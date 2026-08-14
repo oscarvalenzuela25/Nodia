@@ -1,0 +1,7 @@
+{
+  "title": "Comenzar",
+  "counter": "El contador es {{counter}}",
+  "language_label": "Idioma",
+  "react_logo_alt": "Logo de React",
+  "vite_logo_alt": "Logo de Vite"
+}

@@ -1,0 +1,17 @@
+{
+  "generic_error_title": "Error inesperado",
+  "generic_error_message": "La aplicacion encontro un problema.",
+  "route_error_title": "Algo salio mal",
+  "route_error_message": "Ocurrio un error inesperado.",
+  "route_not_found_title": "404 - No encontrado",
+  "route_not_found_message": "La ruta que intentaste abrir no existe.",
+  "route_status_title": "{{status}} - {{statusText}}",
+  "retry": "Reintentar",
+  "go_home": "Ir al inicio",
+  "reload_app": "Recargar aplicacion",
+  "not_found_page_message": "La pagina que buscas no existe.",
+  "not_found_page_title": "404 - No encontrado",
+  "back_home": "Volver al inicio",
+  "maintenance_title": "Mantenimiento",
+  "maintenance_message": "Estamos realizando mejoras. Vuelve a intentarlo en unos minutos."
+}

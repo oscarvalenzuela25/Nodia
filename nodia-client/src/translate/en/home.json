@@ -1,0 +1,7 @@
+{
+  "title": "Get started",
+  "counter": "Counter is {{counter}}",
+  "language_label": "Language",
+  "react_logo_alt": "React logo",
+  "vite_logo_alt": "Vite logo"
+}

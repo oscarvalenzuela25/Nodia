@@ -1,0 +1,17 @@
+{
+  "generic_error_title": "Unexpected error",
+  "generic_error_message": "The application found a problem.",
+  "route_error_title": "Something went wrong",
+  "route_error_message": "An unexpected error occurred.",
+  "route_not_found_title": "404 - Not found",
+  "route_not_found_message": "The route you tried to open does not exist.",
+  "route_status_title": "{{status}} - {{statusText}}",
+  "retry": "Retry",
+  "go_home": "Go home",
+  "reload_app": "Reload app",
+  "not_found_page_message": "The page you are looking for does not exist.",
+  "not_found_page_title": "404 - Not found",
+  "back_home": "Back to home",
+  "maintenance_title": "Maintenance",
+  "maintenance_message": "We are making improvements. Please try again in a few minutes."
+}
