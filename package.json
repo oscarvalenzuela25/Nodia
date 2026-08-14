@@ -1,12 +1,25 @@
 {
   "name": "nodia",
   "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
+  "description": "Aplicacion Nodia: punto de entrada para el cliente y los futuros servicios del proyecto.",
+  "private": true,
   "author": "Oscar Valenzuela",
-  "type": "commonjs",
-  "main": "index.js",
+  "license": "ISC",
+  "engines": {
+    "node": ">=24.11.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "setup": "npm run install:client",
+    "install:client": "npm install --prefix nodia-client",
+    "dev": "npm run dev:client",
+    "dev:client": "npm run dev --prefix nodia-client",
+    "build": "npm run build:client",
+    "build:client": "npm run build --prefix nodia-client",
+    "typecheck": "npm run typecheck:client",
+    "typecheck:client": "npm run typecheck --prefix nodia-client",
+    "lint": "npm run lint:client",
+    "lint:client": "npm run lint --prefix nodia-client",
+    "preview": "npm run preview:client",
+    "preview:client": "npm run preview --prefix nodia-client"
   }
 }

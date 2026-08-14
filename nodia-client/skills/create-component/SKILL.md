@@ -1,127 +1,84 @@
 ---
 name: create-component
-description: Guia operativa para crear componentes React/MUI con la estructura y convenciones del proyecto; cargarla antes de crear o modificar un componente.
+description: Crear o modificar componentes UI del template con React, TypeScript, MUI, Emotion, traducciones, hooks, rutas y acceso a datos mediante Axios y TanStack Query. Usar siempre que se cree o cambie un componente, pagina, layout, provider o sus estilos e infraestructura asociada dentro de este repositorio.
 ---
 
-## When to Use
+# Create Component
 
-Use this skill when:
+## Fuente de verdad
 
-- Creas un componente nuevo (carpeta propia o dentro de otro módulo).
-- Añades lógica dedicada (custom hooks o servicios) a un componente existente.
-- Incorporas MUI en un componente y necesitas confirmar patrones o props (consulta la doc vía MCP de MUI).
+Antes de editar:
 
----
+1. Leer `AGENTS.md`, `package.json` y los componentes cercanos al destino.
+2. Tomar `package.json` como fuente de verdad si alguna version difiere de esta skill.
+3. Mantener la arquitectura existente; no introducir una segunda solucion para auth, API, rutas, estado, traducciones o theme.
+4. Consultar la documentacion de la version instalada cuando una prop o comportamiento de MUI, React Router o TanStack Query no sea evidente.
 
-## Context
+## Stack validado
 
-- Proyecto React 19.2.4 con Vite 8 y styled-components(emotion).
-- Color de marca: usa `theme.palette.primary.main` como color principal.
-- Todo texto se traduce via `useTranslate`/`useTranslation` y se agrega en `src/translations/*`.
-- Axios: usa `mainInstance` desde `src/config/axiosInstance.ts`.
-- Prefiere React Query para datos; componentes base con MUI cuando aplique.
+| Area | Version |
+| --- | --- |
+| Node.js | `>=24.11.0` (`.nvmrc`: `24.19.0`) |
+| React / React DOM | `19.2.8` |
+| TypeScript | `6.0.3` |
+| Vite | `8.2.1` |
+| MUI Material / Icons | `9.3.1` |
+| Emotion React / Styled | `11.14.x` |
+| React Router | `8.3.0` |
+| TanStack React Query | `5.101.4` |
+| Axios | `1.19.0` |
+| i18next / react-i18next | `26.3.6` / `17.0.11` |
+| Zustand | `5.0.15` |
+| Babel | `8.0.1` |
+| ESLint | `10.8.1` |
 
-## Critical Patterns
+No subir TypeScript a v7 mientras `typescript-eslint` declare soporte `<6.1.0`. Verificar nuevamente su peer dependency antes de cambiar esta restriccion.
 
-### Pattern 1: Estructura del componente
+## Flujo obligatorio
 
-```
+1. Determinar si el cambio es UI, logica local, datos remotos, rutas o una combinacion.
+2. Reutilizar componentes, tokens, hooks y patrones existentes antes de crear abstracciones nuevas.
+3. Crear solo los archivos necesarios; no dejar carpetas o archivos placeholder.
+4. Tipar props, respuestas HTTP, errores, callbacks y estado sin `any` innecesario.
+5. Agregar todo texto visible en `src/translate/es/*` y `src/translate/en/*`.
+6. Ejecutar `npm run typecheck` y `npm run lint` al finalizar. Ejecutar `npm run build` cuando cambien imports, configuracion, rutas o integraciones de librerias.
+
+## Estructura
+
+Usar una carpeta PascalCase y mantener el barrel `index.ts`:
+
+```text
 XComponent/
-├── XComponent.tsx       # UI (arrow function)
-├── styles.ts            # styled components usando theme
-├── index.ts             # export default XComponent
-├── types.ts             # tipos compartidos del folder (opcional)
-├── hooks/               # lógica reusable (useXComponent, etc.)
-├── infrastructure/      # HTTP + React Query (services.ts, useServices.ts)
+|-- XComponent.tsx
+|-- styles.ts
+|-- index.ts
+|-- types.ts                 # opcional
+|-- hooks/                   # opcional: logica local reusable
+`-- infrastructure/          # opcional: services.ts + useServices.ts
 ```
 
-- Nombra el componente y carpeta en PascalCase. Hooks en camelCase con prefijo `use`.
-- Si no hay lógica adicional, omite carpetas vacías.
+- Nombrar componentes y carpetas en PascalCase.
+- Nombrar hooks en camelCase con prefijo `use`.
+- Mantener la UI en `XComponent.tsx` y extraer logica no trivial a hooks.
+- Colocar tipos compartidos por varios archivos del folder en `types.ts`; dejar tipos locales pequenos junto a su uso.
+- No crear un theme dentro del componente. La composicion pertenece a `src/providers/MUIProvider.tsx` y los tokens a `src/theme/*`.
 
-### Pattern 2: Firma y traducciones
+## Componente y traducciones
+
+Usar imports de tipo con `verbatimModuleSyntax` y mantener las claves con namespace:
 
 ```tsx
-import { FC } from "react";
-import { useTranslation } from "react-i18next";
-
-type Props = {
-  // tus props
-};
-
-const XComponent: FC<Props> = (props) => {
-  const { t } = useTranslation("namespace"); // aliaséalo como useTranslate si existe wrapper local
-  return <Wrapper>{t("namespace.key")}</Wrapper>;
-};
-```
-
-- Usa `FC<Props>` y arrow function.
-- Todo copy va en traducciones; crea/actualiza el JSON correspondiente y usa el hook de traducción del proyecto (`useTranslate`/`useTranslation`).
-- Si usas MUI, consulta props/comportamiento con el MCP de MUI (elige la versión según `package.json`).
-
-### Pattern 3: Estilos y datos
-
-```tsx
-// styles.ts
-export const Wrapper = styled.div(({ theme }) => ({
-  display: "flex",
-  color: theme.palette.primaryApp,
-}));
-```
-
-- Siempre Styled Components con theme (colores desde `palette`, no primario default de MUI).
-- Para datos/HTTP:
-  - `infrastructure/services.ts`: handlers con el axios instance correcto.
-  - `infrastructure/useServices.ts`: React Query (`useQuery`/`useMutation`) usando esos handlers; favorece optimistic updates.
-  - Custom hooks en `hooks/` para separar lógica de la UI.
-
-### Pattern 4: Nomenclatura en `services.ts`
-
-- `GET` (fetch): el handler debe comenzar con `get`.
-  - Ejemplo: `getNotificationTemplateDetails`.
-- `PUT`: el handler debe comenzar con `update`.
-  - Ejemplo: `updateNotificationTemplateSubject`.
-- `POST`: el handler puede comenzar directamente con el nombre de la acción (sin prefijo obligatorio).
-  - Ejemplo: `sendNotificationTemplateTestEmail`, `rollbackHeaderContent`.
-- `PATCH`: misma regla que `POST` (sin prefijo obligatorio).
-  - Ejemplo: `toggleNotificationStatus`.
-- `DELETE`: el handler debe comenzar con `delete`.
-  - Ejemplo: `deleteNotificationTemplate`.
-
-### Pattern 5: Guardrails Anti-Warnings (React)
-
-- Keys de listas:
-  - Nunca uses objetos como `key` (`key={item}` cuando `item` es objeto termina en `[object Object]`).
-  - Usa una key primitiva y estable (`id`, `slug`, `employee_id`, etc.).
-  - Evita `index` como `key` salvo casos controlados de skeletons estáticos.
-
----
-
-## Decision Tree
-
-```
-¿Solo UI? → Crea carpeta XComponent con XComponent.tsx + styles.ts + index.ts.
-¿Hay tipos compartidos? → Agrega types.ts y tipa Props/handlers.
-¿Lógica reusable? → Crea hooks/useXComponent.ts (y más hooks específicos si se necesitan).
-¿HTTP o datos remotos? → infrastructure/services.ts + infrastructure/useServices.ts con React Query y axios instances.
-¿Usas MUI? → Apóyate en MCP MUI para props/slots y ajusta estilos con Styled Components + theme.
-¿Texto nuevo? → Añade clave en `src/translations` y úsala con `useTranslate`/`useTranslation`.
-```
-
----
-
-## Code Examples
-
-### Example 1: Componente básico
-
-```tsx
-// XComponent/XComponent.tsx
-import { FC } from "react";
+import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Wrapper, Title } from "./styles";
-import type { Props } from "./types";
+
+type Props = {
+  titleKey: string;
+};
 
 const XComponent: FC<Props> = ({ titleKey }) => {
-  const { t } = useTranslation("namespace");
+  const { t } = useTranslation();
+
   return (
     <Wrapper>
       <Title>{t(titleKey)}</Title>
@@ -132,86 +89,178 @@ const XComponent: FC<Props> = ({ titleKey }) => {
 export default XComponent;
 ```
 
-```tsx
-// XComponent/styles.ts
-import styled from "styled-components";
+- Usar `t("namespace:key")` para todo texto visible.
+- Crear la misma key en `src/translate/es/<namespace>.json` y `src/translate/en/<namespace>.json`.
+- No usar `defaultValue` para ocultar keys faltantes.
+- Usar `Trans` cuando el copy necesite componentes interpolados; no concatenar fragmentos traducidos.
 
-export const Wrapper = styled.section(({ theme }) => ({
+## Estilos MUI y Emotion
+
+Usar el `styled` de MUI para obtener el theme tipado. No importar `styled-components`: esa libreria no pertenece al proyecto.
+
+```tsx
+import { styled } from "@mui/material/styles";
+
+export const Wrapper = styled("section")(({ theme }) => ({
   display: "flex",
-  gap: "12px",
+  gap: theme.spacing(1.5),
   color: theme.palette.primary.main,
 }));
 
-export const Title = styled.h3(() => ({
-  fontSize: "18px",
-  fontWeight: "bold",
+export const Title = styled("h2")(({ theme }) => ({
+  ...theme.typography.h6,
+  margin: 0,
 }));
 ```
 
+- Usar tokens del theme (`palette`, `spacing`, `typography`, `breakpoints`, `zIndex`, `transitions`).
+- Usar `theme.palette.primary.main`; no inventar `primaryApp` ni colores hardcodeados cuando exista un token equivalente.
+- Usar `sx` para ajustes puntuales de una instancia y `styled` para estilos reusables.
+- Mantener accesibilidad: label asociado, nombre accesible, orden de foco, estados disabled/loading y navegacion por teclado.
+
+## MUI 9: breaking changes relevantes
+
+Aplicar estas reglas al crear o migrar componentes:
+
+- Usar `slots` y `slotProps`; no usar APIs deprecadas como `components`, `componentsProps`, `*Props`, `inputProps`, `inputRef` o `TransitionComponent` cuando el componente tenga reemplazo por slots.
+- Usar `Grid` de `@mui/material/Grid`; `GridLegacy` fue eliminado. No usar `item`, `xs`, `sm`, `md`, `lg` o `xl` directamente:
+
+```tsx
+<Grid container spacing={2}>
+  <Grid size={{ xs: 12, sm: 6 }}>{children}</Grid>
+</Grid>
+```
+
+- Mover system props a `sx` en `Box`, `Grid`, `Stack`, `Typography`, `Link` y `DialogContentText`:
+
+```tsx
+<Stack sx={{ mt: 2, alignItems: "center" }} />
+```
+
+- No usar `disableEscapeKeyDown` en `Dialog` o `Modal`; filtrar `reason === "escapeKeyDown"` dentro de `onClose` cuando se necesite bloquear Escape.
+- Usar iconos con sufijo `Outlined`; los aliases antiguos terminados en `Outline` fueron eliminados.
+- Revisar visualmente componentes existentes al migrarlos: `ListItemIcon` redujo su ancho minimo y Tabs, MenuList y Stepper cambiaron comportamiento de foco/teclado.
+- Considerar el soporte minimo de MUI 9: Chrome 117, Edge 121, Firefox 121 y Safari 17.
+
+## React 19: guardrails
+
+- Usar el JSX transform moderno configurado por Vite; no importar `React` solo para escribir JSX.
+- Pasar un valor inicial a `useRef`, por ejemplo `useRef<HTMLDivElement | null>(null)`.
+- Evitar retornos implicitos en callbacks de ref porque React 19 interpreta un retorno como cleanup:
+
+```tsx
+<div
+  ref={(node) => {
+    elementRef.current = node;
+  }}
+/>
+```
+
+- Aceptar `ref` como prop en componentes funcionales nuevos cuando sea necesario. No agregar `forwardRef` automaticamente; conservarlo solo cuando una API existente lo requiera.
+- Usar keys primitivas, estables y unicas en listas. No usar objetos ni indices salvo listas estaticas sin reordenamiento.
+
+## React Router 8
+
+- Importar APIs generales (`Link`, `Navigate`, `useNavigate`, hooks) desde `react-router`.
+- Importar `RouterProvider` desde `react-router/dom`.
+- No agregar `react-router-dom`; el paquete de reexport fue eliminado en v8.
+- Usar `loaderData`, no el campo deprecado `data`, al consumir resultados de `useMatches` o argumentos de rutas.
+- Registrar rutas en `src/routes/index.tsx` y respetar `Guard`/`NoGuard`.
+- No duplicar auth en loaders o componentes; consumir `authStore` mediante `useAuth` según la arquitectura existente.
+
+## Axios y TanStack Query 5
+
+No crear instancias Axios aisladas. Usar `mainInstance` o `createApiInstance` desde `src/config/axiosInstance.ts`.
+
+Separar transporte y cache:
+
 ```ts
-// XComponent/types.ts
-export type Props = {
-  titleKey: string;
+// infrastructure/services.ts
+// Ajustar la ruta relativa segun la ubicacion del componente.
+import { mainInstance } from "../../../../config/axiosInstance";
+import type { Item, NewItem } from "../types";
+
+export const getItems = async (): Promise<Item[]> => {
+  const { data } = await mainInstance.get<Item[]>("/items");
+  return data;
+};
+
+export const createItem = async (payload: NewItem): Promise<Item> => {
+  const { data } = await mainInstance.post<Item>("/items", payload);
+  return data;
 };
 ```
 
-### Example 2: React Query + servicios
-
 ```ts
-// XComponent/infrastructure/services.ts
-import { mainInstance } from "src/config/axiosInstance";
+// infrastructure/useServices.ts
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createItem, getItems } from "./services";
 
-export const getItems = (id: number) => mainInstance.get(`/items/${id}`);
-export const createItem = (payload: Payload) =>
-  mainInstance.post("/items", payload);
-export const getItemsFromPy = () => mainInstance.get("/items");
-export const deleteItemInNineBox = (id: number) =>
-  mainInstance.delete(`/items/${id}`);
-```
+export const itemKeys = {
+  all: ["items"] as const,
+};
 
-```ts
-// XComponent/infrastructure/useServices.ts
-// Los mensajes casi siempre van con ese formato, pero en su totalidad siempre van en un objeto httpRequest dentro de las traducciones, con una clave específica para cada acción (ej: handleCreateItemSuccess o handleCreateItemError).
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-import { getItems, createItem } from "./services";
-
-export const useItems = ({ id, enabled }) =>
+export const useItems = () =>
   useQuery({
-    queryKey: ["items", id],
-    queryFn: () => getItems(id),
-    enabled,
+    queryKey: itemKeys.all,
+    queryFn: getItems,
   });
 
 export const useCreateItem = () => {
-  const client = useQueryClient();
-  const { t } = useTranslation();
-
-  type Args = {
-    payload: Payload;
-    callback?: (data: any) => void;
-  };
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ payload }: Args) => createItem(payload),
-    onSuccess: (data, { callback }) => {
-      client.invalidateQueries({ queryKey: ["items"] });
-      <!-- Falta implementar sonner para los toast -->
-      if (callback) callback(data);
+    mutationFn: createItem,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: itemKeys.all });
     },
-    onError: (error) =>
-      <!-- Toca implementarlo mas adelante -->
-      <!-- handleQueryError({
-        error,
-        errorMessage: t("common:items.httpRequest.handleCreateItemError"),
-        t,
-      }), -->
   });
 };
 ```
 
----
+Aplicar las reglas de TanStack Query v5:
 
-## Resources
+- Usar siempre la firma de objeto: `useQuery({ ... })`, `useMutation({ ... })` e `invalidateQueries({ ... })`.
+- No usar `onSuccess`, `onError` ni `onSettled` en `useQuery`; fueron eliminados. Esos callbacks siguen disponibles para mutations.
+- Usar `queryClient.removeQueries(...)`; no usar `query.remove()`.
+- Usar `placeholderData: keepPreviousData`; no usar la opcion eliminada `keepPreviousData: true`.
+- Definir query keys estables y reutilizables. Incluir en la key toda variable consumida por `queryFn`.
+- Favorecer optimistic updates solo cuando exista rollback tipado y manejo coherente de errores.
 
-- Plantilla: usa este SKILL.md como guía base para nuevos componentes.
+Nombrar handlers HTTP por metodo:
+
+- `GET`: `get...`
+- `PUT`: `update...`
+- `DELETE`: `delete...`
+- `POST` y `PATCH`: usar el verbo de negocio, por ejemplo `create...`, `send...`, `toggle...` o `rollback...`.
+
+## Tooling: Babel 8, ESLint 10 y TypeScript 6
+
+- Mantener archivos de configuracion y scripts en ESM; Babel 8 es ESM-only.
+- No agregar `.eslintrc*`; ESLint 10 solo admite flat config mediante `eslint.config.js`.
+- Escapar `{`, `}`, `<` y `>` cuando sean texto JSX literal. No usar expresiones de secuencia sin parentesis dentro de atributos JSX.
+- Mantener `strict`, evitar `any` y usar `import type` para imports exclusivamente de tipos.
+- No silenciar nuevas reglas de ESLint sin justificar por que el codigo no puede corregirse.
+
+## Checklist final
+
+- [ ] El componente sigue la estructura y nombres del modulo.
+- [ ] No se duplicaron auth, Axios, QueryClient, router ni theme.
+- [ ] MUI usa APIs v9 (`slots`, `slotProps`, `sx`, Grid actual).
+- [ ] Los estilos usan MUI/Emotion y tokens del theme.
+- [ ] Todo texto visible existe en español e ingles bajo `src/translate`.
+- [ ] Props, handlers, respuestas y callbacks estan tipados sin `any` innecesario.
+- [ ] Estados loading, empty, error, disabled y accesibilidad estan cubiertos cuando aplican.
+- [ ] `npm run typecheck` pasa.
+- [ ] `npm run lint` pasa.
+- [ ] `npm run build` pasa cuando el alcance lo requiere.
+
+## Referencias oficiales
+
+- React 19: <https://react.dev/blog/2024/04/25/react-19-upgrade-guide>
+- MUI 9: <https://mui.com/material-ui/migration/upgrade-to-v9/>
+- React Router 8: <https://reactrouter.com/upgrading/v7>
+- TanStack Query 5: <https://tanstack.com/query/v5/docs/framework/react/guides/migrating-to-v5>
+- Babel 8: <https://babeljs.io/docs/v8-migration>
+- ESLint 10: <https://eslint.org/docs/latest/use/migrate-to-10.0.0>
+- Compatibilidad TypeScript ESLint: <https://typescript-eslint.io/users/dependency-versions/>

@@ -6,17 +6,17 @@ Template base para aplicaciones frontend con React + TypeScript + Vite, listo pa
 
 - React 19
 - Vite 8
-- TypeScript 5
-- React Router 7
+- TypeScript 6
+- React Router 8
 - Zustand
 - React Query
 - Axios
 - i18next + react-i18next
-- MUI 7 + Emotion
+- MUI 9 + Emotion
 
 ## Requisitos
 
-- Node `22.12.0` o superior
+- Node `24.11.0` o superior
 - NPM 9+
 
 Este repo incluye `.nvmrc` con la version recomendada.
