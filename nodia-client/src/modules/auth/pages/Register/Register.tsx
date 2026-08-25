@@ -1,30 +1,19 @@
-import { useNavigate } from "react-router";
-import useAuth from "../../../../hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import useRegister from "./hooks/useRegister";
+import { ActionButton, Description, Page, Title } from "./styles";
 
 const Register = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth();
   const { t } = useTranslation();
-
-  const handleRegister = () => {
-    login({
-      token: "demo-token",
-      user: {
-        name: "Demo User",
-      },
-    });
-    navigate("/", { replace: true });
-  };
+  const { handleRegister } = useRegister();
 
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>{t("auth:register_title")}</h1>
-      <p>{t("auth:public_route_description")}</p>
-      <button type="button" onClick={handleRegister}>
+    <Page>
+      <Title>{t("auth:register_title")}</Title>
+      <Description>{t("auth:public_route_description")}</Description>
+      <ActionButton type="button" variant="contained" onClick={handleRegister}>
         {t("auth:register_button")}
-      </button>
-    </main>
+      </ActionButton>
+    </Page>
   );
 };
 

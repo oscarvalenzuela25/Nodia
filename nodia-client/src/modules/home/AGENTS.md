@@ -9,7 +9,7 @@ Este modulo contiene la experiencia principal de inicio (`/`) para usuarios aute
 ## Archivos clave
 
 - `src/modules/home/pages/Home/Home.tsx`
-- `src/modules/home/pages/Home/home.css`
+- `src/modules/home/pages/Home/styles.ts`
 - `src/routes/index.tsx`
 
 ## Reglas del modulo

@@ -5,7 +5,7 @@
   "route_error_message": "Ocurrio un error inesperado.",
   "route_not_found_title": "404 - No encontrado",
   "route_not_found_message": "La ruta que intentaste abrir no existe.",
-  "route_status_title": "{{status}} - {{statusText}}",
+  "route_status_title": "Error {{status}}",
   "retry": "Reintentar",
   "go_home": "Ir al inicio",
   "reload_app": "Recargar aplicacion",

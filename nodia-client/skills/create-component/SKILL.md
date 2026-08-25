@@ -31,6 +31,7 @@ Antes de editar:
 | Zustand | `5.0.15` |
 | Babel | `8.0.1` |
 | ESLint | `10.8.1` |
+| Tests | Vitest `4.1.11` + Testing Library `16.3.2` |
 
 No subir TypeScript a v7 mientras `typescript-eslint` declare soporte `<6.1.0`. Verificar nuevamente su peer dependency antes de cambiar esta restriccion.
 
@@ -38,10 +39,11 @@ No subir TypeScript a v7 mientras `typescript-eslint` declare soporte `<6.1.0`. 
 
 1. Determinar si el cambio es UI, logica local, datos remotos, rutas o una combinacion.
 2. Reutilizar componentes, tokens, hooks y patrones existentes antes de crear abstracciones nuevas.
-3. Crear solo los archivos necesarios; no dejar carpetas o archivos placeholder.
+3. Crear solo los archivos necesarios; no dejar carpetas o archivos placeholder. Los `.gitkeep` que conservan el arbol espejo de `src/test` son la unica excepcion y deben eliminarse cuando la carpeta reciba un test real.
 4. Tipar props, respuestas HTTP, errores, callbacks y estado sin `any` innecesario.
 5. Agregar todo texto visible en `src/translate/es/*` y `src/translate/en/*`.
-6. Ejecutar `npm run typecheck` y `npm run lint` al finalizar. Ejecutar `npm run build` cuando cambien imports, configuracion, rutas o integraciones de librerias.
+6. Crear o actualizar el test espejo de todo componente con logica.
+7. Ejecutar `npm run test`, `npm run typecheck` y `npm run lint` al finalizar. Ejecutar `npm run build` cuando cambien imports, configuracion, rutas o integraciones de librerias.
 
 ## Estructura
 
@@ -53,13 +55,16 @@ XComponent/
 |-- styles.ts
 |-- index.ts
 |-- types.ts                 # opcional
-|-- hooks/                   # opcional: logica local reusable
+|-- hooks/                   # opcional: uno o mas hooks useX
 `-- infrastructure/          # opcional: services.ts + useServices.ts
 ```
 
+- `XComponent.tsx`, `styles.ts` e `index.ts` son obligatorios para componentes, paginas y layouts con carpeta propia.
 - Nombrar componentes y carpetas en PascalCase.
 - Nombrar hooks en camelCase con prefijo `use`.
 - Mantener la UI en `XComponent.tsx` y extraer logica no trivial a hooks.
+- Crear `hooks/` solo cuando exista logica local extraible. No crear un hook que se limite a renombrar props o valores.
+- Crear `infrastructure/` solo cuando el componente consuma datos remotos. La carpeta debe contener `services.ts` para transporte y `useServices.ts` para React Query; no crear uno sin el otro.
 - Colocar tipos compartidos por varios archivos del folder en `types.ts`; dejar tipos locales pequenos junto a su uso.
 - No crear un theme dentro del componente. La composicion pertenece a `src/providers/MUIProvider.tsx` y los tokens a `src/theme/*`.
 
@@ -117,6 +122,23 @@ export const Title = styled("h2")(({ theme }) => ({
 - Usar `theme.palette.primary.main`; no inventar `primaryApp` ni colores hardcodeados cuando exista un token equivalente.
 - Usar `sx` para ajustes puntuales de una instancia y `styled` para estilos reusables.
 - Mantener accesibilidad: label asociado, nombre accesible, orden de foco, estados disabled/loading y navegacion por teclado.
+
+## Tests de componentes
+
+Todo componente con logica debe tener un test en `src/test` que replique su ruta relativa dentro de `src`:
+
+```text
+src/modules/auth/pages/Login/Login.tsx
+src/test/modules/auth/pages/Login/Login.test.tsx
+```
+
+Se considera logica cualquier estado local, handler con efectos, navegacion, acceso a stores o contexto, transformacion condicional relevante, error boundary o consumo de hooks/servicios. Usar solo traducciones o renderizar props sin decisiones no obliga por si solo a crear un test, salvo que el `AGENTS.md` local sea mas estricto.
+
+- Usar Vitest y React Testing Library; importar `describe`, `it`, `expect`, `vi` y demas APIs explicitamente desde `vitest`.
+- Probar comportamiento observable y accesibilidad, no detalles internos del componente.
+- Usar `user-event` para interacciones de usuario y `jest-dom` para assertions del DOM.
+- Mantener la misma base de nombre con sufijo `.test.tsx`; usar `.test.ts` para hooks o utilidades sin JSX.
+- Al mover o renombrar un componente, mover tambien su test y eliminar el `.gitkeep` de la carpeta que deje de estar vacia.
 
 ## MUI 9: breaking changes relevantes
 
@@ -251,6 +273,8 @@ Nombrar handlers HTTP por metodo:
 - [ ] Todo texto visible existe en español e ingles bajo `src/translate`.
 - [ ] Props, handlers, respuestas y callbacks estan tipados sin `any` innecesario.
 - [ ] Estados loading, empty, error, disabled y accesibilidad estan cubiertos cuando aplican.
+- [ ] Todo componente con logica tiene su archivo espejo `src/test/**/*.test.tsx`.
+- [ ] `npm run test` pasa.
 - [ ] `npm run typecheck` pasa.
 - [ ] `npm run lint` pasa.
 - [ ] `npm run build` pasa cuando el alcance lo requiere.

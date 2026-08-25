@@ -31,7 +31,7 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
   - `src/routes/Guard.tsx`
   - `src/routes/NoGuard.tsx`
 - Errores globales:
-  - `src/modules/core/components/AppErrorBoundary.tsx`
+  - `src/modules/core/components/AppErrorBoundary/AppErrorBoundary.tsx`
   - `src/modules/core/pages/RouteError/RouteError.tsx`
 
 ## Reglas Operativas
@@ -43,6 +43,17 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 5. Respetar `Guard`/`NoGuard` al agregar rutas nuevas.
 6. Mantener tipado estricto en TypeScript; evitar `any` innecesario.
 7. No crear themes MUI en componentes de modulo; la composicion del theme debe quedarse en `MUIProvider`.
+8. Todo componente que contenga logica debe tener un archivo de test correspondiente en `src/test`.
+9. `src/test` debe replicar la estructura de directorios de `src`: por ejemplo, el test de `src/modules/auth/pages/Login/Login.tsx` debe ubicarse en `src/test/modules/auth/pages/Login/Login.test.tsx`.
+10. Si `src/test` o la ruta espejo necesaria no existen al crear o modificar un componente con logica, se deben crear junto con su archivo `*.test.tsx`.
+
+## Tests
+
+- Runner: Vitest con entorno `jsdom`.
+- Componentes: React Testing Library, `@testing-library/jest-dom` y `@testing-library/user-event`.
+- Ubicacion obligatoria: `src/test/**/*.test.{ts,tsx}`.
+- Los tests deben importar las APIs de Vitest explicitamente para conservar el tipado y las reglas de lint.
+- Comandos disponibles: `npm run test`, `npm run test:watch` y `npm run test:coverage`.
 
 ## Skills
 
@@ -61,6 +72,7 @@ Lineamiento obligatorio para agentes:
 ## Checklist Antes de Finalizar
 
 ```bash
+npm run test
 npm run typecheck
 npm run lint
 ```

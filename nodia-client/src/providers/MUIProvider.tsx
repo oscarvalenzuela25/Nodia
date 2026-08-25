@@ -23,6 +23,9 @@ const MUIProvider: FC<Props> = ({ children }) => {
     zIndex,
     transitions,
     components,
+    shape: {
+      borderRadius: 8,
+    },
   });
 
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;

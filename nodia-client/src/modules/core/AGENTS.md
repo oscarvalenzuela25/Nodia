@@ -12,7 +12,7 @@ Este modulo concentra piezas transversales de la app:
 
 ## Archivos clave
 
-- `src/modules/core/components/AppErrorBoundary.tsx`
+- `src/modules/core/components/AppErrorBoundary/AppErrorBoundary.tsx`
 - `src/modules/core/pages/RouteError/RouteError.tsx`
 - `src/modules/core/pages/NotFound/NotFound.tsx`
 - `src/modules/core/pages/Maintenance/Maintenance.tsx`
