@@ -1,74 +1,57 @@
-import reactLogo from "./../../../../assets/react.svg";
-import viteLogo from "./../../../../assets/vite.svg";
-import heroImg from "./../../../../assets/hero.png";
+import Grid from "@mui/material/Grid";
 import useHome from "./hooks/useHome";
 import {
-  BaseImage,
-  CounterButton,
-  FrameworkImage,
-  Hero,
-  LanguageButton,
-  LanguageLabel,
-  LanguagePanel,
-  LanguageSection,
-  LanguageShortLabel,
-  LanguageText,
-  Page,
-  Tick,
-  Title,
-  ViteImage,
+  ContainerPage,
+  WelcomeMessage,
+  SectionTitle,
+  SettingsCard,
+  CardTitle,
+  CardDescription,
 } from "./styles";
 
+const SETTINGS_MODULES = [
+  {
+    path: "/settings/users",
+    titleKey: "home:users_title",
+    descKey: "home:users_desc",
+  },
+  {
+    path: "/settings/roles",
+    titleKey: "home:roles_title",
+    descKey: "home:roles_desc",
+  },
+  {
+    path: "/settings/modules",
+    titleKey: "home:modules_title",
+    descKey: "home:modules_desc",
+  },
+  {
+    path: "/settings/resources",
+    titleKey: "home:resources_title",
+    descKey: "home:resources_desc",
+  },
+];
+
 const Home = () => {
-  const {
-    count,
-    currentLanguage,
-    handleIncrement,
-    handleLanguageChange,
-    languageOptions,
-    t,
-  } = useHome();
+  const { t } = useHome();
 
   return (
-    <>
-      <Page>
-        <Hero>
-          <BaseImage src={heroImg} width="170" height="179" alt="" />
-          <FrameworkImage src={reactLogo} alt={t("home:react_logo_alt")} />
-          <ViteImage src={viteLogo} alt={t("home:vite_logo_alt")} />
-        </Hero>
-        <Title>{t("home:title")}</Title>
-        <CounterButton type="button" onClick={handleIncrement}>
-          {t("home:counter", { counter: count })}
-        </CounterButton>
-        <LanguageSection>
-          <LanguageLabel id="language-selector-label">
-            {t("home:language_label")}
-          </LanguageLabel>
-          <LanguagePanel role="group" aria-labelledby="language-selector-label">
-            {languageOptions.map(({ code, shortLabel, label }) => {
-              const active = currentLanguage === code;
+    <ContainerPage>
+      <WelcomeMessage>{t("home:welcome")}</WelcomeMessage>
 
-              return (
-                <LanguageButton
-                  key={code}
-                  type="button"
-                  aria-label={label}
-                  aria-pressed={active}
-                  onClick={() => handleLanguageChange(code)}
-                >
-                  <LanguageShortLabel>{shortLabel}</LanguageShortLabel>
-                  <LanguageText>{label}</LanguageText>
-                </LanguageButton>
-              );
-            })}
-          </LanguagePanel>
-        </LanguageSection>
-      </Page>
+      <SectionTitle>{t("home:general_settings")}</SectionTitle>
 
-      <Tick aria-hidden="true" />
-      <Tick aria-hidden="true" />
-    </>
+      <Grid container spacing={3}>
+        {SETTINGS_MODULES.map((module) => (
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={module.path}>
+            <SettingsCard to={module.path}>
+              <CardTitle>{t(module.titleKey)}</CardTitle>
+              <CardDescription>{t(module.descKey)}</CardDescription>
+            </SettingsCard>
+          </Grid>
+        ))}
+      </Grid>
+    </ContainerPage>
   );
 };
 

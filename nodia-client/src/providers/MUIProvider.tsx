@@ -1,4 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
+import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import typography from "../theme/typography";
 import spacing from "../theme/spacing";
@@ -28,7 +29,12 @@ const MUIProvider: FC<Props> = ({ children }) => {
     },
   });
 
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
+  );
 };
 
 export default MUIProvider;

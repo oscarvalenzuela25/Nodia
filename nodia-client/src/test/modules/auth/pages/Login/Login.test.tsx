@@ -30,7 +30,7 @@ describe("Login", () => {
 
     render(<RouterProvider router={router} />);
     await user.click(
-      screen.getByRole("button", { name: "Iniciar sesion (demo)" })
+      screen.getByRole("button", { name: /google/i })
     );
 
     expect(login).toHaveBeenCalledWith({

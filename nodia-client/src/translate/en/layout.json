@@ -1,0 +1,13 @@
+{
+  "menu_home": "Home",
+  "menu_general_settings": "General Settings",
+  "menu_users": "Users",
+  "menu_roles": "Roles",
+  "menu_modules": "Modules",
+  "menu_resources": "Resources",
+  "login": "Login",
+  "toggle_drawer": "Toggle drawer",
+  "collapse_drawer": "Collapse drawer",
+  "toggle_theme": "Toggle theme",
+  "toggle_language": "Change language"
+}

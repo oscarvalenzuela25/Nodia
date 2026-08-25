@@ -1,32 +1,26 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { MemoryRouter } from "react-router";
 import Home from "../../../../../modules/home/pages/Home";
+import MUIProvider from "../../../../../providers/MUIProvider";
 
 describe("Home", () => {
-  it("increments the counter", async () => {
-    const user = userEvent.setup();
-    render(<Home />);
-
-    await user.click(
-      screen.getByRole("button", { name: "El contador es 0" })
+  it("renders the welcome message and general settings", () => {
+    render(
+      <MemoryRouter>
+        <MUIProvider>
+          <Home />
+        </MUIProvider>
+      </MemoryRouter>
     );
+    
+    // Assuming i18n is mocked to return the keys if not initialized.
+    expect(
+      screen.getByRole("heading", { name: /bienvenido a nodia|welcome to nodia|home:welcome/i })
+    ).toBeInTheDocument();
 
     expect(
-      screen.getByRole("button", { name: "El contador es 1" })
+      screen.getByRole("heading", { name: /ajustes generales|general settings|home:general_settings/i })
     ).toBeInTheDocument();
-  });
-
-  it("exposes and updates the selected language", async () => {
-    const user = userEvent.setup();
-    render(<Home />);
-    const englishButton = screen.getByRole("button", { name: "inglés" });
-
-    expect(englishButton).toHaveAttribute("aria-pressed", "false");
-    await user.click(englishButton);
-
-    await waitFor(() => {
-      expect(englishButton).toHaveAttribute("aria-pressed", "true");
-    });
   });
 });

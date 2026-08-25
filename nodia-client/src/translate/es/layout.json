@@ -1,0 +1,13 @@
+{
+  "menu_home": "Inicio",
+  "menu_general_settings": "Ajustes Generales",
+  "menu_users": "Usuarios",
+  "menu_roles": "Roles",
+  "menu_modules": "Módulos",
+  "menu_resources": "Recursos",
+  "login": "Ingresar",
+  "toggle_drawer": "Alternar menú",
+  "collapse_drawer": "Colapsar menú",
+  "toggle_theme": "Cambiar tema",
+  "toggle_language": "Cambiar idioma"
+}
