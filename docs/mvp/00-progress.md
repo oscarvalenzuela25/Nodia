@@ -1,7 +1,7 @@
 # Progreso del MVP — Nodia
 
-> Estado general: en definición
-> Última revisión: 2026-08-21
+> Estado general: en desarrollo
+> Última revisión: 2026-08-24
 
 ## Checklist
 
@@ -17,7 +17,7 @@
 - [x] 10. Stack DevOps definido — `10-stack-devops.md`
 - [x] 11. Arquitectura inicial aprobada — `11-architecture-overview.md`
 - [x] 12. Kanban revisado — `12-kanban.md`
-- [ ] 13. Preparación para implementación aprobada — `13-readiness-review.md`
+- [x] 13. Preparación para implementación aprobada — `13-readiness-review.md`
 
 ## Estado operativo
 
@@ -35,7 +35,7 @@
 | 10 | aprobado | Aprobado el 2026-08-22; Cloudflare Pages, Northflank, monorepo y pre-commit hooks |
 | 11 | aprobado | Aprobado el 2026-08-22; consolidación técnica (diagrama general y flujo de auth) completada |
 | 12 | aprobado | Aprobado el 2026-08-22; desglose en 7 épicas y tareas trazables |
-| 13 | en progreso | Revisión final (Readiness Review) antes de comenzar el desarrollo |
+| 13 | aprobado | Aprobado el 2026-08-24 por instrucción directa del usuario; control total de Nodia concedido |
 
 ## Bloqueos actuales
 
@@ -49,4 +49,4 @@
 
 ## Próxima acción recomendada
 
-Redactar `13-readiness-review.md` para evaluar y confirmar si todos los documentos están alineados y listos para pasar a la fase de programación (desarrollo).
+Comenzar con la implementación técnica del proyecto, desarrollando los módulos, componentes y endpoints acordados, y avanzando en las épicas descritas en el tablero Kanban (`12-kanban.md`).

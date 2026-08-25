@@ -35,83 +35,34 @@ const shape = {
   borderRadius: 8, // Basado en --radius: 0.5rem (1rem = 16px)
 };
 
-export const lightThemeOptions: ThemeOptions = {
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#19398d',
-      contrastText: '#f3f5f9',
-    },
-    secondary: {
-      main: '#0a0a0a',
-      contrastText: '#f5f7fb',
-    },
-    error: {
-      main: '#9b0033',
-      contrastText: '#ffffff',
-    },
-    background: {
-      default: '#f3f5fb',
-      paper: '#ffffff', // Mapeado desde --card
-    },
-    text: {
-      primary: '#010101',
-      secondary: '#454545', // Mapeado desde --muted-foreground
-    },
-    divider: '#e3e3e3',
-  },
-  typography,
-  shape,
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none', // Quita las mayúsculas por defecto de Material
-          boxShadow: 'none',
-        },
-      },
-    },
-  },
-};
+### Código Base del Tema (Design Tokens Extendidos)
 
-export const darkThemeOptions: ThemeOptions = {
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#6a8dd8',
-      contrastText: '#0a0a0a',
-    },
-    secondary: {
-      main: '#171717',
-      contrastText: '#fafafa',
-    },
-    error: {
-      main: '#cd6e7b',
-      contrastText: '#fafafa',
-    },
-    background: {
-      default: '#050505',
-      paper: '#0a0a0a', // Mapeado desde --card dark
-    },
-    text: {
-      primary: '#fafafa',
-      secondary: '#a1a1a1', // Mapeado desde --muted-foreground dark
-    },
-    divider: '#282828',
-  },
-  typography,
-  shape,
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          boxShadow: 'none',
-        },
-      },
-    },
-  },
-};
+Para no perder los tokens propios de Tailwind (`--popover`, `--muted`, `--ring`, `--chart-*`), extendimos las definiciones de TypeScript de Material UI en `src/theme/palette.tsx`:
+
+```typescript
+declare module "@mui/material/styles" {
+  interface Palette {
+    popover: Palette["primary"];
+    muted: Palette["primary"];
+    accent: Palette["primary"];
+    destructive: Palette["primary"];
+    input: string;
+    ring: string;
+    chart: { 1: string; 2: string; 3: string; 4: string; 5: string; };
+  }
+  interface PaletteOptions {
+    popover?: PaletteOptions["primary"];
+    muted?: PaletteOptions["primary"];
+    accent?: PaletteOptions["primary"];
+    destructive?: PaletteOptions["primary"];
+    input?: string;
+    ring?: string;
+    chart?: { 1: string; 2: string; 3: string; 4: string; 5: string; };
+  }
+}
+```
+
+Estos tokens fueron inyectados directamente tanto a `lightPalette` como `darkPalette` con los códigos de color exactos suministrados.
 
 export const lightTheme = createTheme(lightThemeOptions);
 export const darkTheme = createTheme(darkThemeOptions);
