@@ -4,7 +4,7 @@ import {
   ListSubheader,
   ListItemText,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { styled, alpha } from "@mui/material/styles";
 
 export const DRAWER_WIDTH = 256;
 export const DRAWER_COLLAPSED_WIDTH = 88;
@@ -55,6 +55,34 @@ export const NavItemButton = styled(ListItemButton)(({ theme }) => ({
     transform: "translateX(2px)",
     "& .MuiListItemIcon-root, & .MuiTypography-root": {
       color: theme.palette.primary.main,
+    },
+  },
+  "&.Mui-selected": {
+    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+    boxShadow: `0 8px 16px -4px ${alpha(theme.palette.primary.main, 0.5)}, 0 4px 8px -4px ${alpha(theme.palette.primary.main, 0.3)}`,
+    transform: "scale(1.02) translateX(4px)",
+    position: "relative",
+    overflow: "hidden",
+    border: `1px solid ${alpha(theme.palette.primary.light, 0.2)}`,
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "linear-gradient(to right, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%)",
+      pointerEvents: "none",
+    },
+    "& .MuiListItemIcon-root, & .MuiTypography-root": {
+      color: theme.palette.primary.contrastText,
+      fontWeight: 700,
+      textShadow: "0 2px 4px rgba(0,0,0,0.2)",
+    },
+    "&:hover": {
+      background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
+      transform: "scale(1.04) translateX(6px)",
+      boxShadow: `0 12px 20px -4px ${alpha(theme.palette.primary.main, 0.6)}`,
     },
   },
 }));

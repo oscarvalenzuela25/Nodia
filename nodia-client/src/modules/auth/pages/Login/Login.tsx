@@ -41,7 +41,7 @@ const Login = () => {
         <GoogleButton 
           type="button" 
           variant="contained" 
-          onClick={handleLogin}
+          onClick={() => handleLogin()}
           startIcon={<GoogleIcon />}
           fullWidth
         >

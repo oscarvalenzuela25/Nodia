@@ -1,0 +1,19 @@
+{
+  "title": "Users",
+  "subtitle": "Manage platform users, assign roles and permissions to maintain control.",
+  "new_user": "New User",
+  "filter_placeholder": "You will soon be able to apply multiple filters here...",
+  "table": {
+    "id": "Id",
+    "name": "Name",
+    "email": "Email",
+    "roles": "Roles",
+    "allowed": "Allowed",
+    "active": "Active",
+    "actions": "Actions"
+  },
+  "yes": "Yes",
+  "no": "No",
+  "empty_value": "-",
+  "copy": "Copy ID"
+}

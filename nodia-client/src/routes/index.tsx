@@ -7,6 +7,10 @@ import Login from "../modules/auth/pages/Login";
 import NotFound from "../modules/core/pages/NotFound";
 import Maintenance from "../modules/core/pages/Maintenance";
 import RouteError from "../modules/core/pages/RouteError";
+import Users from "../modules/generalSettings/pages/Users";
+import Roles from "../modules/generalSettings/pages/Roles";
+import Modules from "../modules/generalSettings/pages/Modules";
+import Resources from "../modules/generalSettings/pages/Resources";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +22,38 @@ const router = createBrowserRouter([
         element: (
           <BaseLayout>
             <Home />
+          </BaseLayout>
+        ),
+      },
+      {
+        path: "settings/users",
+        element: (
+          <BaseLayout>
+            <Users />
+          </BaseLayout>
+        ),
+      },
+      {
+        path: "settings/roles",
+        element: (
+          <BaseLayout>
+            <Roles />
+          </BaseLayout>
+        ),
+      },
+      {
+        path: "settings/modules",
+        element: (
+          <BaseLayout>
+            <Modules />
+          </BaseLayout>
+        ),
+      },
+      {
+        path: "settings/resources",
+        element: (
+          <BaseLayout>
+            <Resources />
           </BaseLayout>
         ),
       },

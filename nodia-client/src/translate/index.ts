@@ -7,6 +7,7 @@ import coreEs from "./es/core.json";
 import homeEs from "./es/home.json";
 import translateEs from "./es/translate.json";
 import layoutEs from "./es/layout.json";
+import usersEs from "./es/users.json";
 
 // en
 import authEn from "./en/auth.json";
@@ -14,6 +15,7 @@ import coreEn from "./en/core.json";
 import homeEn from "./en/home.json";
 import translateEn from "./en/translate.json";
 import layoutEn from "./en/layout.json";
+import usersEn from "./en/users.json";
 
 export const SUPPORTED_LANGUAGES = ["es", "en"] as const;
 export const DEFAULT_LANGUAGE = "es";
@@ -55,6 +57,7 @@ const resources = {
     home: homeEs,
     translate: translateEs,
     layout: layoutEs,
+    users: usersEs,
   },
   en: {
     auth: authEn,
@@ -62,6 +65,7 @@ const resources = {
     home: homeEn,
     translate: translateEn,
     layout: layoutEn,
+    users: usersEn,
   },
 };
 
@@ -72,7 +76,7 @@ i18n
     lng: getInitialLanguage(),
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: [...SUPPORTED_LANGUAGES],
-    ns: ["auth", "core", "home", "translate", "layout"],
+    ns: ["auth", "core", "home", "translate", "layout", "users"],
     defaultNS: "home",
     interpolation: {
       escapeValue: false,

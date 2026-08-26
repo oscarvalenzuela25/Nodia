@@ -1,0 +1,19 @@
+{
+  "title": "Usuarios",
+  "subtitle": "Gestiona los usuarios de la plataforma, asigna roles y permisos para mantener el control.",
+  "new_user": "Nuevo usuario",
+  "filter_placeholder": "Pronto podrás aplicar múltiples filtros aquí...",
+  "table": {
+    "id": "Id",
+    "name": "Nombre",
+    "email": "Correo Electrónico",
+    "roles": "Roles",
+    "allowed": "Permitido",
+    "active": "Activo",
+    "actions": "Acciones"
+  },
+  "yes": "Sí",
+  "no": "No",
+  "empty_value": "-",
+  "copy": "Copiar ID"
+}

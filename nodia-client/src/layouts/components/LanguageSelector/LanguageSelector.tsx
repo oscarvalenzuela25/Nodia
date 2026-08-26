@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FC, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
+import { Button, Menu, MenuItem, Tooltip } from "@mui/material";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../../translate";
 import { Wrapper } from "./styles";
@@ -28,14 +28,22 @@ const LanguageSelector: FC = () => {
   return (
     <Wrapper>
       <Tooltip title={t("layout:toggle_language")}>
-        <IconButton
+        <Button
           onClick={handleOpenMenu}
           aria-label={t("layout:toggle_language")}
           aria-controls="language-menu"
           aria-haspopup="true"
+          startIcon={<TranslateOutlinedIcon sx={{ fontSize: "1.75rem", color: "text.primary" }} />}
+          sx={{ 
+            color: "text.primary", 
+            textTransform: "uppercase", 
+            fontWeight: "bold",
+            minWidth: 0,
+            px: 1 
+          }}
         >
-          <TranslateOutlinedIcon sx={{ fontSize: "2rem", color: "text.primary" }} />
-        </IconButton>
+          {currentLanguage.substring(0, 2)}
+        </Button>
       </Tooltip>
       <Menu
         id="language-menu"

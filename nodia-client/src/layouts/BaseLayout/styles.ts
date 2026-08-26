@@ -1,5 +1,8 @@
 import { styled } from "@mui/material/styles";
-import { DRAWER_WIDTH, DRAWER_COLLAPSED_WIDTH } from "../components/Sidenav/styles";
+import {
+  DRAWER_WIDTH,
+  DRAWER_COLLAPSED_WIDTH,
+} from "../components/Sidenav/styles";
 
 export const LayoutWrapper = styled("div")({
   display: "flex",
@@ -29,5 +32,5 @@ export const MainContainer = styled("main", {
 
 export const PageContent = styled("div")(({ theme }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  padding: theme.spacing(4),
 }));

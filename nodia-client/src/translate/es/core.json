@@ -13,5 +13,9 @@
   "not_found_page_title": "404 - No encontrado",
   "back_home": "Volver al inicio",
   "maintenance_title": "Mantenimiento",
-  "maintenance_message": "Estamos realizando mejoras. Vuelve a intentarlo en unos minutos."
+  "maintenance_message": "Estamos realizando mejoras. Vuelve a intentarlo en unos minutos.",
+  "filter": "Filtro",
+  "filtering_by": "Filtrando por",
+  "clear_filters": "Limpiar filtros",
+  "cancel": "Cancelar"
 }

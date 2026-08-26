@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation } from "react-router";
 import {
   List,
   ListItem,
@@ -36,20 +37,20 @@ const mockMenu: SidenavItem[] = [
       {
         id: "usuarios",
         nameKey: "menu_users",
-        path: "/usuarios",
+        path: "/settings/users",
         icon: <PeopleOutlinedIcon />,
       },
-      { id: "roles", nameKey: "menu_roles", path: "/roles", icon: <AddReactionOutlinedIcon /> },
+      { id: "roles", nameKey: "menu_roles", path: "/settings/roles", icon: <AddReactionOutlinedIcon /> },
       {
         id: "modulos",
         nameKey: "menu_modules",
-        path: "/modulos",
+        path: "/settings/modules",
         icon: <ViewModuleOutlinedIcon />,
       },
       {
         id: "recursos",
         nameKey: "menu_resources",
-        path: "/recursos",
+        path: "/settings/resources",
         icon: <AppsOutlinedIcon />,
       },
     ],
@@ -68,6 +69,8 @@ const Sidenav: FC<Props> = ({
   desktopCollapsed = false,
 }) => {
   const { t } = useTranslation("layout");
+  const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
 
@@ -112,6 +115,8 @@ const Sidenav: FC<Props> = ({
                       sx={{ display: "block" }}
                     >
                       <NavItemButton
+                        selected={location.pathname === subItem.path}
+                        onClick={() => subItem.path && navigate(subItem.path)}
                         sx={{
                           justifyContent: isCollapsed ? "center" : "initial",
                         }}
@@ -145,6 +150,8 @@ const Sidenav: FC<Props> = ({
                 sx={{ mb: 1, display: "block" }}
               >
                 <NavItemButton
+                  selected={location.pathname === moduleItem.path}
+                  onClick={() => moduleItem.path && navigate(moduleItem.path)}
                   sx={{ justifyContent: isCollapsed ? "center" : "initial" }}
                 >
                   {moduleItem.icon && (

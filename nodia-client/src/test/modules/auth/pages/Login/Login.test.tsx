@@ -13,6 +13,14 @@ vi.mock("../../../../../hooks/useAuth", () => ({
   default: () => ({ login }),
 }));
 
+vi.mock("@react-oauth/google", () => ({
+  useGoogleLogin: (options: { onSuccess?: (response: unknown) => void }) => () => {
+    if (options.onSuccess) {
+      options.onSuccess({ access_token: "mock-google-token" });
+    }
+  },
+}));
+
 describe("Login", () => {
   beforeEach(() => {
     login.mockClear();
