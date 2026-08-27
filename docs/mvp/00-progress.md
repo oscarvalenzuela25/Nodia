@@ -1,7 +1,7 @@
 # Progreso del MVP — Nodia
 
 > Estado general: en desarrollo
-> Última revisión: 2026-08-24
+> Última revisión: 2026-08-26
 
 ## Checklist
 
@@ -25,8 +25,8 @@
 |---:|---|---|
 | 01 | aprobado | Revisión aprobada y terminología `Resources` confirmada el 2026-08-17 |
 | 02 | aprobado | Aprobado tal como estaba en revisión el 2026-08-19 |
-| 03 | aprobado | Aprobado el 2026-08-19; incluye Home solo frontend y unicidad compuesta en pivotes |
-| 04 | aprobado | Aprobado el 2026-08-19; reconciliado PRD V1 + ERD |
+| 03 | aprobado | Aprobado el 2026-08-26; actualizado a modelo de acciones dinámicas (sin resources) y con multiidioma (keys) |
+| 04 | aprobado | Aprobado el 2026-08-26; reconciliado modelo de acciones dinámicas e i18n con flujos de negocio |
 | 05 | aprobado | Aprobado el 2026-08-21; incluye login con React OAuth2 y CRUDs por modales |
 | 06 | aprobado | Aprobado el 2026-08-22; confirmada paginación server-side y acceso administrativo en Header |
 | 07 | aprobado | Aprobado el 2026-08-22; incluye uso de MUI, Light/Dark theme y Full Responsive |
@@ -46,6 +46,7 @@
 - El 2026-08-17 se separaron `Modules` y `Resources` como submódulos de `Ajustes Generales`; el PRD V1 en revisión ya reconcilia este cambio.
 - El 2026-08-21 se eliminaron `/auth/google`, `/auth/callback`, y las rutas de detalle/edición `/:id` en el Sitemap; las ediciones se harán con modales.
 - El 2026-08-22 se decidió que la paginación será asíncrona (server-side) desde el principio para evitar deuda técnica.
+- El 2026-08-26 se eliminó la entidad `Resources` en favor de acciones dinámicas (`actions`). Se agregaron campos `key` para soportar multiidioma y se removió `users.is_allowed`. Esto invalidó el PRD V2.
 
 ## Próxima acción recomendada
 

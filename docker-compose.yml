@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nodia_postgres
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nodia_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nodia_password}
+      POSTGRES_DB: ${POSTGRES_DB:-nodia_db}
+    volumes:
+      - nodia_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-nodia_user} -d ${POSTGRES_DB:-nodia_db}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - nodia_network
+
+volumes:
+  nodia_postgres_data:
+    name: nodia_postgres_data
+
+networks:
+  nodia_network:
+    name: nodia_network
+    driver: bridge

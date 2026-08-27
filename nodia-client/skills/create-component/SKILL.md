@@ -25,6 +25,8 @@ Antes de editar:
 | MUI Material / Icons | `9.3.1` |
 | Emotion React / Styled | `11.14.x` |
 | React Router | `8.3.0` |
+| React Hook Form | `7.86.0` (`@hookform/resolvers`: `5.9.1`) |
+| Zod | `4.4.3` |
 | TanStack React Query | `5.101.4` |
 | Axios | `1.19.0` |
 | i18next / react-i18next | `26.3.6` / `17.0.11` |
@@ -255,6 +257,87 @@ Nombrar handlers HTTP por metodo:
 - `PUT`: `update...`
 - `DELETE`: `delete...`
 - `POST` y `PATCH`: usar el verbo de negocio, por ejemplo `create...`, `send...`, `toggle...` o `rollback...`.
+
+## Formularios con React Hook Form y Zod
+
+Para el manejo y validación de formularios:
+
+1. **Definir el esquema con Zod** e inferir el tipo TypeScript:
+```ts
+import { z } from "zod";
+
+export const exampleSchema = z.object({
+  name: z.string().min(1, "validations:required"),
+  email: z.string().email("validations:invalid_email"),
+});
+
+export type ExampleFormData = z.infer<typeof exampleSchema>;
+```
+
+2. **Integrar con `useForm` y `zodResolver`**:
+```tsx
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { TextField, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { exampleSchema, type ExampleFormData } from "./schema";
+
+export const ExampleForm = ({ onSubmit }: { onSubmit: (data: ExampleFormData) => void }) => {
+  const { t } = useTranslation();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ExampleFormData>({
+    resolver: zodResolver(exampleSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+    },
+  });
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="name"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label={t("common:name")}
+            error={!!errors.name}
+            helperText={errors.name?.message ? t(errors.name.message) : undefined}
+            fullWidth
+            margin="normal"
+          />
+        )}
+      />
+      <Controller
+        name="email"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label={t("common:email")}
+            type="email"
+            error={!!errors.email}
+            helperText={errors.email?.message ? t(errors.email.message) : undefined}
+            fullWidth
+            margin="normal"
+          />
+        )}
+      />
+      <Button type="submit" variant="contained" disabled={isSubmitting} sx={{ mt: 2 }}>
+        {t("common:save")}
+      </Button>
+    </form>
+  );
+};
+```
+
+- Utilizar `Controller` de `react-hook-form` para integrar componentes controlados de MUI (`TextField`, `Select`, `Checkbox`, `Switch`, etc.).
+- Las claves de error en los schemas deben referenciar claves de traducción i18n (`t(errors.field.message)`).
+- Evitar re-renders innecesarios y mantener los schemas desacoplados de la vista.
 
 ## Tooling: Babel 8, ESLint 10 y TypeScript 6
 

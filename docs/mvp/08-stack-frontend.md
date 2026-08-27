@@ -15,6 +15,7 @@ Definir las dependencias base del frontend, la estructura del proyecto y los Des
 - **Enrutamiento:** React Router (v8)
 - **Estado Global:** Zustand
 - **Manejo de Datos Asíncronos:** TanStack React Query (v5), Axios
+- **Formularios & Validación de Esquemas:** React Hook Form (v7), Zod (v4), `@hookform/resolvers`
 - **Internacionalización:** i18next (configurado base)
 - **Autenticación (Nueva):** `@react-oauth/google` (se deberá agregar para resolver el login con Google en el frontend).
 
@@ -98,6 +99,7 @@ src/
 - Se utilizará la fuente `Inter`.
 - Se mapearon exitosamente los colores (Tailwind) a las paletas de MUI.
 - El proyecto adoptará una arquitectura de carpetas por módulos funcionales (*features*).
+- Se utilizará `React Hook Form` junto a `Zod` y `@hookform/resolvers` para la gestión y validación de esquemas de formularios en `nodia-client`.
 
 ## Preguntas abiertas
 - Ninguna. Documento listo para revisión.
