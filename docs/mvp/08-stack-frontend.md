@@ -16,6 +16,8 @@ Definir las dependencias base del frontend, la estructura del proyecto y los Des
 - **Estado Global:** Zustand
 - **Manejo de Datos Asíncronos:** TanStack React Query (v5), Axios
 - **Formularios & Validación de Esquemas:** React Hook Form (v7), Zod (v4), `@hookform/resolvers`
+- **Notificaciones & Snackbars:** `sileo` (Toaster con soporte de temas y feedback reactivo)
+- **Skeletons:** `boneyard-js` (generación automática de estados de carga)
 - **Internacionalización:** i18next (configurado base)
 - **Autenticación (Nueva):** `@react-oauth/google` (se deberá agregar para resolver el login con Google en el frontend).
 

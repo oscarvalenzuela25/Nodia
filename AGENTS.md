@@ -43,3 +43,13 @@ Skills disponibles en `nodia-client/skills/`:
 - **typescript-advanced-types**: Uso avanzado del sistema de tipos de TypeScript (genéricos, conditional types, utility types).
 - **vite**: Configuración de Vite, plugins, SSR y migraciones a Vite 8.
 - **vitest**: Framework de testing rápido unitario basado en Vite (configuración, mocks, coverage).
+
+## Peticiones HTTP y Notificaciones (Snackbars / Toasts)
+
+- Después de **cualquier petición HTTP** (creación, actualización, borrado lógico o errores de transporte/servidor) es **obligatorio** emitir una notificación / snackbar utilizando `sileo` (`sileo.success(...)`, `sileo.error(...)`, `sileo.warning(...)`, etc.).
+- Todos los mensajes y títulos de las notificaciones **deben usar su respectiva traducción internacionalizada** (`t("namespace:key")` o `i18n.t(...)`) tanto en español (`src/translate/es/*`) como en inglés (`src/translate/en/*`).
+- No hardcodear texto en los mensajes de feedback al usuario.
+
+## Componentes Skeleton (Estados de Carga)
+
+- Al solicitar o implementar componentes skeleton para estados de carga (loading skeletons), es **obligatorio** utilizar la librería **`boneyard-js`** (`boneyard-js/react`).
