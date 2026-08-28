@@ -2,18 +2,44 @@
   "title": "Users",
   "subtitle": "Manage platform users, assign roles and permissions to maintain control.",
   "new_user": "New User",
-  "filter_placeholder": "You will soon be able to apply multiple filters here...",
+  "create_modal_title": "New User",
+  "edit_modal_title": "Update User",
+  "create_user_button": "Create User",
+  "update_user_button": "Update User",
+  "filter_modal_title": "User Filters",
+  "filter_modal_subtitle": "Filter the user list by name, email, roles, or active status.",
+  "search_placeholder": "Search by name...",
+  "form": {
+    "active": "Active",
+    "name": "Name",
+    "name_placeholder": "Enter name",
+    "email": "Email",
+    "email_placeholder": "example@email.com",
+    "roles": "Roles",
+    "roles_placeholder": "Select roles...",
+    "image_url": "Image URL",
+    "image_url_placeholder": "https://example.com/image.jpg"
+  },
   "table": {
     "id": "Id",
     "name": "Name",
     "email": "Email",
     "roles": "Roles",
-    "allowed": "Allowed",
     "active": "Active",
     "actions": "Actions"
+  },
+  "actions": {
+    "update": "Update"
+  },
+  "filter_chips": {
+    "name": "Name: {{value}}",
+    "email": "Email: {{value}}",
+    "role": "Role: {{value}}",
+    "active_only": "Active only"
   },
   "yes": "Yes",
   "no": "No",
   "empty_value": "-",
-  "copy": "Copy ID"
+  "copy": "Copy ID",
+  "copied": "Copied to clipboard"
 }

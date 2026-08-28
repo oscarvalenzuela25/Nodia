@@ -2,7 +2,7 @@ import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(4),
+  marginBottom: theme.spacing(3),
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1),
@@ -23,7 +23,7 @@ export const PageTitle = styled(Typography)(({ theme }) => ({
 export const PageSubtitle = styled(Typography)(({ theme }) => ({
   ...theme.typography.body1,
   color: theme.palette.text.secondary,
-  maxWidth: "600px",
+  maxWidth: "640px",
   lineHeight: 1.6,
 }));
 
@@ -38,13 +38,16 @@ export const ActiveFilters = styled(Box)(({ theme }) => ({
   display: "flex",
   flexWrap: "wrap",
   gap: theme.spacing(1.5),
-  marginBottom: theme.spacing(4),
+  marginBottom: theme.spacing(3),
 }));
 
-export const ActionRow = styled(Box)(({ theme }) => ({
+export const TableTopBar = styled(Box)(({ theme }) => ({
   display: "flex",
-  justifyContent: "flex-end",
-  marginBottom: theme.spacing(3),
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: theme.spacing(2.5),
+  gap: theme.spacing(2),
+  flexWrap: "wrap",
 }));
 
 export const UserInfo = styled(Box)(({ theme }) => ({
@@ -53,9 +56,17 @@ export const UserInfo = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1.5),
 }));
 
-export const StyledTableContainer = styled(Box)(({ theme }) => ({
-  borderRadius: typeof theme.shape.borderRadius === 'number' ? theme.shape.borderRadius * 2 : 16,
-  overflow: "hidden",
-  boxShadow: theme.shadows[2],
-  backgroundColor: theme.palette.background.paper,
-}));
+export const StyledTableContainer = styled(Box)(({ theme }) => {
+  const borderColor = theme.palette.border?.default ?? theme.palette.divider;
+
+  return {
+    borderRadius:
+      typeof theme.shape.borderRadius === "number"
+        ? theme.shape.borderRadius * 2
+        : 16,
+    overflow: "hidden",
+    boxShadow: theme.shadows[2],
+    backgroundColor: theme.palette.background.paper,
+    border: `1px solid ${borderColor}`,
+  };
+});

@@ -2,18 +2,44 @@
   "title": "Usuarios",
   "subtitle": "Gestiona los usuarios de la plataforma, asigna roles y permisos para mantener el control.",
   "new_user": "Nuevo usuario",
-  "filter_placeholder": "Pronto podrás aplicar múltiples filtros aquí...",
+  "create_modal_title": "Nuevo Usuario",
+  "edit_modal_title": "Actualizar Usuario",
+  "create_user_button": "Crear Usuario",
+  "update_user_button": "Actualizar Usuario",
+  "filter_modal_title": "Filtros de usuarios",
+  "filter_modal_subtitle": "Filtra la lista de usuarios por nombre, correo, roles o estado activo.",
+  "search_placeholder": "Buscar por nombre...",
+  "form": {
+    "active": "Activo",
+    "name": "Nombre",
+    "name_placeholder": "Ingresa el nombre",
+    "email": "Correo Electrónico",
+    "email_placeholder": "correo@ejemplo.com",
+    "roles": "Roles",
+    "roles_placeholder": "Seleccionar roles...",
+    "image_url": "URL de imagen",
+    "image_url_placeholder": "https://ejemplo.com/imagen.jpg"
+  },
   "table": {
     "id": "Id",
     "name": "Nombre",
     "email": "Correo Electrónico",
     "roles": "Roles",
-    "allowed": "Permitido",
     "active": "Activo",
     "actions": "Acciones"
+  },
+  "actions": {
+    "update": "Actualizar"
+  },
+  "filter_chips": {
+    "name": "Nombre: {{value}}",
+    "email": "Email: {{value}}",
+    "role": "Rol: {{value}}",
+    "active_only": "Solo activos"
   },
   "yes": "Sí",
   "no": "No",
   "empty_value": "-",
-  "copy": "Copiar ID"
+  "copy": "Copiar ID",
+  "copied": "Copiado al portapapeles"
 }
