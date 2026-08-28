@@ -27,6 +27,8 @@ Antes de editar:
 | React Router | `8.3.0` |
 | React Hook Form | `7.86.0` (`@hookform/resolvers`: `5.9.1`) |
 | Zod | `4.4.3` |
+| Sileo (Snackbars) | `0.1.5` |
+| Boneyard (Skeletons) | `1.9.0` |
 | TanStack React Query | `5.101.4` |
 | Axios | `1.19.0` |
 | i18next / react-i18next | `26.3.6` / `17.0.11` |
@@ -257,6 +259,36 @@ Nombrar handlers HTTP por metodo:
 - `PUT`: `update...`
 - `DELETE`: `delete...`
 - `POST` y `PATCH`: usar el verbo de negocio, por ejemplo `create...`, `send...`, `toggle...` o `rollback...`.
+
+### Notificaciones y Feedback HTTP con Sileo
+
+Después de **cualquier petición HTTP** (creación, edición, actualización, borrado lógico o fallo de API) es obligatorio emitir un toast/snackbar con `sileo` utilizando claves de traducción i18n:
+
+```ts
+import { sileo } from "sileo";
+import i18n from "../../../../translate";
+
+export const useCreateItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createItem,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: itemKeys.all });
+      sileo.success({
+        title: i18n.t("common:notifications.success_title"),
+        description: i18n.t("items:created_successfully"),
+      });
+    },
+    onError: (error) => {
+      sileo.error({
+        title: i18n.t("common:notifications.error_title"),
+        description: i18n.t("items:created_error"),
+      });
+    },
+  });
+};
+```
 
 ## Formularios con React Hook Form y Zod
 

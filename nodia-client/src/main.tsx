@@ -8,6 +8,7 @@ import "@fontsource/dm-sans/300.css";
 import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/500.css";
 import "@fontsource/dm-sans/700.css";
+import "sileo/styles.css";
 import "./styles/main.css";
 import "./translate";
 import App from "./App.tsx";

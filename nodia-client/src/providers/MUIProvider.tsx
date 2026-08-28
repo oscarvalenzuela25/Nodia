@@ -1,6 +1,7 @@
 import type { FC, PropsWithChildren } from "react";
 import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Toaster } from "sileo";
 import typography from "../theme/typography";
 import spacing from "../theme/spacing";
 import breakpoints from "../theme/breakpoints";
@@ -32,6 +33,7 @@ const MUIProvider: FC<Props> = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Toaster position="top-right" theme={themeType} />
       {children}
     </ThemeProvider>
   );

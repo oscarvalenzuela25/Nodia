@@ -1,5 +1,6 @@
 import { type StateCreator, create } from "zustand";
 import { persist } from "zustand/middleware";
+import { flushSync } from "react-dom";
 import type { ThemeType } from "../types/global";
 
 interface ConfigState {
@@ -9,15 +10,36 @@ interface ConfigState {
   handleToggleThemeType: () => void;
 }
 
+const applyThemeWithTransition = (updateFn: () => void) => {
+  if (
+    typeof document === "undefined" ||
+    !("startViewTransition" in document) ||
+    typeof document.startViewTransition !== "function"
+  ) {
+    updateFn();
+    return;
+  }
+
+  document.startViewTransition(() => {
+    flushSync(() => {
+      updateFn();
+    });
+  });
+};
+
 const configStore: StateCreator<ConfigState> = (set, get) => ({
   themeType: "light",
   handleChangeThemeType: (theme) => {
-    set({ themeType: theme });
+    applyThemeWithTransition(() => {
+      set({ themeType: theme });
+    });
   },
   handleToggleThemeType: () => {
     const currentTheme = get().themeType;
     const newTheme = currentTheme === "light" ? "dark" : "light";
-    set({ themeType: newTheme });
+    applyThemeWithTransition(() => {
+      set({ themeType: newTheme });
+    });
   },
 });
 

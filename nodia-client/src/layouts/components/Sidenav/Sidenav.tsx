@@ -20,12 +20,10 @@ import AppsOutlinedIcon from "@mui/icons-material/AppsOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import nodiaLightLogo from "../../../assets/nodia_light_webp.webp";
-import nodiaDarkLogo from "../../../assets/nodia_dark_webp.webp";
-
 import {
   SidenavDrawer,
-  LogoImage,
+  LogoContainer,
+  LogoTitle,
   NavItemButton,
   NavItemText,
   ModuleHeaderButton,
@@ -98,8 +96,6 @@ const Sidenav: FC<Props> = ({
 
   const drawerVariant = isLgUp ? "permanent" : "temporary";
   const isCollapsed = desktopCollapsed;
-  const logoSrc =
-    theme.palette.mode === "dark" ? nodiaDarkLogo : nodiaLightLogo;
 
   return (
     <SidenavDrawer
@@ -110,15 +106,11 @@ const Sidenav: FC<Props> = ({
       collapsed={isCollapsed}
     >
       <Box sx={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {!isCollapsed && <LogoImage src={logoSrc} alt="Nodia Logo" />}
-        </Box>
+        {!isCollapsed && (
+          <LogoContainer>
+            <LogoTitle>Nodia</LogoTitle>
+          </LogoContainer>
+        )}
 
         <List disablePadding>
           {mockMenu.map((moduleItem) => {

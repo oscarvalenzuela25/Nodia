@@ -3,6 +3,7 @@ import {
   ListItemButton,
   ListSubheader,
   ListItemText,
+  Box,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 
@@ -26,10 +27,29 @@ export const SidenavDrawer = styled(Drawer, {
   },
 }));
 
-export const LogoImage = styled("img")({
+export const LogoContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: theme.spacing(1, 0),
   width: "100%",
-  objectFit: "contain",
-});
+  userSelect: "none",
+}));
+
+export const LogoTitle = styled("h1")(({ theme }) => ({
+  fontFamily: '"Karmatic Arcade", monospace, sans-serif',
+  fontSize: "48px",
+  fontWeight: 400,
+  letterSpacing: "0.08em",
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  textAlign: "center",
+  lineHeight: 1.2,
+  margin: 0,
+  textTransform: "none",
+  display: "inline-block",
+}));
 
 export const NavHeader = styled(ListSubheader)(({ theme }) => ({
   fontWeight: 600,

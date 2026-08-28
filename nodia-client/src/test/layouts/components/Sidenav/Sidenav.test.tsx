@@ -27,8 +27,8 @@ describe("Sidenav", () => {
 
     render(<RouterProvider router={router} />);
 
-    // Check for logo
-    expect(screen.getByAltText("Nodia Logo")).toBeInTheDocument();
+    // Check for logo title
+    expect(screen.getByRole("heading", { name: "Nodia" })).toBeInTheDocument();
 
     // Check for single module item
     expect(screen.getByText("Inicio")).toBeInTheDocument();
