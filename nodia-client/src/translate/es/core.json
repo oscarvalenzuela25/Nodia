@@ -15,7 +15,13 @@
   "maintenance_title": "Mantenimiento",
   "maintenance_message": "Estamos realizando mejoras. Vuelve a intentarlo en unos minutos.",
   "filter": "Filtro",
+  "filter_action": "Filtrar",
   "filtering_by": "Filtrando por",
   "clear_filters": "Limpiar filtros",
-  "cancel": "Cancelar"
+  "cancel": "Cancelar",
+  "search": "Buscar...",
+  "select_placeholder": "Seleccionar...",
+  "no_options_found": "No se encontraron resultados",
+  "close": "Cerrar",
+  "save": "Guardar"
 }

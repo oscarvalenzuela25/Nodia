@@ -1,30 +1,40 @@
 import type { FC, ReactNode } from "react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Popover, IconButton, Chip, Box, Button } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { FilterHeader, FilterTitle, FilterActions } from "./styles";
+import { Button, Box } from "@mui/material";
+import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
+import BaseModal from "../BaseModal";
+import {
+  FilterTrigger,
+  FilterBadge,
+  FilterActionsContainer,
+  FilterRightActions,
+} from "./styles";
 
 type Props = {
   onFilter: () => void;
   onClear: () => void;
   children?: ReactNode;
+  activeCount?: number;
+  title?: string;
+  subtitle?: string;
+  triggerLabel?: string;
 };
 
-const Filter: FC<Props> = ({ onFilter, onClear, children }) => {
+const Filter: FC<Props> = ({
+  onFilter,
+  onClear,
+  children,
+  activeCount = 0,
+  title,
+  subtitle,
+  triggerLabel,
+}) => {
   const { t } = useTranslation("core");
-  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-  const chipRef = useRef<HTMLDivElement | null>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleOpen = () => {
-    if (chipRef.current) {
-      setAnchorEl(chipRef.current);
-    }
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
 
   const handleApply = () => {
     onFilter();
@@ -36,63 +46,69 @@ const Filter: FC<Props> = ({ onFilter, onClear, children }) => {
     handleClose();
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? "filter-popover" : undefined;
+  const hasActiveFilters = activeCount > 0;
+
+  const modalActions = (
+    <FilterActionsContainer>
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={handleClear}
+        sx={{ borderRadius: 2 }}
+      >
+        {t("clear_filters", "Limpiar filtros")}
+      </Button>
+      <FilterRightActions>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleClose}
+          sx={(theme) => ({
+            color: theme.palette.error.contrastText,
+            borderRadius: 2,
+          })}
+        >
+          {t("cancel", "Cancelar")}
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleApply}
+          sx={(theme) => ({
+            color: theme.palette.primary.contrastText,
+            borderRadius: 2,
+          })}
+        >
+          {t("filter_action", "Filtrar")}
+        </Button>
+      </FilterRightActions>
+    </FilterActionsContainer>
+  );
 
   return (
     <>
-      <Chip
-        ref={chipRef}
-        label={t("filter")}
+      <FilterTrigger
         onClick={handleOpen}
-        color="primary"
-        sx={{
-          color: "primary.contrastText",
-          cursor: "pointer",
-        }}
-      />
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        slotProps={{
-          paper: {
-            sx: { p: 2, minWidth: 320 },
-          },
-        }}
+        hasActiveFilters={hasActiveFilters}
+        aria-label="Abrir filtros"
       >
-        <FilterHeader>
-          <FilterTitle>{t("filtering_by")}</FilterTitle>
-          <IconButton size="small" onClick={handleClose}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </FilterHeader>
-        <Box sx={{ my: 2 }}>
+        <TuneOutlinedIcon fontSize="small" />
+        <span>{triggerLabel ?? t("filter", "Filtro")}</span>
+        {hasActiveFilters && <FilterBadge>{activeCount}</FilterBadge>}
+      </FilterTrigger>
+
+      <BaseModal
+        open={isOpen}
+        onClose={handleClose}
+        title={title ?? t("filtering_by", "Filtrando por")}
+        subtitle={subtitle}
+        size="sm"
+        actions={modalActions}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5, py: 1 }}>
           {children}
         </Box>
-        <FilterActions>
-          <Button variant="outlined" color="error" onClick={handleClear}>
-            {t("clear_filters")}
-          </Button>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button variant="contained" color="error" onClick={handleClose}>
-              {t("cancel")}
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleApply}>
-              {t("filter")}
-            </Button>
-          </Box>
-        </FilterActions>
-      </Popover>
+      </BaseModal>
     </>
   );
 };

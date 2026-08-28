@@ -2,7 +2,7 @@ import type { ThemeOptions } from "@mui/material/styles";
 
 type Typography = ThemeOptions["typography"];
 
-const font = '"Inter", "ui-sans-serif", "sans-serif", system-ui';
+const font = '"DM Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
 const typography: Typography = {
   fontFamily: font,
