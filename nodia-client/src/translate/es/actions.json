@@ -8,7 +8,7 @@
   "update_action_button": "Actualizar Accionable",
   "filter_modal_title": "Filtros de acciones",
   "filter_modal_subtitle": "Filtra la lista de accionables por nombre, módulo asociado o estado activo.",
-  "search_placeholder": "Buscar por nombre, clave o descripción...",
+  "search_placeholder": "Buscar por nombre o identificador...",
   "form": {
     "active": "Activo",
     "key": "Identificador / Key",

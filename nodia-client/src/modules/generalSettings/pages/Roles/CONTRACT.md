@@ -10,9 +10,11 @@
 ## 1. Convenciones Generales
 
 ### Filtrado estilo Ransack
+
 Todos los endpoints de tipo `GET` aceptan el parámetro `q` para aplicar predicados de búsqueda y filtrado dinámico.
 
 Ejemplos comunes de predicados:
+
 - `q[key_cont]`: Búsqueda parcial / `ILIKE` en el identificador o key del rol.
 - `q[is_active_eq]`: Coincidencia exacta booleana (`true` / `false`).
 - `q[actions_id_in][]` o `q[actions_id_eq]`: Filtrado por IDs de acciones asociadas.
@@ -20,12 +22,15 @@ Ejemplos comunes de predicados:
 - `q[s]`: Ordenamiento (ej. `created_at desc`, `key asc`).
 
 ### Paginación
+
 Los endpoints que devuelven listados paginados admiten los siguientes `queryParams`:
+
 - `page`: Número de página actual (entero `1`-indexed, default: `1`).
-- `limit` / `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
+- `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
 - `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
 
 ### Borrado Lógico
+
 No existe el endpoint `DELETE`. La desactivación/eliminación lógica se realiza mediante `PUT /api/v1/role/:roleId` estableciendo `is_active: false`.
 
 ---
@@ -76,12 +81,13 @@ Obtiene el listado paginado y filtrable de roles con sus acciones asociadas comp
 - **Método:** `GET`
 - **Ruta:** `/api/v1/roles`
 - **Query Params:**
-  - `page` *(opcional, number)*: Página actual.
-  - `limit` o `size` *(opcional, number)*: Elementos por página.
-  - `all` *(opcional, boolean)*: Traer todos sin paginar.
-  - `q[campo_predicado]` *(opcional)*: Filtros Ransack (`q[key_cont]`, `q[is_active_eq]`, `q[actions_id_in][]`, etc.).
+  - `page` _(opcional, number)_: Página actual.
+  - `size` _(opcional, number)_: Elementos por página.
+  - `all` _(opcional, boolean)_: Traer todos sin paginar.
+  - `q[campo_predicado]` _(opcional)_: Filtros Ransack (`q[key_cont]`, `q[is_active_eq]`, `q[actions_id_in][]`, etc.).
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 {
   "data": [
@@ -142,13 +148,14 @@ Crea un nuevo rol en el sistema y le asocia las acciones indicadas.
 - **Headers:** `Content-Type: application/json`
 - **Body (`JSON`):**
 
-| Campo | Tipo | Requerido | Descripción |
-| :--- | :--- | :--- | :--- |
-| `key` | `string` | **Sí** | Identificador o clave única del rol (ej: `"super_admin"`, `"editor"`). |
-| `actions` | `string[]` | No | Arreglo de IDs (UUIDs) de acciones asignadas (o `[]`). |
-| `is_active` | `boolean` | No | Estado del rol (Default: `true`). |
+| Campo       | Tipo       | Requerido | Descripción                                                            |
+| :---------- | :--------- | :-------- | :--------------------------------------------------------------------- |
+| `key`       | `string`   | **Sí**    | Identificador o clave única del rol (ej: `"super_admin"`, `"editor"`). |
+| `actions`   | `string[]` | No        | Arreglo de IDs (UUIDs) de acciones asignadas (o `[]`).                 |
+| `is_active` | `boolean`  | No        | Estado del rol (Default: `true`).                                      |
 
 #### Ejemplo de Request Body:
+
 ```json
 {
   "key": "supervisor",
@@ -161,6 +168,7 @@ Crea un nuevo rol en el sistema y le asocia las acciones indicadas.
 ```
 
 #### Respuesta exitosa (`201 Created`):
+
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174099",
@@ -201,15 +209,16 @@ Actualiza los datos, identificador o acciones de un rol existente. También se u
 - **Ruta:** `/api/v1/role/:roleId`
 - **Path Params:** `roleId` (string, UUID del rol)
 - **Headers:** `Content-Type: application/json`
-- **Body (`JSON`):** *(todos los campos son opcionales)*
+- **Body (`JSON`):** _(todos los campos son opcionales)_
 
-| Campo | Tipo | Requerido | Descripción |
-| :--- | :--- | :--- | :--- |
-| `key` | `string` | No | Identificador o clave única del rol. |
-| `actions` | `string[]` | No | Arreglo de IDs (UUIDs) de acciones asignadas. |
-| `is_active` | `boolean` | No | Estado de activación/borrado lógico. |
+| Campo       | Tipo       | Requerido | Descripción                                   |
+| :---------- | :--------- | :-------- | :-------------------------------------------- |
+| `key`       | `string`   | No        | Identificador o clave única del rol.          |
+| `actions`   | `string[]` | No        | Arreglo de IDs (UUIDs) de acciones asignadas. |
+| `is_active` | `boolean`  | No        | Estado de activación/borrado lógico.          |
 
 #### Ejemplo de Request Body:
+
 ```json
 {
   "key": "supervisor_editado",
@@ -222,6 +231,7 @@ Actualiza los datos, identificador o acciones de un rol existente. También se u
 ```
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 {
   "id": "123e4567-e89b-12d3-a456-426614174099",
@@ -259,13 +269,15 @@ Actualiza los datos, identificador o acciones de un rol existente. También se u
 Estos endpoints proveen datos optimizados y livianos para poblar los selectores, auto-completados y modales de filtros.
 
 ### 4.1. Fetch Filter Roles
+
 Obtiene los roles disponibles para selectores de filtro y asignaciones.
 
 - **Método:** `GET`
 - **Ruta:** `/api/v1/filters/roles`
-- **Query Params:** `q[campo_predicado]` *(opcional)*
+- **Query Params:** `q[campo_predicado]` _(opcional)_
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 [
   {
@@ -289,13 +301,15 @@ Obtiene los roles disponibles para selectores de filtro y asignaciones.
 ---
 
 ### 4.2. Fetch Filter Actions
+
 Obtiene el catálogo de acciones del sistema para selectores de filtros y asignaciones en el formulario de roles.
 
 - **Método:** `GET`
 - **Ruta:** `/api/v1/filters/actions`
-- **Query Params:** `q[campo_predicado]` *(opcional, ej. `q[module_id_eq]`, `q[key_cont]`)*
+- **Query Params:** `q[campo_predicado]` _(opcional, ej. `q[module_id_eq]`, `q[key_cont]`)_
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 [
   {

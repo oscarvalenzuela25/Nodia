@@ -358,19 +358,11 @@ const Actions: FC = () => {
     return actions.filter((act) => {
       const displayName = getActionDisplayName(act).toLowerCase();
       const rawKey = act.key.toLowerCase();
-      const desc = act.description?.toLowerCase() ?? "";
-      const moduleName = act.moduleKey
-        ? getModuleDisplayName(act.moduleKey).toLowerCase()
-        : "";
 
-      // 1. Search bar by name, key, description, or module
+      // 1. Search bar by name or identifier
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase().trim();
-        const matches =
-          displayName.includes(query) ||
-          rawKey.includes(query) ||
-          desc.includes(query) ||
-          moduleName.includes(query);
+        const matches = displayName.includes(query) || rawKey.includes(query);
         if (!matches) {
           return false;
         }
@@ -407,7 +399,6 @@ const Actions: FC = () => {
     appliedFilterModuleKeys,
     appliedFilterActive,
     getActionDisplayName,
-    getModuleDisplayName,
   ]);
 
   return (

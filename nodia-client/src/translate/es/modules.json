@@ -1,0 +1,67 @@
+{
+  "title": "Módulos",
+  "subtitle": "Administra la estructura jerárquica de módulos y submódulos de la plataforma, configurando claves e identidades.",
+  "new_module": "Nuevo Módulo",
+  "create_modal_title": "Nuevo Módulo",
+  "edit_modal_title": "Actualizar Módulo",
+  "create_module_button": "Crear Módulo",
+  "update_module_button": "Actualizar Módulo",
+  "filter_modal_title": "Filtros de módulos",
+  "filter_modal_subtitle": "Filtra la lista de módulos por identificador, tipo, módulo padre o estado activo.",
+  "search_placeholder": "Buscar por nombre o identificador...",
+  "form": {
+    "active": "Activo",
+    "key": "Identificador / Key",
+    "key_placeholder": "ej: general_settings, users, security",
+    "key_helper": "Identificador único utilizado internamente por el sistema.",
+    "translations_title": "Traducciones del Nombre",
+    "translations_subtitle": "Define cómo se mostrará el nombre del módulo en cada idioma.",
+    "name_es": "Nombre (Español)",
+    "name_es_placeholder": "ej: Ajustes Generales",
+    "name_en": "Nombre (Inglés)",
+    "name_en_placeholder": "ej: General Settings",
+    "type": "Tipo de Elemento",
+    "type_placeholder": "Seleccionar tipo...",
+    "parent_module": "Módulo Padre (Requerido para submódulos)",
+    "parent_module_placeholder": "Seleccionar módulo padre..."
+  },
+  "types": {
+    "module": "Módulo",
+    "submodule": "Submódulo"
+  },
+  "table": {
+    "id": "Id",
+    "key": "Identificador",
+    "name": "Nombre del módulo",
+    "type": "Tipo",
+    "parent_module": "Módulo padre",
+    "active": "Activo",
+    "actions": "Acciones"
+  },
+  "actions_menu": {
+    "update": "Actualizar"
+  },
+  "filter_chips": {
+    "module": "Módulo: {{value}}",
+    "type": "Tipo: {{value}}",
+    "parent": "Submódulos de: {{value}}",
+    "active_only": "Solo activos"
+  },
+  "module_names": {
+    "general_settings": "Ajustes Generales",
+    "security": "Seguridad y Accesos",
+    "analytics": "Reportes y Métricas",
+    "users": "Usuarios",
+    "roles": "Roles",
+    "actions": "Acciones",
+    "modules": "Módulos",
+    "audit": "Auditoría",
+    "export_logs": "Exportación de Datos"
+  },
+  "no_parent": "Sin módulo padre",
+  "yes": "Sí",
+  "no": "No",
+  "empty_value": "-",
+  "copy": "Copiar ID",
+  "copied": "Copiado al portapapeles"
+}

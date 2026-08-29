@@ -23,7 +23,7 @@ Ejemplos comunes de predicados:
 ### Paginación
 Los endpoints que devuelven listados paginados admiten los siguientes `queryParams`:
 - `page`: Número de página actual (entero `1`-indexed, default: `1`).
-- `limit` / `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
+- `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
 - `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
 
 ### Borrado Lógico
@@ -76,7 +76,7 @@ Obtiene el listado paginado y filtrable de acciones con sus módulos asociados.
 - **Ruta:** `/api/v1/actions`
 - **Query Params:**
   - `page` *(opcional, number)*: Página actual.
-  - `limit` o `size` *(opcional, number)*: Elementos por página.
+  - `size` *(opcional, number)*: Elementos por página.
   - `all` *(opcional, boolean)*: Traer todos sin paginar.
   - `q[campo_predicado]` *(opcional)*: Filtros Ransack (`q[key_cont]`, `q[module_id_eq]`, `q[is_active_eq]`, etc.).
 
@@ -256,17 +256,26 @@ Obtiene el catálogo de módulos del sistema para asociar a los accionables.
 [
   {
     "id": "m1114567-e89b-12d3-a456-426614174001",
+    "key": "general_settings",
+    "type": "module",
+    "parent_id": null,
+    "parent_key": null,
+    "is_active": true
+  },
+  {
+    "id": "m1114567-e89b-12d3-a456-426614174002",
     "key": "users",
+    "type": "submodule",
+    "parent_id": "m1114567-e89b-12d3-a456-426614174001",
+    "parent_key": "general_settings",
     "is_active": true
   },
   {
-    "id": "m2224567-e89b-12d3-a456-426614174002",
+    "id": "m1114567-e89b-12d3-a456-426614174003",
     "key": "roles",
-    "is_active": true
-  },
-  {
-    "id": "m3334567-e89b-12d3-a456-426614174003",
-    "key": "settings",
+    "type": "submodule",
+    "parent_id": "m1114567-e89b-12d3-a456-426614174001",
+    "parent_key": "general_settings",
     "is_active": true
   }
 ]

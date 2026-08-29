@@ -10,9 +10,11 @@
 ## 1. Convenciones Generales
 
 ### Filtrado estilo Ransack
+
 Todos los endpoints de tipo `GET` aceptan el parámetro `q` para aplicar predicados de búsqueda y filtrado dinámico.
 
 Ejemplos comunes de predicados:
+
 - `q[name_cont]`: Búsqueda parcial / `ILIKE` en el nombre.
 - `q[email_cont]`: Búsqueda parcial en el correo.
 - `q[is_active_eq]`: Coincidencia exacta booleana (`true` / `false`).
@@ -20,12 +22,15 @@ Ejemplos comunes de predicados:
 - `q[s]`: Ordenamiento (ej. `created_at desc`, `name asc`).
 
 ### Paginación
+
 Los endpoints que devuelven listados paginados admiten los siguientes `queryParams`:
+
 - `page`: Número de página actual (entero `1`-indexed, default: `1`).
-- `limit` / `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
+- `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
 - `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
 
 ### Borrado Lógico
+
 No existe el endpoint `DELETE`. La desactivación/eliminación lógica se realiza mediante `PUT /api/v1/user/:userId` estableciendo `is_active: false`.
 
 ---
@@ -76,12 +81,13 @@ Obtiene el listado paginado y filtrable de usuarios con sus roles asociados.
 - **Método:** `GET`
 - **Ruta:** `/api/v1/users`
 - **Query Params:**
-  - `page` *(opcional, number)*: Página actual.
-  - `size` *(opcional, number)*: Elementos por página.
-  - `all` *(opcional, boolean)*: Traer todos sin paginar.
-  - `q[campo_predicado]` *(opcional)*: Filtros Ransack (`q[name_cont]`, `q[email_cont]`, `q[is_active_eq]`, etc.).
+  - `page` _(opcional, number)_: Página actual.
+  - `size` _(opcional, number)_: Elementos por página.
+  - `all` _(opcional, boolean)_: Traer todos sin paginar.
+  - `q[campo_predicado]` _(opcional)_: Filtros Ransack (`q[name_cont]`, `q[email_cont]`, `q[is_active_eq]`, etc.).
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 {
   "data": [
@@ -124,28 +130,28 @@ Crea un nuevo usuario en el sistema.
 - **Headers:** `Content-Type: application/json`
 - **Body (`JSON`):**
 
-| Campo | Tipo | Requerido | Descripción |
-| :--- | :--- | :--- | :--- |
-| `email` | `string` | **Sí** | Correo electrónico único válido. |
-| `name` | `string \| null` | No | Nombre del usuario. |
-| `image_url` | `string \| null` | No | URL de avatar. |
-| `is_active` | `boolean` | No | Estado del usuario (Default: `true`). |
-| `roles` | `string[]` | No | Arreglo de IDs (UUIDs) de roles asignados (o `[]`). |
+| Campo       | Tipo             | Requerido | Descripción                                         |
+| :---------- | :--------------- | :-------- | :-------------------------------------------------- |
+| `email`     | `string`         | **Sí**    | Correo electrónico único válido.                    |
+| `name`      | `string \| null` | No        | Nombre del usuario.                                 |
+| `image_url` | `string \| null` | No        | URL de avatar.                                      |
+| `is_active` | `boolean`        | No        | Estado del usuario (Default: `true`).               |
+| `roles`     | `string[]`       | No        | Arreglo de IDs (UUIDs) de roles asignados (o `[]`). |
 
 #### Ejemplo de Request Body:
+
 ```json
 {
   "email": "nuevo.usuario@example.com",
   "name": "Carlos Santana",
   "image_url": null,
   "is_active": true,
-  "roles": [
-    "111e4567-e89b-12d3-a456-426614174001"
-  ]
+  "roles": ["111e4567-e89b-12d3-a456-426614174001"]
 }
 ```
 
 #### Respuesta exitosa (`201 Created`):
+
 ```json
 {
   "id": "9c8e1234-5678-4a6c-9c71-3fa910e52b99",
@@ -177,17 +183,18 @@ Actualiza los datos o roles de un usuario existente. También se utiliza para la
 - **Ruta:** `/api/v1/user/:userId`
 - **Path Params:** `userId` (string, UUID del usuario)
 - **Headers:** `Content-Type: application/json`
-- **Body (`JSON`):** *(todos los campos son opcionales)*
+- **Body (`JSON`):** _(todos los campos son opcionales)_
 
-| Campo | Tipo | Requerido | Descripción |
-| :--- | :--- | :--- | :--- |
-| `name` | `string \| null` | No | Nombre del usuario. |
-| `email` | `string` | No | Correo electrónico del usuario. |
-| `image_url` | `string \| null` | No | URL de avatar. |
-| `is_active` | `boolean` | No | Estado de activación/borrado lógico. |
-| `roles` | `string[]` | No | Arreglo de IDs (UUIDs) de roles asignados. |
+| Campo       | Tipo             | Requerido | Descripción                                |
+| :---------- | :--------------- | :-------- | :----------------------------------------- |
+| `name`      | `string \| null` | No        | Nombre del usuario.                        |
+| `email`     | `string`         | No        | Correo electrónico del usuario.            |
+| `image_url` | `string \| null` | No        | URL de avatar.                             |
+| `is_active` | `boolean`        | No        | Estado de activación/borrado lógico.       |
+| `roles`     | `string[]`       | No        | Arreglo de IDs (UUIDs) de roles asignados. |
 
 #### Ejemplo de Request Body:
+
 ```json
 {
   "name": "Carlos Santana Editado",
@@ -200,6 +207,7 @@ Actualiza los datos o roles de un usuario existente. También se utiliza para la
 ```
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 {
   "id": "9c8e1234-5678-4a6c-9c71-3fa910e52b99",
@@ -235,13 +243,15 @@ Actualiza los datos o roles de un usuario existente. También se utiliza para la
 Estos endpoints proveen datos optimizados y livianos para poblar los selectores, auto-completados y modales de filtros.
 
 ### 4.1. Fetch Filter Users
+
 Obtiene la lista de usuarios (ej. para selectores de usuarios).
 
 - **Método:** `GET`
 - **Ruta:** `/api/v1/filters/users`
-- **Query Params:** `q[campo_predicado]` *(opcional)*
+- **Query Params:** `q[campo_predicado]` _(opcional)_
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 [
   {
@@ -259,31 +269,16 @@ Obtiene la lista de usuarios (ej. para selectores de usuarios).
 
 ---
 
-### 4.2. Fetch Filter Emails
-Obtiene la lista de correos electrónicos para filtrado rápido.
+### 4.2. Fetch Filter Roles
 
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/emails`
-- **Query Params:** `q[campo_predicado]` *(opcional)*
-
-#### Respuesta exitosa (`200 OK`):
-```json
-[
-  "juan.perez@example.com",
-  "nuevo.usuario@example.com"
-]
-```
-
----
-
-### 4.3. Fetch Filter Roles
 Obtiene los roles disponibles para filtros y asignaciones en formularios.
 
 - **Método:** `GET`
 - **Ruta:** `/api/v1/filters/roles`
-- **Query Params:** `q[campo_predicado]` *(opcional)*
+- **Query Params:** `q[campo_predicado]` _(opcional)_
 
 #### Respuesta exitosa (`200 OK`):
+
 ```json
 [
   {

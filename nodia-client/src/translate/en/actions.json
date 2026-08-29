@@ -8,7 +8,7 @@
   "update_action_button": "Update Action",
   "filter_modal_title": "Action Filters",
   "filter_modal_subtitle": "Filter the action list by name, associated module, or active status.",
-  "search_placeholder": "Search by name, key, or description...",
+  "search_placeholder": "Search by name or identifier...",
   "form": {
     "active": "Active",
     "key": "Identifier / Key",

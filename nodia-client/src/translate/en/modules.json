@@ -1,0 +1,67 @@
+{
+  "title": "Modules",
+  "subtitle": "Manage the hierarchical structure of platform modules and submodules, configuring keys and identities.",
+  "new_module": "New Module",
+  "create_modal_title": "New Module",
+  "edit_modal_title": "Update Module",
+  "create_module_button": "Create Module",
+  "update_module_button": "Update Module",
+  "filter_modal_title": "Module Filters",
+  "filter_modal_subtitle": "Filter the module list by identifier, type, parent module, or active status.",
+  "search_placeholder": "Search by name or identifier...",
+  "form": {
+    "active": "Active",
+    "key": "Identifier / Key",
+    "key_placeholder": "e.g.: general_settings, users, security",
+    "key_helper": "Unique identifier used internally by the system.",
+    "translations_title": "Name Translations",
+    "translations_subtitle": "Define how the module name will be displayed in each language.",
+    "name_es": "Name (Spanish)",
+    "name_es_placeholder": "e.g.: Ajustes Generales",
+    "name_en": "Name (English)",
+    "name_en_placeholder": "e.g.: General Settings",
+    "type": "Element Type",
+    "type_placeholder": "Select type...",
+    "parent_module": "Parent Module (Required for submodules)",
+    "parent_module_placeholder": "Select parent module..."
+  },
+  "types": {
+    "module": "Module",
+    "submodule": "Submodule"
+  },
+  "table": {
+    "id": "Id",
+    "key": "Identifier",
+    "name": "Module name",
+    "type": "Type",
+    "parent_module": "Parent module",
+    "active": "Active",
+    "actions": "Actions"
+  },
+  "actions_menu": {
+    "update": "Update"
+  },
+  "filter_chips": {
+    "module": "Module: {{value}}",
+    "type": "Type: {{value}}",
+    "parent": "Submodules of: {{value}}",
+    "active_only": "Active only"
+  },
+  "module_names": {
+    "general_settings": "General Settings",
+    "security": "Security & Access",
+    "analytics": "Analytics & Reports",
+    "users": "Users",
+    "roles": "Roles",
+    "actions": "Actions",
+    "modules": "Modules",
+    "audit": "Audit",
+    "export_logs": "Data Export"
+  },
+  "no_parent": "No parent module",
+  "yes": "Yes",
+  "no": "No",
+  "empty_value": "-",
+  "copy": "Copy ID",
+  "copied": "Copied to clipboard"
+}

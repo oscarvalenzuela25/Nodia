@@ -22,19 +22,32 @@ describe("Actions Page", () => {
     expect(screen.getByText("Sin módulo asociado")).toBeInTheDocument();
   });
 
-  it("filters actions using InputSearch by name, key, description, or module", async () => {
+  it("filters actions using InputSearch only by name or identifier", async () => {
     const user = userEvent.setup();
     render(<Actions />);
 
     const searchInput = screen.getByPlaceholderText(
-      "Buscar por nombre, clave o descripción..."
+      "Buscar por nombre o identificador..."
     );
     expect(screen.getByText("Crear Usuarios")).toBeInTheDocument();
     expect(screen.getByText("Gestionar Roles")).toBeInTheDocument();
 
+    // Match by name
     await user.type(searchInput, "Gestionar");
-
     expect(screen.getByText("Gestionar Roles")).toBeInTheDocument();
+    expect(screen.queryByText("Crear Usuarios")).not.toBeInTheDocument();
+
+    await user.clear(searchInput);
+
+    // Match by identifier / key
+    await user.type(searchInput, "users.create");
+    expect(screen.getByText("Crear Usuarios")).toBeInTheDocument();
+    expect(screen.queryByText("Gestionar Roles")).not.toBeInTheDocument();
+
+    await user.clear(searchInput);
+
+    // Should NOT match by description keywords only
+    await user.type(searchInput, "credenciales");
     expect(screen.queryByText("Crear Usuarios")).not.toBeInTheDocument();
   });
 
