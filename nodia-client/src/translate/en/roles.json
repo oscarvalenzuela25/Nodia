@@ -1,0 +1,66 @@
+{
+  "title": "Roles",
+  "subtitle": "Configure and manage access roles, define identifiers, and assign permitted system actions.",
+  "new_role": "New Role",
+  "create_modal_title": "New Role",
+  "edit_modal_title": "Update Role",
+  "create_role_button": "Create Role",
+  "update_role_button": "Update Role",
+  "filter_modal_title": "Role Filters",
+  "filter_modal_subtitle": "Filter the role list by identifier, associated actions, or active status.",
+  "search_placeholder": "Search by name or identifier...",
+  "form": {
+    "active": "Active",
+    "key": "Identifier / Key",
+    "key_placeholder": "e.g.: super_admin, editor, manager",
+    "key_helper": "Unique identifier used internally by the system.",
+    "translations_title": "Name Translations",
+    "translations_subtitle": "Define how the role name will be displayed in each language.",
+    "name_es": "Name (Spanish)",
+    "name_es_placeholder": "e.g.: Administrador Principal",
+    "name_en": "Name (English)",
+    "name_en_placeholder": "e.g.: Main Administrator",
+    "actions": "Associated Actions",
+    "actions_placeholder": "Select permitted actions..."
+  },
+  "table": {
+    "id": "Id",
+    "name": "Role Name",
+    "key": "Identifier",
+    "actions": "Associated Actions",
+    "active": "Active",
+    "row_actions": "Actions"
+  },
+  "actions_menu": {
+    "update": "Update"
+  },
+  "filter_chips": {
+    "role": "Role: {{value}}",
+    "action": "Action: {{value}}",
+    "active_only": "Active only"
+  },
+  "role_names": {
+    "admin": "Super Administrator",
+    "manager": "Operations Manager",
+    "editor": "Resource Editor",
+    "support": "Technical Support",
+    "viewer": "Read-Only Auditor"
+  },
+  "action_names": {
+    "users.create": "Create Users",
+    "users.read": "View Users",
+    "users.update": "Edit Users",
+    "users.delete": "Delete Users",
+    "roles.manage": "Manage Roles",
+    "reports.view": "View Reports",
+    "settings.edit": "General Settings",
+    "audit.logs": "Audit & Logs"
+  },
+  "more_actions": "+{{count}} more",
+  "all_actions_title": "Assigned actions ({{count}}):",
+  "yes": "Yes",
+  "no": "No",
+  "empty_value": "-",
+  "copy": "Copy ID",
+  "copied": "Copied to clipboard"
+}

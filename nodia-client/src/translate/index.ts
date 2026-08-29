@@ -8,6 +8,8 @@ import homeEs from "./es/home.json";
 import translateEs from "./es/translate.json";
 import layoutEs from "./es/layout.json";
 import usersEs from "./es/users.json";
+import rolesEs from "./es/roles.json";
+import actionsEs from "./es/actions.json";
 
 // en
 import authEn from "./en/auth.json";
@@ -16,6 +18,8 @@ import homeEn from "./en/home.json";
 import translateEn from "./en/translate.json";
 import layoutEn from "./en/layout.json";
 import usersEn from "./en/users.json";
+import rolesEn from "./en/roles.json";
+import actionsEn from "./en/actions.json";
 
 export const SUPPORTED_LANGUAGES = ["es", "en"] as const;
 export const DEFAULT_LANGUAGE = "es";
@@ -58,6 +62,8 @@ const resources = {
     translate: translateEs,
     layout: layoutEs,
     users: usersEs,
+    roles: rolesEs,
+    actions: actionsEs,
   },
   en: {
     auth: authEn,
@@ -66,6 +72,8 @@ const resources = {
     translate: translateEn,
     layout: layoutEn,
     users: usersEn,
+    roles: rolesEn,
+    actions: actionsEn,
   },
 };
 
@@ -76,7 +84,16 @@ i18n
     lng: getInitialLanguage(),
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: [...SUPPORTED_LANGUAGES],
-    ns: ["auth", "core", "home", "translate", "layout", "users"],
+    ns: [
+      "auth",
+      "core",
+      "home",
+      "translate",
+      "layout",
+      "users",
+      "roles",
+      "actions",
+    ],
     defaultNS: "home",
     interpolation: {
       escapeValue: false,

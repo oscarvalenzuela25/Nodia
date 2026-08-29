@@ -77,7 +77,7 @@ Obtiene el listado paginado y filtrable de usuarios con sus roles asociados.
 - **Ruta:** `/api/v1/users`
 - **Query Params:**
   - `page` *(opcional, number)*: Página actual.
-  - `limit` o `size` *(opcional, number)*: Elementos por página.
+  - `size` *(opcional, number)*: Elementos por página.
   - `all` *(opcional, boolean)*: Traer todos sin paginar.
   - `q[campo_predicado]` *(opcional)*: Filtros Ransack (`q[name_cont]`, `q[email_cont]`, `q[is_active_eq]`, etc.).
 

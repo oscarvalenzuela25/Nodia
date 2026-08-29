@@ -3,8 +3,8 @@ import type { ChangeEventHandler, ReactNode, FocusEventHandler } from "react";
 export type TextInputProps = {
   label?: string;
   value: string;
-  onChange: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: FocusEventHandler<HTMLInputElement>;
+  onChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onBlur?: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   type?: string;
   placeholder?: string;
   required?: boolean;
@@ -15,4 +15,8 @@ export type TextInputProps = {
   name?: string;
   fullWidth?: boolean;
   autoFocus?: boolean;
+  multiline?: boolean;
+  rows?: number;
+  minRows?: number;
+  maxRows?: number;
 };

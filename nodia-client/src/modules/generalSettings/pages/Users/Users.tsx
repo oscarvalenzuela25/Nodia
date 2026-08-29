@@ -24,7 +24,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import AddReactionOutlinedIcon from "@mui/icons-material/AddReactionOutlined";
 import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -277,7 +277,7 @@ const Users: FC = () => {
     <Box>
       <PageHeader>
         <PageTitleContainer>
-          <PeopleAltOutlinedIcon color="primary" fontSize="large" />
+          <AddReactionOutlinedIcon color="primary" fontSize="large" />
           <PageTitle>{t("users:title")}</PageTitle>
         </PageTitleContainer>
         <PageSubtitle>{t("users:subtitle")}</PageSubtitle>

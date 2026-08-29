@@ -9,8 +9,8 @@ import Maintenance from "../modules/core/pages/Maintenance";
 import RouteError from "../modules/core/pages/RouteError";
 import Users from "../modules/generalSettings/pages/Users";
 import Roles from "../modules/generalSettings/pages/Roles";
+import Actions from "../modules/generalSettings/pages/Actions";
 import Modules from "../modules/generalSettings/pages/Modules";
-import Resources from "../modules/generalSettings/pages/Resources";
 
 const router = createBrowserRouter([
   {
@@ -42,18 +42,18 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "settings/modules",
+        path: "settings/actions",
         element: (
           <BaseLayout>
-            <Modules />
+            <Actions />
           </BaseLayout>
         ),
       },
       {
-        path: "settings/resources",
+        path: "settings/modules",
         element: (
           <BaseLayout>
-            <Resources />
+            <Modules />
           </BaseLayout>
         ),
       },

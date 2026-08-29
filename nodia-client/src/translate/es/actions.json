@@ -1,0 +1,69 @@
+{
+  "title": "Acciones",
+  "subtitle": "Gestiona los accionables y permisos del sistema, asignando módulos y configurando identificadores traducibles.",
+  "new_action": "Nuevo Accionable",
+  "create_modal_title": "Nuevo Accionable",
+  "edit_modal_title": "Actualizar Accionable",
+  "create_action_button": "Crear Accionable",
+  "update_action_button": "Actualizar Accionable",
+  "filter_modal_title": "Filtros de acciones",
+  "filter_modal_subtitle": "Filtra la lista de accionables por nombre, módulo asociado o estado activo.",
+  "search_placeholder": "Buscar por nombre, clave o descripción...",
+  "form": {
+    "active": "Activo",
+    "key": "Identificador / Key",
+    "key_placeholder": "ej: users.create, roles.manage",
+    "key_helper": "Identificador único utilizado internamente por el sistema.",
+    "translations_title": "Traducciones del Nombre",
+    "translations_subtitle": "Define cómo se mostrará el nombre del accionable en cada idioma.",
+    "name_es": "Nombre (Español)",
+    "name_es_placeholder": "ej: Crear Usuarios",
+    "name_en": "Nombre (Inglés)",
+    "name_en_placeholder": "ej: Create Users",
+    "module": "Módulo Asociado (Opcional)",
+    "module_placeholder": "Seleccionar módulo...",
+    "description": "Descripción",
+    "description_placeholder": "Describe el propósito funcional o técnico de este accionable..."
+  },
+  "table": {
+    "id": "Id",
+    "name": "Nombre",
+    "key": "Identificador",
+    "description": "Descripción",
+    "module": "Módulo asociado",
+    "active": "Activo",
+    "actions": "Acciones"
+  },
+  "actions_menu": {
+    "update": "Actualizar"
+  },
+  "filter_chips": {
+    "action": "Acción: {{value}}",
+    "module": "Módulo: {{value}}",
+    "active_only": "Solo activos"
+  },
+  "action_names": {
+    "users.create": "Crear Usuarios",
+    "users.read": "Ver Usuarios",
+    "users.update": "Editar Usuarios",
+    "users.delete": "Eliminar Usuarios",
+    "roles.manage": "Gestionar Roles",
+    "reports.view": "Ver Reportes",
+    "reports.export": "Exportar Reportes",
+    "settings.edit": "Configuración General",
+    "audit.logs": "Auditoría y Logs"
+  },
+  "module_names": {
+    "users": "Módulo de Usuarios",
+    "roles": "Módulo de Roles",
+    "settings": "Módulo de Configuración",
+    "reports": "Módulo de Reportes",
+    "auth": "Módulo de Autenticación"
+  },
+  "no_module": "Sin módulo asociado",
+  "yes": "Sí",
+  "no": "No",
+  "empty_value": "-",
+  "copy": "Copiar ID",
+  "copied": "Copiado al portapapeles"
+}

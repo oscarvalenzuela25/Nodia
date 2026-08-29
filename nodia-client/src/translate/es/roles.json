@@ -1,0 +1,66 @@
+{
+  "title": "Roles",
+  "subtitle": "Configura y administra los roles de acceso, define identificadores y asigna acciones permitidas en el sistema.",
+  "new_role": "Nuevo Rol",
+  "create_modal_title": "Nuevo Rol",
+  "edit_modal_title": "Actualizar Rol",
+  "create_role_button": "Crear Rol",
+  "update_role_button": "Actualizar Rol",
+  "filter_modal_title": "Filtros de roles",
+  "filter_modal_subtitle": "Filtra la lista de roles por identificador, acciones asociadas o estado activo.",
+  "search_placeholder": "Buscar por nombre o identificador...",
+  "form": {
+    "active": "Activo",
+    "key": "Identificador / Key",
+    "key_placeholder": "ej: super_admin, editor, gestor",
+    "key_helper": "Identificador único utilizado internamente por el sistema.",
+    "translations_title": "Traducciones del Nombre",
+    "translations_subtitle": "Define cómo se mostrará el nombre del rol en cada idioma.",
+    "name_es": "Nombre (Español)",
+    "name_es_placeholder": "ej: Administrador Principal",
+    "name_en": "Nombre (Inglés)",
+    "name_en_placeholder": "ej: Super Administrator",
+    "actions": "Acciones Asociadas",
+    "actions_placeholder": "Seleccionar acciones permitidas..."
+  },
+  "table": {
+    "id": "Id",
+    "name": "Nombre del rol",
+    "key": "Identificador",
+    "actions": "Acciones asociadas",
+    "active": "Activo",
+    "row_actions": "Acciones"
+  },
+  "actions_menu": {
+    "update": "Actualizar"
+  },
+  "filter_chips": {
+    "role": "Rol: {{value}}",
+    "action": "Acción: {{value}}",
+    "active_only": "Solo activos"
+  },
+  "role_names": {
+    "admin": "Super Administrador",
+    "manager": "Gerente de Operaciones",
+    "editor": "Editor de Recursos",
+    "support": "Soporte Técnico",
+    "viewer": "Auditor de Consulta"
+  },
+  "action_names": {
+    "users.create": "Crear Usuarios",
+    "users.read": "Ver Usuarios",
+    "users.update": "Editar Usuarios",
+    "users.delete": "Eliminar Usuarios",
+    "roles.manage": "Gestionar Roles",
+    "reports.view": "Ver Reportes",
+    "settings.edit": "Configuración General",
+    "audit.logs": "Auditoría y Logs"
+  },
+  "more_actions": "+{{count}} más",
+  "all_actions_title": "Acciones asignadas ({{count}}):",
+  "yes": "Sí",
+  "no": "No",
+  "empty_value": "-",
+  "copy": "Copiar ID",
+  "copied": "Copiado al portapapeles"
+}

@@ -13,10 +13,10 @@ import {
   Collapse,
 } from "@mui/material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import AddReactionOutlinedIcon from "@mui/icons-material/AddReactionOutlined";
+import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
+import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
 import ViewModuleOutlinedIcon from "@mui/icons-material/ViewModuleOutlined";
-import AppsOutlinedIcon from "@mui/icons-material/AppsOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -42,25 +42,25 @@ const mockMenu: SidenavItem[] = [
         id: "usuarios",
         nameKey: "menu_users",
         path: "/settings/users",
-        icon: <PeopleOutlinedIcon />,
+        icon: <AddReactionOutlinedIcon />,
       },
       {
         id: "roles",
         nameKey: "menu_roles",
         path: "/settings/roles",
-        icon: <AddReactionOutlinedIcon />,
+        icon: <SecurityOutlinedIcon />,
+      },
+      {
+        id: "acciones",
+        nameKey: "menu_actions",
+        path: "/settings/actions",
+        icon: <BoltOutlinedIcon />,
       },
       {
         id: "modulos",
         nameKey: "menu_modules",
         path: "/settings/modules",
         icon: <ViewModuleOutlinedIcon />,
-      },
-      {
-        id: "recursos",
-        nameKey: "menu_resources",
-        path: "/settings/resources",
-        icon: <AppsOutlinedIcon />,
       },
     ],
   },

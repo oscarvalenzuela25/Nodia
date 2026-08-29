@@ -23,6 +23,10 @@ const TextInput: FC<TextInputProps> = ({
   name,
   fullWidth = true,
   autoFocus = false,
+  multiline = false,
+  rows,
+  minRows,
+  maxRows,
 }) => {
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -49,6 +53,10 @@ const TextInput: FC<TextInputProps> = ({
         fullWidth
         autoFocus={autoFocus}
         variant="outlined"
+        multiline={multiline}
+        rows={rows}
+        minRows={minRows}
+        maxRows={maxRows}
       />
     </InputContainer>
   );

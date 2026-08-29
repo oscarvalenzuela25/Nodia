@@ -40,8 +40,8 @@ describe("Sidenav", () => {
     // Submodules initially visible
     expect(screen.getByText("Usuarios")).toBeInTheDocument();
     expect(screen.getByText("Roles")).toBeInTheDocument();
+    expect(screen.getByText("Acciones")).toBeInTheDocument();
     expect(screen.getByText("Módulos")).toBeInTheDocument();
-    expect(screen.getByText("Recursos")).toBeInTheDocument();
 
     // Click module header to collapse
     await user.click(moduleHeader);
