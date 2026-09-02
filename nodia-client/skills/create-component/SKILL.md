@@ -18,7 +18,7 @@ Antes de editar:
 
 | Area | Version |
 | --- | --- |
-| Node.js | `>=24.11.0` (`.nvmrc`: `24.19.0`) |
+| Node.js | `>=24.20.0` (`.nvmrc`: `24.20.0`) |
 | React / React DOM | `19.2.8` |
 | TypeScript | `6.0.3` |
 | Vite | `8.2.1` |

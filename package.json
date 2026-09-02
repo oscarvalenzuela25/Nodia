@@ -6,7 +6,7 @@
   "author": "Oscar Valenzuela",
   "license": "ISC",
   "engines": {
-    "node": ">=24.11.0"
+    "node": ">=24.20.0"
   },
   "scripts": {
     "setup": "npm run install:client",

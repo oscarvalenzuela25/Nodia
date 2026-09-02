@@ -16,7 +16,7 @@ Template base para aplicaciones frontend con React + TypeScript + Vite, listo pa
 
 ## Requisitos
 
-- Node `24.11.0` o superior
+- Node `24.20.0` o superior
 - NPM 9+
 
 Este repo incluye `.nvmrc` con la version recomendada.

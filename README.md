@@ -30,7 +30,7 @@ La documentacion tecnica y las decisiones de arquitectura del cliente se encuent
 
 ## Requisitos
 
-- Node.js 24.11.0 o superior
+- Node.js 24.20.0 o superior
 - npm
 
 Puedes comprobar las versiones instaladas con:
