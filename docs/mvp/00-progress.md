@@ -1,7 +1,7 @@
 # Progreso del MVP — Nodia
 
 > Estado general: en desarrollo
-> Última revisión: 2026-08-26
+> Última revisión: 2026-09-05
 
 ## Checklist
 
@@ -25,7 +25,7 @@
 |---:|---|---|
 | 01 | aprobado | Revisión aprobada y terminología `Resources` confirmada el 2026-08-17 |
 | 02 | aprobado | Aprobado tal como estaba en revisión el 2026-08-19 |
-| 03 | aprobado | Aprobado el 2026-08-26; actualizado a modelo de acciones dinámicas (sin resources) y con multiidioma (keys) |
+| 03 | aprobado | Aprobado el 2026-08-26; actualizado el 2026-09-05 con PKs bigint universales; actualizado el 2026-09-07 con tabla translations para i18n centralizado (ADR-002) |
 | 04 | aprobado | Aprobado el 2026-08-26; reconciliado modelo de acciones dinámicas e i18n con flujos de negocio |
 | 05 | aprobado | Aprobado el 2026-08-21; incluye login con React OAuth2 y CRUDs por modales |
 | 06 | aprobado | Aprobado el 2026-08-22; confirmada paginación server-side y acceso administrativo en Header |
@@ -47,6 +47,8 @@
 - El 2026-08-21 se eliminaron `/auth/google`, `/auth/callback`, y las rutas de detalle/edición `/:id` en el Sitemap; las ediciones se harán con modales.
 - El 2026-08-22 se decidió que la paginación será asíncrona (server-side) desde el principio para evitar deuda técnica.
 - El 2026-08-26 se eliminó la entidad `Resources` en favor de acciones dinámicas (`actions`). Se agregaron campos `key` para soportar multiidioma y se removió `users.is_allowed`. Esto invalidó el PRD V2.
+- El 2026-09-05 se actualizó el modelo de datos (`03-domain-model-erd.md`) adoptando `bigint` autoincremental de forma universal para todas las tablas (entidades principales y tablas pivote `user_roles`, `role_actions`) en lugar de UUIDs, optimizando el rendimiento de índices y almacenamiento en PostgreSQL.
+- El 2026-09-07 se incorporó la tabla `translations` (ADR-002) para centralizar la gestión de traducciones multiidioma (i18n) en el backend y PostgreSQL, utilizando un catálogo indexado por `key` y `locale`.
 
 ## Próxima acción recomendada
 

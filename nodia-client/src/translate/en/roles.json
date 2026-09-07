@@ -62,5 +62,29 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copy ID",
-  "copied": "Copied to clipboard"
+  "copied": "Copied to clipboard",
+  "empty_state": {
+    "title": "No roles available",
+    "description": "No registered roles were found in the system. Start by creating a new one.",
+    "cta": "Create first role"
+  },
+  "error_state": {
+    "title": "Error loading roles",
+    "description": "Could not retrieve the role list from the server."
+  },
+  "notifications": {
+    "success_title": "Success",
+    "error_title": "Error",
+    "created_success": "Role created successfully",
+    "created_error": "Failed to create role",
+    "updated_success": "Role updated successfully",
+    "updated_error": "Failed to update role"
+  },
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "confirm_deactivate_title": "Deactivate role?",
+  "confirm_activate_title": "Activate role?",
+  "confirm_deactivate_message": "Are you sure you want to deactivate the role \"{{name}}\"?",
+  "confirm_activate_message": "Are you sure you want to activate the role \"{{name}}\"?"
 }
+

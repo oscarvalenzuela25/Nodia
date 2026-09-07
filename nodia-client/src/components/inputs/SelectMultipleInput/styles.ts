@@ -132,12 +132,17 @@ export const SearchContainer = styled(Box)(({ theme }) => ({
   top: 0,
   backgroundColor: theme.palette.background.paper,
   zIndex: 1,
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(1),
 }));
 
 export const SearchField = styled(TextField)(({ theme }) => {
   const borderColor = theme.palette.border?.default ?? theme.palette.divider;
 
   return {
+    flex: 1,
+    minWidth: 0,
     "& .MuiOutlinedInput-root": {
       borderRadius:
         typeof theme.shape.borderRadius === "number"

@@ -8,4 +8,6 @@ export type ModuleModalProps = {
   onSubmit: (data: ModuleFormData) => void;
   initialData?: ModuleFormData | null;
   availableParents?: ParentModuleOption[];
+  isSubmitting?: boolean;
+  isLoadingParents?: boolean;
 };

@@ -8,4 +8,5 @@ export type RoleModalProps = {
   onSubmit: (data: RoleFormData) => void;
   initialData?: RoleFormData | null;
   availableActions?: ActionOption[];
+  isSubmitting?: boolean;
 };

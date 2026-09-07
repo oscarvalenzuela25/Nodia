@@ -1,11 +1,51 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactElement } from "react";
 import RoleModal from "../../../../../../../modules/generalSettings/pages/Roles/components/RoleModal";
+import * as actionServices from "../../../../../../../modules/generalSettings/pages/Actions/infrastructure/services";
+
+vi.mock(
+  "../../../../../../../modules/generalSettings/pages/Actions/infrastructure/services",
+  () => ({
+    getActions: vi.fn(),
+  })
+);
+
+const mockActionsResponse = {
+  data: [
+    { id: "act-1", key: "users.create", is_active: true },
+    { id: "act-2", key: "users.read", is_active: true },
+  ],
+  meta: { page: 1, limit: 10, total_items: 2, total_pages: 1 },
+};
+
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+
+const renderWithClient = (ui: ReactElement) => {
+  const queryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+  );
+};
 
 describe("RoleModal", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(actionServices.getActions).mockResolvedValue(mockActionsResponse);
+  });
+
   it("renders create modal with empty fields, active switch enabled, and disabled submit button", () => {
-    render(
+    renderWithClient(
       <RoleModal
         open={true}
         onClose={vi.fn()}
@@ -27,7 +67,7 @@ describe("RoleModal", () => {
     const handleClose = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithClient(
       <RoleModal
         open={true}
         onClose={handleClose}
@@ -49,7 +89,25 @@ describe("RoleModal", () => {
         isActive: true,
       })
     );
-    expect(handleClose).toHaveBeenCalled();
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  it("calls onClose when cancel button is clicked", async () => {
+    const handleClose = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithClient(
+      <RoleModal
+        open={true}
+        onClose={handleClose}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
+    await user.click(cancelBtn);
+
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
   it("renders edit modal with pre-populated data and allows updating", async () => {
@@ -57,7 +115,7 @@ describe("RoleModal", () => {
     const handleClose = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithClient(
       <RoleModal
         open={true}
         onClose={handleClose}
@@ -79,7 +137,6 @@ describe("RoleModal", () => {
       screen.getByRole("heading", { name: "Actualizar Rol" })
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("editor")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Editor Principal")).toBeInTheDocument();
 
     const updateBtn = screen.getByRole("button", { name: "Actualizar Rol" });
     expect(updateBtn).toBeEnabled();
@@ -95,6 +152,46 @@ describe("RoleModal", () => {
       },
       actions: ["users.read"],
       isActive: false,
+    });
+  });
+
+  it("disables Cancel and Submit buttons when isSubmitting is true", () => {
+    renderWithClient(
+      <RoleModal
+        open={true}
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+        isSubmitting={true}
+        initialData={{
+          id: "role-123",
+          key: "editor",
+          actions: [],
+          isActive: true,
+        }}
+      />
+    );
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
+    const submitBtn = screen.getByRole("button", { name: "Actualizar Rol" });
+
+    expect(cancelBtn).toBeDisabled();
+    expect(submitBtn).toBeDisabled();
+  });
+
+  it("fetches actions with all=true and includes=false when modal is opened", async () => {
+    renderWithClient(
+      <RoleModal
+        open={true}
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(actionServices.getActions).toHaveBeenCalledWith({
+        all: true,
+        includes: false,
+      });
     });
   });
 });

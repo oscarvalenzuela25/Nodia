@@ -26,6 +26,13 @@ Los endpoints que devuelven listados paginados admiten los siguientes `queryPara
 - `limit` / `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
 - `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
 
+### Inclusión de Relaciones (`includes`)
+Los endpoints de tipo `GET` de listado aceptan el parámetro booleano opcional `includes` (default: `true`).
+- `includes=true` (o no enviado): Retorna las entidades con sus relaciones o entidades asociadas cargadas (`eager loading` / joins). En Modules, incluye el objeto `parent_module` asociado a los submódulos.
+- `includes=false`: Omite las relaciones y retorna únicamente los campos propios de la entidad base (`parent_module: null` o excluido).
+- En caso de que el endpoint o entidad no disponga de relaciones, el parámetro es inocuo y no produce error.
+- **Sustitución de endpoints de filtros:** Para poblar selectores, combos o modales de jerarquía de módulos de forma liviana, se consume directamente el endpoint principal `GET /api/v1/modules?all=true&includes=false`, habiendo quedado eliminados los endpoints dedicados `/api/v1/filters/*`.
+
 ### Borrado Lógico
 No existe el endpoint `DELETE`. La desactivación/eliminación lógica se realiza mediante `PUT /api/v1/module/:moduleId` estableciendo `is_active: false`.
 
@@ -44,23 +51,14 @@ export interface ParentModuleSummary {
 }
 
 export interface ModuleEntity {
-  id: string; // UUID
+  id: string; // ID del módulo
   key: string; // Clave / identificador único del módulo (ej. "users", "roles")
   type: ModuleType; // 'module' o 'submodule'
-  parent_id: string | null; // UUID del módulo padre si es submódulo
-  parent_module: ParentModuleSummary | null; // Objeto con el módulo padre
+  parent_id: string | null; // ID del módulo padre si es submódulo
+  parent_module?: ParentModuleSummary | null; // Presente si includes=true; null/omitido si includes=false
   is_active: boolean; // Estado de activación / borrado lógico
   created_at: string; // ISO 8601
   updated_at: string; // ISO 8601
-}
-
-export interface FilterModuleItem {
-  id: string; // UUID
-  key: string; // Clave del módulo
-  type: ModuleType; // 'module' | 'submodule'
-  parent_id: string | null; // UUID del módulo padre o null
-  parent_key: string | null; // Clave del módulo padre o null
-  is_active: boolean;
 }
 
 export interface PaginationMeta {
@@ -73,6 +71,15 @@ export interface PaginationMeta {
 export interface PaginatedResponse<T> {
   data: T[];
   meta: PaginationMeta;
+}
+
+export interface GetModulesParams {
+  page?: number;
+  limit?: number;
+  size?: number;
+  all?: boolean;
+  includes?: boolean; // Default: true. Si es false, omite 'parent_module'
+  q?: Record<string, unknown>;
 }
 ```
 
@@ -90,14 +97,15 @@ Obtiene el listado paginado y filtrable de módulos y submódulos junto con la i
   - `page` *(opcional, number)*: Página actual.
   - `limit` o `size` *(opcional, number)*: Elementos por página.
   - `all` *(opcional, boolean)*: Traer todos sin paginar.
+  - `includes` *(opcional, boolean, default: `true`)*: Si es `false`, omite la relación `parent_module` asociada en cada submódulo.
   - `q[campo_predicado]` *(opcional)*: Filtros Ransack (`q[key_cont]`, `q[type_eq]`, `q[parent_id_eq]`, `q[is_active_eq]`, etc.).
 
-#### Respuesta exitosa (`200 OK`):
+#### Respuesta exitosa con relaciones (`includes=true` o por defecto, `200 OK`):
 ```json
 {
   "data": [
     {
-      "id": "m1114567-e89b-12d3-a456-426614174001",
+      "id": "1",
       "key": "general_settings",
       "type": "module",
       "parent_id": null,
@@ -107,16 +115,50 @@ Obtiene el listado paginado y filtrable de módulos y submódulos junto con la i
       "updated_at": "2026-08-01T10:00:00.000Z"
     },
     {
-      "id": "m1114567-e89b-12d3-a456-426614174002",
+      "id": "2",
       "key": "users",
       "type": "submodule",
-      "parent_id": "m1114567-e89b-12d3-a456-426614174001",
+      "parent_id": "1",
       "parent_module": {
-        "id": "m1114567-e89b-12d3-a456-426614174001",
+        "id": "1",
         "key": "general_settings",
         "type": "module",
         "is_active": true
       },
+      "is_active": true,
+      "created_at": "2026-08-01T10:00:00.000Z",
+      "updated_at": "2026-08-15T12:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total_items": 2,
+    "total_pages": 1
+  }
+}
+```
+
+#### Respuesta exitosa sin relaciones (`includes=false`, `200 OK`):
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "key": "general_settings",
+      "type": "module",
+      "parent_id": null,
+      "parent_module": null,
+      "is_active": true,
+      "created_at": "2026-08-01T10:00:00.000Z",
+      "updated_at": "2026-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "key": "users",
+      "type": "submodule",
+      "parent_id": "1",
+      "parent_module": null,
       "is_active": true,
       "created_at": "2026-08-01T10:00:00.000Z",
       "updated_at": "2026-08-15T12:00:00.000Z"
@@ -228,33 +270,9 @@ Actualiza los datos de un módulo existente o realiza su borrado lógico (`is_ac
 
 ---
 
-## 4. Endpoints de Opciones de Filtros (Filters)
+## 4. Obtención de Opciones para Selectores y Filtros (Sin Endpoints Dedicados)
 
-### 4.1. Fetch Filter Modules
-Obtiene el catálogo optimizado de módulos y submódulos para selectores y modales de filtros.
+Los endpoints anteriores `/api/v1/filters/*` han sido **eliminados**. Para poblar selectores jerárquicos o combos de módulos (ej. seleccionar el módulo padre en `ModuleModal` o en filtros de otros módulos), se consume directamente el endpoint principal:
 
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/modules`
-- **Query Params:** `q[campo_predicado]` *(opcional)*
-
-#### Respuesta exitosa (`200 OK`):
-```json
-[
-  {
-    "id": "m1114567-e89b-12d3-a456-426614174001",
-    "key": "general_settings",
-    "type": "module",
-    "parent_id": null,
-    "parent_key": null,
-    "is_active": true
-  },
-  {
-    "id": "m1114567-e89b-12d3-a456-426614174002",
-    "key": "users",
-    "type": "submodule",
-    "parent_id": "m1114567-e89b-12d3-a456-426614174001",
-    "parent_key": "general_settings",
-    "is_active": true
-  }
-]
-```
+- **Ruta:** `GET /api/v1/modules?all=true&includes=false`
+- **Comportamiento:** Retorna la totalidad de módulos y submódulos sin relaciones anidadas (`parent_module: null` o excluido). Si se requiere filtrar por tipo, se pueden agregar predicados Ransack directamente (ej. `GET /api/v1/modules?all=true&includes=false&q[type_eq]=module` para obtener únicamente módulos raíz candidatos a padre).

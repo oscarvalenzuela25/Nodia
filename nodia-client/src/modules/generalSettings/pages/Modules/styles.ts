@@ -1,5 +1,5 @@
 import { styled, alpha } from "@mui/material/styles";
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography, Chip, TableRow } from "@mui/material";
 import type { ModuleType } from "./types";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
@@ -154,3 +154,18 @@ export const ParentTag = styled(Chip, {
     },
   };
 });
+
+export const SubmoduleTableRow = styled(TableRow)(({ theme }) => {
+  const isDark = theme.palette.mode === "dark";
+  return {
+    backgroundColor: isDark
+      ? alpha(theme.palette.primary.main, 0.04)
+      : alpha(theme.palette.primary.main, 0.02),
+    "&:hover": {
+      backgroundColor: isDark
+        ? alpha(theme.palette.primary.main, 0.08)
+        : alpha(theme.palette.primary.main, 0.05),
+    },
+  };
+});
+

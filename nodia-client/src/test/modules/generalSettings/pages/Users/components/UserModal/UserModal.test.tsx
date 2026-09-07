@@ -1,11 +1,54 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactElement } from "react";
+import type {
+  PaginatedResponse,
+  Role,
+} from "../../../../../../../modules/generalSettings/pages/Roles/types";
 import UserModal from "../../../../../../../modules/generalSettings/pages/Users/components/UserModal";
+import * as rolesServices from "../../../../../../../modules/generalSettings/pages/Roles/infrastructure/services";
+
+vi.mock(
+  "../../../../../../../modules/generalSettings/pages/Roles/infrastructure/services",
+  () => ({
+    getRoles: vi.fn(),
+  })
+);
+
+const mockRolesResponse: PaginatedResponse<Role> = {
+  data: [
+    { id: "r1", key: "Admin", is_active: true },
+    { id: "r2", key: "User", is_active: true },
+  ],
+  meta: { page: 1, limit: 10, total_items: 2, total_pages: 1 },
+};
+
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+
+const renderWithClient = (ui: ReactElement) => {
+  const queryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+  );
+};
 
 describe("UserModal", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(rolesServices.getRoles).mockResolvedValue(mockRolesResponse);
+  });
   it("renders create modal with empty fields and default active switch", () => {
-    render(
+    renderWithClient(
       <UserModal
         open={true}
         onClose={vi.fn()}
@@ -29,7 +72,7 @@ describe("UserModal", () => {
     const handleClose = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithClient(
       <UserModal
         open={true}
         onClose={handleClose}
@@ -55,7 +98,25 @@ describe("UserModal", () => {
         isActive: true,
       })
     );
-    expect(handleClose).toHaveBeenCalled();
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  it("calls onClose when cancel button is clicked", async () => {
+    const handleClose = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithClient(
+      <UserModal
+        open={true}
+        onClose={handleClose}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
+    await user.click(cancelBtn);
+
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
   it("renders update modal when initialData is provided", async () => {
@@ -63,7 +124,7 @@ describe("UserModal", () => {
     const handleClose = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    renderWithClient(
       <UserModal
         open={true}
         onClose={handleClose}
@@ -97,6 +158,23 @@ describe("UserModal", () => {
       roles: ["Admin"],
       isActive: false,
       imageUrl: "https://example.com/pic.jpg",
+    });
+  });
+
+  it("fetches roles with all=true and includes=false when modal is opened", async () => {
+    renderWithClient(
+      <UserModal
+        open={true}
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(rolesServices.getRoles).toHaveBeenCalledWith({
+        all: true,
+        includes: false,
+      });
     });
   });
 });

@@ -3,8 +3,8 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
+import TextInput from "../../../../../../components/inputs/TextInput";
 import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
-import TranslationInput from "../../../../../../components/inputs/TranslationInput";
 import type { ModuleModalProps, ModuleFormData, ModuleType } from "./types";
 import {
   FormContainer,
@@ -20,6 +20,8 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
   onSubmit,
   initialData,
   availableParents = [],
+  isSubmitting = false,
+  isLoadingParents = false,
 }) => {
   const { t } = useTranslation(["modules", "core"]);
   const isEditing = Boolean(initialData?.id);
@@ -34,9 +36,6 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
   const [parentId, setParentId] = useState<string | null>(
     initialData?.parentId ?? initialData?.parentKey ?? null
   );
-  const [nameTranslations, setNameTranslations] = useState<
-    Record<string, string>
-  >(initialData?.nameTranslations ?? { es: "", en: "" });
 
   const typeOptions = useMemo(
     () => [
@@ -52,7 +51,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || isSubmitting) return;
 
     const payload: ModuleFormData = {
       ...(initialData?.id ? { id: initialData.id } : {}),
@@ -61,14 +60,10 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
       type: moduleType,
       parentId: moduleType === "submodule" ? parentId : null,
       parentKey: moduleType === "submodule" ? parentId : null,
-      nameTranslations: {
-        es: nameTranslations.es?.trim() || "",
-        en: nameTranslations.en?.trim() || "",
-      },
+      nameTranslations: initialData?.nameTranslations ?? { es: "", en: "" },
     };
 
     onSubmit(payload);
-    onClose();
   };
 
   const modalTitle = isEditing
@@ -85,6 +80,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
         variant="contained"
         color="error"
         onClick={onClose}
+        disabled={isSubmitting}
         sx={(theme) => ({
           color: theme.palette.error.contrastText,
           borderRadius: 2,
@@ -98,7 +94,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
         form="module-form"
         variant="contained"
         color="primary"
-        disabled={!isFormValid}
+        disabled={!isFormValid || isSubmitting}
         sx={(theme) => ({
           color: theme.palette.primary.contrastText,
           borderRadius: 2,
@@ -126,6 +122,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
                 name="isActive"
+                disabled={isSubmitting}
               />
             }
             label={t("modules:form.active", "Activo")}
@@ -133,26 +130,18 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           />
         </SwitchWrapper>
 
-        <TranslationInput
+        <TextInput
           label={t("modules:form.key", "Identificador / Key")}
           value={moduleKey}
-          onChangeKey={setModuleKey}
+          onChange={(e) => setModuleKey(e.target.value)}
           placeholder={t(
             "modules:form.key_placeholder",
             "ej: general_settings, users, security"
           )}
-          translations={nameTranslations}
-          onChangeTranslations={setNameTranslations}
           required
           autoFocus={!isEditing}
-          sectionTitle={t(
-            "modules:form.translations_title",
-            "Traducciones del Nombre"
-          )}
-          sectionSubtitle={t(
-            "modules:form.translations_subtitle",
-            "Define cómo se mostrará el nombre del módulo en cada idioma."
-          )}
+          name="key"
+          disabled={isSubmitting}
         />
 
         <SelectSingleInput
@@ -169,6 +158,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           }}
           clearable={false}
           required
+          disabled={isSubmitting}
         />
 
         {moduleType === "submodule" && (
@@ -187,6 +177,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
             searchPlaceholder={t("core:search", "Buscar...")}
             required
             clearable={true}
+            disabled={isSubmitting || isLoadingParents}
           />
         )}
       </FormContainer>

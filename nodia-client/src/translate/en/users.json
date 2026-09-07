@@ -41,5 +41,31 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copy ID",
-  "copied": "Copied to clipboard"
+  "copied": "Copied to clipboard",
+  "notifications": {
+    "success_title": "Success",
+    "error_title": "Error",
+    "created_success": "User created successfully",
+    "created_error": "Failed to create user",
+    "updated_success": "User updated successfully",
+    "updated_error": "Failed to update user",
+    "status_updated_success": "User status updated successfully",
+    "status_updated_error": "Failed to update user status"
+  },
+  "empty_state": {
+    "title": "No users available",
+    "description": "No registered users were found on the platform.",
+    "cta": "Create first user"
+  },
+  "error_state": {
+    "title": "Error loading users",
+    "description": "Could not retrieve the user list from the server."
+  },
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "confirm_activate_title": "Activate user?",
+  "confirm_activate_message": "Are you sure you want to activate user {{name}}? The user will regain access to the platform.",
+  "confirm_deactivate_title": "Deactivate user?",
+  "confirm_deactivate_message": "Are you sure you want to deactivate user {{name}}? The user will lose access to the platform until reactivated."
 }
+

@@ -19,9 +19,22 @@
   "filtering_by": "Filtrando por",
   "clear_filters": "Limpiar filtros",
   "cancel": "Cancelar",
+  "confirm": "Confirmar",
   "search": "Buscar...",
   "select_placeholder": "Seleccionar...",
+  "select_all": "Seleccionar todo",
+  "deselect_all": "Deseleccionar todo",
   "no_options_found": "No se encontraron resultados",
   "close": "Cerrar",
-  "save": "Guardar"
+  "save": "Guardar",
+  "empty_state_title": "No hay información disponible",
+  "empty_state_description": "No se encontraron datos para mostrar en este momento.",
+  "server_error_toast": "Error en el servidor. Por favor, inténtelo más tarde.",
+  "server_error_alert": "Ocurrió un problema al cargar los datos desde el servidor.",
+  "pagination": {
+    "rows_per_page": "Filas por página:",
+    "of": "de",
+    "more_than": "más de"
+  }
 }
+

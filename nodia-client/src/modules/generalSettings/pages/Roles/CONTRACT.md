@@ -29,6 +29,13 @@ Los endpoints que devuelven listados paginados admiten los siguientes `queryPara
 - `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
 - `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
 
+### Inclusión de Relaciones (`includes`)
+Los endpoints de tipo `GET` de listado aceptan el parámetro booleano opcional `includes` (default: `true`).
+- `includes=true` (o no enviado): Retorna las entidades con sus relaciones cargadas (`eager loading` / joins). En Roles, incluye el arreglo de acciones asociadas (`actions: Action[]`).
+- `includes=false`: Omite las relaciones y retorna únicamente los campos propios de la entidad base (`actions` omitido o vacío `[]`).
+- En caso de que el endpoint o entidad no disponga de relaciones, el parámetro es inocuo y no produce error.
+- **Sustitución de endpoints de filtros:** Para poblar selectores, combos o autocompletados de roles o acciones de forma liviana, se consumen directamente los endpoints principales con `all=true&includes=false` (ej. `/api/v1/roles?all=true&includes=false` o `/api/v1/actions?all=true&includes=false`), habiendo quedado eliminados los endpoints dedicados `/api/v1/filters/*`.
+
 ### Borrado Lógico
 
 No existe el endpoint `DELETE`. La desactivación/eliminación lógica se realiza mediante `PUT /api/v1/role/:roleId` estableciendo `is_active: false`.
@@ -49,12 +56,12 @@ export interface Action {
 }
 
 export interface Role {
-  id: string; // UUID
+  id: string; // ID del rol
   key: string; // Clave de traducción / identificador único del rol (ej. "admin", "manager")
   is_active: boolean; // Estado de activación / borrado lógico
   created_at: string; // ISO 8601
   updated_at: string; // ISO 8601
-  actions: Action[]; // Arreglo de objetos Action asociados
+  actions?: Action[]; // Arreglo de objetos Action asociados si includes=true; omitido o vacío si includes=false
 }
 
 export interface PaginationMeta {
@@ -68,6 +75,14 @@ export interface PaginatedResponse<T> {
   data: T[];
   meta: PaginationMeta;
 }
+
+export interface GetRolesParams {
+  page?: number;
+  size?: number;
+  all?: boolean;
+  includes?: boolean; // Default: true. Si es false, omite las acciones asociadas
+  q?: Record<string, unknown>;
+}
 ```
 
 ---
@@ -76,7 +91,7 @@ export interface PaginatedResponse<T> {
 
 ### 3.1. Fetch Roles (Listado Principal)
 
-Obtiene el listado paginado y filtrable de roles con sus acciones asociadas completas.
+Obtiene el listado paginado y filtrable de roles. Si `includes=false`, omite la inclusión del arreglo completo de `actions`, acelerando la carga para selectores o tablas que no requieran listar los permisos asociados.
 
 - **Método:** `GET`
 - **Ruta:** `/api/v1/roles`
@@ -84,23 +99,24 @@ Obtiene el listado paginado y filtrable de roles con sus acciones asociadas comp
   - `page` _(opcional, number)_: Página actual.
   - `size` _(opcional, number)_: Elementos por página.
   - `all` _(opcional, boolean)_: Traer todos sin paginar.
+  - `includes` _(opcional, boolean, default: `true`)_: Si es `false`, omite el array `actions` asociado a cada rol.
   - `q[campo_predicado]` _(opcional)_: Filtros Ransack (`q[key_cont]`, `q[is_active_eq]`, `q[actions_id_in][]`, etc.).
 
-#### Respuesta exitosa (`200 OK`):
+#### Respuesta exitosa con relaciones (`includes=true` o por defecto, `200 OK`):
 
 ```json
 {
   "data": [
     {
-      "id": "123e4567-e89b-12d3-a456-426614174001",
+      "id": "1",
       "key": "admin",
       "is_active": true,
       "created_at": "2026-08-01T10:00:00.000Z",
       "updated_at": "2026-08-20T14:32:00.000Z",
       "actions": [
         {
-          "id": "a1114567-e89b-12d3-a456-426614174001",
-          "module_id": "m1114567-e89b-12d3-a456-426614174001",
+          "id": "10",
+          "module_id": "1",
           "key": "users.create",
           "description": "Permite registrar nuevos usuarios en la plataforma",
           "is_active": true,
@@ -108,24 +124,38 @@ Obtiene el listado paginado y filtrable de roles con sus acciones asociadas comp
           "updated_at": "2026-08-01T10:00:00.000Z"
         },
         {
-          "id": "a1114567-e89b-12d3-a456-426614174002",
-          "module_id": "m1114567-e89b-12d3-a456-426614174001",
+          "id": "11",
+          "module_id": "1",
           "key": "users.read",
           "description": "Permite visualizar el listado y detalle de usuarios",
           "is_active": true,
           "created_at": "2026-08-01T10:00:00.000Z",
           "updated_at": "2026-08-01T10:00:00.000Z"
-        },
-        {
-          "id": "a2224567-e89b-12d3-a456-426614174001",
-          "module_id": "m2224567-e89b-12d3-a456-426614174002",
-          "key": "roles.manage",
-          "description": "Permite crear y editar roles de acceso",
-          "is_active": true,
-          "created_at": "2026-08-01T10:00:00.000Z",
-          "updated_at": "2026-08-01T10:00:00.000Z"
         }
       ]
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total_items": 1,
+    "total_pages": 1
+  }
+}
+```
+
+#### Respuesta exitosa sin relaciones (`includes=false`, `200 OK`):
+
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "key": "admin",
+      "is_active": true,
+      "created_at": "2026-08-01T10:00:00.000Z",
+      "updated_at": "2026-08-20T14:32:00.000Z",
+      "actions": []
     }
   ],
   "meta": {
@@ -264,74 +294,14 @@ Actualiza los datos, identificador o acciones de un rol existente. También se u
 
 ---
 
-## 4. Endpoints de Opciones de Filtros (Filters)
+## 4. Obtención de Opciones para Selectores y Filtros (Sin Endpoints Dedicados)
 
-Estos endpoints proveen datos optimizados y livianos para poblar los selectores, auto-completados y modales de filtros.
+Los endpoints anteriores `/api/v1/filters/*` han sido **eliminados**. Para poblar selectores, filtros o combos de roles o de acciones asociadas (ej. en el modal de asignación de permisos de roles o en filtros de usuarios), se consumen directamente los endpoints principales con `all=true` e `includes=false`:
 
-### 4.1. Fetch Filter Roles
+1. **Para obtener el catálogo de roles (ej. selectores o filtros):**  
+   - **Ruta:** `GET /api/v1/roles?all=true&includes=false`
+   - **Comportamiento:** Retorna todos los roles activos sin resolver el arreglo de acciones asociadas (`actions: []` o excluido).
 
-Obtiene los roles disponibles para selectores de filtro y asignaciones.
-
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/roles`
-- **Query Params:** `q[campo_predicado]` _(opcional)_
-
-#### Respuesta exitosa (`200 OK`):
-
-```json
-[
-  {
-    "id": "123e4567-e89b-12d3-a456-426614174001",
-    "key": "admin",
-    "is_active": true
-  },
-  {
-    "id": "123e4567-e89b-12d3-a456-426614174002",
-    "key": "manager",
-    "is_active": true
-  },
-  {
-    "id": "123e4567-e89b-12d3-a456-426614174003",
-    "key": "editor",
-    "is_active": true
-  }
-]
-```
-
----
-
-### 4.2. Fetch Filter Actions
-
-Obtiene el catálogo de acciones del sistema para selectores de filtros y asignaciones en el formulario de roles.
-
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/actions`
-- **Query Params:** `q[campo_predicado]` _(opcional, ej. `q[module_id_eq]`, `q[key_cont]`)_
-
-#### Respuesta exitosa (`200 OK`):
-
-```json
-[
-  {
-    "id": "a1114567-e89b-12d3-a456-426614174001",
-    "module_id": "m1114567-e89b-12d3-a456-426614174001",
-    "key": "users.create",
-    "description": "Permite registrar nuevos usuarios en la plataforma",
-    "is_active": true
-  },
-  {
-    "id": "a1114567-e89b-12d3-a456-426614174002",
-    "module_id": "m1114567-e89b-12d3-a456-426614174001",
-    "key": "users.read",
-    "description": "Permite visualizar el listado y detalle de usuarios",
-    "is_active": true
-  },
-  {
-    "id": "a2224567-e89b-12d3-a456-426614174001",
-    "module_id": "m2224567-e89b-12d3-a456-426614174002",
-    "key": "roles.manage",
-    "description": "Permite crear y editar roles de acceso",
-    "is_active": true
-  }
-]
-```
+2. **Para obtener el catálogo de acciones disponibles para asignar a un rol:**  
+   - **Ruta:** `GET /api/v1/actions?all=true&includes=false`
+   - **Comportamiento:** Retorna todas las acciones del sistema sin relaciones complejas para ser seleccionadas en el formulario de roles (`RoleModal`).

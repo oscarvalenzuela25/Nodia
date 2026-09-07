@@ -11,7 +11,7 @@
   "search_placeholder": "Buscar por nombre o identificador...",
   "form": {
     "active": "Activo",
-    "key": "Identificador / Key",
+    "key": "Identificador",
     "key_placeholder": "ej: users.create, roles.manage",
     "key_helper": "Identificador único utilizado internamente por el sistema.",
     "translations_title": "Traducciones del Nombre",
@@ -65,5 +65,28 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copiar ID",
-  "copied": "Copiado al portapapeles"
+  "copied": "Copiado al portapapeles",
+  "empty_state": {
+    "title": "No hay acciones disponibles",
+    "description": "No se encontraron acciones actualmente. Comience agregando una nueva.",
+    "cta": "Crear primera acción"
+  },
+  "error_state": {
+    "title": "Error al cargar las acciones",
+    "description": "No se pudo obtener el listado de acciones desde el servidor."
+  },
+  "notifications": {
+    "success_title": "Éxito",
+    "error_title": "Error",
+    "created_success": "Acción creada correctamente",
+    "created_error": "No se pudo crear la acción",
+    "updated_success": "Acción actualizada correctamente",
+    "updated_error": "No se pudo actualizar la acción"
+  },
+  "deactivate": "Desactivar",
+  "activate": "Activar",
+  "confirm_deactivate_title": "¿Desactivar acción?",
+  "confirm_activate_title": "¿Activar acción?",
+  "confirm_deactivate_message": "¿Está seguro de que desea desactivar la acción \"{{name}}\"?",
+  "confirm_activate_message": "¿Está seguro de que desea activar la acción \"{{name}}\"?"
 }

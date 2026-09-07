@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: template_postgres
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-template_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-template_password}
+      POSTGRES_DB: ${POSTGRES_DB:-template_db}
+    volumes:
+      - template_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-template_user} -d ${POSTGRES_DB:-template_db}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - template_network
+
+volumes:
+  template_postgres_data:
+    name: template_postgres_data
+
+networks:
+  template_network:
+    name: template_network
+    driver: bridge

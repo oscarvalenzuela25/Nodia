@@ -41,5 +41,31 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copiar ID",
-  "copied": "Copiado al portapapeles"
+  "copied": "Copiado al portapapeles",
+  "notifications": {
+    "success_title": "Éxito",
+    "error_title": "Error",
+    "created_success": "Usuario creado correctamente",
+    "created_error": "No se pudo crear el usuario",
+    "updated_success": "Usuario actualizado correctamente",
+    "updated_error": "No se pudo actualizar el usuario",
+    "status_updated_success": "Estado de usuario actualizado correctamente",
+    "status_updated_error": "No se pudo actualizar el estado del usuario"
+  },
+  "empty_state": {
+    "title": "No hay usuarios disponibles",
+    "description": "No se encontraron usuarios actualmente. Comience agregando uno nuevo.",
+    "cta": "Crear primer usuario"
+  },
+  "error_state": {
+    "title": "Error al cargar los usuarios",
+    "description": "No se pudo obtener el listado de usuarios desde el servidor."
+  },
+  "deactivate": "Desactivar",
+  "activate": "Activar",
+  "confirm_activate_title": "¿Activar usuario?",
+  "confirm_activate_message": "¿Está seguro de que desea activar al usuario {{name}}? El usuario podrá volver a acceder a la plataforma.",
+  "confirm_deactivate_title": "¿Desactivar usuario?",
+  "confirm_deactivate_message": "¿Está seguro de que desea desactivar al usuario {{name}}? El usuario perderá el acceso a la plataforma hasta que sea reactivado."
 }
+

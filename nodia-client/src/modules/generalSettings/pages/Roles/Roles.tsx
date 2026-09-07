@@ -1,5 +1,5 @@
 import type { FC, MouseEvent } from "react";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -21,19 +21,34 @@ import {
   ListItemText,
   Switch,
   FormControlLabel,
+  LinearProgress,
+  Alert,
+  AlertTitle,
+  TablePagination,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import AddModeratorOutlinedIcon from "@mui/icons-material/AddModeratorOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import { Skeleton } from "boneyard-js/react";
+import { sileo } from "sileo";
 
 import Filter from "../../../../components/Filter";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import InputSearch from "../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
+import ConfirmDialog from "../../../../components/ConfirmDialog";
 import RoleModal from "./components/RoleModal";
-import type { RoleItem, RoleFormData, ActionOption } from "./types";
+import {
+  useRoles,
+  useCreateRole,
+  useUpdateRole,
+} from "./infrastructure/useServices";
+import { useActions } from "../Actions";
+import type { RoleItem, RoleFormData, ActionOption, Role } from "./types";
 import {
   PageHeader,
   PageTitleContainer,
@@ -42,7 +57,6 @@ import {
   FilterRow,
   ActiveFilters,
   TableTopBar,
-  RoleInfo,
   StyledTableContainer,
   KeyBadge,
   ActionsWrapper,
@@ -50,84 +64,12 @@ import {
   MoreActionsChip,
 } from "./styles";
 
-const AVAILABLE_ACTION_KEYS = [
-  "users.create",
-  "users.read",
-  "users.update",
-  "users.delete",
-  "roles.manage",
-  "reports.view",
-  "settings.edit",
-  "audit.logs",
-];
-
-const INITIAL_ROLES: RoleItem[] = [
-  {
-    id: "123e4567-e89b-12d3-a456-426614174001",
-    key: "admin",
-    nameTranslations: {
-      es: "Super Administrador",
-      en: "Super Administrator",
-    },
-    actions: [
-      "users.create",
-      "users.read",
-      "users.update",
-      "users.delete",
-      "roles.manage",
-      "reports.view",
-      "settings.edit",
-      "audit.logs",
-    ],
-    isActive: true,
-  },
-  {
-    id: "123e4567-e89b-12d3-a456-426614174002",
-    key: "manager",
-    nameTranslations: {
-      es: "Gerente de Operaciones",
-      en: "Operations Manager",
-    },
-    actions: ["users.read", "users.update", "reports.view", "settings.edit"],
-    isActive: true,
-  },
-  {
-    id: "123e4567-e89b-12d3-a456-426614174003",
-    key: "editor",
-    nameTranslations: {
-      es: "Editor de Recursos",
-      en: "Resource Editor",
-    },
-    actions: ["users.read", "reports.view"],
-    isActive: true,
-  },
-  {
-    id: "123e4567-e89b-12d3-a456-426614174004",
-    key: "support",
-    nameTranslations: {
-      es: "Soporte Técnico",
-      en: "Technical Support",
-    },
-    actions: ["users.read", "audit.logs"],
-    isActive: false,
-  },
-  {
-    id: "123e4567-e89b-12d3-a456-426614174005",
-    key: "viewer",
-    nameTranslations: {
-      es: "Auditor de Consulta",
-      en: "Read-Only Auditor",
-    },
-    actions: ["users.read", "reports.view", "audit.logs"],
-    isActive: true,
-  },
-];
-
 const Roles: FC = () => {
-  const { t, i18n } = useTranslation(["roles", "core"]);
+  const { t } = useTranslation(["roles", "core"]);
 
-  const [roles, setRoles] = useState<RoleItem[]>(INITIAL_ROLES);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
   // Filter modal draft state
   const [draftFilterRoleKeys, setDraftFilterRoleKeys] = useState<string[]>([]);
@@ -153,14 +95,91 @@ const Roles: FC = () => {
     useState<HTMLButtonElement | null>(null);
   const [actionRole, setActionRole] = useState<RoleItem | null>(null);
 
+  // Confirm Active / Inactive Dialog state
+  const [roleToToggle, setRoleToToggle] = useState<RoleItem | null>(null);
+  const [isConfirmToggleOpen, setIsConfirmToggleOpen] =
+    useState<boolean>(false);
+
+  // Mutations
+  const createRoleMutation = useCreateRole();
+  const updateRoleMutation = useUpdateRole();
+  const isMutating =
+    createRoleMutation.isPending || updateRoleMutation.isPending;
+
+  // Build Ransack query
+  const ransackQuery = useMemo(() => {
+    const q: Record<string, unknown> = {};
+    if (searchTerm.trim()) {
+      q.key_cont = searchTerm.trim();
+    }
+    if (appliedFilterActive !== null) {
+      q.is_active_eq = appliedFilterActive;
+    }
+    return q;
+  }, [searchTerm, appliedFilterActive]);
+
+  // React Query hook for Endpoint 1
+  const {
+    data: rolesResponse,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = useRoles({
+    page: page + 1,
+    size: rowsPerPage,
+    q: Object.keys(ransackQuery).length > 0 ? ransackQuery : undefined,
+  });
+
+  const roles: RoleItem[] = useMemo(() => {
+    if (rolesResponse?.data) {
+      return rolesResponse.data.map((r: Role) => ({
+        id: r.id,
+        key: r.key,
+        nameTranslations: r.nameTranslations,
+        actions: (r.actions ?? []).map((a) =>
+          typeof a === "string" ? a : a.key
+        ),
+        isActive: r.is_active ?? true,
+      }));
+    }
+    return [];
+  }, [rolesResponse]);
+
+  const totalItems = useMemo(() => {
+    return rolesResponse?.meta?.total_items ?? roles.length;
+  }, [rolesResponse, roles.length]);
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Actions fetch (Endpoint 1 with all=true and includes=false)
+  const {
+    data: filterActionsResponse,
+    isLoading: isLoadingFilterActions,
+    isFetching: isFetchingFilterActions,
+  } = useActions({
+    all: true,
+    includes: false,
+  });
+
   // Action options with current language labels
   const availableActionOptions: ActionOption[] = useMemo(() => {
-    return AVAILABLE_ACTION_KEYS.map((key) => ({
-      value: key,
-      label: t(`roles:action_names.${key}`, key),
-      category: key.split(".")[0],
+    return (filterActionsResponse?.data ?? []).map((act) => ({
+      value: act.key,
+      label: act.key,
+      category: act.key.split(".")[0],
     }));
-  }, [t]);
+  }, [filterActionsResponse]);
 
   const actionLabelsMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -168,43 +187,13 @@ const Roles: FC = () => {
     return map;
   }, [availableActionOptions]);
 
-  // Resolves the role name using translation or fallback
-  const getRoleDisplayName = useCallback(
-    (role: RoleItem): string => {
-      const currentLang = i18n.language?.toLowerCase().startsWith("en")
-        ? "en"
-        : "es";
-
-      // 1. Try translation key lookup
-      if (i18n.exists(`roles:role_names.${role.key}`)) {
-        return t(`roles:role_names.${role.key}`);
-      }
-
-      // 2. Try role's custom translations
-      if (role.nameTranslations) {
-        if (role.nameTranslations[currentLang]) {
-          return role.nameTranslations[currentLang];
-        }
-        if (role.nameTranslations.es) {
-          return role.nameTranslations.es;
-        }
-        if (role.nameTranslations.en) {
-          return role.nameTranslations.en;
-        }
-      }
-
-      return role.key;
-    },
-    [i18n, t]
-  );
-
   // Role filter options for the filter modal
   const roleFilterOptions = useMemo(() => {
     return roles.map((role) => ({
       value: role.key,
-      label: getRoleDisplayName(role),
+      label: role.key,
     }));
-  }, [roles, getRoleDisplayName]);
+  }, [roles]);
 
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
@@ -238,31 +227,65 @@ const Roles: FC = () => {
     handleCloseActionMenu();
   };
 
-  const handleSaveRole = (data: RoleFormData) => {
-    if (data.id) {
-      setRoles((prev) =>
-        prev.map((r) =>
-          r.id === data.id
-            ? {
-                ...r,
-                key: data.key,
-                nameTranslations: data.nameTranslations,
-                actions: data.actions,
-                isActive: data.isActive,
-              }
-            : r
-        )
-      );
-    } else {
-      const newRole: RoleItem = {
-        id: crypto.randomUUID ? crypto.randomUUID() : `rol-${Date.now()}`,
-        key: data.key,
-        nameTranslations: data.nameTranslations,
-        actions: data.actions,
-        isActive: data.isActive,
-      };
-      setRoles((prev) => [newRole, ...prev]);
+  const handleSaveRole = async (data: RoleFormData) => {
+    const roleId = data.id;
+    try {
+      if (roleId) {
+        await updateRoleMutation.mutateAsync({
+          roleId,
+          payload: {
+            key: data.key,
+            is_active: data.isActive,
+            actions: data.actions,
+          },
+        });
+      } else {
+        await createRoleMutation.mutateAsync({
+          key: data.key,
+          is_active: data.isActive,
+          actions: data.actions,
+        });
+      }
+      setIsRoleModalOpen(false);
+    } catch {
+      // Error is handled by mutation onError sileo notification
     }
+  };
+
+  const handleRequestToggleActive = (role: RoleItem) => {
+    setRoleToToggle(role);
+    setIsConfirmToggleOpen(true);
+    handleCloseActionMenu();
+  };
+
+  const handleCloseConfirmToggle = () => {
+    if (isMutating) return;
+    setIsConfirmToggleOpen(false);
+    setRoleToToggle(null);
+  };
+
+  const handleConfirmToggleActive = async () => {
+    if (!roleToToggle) return;
+    try {
+      await updateRoleMutation.mutateAsync({
+        roleId: roleToToggle.id,
+        payload: {
+          is_active: !roleToToggle.isActive,
+        },
+      });
+      setIsConfirmToggleOpen(false);
+      setRoleToToggle(null);
+    } catch {
+      // Error is handled by mutation onError sileo notification
+    }
+  };
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    sileo.info({
+      title: t("roles:copy"),
+      description: t("roles:copied"),
+    });
   };
 
   // Filter application
@@ -270,6 +293,7 @@ const Roles: FC = () => {
     setAppliedFilterRoleKeys(draftFilterRoleKeys);
     setAppliedFilterActions(draftFilterActions);
     setAppliedFilterActive(draftFilterActive);
+    setPage(0);
   };
 
   const handleClearFilters = () => {
@@ -279,6 +303,7 @@ const Roles: FC = () => {
     setAppliedFilterRoleKeys([]);
     setAppliedFilterActions([]);
     setAppliedFilterActive(null);
+    setPage(0);
   };
 
   // Active filter count
@@ -293,15 +318,12 @@ const Roles: FC = () => {
   // Filtered roles list
   const filteredRoles = useMemo(() => {
     return roles.filter((role) => {
-      const displayName = getRoleDisplayName(role).toLowerCase();
       const rawKey = role.key.toLowerCase();
 
-      // 1. Search bar by name or key
+      // 1. Search bar by key
       if (searchTerm.trim()) {
         const query = searchTerm.toLowerCase().trim();
-        const matchesName = displayName.includes(query);
-        const matchesKey = rawKey.includes(query);
-        if (!matchesName && !matchesKey) {
+        if (!rawKey.includes(query)) {
           return false;
         }
       }
@@ -338,7 +360,6 @@ const Roles: FC = () => {
     appliedFilterRoleKeys,
     appliedFilterActions,
     appliedFilterActive,
-    getRoleDisplayName,
   ]);
 
   return (
@@ -360,11 +381,12 @@ const Roles: FC = () => {
           subtitle={t("roles:filter_modal_subtitle")}
         >
           <SelectMultipleInput
-            label={t("roles:table.name")}
+            label={t("roles:table.key")}
             options={roleFilterOptions}
             value={draftFilterRoleKeys}
             onChange={setDraftFilterRoleKeys}
             placeholder={t("roles:form.key_placeholder")}
+            disabled={isLoading || isFetching}
           />
 
           <SelectMultipleInput
@@ -373,6 +395,7 @@ const Roles: FC = () => {
             value={draftFilterActions}
             onChange={setDraftFilterActions}
             placeholder={t("roles:form.actions_placeholder")}
+            disabled={isLoadingFilterActions || isFetchingFilterActions}
           />
 
           <Box
@@ -393,6 +416,7 @@ const Roles: FC = () => {
                   checked={draftFilterActive}
                   onChange={(e) => setDraftFilterActive(e.target.checked)}
                   color="primary"
+                  disabled={isLoading || isFetching}
                 />
               }
               label={t("roles:form.active")}
@@ -405,32 +429,32 @@ const Roles: FC = () => {
 
       {activeFiltersCount > 0 && (
         <ActiveFilters>
-          {appliedFilterRoleKeys.map((roleKey) => {
-            const matchedRole = roles.find((r) => r.key === roleKey);
-            const label = matchedRole ? getRoleDisplayName(matchedRole) : roleKey;
-            return (
-              <FilterChips
-                key={`role-${roleKey}`}
-                label={t("roles:filter_chips.role", { value: label })}
-                onAction={() =>
-                  setAppliedFilterRoleKeys((prev) =>
-                    prev.filter((k) => k !== roleKey)
-                  )
-                }
-              />
-            );
-          })}
+          {appliedFilterRoleKeys.map((roleKey) => (
+            <FilterChips
+              key={`role-${roleKey}`}
+              label={t("roles:filter_chips.role", { value: roleKey })}
+              onAction={() => {
+                setAppliedFilterRoleKeys((prev) =>
+                  prev.filter((k) => k !== roleKey)
+                );
+                setPage(0);
+              }}
+            />
+          ))}
           {appliedFilterActions.map((actionKey) => {
-            const actionLabel = actionLabelsMap.get(actionKey) ?? actionKey;
+            const actionLabel =
+              actionLabelsMap.get(actionKey) ??
+              t(`roles:action_names.${actionKey}`, actionKey);
             return (
               <FilterChips
                 key={`action-${actionKey}`}
                 label={t("roles:filter_chips.action", { value: actionLabel })}
-                onAction={() =>
+                onAction={() => {
                   setAppliedFilterActions((prev) =>
                     prev.filter((a) => a !== actionKey)
-                  )
-                }
+                  );
+                  setPage(0);
+                }}
               />
             );
           })}
@@ -441,19 +465,49 @@ const Roles: FC = () => {
                   ? t("roles:filter_chips.active_only")
                   : t("roles:no")
               }
-              onAction={() => setAppliedFilterActive(null)}
+              onAction={() => {
+                setAppliedFilterActive(null);
+                setPage(0);
+              }}
             />
           )}
         </ActiveFilters>
+      )}
+
+      {isError && (
+        <Box sx={{ mb: 2.5 }}>
+          <Alert
+            severity="error"
+            action={
+              <Button color="inherit" size="small" onClick={() => refetch()}>
+                {t("core:retry", "Reintentar")}
+              </Button>
+            }
+          >
+            <AlertTitle>
+              {t("roles:error_state.title", "Error al cargar los roles")}
+            </AlertTitle>
+            {error instanceof Error
+              ? error.message
+              : t(
+                  "roles:error_state.description",
+                  "No se pudo obtener el listado de roles desde el servidor."
+                )}
+          </Alert>
+        </Box>
       )}
 
       <TableTopBar>
         <Box sx={{ width: { xs: "100%", sm: "340px" } }}>
           <InputSearch
             value={searchTerm}
-            onChange={setSearchTerm}
+            onChange={(val) => {
+              setSearchTerm(val);
+              setPage(0);
+            }}
             placeholder={t("roles:search_placeholder")}
             fullWidth
+            disabled={isLoading || isMutating}
           />
         </Box>
         <Button
@@ -461,6 +515,7 @@ const Roles: FC = () => {
           color="primary"
           startIcon={<AddModeratorOutlinedIcon />}
           onClick={handleOpenCreateModal}
+          disabled={isLoading || isFetching || isMutating}
           sx={(theme) => ({
             borderRadius: 2,
             color: theme.palette.primary.contrastText,
@@ -470,7 +525,15 @@ const Roles: FC = () => {
         </Button>
       </TableTopBar>
 
-      <StyledTableContainer>
+      <Skeleton loading={isLoading} name="roles-table">
+        <StyledTableContainer>
+          {isFetching && !isLoading && (
+            <LinearProgress
+              sx={{
+                height: 3,
+              }}
+            />
+          )}
         <TableContainer component={Paper} elevation={0}>
           <Table>
             <TableHead
@@ -484,7 +547,6 @@ const Roles: FC = () => {
             >
               <TableRow>
                 <TableCell>{t("roles:table.id")}</TableCell>
-                <TableCell>{t("roles:table.name")}</TableCell>
                 <TableCell>{t("roles:table.key")}</TableCell>
                 <TableCell>{t("roles:table.actions")}</TableCell>
                 <TableCell>{t("roles:table.active")}</TableCell>
@@ -494,19 +556,52 @@ const Roles: FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRoles.length === 0 ? (
+              {!isLoading && filteredRoles.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={5}
                     align="center"
-                    sx={{ py: 4, color: "text.secondary" }}
+                    sx={{ py: 6, color: "text.secondary" }}
                   >
-                    {t("core:no_options_found")}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 1.5,
+                      }}
+                    >
+                      <SecurityOutlinedIcon
+                        sx={{ fontSize: 48, color: "text.disabled" }}
+                      />
+                      <Typography variant="h6" color="text.secondary">
+                        {t("roles:empty_state.title", "No hay roles disponibles")}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.disabled"
+                        sx={{ maxWidth: 400 }}
+                      >
+                        {t(
+                          "roles:empty_state.description",
+                          "No se encontraron roles actualmente. Comience agregando uno nuevo."
+                        )}
+                      </Typography>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<AddModeratorOutlinedIcon />}
+                        onClick={handleOpenCreateModal}
+                        disabled={isLoading || isFetching || isMutating}
+                        sx={{ mt: 1 }}
+                      >
+                        {t("roles:empty_state.cta", "Crear primer rol")}
+                      </Button>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredRoles.map((role) => {
-                  const displayName = getRoleDisplayName(role);
                   const maxVisibleActions = 2;
                   const visibleActions = role.actions.slice(0, maxVisibleActions);
                   const overflowCount = role.actions.length - maxVisibleActions;
@@ -527,7 +622,8 @@ const Roles: FC = () => {
                       >
                         {role.actions.map((act) => (
                           <li key={act}>
-                            {actionLabelsMap.get(act) ?? act}
+                            {actionLabelsMap.get(act) ??
+                              t(`roles:action_names.${act}`, act)}
                           </li>
                         ))}
                       </Box>
@@ -552,7 +648,9 @@ const Roles: FC = () => {
                         <Box
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
-                          {role.id.split("-")[0]}...
+                          {role.id.includes("-")
+                            ? `${role.id.split("-")[0]}...`
+                            : role.id}
                           <Tooltip
                             title={t("roles:copy")}
                             arrow
@@ -560,9 +658,7 @@ const Roles: FC = () => {
                           >
                             <IconButton
                               size="small"
-                              onClick={() =>
-                                navigator.clipboard.writeText(role.id)
-                              }
+                              onClick={() => handleCopyId(role.id)}
                               aria-label={t("roles:copy")}
                             >
                               <ContentCopyIcon
@@ -574,16 +670,6 @@ const Roles: FC = () => {
                         </Box>
                       </TableCell>
                       <TableCell>
-                        <RoleInfo>
-                          <Typography
-                            variant="body2"
-                            sx={{ fontWeight: "medium" }}
-                          >
-                            {displayName}
-                          </Typography>
-                        </RoleInfo>
-                      </TableCell>
-                      <TableCell>
                         <KeyBadge>{role.key}</KeyBadge>
                       </TableCell>
                       <TableCell>
@@ -591,11 +677,12 @@ const Roles: FC = () => {
                           <ActionsWrapper>
                             {visibleActions.map((actionKey) => {
                               const label =
-                                actionLabelsMap.get(actionKey) ?? actionKey;
+                                actionLabelsMap.get(actionKey) ??
+                                t(`roles:action_names.${actionKey}`, actionKey);
                               const category = actionKey.split(".")[0];
                               return (
                                 <ActionTag
-                                  key={actionKey}
+                                   key={actionKey}
                                   label={label}
                                   size="small"
                                   category={category}
@@ -643,6 +730,7 @@ const Roles: FC = () => {
                           size="small"
                           color="primary"
                           aria-label={t("roles:table.row_actions")}
+                          disabled={isLoading || isFetching || isMutating}
                           onClick={(e) => handleOpenActionMenu(e, role)}
                         >
                           <MoreVertIcon fontSize="small" />
@@ -654,8 +742,25 @@ const Roles: FC = () => {
               )}
             </TableBody>
           </Table>
-        </TableContainer>
-      </StyledTableContainer>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={totalItems}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            disabled={isLoading || isFetching || isMutating}
+            labelRowsPerPage={t("core:pagination.rows_per_page")}
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}–${to} ${t("core:pagination.of")} ${
+                count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
+              }`
+            }
+          />
+        </StyledTableContainer>
+      </Skeleton>
 
       {/* Row Actions Menu */}
       <Menu
@@ -668,7 +773,7 @@ const Roles: FC = () => {
           paper: {
             sx: (theme) => ({
               borderRadius: 2,
-              minWidth: 140,
+              minWidth: 160,
               boxShadow: theme.shadows[3],
               border: `1px solid ${
                 theme.palette.border?.default ?? theme.palette.divider
@@ -691,6 +796,30 @@ const Roles: FC = () => {
           </ListItemIcon>
           <ListItemText primary={t("roles:actions_menu.update")} />
         </MenuItem>
+        {actionRole && (
+          <MenuItem
+            onClick={() => handleRequestToggleActive(actionRole)}
+            sx={{ borderRadius: 1 }}
+          >
+            <ListItemIcon>
+              {actionRole.isActive ? (
+                <BlockOutlinedIcon fontSize="small" color="error" />
+              ) : (
+                <CheckCircleOutlineOutlinedIcon
+                  fontSize="small"
+                  color="success"
+                />
+              )}
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                actionRole.isActive
+                  ? t("roles:deactivate")
+                  : t("roles:activate")
+              }
+            />
+          </MenuItem>
+        )}
       </Menu>
 
       {/* Role Create / Edit Modal */}
@@ -700,6 +829,29 @@ const Roles: FC = () => {
         onSubmit={handleSaveRole}
         initialData={selectedRoleForEdit}
         availableActions={availableActionOptions}
+        isSubmitting={isMutating}
+      />
+
+      {/* Confirm Role Active/Inactive Dialog */}
+      <ConfirmDialog
+        open={isConfirmToggleOpen}
+        onClose={handleCloseConfirmToggle}
+        onConfirm={handleConfirmToggleActive}
+        isLoading={isMutating}
+        title={
+          roleToToggle?.isActive
+            ? t("roles:confirm_deactivate_title")
+            : t("roles:confirm_activate_title")
+        }
+        message={
+          roleToToggle?.isActive
+            ? t("roles:confirm_deactivate_message", {
+                name: roleToToggle?.key,
+              })
+            : t("roles:confirm_activate_message", {
+                name: roleToToggle?.key,
+              })
+        }
       />
     </Box>
   );

@@ -22,7 +22,7 @@ const BaseModal: FC<BaseModalProps> = ({
   children,
   actions,
   showCloseButton = true,
-  disableEscapeKeyDown = false,
+  disableEscapeKeyDown: _disableEscapeKeyDown = false,
   ariaLabelledBy,
   ariaDescribedBy,
 }) => {
@@ -36,7 +36,7 @@ const BaseModal: FC<BaseModalProps> = ({
     _event: object,
     reason: "backdropClick" | "escapeKeyDown"
   ) => {
-    if (disableEscapeKeyDown && reason === "escapeKeyDown") {
+    if (reason === "backdropClick" || reason === "escapeKeyDown") {
       return;
     }
     onClose();

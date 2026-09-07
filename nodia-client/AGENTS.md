@@ -46,6 +46,31 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 8. Todo componente que contenga logica debe tener un archivo de test correspondiente en `src/test`.
 9. `src/test` debe replicar la estructura de directorios de `src`: por ejemplo, el test de `src/modules/auth/pages/Login/Login.tsx` debe ubicarse en `src/test/modules/auth/pages/Login/Login.test.tsx`.
 10. Si `src/test` o la ruta espejo necesaria no existen al crear o modificar un componente con logica, se deben crear junto con su archivo `*.test.tsx`.
+11. Estados de carga: usar `boneyard-js` (`Skeleton`) obligatoriamente para `isLoading` (primer fetch sin datos en caché) en tablas, paneles informativos y objetos de datos no accionables. Prohibido re-renderizar skeletons en `isFetching` o `isMutating` (refetch o mutación con datos existentes); usar soft loading (representación interna y sutil) o ningún cambio que altere la UI.
+12. Botones, formularios, menús e inputs: ante cualquier petición en curso (`isLoading`, `isFetching` o `isMutating`), el estado debe representarse exclusivamente como `disabled` o `loading` (sin skeletons) para evitar dobles envíos o interacciones inválidas. No tienen estado vacío ni estado de error custom en la vista si el endpoint falla o viene vacío; permanecen vacíos en su estado normal.
+13. Estados vacíos: prohibido dejar vistas o contenedores en blanco o nulos (`null`). Si un endpoint responde vacío, mostrar un Empty State con mensaje informativo (genérico o custom) y llamado a la acción (CTA) si corresponde, usando traducción i18n.
+14. Estados de error y feedback: toda petición HTTP debe emitir un toast con `sileo` (`sileo.error(...)`), extrayendo el mensaje del backend o fallback genérico i18n. En tablas y paneles, además del toast, se debe renderizar un estado visual de error (ej. `Alert` de MUI con opción de reintento) en lugar de dejar el componente roto.
+
+## Manejo de Estados: Carga (Loading), Vacío (Empty) y Error
+
+### 1. Estados de Carga con TanStack Query (`isLoading`, `isFetching` e `isMutating`)
+- **`isLoading` (primer fetch / datos ausentes en caché):**
+  - **Tablas, Paneles Informativos y Métodos de Visualización de Datos (NO accionables):** Usar `<Skeleton loading={isLoading}>` de `boneyard-js/react`.
+  - **Botones, Accionables e Inputs:** `disabled={isLoading}` o `loading={isLoading}`. Inhabilitados para interacción; sin skeletons.
+- **`isFetching` o `isMutating` (revalidación o mutación con datos en caché):**
+  - **Prohibido** volver a mostrar el Skeleton de boneyard para no provocar parpadeo ni desmontar los datos visibles.
+  - Usar un **soft loading** o indicador visual sutil (ej. linear progress discreto de 2px, opacidad leve o spinner en la cabecera) que no tape ni limite la información previa, o mantener la UI sin cambios invasivos.
+  - **Accionables e interactivos:** Los 3 estados (`isLoading`, `isFetching`, `isMutating`) deben dejar a los controles en `disabled` o `loading` para evitar clics concurrentes o dobles envíos en medio de una petición HTTP.
+
+### 2. Estados Vacíos (`Empty State`)
+- **Nunca dejar contenedores en blanco o retornar `null`:** Si la respuesta contiene 0 registros o viene vacía, mostrar un componente/mensaje explicativo.
+- **Tablas y Paneles:** Mensaje informativo descriptivo (ej. *"No hay registros disponibles actualmente. Agregue uno nuevo para comenzar"*) con botón CTA opcional. Claves traducidas en `es` y `en`.
+- **Botones e Inputs:** No poseen estado vacío ni mensajes custom; permanecen vacíos/por defecto.
+
+### 3. Estados de Error (`Error State`)
+- **Toasts HTTP obligatorios:** Disparar `sileo.error(...)` tras fallos de red/servidor. Mostrar el `message` que retorne el backend si existe, o el mensaje genérico internacionalizado del sistema si no viene provisto.
+- **Tablas y Paneles:** Mostrar un estado visible en el contenedor (ej. `<Alert severity="error">` con opción a `refetch`) además del toast.
+- **Botones e Inputs:** No muestran mensajes custom de error de endpoint a nivel de vista; permanecen en su estado normal. (Las validaciones de formulario se gestionan con React Hook Form + Zod).
 
 ## Tests
 

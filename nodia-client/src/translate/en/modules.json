@@ -8,7 +8,13 @@
   "update_module_button": "Update Module",
   "filter_modal_title": "Module Filters",
   "filter_modal_subtitle": "Filter the module list by identifier, type, parent module, or active status.",
-  "search_placeholder": "Search by name or identifier...",
+  "search_placeholder": "Search by identifier...",
+  "expand": "Expand submodules",
+  "collapse": "Collapse submodules",
+  "modules_label": "Modules",
+  "submodules_label": "Submodules",
+  "modules_placeholder": "Select modules...",
+  "submodules_placeholder": "Select submodules...",
   "form": {
     "active": "Active",
     "key": "Identifier / Key",
@@ -43,6 +49,7 @@
   },
   "filter_chips": {
     "module": "Module: {{value}}",
+    "submodule": "Submodule: {{value}}",
     "type": "Type: {{value}}",
     "parent": "Submodules of: {{value}}",
     "active_only": "Active only"
@@ -63,5 +70,29 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copy ID",
-  "copied": "Copied to clipboard"
+  "copied": "Copied to clipboard",
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "confirm_deactivate_title": "Deactivate module?",
+  "confirm_activate_title": "Activate module?",
+  "confirm_deactivate_message": "Are you sure you want to deactivate the module \"{{name}}\"?",
+  "confirm_deactivate_with_children_message": "Are you sure you want to deactivate the module \"{{name}}\"? All associated submodules will also be deactivated.",
+  "confirm_activate_message": "Are you sure you want to activate the module \"{{name}}\"?",
+  "empty_state": {
+    "title": "No modules available",
+    "description": "No modules currently found. Get started by adding a new one.",
+    "cta": "Create first module"
+  },
+  "error_state": {
+    "title": "Error loading modules",
+    "description": "Failed to fetch modules list from the server."
+  },
+  "notifications": {
+    "success_title": "Success",
+    "error_title": "Error",
+    "created_success": "Module created successfully",
+    "created_error": "Failed to create module",
+    "updated_success": "Module updated successfully",
+    "updated_error": "Failed to update module"
+  }
 }

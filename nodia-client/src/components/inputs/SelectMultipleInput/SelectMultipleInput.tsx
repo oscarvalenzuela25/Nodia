@@ -9,6 +9,7 @@ import {
   ListItemText,
   Typography,
   Box,
+  Tooltip,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SearchIcon from "@mui/icons-material/Search";
@@ -87,6 +88,36 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
       onChange(value.filter((v) => v !== optionValue));
     } else {
       onChange([...value, optionValue]);
+    }
+  };
+
+  const isAllSelected = useMemo(() => {
+    if (filteredOptions.length === 0) return false;
+    return filteredOptions.every((opt) => value.includes(opt.value));
+  }, [filteredOptions, value]);
+
+  const isSomeSelected = useMemo(() => {
+    return filteredOptions.some((opt) => value.includes(opt.value));
+  }, [filteredOptions, value]);
+
+  const handleToggleSelectAll = () => {
+    if (disabled || filteredOptions.length === 0) return;
+
+    if (isAllSelected) {
+      if (!searchTerm.trim()) {
+        onChange([]);
+      } else {
+        const filteredValues = new Set(filteredOptions.map((opt) => opt.value));
+        onChange(value.filter((val) => !filteredValues.has(val)));
+      }
+    } else {
+      if (!searchTerm.trim()) {
+        onChange(normalizedOptions.map((opt) => opt.value));
+      } else {
+        const newSelected = new Set(value);
+        filteredOptions.forEach((opt) => newSelected.add(opt.value));
+        onChange(Array.from(newSelected));
+      }
     }
   };
 
@@ -243,6 +274,39 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
               },
             }}
           />
+          {normalizedOptions.length >= 2 && (
+            <Tooltip
+              title={
+                isAllSelected
+                  ? t("deselect_all", "Deseleccionar todo")
+                  : t("select_all", "Seleccionar todo")
+              }
+              arrow
+              placement="top"
+            >
+              <Box sx={{ display: "inline-flex", alignItems: "center" }}>
+                <Checkbox
+                  size="small"
+                  checked={isAllSelected}
+                  indeterminate={isSomeSelected && !isAllSelected}
+                  onChange={handleToggleSelectAll}
+                  disabled={disabled || filteredOptions.length === 0}
+                  color="primary"
+                  slotProps={{
+                    input: {
+                      "aria-label": isAllSelected
+                        ? t("deselect_all", "Deseleccionar todo")
+                        : t("select_all", "Seleccionar todo"),
+                    },
+                  }}
+                  sx={{
+                    p: 0.5,
+                    flexShrink: 0,
+                  }}
+                />
+              </Box>
+            </Tooltip>
+          )}
         </SearchContainer>
 
         <OptionsList role="listbox" aria-multiselectable="true">

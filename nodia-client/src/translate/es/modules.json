@@ -8,7 +8,13 @@
   "update_module_button": "Actualizar Módulo",
   "filter_modal_title": "Filtros de módulos",
   "filter_modal_subtitle": "Filtra la lista de módulos por identificador, tipo, módulo padre o estado activo.",
-  "search_placeholder": "Buscar por nombre o identificador...",
+  "search_placeholder": "Buscar por identificador...",
+  "expand": "Expandir submódulos",
+  "collapse": "Colapsar submódulos",
+  "modules_label": "Módulos",
+  "submodules_label": "Submódulos",
+  "modules_placeholder": "Seleccionar módulos...",
+  "submodules_placeholder": "Seleccionar submódulos...",
   "form": {
     "active": "Activo",
     "key": "Identificador / Key",
@@ -43,6 +49,7 @@
   },
   "filter_chips": {
     "module": "Módulo: {{value}}",
+    "submodule": "Submódulo: {{value}}",
     "type": "Tipo: {{value}}",
     "parent": "Submódulos de: {{value}}",
     "active_only": "Solo activos"
@@ -63,5 +70,29 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copiar ID",
-  "copied": "Copiado al portapapeles"
+  "copied": "Copiado al portapapeles",
+  "deactivate": "Desactivar",
+  "activate": "Activar",
+  "confirm_deactivate_title": "¿Desactivar módulo?",
+  "confirm_activate_title": "¿Activar módulo?",
+  "confirm_deactivate_message": "¿Está seguro de que desea desactivar el módulo \"{{name}}\"?",
+  "confirm_deactivate_with_children_message": "¿Está seguro de que desea desactivar el módulo \"{{name}}\"? Todos los submódulos asociados también quedarán deshabilitados.",
+  "confirm_activate_message": "¿Está seguro de que desea activar el módulo \"{{name}}\"?",
+  "empty_state": {
+    "title": "No hay módulos disponibles",
+    "description": "No se encontraron módulos actualmente. Comience agregando uno nuevo.",
+    "cta": "Crear primer módulo"
+  },
+  "error_state": {
+    "title": "Error al cargar los módulos",
+    "description": "No se pudo obtener el listado de módulos desde el servidor."
+  },
+  "notifications": {
+    "success_title": "Éxito",
+    "error_title": "Error",
+    "created_success": "Módulo creado correctamente",
+    "created_error": "No se pudo crear el módulo",
+    "updated_success": "Módulo actualizado correctamente",
+    "updated_error": "No se pudo actualizar el módulo"
+  }
 }

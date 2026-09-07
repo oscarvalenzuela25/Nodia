@@ -1,0 +1,93 @@
+import type { AxiosError } from "axios";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { sileo } from "sileo";
+import i18n from "../../../../../translate";
+import { createModule, getModules, updateModule } from "./services";
+import type {
+  CreateModulePayload,
+  GetModulesParams,
+  UpdateModulePayload,
+} from "../types";
+
+export const moduleKeys = {
+  all: ["modules"] as const,
+  lists: () => [...moduleKeys.all, "list"] as const,
+  list: (params?: GetModulesParams) => [...moduleKeys.lists(), params] as const,
+};
+
+export const useModules = (
+  params?: GetModulesParams,
+  options?: { enabled?: boolean }
+) =>
+  useQuery({
+    queryKey: moduleKeys.list(params),
+    queryFn: () => getModules(params),
+    placeholderData: keepPreviousData,
+    enabled: options?.enabled ?? true,
+  });
+
+const extractErrorMessage = (
+  error: AxiosError<{ message?: string }> | Error
+): string => {
+  if ("response" in error && typeof error.response?.data?.message === "string") {
+    return error.response.data.message;
+  }
+  return error.message;
+};
+
+export const useCreateModule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: CreateModulePayload) => createModule(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: moduleKeys.all });
+      sileo.success({
+        title: i18n.t("modules:notifications.success_title"),
+        description: i18n.t("modules:notifications.created_success"),
+      });
+    },
+    onError: (error: AxiosError<{ message?: string }> | Error) => {
+      const backendMessage = extractErrorMessage(error);
+      sileo.error({
+        title: i18n.t("modules:notifications.error_title"),
+        description:
+          backendMessage || i18n.t("modules:notifications.created_error"),
+      });
+    },
+  });
+};
+
+export const useUpdateModule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      moduleId,
+      payload,
+    }: {
+      moduleId: string;
+      payload: UpdateModulePayload;
+    }) => updateModule(moduleId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: moduleKeys.all });
+      sileo.success({
+        title: i18n.t("modules:notifications.success_title"),
+        description: i18n.t("modules:notifications.updated_success"),
+      });
+    },
+    onError: (error: AxiosError<{ message?: string }> | Error) => {
+      const backendMessage = extractErrorMessage(error);
+      sileo.error({
+        title: i18n.t("modules:notifications.error_title"),
+        description:
+          backendMessage || i18n.t("modules:notifications.updated_error"),
+      });
+    },
+  });
+};

@@ -11,7 +11,7 @@
   "search_placeholder": "Search by name or identifier...",
   "form": {
     "active": "Active",
-    "key": "Identifier / Key",
+    "key": "Key",
     "key_placeholder": "e.g.: users.create, roles.manage",
     "key_helper": "Unique identifier used internally by the system.",
     "translations_title": "Name Translations",
@@ -65,5 +65,28 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copy ID",
-  "copied": "Copied to clipboard"
+  "copied": "Copied to clipboard",
+  "empty_state": {
+    "title": "No actions available",
+    "description": "No actions were found in the system. Start by creating a new one.",
+    "cta": "Create first action"
+  },
+  "error_state": {
+    "title": "Error loading actions",
+    "description": "Could not retrieve the action list from the server."
+  },
+  "notifications": {
+    "success_title": "Success",
+    "error_title": "Error",
+    "created_success": "Action created successfully",
+    "created_error": "Failed to create action",
+    "updated_success": "Action updated successfully",
+    "updated_error": "Failed to update action"
+  },
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "confirm_deactivate_title": "Deactivate action?",
+  "confirm_activate_title": "Activate action?",
+  "confirm_deactivate_message": "Are you sure you want to deactivate the action \"{{name}}\"?",
+  "confirm_activate_message": "Are you sure you want to activate the action \"{{name}}\"?"
 }

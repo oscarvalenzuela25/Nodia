@@ -8,4 +8,5 @@ export type ActionModalProps = {
   onSubmit: (data: ActionFormData) => void;
   initialData?: ActionFormData | null;
   availableModules?: ModuleOption[];
+  isSubmitting?: boolean;
 };

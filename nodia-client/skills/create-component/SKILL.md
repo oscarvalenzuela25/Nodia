@@ -280,13 +280,147 @@ export const useCreateItem = () => {
         description: i18n.t("items:created_successfully"),
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      const serverMessage = error?.response?.data?.message;
       sileo.error({
         title: i18n.t("common:notifications.error_title"),
-        description: i18n.t("items:created_error"),
+        description: serverMessage || i18n.t("core:server_error_toast"),
       });
     },
   });
+};
+```
+
+### Manejo de Estados: Carga (Loading), Vacío (Empty) y Error
+
+Al consumir datos remotos y diseñar vistas, es **obligatorio** cumplir con las siguientes reglas según la naturaleza del componente:
+
+#### 1. Estados de Carga con TanStack Query (`isLoading`, `isFetching` e `isMutating`)
+
+Al crear un nuevo componente o modificar uno existente que utilice TanStack Query, la gestión del estado de carga se rige estrictamente por la naturaleza del elemento (informativo vs accionable):
+
+- **Paneles informativos y objetos que representan datos (NO accionables / al hacer clic no pasa nada):**
+  - Aplica a tablas, paneles informativos, cards de datos, listas y contenedores de información.
+  - **`isLoading` (primer fetch inicial sin datos en caché):**
+    - Debe mostrar un estado de carga completo o skeleton. En este proyecto se utiliza obligatoriamente la librería **`boneyard-js`** (`boneyard-js/react`), envolviendo la sección con `<Skeleton loading={isLoading}>...children...</Skeleton>`.
+  - **`isFetching` o `isMutating` (revalidación con datos ya presentes o mutación en vuelo):**
+    - **PROHIBIDO** volver a mostrar el Skeleton de Boneyard o desmontar el contenido visible. Reemplazar datos ya visibles con skeletons estropea la UI y genera parpadeos bruscos.
+    - Se debe utilizar un **soft loading** o un pequeño representador sutil del estado de carga (ejemplo: un `LinearProgress` discreto de 2px en el borde superior, un spinner pequeño en la barra de herramientas/cabecera, o una leve opacidad) que **no limite ni oculte la información anterior ni altere la UI**. También es perfectamente válido que **no se tenga ningún cambio en la UI** si no aporta valor.
+
+- **Elementos accionables e interactivos (Accionables / al interactuar generan una acción o evento):**
+  - Aplica a botones, inputs, menús de fila/acciones, selectores, switches, checkboxes y controles de formulario.
+  - **`isLoading`, `isFetching` o `isMutating` (cualquier petición HTTP en proceso):**
+    - **Cualquiera de estos 3 estados debe dejar al componente en estado de carga (`loading`) o en estado deshabilitado (`disabled`)** (ejemplo: `disabled={isLoading || isFetching || isMutating}` o `disabled={isPending}`).
+    - **Regla estricta:** Esto garantiza que no ocurran errores, dobles envíos o condiciones de carrera al interactuar en medio de una petición HTTP.
+    - Los accionables e inputs **no** utilizan skeletons bajo ninguna circunstancia.
+
+#### 2. Estados Vacíos (`Empty State`)
+
+- **Prohibido dejar vistas en blanco o retornar `null`:** Si el backend responde sin datos (ej. `data.length === 0`), siempre se debe proporcionar feedback al usuario.
+- **Tablas, Paneles y Contenedores:** Renderizar un componente o mensaje de estado vacío (genérico o custom de la sección) informando que no hay registros y guiando la acción siguiente (ej. *"No hay elementos para mostrar actualmente. Agregue un nuevo registro para comenzar"* con un botón CTA si aplica). Textos siempre internacionalizados (`t("namespace:key")`).
+- **Botones e Inputs:** No tienen estado vacío con mensajes custom. Si la respuesta viene vacía, simplemente permanecen vacíos en su estado por defecto.
+
+#### 3. Estados de Error (`Error State`)
+
+- **Toast de error obligatorio (`sileo.error(...)`):** Ante cualquier fallo de petición HTTP, emitir notificación Sileo mostrando el mensaje del backend (`error.response?.data?.message`) o el mensaje genérico internacionalizado (`t("core:server_error_toast")`).
+- **Tablas, Paneles y Contenedores:** Además del toast, es obligatorio/recomendado mostrar un componente visible de error en la propia vista (ej. `<Alert severity="error">` de MUI con botón de reintento `refetch()`), evitando pantallas rotas o contenedores vacíos sin explicación.
+- **Botones e Inputs:** No tienen estado de error custom por fallo de endpoint; permanecen vacíos/en su estado inicial.
+
+#### Ejemplo de integración en un componente de listado / tabla:
+
+```tsx
+import type { FC } from "react";
+import { useTranslation } from "react-i18next";
+import { Skeleton } from "boneyard-js/react";
+import {
+  Alert,
+  Box,
+  Button,
+  LinearProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { useIsMutating } from "@tanstack/react-query";
+import { useItems } from "./infrastructure/useServices";
+
+export const ItemsTable: FC = () => {
+  const { t } = useTranslation();
+  const { data: items, isLoading, isFetching, isError, refetch } = useItems();
+  const isMutating = useIsMutating() > 0;
+  const isBusy = isLoading || isFetching || isMutating;
+
+  // 1. Estado de Error visual en el contenedor
+  if (isError) {
+    return (
+      <Alert
+        severity="error"
+        action={
+          <Button color="inherit" size="small" disabled={isBusy} onClick={() => refetch()}>
+            {t("core:retry")}
+          </Button>
+        }
+      >
+        {t("core:server_error_alert")}
+      </Alert>
+    );
+  }
+
+  // 2. Estado de Carga inicial: Skeleton automático con Boneyard
+  // 3. Revalidación o mutación (isFetching / isMutating): Soft loading sutil sin desmontar datos
+  return (
+    <Box sx={{ position: "relative" }}>
+      {(isFetching || isMutating) && !isLoading && (
+        <LinearProgress
+          sx={{ position: "absolute", top: 0, left: 0, right: 0, height: 2 }}
+        />
+      )}
+
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        {/* Accionables inhabilitados ante cualquier estado de carga o mutación */}
+        <Button variant="contained" disabled={isBusy} onClick={() => {}}>
+          {t("items:new_item")}
+        </Button>
+      </Box>
+
+      <Skeleton loading={isLoading}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t("items:name")}</TableCell>
+              <TableCell align="right">{t("core:actions")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {/* 4. Estado Vacío: Feedback visual cuando no hay registros */}
+            {!isLoading && items?.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={2} align="center" sx={{ py: 6 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {t("core:empty_state_description")}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              items?.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell align="right">
+                    <Button size="small" disabled={isBusy} onClick={() => {}}>
+                      {t("core:edit")}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </Skeleton>
+    </Box>
+  );
 };
 ```
 

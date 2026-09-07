@@ -66,7 +66,7 @@ describe("ModuleModal", () => {
         isActive: true,
       })
     );
-    expect(handleClose).toHaveBeenCalled();
+    expect(handleClose).not.toHaveBeenCalled();
   });
 
   it("requires parent module when type is submodule", async () => {
@@ -122,7 +122,25 @@ describe("ModuleModal", () => {
         isActive: true,
       })
     );
-    expect(handleClose).toHaveBeenCalled();
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  it("calls onClose when cancel button is clicked", async () => {
+    const handleClose = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <ModuleModal
+        open={true}
+        onClose={handleClose}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
+    await user.click(cancelBtn);
+
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
   it("renders edit modal with pre-populated data and allows updating", async () => {

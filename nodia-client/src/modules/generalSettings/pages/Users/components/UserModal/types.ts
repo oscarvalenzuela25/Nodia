@@ -13,4 +13,6 @@ export type UserModalProps = {
   onSubmit: (data: UserFormData) => void;
   initialData?: UserFormData | null;
   availableRoles?: string[];
+  isSubmitting?: boolean;
 };
+

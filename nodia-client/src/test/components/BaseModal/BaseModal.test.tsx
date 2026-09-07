@@ -62,4 +62,25 @@ describe("BaseModal", () => {
 
     expect(screen.getByText("Custom Action")).toBeInTheDocument();
   });
+
+  it("does not call onClose when escape key is pressed or backdrop is clicked", async () => {
+    const handleClose = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <BaseModal open={true} onClose={handleClose} title="Test Modal">
+        <div>Content</div>
+      </BaseModal>
+    );
+
+    await user.keyboard("{Escape}");
+    expect(handleClose).not.toHaveBeenCalled();
+
+    // Click backdrop
+    const backdrop = document.querySelector(".MuiBackdrop-root");
+    if (backdrop) {
+      await user.click(backdrop);
+    }
+    expect(handleClose).not.toHaveBeenCalled();
+  });
 });

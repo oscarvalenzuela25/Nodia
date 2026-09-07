@@ -29,6 +29,13 @@ Los endpoints que devuelven listados paginados admiten los siguientes `queryPara
 - `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
 - `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
 
+### Inclusión de Relaciones (`includes`)
+Los endpoints de tipo `GET` de listado aceptan el parámetro booleano opcional `includes` (default: `true`).
+- `includes=true` (o no enviado): Retorna las entidades con sus relaciones cargadas (`eager loading` / joins). En Users, incluye el arreglo de roles asociados (`roles: RoleSummary[]`).
+- `includes=false`: Omite las relaciones y retorna únicamente los campos propios de la entidad base (`roles` omitido o vacío `[]`).
+- En caso de que el endpoint o entidad no disponga de relaciones, el parámetro es inocuo y no produce error.
+- **Sustitución de endpoints de filtros:** Para poblar selectores, combos o autocompletados de usuarios o roles de forma liviana, se consumen directamente los endpoints principales con `all=true&includes=false` (ej. `/api/v1/users?all=true&includes=false` o `/api/v1/roles?all=true&includes=false`), habiendo quedado eliminados los endpoints dedicados `/api/v1/filters/*`.
+
 ### Borrado Lógico
 
 No existe el endpoint `DELETE`. La desactivación/eliminación lógica se realiza mediante `PUT /api/v1/user/:userId` estableciendo `is_active: false`.
@@ -47,14 +54,14 @@ export interface RoleSummary {
 }
 
 export interface User {
-  id: string; // UUID
+  id: string; // ID del usuario
   name: string | null;
   email: string;
   image_url: string | null;
   is_active: boolean;
   created_at: string; // ISO 8601
   updated_at: string; // ISO 8601
-  roles: RoleSummary[];
+  roles?: RoleSummary[]; // Presente si includes=true; omitido o vacío [] si includes=false
 }
 
 export interface PaginationMeta {
@@ -68,6 +75,14 @@ export interface PaginatedResponse<T> {
   data: T[];
   meta: PaginationMeta;
 }
+
+export interface GetUsersParams {
+  page?: number;
+  size?: number;
+  all?: boolean;
+  includes?: boolean; // Default: true. Si es false, omite el listado de 'roles'
+  q?: Record<string, unknown>;
+}
 ```
 
 ---
@@ -76,7 +91,7 @@ export interface PaginatedResponse<T> {
 
 ### 3.1. Fetch Users (Listado Principal)
 
-Obtiene el listado paginado y filtrable de usuarios con sus roles asociados.
+Obtiene el listado paginado y filtrable de usuarios. Si `includes=false`, omite la inclusión del arreglo de `roles` asociados, reduciendo el tamaño del payload cuando se consumen usuarios para selectores o listados simples.
 
 - **Método:** `GET`
 - **Ruta:** `/api/v1/users`
@@ -84,15 +99,16 @@ Obtiene el listado paginado y filtrable de usuarios con sus roles asociados.
   - `page` _(opcional, number)_: Página actual.
   - `size` _(opcional, number)_: Elementos por página.
   - `all` _(opcional, boolean)_: Traer todos sin paginar.
+  - `includes` _(opcional, boolean, default: `true`)_: Si es `false`, omite el array `roles` asociado a cada usuario.
   - `q[campo_predicado]` _(opcional)_: Filtros Ransack (`q[name_cont]`, `q[email_cont]`, `q[is_active_eq]`, etc.).
 
-#### Respuesta exitosa (`200 OK`):
+#### Respuesta exitosa con relaciones (`includes=true` o por defecto, `200 OK`):
 
 ```json
 {
   "data": [
     {
-      "id": "7b8f9e60-4e2a-4a6c-9c71-3fa910e52b21",
+      "id": "1",
       "name": "Juan Pérez",
       "email": "juan.perez@example.com",
       "image_url": "https://lh3.googleusercontent.com/a/mock-img",
@@ -101,13 +117,38 @@ Obtiene el listado paginado y filtrable de usuarios con sus roles asociados.
       "updated_at": "2026-08-26T18:15:00.000Z",
       "roles": [
         {
-          "id": "111e4567-e89b-12d3-a456-426614174001",
+          "id": "10",
           "key": "admin",
           "is_active": true,
           "created_at": "2026-08-01T10:00:00.000Z",
           "updated_at": "2026-08-01T10:00:00.000Z"
         }
       ]
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total_items": 1,
+    "total_pages": 1
+  }
+}
+```
+
+#### Respuesta exitosa sin relaciones (`includes=false`, `200 OK`):
+
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "name": "Juan Pérez",
+      "email": "juan.perez@example.com",
+      "image_url": "https://lh3.googleusercontent.com/a/mock-img",
+      "is_active": true,
+      "created_at": "2026-08-20T14:32:00.000Z",
+      "updated_at": "2026-08-26T18:15:00.000Z",
+      "roles": []
     }
   ],
   "meta": {
@@ -238,63 +279,14 @@ Actualiza los datos o roles de un usuario existente. También se utiliza para la
 
 ---
 
-## 4. Endpoints de Opciones de Filtros (Filters)
+## 4. Obtención de Opciones para Selectores y Filtros (Sin Endpoints Dedicados)
 
-Estos endpoints proveen datos optimizados y livianos para poblar los selectores, auto-completados y modales de filtros.
+Los endpoints anteriores `/api/v1/filters/*` han sido **eliminados**. Para poblar selectores, filtros o combos de usuarios o de roles asociados (ej. en el modal de asignación de roles a usuarios o filtros de auditoría), se consumen directamente los endpoints principales con `all=true` e `includes=false`:
 
-### 4.1. Fetch Filter Users
+1. **Para obtener el catálogo de usuarios (ej. selectores o combos):**  
+   - **Ruta:** `GET /api/v1/users?all=true&includes=false`
+   - **Comportamiento:** Retorna todos los usuarios activos sin resolver el arreglo anidado de roles (`roles: []` o excluido).
 
-Obtiene la lista de usuarios (ej. para selectores de usuarios).
-
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/users`
-- **Query Params:** `q[campo_predicado]` _(opcional)_
-
-#### Respuesta exitosa (`200 OK`):
-
-```json
-[
-  {
-    "id": "7b8f9e60-4e2a-4a6c-9c71-3fa910e52b21",
-    "name": "Juan Pérez",
-    "email": "juan.perez@example.com"
-  },
-  {
-    "id": "9c8e1234-5678-4a6c-9c71-3fa910e52b99",
-    "name": "Carlos Santana",
-    "email": "nuevo.usuario@example.com"
-  }
-]
-```
-
----
-
-### 4.2. Fetch Filter Roles
-
-Obtiene los roles disponibles para filtros y asignaciones en formularios.
-
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/roles`
-- **Query Params:** `q[campo_predicado]` _(opcional)_
-
-#### Respuesta exitosa (`200 OK`):
-
-```json
-[
-  {
-    "id": "111e4567-e89b-12d3-a456-426614174001",
-    "key": "admin",
-    "is_active": true
-  },
-  {
-    "id": "222e4567-e89b-12d3-a456-426614174002",
-    "key": "supervisor",
-    "is_active": true
-  },
-  {
-    "id": "333e4567-e89b-12d3-a456-426614174003",
-    "key": "user",
-    "is_active": true
-  }
-]
-```
+2. **Para obtener el catálogo de roles disponibles para asignar a un usuario:**  
+   - **Ruta:** `GET /api/v1/roles?all=true&includes=false`
+   - **Comportamiento:** Retorna todos los roles del sistema de forma liviana para poblar el selector múltiple de roles en `UserModal`.

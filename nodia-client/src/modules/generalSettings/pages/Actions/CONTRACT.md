@@ -26,6 +26,13 @@ Los endpoints que devuelven listados paginados admiten los siguientes `queryPara
 - `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
 - `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
 
+### Inclusión de Relaciones (`includes`)
+Los endpoints de tipo `GET` de listado aceptan el parámetro booleano opcional `includes` (default: `true`).
+- `includes=true` (o no enviado): Retorna las entidades con sus relaciones o entidades asociadas cargadas (`eager loading` / joins). En Actions, incluye el objeto `module` asociado.
+- `includes=false`: Omite las relaciones y retorna únicamente los campos propios de la entidad base (`module: null` o excluido).
+- En caso de que el endpoint o entidad no disponga de relaciones, el parámetro es inocuo y no produce error.
+- **Sustitución de endpoints de filtros:** Para poblar selectores, combos o autocompletados livianos, se consume directamente el endpoint principal de la entidad con `all=true&includes=false` (ej. `/api/v1/actions?all=true&includes=false`), habiendo quedado eliminados los endpoints dedicados `/api/v1/filters/*`.
+
 ### Borrado Lógico
 No existe el endpoint `DELETE`. La desactivación/eliminación lógica se realiza mediante `PUT /api/v1/action/:actionId` estableciendo `is_active: false`.
 
@@ -41,14 +48,14 @@ export interface ModuleSummary {
 }
 
 export interface Action {
-  id: string; // UUID
-  module_id: string | null; // UUID del módulo asociado o null
+  id: string; // ID de la acción
+  module_id: string | null; // ID del módulo asociado o null
   key: string; // Clave / identificador único de la acción (ej. "users.create")
   description: string | null; // Descripción funcional de la acción
   is_active: boolean; // Estado de activación / borrado lógico
   created_at: string; // ISO 8601
   updated_at: string; // ISO 8601
-  module?: ModuleSummary | null; // Datos resumidos del módulo asociado
+  module?: ModuleSummary | null; // Presente si includes=true; null/omitido si includes=false
 }
 
 export interface PaginationMeta {
@@ -62,6 +69,14 @@ export interface PaginatedResponse<T> {
   data: T[];
   meta: PaginationMeta;
 }
+
+export interface GetActionsParams {
+  page?: number;
+  size?: number;
+  all?: boolean;
+  includes?: boolean; // Default: true. Si es false, no incluye 'module'
+  q?: Record<string, unknown>;
+}
 ```
 
 ---
@@ -70,7 +85,7 @@ export interface PaginatedResponse<T> {
 
 ### 3.1. Fetch Actions (Listado Principal)
 
-Obtiene el listado paginado y filtrable de acciones con sus módulos asociados.
+Obtiene el listado paginado y filtrable de acciones. Si `includes=false`, omite la relación con el módulo asociado (`module`), devolviendo una respuesta más liviana apta para selectores o tablas planas.
 
 - **Método:** `GET`
 - **Ruta:** `/api/v1/actions`
@@ -78,28 +93,63 @@ Obtiene el listado paginado y filtrable de acciones con sus módulos asociados.
   - `page` *(opcional, number)*: Página actual.
   - `size` *(opcional, number)*: Elementos por página.
   - `all` *(opcional, boolean)*: Traer todos sin paginar.
+  - `includes` *(opcional, boolean, default: `true`)*: Si es `false`, omite la relación `module` asociada en cada acción.
   - `q[campo_predicado]` *(opcional)*: Filtros Ransack (`q[key_cont]`, `q[module_id_eq]`, `q[is_active_eq]`, etc.).
 
-#### Respuesta exitosa (`200 OK`):
+#### Respuesta exitosa con relaciones (`includes=true` o por defecto, `200 OK`):
 ```json
 {
   "data": [
     {
-      "id": "a1114567-e89b-12d3-a456-426614174001",
-      "module_id": "m1114567-e89b-12d3-a456-426614174001",
+      "id": "1",
+      "module_id": "10",
       "key": "users.create",
       "description": "Permite registrar nuevos usuarios en la plataforma y asignarles credenciales.",
       "is_active": true,
       "created_at": "2026-08-01T10:00:00.000Z",
       "updated_at": "2026-08-20T14:32:00.000Z",
       "module": {
-        "id": "m1114567-e89b-12d3-a456-426614174001",
+        "id": "10",
         "key": "users",
         "is_active": true
       }
     },
     {
-      "id": "a5554567-e89b-12d3-a456-426614174001",
+      "id": "2",
+      "module_id": null,
+      "key": "audit.logs",
+      "description": "Permite consultar el registro histórico de eventos y cambios de seguridad.",
+      "is_active": true,
+      "created_at": "2026-08-01T10:00:00.000Z",
+      "updated_at": "2026-08-01T10:00:00.000Z",
+      "module": null
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total_items": 2,
+    "total_pages": 1
+  }
+}
+```
+
+#### Respuesta exitosa sin relaciones (`includes=false`, `200 OK`):
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "module_id": "10",
+      "key": "users.create",
+      "description": "Permite registrar nuevos usuarios en la plataforma y asignarles credenciales.",
+      "is_active": true,
+      "created_at": "2026-08-01T10:00:00.000Z",
+      "updated_at": "2026-08-20T14:32:00.000Z",
+      "module": null
+    },
+    {
+      "id": "2",
       "module_id": null,
       "key": "audit.logs",
       "description": "Permite consultar el registro histórico de eventos y cambios de seguridad.",
@@ -211,72 +261,14 @@ Actualiza los datos de un accionable existente o realiza su borrado lógico (`is
 
 ---
 
-## 4. Endpoints de Opciones de Filtros (Filters)
+## 4. Obtención de Opciones para Selectores y Filtros (Sin Endpoints Dedicados)
 
-Estos endpoints proveen datos optimizados para selectores y modales de filtros.
+Los endpoints anteriores `/api/v1/filters/*` han sido **eliminados**. Para poblar selectores, combos o autocompletados (como la lista de acciones o de módulos), se consumen directamente los endpoints principales con `all=true` e `includes=false`:
 
-### 4.1. Fetch Filter Actions
-Obtiene el listado ligero de acciones para autocompletados y selectores.
+1. **Para obtener el catálogo de acciones (ej. para selectores o filtros):**  
+   - **Ruta:** `GET /api/v1/actions?all=true&includes=false`
+   - **Comportamiento:** Retorna todas las acciones activas con sus atributos propios sin resolver joins ni objetos anidados (`module: null` o excluido).
 
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/actions`
-- **Query Params:** `q[campo_predicado]` *(opcional)*
-
-#### Respuesta exitosa (`200 OK`):
-```json
-[
-  {
-    "id": "a1114567-e89b-12d3-a456-426614174001",
-    "module_id": "m1114567-e89b-12d3-a456-426614174001",
-    "key": "users.create",
-    "description": "Permite registrar nuevos usuarios en la plataforma y asignarles credenciales.",
-    "is_active": true
-  },
-  {
-    "id": "a2224567-e89b-12d3-a456-426614174001",
-    "module_id": "m2224567-e89b-12d3-a456-426614174002",
-    "key": "roles.manage",
-    "description": "Permite crear, editar identificadores y asignar acciones permitidas a roles.",
-    "is_active": true
-  }
-]
-```
-
----
-
-### 4.2. Fetch Filter Modules
-Obtiene el catálogo de módulos del sistema para asociar a los accionables.
-
-- **Método:** `GET`
-- **Ruta:** `/api/v1/filters/modules`
-- **Query Params:** `q[campo_predicado]` *(opcional)*
-
-#### Respuesta exitosa (`200 OK`):
-```json
-[
-  {
-    "id": "m1114567-e89b-12d3-a456-426614174001",
-    "key": "general_settings",
-    "type": "module",
-    "parent_id": null,
-    "parent_key": null,
-    "is_active": true
-  },
-  {
-    "id": "m1114567-e89b-12d3-a456-426614174002",
-    "key": "users",
-    "type": "submodule",
-    "parent_id": "m1114567-e89b-12d3-a456-426614174001",
-    "parent_key": "general_settings",
-    "is_active": true
-  },
-  {
-    "id": "m1114567-e89b-12d3-a456-426614174003",
-    "key": "roles",
-    "type": "submodule",
-    "parent_id": "m1114567-e89b-12d3-a456-426614174001",
-    "parent_key": "general_settings",
-    "is_active": true
-  }
-]
-```
+2. **Para obtener el catálogo de módulos asociados (ej. selector de módulo en ActionModal):**  
+   - **Ruta:** `GET /api/v1/modules?all=true&includes=false`
+   - **Comportamiento:** Retorna todos los módulos sin relaciones anidadas (`parent_module: null` o excluido).

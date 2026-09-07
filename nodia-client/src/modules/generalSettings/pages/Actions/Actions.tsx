@@ -21,19 +21,34 @@ import {
   ListItemText,
   Switch,
   FormControlLabel,
+  LinearProgress,
+  Alert,
+  AlertTitle,
+  TablePagination,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import { Skeleton } from "boneyard-js/react";
+import { sileo } from "sileo";
 
 import Filter from "../../../../components/Filter";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import InputSearch from "../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
+import ConfirmDialog from "../../../../components/ConfirmDialog";
 import ActionModal from "./components/ActionModal";
-import type { ActionItem, ActionFormData, ModuleOption } from "./types";
+import {
+  useActions,
+  useCreateAction,
+  useUpdateAction,
+} from "./infrastructure/useServices";
+import { useModules } from "../Modules";
+import type { ActionItem, ActionFormData, ModuleOption, Action } from "./types";
 import {
   PageHeader,
   PageTitleContainer,
@@ -48,115 +63,12 @@ import {
   DescriptionTypography,
 } from "./styles";
 
-const AVAILABLE_MODULE_KEYS = ["users", "roles", "settings", "reports", "auth"];
-
-const INITIAL_ACTIONS: ActionItem[] = [
-  {
-    id: "a1114567-e89b-12d3-a456-426614174001",
-    key: "users.create",
-    nameTranslations: {
-      es: "Crear Usuarios",
-      en: "Create Users",
-    },
-    description: "Permite registrar nuevos usuarios en la plataforma y asignarles credenciales.",
-    moduleKey: "users",
-    isActive: true,
-  },
-  {
-    id: "a1114567-e89b-12d3-a456-426614174002",
-    key: "users.read",
-    nameTranslations: {
-      es: "Ver Usuarios",
-      en: "View Users",
-    },
-    description: "Permite visualizar el listado y el detalle de los usuarios registrados.",
-    moduleKey: "users",
-    isActive: true,
-  },
-  {
-    id: "a1114567-e89b-12d3-a456-426614174003",
-    key: "users.update",
-    nameTranslations: {
-      es: "Editar Usuarios",
-      en: "Edit Users",
-    },
-    description: "Permite actualizar datos personales, roles y estados de los usuarios.",
-    moduleKey: "users",
-    isActive: true,
-  },
-  {
-    id: "a1114567-e89b-12d3-a456-426614174004",
-    key: "users.delete",
-    nameTranslations: {
-      es: "Eliminar Usuarios",
-      en: "Delete Users",
-    },
-    description: "Permite la desactivación o borrado lógico de usuarios en el sistema.",
-    moduleKey: "users",
-    isActive: true,
-  },
-  {
-    id: "a2224567-e89b-12d3-a456-426614174001",
-    key: "roles.manage",
-    nameTranslations: {
-      es: "Gestionar Roles",
-      en: "Manage Roles",
-    },
-    description: "Permite crear, editar identificadores y asignar acciones permitidas a roles.",
-    moduleKey: "roles",
-    isActive: true,
-  },
-  {
-    id: "a3334567-e89b-12d3-a456-426614174001",
-    key: "settings.edit",
-    nameTranslations: {
-      es: "Configuración General",
-      en: "General Settings",
-    },
-    description: "Permite modificar parámetros globales y preferencias de la aplicación.",
-    moduleKey: "settings",
-    isActive: true,
-  },
-  {
-    id: "a4444567-e89b-12d3-a456-426614174001",
-    key: "reports.view",
-    nameTranslations: {
-      es: "Ver Reportes",
-      en: "View Reports",
-    },
-    description: "Permite consultar estadísticas, gráficos y resúmenes de rendimiento.",
-    moduleKey: "reports",
-    isActive: true,
-  },
-  {
-    id: "a4444567-e89b-12d3-a456-426614174002",
-    key: "reports.export",
-    nameTranslations: {
-      es: "Exportar Reportes",
-      en: "Export Reports",
-    },
-    description: "Generación y descarga de archivos de métricas en formatos CSV y PDF.",
-    moduleKey: "reports",
-    isActive: false,
-  },
-  {
-    id: "a5554567-e89b-12d3-a456-426614174001",
-    key: "audit.logs",
-    nameTranslations: {
-      es: "Auditoría y Logs",
-      en: "Audit & Logs",
-    },
-    description: "Permite consultar el registro histórico de eventos y cambios de seguridad.",
-    moduleKey: null,
-    isActive: true,
-  },
-];
-
 const Actions: FC = () => {
-  const { t, i18n } = useTranslation(["actions", "core"]);
+  const { t } = useTranslation(["actions", "core"]);
 
-  const [actions, setActions] = useState<ActionItem[]>(INITIAL_ACTIONS);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
   // Filter modal draft state
   const [draftFilterActionKeys, setDraftFilterActionKeys] = useState<string[]>(
@@ -188,81 +100,153 @@ const Actions: FC = () => {
     useState<HTMLButtonElement | null>(null);
   const [targetAction, setTargetAction] = useState<ActionItem | null>(null);
 
-  // Module options with translated labels
-  const availableModuleOptions: ModuleOption[] = useMemo(() => {
-    return AVAILABLE_MODULE_KEYS.map((key) => ({
-      value: key,
-      label: t(`actions:module_names.${key}`, key),
-      category: key,
+  // Confirm Active / Inactive Dialog state
+  const [actionToToggle, setActionToToggle] = useState<ActionItem | null>(null);
+  const [isConfirmToggleOpen, setIsConfirmToggleOpen] =
+    useState<boolean>(false);
+
+  // Mutations
+  const createActionMutation = useCreateAction();
+  const updateActionMutation = useUpdateAction();
+  const isMutating =
+    createActionMutation.isPending || updateActionMutation.isPending;
+
+  // Build Ransack query
+  const ransackQuery = useMemo(() => {
+    const q: Record<string, unknown> = {};
+    if (searchTerm.trim()) {
+      q.key_cont = searchTerm.trim();
+    }
+    if (appliedFilterActive !== null) {
+      q.is_active_eq = appliedFilterActive;
+    }
+    if (appliedFilterActionKeys.length > 0) {
+      q.key_in = appliedFilterActionKeys;
+    }
+    if (appliedFilterModuleKeys.length > 0) {
+      const hasNone = appliedFilterModuleKeys.includes("none");
+      const realModuleIds = appliedFilterModuleKeys.filter((id) => id !== "none");
+      if (hasNone && realModuleIds.length === 0) {
+        q.module_id_null = true;
+      } else if (!hasNone && realModuleIds.length > 0) {
+        q.module_id_in = realModuleIds;
+      }
+    }
+    return q;
+  }, [
+    searchTerm,
+    appliedFilterActive,
+    appliedFilterActionKeys,
+    appliedFilterModuleKeys,
+  ]);
+
+  // React Query hook for Actions with pagination & includes
+  const {
+    data: actionsResponse,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = useActions({
+    page: page + 1,
+    size: rowsPerPage,
+    includes: true,
+    q: Object.keys(ransackQuery).length > 0 ? ransackQuery : undefined,
+  });
+
+  const actions: ActionItem[] = useMemo(() => {
+    if (actionsResponse?.data) {
+      return actionsResponse.data.map((a: Action) => ({
+        id: a.id,
+        key: a.key,
+        description: a.description ?? null,
+        moduleId: a.module_id ?? a.module?.id ?? null,
+        moduleKey: a.module?.key ?? null,
+        isActive: a.is_active ?? true,
+      }));
+    }
+    return [];
+  }, [actionsResponse]);
+
+  const totalItems = useMemo(() => {
+    return actionsResponse?.meta?.total_items ?? actions.length;
+  }, [actionsResponse, actions.length]);
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Modules fetch for filters (with all=true and includes=false)
+  const {
+    data: filterModulesResponse,
+  } = useModules({
+    all: true,
+    includes: false,
+  });
+
+  // Filter leaf modules and submodules
+  const leafModules = useMemo(() => {
+    if (!filterModulesResponse?.data) return [];
+    const parentIdsWithChildren = new Set(
+      filterModulesResponse.data
+        .filter((m) => m.parent_id)
+        .map((m) => m.parent_id)
+    );
+    return filterModulesResponse.data.filter(
+      (m) =>
+        m.type === "submodule" ||
+        (m.type === "module" && !parentIdsWithChildren.has(m.id))
+    );
+  }, [filterModulesResponse]);
+
+  const moduleFilterOptions: ModuleOption[] = useMemo(() => {
+    const options: ModuleOption[] = leafModules.map((m) => ({
+      value: m.id,
+      label: m.key,
+      category: m.type,
     }));
-  }, [t]);
+    return [
+      ...options,
+      {
+        value: "none",
+        label: t("actions:no_module", "Sin módulo asociado"),
+      },
+    ];
+  }, [leafModules, t]);
 
   const moduleLabelsMap = useMemo(() => {
     const map = new Map<string, string>();
-    availableModuleOptions.forEach((opt) => map.set(opt.value, opt.label));
+    leafModules.forEach((m) => {
+      map.set(m.id, m.key);
+      map.set(m.key, m.key);
+    });
     return map;
-  }, [availableModuleOptions]);
+  }, [leafModules]);
 
   const getModuleDisplayName = useCallback(
-    (moduleKey: string | null): string => {
-      if (!moduleKey) {
+    (moduleKeyOrId?: string | null): string => {
+      if (!moduleKeyOrId) {
         return t("actions:no_module", "Sin módulo asociado");
       }
-      if (i18n.exists(`actions:module_names.${moduleKey}`)) {
-        return t(`actions:module_names.${moduleKey}`);
-      }
-      return moduleLabelsMap.get(moduleKey) ?? moduleKey;
+      return moduleLabelsMap.get(moduleKeyOrId) ?? moduleKeyOrId;
     },
-    [i18n, t, moduleLabelsMap]
+    [t, moduleLabelsMap]
   );
 
-  // Resolves the action name using translation or fallback
-  const getActionDisplayName = useCallback(
-    (action: ActionItem): string => {
-      const currentLang = i18n.language?.toLowerCase().startsWith("en")
-        ? "en"
-        : "es";
-
-      // 1. Try translation key lookup
-      if (i18n.exists(`actions:action_names.${action.key}`)) {
-        return t(`actions:action_names.${action.key}`);
-      }
-
-      // 2. Try action's custom translations
-      if (action.nameTranslations) {
-        if (action.nameTranslations[currentLang]) {
-          return action.nameTranslations[currentLang];
-        }
-        if (action.nameTranslations.es) {
-          return action.nameTranslations.es;
-        }
-        if (action.nameTranslations.en) {
-          return action.nameTranslations.en;
-        }
-      }
-
-      return action.key;
-    },
-    [i18n, t]
-  );
-
-  // Action filter options for the filter modal
   const actionFilterOptions = useMemo(() => {
     return actions.map((act) => ({
       value: act.key,
-      label: getActionDisplayName(act),
+      label: act.key,
     }));
-  }, [actions, getActionDisplayName]);
-
-  // Module filter options for the filter modal (including 'none')
-  const moduleFilterOptions = useMemo(() => {
-    const list: ModuleOption[] = [...availableModuleOptions];
-    list.push({
-      value: "none",
-      label: t("actions:no_module", "Sin módulo asociado"),
-    });
-    return list;
-  }, [availableModuleOptions, t]);
+  }, [actions]);
 
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
@@ -287,9 +271,9 @@ const Actions: FC = () => {
       setSelectedActionForEdit({
         id: targetAction.id,
         key: targetAction.key,
-        nameTranslations: targetAction.nameTranslations,
         description: targetAction.description,
-        moduleKey: targetAction.moduleKey,
+        moduleId: targetAction.moduleId,
+        moduleKey: targetAction.moduleId ?? targetAction.moduleKey,
         isActive: targetAction.isActive,
       });
       setIsActionModalOpen(true);
@@ -297,33 +281,67 @@ const Actions: FC = () => {
     handleCloseActionMenu();
   };
 
-  const handleSaveAction = (data: ActionFormData) => {
-    if (data.id) {
-      setActions((prev) =>
-        prev.map((a) =>
-          a.id === data.id
-            ? {
-                ...a,
-                key: data.key,
-                nameTranslations: data.nameTranslations,
-                description: data.description,
-                moduleKey: data.moduleKey,
-                isActive: data.isActive,
-              }
-            : a
-        )
-      );
-    } else {
-      const newAction: ActionItem = {
-        id: crypto.randomUUID ? crypto.randomUUID() : `act-${Date.now()}`,
-        key: data.key,
-        nameTranslations: data.nameTranslations,
-        description: data.description,
-        moduleKey: data.moduleKey,
-        isActive: data.isActive,
-      };
-      setActions((prev) => [newAction, ...prev]);
+  const handleSaveAction = async (data: ActionFormData) => {
+    const actionId = data.id;
+    try {
+      if (actionId) {
+        await updateActionMutation.mutateAsync({
+          actionId,
+          payload: {
+            key: data.key,
+            is_active: data.isActive,
+            module_id: data.moduleId,
+            description: data.description,
+          },
+        });
+      } else {
+        await createActionMutation.mutateAsync({
+          key: data.key,
+          is_active: data.isActive,
+          module_id: data.moduleId,
+          description: data.description,
+        });
+      }
+      setIsActionModalOpen(false);
+    } catch {
+      // Handled by onError sileo toast
     }
+  };
+
+  const handleRequestToggleActive = (action: ActionItem) => {
+    setActionToToggle(action);
+    setIsConfirmToggleOpen(true);
+    handleCloseActionMenu();
+  };
+
+  const handleCloseConfirmToggle = () => {
+    if (isMutating) return;
+    setIsConfirmToggleOpen(false);
+    setActionToToggle(null);
+  };
+
+  const handleConfirmToggleActive = async () => {
+    if (!actionToToggle) return;
+    try {
+      await updateActionMutation.mutateAsync({
+        actionId: actionToToggle.id,
+        payload: {
+          is_active: !actionToToggle.isActive,
+        },
+      });
+      setIsConfirmToggleOpen(false);
+      setActionToToggle(null);
+    } catch {
+      // Handled by mutation onError sileo toast
+    }
+  };
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    sileo.info({
+      title: t("actions:copy"),
+      description: t("actions:copied"),
+    });
   };
 
   // Filter application
@@ -331,6 +349,7 @@ const Actions: FC = () => {
     setAppliedFilterActionKeys(draftFilterActionKeys);
     setAppliedFilterModuleKeys(draftFilterModuleKeys);
     setAppliedFilterActive(draftFilterActive);
+    setPage(0);
   };
 
   const handleClearFilters = () => {
@@ -340,9 +359,9 @@ const Actions: FC = () => {
     setAppliedFilterActionKeys([]);
     setAppliedFilterModuleKeys([]);
     setAppliedFilterActive(null);
+    setPage(0);
   };
 
-  // Active filter count
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (appliedFilterActionKeys.length > 0)
@@ -352,54 +371,6 @@ const Actions: FC = () => {
     if (appliedFilterActive !== null) count += 1;
     return count;
   }, [appliedFilterActionKeys, appliedFilterModuleKeys, appliedFilterActive]);
-
-  // Filtered actions list
-  const filteredActions = useMemo(() => {
-    return actions.filter((act) => {
-      const displayName = getActionDisplayName(act).toLowerCase();
-      const rawKey = act.key.toLowerCase();
-
-      // 1. Search bar by name or identifier
-      if (searchTerm.trim()) {
-        const query = searchTerm.toLowerCase().trim();
-        const matches = displayName.includes(query) || rawKey.includes(query);
-        if (!matches) {
-          return false;
-        }
-      }
-
-      // 2. Modal filter by Action Key
-      if (appliedFilterActionKeys.length > 0) {
-        if (!appliedFilterActionKeys.includes(act.key)) {
-          return false;
-        }
-      }
-
-      // 3. Modal filter by Module
-      if (appliedFilterModuleKeys.length > 0) {
-        const actModKey = act.moduleKey ?? "none";
-        if (!appliedFilterModuleKeys.includes(actModKey)) {
-          return false;
-        }
-      }
-
-      // 4. Modal filter by Active
-      if (appliedFilterActive !== null) {
-        if (act.isActive !== appliedFilterActive) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [
-    actions,
-    searchTerm,
-    appliedFilterActionKeys,
-    appliedFilterModuleKeys,
-    appliedFilterActive,
-    getActionDisplayName,
-  ]);
 
   return (
     <Box>
@@ -420,7 +391,7 @@ const Actions: FC = () => {
           subtitle={t("actions:filter_modal_subtitle")}
         >
           <SelectMultipleInput
-            label={t("actions:table.name")}
+            label={t("actions:table.key")}
             options={actionFilterOptions}
             value={draftFilterActionKeys}
             onChange={setDraftFilterActionKeys}
@@ -465,23 +436,18 @@ const Actions: FC = () => {
 
       {activeFiltersCount > 0 && (
         <ActiveFilters>
-          {appliedFilterActionKeys.map((actionKey) => {
-            const matchedAction = actions.find((a) => a.key === actionKey);
-            const label = matchedAction
-              ? getActionDisplayName(matchedAction)
-              : actionKey;
-            return (
-              <FilterChips
-                key={`action-${actionKey}`}
-                label={t("actions:filter_chips.action", { value: label })}
-                onAction={() =>
-                  setAppliedFilterActionKeys((prev) =>
-                    prev.filter((k) => k !== actionKey)
-                  )
-                }
-              />
-            );
-          })}
+          {appliedFilterActionKeys.map((actionKey) => (
+            <FilterChips
+              key={`action-${actionKey}`}
+              label={t("actions:filter_chips.action", { value: actionKey })}
+              onAction={() => {
+                setAppliedFilterActionKeys((prev) =>
+                  prev.filter((k) => k !== actionKey)
+                );
+                setPage(0);
+              }}
+            />
+          ))}
           {appliedFilterModuleKeys.map((moduleKey) => {
             const label =
               moduleKey === "none"
@@ -491,11 +457,12 @@ const Actions: FC = () => {
               <FilterChips
                 key={`mod-${moduleKey}`}
                 label={t("actions:filter_chips.module", { value: label })}
-                onAction={() =>
+                onAction={() => {
                   setAppliedFilterModuleKeys((prev) =>
                     prev.filter((m) => m !== moduleKey)
-                  )
-                }
+                  );
+                  setPage(0);
+                }}
               />
             );
           })}
@@ -506,19 +473,49 @@ const Actions: FC = () => {
                   ? t("actions:filter_chips.active_only")
                   : t("actions:no")
               }
-              onAction={() => setAppliedFilterActive(null)}
+              onAction={() => {
+                setAppliedFilterActive(null);
+                setPage(0);
+              }}
             />
           )}
         </ActiveFilters>
+      )}
+
+      {isError && (
+        <Box sx={{ mb: 2.5 }}>
+          <Alert
+            severity="error"
+            action={
+              <Button color="inherit" size="small" onClick={() => refetch()}>
+                {t("core:retry", "Reintentar")}
+              </Button>
+            }
+          >
+            <AlertTitle>
+              {t("actions:error_state.title", "Error al cargar las acciones")}
+            </AlertTitle>
+            {error instanceof Error
+              ? error.message
+              : t(
+                  "actions:error_state.description",
+                  "No se pudo obtener el listado de acciones desde el servidor."
+                )}
+          </Alert>
+        </Box>
       )}
 
       <TableTopBar>
         <Box sx={{ width: { xs: "100%", sm: "360px" } }}>
           <InputSearch
             value={searchTerm}
-            onChange={setSearchTerm}
+            onChange={(val) => {
+              setSearchTerm(val);
+              setPage(0);
+            }}
             placeholder={t("actions:search_placeholder")}
             fullWidth
+            disabled={isLoading || isMutating}
           />
         </Box>
         <Button
@@ -526,6 +523,7 @@ const Actions: FC = () => {
           color="primary"
           startIcon={<AddCircleOutlinedIcon />}
           onClick={handleOpenCreateModal}
+          disabled={isLoading || isFetching || isMutating}
           sx={(theme) => ({
             borderRadius: 2,
             color: theme.palette.primary.contrastText,
@@ -535,148 +533,206 @@ const Actions: FC = () => {
         </Button>
       </TableTopBar>
 
-      <StyledTableContainer>
-        <TableContainer component={Paper} elevation={0}>
-          <Table>
-            <TableHead
+      <Skeleton loading={isLoading} name="actions-table">
+        <StyledTableContainer>
+          {isFetching && !isLoading && (
+            <LinearProgress
               sx={{
-                bgcolor: "primary.main",
-                "& th": {
-                  color: "primary.contrastText",
-                  fontWeight: "bold",
-                },
+                height: 3,
               }}
-            >
-              <TableRow>
-                <TableCell>{t("actions:table.id")}</TableCell>
-                <TableCell>{t("actions:table.name")}</TableCell>
-                <TableCell>{t("actions:table.key")}</TableCell>
-                <TableCell>{t("actions:table.description")}</TableCell>
-                <TableCell>{t("actions:table.module")}</TableCell>
-                <TableCell>{t("actions:table.active")}</TableCell>
-                <TableCell align="center">
-                  {t("actions:table.actions")}
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredActions.length === 0 ? (
+            />
+          )}
+          <TableContainer component={Paper} elevation={0}>
+            <Table>
+              <TableHead
+                sx={{
+                  bgcolor: "primary.main",
+                  "& th": {
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  },
+                }}
+              >
                 <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    align="center"
-                    sx={{ py: 4, color: "text.secondary" }}
-                  >
-                    {t("core:no_options_found")}
+                  <TableCell>{t("actions:table.id")}</TableCell>
+                  <TableCell>{t("actions:table.key")}</TableCell>
+                  <TableCell>{t("actions:table.description")}</TableCell>
+                  <TableCell>{t("actions:table.module")}</TableCell>
+                  <TableCell>{t("actions:table.active")}</TableCell>
+                  <TableCell align="center">
+                    {t("actions:table.actions")}
                   </TableCell>
                 </TableRow>
-              ) : (
-                filteredActions.map((act) => {
-                  const displayName = getActionDisplayName(act);
-                  const moduleDisplayName = getModuleDisplayName(act.moduleKey);
-
-                  return (
-                    <TableRow
-                      key={act.id}
-                      hover
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
+              </TableHead>
+              <TableBody>
+                {!isLoading && actions.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      align="center"
+                      sx={{ py: 6, color: "text.secondary" }}
                     >
-                      <TableCell
+                      <Box
                         sx={{
-                          color: "text.secondary",
-                          fontSize: "0.875rem",
-                          fontFamily: "monospace",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: 1.5,
                         }}
                       >
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          {act.id.split("-")[0]}...
-                          <Tooltip
-                            title={t("actions:copy")}
-                            arrow
-                            placement="top"
-                          >
-                            <IconButton
-                              size="small"
-                              onClick={() =>
-                                navigator.clipboard.writeText(act.id)
-                              }
-                              aria-label={t("actions:copy")}
-                            >
-                              <ContentCopyIcon
-                                fontSize="small"
-                                sx={{ fontSize: "1rem" }}
-                              />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
+                        <BoltOutlinedIcon
+                          sx={{ fontSize: 48, color: "text.disabled" }}
+                        />
+                        <Typography variant="h6" color="text.secondary">
+                          {t(
+                            "actions:empty_state.title",
+                            "No hay acciones disponibles"
+                          )}
+                        </Typography>
                         <Typography
                           variant="body2"
-                          sx={{ fontWeight: "medium" }}
+                          color="text.disabled"
+                          sx={{ maxWidth: 400 }}
                         >
-                          {displayName}
+                          {t(
+                            "actions:empty_state.description",
+                            "No se encontraron acciones actualmente. Comience agregando una nueva."
+                          )}
                         </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <KeyBadge>{act.key}</KeyBadge>
-                      </TableCell>
-                      <TableCell>
-                        {act.description ? (
-                          <DescriptionTypography>
-                            {act.description}
-                          </DescriptionTypography>
-                        ) : (
-                          t("actions:empty_value")
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <ModuleTag
-                          hasModule={Boolean(act.moduleKey)}
-                          moduleKey={act.moduleKey}
-                          label={moduleDisplayName}
+                        <Button
+                          variant="outlined"
                           size="small"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={
-                            act.isActive
-                              ? t("actions:yes")
-                              : t("actions:no")
-                          }
-                          color={act.isActive ? "success" : "error"}
-                          size="small"
-                          variant={act.isActive ? "filled" : "outlined"}
-                          sx={
-                            act.isActive
-                              ? { color: "success.contrastText" }
-                              : {}
-                          }
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          aria-label={t("actions:table.actions")}
-                          onClick={(e) => handleOpenActionMenu(e, act)}
+                          startIcon={<AddCircleOutlinedIcon />}
+                          onClick={handleOpenCreateModal}
+                          disabled={isLoading || isFetching || isMutating}
+                          sx={{ mt: 1 }}
                         >
-                          <MoreVertIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </StyledTableContainer>
+                          {t(
+                            "actions:empty_state.cta",
+                            "Crear primera acción"
+                          )}
+                        </Button>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  actions.map((act) => {
+                    const moduleDisplayName = getModuleDisplayName(
+                      act.moduleKey ?? act.moduleId
+                    );
+
+                    return (
+                      <TableRow
+                        key={act.id}
+                        hover
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell
+                          sx={{
+                            color: "text.secondary",
+                            fontSize: "0.875rem",
+                            fontFamily: "monospace",
+                          }}
+                        >
+                          <Box
+                            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                          >
+                            {act.id.includes("-")
+                              ? `${act.id.split("-")[0]}...`
+                              : act.id}
+                            <Tooltip
+                              title={t("actions:copy")}
+                              arrow
+                              placement="top"
+                            >
+                              <IconButton
+                                size="small"
+                                onClick={() => handleCopyId(act.id)}
+                                aria-label={t("actions:copy")}
+                                disabled={isLoading || isFetching || isMutating}
+                              >
+                                <ContentCopyIcon
+                                  fontSize="small"
+                                  sx={{ fontSize: "1rem" }}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <KeyBadge>{act.key}</KeyBadge>
+                        </TableCell>
+                        <TableCell>
+                          {act.description ? (
+                            <DescriptionTypography>
+                              {act.description}
+                            </DescriptionTypography>
+                          ) : (
+                            t("actions:empty_value")
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <ModuleTag
+                            hasModule={Boolean(act.moduleKey || act.moduleId)}
+                            moduleKey={act.moduleKey}
+                            label={moduleDisplayName}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={
+                              act.isActive
+                                ? t("actions:yes")
+                                : t("actions:no")
+                            }
+                            color={act.isActive ? "success" : "error"}
+                            size="small"
+                            variant={act.isActive ? "filled" : "outlined"}
+                            sx={
+                              act.isActive
+                                ? { color: "success.contrastText" }
+                                : {}
+                            }
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            aria-label={t("actions:table.actions")}
+                            onClick={(e) => handleOpenActionMenu(e, act)}
+                            disabled={isLoading || isFetching || isMutating}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={totalItems}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            labelRowsPerPage={t("core:pagination.rows_per_page")}
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}–${to} ${t("core:pagination.of")} ${
+                count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
+              }`
+            }
+          />
+        </StyledTableContainer>
+      </Skeleton>
 
       {/* Row Actions Menu */}
       <Menu
@@ -712,7 +768,56 @@ const Actions: FC = () => {
           </ListItemIcon>
           <ListItemText primary={t("actions:actions_menu.update")} />
         </MenuItem>
+        {targetAction && (
+          <MenuItem
+            onClick={() => handleRequestToggleActive(targetAction)}
+            sx={{ borderRadius: 1 }}
+          >
+            <ListItemIcon>
+              {targetAction.isActive ? (
+                <BlockOutlinedIcon fontSize="small" color="error" />
+              ) : (
+                <CheckCircleOutlineOutlinedIcon fontSize="small" color="success" />
+              )}
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                targetAction.isActive
+                  ? t("actions:deactivate")
+                  : t("actions:activate")
+              }
+            />
+          </MenuItem>
+        )}
       </Menu>
+
+      {/* Confirm Active / Inactive Dialog */}
+      <ConfirmDialog
+        open={isConfirmToggleOpen}
+        onClose={handleCloseConfirmToggle}
+        onConfirm={handleConfirmToggleActive}
+        isLoading={isMutating}
+        title={
+          actionToToggle?.isActive
+            ? t("actions:confirm_deactivate_title")
+            : t("actions:confirm_activate_title")
+        }
+        message={
+          actionToToggle?.isActive
+            ? t("actions:confirm_deactivate_message", {
+                name: actionToToggle?.key,
+              })
+            : t("actions:confirm_activate_message", {
+                name: actionToToggle?.key,
+              })
+        }
+        confirmText={
+          actionToToggle?.isActive
+            ? t("actions:deactivate")
+            : t("actions:activate")
+        }
+        cancelText={t("core:cancel")}
+      />
 
       {/* Action Create / Edit Modal */}
       <ActionModal
@@ -720,7 +825,7 @@ const Actions: FC = () => {
         onClose={() => setIsActionModalOpen(false)}
         onSubmit={handleSaveAction}
         initialData={selectedActionForEdit}
-        availableModules={availableModuleOptions}
+        isSubmitting={isMutating}
       />
     </Box>
   );

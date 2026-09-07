@@ -62,5 +62,29 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copiar ID",
-  "copied": "Copiado al portapapeles"
+  "copied": "Copiado al portapapeles",
+  "empty_state": {
+    "title": "No hay roles disponibles",
+    "description": "No se encontraron roles actualmente. Comience agregando uno nuevo.",
+    "cta": "Crear primer rol"
+  },
+  "error_state": {
+    "title": "Error al cargar los roles",
+    "description": "No se pudo obtener el listado de roles desde el servidor."
+  },
+  "notifications": {
+    "success_title": "Éxito",
+    "error_title": "Error",
+    "created_success": "Rol creado correctamente",
+    "created_error": "No se pudo crear el rol",
+    "updated_success": "Rol actualizado correctamente",
+    "updated_error": "No se pudo actualizar el rol"
+  },
+  "deactivate": "Desactivar",
+  "activate": "Activar",
+  "confirm_deactivate_title": "¿Desactivar rol?",
+  "confirm_activate_title": "¿Activar rol?",
+  "confirm_deactivate_message": "¿Está seguro de que desea desactivar el rol \"{{name}}\"?",
+  "confirm_activate_message": "¿Está seguro de que desea activar el rol \"{{name}}\"?"
 }
+

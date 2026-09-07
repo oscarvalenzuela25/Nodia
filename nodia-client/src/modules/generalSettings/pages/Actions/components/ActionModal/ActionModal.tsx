@@ -1,12 +1,12 @@
 import type { FC, FormEvent } from "react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
 import TextInput from "../../../../../../components/inputs/TextInput";
 import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
-import TranslationInput from "../../../../../../components/inputs/TranslationInput";
-import type { ActionModalProps, ActionFormData } from "./types";
+import { useModules } from "../../../Modules";
+import type { ActionModalProps, ActionFormData, ModuleOption } from "./types";
 import {
   FormContainer,
   SwitchWrapper,
@@ -21,19 +21,46 @@ const ActionModalInner: FC<ActionModalProps> = ({
   onSubmit,
   initialData,
   availableModules = [],
+  isSubmitting = false,
 }) => {
   const { t } = useTranslation(["actions", "core"]);
   const isEditing = Boolean(initialData?.id);
+
+  const {
+    data: modulesResponse,
+    isLoading: isLoadingModules,
+    isFetching: isFetchingModules,
+  } = useModules(
+    { all: true, includes: false },
+    { enabled: open }
+  );
+
+  const dynamicModuleOptions: ModuleOption[] = useMemo(() => {
+    if (modulesResponse?.data && modulesResponse.data.length > 0) {
+      const parentIdsWithChildren = new Set(
+        modulesResponse.data.filter((m) => m.parent_id).map((m) => m.parent_id)
+      );
+      return modulesResponse.data
+        .filter(
+          (m) =>
+            m.type === "submodule" ||
+            (m.type === "module" && !parentIdsWithChildren.has(m.id))
+        )
+        .map((m) => ({
+          value: m.id,
+          label: m.key,
+          category: m.type,
+        }));
+    }
+    return availableModules;
+  }, [modulesResponse, availableModules]);
 
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.isActive ?? true
   );
   const [actionKey, setActionKey] = useState<string>(initialData?.key ?? "");
-  const [nameTranslations, setNameTranslations] = useState<
-    Record<string, string>
-  >(initialData?.nameTranslations ?? { es: "", en: "" });
-  const [moduleKey, setModuleKey] = useState<string | null>(
-    initialData?.moduleKey ?? null
+  const [moduleId, setModuleId] = useState<string | null>(
+    initialData?.moduleId ?? initialData?.moduleKey ?? null
   );
   const [description, setDescription] = useState<string>(
     initialData?.description ?? ""
@@ -43,22 +70,23 @@ const ActionModalInner: FC<ActionModalProps> = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || isSubmitting) return;
+
+    const matchedOption = dynamicModuleOptions.find(
+      (opt) => opt.value === moduleId
+    );
 
     const payload: ActionFormData = {
       ...(initialData?.id ? { id: initialData.id } : {}),
       isActive,
       key: actionKey.trim().toLowerCase(),
-      nameTranslations: {
-        es: nameTranslations.es?.trim() || "",
-        en: nameTranslations.en?.trim() || "",
-      },
-      moduleKey: moduleKey || null,
+      nameTranslations: initialData?.nameTranslations ?? { es: "", en: "" },
+      moduleId: moduleId || null,
+      moduleKey: matchedOption?.label ?? moduleId ?? null,
       description: description.trim() || null,
     };
 
     onSubmit(payload);
-    onClose();
   };
 
   const modalTitle = isEditing
@@ -75,6 +103,7 @@ const ActionModalInner: FC<ActionModalProps> = ({
         variant="contained"
         color="error"
         onClick={onClose}
+        disabled={isSubmitting}
         sx={(theme) => ({
           color: theme.palette.error.contrastText,
           borderRadius: 2,
@@ -88,7 +117,7 @@ const ActionModalInner: FC<ActionModalProps> = ({
         form="action-form"
         variant="contained"
         color="primary"
-        disabled={!isFormValid}
+        disabled={!isFormValid || isSubmitting}
         sx={(theme) => ({
           color: theme.palette.primary.contrastText,
           borderRadius: 2,
@@ -116,6 +145,7 @@ const ActionModalInner: FC<ActionModalProps> = ({
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
                 name="isActive"
+                disabled={isSubmitting}
               />
             }
             label={t("actions:form.active", "Activo")}
@@ -123,39 +153,32 @@ const ActionModalInner: FC<ActionModalProps> = ({
           />
         </SwitchWrapper>
 
-        <TranslationInput
-          label={t("actions:form.key", "Identificador / Key")}
-          value={actionKey}
-          onChangeKey={setActionKey}
-          placeholder={t(
-            "actions:form.key_placeholder",
-            "ej: users.create, roles.manage"
-          )}
-          translations={nameTranslations}
-          onChangeTranslations={setNameTranslations}
-          required
-          autoFocus={!isEditing}
-          sectionTitle={t(
-            "actions:form.translations_title",
-            "Traducciones del Nombre"
-          )}
-          sectionSubtitle={t(
-            "actions:form.translations_subtitle",
-            "Define cómo se mostrará el nombre del accionable en cada idioma."
-          )}
-        />
-
         <SelectSingleInput
           label={t("actions:form.module", "Módulo Asociado (Opcional)")}
-          options={availableModules}
-          value={moduleKey}
-          onChange={setModuleKey}
+          options={dynamicModuleOptions}
+          value={moduleId}
+          onChange={setModuleId}
           placeholder={t(
             "actions:form.module_placeholder",
             "Seleccionar módulo..."
           )}
           searchPlaceholder={t("core:search", "Buscar...")}
           clearable
+          disabled={isSubmitting || isLoadingModules || isFetchingModules}
+        />
+
+        <TextInput
+          label={t("actions:form.key", "Identificador")}
+          value={actionKey}
+          onChange={(e) => setActionKey(e.target.value)}
+          placeholder={t(
+            "actions:form.key_placeholder",
+            "ej: users.create, roles.manage"
+          )}
+          required
+          autoFocus={!isEditing}
+          disabled={isSubmitting}
+          name="key"
         />
 
         <TextInput
@@ -169,6 +192,7 @@ const ActionModalInner: FC<ActionModalProps> = ({
           name="description"
           multiline
           rows={3}
+          disabled={isSubmitting}
         />
       </FormContainer>
     </BaseModal>

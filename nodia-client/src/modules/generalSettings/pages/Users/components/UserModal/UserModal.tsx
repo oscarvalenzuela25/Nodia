@@ -1,10 +1,11 @@
 import type { FC, FormEvent } from "react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
 import TextInput from "../../../../../../components/inputs/TextInput";
 import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
+import { useRoles } from "../../../Roles";
 import type { UserModalProps, UserFormData } from "./types";
 import {
   FormContainer,
@@ -22,9 +23,31 @@ const UserModalInner: FC<UserModalProps> = ({
   onSubmit,
   initialData,
   availableRoles = DEFAULT_ROLES,
+  isSubmitting = false,
 }) => {
   const { t } = useTranslation(["users", "core"]);
   const isEditing = Boolean(initialData?.id);
+
+  const {
+    data: rolesResponse,
+    isLoading: isLoadingRoles,
+    isFetching: isFetchingRoles,
+  } = useRoles(
+    { all: true, includes: false },
+    { enabled: open }
+  );
+
+  const dynamicRoleOptions = useMemo(() => {
+    if (rolesResponse?.data && rolesResponse.data.length > 0) {
+      return rolesResponse.data.map((r) => ({
+        value: r.id,
+        label: r.key,
+      }));
+    }
+    return (availableRoles ?? []).map((opt) =>
+      typeof opt === "string" ? { value: opt, label: opt } : opt
+    );
+  }, [rolesResponse, availableRoles]);
 
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.isActive ?? true
@@ -38,9 +61,10 @@ const UserModalInner: FC<UserModalProps> = ({
 
   const isFormValid = email.trim().length > 0;
 
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || isSubmitting) return;
 
     const payload: UserFormData = {
       ...(initialData?.id ? { id: initialData.id } : {}),
@@ -52,7 +76,6 @@ const UserModalInner: FC<UserModalProps> = ({
     };
 
     onSubmit(payload);
-    onClose();
   };
 
   const modalTitle = isEditing
@@ -69,6 +92,7 @@ const UserModalInner: FC<UserModalProps> = ({
         variant="contained"
         color="error"
         onClick={onClose}
+        disabled={isSubmitting}
         sx={(theme) => ({
           color: theme.palette.error.contrastText,
           borderRadius: 2,
@@ -82,7 +106,7 @@ const UserModalInner: FC<UserModalProps> = ({
         form="user-form"
         variant="contained"
         color="primary"
-        disabled={!isFormValid}
+        disabled={!isFormValid || isSubmitting}
         sx={(theme) => ({
           color: theme.palette.primary.contrastText,
           borderRadius: 2,
@@ -110,6 +134,7 @@ const UserModalInner: FC<UserModalProps> = ({
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
                 name="isActive"
+                disabled={isSubmitting}
               />
             }
             label={t("users:form.active", "Activo")}
@@ -123,6 +148,7 @@ const UserModalInner: FC<UserModalProps> = ({
           onChange={(e) => setName(e.target.value)}
           placeholder={t("users:form.name_placeholder", "Ingresa el nombre")}
           name="name"
+          disabled={isSubmitting}
         />
 
         <TextInput
@@ -133,15 +159,17 @@ const UserModalInner: FC<UserModalProps> = ({
           name="email"
           type="email"
           required
+          disabled={isSubmitting}
         />
 
         <SelectMultipleInput
           label={t("users:form.roles", "Roles")}
-          options={availableRoles}
+          options={dynamicRoleOptions}
           value={roles}
           onChange={setRoles}
           placeholder={t("users:form.roles_placeholder", "Seleccionar roles...")}
           searchPlaceholder={t("core:search", "Buscar...")}
+          disabled={isLoadingRoles || isFetchingRoles || isSubmitting}
         />
 
         <TextInput
@@ -153,6 +181,7 @@ const UserModalInner: FC<UserModalProps> = ({
             "https://ejemplo.com/imagen.jpg"
           )}
           name="imageUrl"
+          disabled={isSubmitting}
         />
       </FormContainer>
     </BaseModal>

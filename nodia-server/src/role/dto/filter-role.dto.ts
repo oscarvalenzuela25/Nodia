@@ -1,0 +1,43 @@
+import { IsOptional, IsString, IsBoolean, IsArray } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { RansackFilter } from '../../common/types/ransack.type.js';
+import { Role } from '../entities/role.entity.js';
+
+export class RoleFilterDto implements RansackFilter<Role> {
+  @IsOptional()
+  @IsString()
+  key_cont?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  key_in?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true) return true;
+    if (value === 'false' || value === false) return false;
+    return value;
+  })
+  @IsBoolean()
+  is_active_eq?: boolean;
+
+  @IsOptional()
+  @IsString()
+  actions_id_eq?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  actions_id_in?: string[];
+
+  @IsOptional()
+  @IsString()
+  actions_key_cont?: string;
+
+  @IsOptional()
+  @IsString()
+  s?: string;
+}
