@@ -1,11 +1,11 @@
 import type { FC, FormEvent } from "react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
 import TextInput from "../../../../../../components/inputs/TextInput";
-import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
-import type { ModuleModalProps, ModuleFormData, ModuleType } from "./types";
+import TranslationInput from "../../../../../../components/inputs/TranslationInput";
+import type { ModuleModalProps, ModuleFormData } from "./types";
 import {
   FormContainer,
   SwitchWrapper,
@@ -19,9 +19,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
   onClose,
   onSubmit,
   initialData,
-  availableParents = [],
   isSubmitting = false,
-  isLoadingParents = false,
 }) => {
   const { t } = useTranslation(["modules", "core"]);
   const isEditing = Boolean(initialData?.id);
@@ -30,37 +28,33 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
     initialData?.isActive ?? true
   );
   const [moduleKey, setModuleKey] = useState<string>(initialData?.key ?? "");
-  const [moduleType, setModuleType] = useState<ModuleType>(
-    initialData?.type ?? "module"
-  );
-  const [parentId, setParentId] = useState<string | null>(
-    initialData?.parentId ?? initialData?.parentKey ?? null
-  );
-
-  const typeOptions = useMemo(
-    () => [
-      { value: "module", label: t("modules:types.module", "Módulo") },
-      { value: "submodule", label: t("modules:types.submodule", "Submódulo") },
-    ],
-    [t]
-  );
+  const [groupBy, setGroupBy] = useState<string>(initialData?.group_by ?? "");
+  const [nameTranslations, setNameTranslations] = useState<
+    Record<string, string>
+  >(initialData?.nameTranslations ?? { es: "", en: "" });
 
   const isFormValid =
-    moduleKey.trim().length > 0 &&
-    (moduleType === "module" || Boolean(parentId));
+    moduleKey.trim().length > 0 && groupBy.trim().length > 0;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!isFormValid || isSubmitting) return;
 
+    const translates = [
+      {
+        key: "key",
+        es: nameTranslations.es?.trim() || moduleKey.trim(),
+        en: nameTranslations.en?.trim() || moduleKey.trim(),
+      },
+    ];
+
     const payload: ModuleFormData = {
       ...(initialData?.id ? { id: initialData.id } : {}),
       isActive,
       key: moduleKey.trim().toLowerCase(),
-      type: moduleType,
-      parentId: moduleType === "submodule" ? parentId : null,
-      parentKey: moduleType === "submodule" ? parentId : null,
-      nameTranslations: initialData?.nameTranslations ?? { es: "", en: "" },
+      group_by: groupBy.trim(),
+      nameTranslations,
+      translates,
     };
 
     onSubmit(payload);
@@ -130,56 +124,41 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           />
         </SwitchWrapper>
 
-        <TextInput
-          label={t("modules:form.key", "Identificador / Key")}
+        <TranslationInput
+          label={t("modules:form.key", "Identificador")}
           value={moduleKey}
-          onChange={(e) => setModuleKey(e.target.value)}
+          onChangeKey={setModuleKey}
           placeholder={t(
             "modules:form.key_placeholder",
-            "ej: general_settings, users, security"
+            "ej: users, roles, settings"
+          )}
+          translations={nameTranslations}
+          onChangeTranslations={setNameTranslations}
+          sectionTitle={t(
+            "modules:form.translations_title",
+            "Traducciones del Identificador"
+          )}
+          sectionSubtitle={t(
+            "modules:form.translations_subtitle",
+            "Define cómo se mostrará el nombre del módulo en cada idioma."
           )}
           required
           autoFocus={!isEditing}
-          name="key"
           disabled={isSubmitting}
         />
 
-        <SelectSingleInput
-          label={t("modules:form.type", "Tipo de Elemento")}
-          options={typeOptions}
-          value={moduleType}
-          onChange={(val) => {
-            if (val === "module" || val === "submodule") {
-              setModuleType(val);
-              if (val === "module") {
-                setParentId(null);
-              }
-            }
-          }}
-          clearable={false}
+        <TextInput
+          label={t("modules:form.group_by", "Grupo")}
+          value={groupBy}
+          onChange={(e) => setGroupBy(e.target.value)}
+          placeholder={t(
+            "modules:form.group_by_placeholder",
+            "ej: settings, catalog..."
+          )}
           required
           disabled={isSubmitting}
+          name="groupBy"
         />
-
-        {moduleType === "submodule" && (
-          <SelectSingleInput
-            label={t(
-              "modules:form.parent_module",
-              "Módulo Padre (Requerido para submódulos)"
-            )}
-            options={availableParents}
-            value={parentId}
-            onChange={setParentId}
-            placeholder={t(
-              "modules:form.parent_module_placeholder",
-              "Seleccionar módulo padre..."
-            )}
-            searchPlaceholder={t("core:search", "Buscar...")}
-            required
-            clearable={true}
-            disabled={isSubmitting || isLoadingParents}
-          />
-        )}
       </FormContainer>
     </BaseModal>
   );

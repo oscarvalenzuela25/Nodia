@@ -15,8 +15,22 @@ vi.mock(
 
 const mockActionsResponse = {
   data: [
-    { id: "act-1", key: "users.create", is_active: true },
-    { id: "act-2", key: "users.read", is_active: true },
+    {
+      id: "act-1",
+      key: "users.create",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Crear Usuarios", en: "Create Users" },
+      ],
+    },
+    {
+      id: "act-2",
+      key: "users.read",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Ver Usuarios", en: "View Users" },
+      ],
+    },
   ],
   meta: { page: 1, limit: 10, total_items: 2, total_pages: 1 },
 };
@@ -55,7 +69,7 @@ describe("RoleModal", () => {
 
     expect(screen.getByText("Nuevo Rol")).toBeInTheDocument();
     expect(screen.getByText("Activo")).toBeInTheDocument();
-    expect(screen.getByText("Identificador / Key")).toBeInTheDocument();
+    expect(screen.getByText("Identificador")).toBeInTheDocument();
     expect(screen.getByText("Acciones Asociadas")).toBeInTheDocument();
 
     const submitBtn = screen.getByRole("button", { name: "Crear Rol" });
@@ -75,7 +89,7 @@ describe("RoleModal", () => {
       />
     );
 
-    const keyInput = screen.getByPlaceholderText("ej: super_admin, editor, gestor");
+    const keyInput = screen.getByPlaceholderText(/super_admin/i);
     await user.type(keyInput, "custom_role");
 
     const submitBtn = screen.getByRole("button", { name: "Crear Rol" });
@@ -87,6 +101,13 @@ describe("RoleModal", () => {
       expect.objectContaining({
         key: "custom_role",
         isActive: true,
+        translates: [
+          {
+            key: "key",
+            es: "custom_role",
+            en: "custom_role",
+          },
+        ],
       })
     );
     expect(handleClose).not.toHaveBeenCalled();
@@ -152,6 +173,13 @@ describe("RoleModal", () => {
       },
       actions: ["users.read"],
       isActive: false,
+      translates: [
+        {
+          key: "key",
+          es: "Editor Principal",
+          en: "Main Editor",
+        },
+      ],
     });
   });
 
@@ -192,6 +220,33 @@ describe("RoleModal", () => {
         all: true,
         includes: false,
       });
+    });
+  });
+
+  it("renders action options in Translate (key) format", async () => {
+    const user = userEvent.setup();
+    renderWithClient(
+      <RoleModal
+        open={true}
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(actionServices.getActions).toHaveBeenCalled();
+    });
+
+    const trigger = screen.getByRole("button", { name: /Acciones Asociadas/i });
+    await user.click(trigger);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Crear Usuarios (users.create)")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Ver Usuarios (users.read)")
+      ).toBeInTheDocument();
     });
   });
 });

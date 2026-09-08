@@ -1,5 +1,5 @@
 import type { FC, MouseEvent } from "react";
-import { useState, useMemo, useCallback, Fragment } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -33,9 +33,6 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import SubdirectoryArrowRightOutlinedIcon from "@mui/icons-material/SubdirectoryArrowRightOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 
@@ -45,11 +42,7 @@ import InputSearch from "../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import ModuleModal from "./components/ModuleModal";
-import type {
-  ModuleEntity,
-  ModuleFormData,
-  ParentModuleOption,
-} from "./types";
+import type { ModuleEntity, ModuleFormData } from "./types";
 import {
   useModules,
   useCreateModule,
@@ -65,9 +58,6 @@ import {
   TableTopBar,
   StyledTableContainer,
   KeyBadge,
-  TypeTag,
-  ParentTag,
-  SubmoduleTableRow,
 } from "./styles";
 
 const Modules: FC = () => {
@@ -77,44 +67,17 @@ const Modules: FC = () => {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
-  // Collapsed / Expanded state for module rows
-  const [expandedModuleIds, setExpandedModuleIds] = useState<Set<string>>(
-    new Set()
-  );
-
-  const handleToggleExpand = (id: string) => {
-    setExpandedModuleIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
   // Filter modal draft state
-  const [draftFilterTypes, setDraftFilterTypes] = useState<string[]>([]);
-  const [draftFilterModuleKeys, setDraftFilterModuleKeys] = useState<string[]>(
-    []
-  );
-  const [draftFilterSubmoduleKeys, setDraftFilterSubmoduleKeys] = useState<
-    string[]
-  >([]);
+  const [draftFilterKeys, setDraftFilterKeys] = useState<string[]>([]);
+  const [draftFilterGroups, setDraftFilterGroups] = useState<string[]>([]);
   const [draftFilterActive, setDraftFilterActive] = useState<boolean>(true);
 
   // Applied filter state
-  const [appliedFilterTypes, setAppliedFilterTypes] = useState<string[]>([]);
-  const [appliedFilterModuleKeys, setAppliedFilterModuleKeys] = useState<
-    string[]
-  >([]);
-  const [appliedFilterSubmoduleKeys, setAppliedFilterSubmoduleKeys] = useState<
-    string[]
-  >([]);
-  const [appliedFilterActive, setAppliedFilterActive] = useState<
-    boolean | null
-  >(null);
+  const [appliedFilterKeys, setAppliedFilterKeys] = useState<string[]>([]);
+  const [appliedFilterGroups, setAppliedFilterGroups] = useState<string[]>([]);
+  const [appliedFilterActive, setAppliedFilterActive] = useState<boolean | null>(
+    null
+  );
 
   // Module Create / Edit Modal state
   const [isModuleModalOpen, setIsModuleModalOpen] = useState<boolean>(false);
@@ -134,10 +97,16 @@ const Modules: FC = () => {
   // Resolves the module display name using translation or fallback
   const getModuleDisplayName = useCallback(
     (keyOrModule: string | ModuleEntity): string => {
+      if (typeof keyOrModule === "object" && keyOrModule) {
+        const lang = i18n.language?.startsWith("en") ? "en" : "es";
+        const altLang = lang === "en" ? "es" : "en";
+        const keyTrans = keyOrModule.translates?.find((tr) => tr.key === "key");
+        const translated = keyTrans?.[lang] || keyTrans?.[altLang];
+        if (translated) return translated;
+      }
       const key =
         typeof keyOrModule === "string" ? keyOrModule : keyOrModule.key;
 
-      // 1. Try translation lookup
       if (i18n.exists(`modules:module_names.${key}`)) {
         return t(`modules:module_names.${key}`);
       }
@@ -147,85 +116,36 @@ const Modules: FC = () => {
     [i18n, t]
   );
 
-  // Query 1: All modules for filter dropdowns & modal parent options
+  // Query 1: All modules for filter dropdowns (all=true, includes=false)
   const {
     data: allModulesResponse,
     isLoading: isLoadingAllModules,
     isFetching: isFetchingAllModules,
   } = useModules({ all: true, includes: false });
 
-  // Check whether modules of type 'module' or 'submodule' exist
-  const hasModuleType = useMemo(() => {
-    return (
-      allModulesResponse?.data?.some((m) => m.type === "module") ?? false
+  // Key filter options
+  const keyFilterOptions = useMemo(() => {
+    if (!allModulesResponse?.data) return [];
+    return allModulesResponse.data.map((m) => {
+      const name = getModuleDisplayName(m);
+      return {
+        value: m.key,
+        label: name !== "-" ? `${name} (${m.key})` : m.key,
+      };
+    });
+  }, [allModulesResponse?.data, getModuleDisplayName]);
+
+  // Group filter options
+  const groupByFilterOptions = useMemo(() => {
+    if (!allModulesResponse?.data) return [];
+    const groups = Array.from(
+      new Set(allModulesResponse.data.map((m) => m.group_by).filter(Boolean))
     );
+    return groups.map((group) => ({
+      value: group,
+      label: group,
+    }));
   }, [allModulesResponse?.data]);
-
-  const hasSubmoduleType = useMemo(() => {
-    return (
-      allModulesResponse?.data?.some((m) => m.type === "submodule") ?? false
-    );
-  }, [allModulesResponse?.data]);
-
-  // Options for filter modal - Type (conditioned on existing types in the system)
-  const moduleTypeFilterOptions = useMemo(() => {
-    const options = [];
-    if (hasModuleType) {
-      options.push({
-        value: "module",
-        label: t("modules:types.module", "Módulo"),
-      });
-    }
-    if (hasSubmoduleType) {
-      options.push({
-        value: "submodule",
-        label: t("modules:types.submodule", "Submódulo"),
-      });
-    }
-    return options;
-  }, [hasModuleType, hasSubmoduleType, t]);
-
-  // Options for filter modal - Modules of type 'module'
-  const moduleFilterOptions = useMemo(() => {
-    if (!allModulesResponse?.data) return [];
-    return allModulesResponse.data
-      .filter((m) => m.type === "module")
-      .map((m) => {
-        const name = getModuleDisplayName(m);
-        return {
-          value: m.key,
-          label: name !== "-" ? name : m.key,
-        };
-      });
-  }, [allModulesResponse?.data, getModuleDisplayName]);
-
-  // Options for filter modal - Modules of type 'submodule'
-  const submoduleFilterOptions = useMemo(() => {
-    if (!allModulesResponse?.data) return [];
-    return allModulesResponse.data
-      .filter((m) => m.type === "submodule")
-      .map((m) => {
-        const name = getModuleDisplayName(m);
-        return {
-          value: m.key,
-          label: name !== "-" ? name : m.key,
-        };
-      });
-  }, [allModulesResponse?.data, getModuleDisplayName]);
-
-  // Parent module options (modules whose type === 'module') for ModuleModal
-  const parentModuleOptions: ParentModuleOption[] = useMemo(() => {
-    if (!allModulesResponse?.data) return [];
-    return allModulesResponse.data
-      .filter((m) => m.type === "module")
-      .map((m) => {
-        const name = getModuleDisplayName(m);
-        return {
-          value: m.id,
-          label: name !== "-" ? name : m.key,
-        };
-      });
-  }, [allModulesResponse?.data, getModuleDisplayName]);
 
   // Ransack query for paginated table
   const ransackQuery = useMemo(() => {
@@ -234,15 +154,11 @@ const Modules: FC = () => {
     if (searchTerm.trim()) {
       q.key_cont = searchTerm.trim();
     }
-    if (appliedFilterTypes.length > 0) {
-      q.type_in = appliedFilterTypes;
+    if (appliedFilterKeys.length > 0) {
+      q.key_in = appliedFilterKeys;
     }
-    const combinedKeys = [
-      ...appliedFilterModuleKeys,
-      ...appliedFilterSubmoduleKeys,
-    ];
-    if (combinedKeys.length > 0) {
-      q.key_in = combinedKeys;
+    if (appliedFilterGroups.length > 0) {
+      q.group_by_in = appliedFilterGroups;
     }
     if (appliedFilterActive !== null) {
       q.is_active_eq = appliedFilterActive;
@@ -251,13 +167,12 @@ const Modules: FC = () => {
     return Object.keys(q).length > 0 ? q : undefined;
   }, [
     searchTerm,
-    appliedFilterTypes,
-    appliedFilterModuleKeys,
-    appliedFilterSubmoduleKeys,
+    appliedFilterKeys,
+    appliedFilterGroups,
     appliedFilterActive,
   ]);
 
-  // Query 2: Paginated modules for table
+  // Query 2: Paginated modules for table (with includes=true for translations)
   const {
     data: modulesResponse,
     isLoading: isLoadingModules,
@@ -280,59 +195,11 @@ const Modules: FC = () => {
     createModuleMutation.isPending || updateModuleMutation.isPending;
   const isBusy = isLoadingModules || isFetchingModules || isMutating;
 
-  const modulesList = useMemo(
+  const modulesList: ModuleEntity[] = useMemo(
     () => modulesResponse?.data ?? [],
     [modulesResponse?.data]
   );
   const totalCount = modulesResponse?.meta?.total_items ?? 0;
-
-  interface HierarchicalModuleRow {
-    module: ModuleEntity;
-    children: ModuleEntity[];
-  }
-
-  const hierarchicalRows = useMemo<HierarchicalModuleRow[]>(() => {
-    const mapById = new Map<string, ModuleEntity>();
-    modulesList.forEach((m) => mapById.set(m.id, m));
-
-    const childrenByParentId = new Map<string, ModuleEntity[]>();
-    const isChildInView = new Set<string>();
-
-    // Pass 1: find all submodules whose parent is also present in modulesList
-    modulesList.forEach((m) => {
-      const parentId = m.parent_id ?? m.parent_module?.id;
-      if (parentId && mapById.has(parentId)) {
-        isChildInView.add(m.id);
-        const existing = childrenByParentId.get(parentId) ?? [];
-        existing.push(m);
-        childrenByParentId.set(parentId, existing);
-      }
-    });
-
-    // Pass 2: top-level rows are items that are NOT treated as children of another row in the current view
-    const rows: HierarchicalModuleRow[] = [];
-    modulesList.forEach((m) => {
-      if (!isChildInView.has(m.id)) {
-        rows.push({
-          module: m,
-          children: childrenByParentId.get(m.id) ?? [],
-        });
-      }
-    });
-
-    return rows;
-  }, [modulesList]);
-
-  const isModuleWithChildren = useMemo(() => {
-    if (!moduleToToggle || moduleToToggle.type !== "module") return false;
-    const allMods = allModulesResponse?.data ?? modulesList;
-    return allMods.some(
-      (m) =>
-        m.type === "submodule" &&
-        (m.parent_id === moduleToToggle.id ||
-          m.parent_module?.id === moduleToToggle.id)
-    );
-  }, [moduleToToggle, allModulesResponse?.data, modulesList]);
 
   const handleCopyId = (id: string) => {
     navigator.clipboard.writeText(id);
@@ -362,16 +229,15 @@ const Modules: FC = () => {
 
   const handleOpenEditModal = () => {
     if (targetModule) {
+      const transItem = targetModule.translates?.find((tr) => tr.key === "key");
       setSelectedModuleForEdit({
         id: targetModule.id,
         key: targetModule.key,
-        type: targetModule.type,
-        parentId:
-          targetModule.parent_id ??
-          targetModule.parent_module?.id ??
-          null,
-        parentKey: targetModule.parent_module?.key ?? null,
-        nameTranslations: {},
+        group_by: targetModule.group_by,
+        nameTranslations: {
+          es: transItem?.es || "",
+          en: transItem?.en || "",
+        },
         isActive: targetModule.is_active ?? true,
       });
       setIsModuleModalOpen(true);
@@ -413,17 +279,17 @@ const Modules: FC = () => {
           moduleId: data.id,
           payload: {
             key: data.key,
-            type: data.type,
-            parent_id: data.type === "submodule" ? data.parentId : null,
+            group_by: data.group_by,
             is_active: data.isActive,
+            translates: data.translates,
           },
         });
       } else {
         await createModuleMutation.mutateAsync({
           key: data.key,
-          type: data.type,
-          parent_id: data.type === "submodule" ? data.parentId : null,
+          group_by: data.group_by,
           is_active: data.isActive,
+          translates: data.translates,
         });
       }
       setIsModuleModalOpen(false);
@@ -433,37 +299,20 @@ const Modules: FC = () => {
     }
   };
 
-  const handleDraftTypesChange = (newTypes: string[]) => {
-    setDraftFilterTypes(newTypes);
-    if (!newTypes.includes("module")) {
-      setDraftFilterModuleKeys([]);
-    }
-    if (!newTypes.includes("submodule")) {
-      setDraftFilterSubmoduleKeys([]);
-    }
-  };
-
   // Filter application
   const handleApplyFilters = () => {
-    setAppliedFilterTypes(draftFilterTypes);
-    setAppliedFilterModuleKeys(
-      draftFilterTypes.includes("module") ? draftFilterModuleKeys : []
-    );
-    setAppliedFilterSubmoduleKeys(
-      draftFilterTypes.includes("submodule") ? draftFilterSubmoduleKeys : []
-    );
+    setAppliedFilterKeys(draftFilterKeys);
+    setAppliedFilterGroups(draftFilterGroups);
     setAppliedFilterActive(draftFilterActive);
     setPage(0);
   };
 
   const handleClearFilters = () => {
-    setDraftFilterTypes([]);
-    setDraftFilterModuleKeys([]);
-    setDraftFilterSubmoduleKeys([]);
+    setDraftFilterKeys([]);
+    setDraftFilterGroups([]);
     setDraftFilterActive(true);
-    setAppliedFilterTypes([]);
-    setAppliedFilterModuleKeys([]);
-    setAppliedFilterSubmoduleKeys([]);
+    setAppliedFilterKeys([]);
+    setAppliedFilterGroups([]);
     setAppliedFilterActive(null);
     setPage(0);
   };
@@ -471,20 +320,11 @@ const Modules: FC = () => {
   // Active filter count
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (appliedFilterTypes.length > 0) count += appliedFilterTypes.length;
-    if (appliedFilterModuleKeys.length > 0)
-      count += appliedFilterModuleKeys.length;
-    if (appliedFilterSubmoduleKeys.length > 0)
-      count += appliedFilterSubmoduleKeys.length;
+    if (appliedFilterKeys.length > 0) count += appliedFilterKeys.length;
+    if (appliedFilterGroups.length > 0) count += appliedFilterGroups.length;
     if (appliedFilterActive !== null) count += 1;
     return count;
-  }, [
-    appliedFilterTypes,
-    appliedFilterModuleKeys,
-    appliedFilterSubmoduleKeys,
-    appliedFilterActive,
-  ]);
-
+  }, [appliedFilterKeys, appliedFilterGroups, appliedFilterActive]);
 
   return (
     <Box>
@@ -505,41 +345,22 @@ const Modules: FC = () => {
           subtitle={t("modules:filter_modal_subtitle")}
         >
           <SelectMultipleInput
-            label={t("modules:table.type")}
-            options={moduleTypeFilterOptions}
-            value={draftFilterTypes}
-            onChange={handleDraftTypesChange}
-            placeholder={t("modules:form.type_placeholder")}
-            disabled={isBusy}
+            label={t("modules:table.key")}
+            options={keyFilterOptions}
+            value={draftFilterKeys}
+            onChange={setDraftFilterKeys}
+            placeholder={t("modules:form.key_placeholder")}
+            disabled={isBusy || isLoadingAllModules || isFetchingAllModules}
           />
 
-          {draftFilterTypes.includes("module") && (
-            <SelectMultipleInput
-              label={t("modules:modules_label", "Módulos")}
-              options={moduleFilterOptions}
-              value={draftFilterModuleKeys}
-              onChange={setDraftFilterModuleKeys}
-              placeholder={t(
-                "modules:modules_placeholder",
-                "Seleccionar módulos..."
-              )}
-              disabled={isBusy}
-            />
-          )}
-
-          {draftFilterTypes.includes("submodule") && (
-            <SelectMultipleInput
-              label={t("modules:submodules_label", "Submódulos")}
-              options={submoduleFilterOptions}
-              value={draftFilterSubmoduleKeys}
-              onChange={setDraftFilterSubmoduleKeys}
-              placeholder={t(
-                "modules:submodules_placeholder",
-                "Seleccionar submódulos..."
-              )}
-              disabled={isBusy}
-            />
-          )}
+          <SelectMultipleInput
+            label={t("modules:table.group_by")}
+            options={groupByFilterOptions}
+            value={draftFilterGroups}
+            onChange={setDraftFilterGroups}
+            placeholder={t("modules:form.group_by_placeholder")}
+            disabled={isBusy || isLoadingAllModules || isFetchingAllModules}
+          />
 
           <Box
             sx={(theme) => ({
@@ -572,28 +393,7 @@ const Modules: FC = () => {
 
       {activeFiltersCount > 0 && (
         <ActiveFilters>
-          {appliedFilterTypes.map((typeVal) => {
-            const label = t(`modules:types.${typeVal}`, typeVal);
-            return (
-              <FilterChips
-                key={`mod-type-${typeVal}`}
-                label={t("modules:filter_chips.type", { value: label })}
-                onAction={() => {
-                  setAppliedFilterTypes((prev) =>
-                    prev.filter((tp) => tp !== typeVal)
-                  );
-                  if (typeVal === "module") {
-                    setAppliedFilterModuleKeys([]);
-                  }
-                  if (typeVal === "submodule") {
-                    setAppliedFilterSubmoduleKeys([]);
-                  }
-                  setPage(0);
-                }}
-              />
-            );
-          })}
-          {appliedFilterModuleKeys.map((key) => {
+          {appliedFilterKeys.map((key) => {
             const matched = allModulesResponse?.data?.find(
               (m) => m.key === key
             );
@@ -601,34 +401,28 @@ const Modules: FC = () => {
             return (
               <FilterChips
                 key={`mod-key-${key}`}
-                label={t("modules:filter_chips.module", { value: label })}
+                label={t("modules:filter_chips.key", {
+                  value: label !== "-" ? `${label} (${key})` : key,
+                })}
                 onAction={() => {
-                  setAppliedFilterModuleKeys((prev) =>
-                    prev.filter((k) => k !== key)
-                  );
+                  setAppliedFilterKeys((prev) => prev.filter((k) => k !== key));
                   setPage(0);
                 }}
               />
             );
           })}
-          {appliedFilterSubmoduleKeys.map((key) => {
-            const matched = allModulesResponse?.data?.find(
-              (m) => m.key === key
-            );
-            const label = matched ? getModuleDisplayName(matched) : key;
-            return (
-              <FilterChips
-                key={`submod-key-${key}`}
-                label={t("modules:filter_chips.submodule", { value: label })}
-                onAction={() => {
-                  setAppliedFilterSubmoduleKeys((prev) =>
-                    prev.filter((k) => k !== key)
-                  );
-                  setPage(0);
-                }}
-              />
-            );
-          })}
+          {appliedFilterGroups.map((group) => (
+            <FilterChips
+              key={`mod-group-${group}`}
+              label={t("modules:filter_chips.group_by", { value: group })}
+              onAction={() => {
+                setAppliedFilterGroups((prev) =>
+                  prev.filter((g) => g !== group)
+                );
+                setPage(0);
+              }}
+            />
+          ))}
           {appliedFilterActive !== null && (
             <FilterChips
               label={
@@ -718,10 +512,9 @@ const Modules: FC = () => {
               >
                 <TableRow>
                   <TableCell>{t("modules:table.id")}</TableCell>
-                  <TableCell>{t("modules:table.key")}</TableCell>
                   <TableCell>{t("modules:table.name")}</TableCell>
-                  <TableCell>{t("modules:table.type")}</TableCell>
-                  <TableCell>{t("modules:table.parent_module")}</TableCell>
+                  <TableCell>{t("modules:table.key")}</TableCell>
+                  <TableCell>{t("modules:table.group_by")}</TableCell>
                   <TableCell>{t("modules:table.active")}</TableCell>
                   <TableCell align="center">
                     {t("modules:table.actions")}
@@ -729,10 +522,10 @@ const Modules: FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {!isLoadingModules && hierarchicalRows.length === 0 ? (
+                {!isLoadingModules && modulesList.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={7}
+                      colSpan={6}
                       align="center"
                       sx={{ py: 6, color: "text.secondary" }}
                     >
@@ -782,281 +575,106 @@ const Modules: FC = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  hierarchicalRows.map(({ module: m, children }) => {
+                  modulesList.map((m) => {
                     const displayName = getModuleDisplayName(m);
-                    const typeLabel = t(`modules:types.${m.type}`, m.type);
-                    const parentDisplayName = m.parent_module
-                      ? getModuleDisplayName(m.parent_module.key)
-                      : null;
-                    const resolvedParentLabel =
-                      parentDisplayName && parentDisplayName !== "-"
-                        ? parentDisplayName
-                        : m.parent_module?.key;
                     const isRowActive = m.is_active ?? true;
-                    const hasChildren = children.length > 0;
-                    const isExpanded = expandedModuleIds.has(m.id);
 
                     return (
-                      <Fragment key={m.id}>
-                        <TableRow
-                          hover
+                      <TableRow
+                        key={m.id}
+                        hover
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell
                           sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
+                            color: "text.secondary",
+                            fontSize: "0.875rem",
+                            fontFamily: "monospace",
                           }}
                         >
-                          <TableCell
+                          <Box
                             sx={{
-                              color: "text.secondary",
-                              fontSize: "0.875rem",
-                              fontFamily: "monospace",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
                             }}
                           >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                              }}
+                            {m.id.includes("-")
+                              ? `${m.id.split("-")[0]}...`
+                              : m.id}
+                            <Tooltip
+                              title={t("modules:copy")}
+                              arrow
+                              placement="top"
                             >
-                              {hasChildren ? (
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleToggleExpand(m.id)}
-                                  aria-label={
-                                    isExpanded
-                                      ? t(
-                                          "modules:collapse",
-                                          "Colapsar submódulos"
-                                        )
-                                      : t(
-                                          "modules:expand",
-                                          "Expandir submódulos"
-                                        )
-                                  }
-                                  disabled={isBusy}
-                                  sx={{ p: 0.5 }}
-                                >
-                                  {isExpanded ? (
-                                    <KeyboardArrowDownIcon fontSize="small" />
-                                  ) : (
-                                    <KeyboardArrowRightIcon fontSize="small" />
-                                  )}
-                                </IconButton>
-                              ) : (
-                                <Box sx={{ width: 28 }} />
-                              )}
-                              {m.id.split("-")[0]}...
-                              <Tooltip
-                                title={t("modules:copy")}
-                                arrow
-                                placement="top"
+                              <IconButton
+                                size="small"
+                                onClick={() => handleCopyId(m.id)}
+                                aria-label={t("modules:copy")}
+                                disabled={isBusy}
                               >
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleCopyId(m.id)}
-                                  aria-label={t("modules:copy")}
-                                  disabled={isBusy}
-                                >
-                                  <ContentCopyIcon
-                                    fontSize="small"
-                                    sx={{ fontSize: "1rem" }}
-                                  />
-                                </IconButton>
-                              </Tooltip>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <KeyBadge>{m.key}</KeyBadge>
-                          </TableCell>
-                          <TableCell>
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: "medium" }}
-                            >
-                              {displayName}
-                            </Typography>
-                          </TableCell>
-                          <TableCell>
-                            <TypeTag
-                              moduleType={m.type}
-                              label={typeLabel}
-                              size="small"
-                            />
-                          </TableCell>
-                          <TableCell>
-                            {m.parent_module ? (
-                              <ParentTag
-                                hasParent={true}
-                                label={resolvedParentLabel ?? "-"}
-                                size="small"
-                              />
-                            ) : (
-                              <ParentTag
-                                hasParent={false}
-                                label={t(
-                                  "modules:no_parent",
-                                  "Sin módulo padre"
-                                )}
-                                size="small"
-                              />
-                            )}
-                          </TableCell>
-                          <TableCell>
+                                <ContentCopyIcon
+                                  fontSize="small"
+                                  sx={{ fontSize: "1rem" }}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "medium" }}
+                          >
+                            {displayName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <KeyBadge>{m.key}</KeyBadge>
+                        </TableCell>
+                        <TableCell>
+                          {m.group_by ? (
                             <Chip
-                              label={
-                                isRowActive
-                                  ? t("modules:yes")
-                                  : t("modules:no")
-                              }
-                              color={isRowActive ? "success" : "error"}
+                              label={m.group_by}
                               size="small"
-                              variant={isRowActive ? "filled" : "outlined"}
-                              sx={
-                                isRowActive
-                                  ? { color: "success.contrastText" }
-                                  : {}
-                              }
-                            />
-                          </TableCell>
-                          <TableCell align="center">
-                            <IconButton
-                              size="small"
+                              variant="outlined"
                               color="primary"
-                              aria-label={t("modules:table.actions")}
-                              onClick={(e) => handleOpenActionMenu(e, m)}
-                              disabled={isBusy}
-                            >
-                              <MoreVertIcon fontSize="small" />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-
-                        {/* Submodule child rows when expanded */}
-                        {isExpanded &&
-                          children.map((child) => {
-                            const childDisplayName =
-                              getModuleDisplayName(child);
-                            const childTypeLabel = t(
-                              `modules:types.${child.type}`,
-                              child.type
-                            );
-                            const childParentDisplayName = child.parent_module
-                              ? getModuleDisplayName(child.parent_module.key)
-                              : displayName;
-                            const childResolvedParentLabel =
-                              childParentDisplayName &&
-                              childParentDisplayName !== "-"
-                                ? childParentDisplayName
-                                : child.parent_module?.key ?? m.key;
-                            const isChildRowActive = child.is_active ?? true;
-
-                            return (
-                              <SubmoduleTableRow key={child.id} hover>
-                                <TableCell
-                                  sx={{
-                                    color: "text.secondary",
-                                    fontSize: "0.875rem",
-                                    fontFamily: "monospace",
-                                  }}
-                                >
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 1,
-                                      pl: 3,
-                                    }}
-                                  >
-                                    <SubdirectoryArrowRightOutlinedIcon
-                                      fontSize="small"
-                                      sx={{
-                                        color: "text.disabled",
-                                        fontSize: "1.1rem",
-                                      }}
-                                    />
-                                    {child.id.split("-")[0]}...
-                                    <Tooltip
-                                      title={t("modules:copy")}
-                                      arrow
-                                      placement="top"
-                                    >
-                                      <IconButton
-                                        size="small"
-                                        onClick={() => handleCopyId(child.id)}
-                                        aria-label={t("modules:copy")}
-                                        disabled={isBusy}
-                                      >
-                                        <ContentCopyIcon
-                                          fontSize="small"
-                                          sx={{ fontSize: "1rem" }}
-                                        />
-                                      </IconButton>
-                                    </Tooltip>
-                                  </Box>
-                                </TableCell>
-                                <TableCell>
-                                  <KeyBadge>{child.key}</KeyBadge>
-                                </TableCell>
-                                <TableCell>
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: "medium" }}
-                                  >
-                                    {childDisplayName}
-                                  </Typography>
-                                </TableCell>
-                                <TableCell>
-                                  <TypeTag
-                                    moduleType={child.type}
-                                    label={childTypeLabel}
-                                    size="small"
-                                  />
-                                </TableCell>
-                                <TableCell>
-                                  <ParentTag
-                                    hasParent={true}
-                                    label={childResolvedParentLabel ?? "-"}
-                                    size="small"
-                                  />
-                                </TableCell>
-                                <TableCell>
-                                  <Chip
-                                    label={
-                                      isChildRowActive
-                                        ? t("modules:yes")
-                                        : t("modules:no")
-                                    }
-                                    color={
-                                      isChildRowActive ? "success" : "error"
-                                    }
-                                    size="small"
-                                    variant={
-                                      isChildRowActive ? "filled" : "outlined"
-                                    }
-                                    sx={
-                                      isChildRowActive
-                                        ? { color: "success.contrastText" }
-                                        : {}
-                                    }
-                                  />
-                                </TableCell>
-                                <TableCell align="center">
-                                  <IconButton
-                                    size="small"
-                                    color="primary"
-                                    aria-label={t("modules:table.actions")}
-                                    onClick={(e) =>
-                                      handleOpenActionMenu(e, child)
-                                    }
-                                    disabled={isBusy}
-                                  >
-                                    <MoreVertIcon fontSize="small" />
-                                  </IconButton>
-                                </TableCell>
-                              </SubmoduleTableRow>
-                            );
-                          })}
-                      </Fragment>
+                            />
+                          ) : (
+                            t("modules:empty_value")
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={
+                              isRowActive
+                                ? t("modules:yes")
+                                : t("modules:no")
+                            }
+                            color={isRowActive ? "success" : "error"}
+                            size="small"
+                            variant={isRowActive ? "filled" : "outlined"}
+                            sx={
+                              isRowActive
+                                ? { color: "success.contrastText" }
+                                : {}
+                            }
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            aria-label={t("modules:table.actions")}
+                            onClick={(e) => handleOpenActionMenu(e, m)}
+                            disabled={isBusy}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
                     );
                   })
                 )}
@@ -1163,13 +781,9 @@ const Modules: FC = () => {
         }
         message={
           moduleToToggle?.is_active ?? true
-            ? isModuleWithChildren
-              ? t("modules:confirm_deactivate_with_children_message", {
-                  name: moduleToToggle?.key,
-                })
-              : t("modules:confirm_deactivate_message", {
-                  name: moduleToToggle?.key,
-                })
+            ? t("modules:confirm_deactivate_message", {
+                name: moduleToToggle?.key,
+              })
             : t("modules:confirm_activate_message", {
                 name: moduleToToggle?.key,
               })
@@ -1191,9 +805,7 @@ const Modules: FC = () => {
         }}
         onSubmit={handleSaveModule}
         initialData={selectedModuleForEdit}
-        availableParents={parentModuleOptions}
         isSubmitting={isMutating}
-        isLoadingParents={isLoadingAllModules || isFetchingAllModules}
       />
     </Box>
   );

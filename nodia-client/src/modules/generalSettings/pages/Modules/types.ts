@@ -1,49 +1,35 @@
-export type ModuleType = "module" | "submodule";
-
-export type ParentModule = {
-  id: string;
+export type TranslateItem = {
   key: string;
+  es: string;
+  en: string;
 };
 
 export type ModuleItem = {
   id: string;
   key: string;
-  type: ModuleType;
-  parentModule: ParentModule | null;
-  nameTranslations: Record<string, string>;
+  group_by: string;
+  nameTranslations?: Record<string, string>;
   isActive: boolean;
+  translates?: TranslateItem[];
 };
 
 export type ModuleFormData = {
   id?: string;
   key: string;
-  type: ModuleType;
-  parentId: string | null;
-  parentKey?: string | null;
+  group_by: string;
   nameTranslations: Record<string, string>;
   isActive: boolean;
-};
-
-export type ParentModuleOption = {
-  value: string;
-  label: string;
-  category?: string;
+  translates?: TranslateItem[];
 };
 
 export interface ModuleEntity {
   id: string;
   key: string;
-  type: ModuleType;
-  parent_id: string | null;
-  parent_module?: {
-    id: string;
-    key: string;
-    type: ModuleType;
-    is_active: boolean;
-  } | null;
+  group_by: string;
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;
+  translates?: TranslateItem[];
 }
 
 export interface GetModulesParams {
@@ -67,14 +53,14 @@ export interface PaginatedResponse<T> {
 
 export interface CreateModulePayload {
   key: string;
-  type: ModuleType;
-  parent_id?: string | null;
+  group_by: string;
   is_active?: boolean;
+  translates?: TranslateItem[];
 }
 
 export interface UpdateModulePayload {
   key?: string;
-  type?: ModuleType;
-  parent_id?: string | null;
+  group_by?: string;
   is_active?: boolean;
+  translates?: TranslateItem[];
 }

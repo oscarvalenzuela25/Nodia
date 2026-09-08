@@ -17,6 +17,8 @@
     "email_placeholder": "example@email.com",
     "roles": "Roles",
     "roles_placeholder": "Select roles...",
+    "modules": "Modules",
+    "modules_placeholder": "Select modules...",
     "image_url": "Image URL",
     "image_url_placeholder": "https://example.com/image.jpg"
   },
@@ -25,6 +27,7 @@
     "name": "Name",
     "email": "Email",
     "roles": "Roles",
+    "modules": "Modules",
     "active": "Active",
     "actions": "Actions"
   },
@@ -35,6 +38,7 @@
     "name": "Name: {{value}}",
     "email": "Email: {{value}}",
     "role": "Role: {{value}}",
+    "module": "Module: {{value}}",
     "active_only": "Active only"
   },
   "yes": "Yes",

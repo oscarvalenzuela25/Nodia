@@ -11,10 +11,10 @@
   "search_placeholder": "Buscar por nombre o identificador...",
   "form": {
     "active": "Activo",
-    "key": "Identificador / Key",
+    "key": "Identificador",
     "key_placeholder": "ej: super_admin, editor, gestor",
     "key_helper": "Identificador único utilizado internamente por el sistema.",
-    "translations_title": "Traducciones del Nombre",
+    "translations_title": "Traducciones del Identificador",
     "translations_subtitle": "Define cómo se mostrará el nombre del rol en cada idioma.",
     "name_es": "Nombre (Español)",
     "name_es_placeholder": "ej: Administrador Principal",
@@ -25,7 +25,7 @@
   },
   "table": {
     "id": "Id",
-    "name": "Nombre del rol",
+    "name": "Nombre",
     "key": "Identificador",
     "actions": "Acciones asociadas",
     "active": "Activo",

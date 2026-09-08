@@ -17,6 +17,8 @@
     "email_placeholder": "correo@ejemplo.com",
     "roles": "Roles",
     "roles_placeholder": "Seleccionar roles...",
+    "modules": "Módulos",
+    "modules_placeholder": "Seleccionar módulos...",
     "image_url": "URL de imagen",
     "image_url_placeholder": "https://ejemplo.com/imagen.jpg"
   },
@@ -25,6 +27,7 @@
     "name": "Nombre",
     "email": "Correo Electrónico",
     "roles": "Roles",
+    "modules": "Módulos",
     "active": "Activo",
     "actions": "Acciones"
   },
@@ -35,6 +38,7 @@
     "name": "Nombre: {{value}}",
     "email": "Email: {{value}}",
     "role": "Rol: {{value}}",
+    "module": "Módulo: {{value}}",
     "active_only": "Solo activos"
   },
   "yes": "Sí",

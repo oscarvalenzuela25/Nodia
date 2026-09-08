@@ -32,44 +32,34 @@ vi.mock(
 const mockModules: ModuleEntity[] = [
   {
     id: "m1",
-    key: "general_settings",
-    type: "module",
-    parent_id: null,
-    parent_module: null,
+    key: "users",
+    group_by: "administration",
     is_active: true,
+    translates: [
+      {
+        key: "key",
+        es: "Usuarios",
+        en: "Users",
+      },
+    ],
   },
   {
     id: "m2",
-    key: "users",
-    type: "submodule",
-    parent_id: "m1",
-    parent_module: {
-      id: "m1",
-      key: "general_settings",
-      type: "module",
-      is_active: true,
-    },
+    key: "roles",
+    group_by: "administration",
     is_active: true,
+    translates: [
+      {
+        key: "key",
+        es: "Roles",
+        en: "Roles",
+      },
+    ],
   },
   {
     id: "m3",
     key: "untranslated_feature",
-    type: "module",
-    parent_id: null,
-    parent_module: null,
-    is_active: true,
-  },
-  {
-    id: "m4",
-    key: "export_logs",
-    type: "submodule",
-    parent_id: "m1",
-    parent_module: {
-      id: "m1",
-      key: "general_settings",
-      type: "module",
-      is_active: true,
-    },
+    group_by: "reports",
     is_active: false,
   },
 ];
@@ -107,84 +97,41 @@ describe("Modules Page", () => {
     vi.mocked(services.getModules).mockResolvedValue(mockPaginatedResponse);
   });
 
-  it("renders modules table with expected columns and root modules initially collapsed", async () => {
+  it("renders modules table with expected columns and initial modules", async () => {
     renderWithClient(<Modules />);
 
     expect(screen.getAllByText("Módulos").length).toBeGreaterThanOrEqual(1);
 
     await waitFor(() => {
       expect(screen.getByText("Id")).toBeInTheDocument();
+      expect(screen.getByText("Nombre")).toBeInTheDocument();
       expect(screen.getByText("Identificador")).toBeInTheDocument();
-      expect(screen.getByText("Nombre del módulo")).toBeInTheDocument();
-      expect(screen.getByText("Tipo")).toBeInTheDocument();
-      expect(screen.getByText("Módulo padre")).toBeInTheDocument();
+      expect(screen.getByText("Grupo")).toBeInTheDocument();
       expect(screen.getByText("Activo")).toBeInTheDocument();
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
-      expect(
-        screen.getAllByText("Ajustes Generales").length
-      ).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText("untranslated_feature")).toBeInTheDocument();
-      expect(
-        screen.getAllByText("Sin módulo padre").length
-      ).toBeGreaterThanOrEqual(1);
-    });
+      expect(screen.getByText("Acciones")).toBeInTheDocument();
 
-    // Submodules users and export_logs should not be visible when collapsed
-    expect(screen.queryByText("users")).not.toBeInTheDocument();
-    expect(screen.queryByText("export_logs")).not.toBeInTheDocument();
+      expect(screen.getByText("users")).toBeInTheDocument();
+      expect(screen.getByText("Usuarios")).toBeInTheDocument();
+      expect(screen.getAllByText("administration").length).toBeGreaterThanOrEqual(2);
+      expect(screen.getByText("untranslated_feature")).toBeInTheDocument();
+    });
   });
 
-  it("expands and collapses submodules when clicking the arrow icon", async () => {
-    const user = userEvent.setup();
+  it("fetches modules for filters with all=true & includes=false and for table with includes=true", async () => {
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(services.getModules).toHaveBeenCalledWith({
+        all: true,
+        includes: false,
+      });
+      expect(services.getModules).toHaveBeenCalledWith({
+        page: 1,
+        size: 10,
+        includes: true,
+        q: undefined,
+      });
     });
-
-    // Parent module general_settings has submodules, so it has the expand arrow
-    const expandBtn = screen.getByRole("button", {
-      name: "Expandir submódulos",
-    });
-    expect(expandBtn).toBeInTheDocument();
-
-    // Click expand
-    await user.click(expandBtn);
-
-    // Now submodules are visible
-    expect(screen.getByText("users")).toBeInTheDocument();
-    expect(screen.getByText("Usuarios")).toBeInTheDocument();
-    expect(screen.getByText("export_logs")).toBeInTheDocument();
-
-    // Button label changed to collapse
-    const collapseBtn = screen.getByRole("button", {
-      name: "Colapsar submódulos",
-    });
-    expect(collapseBtn).toBeInTheDocument();
-
-    // Click collapse
-    await user.click(collapseBtn);
-
-    // Submodules are hidden again
-    expect(screen.queryByText("users")).not.toBeInTheDocument();
-    expect(screen.queryByText("export_logs")).not.toBeInTheDocument();
-  });
-
-  it("does not display expand arrow for modules without submodules", async () => {
-    renderWithClient(<Modules />);
-
-    await waitFor(() => {
-      expect(screen.getByText("untranslated_feature")).toBeInTheDocument();
-    });
-
-    const untranslatedRow = screen
-      .getByText("untranslated_feature")
-      .closest("tr")!;
-    expect(
-      within(untranslatedRow).queryByRole("button", {
-        name: /submódulos/i,
-      })
-    ).not.toBeInTheDocument();
   });
 
   it("displays '-' when a module does not have a translated name", async () => {
@@ -203,81 +150,39 @@ describe("Modules Page", () => {
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(screen.getByText("users")).toBeInTheDocument();
     });
 
     const searchInput = screen.getByPlaceholderText(
       "Buscar por identificador..."
     );
 
-    await user.type(searchInput, "users");
+    await user.type(searchInput, "roles");
 
     await waitFor(() => {
       expect(services.getModules).toHaveBeenCalledWith(
         expect.objectContaining({
           q: expect.objectContaining({
-            key_cont: "users",
+            key_cont: "roles",
           }),
         })
       );
     });
   });
 
-  it("renders child module as a root row without expand arrow when only child is in result", async () => {
-    vi.mocked(services.getModules).mockResolvedValue({
-      data: [
-        {
-          id: "m2",
-          key: "users",
-          type: "submodule",
-          parent_id: "m1",
-          parent_module: {
-            id: "m1",
-            key: "general_settings",
-            type: "module",
-            is_active: true,
-          },
-          is_active: true,
-        },
-      ],
-      meta: {
-        page: 1,
-        limit: 10,
-        total_items: 1,
-        total_pages: 1,
-      },
-    });
-
-    renderWithClient(<Modules />);
-
-    await waitFor(() => {
-      expect(screen.getByText("users")).toBeInTheDocument();
-      expect(screen.getByText("Usuarios")).toBeInTheDocument();
-    });
-
-    const usersRow = screen.getByText("users").closest("tr")!;
-    expect(
-      within(usersRow).queryByRole("button", {
-        name: /submódulos/i,
-      })
-    ).not.toBeInTheDocument();
-  });
-
   it("opens create module modal and creates a module via createModule", async () => {
     const user = userEvent.setup();
     vi.mocked(services.createModule).mockResolvedValue({
-      id: "m5",
+      id: "m4",
       key: "billing",
-      type: "module",
-      parent_id: null,
-      parent_module: null,
+      group_by: "finance",
       is_active: true,
     });
 
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(screen.getByText("users")).toBeInTheDocument();
     });
 
     const newModuleBtn = screen.getByRole("button", {
@@ -289,8 +194,11 @@ describe("Modules Page", () => {
       screen.getByRole("heading", { name: "Nuevo Módulo" })
     ).toBeInTheDocument();
 
-    const keyInput = screen.getByLabelText(/Identificador \/ Key/i);
+    const keyInput = screen.getByPlaceholderText(/users, roles, settings/i);
     await user.type(keyInput, "billing");
+
+    const groupInput = screen.getByPlaceholderText(/settings, catalog/i);
+    await user.type(groupInput, "finance");
 
     const submitBtn = screen.getByRole("button", { name: "Crear Módulo" });
     await user.click(submitBtn);
@@ -298,9 +206,15 @@ describe("Modules Page", () => {
     await waitFor(() => {
       expect(services.createModule).toHaveBeenCalledWith({
         key: "billing",
-        type: "module",
-        parent_id: null,
+        group_by: "finance",
         is_active: true,
+        translates: [
+          {
+            key: "key",
+            es: "billing",
+            en: "billing",
+          },
+        ],
       });
     });
   });
@@ -309,23 +223,19 @@ describe("Modules Page", () => {
     const user = userEvent.setup();
     vi.mocked(services.updateModule).mockResolvedValue({
       id: "m1",
-      key: "general_settings_updated",
-      type: "module",
-      parent_id: null,
-      parent_module: null,
+      key: "users",
+      group_by: "administration_updated",
       is_active: true,
     });
 
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(screen.getByText("users")).toBeInTheDocument();
     });
 
-    const generalSettingsRow = screen
-      .getByText("general_settings")
-      .closest("tr")!;
-    const actionBtn = within(generalSettingsRow).getByRole("button", {
+    const usersRow = screen.getByText("users").closest("tr")!;
+    const actionBtn = within(usersRow).getByRole("button", {
       name: "Acciones",
     });
     await user.click(actionBtn);
@@ -338,7 +248,8 @@ describe("Modules Page", () => {
     expect(
       screen.getByRole("heading", { name: "Actualizar Módulo" })
     ).toBeInTheDocument();
-    expect(screen.getByDisplayValue("general_settings")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("users")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("administration")).toBeInTheDocument();
 
     const submitBtn = screen.getByRole("button", {
       name: "Actualizar Módulo",
@@ -349,77 +260,35 @@ describe("Modules Page", () => {
       expect(services.updateModule).toHaveBeenCalledWith(
         "m1",
         expect.objectContaining({
-          key: "general_settings",
-          type: "module",
+          key: "users",
+          group_by: "administration",
+          is_active: true,
+          translates: [
+            {
+              key: "key",
+              es: "Usuarios",
+              en: "Users",
+            },
+          ],
         })
       );
     });
   });
 
-  it("shows conditional warning when deactivating a module with children and calls updateModule", async () => {
+  it("opens ConfirmDialog and deactivates an active module", async () => {
     const user = userEvent.setup();
     vi.mocked(services.updateModule).mockResolvedValue({
       id: "m1",
-      key: "general_settings",
-      type: "module",
-      parent_id: null,
-      parent_module: null,
+      key: "users",
+      group_by: "administration",
       is_active: false,
     });
 
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(screen.getByText("users")).toBeInTheDocument();
     });
-
-    const generalSettingsRow = screen
-      .getByText("general_settings")
-      .closest("tr")!;
-    const actionBtn = within(generalSettingsRow).getByRole("button", {
-      name: "Acciones",
-    });
-    await user.click(actionBtn);
-
-    const deactivateOption = screen.getByRole("menuitem", {
-      name: /Desactivar/i,
-    });
-    await user.click(deactivateOption);
-
-    expect(
-      screen.getByRole("heading", { name: "¿Desactivar módulo?" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /Todos los submódulos asociados también quedarán deshabilitados/i
-      )
-    ).toBeInTheDocument();
-
-    const confirmBtn = screen.getByRole("button", { name: "Desactivar" });
-    await user.click(confirmBtn);
-
-    await waitFor(() => {
-      expect(services.updateModule).toHaveBeenCalledWith("m1", {
-        is_active: false,
-      });
-    });
-  });
-
-  it("shows standard deactivation message when deactivating an expanded submodule", async () => {
-    const user = userEvent.setup();
-    renderWithClient(<Modules />);
-
-    await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
-    });
-
-    // Expand general_settings to reveal users
-    const expandBtn = screen.getByRole("button", {
-      name: "Expandir submódulos",
-    });
-    await user.click(expandBtn);
-
-    expect(screen.getByText("users")).toBeInTheDocument();
 
     const usersRow = screen.getByText("users").closest("tr")!;
     const actionBtn = within(usersRow).getByRole("button", {
@@ -436,49 +305,36 @@ describe("Modules Page", () => {
       screen.getByRole("heading", { name: "¿Desactivar módulo?" })
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        '¿Está seguro de que desea desactivar el módulo "users"?'
-      )
+      screen.getByText('¿Está seguro de que desea desactivar el módulo "users"?')
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        /Todos los submódulos asociados también quedarán deshabilitados/i
-      )
-    ).not.toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole("button", { name: "Desactivar" });
+    await user.click(confirmBtn);
+
+    await waitFor(() => {
+      expect(services.updateModule).toHaveBeenCalledWith("m1", {
+        is_active: false,
+      });
+    });
   });
 
-  it("shows activation dialog and activates an inactive module", async () => {
+  it("opens ConfirmDialog and activates an inactive module", async () => {
     const user = userEvent.setup();
     vi.mocked(services.updateModule).mockResolvedValue({
-      id: "m4",
-      key: "export_logs",
-      type: "submodule",
-      parent_id: "m1",
-      parent_module: {
-        id: "m1",
-        key: "general_settings",
-        type: "module",
-        is_active: true,
-      },
+      id: "m3",
+      key: "untranslated_feature",
+      group_by: "reports",
       is_active: true,
     });
 
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(screen.getByText("untranslated_feature")).toBeInTheDocument();
     });
 
-    // Expand general_settings to reveal inactive export_logs
-    const expandBtn = screen.getByRole("button", {
-      name: "Expandir submódulos",
-    });
-    await user.click(expandBtn);
-
-    expect(screen.getByText("export_logs")).toBeInTheDocument();
-
-    const exportLogsRow = screen.getByText("export_logs").closest("tr")!;
-    const actionBtn = within(exportLogsRow).getByRole("button", {
+    const row = screen.getByText("untranslated_feature").closest("tr")!;
+    const actionBtn = within(row).getByRole("button", {
       name: "Acciones",
     });
     await user.click(actionBtn);
@@ -491,7 +347,7 @@ describe("Modules Page", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        '¿Está seguro de que desea activar el módulo "export_logs"?'
+        '¿Está seguro de que desea activar el módulo "untranslated_feature"?'
       )
     ).toBeInTheDocument();
 
@@ -499,7 +355,7 @@ describe("Modules Page", () => {
     await user.click(confirmBtn);
 
     await waitFor(() => {
-      expect(services.updateModule).toHaveBeenCalledWith("m4", {
+      expect(services.updateModule).toHaveBeenCalledWith("m3", {
         is_active: true,
       });
     });
@@ -519,7 +375,7 @@ describe("Modules Page", () => {
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(screen.getByText("users")).toBeInTheDocument();
     });
 
     const copyButtons = screen.getAllByRole("button", { name: "Copiar ID" });
@@ -556,9 +412,12 @@ describe("Modules Page", () => {
   });
 
   it("renders error state when query fails and allows retry", async () => {
-    vi.mocked(services.getModules).mockRejectedValue(
-      new Error("Network connection error")
-    );
+    vi.mocked(services.getModules).mockImplementation(async (params) => {
+      if (params?.page) {
+        throw new Error("Network connection error");
+      }
+      return mockPaginatedResponse;
+    });
 
     renderWithClient(<Modules />);
 
@@ -573,12 +432,12 @@ describe("Modules Page", () => {
     expect(retryBtn).toBeInTheDocument();
   });
 
-  it("displays conditional module and submodule inputs in filter modal when types are selected", async () => {
+  it("opens filter modal with Identificador and Grupo filter fields", async () => {
     const user = userEvent.setup();
     renderWithClient(<Modules />);
 
     await waitFor(() => {
-      expect(screen.getByText("general_settings")).toBeInTheDocument();
+      expect(screen.getByText("users")).toBeInTheDocument();
     });
 
     // Open filter modal
@@ -586,32 +445,18 @@ describe("Modules Page", () => {
     await user.click(filterBtn);
 
     expect(screen.getByText("Filtros de módulos")).toBeInTheDocument();
+    expect(screen.getAllByText("Identificador").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText("Grupo").length).toBeGreaterThanOrEqual(2);
 
-    // Initially, neither "Módulos" nor "Submódulos" select inputs are present
-    expect(
-      screen.queryByText("Seleccionar módulos...")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Seleccionar submódulos...")
-    ).not.toBeInTheDocument();
+    // Click Identificador filter input to open options
+    const keyInput = screen.getByText(/ej: users, roles, settings/i);
+    await user.click(keyInput);
 
-    // Click Tipo select trigger to open options popover
-    const typeSelect = screen.getByRole("button", { name: "Tipo" });
-    await user.click(typeSelect);
-
-    // Select "Módulo"
-    const moduleOption = screen.getByRole("menuitem", { name: "Módulo" });
-    await user.click(moduleOption);
-
-    // Now the conditional "Módulos" input appears
-    expect(screen.getByText("Seleccionar módulos...")).toBeInTheDocument();
-
-    // Select "Submódulo" as well
-    const submoduleOption = screen.getByRole("menuitem", { name: "Submódulo" });
-    await user.click(submoduleOption);
-
-    // Now both "Módulos" and "Submódulos" are present
-    expect(screen.getByText("Seleccionar submódulos...")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Usuarios (users)")).toBeInTheDocument();
+      expect(screen.getByText("Roles (roles)")).toBeInTheDocument();
+    });
   });
 });
+
 

@@ -7,30 +7,32 @@
   "create_action_button": "Crear Accionable",
   "update_action_button": "Actualizar Accionable",
   "filter_modal_title": "Filtros de acciones",
-  "filter_modal_subtitle": "Filtra la lista de accionables por nombre, módulo asociado o estado activo.",
-  "search_placeholder": "Buscar por nombre o identificador...",
+  "filter_modal_subtitle": "Filtra la lista de accionables por identificador o estado activo.",
+  "search_placeholder": "Buscar por identificador...",
   "form": {
     "active": "Activo",
     "key": "Identificador",
     "key_placeholder": "ej: users.create, roles.manage",
     "key_helper": "Identificador único utilizado internamente por el sistema.",
-    "translations_title": "Traducciones del Nombre",
+    "translations_title": "Traducciones del Identificador",
     "translations_subtitle": "Define cómo se mostrará el nombre del accionable en cada idioma.",
     "name_es": "Nombre (Español)",
     "name_es_placeholder": "ej: Crear Usuarios",
     "name_en": "Nombre (Inglés)",
     "name_en_placeholder": "ej: Create Users",
-    "module": "Módulo Asociado (Opcional)",
-    "module_placeholder": "Seleccionar módulo...",
     "description": "Descripción",
-    "description_placeholder": "Describe el propósito funcional o técnico de este accionable..."
+    "description_translations_title": "Traducciones de la Descripción",
+    "description_translations_subtitle": "Define cómo se describirá la acción en cada idioma.",
+    "description_es": "Descripción (Español)",
+    "description_es_placeholder": "ej: Permite crear y gestionar nuevos usuarios",
+    "description_en": "Descripción (Inglés)",
+    "description_en_placeholder": "ej: Allows creating and managing new users"
   },
   "table": {
     "id": "Id",
     "name": "Nombre",
     "key": "Identificador",
     "description": "Descripción",
-    "module": "Módulo asociado",
     "active": "Activo",
     "actions": "Acciones"
   },
@@ -39,7 +41,6 @@
   },
   "filter_chips": {
     "action": "Acción: {{value}}",
-    "module": "Módulo: {{value}}",
     "active_only": "Solo activos"
   },
   "action_names": {

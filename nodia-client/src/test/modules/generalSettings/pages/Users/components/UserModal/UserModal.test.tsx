@@ -9,6 +9,7 @@ import type {
 } from "../../../../../../../modules/generalSettings/pages/Roles/types";
 import UserModal from "../../../../../../../modules/generalSettings/pages/Users/components/UserModal";
 import * as rolesServices from "../../../../../../../modules/generalSettings/pages/Roles/infrastructure/services";
+import * as modulesServices from "../../../../../../../modules/generalSettings/pages/Modules/infrastructure/services";
 
 vi.mock(
   "../../../../../../../modules/generalSettings/pages/Roles/infrastructure/services",
@@ -17,10 +18,47 @@ vi.mock(
   })
 );
 
+vi.mock(
+  "../../../../../../../modules/generalSettings/pages/Modules/infrastructure/services",
+  () => ({
+    getModules: vi.fn(),
+  })
+);
+
 const mockRolesResponse: PaginatedResponse<Role> = {
   data: [
-    { id: "r1", key: "Admin", is_active: true },
-    { id: "r2", key: "User", is_active: true },
+    {
+      id: "r1",
+      key: "Admin",
+      is_active: true,
+      translates: [{ key: "key", es: "Super Administrador", en: "Admin" }],
+    },
+    {
+      id: "r2",
+      key: "User",
+      is_active: true,
+      translates: [{ key: "key", es: "Usuario Estándar", en: "User" }],
+    },
+  ],
+  meta: { page: 1, limit: 10, total_items: 2, total_pages: 1 },
+};
+
+const mockModulesResponse = {
+  data: [
+    {
+      id: "mod-1",
+      key: "users",
+      group_by: "system",
+      is_active: true,
+      translates: [{ key: "key", es: "Usuarios", en: "Users" }],
+    },
+    {
+      id: "mod-2",
+      key: "roles",
+      group_by: "system",
+      is_active: true,
+      translates: [{ key: "key", es: "Roles de Sistema", en: "Roles" }],
+    },
   ],
   meta: { page: 1, limit: 10, total_items: 2, total_pages: 1 },
 };
@@ -46,6 +84,7 @@ describe("UserModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(rolesServices.getRoles).mockResolvedValue(mockRolesResponse);
+    vi.mocked(modulesServices.getModules).mockResolvedValue(mockModulesResponse);
   });
   it("renders create modal with empty fields and default active switch", () => {
     renderWithClient(
@@ -61,6 +100,7 @@ describe("UserModal", () => {
     expect(screen.getByText("Nombre")).toBeInTheDocument();
     expect(screen.getByText("Correo Electrónico")).toBeInTheDocument();
     expect(screen.getByText("Roles")).toBeInTheDocument();
+    expect(screen.getByText("Módulos")).toBeInTheDocument();
     expect(screen.getByText("URL de imagen")).toBeInTheDocument();
 
     const submitBtn = screen.getByRole("button", { name: "Crear Usuario" });
@@ -134,6 +174,7 @@ describe("UserModal", () => {
           name: "Existing User",
           email: "existing@example.com",
           roles: ["Admin"],
+          modules: ["mod-1"],
           isActive: false,
           imageUrl: "https://example.com/pic.jpg",
         }}
@@ -156,12 +197,13 @@ describe("UserModal", () => {
       name: "Existing User",
       email: "existing@example.com",
       roles: ["Admin"],
+      modules: ["mod-1"],
       isActive: false,
       imageUrl: "https://example.com/pic.jpg",
     });
   });
 
-  it("fetches roles with all=true and includes=false when modal is opened", async () => {
+  it("fetches roles and modules with all=true and includes=false when modal is opened", async () => {
     renderWithClient(
       <UserModal
         open={true}
@@ -175,6 +217,47 @@ describe("UserModal", () => {
         all: true,
         includes: false,
       });
+      expect(modulesServices.getModules).toHaveBeenCalledWith({
+        all: true,
+        includes: false,
+      });
+    });
+  });
+
+  it("renders role and module options formatted as Translate (key)", async () => {
+    const user = userEvent.setup();
+
+    renderWithClient(
+      <UserModal
+        open={true}
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    // Open roles select
+    const rolesSelect = screen.getByText("Seleccionar roles...");
+    await user.click(rolesSelect);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Super Administrador (Admin)")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Usuario Estándar (User)")
+      ).toBeInTheDocument();
+    });
+
+    // Close roles select by pressing Escape
+    await user.keyboard("{Escape}");
+
+    // Open modules select
+    const modulesSelect = screen.getByText("Seleccionar módulos...");
+    await user.click(modulesSelect);
+
+    await waitFor(() => {
+      expect(screen.getByText("Usuarios (users)")).toBeInTheDocument();
+      expect(screen.getByText("Roles de Sistema (roles)")).toBeInTheDocument();
     });
   });
 });

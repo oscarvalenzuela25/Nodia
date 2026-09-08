@@ -1,3 +1,9 @@
+export type TranslateItem = {
+  key: string;
+  es: string;
+  en: string;
+};
+
 export interface Action {
   id: string;
   module_id: string;
@@ -6,6 +12,7 @@ export interface Action {
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
+  translates?: TranslateItem[];
 }
 
 export interface Role {
@@ -16,6 +23,7 @@ export interface Role {
   updated_at?: string;
   actions?: (Action | string)[];
   nameTranslations?: Record<string, string>;
+  translates?: TranslateItem[];
 }
 
 export interface PaginationMeta {
@@ -40,8 +48,10 @@ export interface GetRolesParams {
 
 export type RoleItem = {
   id: string;
+  name?: string | null;
   key: string;
   nameTranslations?: Record<string, string>;
+  translates?: TranslateItem[];
   actions: string[];
   isActive: boolean;
 };
@@ -52,6 +62,7 @@ export type RoleFormData = {
   nameTranslations?: Record<string, string>;
   actions: string[];
   isActive: boolean;
+  translates?: TranslateItem[];
 };
 
 export type ActionOption = {
@@ -64,10 +75,12 @@ export interface CreateRolePayload {
   key: string;
   is_active?: boolean;
   actions?: string[];
+  translates?: TranslateItem[];
 }
 
 export interface UpdateRolePayload {
   key?: string;
   is_active?: boolean;
   actions?: string[];
+  translates?: TranslateItem[];
 }

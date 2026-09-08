@@ -1,27 +1,28 @@
+export type TranslateItem = {
+  key: string;
+  es: string;
+  en: string;
+};
+
 export type ActionItem = {
   id: string;
+  name?: string | null;
   key: string;
   nameTranslations?: Record<string, string>;
+  descriptionTranslations?: Record<string, string>;
   description: string | null;
-  moduleId?: string | null;
-  moduleKey: string | null;
   isActive: boolean;
+  translates?: TranslateItem[];
 };
 
 export type ActionFormData = {
   id?: string;
   key: string;
   nameTranslations?: Record<string, string>;
+  descriptionTranslations?: Record<string, string>;
   description: string | null;
-  moduleId?: string | null;
-  moduleKey?: string | null;
   isActive: boolean;
-};
-
-export type ModuleOption = {
-  value: string;
-  label: string;
-  category?: string;
+  translates?: TranslateItem[];
 };
 
 export type Action = {
@@ -29,28 +30,23 @@ export type Action = {
   key: string;
   description?: string | null;
   is_active?: boolean;
-  module_id?: string | null;
-  module?: {
-    id: string;
-    key: string;
-    type?: string;
-  } | null;
   created_at?: string;
   updated_at?: string;
+  translates?: TranslateItem[];
 };
 
 export type CreateActionPayload = {
   key: string;
-  module_id?: string | null;
   description?: string | null;
   is_active?: boolean;
+  translates?: TranslateItem[];
 };
 
 export type UpdateActionPayload = {
   key?: string;
-  module_id?: string | null;
   description?: string | null;
   is_active?: boolean;
+  translates?: TranslateItem[];
 };
 
 export type GetActionsParams = {

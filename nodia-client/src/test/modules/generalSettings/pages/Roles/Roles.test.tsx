@@ -42,6 +42,13 @@ const mockRoles: Role[] = [
     id: "123e4567-e89b-12d3-a456-426614174001",
     key: "admin",
     is_active: true,
+    translates: [
+      {
+        key: "key",
+        es: "Super Administrador",
+        en: "Super Administrator",
+      },
+    ],
     nameTranslations: {
       es: "Super Administrador",
       en: "Super Administrator",
@@ -61,6 +68,13 @@ const mockRoles: Role[] = [
     id: "123e4567-e89b-12d3-a456-426614174002",
     key: "manager",
     is_active: true,
+    translates: [
+      {
+        key: "key",
+        es: "Gerente de Operaciones",
+        en: "Operations Manager",
+      },
+    ],
     nameTranslations: {
       es: "Gerente de Operaciones",
       en: "Operations Manager",
@@ -71,6 +85,13 @@ const mockRoles: Role[] = [
     id: "123e4567-e89b-12d3-a456-426614174003",
     key: "editor",
     is_active: true,
+    translates: [
+      {
+        key: "key",
+        es: "Editor de Recursos",
+        en: "Resource Editor",
+      },
+    ],
     nameTranslations: {
       es: "Editor de Recursos",
       en: "Resource Editor",
@@ -91,14 +112,70 @@ const mockPaginatedResponse: PaginatedResponse<Role> = {
 
 const mockActionsResponse = {
   data: [
-    { id: "act-1", key: "users.create", is_active: true },
-    { id: "act-2", key: "users.read", is_active: true },
-    { id: "act-3", key: "users.update", is_active: true },
-    { id: "act-4", key: "users.delete", is_active: true },
-    { id: "act-5", key: "roles.manage", is_active: true },
-    { id: "act-6", key: "reports.view", is_active: true },
-    { id: "act-7", key: "settings.edit", is_active: true },
-    { id: "act-8", key: "audit.logs", is_active: true },
+    {
+      id: "act-1",
+      key: "users.create",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Crear Usuarios", en: "Create Users" },
+      ],
+    },
+    {
+      id: "act-2",
+      key: "users.read",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Ver Usuarios", en: "View Users" },
+      ],
+    },
+    {
+      id: "act-3",
+      key: "users.update",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Editar Usuarios", en: "Edit Users" },
+      ],
+    },
+    {
+      id: "act-4",
+      key: "users.delete",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Eliminar Usuarios", en: "Delete Users" },
+      ],
+    },
+    {
+      id: "act-5",
+      key: "roles.manage",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Gestionar Roles", en: "Manage Roles" },
+      ],
+    },
+    {
+      id: "act-6",
+      key: "reports.view",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Ver Reportes", en: "View Reports" },
+      ],
+    },
+    {
+      id: "act-7",
+      key: "settings.edit",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Configuración General", en: "General Settings" },
+      ],
+    },
+    {
+      id: "act-8",
+      key: "audit.logs",
+      is_active: true,
+      translates: [
+        { key: "key", es: "Auditoría y Logs", en: "Audit & Logs" },
+      ],
+    },
   ],
   meta: {
     page: 1,
@@ -139,21 +216,27 @@ describe("Roles Page", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Id")).toBeInTheDocument();
+      expect(screen.getByText("Nombre")).toBeInTheDocument();
       expect(screen.getByText("Identificador")).toBeInTheDocument();
       expect(screen.getByText("Acciones asociadas")).toBeInTheDocument();
       expect(screen.getByText("Activo")).toBeInTheDocument();
       expect(screen.getByText("Acciones")).toBeInTheDocument();
 
+      expect(screen.getByText("Super Administrador")).toBeInTheDocument();
       expect(screen.getByText("admin")).toBeInTheDocument();
       expect(screen.getByText("manager")).toBeInTheDocument();
       expect(screen.getByText("editor")).toBeInTheDocument();
     });
   });
 
-  it("fetches actions with all=true & includes=false for filter options", async () => {
+  it("fetches actions and roles with all=true & includes=false for filter options", async () => {
     renderWithClient(<Roles />);
 
     await waitFor(() => {
+      expect(services.getRoles).toHaveBeenCalledWith({
+        all: true,
+        includes: false,
+      });
       expect(actionServices.getActions).toHaveBeenCalledWith({
         all: true,
         includes: false,
@@ -194,7 +277,7 @@ describe("Roles Page", () => {
     expect(
       screen.getByRole("heading", { name: "Nuevo Rol" })
     ).toBeInTheDocument();
-    expect(screen.getByText("Identificador / Key")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/super_admin/i)).toBeInTheDocument();
   });
 
   it("opens action menu with 'Actualizar' and opens edit modal with prefilled data", async () => {
@@ -324,7 +407,7 @@ describe("Roles Page", () => {
   });
 
   it("renders empty state when server returns empty roles list", async () => {
-    vi.mocked(services.getRoles).mockResolvedValueOnce({
+    vi.mocked(services.getRoles).mockResolvedValue({
       data: [],
       meta: {
         page: 1,
@@ -345,9 +428,12 @@ describe("Roles Page", () => {
   });
 
   it("renders error state when fetch fails and allows retry", async () => {
-    vi.mocked(services.getRoles).mockRejectedValueOnce(
-      new Error("Network Error")
-    );
+    vi.mocked(services.getRoles).mockImplementation(async (params) => {
+      if (params?.page) {
+        throw new Error("Network Error");
+      }
+      return mockPaginatedResponse;
+    });
 
     renderWithClient(<Roles />);
 
@@ -435,6 +521,52 @@ describe("Roles Page", () => {
           is_active: true,
         })
       );
+    });
+  });
+
+  it("opens filter modal with Translate (key) options for identifier and actions", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Roles />);
+
+    await waitFor(() => {
+      expect(screen.getByText("admin")).toBeInTheDocument();
+    });
+
+    const filterButton = screen.getByRole("button", { name: /Abrir filtros/i });
+    await user.click(filterButton);
+
+    expect(screen.getByText("Filtros de roles")).toBeInTheDocument();
+
+    // Verify role key select has Translate (key) options
+    const roleKeyTrigger = screen.getByText(/ej: super_admin, editor, gestor/i);
+    await user.click(roleKeyTrigger);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Super Administrador (admin)")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Gerente de Operaciones (manager)")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Editor de Recursos (editor)")
+      ).toBeInTheDocument();
+    });
+
+    // Close role dropdown
+    await user.keyboard("{Escape}");
+
+    // Verify actions select has Translate (key) options
+    const actionsTrigger = screen.getByText(/Seleccionar acciones permitidas\.\.\./i);
+    await user.click(actionsTrigger);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Crear Usuarios (users.create)")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Ver Usuarios (users.read)")
+      ).toBeInTheDocument();
     });
   });
 });

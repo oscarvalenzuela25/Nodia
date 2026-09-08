@@ -3,6 +3,7 @@ export type UserFormData = {
   name?: string | null;
   email: string;
   roles: string[];
+  modules?: string[];
   isActive: boolean;
   imageUrl?: string | null;
 };
@@ -13,6 +14,7 @@ export type UserModalProps = {
   onSubmit: (data: UserFormData) => void;
   initialData?: UserFormData | null;
   availableRoles?: string[];
+  availableModules?: Array<{ value: string; label: string }>;
   isSubmitting?: boolean;
 };
 

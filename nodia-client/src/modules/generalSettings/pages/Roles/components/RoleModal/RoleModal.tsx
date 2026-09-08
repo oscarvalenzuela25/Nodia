@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
-import TextInput from "../../../../../../components/inputs/TextInput";
+import TranslationInput from "../../../../../../components/inputs/TranslationInput";
 import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
 import { useActions } from "../../../Actions";
 import type { RoleModalProps, RoleFormData } from "./types";
@@ -23,7 +23,7 @@ const RoleModalInner: FC<RoleModalProps> = ({
   availableActions = [],
   isSubmitting = false,
 }) => {
-  const { t } = useTranslation(["roles", "core"]);
+  const { t, i18n } = useTranslation(["roles", "actions", "core"]);
   const isEditing = Boolean(initialData?.id);
 
   const {
@@ -37,19 +37,36 @@ const RoleModalInner: FC<RoleModalProps> = ({
 
   const dynamicActionOptions = useMemo(() => {
     if (actionsResponse?.data && actionsResponse.data.length > 0) {
-      return actionsResponse.data.map((act) => ({
-        value: act.key,
-        label: act.key,
-        category: act.key.split(".")[0],
-      }));
+      return actionsResponse.data.map((act) => {
+        const keyTrans = act.translates?.find((tr) => tr.key === "key");
+        const lang = i18n.language?.startsWith("en") ? "en" : "es";
+        const altLang = lang === "en" ? "es" : "en";
+        const translated =
+          keyTrans?.[lang] ||
+          keyTrans?.[altLang] ||
+          (i18n.exists(`actions:action_names.${act.key}`)
+            ? t(`actions:action_names.${act.key}`)
+            : i18n.exists(`roles:action_names.${act.key}`)
+            ? t(`roles:action_names.${act.key}`)
+            : null);
+        const label = translated ? `${translated} (${act.key})` : act.key;
+        return {
+          value: act.key,
+          label,
+          category: act.key.split(".")[0],
+        };
+      });
     }
     return availableActions;
-  }, [actionsResponse, availableActions]);
+  }, [actionsResponse, availableActions, i18n.language, t, i18n]);
 
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.isActive ?? true
   );
   const [roleKey, setRoleKey] = useState<string>(initialData?.key ?? "");
+  const [nameTranslations, setNameTranslations] = useState<
+    Record<string, string>
+  >(initialData?.nameTranslations ?? { es: "", en: "" });
   const [actions, setActions] = useState<string[]>(
     initialData?.actions ?? []
   );
@@ -60,12 +77,21 @@ const RoleModalInner: FC<RoleModalProps> = ({
     e.preventDefault();
     if (!isFormValid || isSubmitting) return;
 
+    const translates = [
+      {
+        key: "key",
+        es: nameTranslations.es?.trim() || roleKey.trim(),
+        en: nameTranslations.en?.trim() || roleKey.trim(),
+      },
+    ];
+
     const payload: RoleFormData = {
       ...(initialData?.id ? { id: initialData.id } : {}),
       isActive,
       key: roleKey.trim().toLowerCase(),
-      nameTranslations: initialData?.nameTranslations,
+      nameTranslations,
       actions,
+      translates,
     };
 
     onSubmit(payload);
@@ -135,15 +161,24 @@ const RoleModalInner: FC<RoleModalProps> = ({
           />
         </SwitchWrapper>
 
-        <TextInput
-          label={t("roles:form.key", "Identificador / Key")}
+        <TranslationInput
+          label={t("roles:form.key", "Identificador")}
           value={roleKey}
-          onChange={(e) => setRoleKey(e.target.value)}
+          onChangeKey={setRoleKey}
           placeholder={t("roles:form.key_placeholder", "ej: super_admin")}
+          translations={nameTranslations}
+          onChangeTranslations={setNameTranslations}
+          sectionTitle={t(
+            "roles:form.translations_title",
+            "Traducciones del Identificador"
+          )}
+          sectionSubtitle={t(
+            "roles:form.translations_subtitle",
+            "Define cómo se mostrará el nombre del rol en cada idioma."
+          )}
           required
           autoFocus={!isEditing}
           disabled={isSubmitting}
-          name="key"
         />
 
         <SelectMultipleInput

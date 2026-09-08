@@ -65,7 +65,7 @@ import {
 } from "./styles";
 
 const Roles: FC = () => {
-  const { t } = useTranslation(["roles", "core"]);
+  const { t, i18n } = useTranslation(["roles", "actions", "core"]);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -129,23 +129,40 @@ const Roles: FC = () => {
   } = useRoles({
     page: page + 1,
     size: rowsPerPage,
+    includes: true,
     q: Object.keys(ransackQuery).length > 0 ? ransackQuery : undefined,
   });
 
   const roles: RoleItem[] = useMemo(() => {
     if (rolesResponse?.data) {
-      return rolesResponse.data.map((r: Role) => ({
-        id: r.id,
-        key: r.key,
-        nameTranslations: r.nameTranslations,
-        actions: (r.actions ?? []).map((a) =>
-          typeof a === "string" ? a : a.key
-        ),
-        isActive: r.is_active ?? true,
-      }));
+      return rolesResponse.data.map((r: Role) => {
+        const keyTrans = r.translates?.find((t) => t.key === "key");
+        const nameTranslations = keyTrans
+          ? { es: keyTrans.es, en: keyTrans.en }
+          : r.nameTranslations;
+        const lang = i18n.language?.startsWith("en") ? "en" : "es";
+        const altLang = lang === "en" ? "es" : "en";
+        const name =
+          keyTrans?.[lang] ||
+          keyTrans?.[altLang] ||
+          (i18n.exists(`roles:role_names.${r.key}`)
+            ? t(`roles:role_names.${r.key}`)
+            : null);
+        return {
+          id: r.id,
+          name,
+          key: r.key,
+          nameTranslations,
+          translates: r.translates,
+          actions: (r.actions ?? []).map((a) =>
+            typeof a === "string" ? a : a.key
+          ),
+          isActive: r.is_active ?? true,
+        };
+      });
     }
     return [];
-  }, [rolesResponse]);
+  }, [rolesResponse, i18n.language, t, i18n]);
 
   const totalItems = useMemo(() => {
     return rolesResponse?.meta?.total_items ?? roles.length;
@@ -172,14 +189,75 @@ const Roles: FC = () => {
     includes: false,
   });
 
-  // Action options with current language labels
+  const actionCleanNamesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    const lang = i18n.language?.startsWith("en") ? "en" : "es";
+    const altLang = lang === "en" ? "es" : "en";
+
+    // 1. Load from actions catalog if available
+    (filterActionsResponse?.data ?? []).forEach((act) => {
+      const keyTrans = act.translates?.find((tr) => tr.key === "key");
+      const translated =
+        keyTrans?.[lang] ||
+        keyTrans?.[altLang] ||
+        (i18n.exists(`actions:action_names.${act.key}`)
+          ? t(`actions:action_names.${act.key}`)
+          : i18n.exists(`roles:action_names.${act.key}`)
+          ? t(`roles:action_names.${act.key}`)
+          : null);
+      if (translated) {
+        map.set(act.key, translated);
+      }
+    });
+
+    // 2. Load directly from role actions translates returned in roles fetch
+    (rolesResponse?.data ?? []).forEach((r: Role) => {
+      (r.actions ?? []).forEach((act) => {
+        if (typeof act !== "string" && act.key) {
+          const keyTrans = act.translates?.find((tr) => tr.key === "key");
+          const translated =
+            keyTrans?.[lang] ||
+            keyTrans?.[altLang] ||
+            (i18n.exists(`actions:action_names.${act.key}`)
+              ? t(`actions:action_names.${act.key}`)
+              : i18n.exists(`roles:action_names.${act.key}`)
+              ? t(`roles:action_names.${act.key}`)
+              : null);
+          if (translated) {
+            map.set(act.key, translated);
+          }
+        }
+      });
+    });
+
+    return map;
+  }, [filterActionsResponse, rolesResponse, i18n.language, t, i18n]);
+
+  // Roles fetch for filter options (all=true and includes=false)
+  const {
+    data: allRolesResponse,
+    isLoading: isLoadingAllRoles,
+    isFetching: isFetchingAllRoles,
+  } = useRoles({
+    all: true,
+    includes: false,
+  });
+
+  // Action options with current language labels in Translate (key) format
   const availableActionOptions: ActionOption[] = useMemo(() => {
-    return (filterActionsResponse?.data ?? []).map((act) => ({
-      value: act.key,
-      label: act.key,
-      category: act.key.split(".")[0],
-    }));
-  }, [filterActionsResponse]);
+    return (filterActionsResponse?.data ?? []).map((act) => {
+      const cleanName = actionCleanNamesMap.get(act.key);
+      const label =
+        cleanName && cleanName !== act.key
+          ? `${cleanName} (${act.key})`
+          : act.key;
+      return {
+        value: act.key,
+        label,
+        category: act.key.split(".")[0],
+      };
+    });
+  }, [filterActionsResponse, actionCleanNamesMap]);
 
   const actionLabelsMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -187,13 +265,36 @@ const Roles: FC = () => {
     return map;
   }, [availableActionOptions]);
 
-  // Role filter options for the filter modal
+  // Role filter options for the filter modal in Translate (key) format
   const roleFilterOptions = useMemo(() => {
-    return roles.map((role) => ({
-      value: role.key,
-      label: role.key,
-    }));
-  }, [roles]);
+    const sourceRoles = allRolesResponse?.data ?? roles;
+    return sourceRoles.map((role: Role | RoleItem) => {
+      const keyTrans = role.translates?.find((t) => t.key === "key");
+      const lang = i18n.language?.startsWith("en") ? "en" : "es";
+      const altLang = lang === "en" ? "es" : "en";
+      const name =
+        keyTrans?.[lang] ||
+        keyTrans?.[altLang] ||
+        role.nameTranslations?.[lang] ||
+        role.nameTranslations?.[altLang] ||
+        ("name" in role && role.name ? role.name : null) ||
+        (i18n.exists(`roles:role_names.${role.key}`)
+          ? t(`roles:role_names.${role.key}`)
+          : null);
+      const label =
+        name && name !== role.key ? `${name} (${role.key})` : role.key;
+      return {
+        value: role.key,
+        label,
+      };
+    });
+  }, [allRolesResponse?.data, roles, i18n.language, t, i18n]);
+
+  const roleLabelsMap = useMemo(() => {
+    const map = new Map<string, string>();
+    roleFilterOptions.forEach((opt) => map.set(opt.value, opt.label));
+    return map;
+  }, [roleFilterOptions]);
 
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
@@ -215,10 +316,15 @@ const Roles: FC = () => {
 
   const handleOpenEditModal = () => {
     if (actionRole) {
+      const keyTrans = actionRole.translates?.find((t) => t.key === "key");
       setSelectedRoleForEdit({
         id: actionRole.id,
         key: actionRole.key,
-        nameTranslations: actionRole.nameTranslations,
+        nameTranslations:
+          actionRole.nameTranslations ?? {
+            es: keyTrans?.es ?? "",
+            en: keyTrans?.en ?? "",
+          },
         actions: actionRole.actions,
         isActive: actionRole.isActive,
       });
@@ -237,6 +343,7 @@ const Roles: FC = () => {
             key: data.key,
             is_active: data.isActive,
             actions: data.actions,
+            translates: data.translates,
           },
         });
       } else {
@@ -244,6 +351,7 @@ const Roles: FC = () => {
           key: data.key,
           is_active: data.isActive,
           actions: data.actions,
+          translates: data.translates,
         });
       }
       setIsRoleModalOpen(false);
@@ -386,7 +494,12 @@ const Roles: FC = () => {
             value={draftFilterRoleKeys}
             onChange={setDraftFilterRoleKeys}
             placeholder={t("roles:form.key_placeholder")}
-            disabled={isLoading || isFetching}
+            disabled={
+              isLoading ||
+              isFetching ||
+              isLoadingAllRoles ||
+              isFetchingAllRoles
+            }
           />
 
           <SelectMultipleInput
@@ -429,18 +542,21 @@ const Roles: FC = () => {
 
       {activeFiltersCount > 0 && (
         <ActiveFilters>
-          {appliedFilterRoleKeys.map((roleKey) => (
-            <FilterChips
-              key={`role-${roleKey}`}
-              label={t("roles:filter_chips.role", { value: roleKey })}
-              onAction={() => {
-                setAppliedFilterRoleKeys((prev) =>
-                  prev.filter((k) => k !== roleKey)
-                );
-                setPage(0);
-              }}
-            />
-          ))}
+          {appliedFilterRoleKeys.map((roleKey) => {
+            const roleLabel = roleLabelsMap.get(roleKey) ?? roleKey;
+            return (
+              <FilterChips
+                key={`role-${roleKey}`}
+                label={t("roles:filter_chips.role", { value: roleLabel })}
+                onAction={() => {
+                  setAppliedFilterRoleKeys((prev) =>
+                    prev.filter((k) => k !== roleKey)
+                  );
+                  setPage(0);
+                }}
+              />
+            );
+          })}
           {appliedFilterActions.map((actionKey) => {
             const actionLabel =
               actionLabelsMap.get(actionKey) ??
@@ -547,6 +663,7 @@ const Roles: FC = () => {
             >
               <TableRow>
                 <TableCell>{t("roles:table.id")}</TableCell>
+                <TableCell>{t("roles:table.name")}</TableCell>
                 <TableCell>{t("roles:table.key")}</TableCell>
                 <TableCell>{t("roles:table.actions")}</TableCell>
                 <TableCell>{t("roles:table.active")}</TableCell>
@@ -559,7 +676,7 @@ const Roles: FC = () => {
               {!isLoading && filteredRoles.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     align="center"
                     sx={{ py: 6, color: "text.secondary" }}
                   >
@@ -622,8 +739,12 @@ const Roles: FC = () => {
                       >
                         {role.actions.map((act) => (
                           <li key={act}>
-                            {actionLabelsMap.get(act) ??
-                              t(`roles:action_names.${act}`, act)}
+                            {actionCleanNamesMap.get(act) ??
+                              (i18n.exists(`actions:action_names.${act}`)
+                                ? t(`actions:action_names.${act}`)
+                                : i18n.exists(`roles:action_names.${act}`)
+                                ? t(`roles:action_names.${act}`)
+                                : act)}
                           </li>
                         ))}
                       </Box>
@@ -670,6 +791,14 @@ const Roles: FC = () => {
                         </Box>
                       </TableCell>
                       <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "medium" }}
+                        >
+                          {role.name || t("roles:empty_value", "-")}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
                         <KeyBadge>{role.key}</KeyBadge>
                       </TableCell>
                       <TableCell>
@@ -677,8 +806,12 @@ const Roles: FC = () => {
                           <ActionsWrapper>
                             {visibleActions.map((actionKey) => {
                               const label =
-                                actionLabelsMap.get(actionKey) ??
-                                t(`roles:action_names.${actionKey}`, actionKey);
+                                actionCleanNamesMap.get(actionKey) ??
+                                (i18n.exists(`actions:action_names.${actionKey}`)
+                                  ? t(`actions:action_names.${actionKey}`)
+                                  : i18n.exists(`roles:action_names.${actionKey}`)
+                                  ? t(`roles:action_names.${actionKey}`)
+                                  : actionKey);
                               const category = actionKey.split(".")[0];
                               return (
                                 <ActionTag

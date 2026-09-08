@@ -1,5 +1,5 @@
 import type { FC, MouseEvent } from "react";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -47,8 +47,7 @@ import {
   useCreateAction,
   useUpdateAction,
 } from "./infrastructure/useServices";
-import { useModules } from "../Modules";
-import type { ActionItem, ActionFormData, ModuleOption, Action } from "./types";
+import type { ActionItem, ActionFormData, Action } from "./types";
 import {
   PageHeader,
   PageTitleContainer,
@@ -59,12 +58,11 @@ import {
   TableTopBar,
   StyledTableContainer,
   KeyBadge,
-  ModuleTag,
   DescriptionTypography,
 } from "./styles";
 
 const Actions: FC = () => {
-  const { t } = useTranslation(["actions", "core"]);
+  const { t, i18n } = useTranslation(["actions", "core"]);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -74,16 +72,10 @@ const Actions: FC = () => {
   const [draftFilterActionKeys, setDraftFilterActionKeys] = useState<string[]>(
     []
   );
-  const [draftFilterModuleKeys, setDraftFilterModuleKeys] = useState<string[]>(
-    []
-  );
   const [draftFilterActive, setDraftFilterActive] = useState<boolean>(true);
 
   // Applied filter state
   const [appliedFilterActionKeys, setAppliedFilterActionKeys] = useState<
-    string[]
-  >([]);
-  const [appliedFilterModuleKeys, setAppliedFilterModuleKeys] = useState<
     string[]
   >([]);
   const [appliedFilterActive, setAppliedFilterActive] = useState<
@@ -123,24 +115,17 @@ const Actions: FC = () => {
     if (appliedFilterActionKeys.length > 0) {
       q.key_in = appliedFilterActionKeys;
     }
-    if (appliedFilterModuleKeys.length > 0) {
-      const hasNone = appliedFilterModuleKeys.includes("none");
-      const realModuleIds = appliedFilterModuleKeys.filter((id) => id !== "none");
-      if (hasNone && realModuleIds.length === 0) {
-        q.module_id_null = true;
-      } else if (!hasNone && realModuleIds.length > 0) {
-        q.module_id_in = realModuleIds;
-      }
-    }
     return q;
-  }, [
-    searchTerm,
-    appliedFilterActive,
-    appliedFilterActionKeys,
-    appliedFilterModuleKeys,
-  ]);
+  }, [searchTerm, appliedFilterActive, appliedFilterActionKeys]);
 
-  // React Query hook for Actions with pagination & includes
+  // Query 1: All actions for filter dropdowns (all=true, includes=true)
+  const {
+    data: allActionsResponse,
+    isLoading: isLoadingAllActions,
+    isFetching: isFetchingAllActions,
+  } = useActions({ all: true, includes: true });
+
+  // Query 2: Paginated actions with includes
   const {
     data: actionsResponse,
     isLoading,
@@ -157,17 +142,43 @@ const Actions: FC = () => {
 
   const actions: ActionItem[] = useMemo(() => {
     if (actionsResponse?.data) {
-      return actionsResponse.data.map((a: Action) => ({
-        id: a.id,
-        key: a.key,
-        description: a.description ?? null,
-        moduleId: a.module_id ?? a.module?.id ?? null,
-        moduleKey: a.module?.key ?? null,
-        isActive: a.is_active ?? true,
-      }));
+      return actionsResponse.data.map((a: Action) => {
+        const keyTrans = a.translates?.find((t) => t.key === "key");
+        const commentTrans = a.translates?.find((t) => t.key === "comment");
+        const nameTranslations = keyTrans
+          ? { es: keyTrans.es, en: keyTrans.en }
+          : undefined;
+        const descriptionTranslations = commentTrans
+          ? { es: commentTrans.es, en: commentTrans.en }
+          : undefined;
+        const lang = i18n.language?.startsWith("en") ? "en" : "es";
+        const altLang = lang === "en" ? "es" : "en";
+        const description =
+          commentTrans?.[lang] ||
+          commentTrans?.[altLang] ||
+          a.description ||
+          null;
+        const name =
+          keyTrans?.[lang] ||
+          keyTrans?.[altLang] ||
+          (i18n.exists(`actions:action_names.${a.key}`)
+            ? t(`actions:action_names.${a.key}`)
+            : null);
+
+        return {
+          id: a.id,
+          name,
+          key: a.key,
+          nameTranslations,
+          descriptionTranslations,
+          description,
+          isActive: a.is_active ?? true,
+          translates: a.translates,
+        };
+      });
     }
     return [];
-  }, [actionsResponse]);
+  }, [actionsResponse, i18n.language, t, i18n]);
 
   const totalItems = useMemo(() => {
     return actionsResponse?.meta?.total_items ?? actions.length;
@@ -184,69 +195,25 @@ const Actions: FC = () => {
     setPage(0);
   };
 
-  // Modules fetch for filters (with all=true and includes=false)
-  const {
-    data: filterModulesResponse,
-  } = useModules({
-    all: true,
-    includes: false,
-  });
-
-  // Filter leaf modules and submodules
-  const leafModules = useMemo(() => {
-    if (!filterModulesResponse?.data) return [];
-    const parentIdsWithChildren = new Set(
-      filterModulesResponse.data
-        .filter((m) => m.parent_id)
-        .map((m) => m.parent_id)
-    );
-    return filterModulesResponse.data.filter(
-      (m) =>
-        m.type === "submodule" ||
-        (m.type === "module" && !parentIdsWithChildren.has(m.id))
-    );
-  }, [filterModulesResponse]);
-
-  const moduleFilterOptions: ModuleOption[] = useMemo(() => {
-    const options: ModuleOption[] = leafModules.map((m) => ({
-      value: m.id,
-      label: m.key,
-      category: m.type,
-    }));
-    return [
-      ...options,
-      {
-        value: "none",
-        label: t("actions:no_module", "Sin módulo asociado"),
-      },
-    ];
-  }, [leafModules, t]);
-
-  const moduleLabelsMap = useMemo(() => {
-    const map = new Map<string, string>();
-    leafModules.forEach((m) => {
-      map.set(m.id, m.key);
-      map.set(m.key, m.key);
-    });
-    return map;
-  }, [leafModules]);
-
-  const getModuleDisplayName = useCallback(
-    (moduleKeyOrId?: string | null): string => {
-      if (!moduleKeyOrId) {
-        return t("actions:no_module", "Sin módulo asociado");
-      }
-      return moduleLabelsMap.get(moduleKeyOrId) ?? moduleKeyOrId;
-    },
-    [t, moduleLabelsMap]
-  );
-
   const actionFilterOptions = useMemo(() => {
-    return actions.map((act) => ({
-      value: act.key,
-      label: act.key,
-    }));
-  }, [actions]);
+    const sourceActions = allActionsResponse?.data ?? actionsResponse?.data ?? [];
+    return sourceActions.map((a: Action) => {
+      const keyTrans = a.translates?.find((t) => t.key === "key");
+      const lang = i18n.language?.startsWith("en") ? "en" : "es";
+      const altLang = lang === "en" ? "es" : "en";
+      const name =
+        keyTrans?.[lang] ||
+        keyTrans?.[altLang] ||
+        (i18n.exists(`actions:action_names.${a.key}`)
+          ? t(`actions:action_names.${a.key}`)
+          : null);
+      const label = name ? `${name} (${a.key})` : a.key;
+      return {
+        value: a.key,
+        label,
+      };
+    });
+  }, [allActionsResponse?.data, actionsResponse?.data, i18n.language, t, i18n]);
 
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
@@ -268,12 +235,20 @@ const Actions: FC = () => {
 
   const handleOpenEditModal = () => {
     if (targetAction) {
+      const keyTrans = targetAction.translates?.find((t) => t.key === "key");
+      const commentTrans = targetAction.translates?.find((t) => t.key === "comment");
       setSelectedActionForEdit({
         id: targetAction.id,
         key: targetAction.key,
-        description: targetAction.description,
-        moduleId: targetAction.moduleId,
-        moduleKey: targetAction.moduleId ?? targetAction.moduleKey,
+        nameTranslations: targetAction.nameTranslations ?? {
+          es: keyTrans?.es ?? "",
+          en: keyTrans?.en ?? "",
+        },
+        descriptionTranslations: targetAction.descriptionTranslations ?? {
+          es: commentTrans?.es ?? "",
+          en: commentTrans?.en ?? "",
+        },
+        description: null,
         isActive: targetAction.isActive,
       });
       setIsActionModalOpen(true);
@@ -290,16 +265,16 @@ const Actions: FC = () => {
           payload: {
             key: data.key,
             is_active: data.isActive,
-            module_id: data.moduleId,
-            description: data.description,
+            description: null,
+            translates: data.translates,
           },
         });
       } else {
         await createActionMutation.mutateAsync({
           key: data.key,
           is_active: data.isActive,
-          module_id: data.moduleId,
-          description: data.description,
+          description: null,
+          translates: data.translates,
         });
       }
       setIsActionModalOpen(false);
@@ -347,17 +322,14 @@ const Actions: FC = () => {
   // Filter application
   const handleApplyFilters = () => {
     setAppliedFilterActionKeys(draftFilterActionKeys);
-    setAppliedFilterModuleKeys(draftFilterModuleKeys);
     setAppliedFilterActive(draftFilterActive);
     setPage(0);
   };
 
   const handleClearFilters = () => {
     setDraftFilterActionKeys([]);
-    setDraftFilterModuleKeys([]);
     setDraftFilterActive(true);
     setAppliedFilterActionKeys([]);
-    setAppliedFilterModuleKeys([]);
     setAppliedFilterActive(null);
     setPage(0);
   };
@@ -366,11 +338,9 @@ const Actions: FC = () => {
     let count = 0;
     if (appliedFilterActionKeys.length > 0)
       count += appliedFilterActionKeys.length;
-    if (appliedFilterModuleKeys.length > 0)
-      count += appliedFilterModuleKeys.length;
     if (appliedFilterActive !== null) count += 1;
     return count;
-  }, [appliedFilterActionKeys, appliedFilterModuleKeys, appliedFilterActive]);
+  }, [appliedFilterActionKeys, appliedFilterActive]);
 
   return (
     <Box>
@@ -396,14 +366,7 @@ const Actions: FC = () => {
             value={draftFilterActionKeys}
             onChange={setDraftFilterActionKeys}
             placeholder={t("actions:form.key_placeholder")}
-          />
-
-          <SelectMultipleInput
-            label={t("actions:table.module")}
-            options={moduleFilterOptions}
-            value={draftFilterModuleKeys}
-            onChange={setDraftFilterModuleKeys}
-            placeholder={t("actions:form.module_placeholder")}
+            disabled={isLoadingAllActions || isFetchingAllActions || isMutating}
           />
 
           <Box
@@ -436,30 +399,27 @@ const Actions: FC = () => {
 
       {activeFiltersCount > 0 && (
         <ActiveFilters>
-          {appliedFilterActionKeys.map((actionKey) => (
-            <FilterChips
-              key={`action-${actionKey}`}
-              label={t("actions:filter_chips.action", { value: actionKey })}
-              onAction={() => {
-                setAppliedFilterActionKeys((prev) =>
-                  prev.filter((k) => k !== actionKey)
-                );
-                setPage(0);
-              }}
-            />
-          ))}
-          {appliedFilterModuleKeys.map((moduleKey) => {
-            const label =
-              moduleKey === "none"
-                ? t("actions:no_module", "Sin módulo asociado")
-                : getModuleDisplayName(moduleKey);
+          {appliedFilterActionKeys.map((actionKey) => {
+            const matched = (allActionsResponse?.data ?? actionsResponse?.data)?.find(
+              (a) => a.key === actionKey
+            );
+            const keyTrans = matched?.translates?.find((t) => t.key === "key");
+            const lang = i18n.language?.startsWith("en") ? "en" : "es";
+            const altLang = lang === "en" ? "es" : "en";
+            const name =
+              keyTrans?.[lang] ||
+              keyTrans?.[altLang] ||
+              (i18n.exists(`actions:action_names.${actionKey}`)
+                ? t(`actions:action_names.${actionKey}`)
+                : null);
+            const actLabel = name ? `${name} (${actionKey})` : actionKey;
             return (
               <FilterChips
-                key={`mod-${moduleKey}`}
-                label={t("actions:filter_chips.module", { value: label })}
+                key={`action-${actionKey}`}
+                label={t("actions:filter_chips.action", { value: actLabel })}
                 onAction={() => {
-                  setAppliedFilterModuleKeys((prev) =>
-                    prev.filter((m) => m !== moduleKey)
+                  setAppliedFilterActionKeys((prev) =>
+                    prev.filter((k) => k !== actionKey)
                   );
                   setPage(0);
                 }}
@@ -555,9 +515,9 @@ const Actions: FC = () => {
               >
                 <TableRow>
                   <TableCell>{t("actions:table.id")}</TableCell>
+                  <TableCell>{t("actions:table.name")}</TableCell>
                   <TableCell>{t("actions:table.key")}</TableCell>
                   <TableCell>{t("actions:table.description")}</TableCell>
-                  <TableCell>{t("actions:table.module")}</TableCell>
                   <TableCell>{t("actions:table.active")}</TableCell>
                   <TableCell align="center">
                     {t("actions:table.actions")}
@@ -617,10 +577,6 @@ const Actions: FC = () => {
                   </TableRow>
                 ) : (
                   actions.map((act) => {
-                    const moduleDisplayName = getModuleDisplayName(
-                      act.moduleKey ?? act.moduleId
-                    );
-
                     return (
                       <TableRow
                         key={act.id}
@@ -654,12 +610,20 @@ const Actions: FC = () => {
                                 disabled={isLoading || isFetching || isMutating}
                               >
                                 <ContentCopyIcon
-                                  fontSize="small"
-                                  sx={{ fontSize: "1rem" }}
+                                   fontSize="small"
+                                   sx={{ fontSize: "1rem" }}
                                 />
                               </IconButton>
                             </Tooltip>
                           </Box>
+                        </TableCell>
+                        <TableCell>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "medium" }}
+                          >
+                            {act.name || t("actions:empty_value", "-")}
+                          </Typography>
                         </TableCell>
                         <TableCell>
                           <KeyBadge>{act.key}</KeyBadge>
@@ -672,14 +636,6 @@ const Actions: FC = () => {
                           ) : (
                             t("actions:empty_value")
                           )}
-                        </TableCell>
-                        <TableCell>
-                          <ModuleTag
-                            hasModule={Boolean(act.moduleKey || act.moduleId)}
-                            moduleKey={act.moduleKey}
-                            label={moduleDisplayName}
-                            size="small"
-                          />
                         </TableCell>
                         <TableCell>
                           <Chip

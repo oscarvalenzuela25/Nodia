@@ -93,6 +93,7 @@ describe("TranslationInput", () => {
         onChangeKey={vi.fn()}
         translations={{ es: "", en: "" }}
         onChangeTranslations={vi.fn()}
+        sectionTitle="Traducciones del Nombre"
         defaultExpanded={false}
       />
     );

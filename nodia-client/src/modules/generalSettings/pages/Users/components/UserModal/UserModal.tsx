@@ -6,6 +6,8 @@ import BaseModal from "../../../../../../components/BaseModal";
 import TextInput from "../../../../../../components/inputs/TextInput";
 import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
 import { useRoles } from "../../../Roles";
+import { useModules } from "../../../Modules";
+import { formatEntityLabel } from "../../utils";
 import type { UserModalProps, UserFormData } from "./types";
 import {
   FormContainer,
@@ -23,9 +25,10 @@ const UserModalInner: FC<UserModalProps> = ({
   onSubmit,
   initialData,
   availableRoles = DEFAULT_ROLES,
+  availableModules = [],
   isSubmitting = false,
 }) => {
-  const { t } = useTranslation(["users", "core"]);
+  const { t, i18n } = useTranslation(["users", "modules", "roles", "core"]);
   const isEditing = Boolean(initialData?.id);
 
   const {
@@ -37,17 +40,66 @@ const UserModalInner: FC<UserModalProps> = ({
     { enabled: open }
   );
 
+  const {
+    data: modulesResponse,
+    isLoading: isLoadingModules,
+    isFetching: isFetchingModules,
+  } = useModules(
+    { all: true, includes: false },
+    { enabled: open }
+  );
+
   const dynamicRoleOptions = useMemo(() => {
     if (rolesResponse?.data && rolesResponse.data.length > 0) {
       return rolesResponse.data.map((r) => ({
         value: r.id,
-        label: r.key,
+        label: formatEntityLabel(r, i18n.language, (key) =>
+          i18n.exists(`roles:role_names.${key}`)
+            ? t(`roles:role_names.${key}`)
+            : null
+        ),
       }));
     }
-    return (availableRoles ?? []).map((opt) =>
-      typeof opt === "string" ? { value: opt, label: opt } : opt
-    );
-  }, [rolesResponse, availableRoles]);
+    return (availableRoles ?? []).map((opt) => {
+      if (typeof opt === "string") {
+        return {
+          value: opt,
+          label: formatEntityLabel(opt, i18n.language, (key) =>
+            i18n.exists(`roles:role_names.${key}`)
+              ? t(`roles:role_names.${key}`)
+              : null
+          ),
+        };
+      }
+      return opt;
+    });
+  }, [rolesResponse, availableRoles, i18n.language, i18n, t]);
+
+  const dynamicModuleOptions = useMemo(() => {
+    if (modulesResponse?.data && modulesResponse.data.length > 0) {
+      return modulesResponse.data.map((m) => ({
+        value: m.id,
+        label: formatEntityLabel(m, i18n.language, (key) =>
+          i18n.exists(`modules:module_names.${key}`)
+            ? t(`modules:module_names.${key}`)
+            : null
+        ),
+      }));
+    }
+    return (availableModules ?? []).map((opt) => {
+      if (typeof opt === "string") {
+        return {
+          value: opt,
+          label: formatEntityLabel(opt, i18n.language, (key) =>
+            i18n.exists(`modules:module_names.${key}`)
+              ? t(`modules:module_names.${key}`)
+              : null
+          ),
+        };
+      }
+      return opt;
+    });
+  }, [modulesResponse, availableModules, i18n.language, i18n, t]);
 
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.isActive ?? true
@@ -55,12 +107,12 @@ const UserModalInner: FC<UserModalProps> = ({
   const [name, setName] = useState<string>(initialData?.name ?? "");
   const [email, setEmail] = useState<string>(initialData?.email ?? "");
   const [roles, setRoles] = useState<string[]>(initialData?.roles ?? []);
+  const [modules, setModules] = useState<string[]>(initialData?.modules ?? []);
   const [imageUrl, setImageUrl] = useState<string>(
     initialData?.imageUrl ?? ""
   );
 
   const isFormValid = email.trim().length > 0;
-
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -72,6 +124,7 @@ const UserModalInner: FC<UserModalProps> = ({
       name: name.trim() || null,
       email: email.trim(),
       roles,
+      modules,
       imageUrl: imageUrl.trim() || null,
     };
 
@@ -170,6 +223,16 @@ const UserModalInner: FC<UserModalProps> = ({
           placeholder={t("users:form.roles_placeholder", "Seleccionar roles...")}
           searchPlaceholder={t("core:search", "Buscar...")}
           disabled={isLoadingRoles || isFetchingRoles || isSubmitting}
+        />
+
+        <SelectMultipleInput
+          label={t("users:form.modules", "Módulos")}
+          options={dynamicModuleOptions}
+          value={modules}
+          onChange={setModules}
+          placeholder={t("users:form.modules_placeholder", "Seleccionar módulos...")}
+          searchPlaceholder={t("core:search", "Buscar...")}
+          disabled={isLoadingModules || isFetchingModules || isSubmitting}
         />
 
         <TextInput

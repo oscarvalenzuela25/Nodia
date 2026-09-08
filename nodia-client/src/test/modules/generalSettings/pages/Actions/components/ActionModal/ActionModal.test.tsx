@@ -1,26 +1,9 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import ActionModal from "../../../../../../../modules/generalSettings/pages/Actions/components/ActionModal";
-import * as moduleServices from "../../../../../../../modules/generalSettings/pages/Modules/infrastructure/services";
-
-vi.mock(
-  "../../../../../../../modules/generalSettings/pages/Modules/infrastructure/services",
-  () => ({
-    getModules: vi.fn(),
-  })
-);
-
-const mockModulesResponse = {
-  data: [
-    { id: "mod-parent", key: "settings", type: "module", parent_id: null },
-    { id: "mod-sub", key: "general", type: "submodule", parent_id: "mod-parent" },
-    { id: "mod-users", key: "users", type: "module", parent_id: null },
-  ],
-  meta: { page: 1, limit: 10, total_items: 3, total_pages: 1 },
-};
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -40,11 +23,6 @@ const renderWithClient = (ui: ReactElement) => {
 };
 
 describe("ActionModal", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(moduleServices.getModules).mockResolvedValue(mockModulesResponse as any);
-  });
-
   it("renders create modal with empty fields, active switch enabled, and disabled submit button", () => {
     renderWithClient(
       <ActionModal
@@ -57,8 +35,12 @@ describe("ActionModal", () => {
     expect(screen.getByText("Nuevo Accionable")).toBeInTheDocument();
     expect(screen.getByText("Activo")).toBeInTheDocument();
     expect(screen.getByText("Identificador")).toBeInTheDocument();
-    expect(screen.getByText("Módulo Asociado (Opcional)")).toBeInTheDocument();
-    expect(screen.getByText("Descripción")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Módulo Asociado (Opcional)")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Traducciones de la Descripción")
+    ).toBeInTheDocument();
 
     const submitBtn = screen.getByRole("button", { name: "Crear Accionable" });
     expect(submitBtn).toBeDisabled();
@@ -74,18 +56,24 @@ describe("ActionModal", () => {
         open={true}
         onClose={handleClose}
         onSubmit={handleSubmit}
-        availableModules={[{ value: "users", label: "Módulo de Usuarios" }]}
       />
     );
 
-    const keyInput = screen.getByPlaceholderText("ej: users.create, roles.manage");
+    const keyInput = screen.getByPlaceholderText(/users\.create/i);
     fireEvent.change(keyInput, { target: { value: "users.export" } });
 
-    const descInput = screen.getByPlaceholderText(
-      "Describe el propósito funcional o técnico de este accionable..."
+    const descEsInput = screen.getByPlaceholderText(
+      /Permite crear y gestionar nuevos usuarios/i
     );
-    fireEvent.change(descInput, {
+    fireEvent.change(descEsInput, {
       target: { value: "Permite exportar usuarios a Excel" },
+    });
+
+    const descEnInput = screen.getByPlaceholderText(
+      /Allows creating and managing new users/i
+    );
+    fireEvent.change(descEnInput, {
+      target: { value: "Allows exporting users to Excel" },
     });
 
     const submitBtn = screen.getByRole("button", { name: "Crear Accionable" });
@@ -93,13 +81,28 @@ describe("ActionModal", () => {
 
     await user.click(submitBtn);
 
-    expect(handleSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        key: "users.export",
-        description: "Permite exportar usuarios a Excel",
-        isActive: true,
-      })
-    );
+    expect(handleSubmit).toHaveBeenCalledWith({
+      key: "users.export",
+      isActive: true,
+      description: null,
+      nameTranslations: { es: "", en: "" },
+      descriptionTranslations: {
+        es: "Permite exportar usuarios a Excel",
+        en: "Allows exporting users to Excel",
+      },
+      translates: [
+        {
+          key: "key",
+          es: "users.export",
+          en: "users.export",
+        },
+        {
+          key: "comment",
+          es: "Permite exportar usuarios a Excel",
+          en: "Allows exporting users to Excel",
+        },
+      ],
+    });
     expect(handleClose).not.toHaveBeenCalled();
   });
 
@@ -138,12 +141,13 @@ describe("ActionModal", () => {
             es: "Ver Usuarios",
             en: "View Users",
           },
-          description: "Visualizar usuarios",
-          moduleId: "users",
-          moduleKey: "users",
+          descriptionTranslations: {
+            es: "Visualizar usuarios",
+            en: "View users",
+          },
+          description: null,
           isActive: false,
         }}
-        availableModules={[{ value: "users", label: "Módulo de Usuarios" }]}
       />
     );
 
@@ -152,6 +156,7 @@ describe("ActionModal", () => {
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("users.read")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Visualizar usuarios")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("View users")).toBeInTheDocument();
 
     const updateBtn = screen.getByRole("button", {
       name: "Actualizar Accionable",
@@ -167,10 +172,24 @@ describe("ActionModal", () => {
         es: "Ver Usuarios",
         en: "View Users",
       },
-      description: "Visualizar usuarios",
-      moduleId: "users",
-      moduleKey: "users",
+      descriptionTranslations: {
+        es: "Visualizar usuarios",
+        en: "View users",
+      },
+      description: null,
       isActive: false,
+      translates: [
+        {
+          key: "key",
+          es: "Ver Usuarios",
+          en: "View Users",
+        },
+        {
+          key: "comment",
+          es: "Visualizar usuarios",
+          en: "View users",
+        },
+      ],
     });
   });
 
@@ -185,34 +204,19 @@ describe("ActionModal", () => {
           id: "act-123",
           key: "users.read",
           nameTranslations: { es: "", en: "" },
+          descriptionTranslations: { es: "", en: "" },
           description: null,
-          moduleKey: null,
           isActive: true,
         }}
       />
     );
 
     const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
-    const submitBtn = screen.getByRole("button", { name: "Actualizar Accionable" });
+    const submitBtn = screen.getByRole("button", {
+      name: "Actualizar Accionable",
+    });
 
     expect(cancelBtn).toBeDisabled();
     expect(submitBtn).toBeDisabled();
-  });
-
-  it("fetches modules with all=true and includes=false when modal is opened", async () => {
-    renderWithClient(
-      <ActionModal
-        open={true}
-        onClose={vi.fn()}
-        onSubmit={vi.fn()}
-      />
-    );
-
-    await waitFor(() => {
-      expect(moduleServices.getModules).toHaveBeenCalledWith({
-        all: true,
-        includes: false,
-      });
-    });
   });
 });

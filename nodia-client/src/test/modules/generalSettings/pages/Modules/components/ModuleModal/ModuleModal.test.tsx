@@ -1,31 +1,25 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import ModuleModal from "../../../../../../../modules/generalSettings/pages/Modules/components/ModuleModal";
 
 describe("ModuleModal", () => {
-  const availableParents = [
-    { value: "general_settings", label: "Ajustes Generales" },
-    { value: "security", label: "Seguridad y Accesos" },
-  ];
-
-  it("renders create modal with empty key, module type selected, active switch enabled, and disabled submit button", () => {
+  it("renders create modal with empty fields, active switch enabled, and disabled submit button", () => {
     render(
       <ModuleModal
         open={true}
         onClose={vi.fn()}
         onSubmit={vi.fn()}
-        availableParents={availableParents}
       />
     );
 
     expect(screen.getByText("Nuevo Módulo")).toBeInTheDocument();
     expect(screen.getByText("Activo")).toBeInTheDocument();
-    expect(screen.getByText("Identificador / Key")).toBeInTheDocument();
-    expect(screen.getByText("Tipo de Elemento")).toBeInTheDocument();
-    expect(screen.getByText("Módulo")).toBeInTheDocument();
+    expect(screen.getByText("Identificador")).toBeInTheDocument();
+    expect(screen.getByText("Grupo")).toBeInTheDocument();
 
-    // Parent module select is not visible when type is 'module'
+    // Elements from old hierarchical model are not present
+    expect(screen.queryByText("Tipo de Elemento")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Módulo Padre (Requerido para submódulos)")
     ).not.toBeInTheDocument();
@@ -34,7 +28,7 @@ describe("ModuleModal", () => {
     expect(submitBtn).toBeDisabled();
   });
 
-  it("enables submit button when key is entered for a root module and submits properly", async () => {
+  it("enables submit button when key and group_by are entered, and submits properly", async () => {
     const handleSubmit = vi.fn();
     const handleClose = vi.fn();
     const user = userEvent.setup();
@@ -44,84 +38,39 @@ describe("ModuleModal", () => {
         open={true}
         onClose={handleClose}
         onSubmit={handleSubmit}
-        availableParents={availableParents}
       />
     );
 
-    const keyInput = screen.getByPlaceholderText(
-      "ej: general_settings, users, security"
-    );
-    fireEvent.change(keyInput, { target: { value: "analytics" } });
-
-    const submitBtn = screen.getByRole("button", { name: "Crear Módulo" });
-    expect(submitBtn).toBeEnabled();
-
-    await user.click(submitBtn);
-
-    expect(handleSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        key: "analytics",
-        type: "module",
-        parentId: null,
-        isActive: true,
-      })
-    );
-    expect(handleClose).not.toHaveBeenCalled();
-  });
-
-  it("requires parent module when type is submodule", async () => {
-    const handleSubmit = vi.fn();
-    const handleClose = vi.fn();
-    const user = userEvent.setup();
-
-    render(
-      <ModuleModal
-        open={true}
-        onClose={handleClose}
-        onSubmit={handleSubmit}
-        availableParents={availableParents}
-      />
-    );
-
-    const keyInput = screen.getByPlaceholderText(
-      "ej: general_settings, users, security"
-    );
-    fireEvent.change(keyInput, { target: { value: "reports" } });
-
-    // Open Type selector and change to Submódulo
-    const typeTrigger = screen.getByRole("button", { name: "Tipo de Elemento" });
-    await user.click(typeTrigger);
-    await user.click(screen.getByText("Submódulo"));
-
-    // Now parent module field should be visible
-    expect(
-      screen.getByText("Módulo Padre (Requerido para submódulos)")
-    ).toBeInTheDocument();
-
-    // Submit button should be disabled because no parent is selected
     const submitBtn = screen.getByRole("button", { name: "Crear Módulo" });
     expect(submitBtn).toBeDisabled();
 
-    // Select a parent module
-    const parentTrigger = screen.getByRole("button", {
-      name: "Módulo Padre (Requerido para submódulos)",
-    });
-    await user.click(parentTrigger);
-    await user.click(screen.getByText("Ajustes Generales"));
+    const keyInput = screen.getByPlaceholderText(/users, roles, settings/i);
+    await user.type(keyInput, "analytics");
 
-    // Now submit button should be enabled
+    // Still disabled without group_by
+    expect(submitBtn).toBeDisabled();
+
+    const groupInput = screen.getByPlaceholderText(/settings, catalog/i);
+    await user.type(groupInput, "reports_group");
+
+    // Enabled now
     expect(submitBtn).toBeEnabled();
 
     await user.click(submitBtn);
 
-    expect(handleSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        key: "reports",
-        type: "submodule",
-        parentId: "general_settings",
-        isActive: true,
-      })
-    );
+    expect(handleSubmit).toHaveBeenCalledWith({
+      key: "analytics",
+      group_by: "reports_group",
+      isActive: true,
+      nameTranslations: { es: "", en: "" },
+      translates: [
+        {
+          key: "key",
+          es: "analytics",
+          en: "analytics",
+        },
+      ],
+    });
     expect(handleClose).not.toHaveBeenCalled();
   });
 
@@ -156,15 +105,13 @@ describe("ModuleModal", () => {
         initialData={{
           id: "mod-123",
           key: "users",
-          type: "submodule",
-          parentId: "general_settings",
+          group_by: "administration",
           nameTranslations: {
             es: "Usuarios",
             en: "Users",
           },
           isActive: false,
         }}
-        availableParents={availableParents}
       />
     );
 
@@ -172,6 +119,7 @@ describe("ModuleModal", () => {
       screen.getByRole("heading", { name: "Actualizar Módulo" })
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("users")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("administration")).toBeInTheDocument();
 
     const updateBtn = screen.getByRole("button", { name: "Actualizar Módulo" });
     expect(updateBtn).toBeEnabled();
@@ -181,14 +129,45 @@ describe("ModuleModal", () => {
     expect(handleSubmit).toHaveBeenCalledWith({
       id: "mod-123",
       key: "users",
-      type: "submodule",
-      parentId: "general_settings",
-      parentKey: "general_settings",
+      group_by: "administration",
       nameTranslations: {
         es: "Usuarios",
         en: "Users",
       },
       isActive: false,
+      translates: [
+        {
+          key: "key",
+          es: "Usuarios",
+          en: "Users",
+        },
+      ],
     });
+  });
+
+  it("disables Cancel and Submit buttons when isSubmitting is true", () => {
+    render(
+      <ModuleModal
+        open={true}
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+        isSubmitting={true}
+        initialData={{
+          id: "mod-123",
+          key: "users",
+          group_by: "admin",
+          nameTranslations: { es: "", en: "" },
+          isActive: true,
+        }}
+      />
+    );
+
+    const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
+    const submitBtn = screen.getByRole("button", {
+      name: "Actualizar Módulo",
+    });
+
+    expect(cancelBtn).toBeDisabled();
+    expect(submitBtn).toBeDisabled();
   });
 });

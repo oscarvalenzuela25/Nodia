@@ -6,7 +6,6 @@ import type { ReactElement } from "react";
 import { sileo } from "sileo";
 import Actions from "../../../../../modules/generalSettings/pages/Actions/Actions";
 import * as services from "../../../../../modules/generalSettings/pages/Actions/infrastructure/services";
-import * as moduleServices from "../../../../../modules/generalSettings/pages/Modules/infrastructure/services";
 import type {
   Action,
   PaginatedResponse,
@@ -30,62 +29,53 @@ vi.mock(
   })
 );
 
-vi.mock(
-  "../../../../../modules/generalSettings/pages/Modules/infrastructure/services",
-  () => ({
-    getModules: vi.fn(),
-  })
-);
-
 const mockActions: Action[] = [
   {
     id: "123e4567-e89b-12d3-a456-426614174001",
     key: "users.create",
     description: "Permite registrar nuevos usuarios",
     is_active: true,
-    module_id: "mod-users",
-    module: {
-      id: "mod-users",
-      key: "users",
-    },
+    translates: [
+      { key: "key", es: "Crear Usuarios", en: "Create Users" },
+      {
+        key: "comment",
+        es: "Permite registrar nuevos usuarios",
+        en: "Allows registering new users",
+      },
+    ],
   },
   {
     id: "123e4567-e89b-12d3-a456-426614174002",
     key: "users.read",
     description: "Permite visualizar usuarios",
     is_active: true,
-    module_id: "mod-users",
-    module: {
-      id: "mod-users",
-      key: "users",
-    },
+    translates: [
+      { key: "key", es: "Ver Usuarios", en: "View Users" },
+      {
+        key: "comment",
+        es: "Permite visualizar usuarios",
+        en: "Allows viewing users",
+      },
+    ],
   },
   {
     id: "123e4567-e89b-12d3-a456-426614174003",
     key: "roles.manage",
     description: "Permite gestionar roles",
     is_active: false,
-    module_id: null,
-    module: null,
+    translates: [
+      { key: "key", es: "Gestionar Roles", en: "Manage Roles" },
+      {
+        key: "comment",
+        es: "Permite gestionar roles",
+        en: "Allows managing roles",
+      },
+    ],
   },
 ];
 
 const mockPaginatedResponse: PaginatedResponse<Action> = {
   data: mockActions,
-  meta: {
-    page: 1,
-    limit: 10,
-    total_items: 3,
-    total_pages: 1,
-  },
-};
-
-const mockModulesResponse = {
-  data: [
-    { id: "mod-parent", key: "settings", type: "module", parent_id: null },
-    { id: "mod-sub", key: "general", type: "submodule", parent_id: "mod-parent" },
-    { id: "mod-users", key: "users", type: "module", parent_id: null },
-  ],
   meta: {
     page: 1,
     limit: 10,
@@ -115,40 +105,24 @@ describe("Actions Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(services.getActions).mockResolvedValue(mockPaginatedResponse);
-    vi.mocked(moduleServices.getModules).mockResolvedValue(mockModulesResponse as any);
   });
 
-  it("renders actions table with expected columns (without Nombre column) and fetched actions", async () => {
+  it("renders actions table with expected columns (including Nombre) and fetched actions with translated names", async () => {
     renderWithClient(<Actions />);
 
-    expect(screen.getAllByText("Acciones").length).toBeGreaterThanOrEqual(1);
-
     await waitFor(() => {
-      expect(screen.getByText("Id")).toBeInTheDocument();
-      expect(screen.getByText("Identificador")).toBeInTheDocument();
-      expect(screen.getByText("Descripción")).toBeInTheDocument();
-      expect(screen.getByText("Módulo asociado")).toBeInTheDocument();
-      expect(screen.getByText("Activo")).toBeInTheDocument();
-
-      // Ensure "Nombre" column was removed
-      expect(screen.queryByText("Nombre")).not.toBeInTheDocument();
-
-      // Verify action keys are present
       expect(screen.getByText("users.create")).toBeInTheDocument();
-      expect(screen.getByText("users.read")).toBeInTheDocument();
-      expect(screen.getByText("roles.manage")).toBeInTheDocument();
     });
-  });
 
-  it("fetches modules with all=true & includes=false for filter options", async () => {
-    renderWithClient(<Actions />);
+    expect(screen.getByText("Id")).toBeInTheDocument();
+    expect(screen.getByText("Nombre")).toBeInTheDocument();
+    expect(screen.getByText("Identificador")).toBeInTheDocument();
+    expect(screen.getByText("Descripción")).toBeInTheDocument();
+    expect(screen.getByText("Activo")).toBeInTheDocument();
+    expect(screen.getAllByText("Acciones").length).toBeGreaterThanOrEqual(2);
 
-    await waitFor(() => {
-      expect(moduleServices.getModules).toHaveBeenCalledWith({
-        all: true,
-        includes: false,
-      });
-    });
+    expect(screen.getByText("Crear Usuarios")).toBeInTheDocument();
+    expect(screen.queryByText("Módulo asociado")).not.toBeInTheDocument();
   });
 
   it("copies id to clipboard and triggers sileo info toast", async () => {
@@ -265,6 +239,30 @@ describe("Actions Page", () => {
       expect(
         screen.getByRole("button", { name: "Crear primera acción" })
       ).toBeInTheDocument();
+    });
+  });
+
+  it("opens filter modal with Translate (key) options in identifier select", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+
+    await waitFor(() => {
+      expect(screen.getByText("users.create")).toBeInTheDocument();
+    });
+
+    const filterBtn = screen.getByRole("button", { name: /Abrir filtros/i });
+    await user.click(filterBtn);
+
+    expect(screen.getByText("Filtros de acciones")).toBeInTheDocument();
+
+    const selectTrigger = screen.getByText(/ej: users\.create, roles\.manage/i);
+    await user.click(selectTrigger);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Crear Usuarios (users.create)")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Ver Usuarios (users.read)")).toBeInTheDocument();
     });
   });
 });

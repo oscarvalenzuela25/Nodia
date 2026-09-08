@@ -4,6 +4,17 @@ export interface RoleSummary {
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
+  translates?: Array<{ key: string; es: string; en: string }>;
+}
+
+export interface ModuleSummary {
+  id: string;
+  key: string;
+  group_by?: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  translates?: Array<{ key: string; es: string; en: string }>;
 }
 
 export interface User {
@@ -15,6 +26,7 @@ export interface User {
   created_at: string;
   updated_at: string;
   roles: RoleSummary[];
+  modules?: ModuleSummary[];
 }
 
 export interface PaginationMeta {
@@ -43,6 +55,7 @@ export interface CreateUserPayload {
   image_url?: string | null;
   is_active?: boolean;
   roles?: string[];
+  modules?: string[];
 }
 
 export interface UpdateUserPayload {
@@ -51,4 +64,5 @@ export interface UpdateUserPayload {
   image_url?: string | null;
   is_active?: boolean;
   roles?: string[];
+  modules?: string[];
 }

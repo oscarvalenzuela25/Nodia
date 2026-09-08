@@ -33,7 +33,7 @@ const MUIProvider: FC<Props> = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Toaster position="top-right" theme={themeType} />
+      <Toaster position="bottom-right" theme={themeType} />
       {children}
     </ThemeProvider>
   );

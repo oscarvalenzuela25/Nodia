@@ -6,6 +6,7 @@ import type { ReactElement } from "react";
 import Users from "../../../../../modules/generalSettings/pages/Users/Users";
 import * as services from "../../../../../modules/generalSettings/pages/Users/infrastructure/services";
 import * as rolesServices from "../../../../../modules/generalSettings/pages/Roles/infrastructure/services";
+import * as modulesServices from "../../../../../modules/generalSettings/pages/Modules/infrastructure/services";
 import type {
   PaginatedResponse,
   User,
@@ -28,6 +29,13 @@ vi.mock(
   })
 );
 
+vi.mock(
+  "../../../../../modules/generalSettings/pages/Modules/infrastructure/services",
+  () => ({
+    getModules: vi.fn(),
+  })
+);
+
 const mockUsers: User[] = [
   {
     id: "123e4567-e89b-12d3-a456-426614174000",
@@ -42,6 +50,14 @@ const mockUsers: User[] = [
         id: "r1",
         key: "admin",
         is_active: true,
+      },
+    ],
+    modules: [
+      {
+        id: "m1",
+        key: "settings",
+        is_active: true,
+        translates: [{ key: "key", es: "Ajustes", en: "Settings" }],
       },
     ],
   },
@@ -60,6 +76,7 @@ const mockUsers: User[] = [
         is_active: true,
       },
     ],
+    modules: [],
   },
 ];
 
@@ -75,8 +92,18 @@ const mockPaginatedResponse: PaginatedResponse<User> = {
 
 const mockRolesResponse: PaginatedResponse<Role> = {
   data: [
-    { id: "r1", key: "admin", is_active: true },
-    { id: "r2", key: "manager", is_active: true },
+    {
+      id: "r1",
+      key: "admin",
+      is_active: true,
+      translates: [{ key: "key", es: "Super Administrador", en: "Admin" }],
+    },
+    {
+      id: "r2",
+      key: "manager",
+      is_active: true,
+      translates: [{ key: "key", es: "Gerente", en: "Manager" }],
+    },
   ],
   meta: {
     page: 1,
@@ -114,6 +141,10 @@ describe("Users Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(rolesServices.getRoles).mockResolvedValue(mockRolesResponse);
+    vi.mocked(modulesServices.getModules).mockResolvedValue({
+      data: [{ id: "m1", key: "auth", group_by: "system", is_active: true }],
+      meta: { page: 1, limit: 10, total_items: 1, total_pages: 1 },
+    });
   });
 
   it("renders users table with expected columns and data from getUsers (Endpoint 1)", async () => {
@@ -128,6 +159,7 @@ describe("Users Page", () => {
       expect(screen.getByText("Nombre")).toBeInTheDocument();
       expect(screen.getByText("Correo Electrónico")).toBeInTheDocument();
       expect(screen.getByText("Roles")).toBeInTheDocument();
+      expect(screen.getByText("Módulos")).toBeInTheDocument();
       expect(screen.getByText("Activo")).toBeInTheDocument();
       expect(screen.getByText("Acciones")).toBeInTheDocument();
 
@@ -138,6 +170,8 @@ describe("Users Page", () => {
       expect(screen.getByText("juan@example.com")).toBeInTheDocument();
       expect(screen.getByText("Maria Lopez")).toBeInTheDocument();
       expect(screen.getByText("maria@example.com")).toBeInTheDocument();
+      expect(screen.getByText("Ajustes (settings)")).toBeInTheDocument();
+      expect(screen.getByText("Super Administrador (admin)")).toBeInTheDocument();
     });
 
     expect(services.getUsers).toHaveBeenCalledWith({
@@ -150,6 +184,10 @@ describe("Users Page", () => {
       includes: false,
     });
     expect(rolesServices.getRoles).toHaveBeenCalledWith({
+      all: true,
+      includes: false,
+    });
+    expect(modulesServices.getModules).toHaveBeenCalledWith({
       all: true,
       includes: false,
     });
@@ -394,9 +432,21 @@ describe("Users Page", () => {
     expect(services.updateUser).not.toHaveBeenCalled();
   });
 
-  it("fetches filter options with all=true & includes=false and renders Filter modal", async () => {
+  it("fetches filter options with all=true & includes=false and renders Filter modal with Translate (key) options", async () => {
     vi.mocked(services.getUsers).mockResolvedValue(mockPaginatedResponse);
     vi.mocked(rolesServices.getRoles).mockResolvedValue(mockRolesResponse);
+    vi.mocked(modulesServices.getModules).mockResolvedValue({
+      data: [
+        {
+          id: "m1",
+          key: "settings",
+          group_by: "system",
+          is_active: true,
+          translates: [{ key: "key", es: "Ajustes", en: "Settings" }],
+        },
+      ],
+      meta: { page: 1, limit: 10, total_items: 1, total_pages: 1 },
+    });
 
     const user = userEvent.setup();
     renderWithClient(<Users />);
@@ -413,11 +463,37 @@ describe("Users Page", () => {
       all: true,
       includes: false,
     });
+    expect(modulesServices.getModules).toHaveBeenCalledWith({
+      all: true,
+      includes: false,
+    });
 
     const filterButton = screen.getByRole("button", { name: /Filtros/i });
     await user.click(filterButton);
 
     expect(screen.getByText("Filtros de usuarios")).toBeInTheDocument();
     expect(screen.getAllByText("Roles").length).toBeGreaterThanOrEqual(2);
+
+    // Click module filter input to open popover
+    const moduleInput = screen.getByText("Seleccionar módulos...");
+    await user.click(moduleInput);
+
+    // Verify option is rendered with Translate (key)
+    await waitFor(() => {
+      expect(
+        screen.getAllByText("Ajustes (settings)").length
+      ).toBeGreaterThanOrEqual(2);
+    });
+
+    // Click roles filter input to open popover
+    const roleInput = screen.getByText("Seleccionar roles...");
+    await user.click(roleInput);
+
+    // Verify role option is rendered with Translate (key)
+    await waitFor(() => {
+      expect(
+        screen.getAllByText("Super Administrador (admin)").length
+      ).toBeGreaterThanOrEqual(1);
+    });
   });
 });

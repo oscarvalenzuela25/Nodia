@@ -1,46 +1,33 @@
 {
   "title": "Módulos",
-  "subtitle": "Administra la estructura jerárquica de módulos y submódulos de la plataforma, configurando claves e identidades.",
+  "subtitle": "Administra los módulos de la plataforma, configurando claves, grupos e identidades.",
   "new_module": "Nuevo Módulo",
   "create_modal_title": "Nuevo Módulo",
   "edit_modal_title": "Actualizar Módulo",
   "create_module_button": "Crear Módulo",
   "update_module_button": "Actualizar Módulo",
   "filter_modal_title": "Filtros de módulos",
-  "filter_modal_subtitle": "Filtra la lista de módulos por identificador, tipo, módulo padre o estado activo.",
+  "filter_modal_subtitle": "Filtra la lista de módulos por identificador, grupo o estado activo.",
   "search_placeholder": "Buscar por identificador...",
-  "expand": "Expandir submódulos",
-  "collapse": "Colapsar submódulos",
-  "modules_label": "Módulos",
-  "submodules_label": "Submódulos",
-  "modules_placeholder": "Seleccionar módulos...",
-  "submodules_placeholder": "Seleccionar submódulos...",
   "form": {
     "active": "Activo",
-    "key": "Identificador / Key",
-    "key_placeholder": "ej: general_settings, users, security",
+    "key": "Identificador",
+    "key_placeholder": "ej: users, roles, settings",
     "key_helper": "Identificador único utilizado internamente por el sistema.",
-    "translations_title": "Traducciones del Nombre",
+    "translations_title": "Traducciones del Identificador",
     "translations_subtitle": "Define cómo se mostrará el nombre del módulo en cada idioma.",
     "name_es": "Nombre (Español)",
     "name_es_placeholder": "ej: Ajustes Generales",
     "name_en": "Nombre (Inglés)",
     "name_en_placeholder": "ej: General Settings",
-    "type": "Tipo de Elemento",
-    "type_placeholder": "Seleccionar tipo...",
-    "parent_module": "Módulo Padre (Requerido para submódulos)",
-    "parent_module_placeholder": "Seleccionar módulo padre..."
-  },
-  "types": {
-    "module": "Módulo",
-    "submodule": "Submódulo"
+    "group_by": "Grupo",
+    "group_by_placeholder": "ej: settings, catalog..."
   },
   "table": {
     "id": "Id",
+    "name": "Nombre",
     "key": "Identificador",
-    "name": "Nombre del módulo",
-    "type": "Tipo",
-    "parent_module": "Módulo padre",
+    "group_by": "Grupo",
     "active": "Activo",
     "actions": "Acciones"
   },
@@ -48,10 +35,8 @@
     "update": "Actualizar"
   },
   "filter_chips": {
-    "module": "Módulo: {{value}}",
-    "submodule": "Submódulo: {{value}}",
-    "type": "Tipo: {{value}}",
-    "parent": "Submódulos de: {{value}}",
+    "key": "Identificador: {{value}}",
+    "group_by": "Grupo: {{value}}",
     "active_only": "Solo activos"
   },
   "module_names": {

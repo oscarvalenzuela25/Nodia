@@ -11,10 +11,10 @@
   "search_placeholder": "Search by name or identifier...",
   "form": {
     "active": "Active",
-    "key": "Identifier / Key",
+    "key": "Key",
     "key_placeholder": "e.g.: super_admin, editor, manager",
     "key_helper": "Unique identifier used internally by the system.",
-    "translations_title": "Name Translations",
+    "translations_title": "Key Translations",
     "translations_subtitle": "Define how the role name will be displayed in each language.",
     "name_es": "Name (Spanish)",
     "name_es_placeholder": "e.g.: Administrador Principal",
@@ -25,7 +25,7 @@
   },
   "table": {
     "id": "Id",
-    "name": "Role Name",
+    "name": "Name",
     "key": "Identifier",
     "actions": "Associated Actions",
     "active": "Active",

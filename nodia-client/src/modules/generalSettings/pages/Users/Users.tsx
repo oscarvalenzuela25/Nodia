@@ -1,5 +1,5 @@
 import type { FC, MouseEvent } from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -49,8 +49,10 @@ import {
   useCreateUser,
   useUpdateUser,
 } from "./infrastructure/useServices";
-import { useRoles } from "../Roles";
-import type { RoleSummary, User } from "./types";
+import { useRoles, type Role } from "../Roles";
+import { useModules, type ModuleEntity } from "../Modules";
+import { formatEntityLabel } from "./utils";
+import type { RoleSummary, ModuleSummary, User } from "./types";
 import {
   PageHeader,
   PageTitleContainer,
@@ -64,7 +66,7 @@ import {
 } from "./styles";
 
 const Users: FC = () => {
-  const { t } = useTranslation(["users", "core"]);
+  const { t, i18n } = useTranslation(["users", "modules", "roles", "core"]);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -74,12 +76,14 @@ const Users: FC = () => {
   const [draftFilterNames, setDraftFilterNames] = useState<string[]>([]);
   const [draftFilterEmails, setDraftFilterEmails] = useState<string[]>([]);
   const [draftFilterRoles, setDraftFilterRoles] = useState<string[]>([]);
+  const [draftFilterModules, setDraftFilterModules] = useState<string[]>([]);
   const [draftFilterActive, setDraftFilterActive] = useState<boolean>(true);
 
   // Applied filter state
   const [appliedFilterNames, setAppliedFilterNames] = useState<string[]>([]);
   const [appliedFilterEmails, setAppliedFilterEmails] = useState<string[]>([]);
   const [appliedFilterRoles, setAppliedFilterRoles] = useState<string[]>([]);
+  const [appliedFilterModules, setAppliedFilterModules] = useState<string[]>([]);
   const [appliedFilterActive, setAppliedFilterActive] = useState<boolean | null>(
     null
   );
@@ -114,6 +118,9 @@ const Users: FC = () => {
     if (appliedFilterRoles.length > 0) {
       q.roles_id_in = appliedFilterRoles;
     }
+    if (appliedFilterModules.length > 0) {
+      q.modules_id_in = appliedFilterModules;
+    }
     if (appliedFilterActive !== null) {
       q.is_active_eq = appliedFilterActive;
     }
@@ -123,6 +130,7 @@ const Users: FC = () => {
     appliedFilterNames,
     appliedFilterEmails,
     appliedFilterRoles,
+    appliedFilterModules,
     appliedFilterActive,
   ]);
 
@@ -160,6 +168,16 @@ const Users: FC = () => {
     includes: false,
   });
 
+  // Filter modules fetch (all=true and includes=false)
+  const {
+    data: filterModulesResponse,
+    isLoading: isLoadingFilterModules,
+    isFetching: isFetchingFilterModules,
+  } = useModules({
+    all: true,
+    includes: false,
+  });
+
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
 
@@ -180,10 +198,6 @@ const Users: FC = () => {
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
-  const getRoleKeys = (roles: (RoleSummary | string)[] = []): string[] => {
-    return roles.map((r) => (typeof r === "string" ? r : r.key));
   };
 
   const handleOpenActionMenu = (
@@ -213,6 +227,9 @@ const Users: FC = () => {
         roles: actionUser.roles.map((r) =>
           typeof r === "string" ? r : r.id
         ),
+        modules: (actionUser.modules ?? []).map((m) =>
+          typeof m === "string" ? m : m.id
+        ),
         isActive: actionUser.is_active,
         imageUrl: actionUser.image_url ?? null,
       });
@@ -230,6 +247,7 @@ const Users: FC = () => {
             name: data.name ?? null,
             email: data.email,
             roles: data.roles,
+            modules: data.modules,
             is_active: data.isActive,
             image_url: data.imageUrl ?? null,
           },
@@ -239,6 +257,7 @@ const Users: FC = () => {
           name: data.name ?? null,
           email: data.email,
           roles: data.roles,
+          modules: data.modules,
           is_active: data.isActive,
           image_url: data.imageUrl ?? null,
         });
@@ -290,6 +309,7 @@ const Users: FC = () => {
     setAppliedFilterNames(draftFilterNames);
     setAppliedFilterEmails(draftFilterEmails);
     setAppliedFilterRoles(draftFilterRoles);
+    setAppliedFilterModules(draftFilterModules);
     setAppliedFilterActive(draftFilterActive);
     setPage(0);
   };
@@ -298,10 +318,12 @@ const Users: FC = () => {
     setDraftFilterNames([]);
     setDraftFilterEmails([]);
     setDraftFilterRoles([]);
+    setDraftFilterModules([]);
     setDraftFilterActive(true);
     setAppliedFilterNames([]);
     setAppliedFilterEmails([]);
     setAppliedFilterRoles([]);
+    setAppliedFilterModules([]);
     setAppliedFilterActive(null);
     setPage(0);
   };
@@ -327,13 +349,45 @@ const Users: FC = () => {
     );
   }, [filterUsersResponse]);
 
+  // Helper to format role display name with translation as Translate (key)
+  const getRoleFilterLabel = useCallback(
+    (role: RoleSummary | Role | string | undefined | null): string => {
+      return formatEntityLabel(role, i18n.language, (key) =>
+        i18n.exists(`roles:role_names.${key}`)
+          ? t(`roles:role_names.${key}`)
+          : null
+      );
+    },
+    [i18n, t]
+  );
+
+  // Helper to format module display name with translation as Translate (key)
+  const getModuleFilterLabel = useCallback(
+    (mod: ModuleSummary | ModuleEntity | string | undefined | null): string => {
+      return formatEntityLabel(mod, i18n.language, (key) =>
+        i18n.exists(`modules:module_names.${key}`)
+          ? t(`modules:module_names.${key}`)
+          : null
+      );
+    },
+    [i18n, t]
+  );
+
   // Filter options derived from all roles (without relations)
   const roleFilterOptions = useMemo(() => {
     return (filterRolesResponse?.data ?? []).map((role) => ({
       value: role.id,
-      label: role.key,
+      label: getRoleFilterLabel(role),
     }));
-  }, [filterRolesResponse]);
+  }, [filterRolesResponse, getRoleFilterLabel]);
+
+  // Filter options derived from all modules (without relations)
+  const moduleFilterOptions = useMemo(() => {
+    return (filterModulesResponse?.data ?? []).map((module) => ({
+      value: module.id,
+      label: getModuleFilterLabel(module),
+    }));
+  }, [filterModulesResponse, getModuleFilterLabel]);
 
   // Active filter count calculation
   const activeFiltersCount = useMemo(() => {
@@ -341,12 +395,14 @@ const Users: FC = () => {
     if (appliedFilterNames.length > 0) count += appliedFilterNames.length;
     if (appliedFilterEmails.length > 0) count += appliedFilterEmails.length;
     if (appliedFilterRoles.length > 0) count += appliedFilterRoles.length;
+    if (appliedFilterModules.length > 0) count += appliedFilterModules.length;
     if (appliedFilterActive !== null) count += 1;
     return count;
   }, [
     appliedFilterNames,
     appliedFilterEmails,
     appliedFilterRoles,
+    appliedFilterModules,
     appliedFilterActive,
   ]);
 
@@ -393,6 +449,15 @@ const Users: FC = () => {
             onChange={setDraftFilterRoles}
             placeholder={t("users:form.roles_placeholder")}
             disabled={isLoadingFilterRoles || isFetchingFilterRoles}
+          />
+
+          <SelectMultipleInput
+            label={t("users:form.modules")}
+            options={moduleFilterOptions}
+            value={draftFilterModules}
+            onChange={setDraftFilterModules}
+            placeholder={t("users:form.modules_placeholder")}
+            disabled={isLoadingFilterModules || isFetchingFilterModules}
           />
 
           <Box
@@ -450,13 +515,31 @@ const Users: FC = () => {
           ))}
           {appliedFilterRoles.map((roleId) => {
             const role = filterRolesResponse?.data?.find((r) => r.id === roleId);
-            const roleLabel = role?.key ?? roleId;
+            const roleLabel = role ? getRoleFilterLabel(role) : roleId;
             return (
               <FilterChips
                 key={`role-${roleId}`}
                 label={t("users:filter_chips.role", { value: roleLabel })}
                 onAction={() => {
                   setAppliedFilterRoles((prev) => prev.filter((r) => r !== roleId));
+                  setPage(0);
+                }}
+              />
+            );
+          })}
+          {appliedFilterModules.map((moduleId) => {
+            const mod = filterModulesResponse?.data?.find(
+              (m) => m.id === moduleId
+            );
+            const modLabel = mod ? getModuleFilterLabel(mod) : moduleId;
+            return (
+              <FilterChips
+                key={`module-${moduleId}`}
+                label={t("users:filter_chips.module", { value: modLabel })}
+                onAction={() => {
+                  setAppliedFilterModules((prev) =>
+                    prev.filter((m) => m !== moduleId)
+                  );
                   setPage(0);
                 }}
               />
@@ -554,6 +637,7 @@ const Users: FC = () => {
                   <TableCell>{t("users:table.name")}</TableCell>
                   <TableCell>{t("users:table.email")}</TableCell>
                   <TableCell>{t("users:table.roles")}</TableCell>
+                  <TableCell>{t("users:table.modules")}</TableCell>
                   <TableCell>{t("users:table.active")}</TableCell>
                   <TableCell align="center">
                     {t("users:table.actions")}
@@ -564,7 +648,7 @@ const Users: FC = () => {
                 {!isLoading && users.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={6}
+                      colSpan={7}
                       align="center"
                       sx={{ py: 6, color: "text.secondary" }}
                     >
@@ -692,15 +776,73 @@ const Users: FC = () => {
                               flexWrap: "wrap",
                             }}
                           >
-                            {getRoleKeys(user.roles).map((roleKey) => (
-                              <Chip
-                                key={roleKey}
-                                label={roleKey}
-                                size="small"
-                                variant="outlined"
-                                color="primary"
-                              />
-                            ))}
+                            {user.roles.map((role) => {
+                              const roleKey =
+                                typeof role === "string" ? role : role.key;
+                              const roleId =
+                                typeof role === "string" ? role : role.id;
+                              const roleObj =
+                                typeof role === "object"
+                                  ? role
+                                  : filterRolesResponse?.data?.find(
+                                      (r) => r.id === role || r.key === role
+                                    );
+                              const roleLabel = getRoleFilterLabel(
+                                roleObj ?? roleKey
+                              );
+                              return (
+                                <Chip
+                                  key={roleId || roleKey}
+                                  label={roleLabel}
+                                  size="small"
+                                  variant="outlined"
+                                  color="primary"
+                                />
+                              );
+                            })}
+                          </Box>
+                        ) : (
+                          t("users:empty_value")
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {user.modules && user.modules.length > 0 ? (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              gap: 0.5,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {user.modules.map((mod) => {
+                              const modKey =
+                                typeof mod === "string" ? mod : mod.key;
+                              const modId =
+                                typeof mod === "string" ? mod : mod.id;
+                              const modObj =
+                                typeof mod === "object"
+                                  ? mod
+                                  : filterModulesResponse?.data?.find(
+                                      (m) => m.id === mod || m.key === mod
+                                    );
+                              const modLabel = getModuleFilterLabel(
+                                modObj ?? modKey
+                              );
+                              return (
+                                <Tooltip
+                                  key={modId || modKey}
+                                  title={modLabel !== modKey ? modKey : ""}
+                                  arrow
+                                >
+                                  <Chip
+                                    label={modLabel}
+                                    size="small"
+                                    variant="outlined"
+                                    color="secondary"
+                                  />
+                                </Tooltip>
+                              );
+                            })}
                           </Box>
                         ) : (
                           t("users:empty_value")
