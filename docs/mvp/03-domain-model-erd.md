@@ -6,46 +6,47 @@
 
 ## 1. Resumen del modelo
 
-El modelo cubre la base de identidad, autorización e internacionalización de Nodia con siete tablas:
+El modelo cubre la base de identidad, autorización, navegación e internacionalización de Nodia con ocho tablas:
 
 - `users`: personas preautorizadas para iniciar sesión con Google.
-- `roles`: agrupaciones reutilizables de permisos, identificadas por un `key` para soporte multiidioma.
-- `modules`: módulos y submódulos de la aplicación, identificados por un `key` (una sola entidad con `type` y `parent_id`).
-- `actions`: catálogo de acciones dinámicas (permisos), con un `key` (multiidioma) y vinculadas opcionalmente a un módulo (`module_id`).
+- `roles`: agrupaciones reutilizables de permisos funcionales, identificadas por un `key`.
+- `modules`: catálogo plano de módulos de la aplicación, agrupados por `group_by`.
+- `actions`: catálogo de acciones dinámicas (permisos de endpoints/operaciones), con un `key` globalmente único e independientes de módulos.
 - `role_actions`: permisos asignados por rol (pivote rol + acción).
 - `user_roles`: asignación de roles a usuarios (pivote usuario + rol).
-- `translations`: catálogo centralizado de traducciones i18n para nombres legibles y descripciones según clave (`key`) e idioma (`locale`).
+- `user_modules`: asignación de visibilidad de módulos a usuarios (pivote usuario + módulo).
+- `translations`: catálogo centralizado de traducciones i18n para cualquier entidad y campo (`source_entity`, `source_id`, `source_key`, `locale`).
 
 ### Relaciones clave
 
-- Un módulo puede tener muchos submódulos (`modules.parent_id` → `modules.id`).
-- Una acción puede pertenecer opcionalmente a un módulo o submódulo (`actions.module_id` → `modules.id`).
-- Un rol tiene muchas acciones (`role_actions`).
 - Un usuario tiene muchos roles (`user_roles`).
+- Un usuario tiene muchos módulos asignados (`user_modules`).
+- Un rol tiene muchas acciones (`role_actions`).
+- Las acciones son independientes del árbol de navegación (`actions` no tiene `module_id`).
+- Las traducciones identifican de forma unívoca la traducción de cualquier campo por registro e idioma (`translations`).
 
 ### Supuestos importantes
 
-- Se eliminan tablas y campos descriptivos (`name` en roles, `label` en modules) en favor de utilizar un `key` (ej. `viewUserPage`) para habilitar traducciones (i18n).
-- La gestión de traducciones (i18n) se centraliza en el backend mediante la tabla `translations`, desacoplando al frontend de diccionarios locales y permitiendo servir bundles lingüísticos completos o traducciones puntuales por `key` y `locale`.
+- Se eliminan la jerarquía recursiva de módulos (`parent_id`, `type = 'submodule'`); todos los módulos son homogéneos y se agrupan mediante la propiedad `group_by`.
+- Las acciones dinámicas quedan 100% desacopladas de los módulos de navegación, separando los permisos operativos (backend/acciones) de la navegación en UI (módulos asignados al usuario).
+- La gestión de traducciones (i18n) se centraliza en la tabla `translations` con clave cuádruple (`source_entity`, `source_id`, `source_key`, `locale`), permitiendo traducir dinámicamente atributos como `key`, `comment`, `description`, etc., en múltiples idiomas.
 - `Home` es un módulo exclusivamente de frontend (hardcodeado); no es una fila de `modules`.
 - La identidad externa de Google no tiene tabla propia: `users` guarda nombre, correo e imagen, y Google completa los campos vacíos tras el primer acceso válido.
 - El correo se persiste normalizado en minúsculas y es único.
-- Se ha simplificado la autorización eliminando `resources`, vinculando directamente las acciones (dinámicas) a los roles.
-- `users.is_allowed` fue removido; la autorización de ingreso ahora dependerá únicamente de `is_active` (u otra lógica si se define en el futuro).
 
 ## 2. Mapeo funcional → entidades
 
 ### Módulos detectados → entidades
 
-| Módulo / submódulo | Entidad |
+| Módulo / Funcionalidad | Entidad |
 |---|---|
 | `Home` (universal) | Sin tabla (frontend hardcodeado) |
-| `Ajustes Generales` | `modules` (fila con `type = 'module'`) |
-| `Users` | `users` + `user_roles` (submódulo de `generalSettings`) |
-| `Modules` | `modules` (submódulo que administra la propia entidad) |
+| `Módulos de navegación` | `modules` (agrupados por `group_by`) |
+| `Asignación de navegación` | `user_modules` (relación usuario - módulo) |
+| `Users` | `users` + `user_roles` + `user_modules` |
 | `Roles` | `roles` + `role_actions` |
-| `Actions` | `actions` (nuevo catálogo dinámico de permisos) |
-| `Traducciones (i18n)` | `translations` (catálogo centralizado por `key` y `locale`) |
+| `Actions` | `actions` (catálogo dinámico de permisos sin `module_id`) |
+| `Traducciones (i18n)` | `translations` (catálogo centralizado cuádruple) |
 
 ### Flujos relevantes → relaciones necesarias
 
@@ -54,10 +55,9 @@ El modelo cubre la base de identidad, autorización e internacionalización de N
 | Inicio de sesión por correo permitido | `users.email`, `is_active` |
 | Datos de Google completan identidad | `users.name`, `users.image_url` (nullable) |
 | Permisos efectivos por roles | `user_roles` → `role_actions` → `actions` |
-| Acción agrupada en módulo/submódulo | `actions.module_id` → `modules.id` (opcional) |
-| Submódulo dentro de su módulo padre | `modules.parent_id` → `modules.id` |
+| Módulos visibles en frontend por usuario | `user_modules` → `modules` |
 | Borrado lógico | `is_active` en todas las entidades |
-| Traducción dinámica de entidades y UI | `translations.key`, `translations.locale` |
+| Traducción dinámica de entidades y campos | `translations(source_entity, source_id, source_key, locale)` |
 
 ### Reglas de negocio → campos o estructuras que las soportan
 
@@ -67,12 +67,26 @@ El modelo cubre la base de identidad, autorización e internacionalización de N
 | Alta de usuario requiere solo correo | `users.email` `not null, unique`; `name`/`image_url` nullable |
 | Un rol no repite un permiso | índice único compuesto `(role_id, action_id)` en `role_actions` |
 | Un usuario no repite un rol | índice único compuesto `(user_id, role_id)` en `user_roles` |
-| Relación padre-hijo explícita | `modules.parent_id` con FK |
-| Soporte Multiidiomas (i18n) | Uso de `key` en `roles`, `actions`, `modules` resuelto contra `translations(key, locale)` con índice único |
+| Un usuario no repite un módulo | índice único compuesto `(user_id, module_id)` en `user_modules` |
+| Agrupación de módulos | `modules.group_by` con índice para consultas optimizadas |
+| Soporte Multiidiomas (i18n) | Unicidad cuádruple en `translations(source_entity, source_id, source_key, locale)` con índice de búsqueda por `(locale, source_entity, source_id)` |
 
 ## 3. Modelo DBML
 
 ```dbml
+Table user_modules [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	user_id bigint [ not null ]
+	module_id bigint [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(user_id, module_id) [ name: 'uq_user_module', unique ]
+	}
+}
+
 Table users [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
 	name varchar(255)
@@ -93,7 +107,6 @@ Table roles [headercolor: #175e7a] {
 
 Table actions [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
-	module_id bigint
 	key text [ not null, unique ]
 	description text
 	is_active boolean [ not null, default: true ]
@@ -103,12 +116,15 @@ Table actions [headercolor: #175e7a] {
 
 Table modules [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
-	key text [ not null, unique ]
-	type text [ not null ]
-	parent_id bigint
+	key varchar(255) [ not null, unique ]
+	group_by varchar(255) [ not null ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
+
+	indexes {
+		group_by [ name: 'idx_modules_group_by' ]
+	}
 }
 
 Table role_actions [headercolor: #175e7a] {
@@ -139,24 +155,19 @@ Table user_roles [headercolor: #175e7a] {
 
 Table translations [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
-	key varchar(255) [ not null ]
+	source_entity varchar(255) [ not null ]
+	source_id varchar(255) [ not null ]
+	source_key varchar(255) [ not null ]
 	locale varchar(10) [ not null ]
 	value text [ not null ]
+	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
 
 	indexes {
-		(key, locale) [ name: 'uq_translation_key_locale', unique ]
-		(locale, key) [ name: 'idx_translation_locale_key' ]
+		(source_entity, source_id, source_key, locale) [ name: 'uq_translation_entity_id_key_locale', unique ]
+		(locale, source_entity, source_id) [ name: 'idx_translation_lookup' ]
 	}
-}
-
-Ref fk_actions_module {
-	actions.module_id > modules.id [ delete: no action, update: no action ]
-}
-
-Ref fk_modules_parent {
-	modules.parent_id > modules.id [ delete: no action, update: no action ]
 }
 
 Ref fk_role_actions_role {
@@ -173,6 +184,14 @@ Ref fk_user_roles_user {
 
 Ref fk_user_roles_role {
 	user_roles.role_id > roles.id [ delete: no action, update: no action ]
+}
+
+Ref fk_user_modules_user {
+	user_modules.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_user_modules_module {
+	user_modules.module_id > modules.id [ delete: no action, update: no action ]
 }
 ```
 

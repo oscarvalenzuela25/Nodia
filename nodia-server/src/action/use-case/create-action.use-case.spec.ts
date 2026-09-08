@@ -21,18 +21,26 @@ describe('CreateActionUseCase', () => {
   it('should call actionService.create with dto and return the created action', async () => {
     const dto: CreateActionDto = {
       key: 'roles.delete',
-      module_id: '1',
       description: 'Delete roles',
       is_active: true,
+      translates: [
+        { key: 'key', es: 'Eliminar roles', en: 'Delete roles' },
+        { key: 'comment', es: 'Permite eliminar roles del sistema', en: 'Allows deleting system roles' },
+      ],
     };
 
     const createdAction = {
       id: '1',
-      ...dto,
+      key: 'roles.delete',
+      description: 'Delete roles',
+      is_active: true,
       created_at: new Date(),
       updated_at: new Date(),
       action_roles: [],
-      module: null,
+      translates: [
+        { key: 'key', es: 'Eliminar roles', en: 'Delete roles' },
+        { key: 'comment', es: 'Permite eliminar roles del sistema', en: 'Allows deleting system roles' },
+      ],
     };
 
     vi.mocked(actionServiceMock.create!).mockResolvedValue(createdAction as any);

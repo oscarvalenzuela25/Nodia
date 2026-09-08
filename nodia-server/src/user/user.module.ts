@@ -7,6 +7,8 @@ import { UserRole } from './entities/user-role.entity.js';
 import { GetAllUsersUseCase } from './use-case/get-all-users.use-case.js';
 import { CreateUserUseCase } from './use-case/create-user.use-case.js';
 import { UpdateUserUseCase } from './use-case/update-user.use-case.js';
+import { UserModule as UserModuleEntity } from './entities/user-module.entity.js';
+import { TranslationModule } from '../translation/translation.module.js';
 
 @Module({
   controllers: [UserController],
@@ -16,7 +18,9 @@ import { UpdateUserUseCase } from './use-case/update-user.use-case.js';
     CreateUserUseCase,
     UpdateUserUseCase,
   ],
-  imports: [TypeOrmModule.forFeature([User, UserRole])],
+  imports: [
+    TypeOrmModule.forFeature([User, UserRole, UserModuleEntity]),
+    TranslationModule,
+  ],
 })
 export class UserModule {}
-

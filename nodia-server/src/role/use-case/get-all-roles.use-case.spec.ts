@@ -36,7 +36,10 @@ describe('GetAllRolesUseCase', () => {
           updated_at: new Date(),
           role_users: [],
           role_actions: [],
-        },
+          translates: [
+            { key: 'key', es: 'Administrador', en: 'Administrator' },
+          ],
+        } as any,
       ],
       meta: {
         page: 1,
@@ -74,7 +77,10 @@ describe('GetAllRolesUseCase', () => {
           role_users: [],
           role_actions: [],
           actions: [],
-        },
+          translates: [
+            { key: 'key', es: 'Administrador', en: 'Administrator' },
+          ],
+        } as any,
       ],
       meta: {
         page: 1,

@@ -10,6 +10,8 @@ import { GetRolesResponse } from './types/role.types.js';
 import { CreateRoleDto } from './dto/create-role.dto.js';
 import { UpdateRoleDto } from './dto/update-role.dto.js';
 
+import { TranslationService } from '../translation/translation.service.js';
+
 @Injectable()
 export class RoleService {
   constructor(
@@ -19,6 +21,7 @@ export class RoleService {
     private readonly roleActionRepository: Repository<RoleAction>,
     @InjectRepository(Action)
     private readonly actionRepository: Repository<Action>,
+    private readonly translationService: TranslationService,
   ) {}
 
   async findAll({
@@ -55,10 +58,55 @@ export class RoleService {
     const { actions_id_eq: _aie, actions_id_in: _aii, actions_key_cont: _akc, ...cleanRoleQ } = q ?? {};
     applyRansack(qb, cleanRoleQ, 'role');
 
-    const formatRole = (role: Role): Role => {
-      const actions = role.role_actions
-        ?.map((ra) => ra.action)
-        .filter(Boolean) ?? [];
+    const attachActionTranslations = async (
+      rolesList: Role[],
+    ): Promise<Map<string, any>> => {
+      if (!includes) return new Map();
+      const allActions: Action[] = [];
+      for (const r of rolesList) {
+        if (r.role_actions) {
+          for (const ra of r.role_actions) {
+            if (ra.action) {
+              allActions.push(ra.action);
+            }
+          }
+        }
+      }
+      if (allActions.length === 0) return new Map();
+
+      const uniqueActionsMap = new Map<string, Action>();
+      for (const act of allActions) {
+        if (act.id && !uniqueActionsMap.has(String(act.id))) {
+          uniqueActionsMap.set(String(act.id), act);
+        }
+      }
+
+      const translatedActions =
+        await this.translationService.attachTranslations(
+          'actions',
+          Array.from(uniqueActionsMap.values()),
+        );
+
+      const map = new Map<string, any>();
+      for (const ta of translatedActions) {
+        map.set(String(ta.id), ta);
+      }
+      return map;
+    };
+
+    const formatRole = (
+      role: Role,
+      actionTranslationsMap?: Map<string, any>,
+    ): Role => {
+      const actions =
+        role.role_actions
+          ?.map((ra) => {
+            if (!ra.action) return null;
+            return (
+              actionTranslationsMap?.get(String(ra.action.id)) ?? ra.action
+            );
+          })
+          .filter(Boolean) ?? [];
       const { role_actions: _ra, role_users: _ru, ...rest } = role;
       return {
         ...rest,
@@ -68,9 +116,13 @@ export class RoleService {
 
     if (all) {
       const rawData = await qb.getMany();
-      const data = rawData.map(formatRole);
+      const actionTranslationsMap = await attachActionTranslations(rawData);
+      const data = await this.translationService.attachTranslations(
+        'roles',
+        rawData.map((r) => formatRole(r, actionTranslationsMap)),
+      );
       return {
-        data,
+        data: data as any,
         meta: {
           page: 1,
           limit: data.length,
@@ -85,11 +137,15 @@ export class RoleService {
       .take(limit)
       .getManyAndCount();
 
-    const data = rawData.map(formatRole);
+    const actionTranslationsMap = await attachActionTranslations(rawData);
+    const data = await this.translationService.attachTranslations(
+      'roles',
+      rawData.map((r) => formatRole(r, actionTranslationsMap)),
+    );
     const total_pages = Math.ceil(total_items / limit);
 
     return {
-      data,
+      data: data as any,
       meta: {
         page,
         limit,
@@ -133,7 +189,7 @@ export class RoleService {
   }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
-    const { actions, ...roleData } = createRoleDto;
+    const { actions, translates, ...roleData } = createRoleDto;
     const newRole = this.roleRepository.create(roleData);
     const savedRole = await this.roleRepository.save(newRole);
 
@@ -147,6 +203,14 @@ export class RoleService {
         }),
       );
       await this.roleActionRepository.save(roleActions);
+    }
+
+    if (translates && translates.length > 0) {
+      await this.translationService.saveTranslations(
+        'roles',
+        savedRole.id,
+        translates,
+      );
     }
 
     return this.findOne(savedRole.id);
@@ -164,13 +228,22 @@ export class RoleService {
     if (!role) {
       throw new NotFoundException(`Role with ID "${id}" not found`);
     }
-    const actions =
+    const rawActions =
       role.role_actions?.map((ra) => ra.action).filter(Boolean) ?? [];
+    const actions = await this.translationService.attachTranslations(
+      'actions',
+      rawActions,
+    );
     const { role_actions: _ra, role_users: _ru, ...rest } = role;
-    return {
+    const formatted = {
       ...rest,
       actions,
     } as Role;
+
+    return this.translationService.attachTranslationsToOne(
+      'roles',
+      formatted,
+    ) as any;
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
@@ -179,7 +252,7 @@ export class RoleService {
       throw new NotFoundException(`Role with ID "${id}" not found`);
     }
 
-    const { actions, ...rest } = updateRoleDto;
+    const { actions, translates, ...rest } = updateRoleDto;
     Object.assign(role, rest);
     await this.roleRepository.save(role);
 
@@ -196,6 +269,10 @@ export class RoleService {
         );
         await this.roleActionRepository.save(roleActions);
       }
+    }
+
+    if (translates !== undefined) {
+      await this.translationService.updateTranslations('roles', id, translates);
     }
 
     return this.findOne(id);

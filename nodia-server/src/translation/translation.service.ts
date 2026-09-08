@@ -1,19 +1,13 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Translation } from './entities/translation.entity.js';
-import { CreateTranslationDto } from './dto/create-translation.dto.js';
-import { UpdateTranslationDto } from './dto/update-translation.dto.js';
-import { GetTranslationsDto } from './dto/get-translations.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
-import {
-  GetTranslationsResponse,
-  TranslationsBundleResponse,
-} from './types/translation.types.js';
+import { TranslateItemDto } from './dto/translate-item.dto.js';
+
+export interface EntityTranslations {
+  translates?: Array<{ key: string; es: string; en: string }>;
+  [key: string]: any;
+}
 
 @Injectable()
 export class TranslationService {
@@ -22,118 +16,142 @@ export class TranslationService {
     private readonly translationRepository: Repository<Translation>,
   ) {}
 
-  async findAll({
-    page = 1,
-    limit = 10,
-    all = false,
-    q,
-  }: GetTranslationsDto): Promise<GetTranslationsResponse> {
-    const qb = this.translationRepository.createQueryBuilder('translation');
+  async saveTranslations(
+    sourceEntity: string,
+    sourceId: string,
+    translates?: TranslateItemDto[],
+  ): Promise<void> {
+    if (!translates || translates.length === 0) return;
 
-    applyRansack(qb, q, 'translation');
-
-    if (all) {
-      const data = await qb.getMany();
-      return {
-        data,
-        meta: {
-          page: 1,
-          limit: data.length,
-          total_items: data.length,
-          total_pages: 1,
-        },
-      };
-    }
-
-    const [data, total_items] = await qb
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    const total_pages = Math.ceil(total_items / limit);
-
-    return {
-      data,
-      meta: {
-        page,
-        limit,
-        total_items,
-        total_pages,
-      },
-    };
-  }
-
-  async findOne(id: string): Promise<Translation> {
-    const translation = await this.translationRepository.findOne({
-      where: { id },
-    });
-    if (!translation) {
-      throw new NotFoundException(`Translation with ID "${id}" not found`);
-    }
-    return translation;
-  }
-
-  async getBundle(locale: string): Promise<TranslationsBundleResponse> {
-    const list = await this.translationRepository.find({
-      where: { locale },
-    });
-
-    const map: Record<string, string> = {};
-    for (const item of list) {
-      map[item.key] = item.value;
-    }
-
-    return {
-      locale,
-      translations: map,
-    };
-  }
-
-  async create(createTranslationDto: CreateTranslationDto): Promise<Translation> {
-    const existing = await this.translationRepository.findOne({
-      where: {
-        key: createTranslationDto.key,
-        locale: createTranslationDto.locale,
-      },
-    });
-
-    if (existing) {
-      throw new ConflictException(
-        `Translation for key "${createTranslationDto.key}" and locale "${createTranslationDto.locale}" already exists`,
-      );
-    }
-
-    const translation = this.translationRepository.create(createTranslationDto);
-    return this.translationRepository.save(translation);
-  }
-
-  async update(
-    id: string,
-    updateTranslationDto: UpdateTranslationDto,
-  ): Promise<Translation> {
-    const translation = await this.findOne(id);
-
-    const targetKey = updateTranslationDto.key ?? translation.key;
-    const targetLocale = updateTranslationDto.locale ?? translation.locale;
-
-    if (targetKey !== translation.key || targetLocale !== translation.locale) {
-      const existing = await this.translationRepository.findOne({
-        where: { key: targetKey, locale: targetLocale },
-      });
-      if (existing && existing.id !== id) {
-        throw new ConflictException(
-          `Translation for key "${targetKey}" and locale "${targetLocale}" already exists`,
-        );
+    const rows: Partial<Translation>[] = [];
+    for (const item of translates) {
+      if (item.es !== undefined && item.es !== null) {
+        rows.push({
+          source_entity: sourceEntity,
+          source_id: String(sourceId),
+          source_key: item.key,
+          locale: 'es',
+          value: item.es,
+          is_active: true,
+        });
+      }
+      if (item.en !== undefined && item.en !== null) {
+        rows.push({
+          source_entity: sourceEntity,
+          source_id: String(sourceId),
+          source_key: item.key,
+          locale: 'en',
+          value: item.en,
+          is_active: true,
+        });
       }
     }
 
-    Object.assign(translation, updateTranslationDto);
-    return this.translationRepository.save(translation);
+    if (rows.length > 0) {
+      const entities = this.translationRepository.create(rows);
+      await this.translationRepository.save(entities);
+    }
   }
 
-  async remove(id: string): Promise<{ deleted: boolean }> {
-    const translation = await this.findOne(id);
-    await this.translationRepository.remove(translation);
-    return { deleted: true };
+  async updateTranslations(
+    sourceEntity: string,
+    sourceId: string,
+    translates?: TranslateItemDto[],
+  ): Promise<void> {
+    if (translates === undefined) return;
+
+    for (const item of translates) {
+      const locales: Array<{ locale: string; value: string }> = [
+        { locale: 'es', value: item.es },
+        { locale: 'en', value: item.en },
+      ];
+
+      for (const { locale, value } of locales) {
+        if (value === undefined || value === null) continue;
+
+        const existing = await this.translationRepository.findOne({
+          where: {
+            source_entity: sourceEntity,
+            source_id: String(sourceId),
+            source_key: item.key,
+            locale,
+          },
+        });
+
+        if (existing) {
+          existing.value = value;
+          await this.translationRepository.save(existing);
+        } else {
+          const created = this.translationRepository.create({
+            source_entity: sourceEntity,
+            source_id: String(sourceId),
+            source_key: item.key,
+            locale,
+            value,
+            is_active: true,
+          });
+          await this.translationRepository.save(created);
+        }
+      }
+    }
+  }
+
+  async attachTranslationsToOne<T extends { id: string }>(
+    sourceEntity: string,
+    item: T,
+  ): Promise<T & EntityTranslations> {
+    if (!item) return item as any;
+    const [result] = await this.attachTranslations(sourceEntity, [item]);
+    return result;
+  }
+
+  async attachTranslations<T extends { id: string }>(
+    sourceEntity: string,
+    items: T[],
+  ): Promise<Array<T & EntityTranslations>> {
+    if (!items || items.length === 0) return items as any;
+
+    const ids = items.map((i) => String(i.id)).filter(Boolean);
+    if (ids.length === 0) return items as any;
+
+    const translations = await this.translationRepository.find({
+      where: {
+        source_entity: sourceEntity,
+        source_id: In(ids),
+      },
+    });
+
+    const map = new Map<string, Map<string, Record<string, string>>>();
+    for (const t of translations) {
+      if (!map.has(t.source_id)) {
+        map.set(t.source_id, new Map());
+      }
+      const entityMap = map.get(t.source_id)!;
+      if (!entityMap.has(t.source_key)) {
+        entityMap.set(t.source_key, {});
+      }
+      entityMap.get(t.source_key)![t.locale] = t.value;
+    }
+
+    return items.map((item) => {
+      const entityMap = map.get(String(item.id));
+      const translatesList: Array<{ key: string; es: string; en: string }> = [];
+
+      if (entityMap) {
+        for (const [sourceKey, locales] of entityMap.entries()) {
+          translatesList.push({
+            key: sourceKey,
+            es: locales.es ?? '',
+            en: locales.en ?? '',
+          });
+        }
+      }
+
+      return {
+        ...item,
+        ...(translatesList.length > 0 ? { translates: translatesList } : {}),
+      };
+    });
   }
 }
+

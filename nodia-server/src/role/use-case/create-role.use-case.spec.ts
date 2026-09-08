@@ -69,4 +69,35 @@ describe('CreateRoleUseCase', () => {
     expect(roleServiceMock.create).toHaveBeenCalledWith(dto);
     expect(result).toEqual(createdRole);
   });
+
+  it('should call roleService.create with translates and return role with translates', async () => {
+    const dto: CreateRoleDto = {
+      key: 'supervisor',
+      is_active: true,
+      translates: [
+        { key: 'key', es: 'Supervisor', en: 'Supervisor' },
+      ],
+    };
+
+    const createdRole = {
+      id: '3',
+      key: 'supervisor',
+      is_active: true,
+      created_at: new Date(),
+      updated_at: new Date(),
+      actions: [],
+      translates: [
+        { key: 'key', es: 'Supervisor', en: 'Supervisor' },
+      ],
+    };
+
+    vi.mocked(roleServiceMock.create!).mockResolvedValue(createdRole as any);
+
+    const result = await useCase.execute(dto);
+
+    expect(roleServiceMock.create).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(result).toEqual(createdRole);
+  });
 });
+

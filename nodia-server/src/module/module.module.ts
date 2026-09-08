@@ -6,9 +6,10 @@ import { Module as ModuleEntity } from './entities/module.entity.js';
 import { GetAllModulesUseCase } from './use-case/get-all-modules.use-case.js';
 import { CreateModuleUseCase } from './use-case/create-module.use-case.js';
 import { UpdateModuleUseCase } from './use-case/update-module.use-case.js';
+import { TranslationModule } from '../translation/translation.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ModuleEntity])],
+  imports: [TypeOrmModule.forFeature([ModuleEntity]), TranslationModule],
   controllers: [ModuleController],
   providers: [
     ModuleService,

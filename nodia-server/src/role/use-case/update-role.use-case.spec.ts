@@ -69,4 +69,34 @@ describe('UpdateRoleUseCase', () => {
     expect(roleServiceMock.update).toHaveBeenCalledWith(id, dto);
     expect(result).toEqual(updatedRole);
   });
+
+  it('should call roleService.update with translates and return role with updated translates', async () => {
+    const id = '1';
+    const dto: UpdateRoleDto = {
+      translates: [
+        { key: 'key', es: 'Super Administrador', en: 'Super Administrator' },
+      ],
+    };
+
+    const updatedRole = {
+      id,
+      key: 'super_admin',
+      is_active: true,
+      created_at: new Date(),
+      updated_at: new Date(),
+      actions: [],
+      translates: [
+        { key: 'key', es: 'Super Administrador', en: 'Super Administrator' },
+      ],
+    };
+
+    vi.mocked(roleServiceMock.update!).mockResolvedValue(updatedRole as any);
+
+    const result = await useCase.execute(id, dto);
+
+    expect(roleServiceMock.update).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(result).toEqual(updatedRole);
+  });
 });
+

@@ -93,4 +93,58 @@ describe('GetAllUsersUseCase', () => {
     expect(userServiceMock.findAll).toHaveBeenCalledWith(dto);
     expect(result).toEqual(mockResponse);
   });
+
+  it('should return users with modules containing translates when included', async () => {
+    const dto: GetUsersDto = {
+      page: 1,
+      limit: 10,
+      all: false,
+      includes: true,
+    };
+
+    const mockResponse: GetUsersResponse = {
+      data: [
+        {
+          id: '1',
+          name: 'Jane Doe',
+          email: 'jane@example.com',
+          image_url: null,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date(),
+          user_roles: [],
+          roles: [],
+          modules: [
+            {
+              id: '10',
+              key: 'settings',
+              group_by: 'core',
+              is_active: true,
+              created_at: new Date(),
+              updated_at: new Date(),
+              module_users: [],
+              translates: [
+                { key: 'key', es: 'Configuración', en: 'Settings' },
+              ],
+            } as any,
+          ],
+        },
+      ],
+      meta: {
+        page: 1,
+        limit: 10,
+        total_items: 1,
+        total_pages: 1,
+      },
+    };
+
+    vi.mocked(userServiceMock.findAll!).mockResolvedValue(mockResponse);
+
+    const result = await useCase.execute(dto);
+
+    expect(userServiceMock.findAll).toHaveBeenCalledWith(dto);
+    expect(result.data[0].modules?.[0].translates).toEqual([
+      { key: 'key', es: 'Configuración', en: 'Settings' },
+    ]);
+  });
 });

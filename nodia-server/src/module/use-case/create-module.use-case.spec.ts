@@ -22,28 +22,26 @@ describe('CreateModuleUseCase', () => {
   it('should call moduleService.create with CreateModuleDto and return created module', async () => {
     const dto: CreateModuleDto = {
       key: 'users',
-      type: 'submodule',
-      parent_id: '1',
+      group_by: 'settings',
       is_active: true,
+      translates: [
+        { key: 'key', es: 'Usuarios', en: 'Users' },
+      ],
     };
 
-    const mockCreatedModule: Partial<Module> = {
+    const mockCreatedModule = {
       id: '2',
       key: 'users',
-      type: 'submodule',
-      parent_id: '1',
+      group_by: 'settings',
       is_active: true,
       created_at: new Date(),
       updated_at: new Date(),
-      parent_module: {
-        id: '1',
-        key: 'general_settings',
-        type: 'module',
-        is_active: true,
-      },
+      translates: [
+        { key: 'key', es: 'Usuarios', en: 'Users' },
+      ],
     };
 
-    vi.mocked(moduleServiceMock.create!).mockResolvedValue(mockCreatedModule as Module);
+    vi.mocked(moduleServiceMock.create!).mockResolvedValue(mockCreatedModule as any);
 
     const result = await useCase.execute(dto);
 
@@ -51,38 +49,5 @@ describe('CreateModuleUseCase', () => {
     expect(moduleServiceMock.create).toHaveBeenCalledWith(dto);
     expect(result).toEqual(mockCreatedModule);
   });
-
-  it('should propagate BadRequestException if submodule has no parent_id or parent is invalid', async () => {
-    const dto: CreateModuleDto = {
-      key: 'users',
-      type: 'submodule',
-      parent_id: null,
-      is_active: true,
-    };
-
-    vi.mocked(moduleServiceMock.create!).mockRejectedValue(
-      new Error('parent_id is required when type is submodule'),
-    );
-
-    await expect(useCase.execute(dto)).rejects.toThrow(
-      'parent_id is required when type is submodule',
-    );
-  });
-
-  it('should propagate BadRequestException if parent is another submodule', async () => {
-    const dto: CreateModuleDto = {
-      key: 'roles',
-      type: 'submodule',
-      parent_id: 'submodule_id',
-      is_active: true,
-    };
-
-    vi.mocked(moduleServiceMock.create!).mockRejectedValue(
-      new Error('A submodule cannot have another submodule as its parent'),
-    );
-
-    await expect(useCase.execute(dto)).rejects.toThrow(
-      'A submodule cannot have another submodule as its parent',
-    );
-  });
 });
+

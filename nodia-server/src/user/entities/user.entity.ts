@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { UserRole } from './user-role.entity.js';
 import type { Role } from '../../role/entities/role.entity.js';
+import { UserModule as UserModuleEntity } from './user-module.entity.js';
+import { Module } from '../../module/entities/module.entity.js';
 
 @Entity({
   name: 'users',
@@ -38,5 +40,10 @@ export class User {
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   user_roles: Relation<UserRole>[];
 
+  @OneToMany(() => UserModuleEntity, (userModule) => userModule.user)
+  user_modules: Relation<UserModuleEntity>[];
+
   roles?: Relation<Role>[];
+
+  modules?: Relation<Module>[];
 }

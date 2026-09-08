@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Module } from './entities/module.entity.js';
@@ -7,50 +7,34 @@ import { UpdateModuleDto } from './dto/update-module.dto.js';
 import { GetModulesDto } from './dto/get-modules.dto.js';
 import { applyRansack } from '../common/utils/ransack-query.builder.js';
 import { GetModulesResponse } from './types/module.types.js';
+import { TranslationService } from '../translation/translation.service.js';
 
 @Injectable()
 export class ModuleService {
   constructor(
     @InjectRepository(Module)
     private readonly moduleRepository: Repository<Module>,
+    private readonly translationService: TranslationService,
   ) {}
 
   async findAll({
     page = 1,
     limit = 10,
     all = false,
-    includes = true,
     q,
   }: GetModulesDto): Promise<GetModulesResponse> {
     const qb = this.moduleRepository.createQueryBuilder('module');
 
-    if (includes) {
-      qb.leftJoinAndSelect('module.parent', 'parent');
-    }
-
     applyRansack(qb, q, 'module');
-
-    const formatModule = (mod: Module): Module => {
-      const { actions: _a, children: _c, parent, ...rest } = mod;
-      return {
-        ...rest,
-        parent_module:
-          includes && mod.type === 'submodule' && parent
-            ? {
-                id: parent.id,
-                key: parent.key,
-                type: parent.type,
-                is_active: parent.is_active,
-              }
-            : null,
-      } as Module;
-    };
 
     if (all) {
       const rawData = await qb.getMany();
-      const data = rawData.map(formatModule);
+      const data = await this.translationService.attachTranslations(
+        'modules',
+        rawData,
+      );
       return {
-        data,
+        data: data as any,
         meta: {
           page: 1,
           limit: data.length,
@@ -65,11 +49,14 @@ export class ModuleService {
       .take(limit)
       .getManyAndCount();
 
-    const data = rawData.map(formatModule);
+    const data = await this.translationService.attachTranslations(
+      'modules',
+      rawData,
+    );
     const total_pages = Math.ceil(total_items / limit);
 
     return {
-      data,
+      data: data as any,
       meta: {
         page,
         limit,
@@ -82,57 +69,30 @@ export class ModuleService {
   async findOne(id: string): Promise<Module> {
     const module = await this.moduleRepository.findOne({
       where: { id },
-      relations: {
-        parent: true,
-      },
     });
 
     if (!module) {
       throw new NotFoundException(`Module with ID "${id}" not found`);
     }
 
-    const { actions: _a, children: _c, parent, ...rest } = module;
-    return {
-      ...rest,
-      parent_module:
-        module.type === 'submodule' && parent
-          ? {
-              id: parent.id,
-              key: parent.key,
-              type: parent.type,
-              is_active: parent.is_active,
-            }
-          : null,
-    } as Module;
+    return this.translationService.attachTranslationsToOne(
+      'modules',
+      module,
+    ) as any;
   }
 
   async create(createModuleDto: CreateModuleDto): Promise<Module> {
-    if (createModuleDto.type === 'submodule') {
-      if (!createModuleDto.parent_id) {
-        throw new BadRequestException('parent_id is required when type is submodule');
-      }
-
-      const parent = await this.moduleRepository.findOne({
-        where: { id: createModuleDto.parent_id },
-      });
-      if (!parent) {
-        throw new NotFoundException(
-          `Parent module with ID "${createModuleDto.parent_id}" not found`,
-        );
-      }
-      if (parent.type !== 'module') {
-        throw new BadRequestException(
-          'A submodule cannot have another submodule as its parent',
-        );
-      }
-    }
-
-    if (createModuleDto.type === 'module') {
-      createModuleDto.parent_id = null;
-    }
-
-    const module = this.moduleRepository.create(createModuleDto);
+    const { translates, ...moduleData } = createModuleDto;
+    const module = this.moduleRepository.create(moduleData);
     const savedModule = await this.moduleRepository.save(module);
+
+    if (translates && translates.length > 0) {
+      await this.translationService.saveTranslations(
+        'modules',
+        savedModule.id,
+        translates,
+      );
+    }
 
     return this.findOne(savedModule.id);
   }
@@ -143,57 +103,12 @@ export class ModuleService {
       throw new NotFoundException(`Module with ID "${id}" not found`);
     }
 
-    const targetType = updateModuleDto.type ?? module.type;
-    const targetParentId =
-      updateModuleDto.parent_id !== undefined
-        ? updateModuleDto.parent_id
-        : module.parent_id;
-
-    if (targetType === 'submodule') {
-      if (!targetParentId) {
-        throw new BadRequestException('parent_id is required when type is submodule');
-      }
-      if (targetParentId === id) {
-        throw new BadRequestException('A submodule cannot be its own parent');
-      }
-      if (module.type === 'module') {
-        const childrenCount = await this.moduleRepository.count({
-          where: { parent_id: id },
-        });
-        if (childrenCount > 0) {
-          throw new BadRequestException(
-            'Cannot convert a module with submodules into a submodule',
-          );
-        }
-      }
-
-      const parent = await this.moduleRepository.findOne({
-        where: { id: targetParentId },
-      });
-      if (!parent) {
-        throw new NotFoundException(
-          `Parent module with ID "${targetParentId}" not found`,
-        );
-      }
-      if (parent.type !== 'module') {
-        throw new BadRequestException(
-          'A submodule cannot have another submodule as its parent',
-        );
-      }
-    }
-
-    if (targetType === 'module') {
-      updateModuleDto.parent_id = null;
-    }
-
-    Object.assign(module, updateModuleDto);
+    const { translates, ...rest } = updateModuleDto;
+    Object.assign(module, rest);
     await this.moduleRepository.save(module);
 
-    if (updateModuleDto.is_active === false && module.type === 'module') {
-      await this.moduleRepository.update(
-        { parent_id: module.id },
-        { is_active: false },
-      );
+    if (translates !== undefined) {
+      await this.translationService.updateTranslations('modules', id, translates);
     }
 
     return this.findOne(id);
@@ -203,3 +118,4 @@ export class ModuleService {
     return `This action removes a #${id} module`;
   }
 }
+

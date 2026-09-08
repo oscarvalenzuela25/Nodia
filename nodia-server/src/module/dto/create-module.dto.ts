@@ -1,4 +1,6 @@
-import { IsBoolean, IsIn, IsNotEmpty, IsOptional, IsString, ValidateIf } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { TranslateItemDto } from '../../translation/dto/translate-item.dto.js';
 
 export class CreateModuleDto {
   @IsNotEmpty()
@@ -6,15 +8,17 @@ export class CreateModuleDto {
   key: string;
 
   @IsNotEmpty()
-  @IsIn(['module', 'submodule'])
-  type: 'module' | 'submodule';
-
-  @ValidateIf((o: CreateModuleDto) => o.type === 'submodule')
-  @IsNotEmpty({ message: 'parent_id is required when type is submodule' })
   @IsString()
-  parent_id?: string | null;
+  group_by: string;
 
   @IsOptional()
   @IsBoolean()
   is_active?: boolean = true;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TranslateItemDto)
+  translates?: TranslateItemDto[];
 }
+

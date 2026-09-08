@@ -30,26 +30,17 @@ describe('GetAllActionsUseCase', () => {
       data: [
         {
           id: '1',
-          module_id: '10',
           key: 'users.create',
           description: 'Create user',
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),
           action_roles: [],
-          module: {
-            id: '10',
-            key: 'users',
-            type: 'submodule',
-            parent_id: '1',
-            is_active: true,
-            created_at: new Date(),
-            updated_at: new Date(),
-            actions: [],
-            parent: null,
-            children: [],
-          },
-        },
+          translates: [
+            { key: 'key', es: 'Crear usuario', en: 'Create user' },
+            { key: 'comment', es: 'Permite crear nuevos usuarios', en: 'Allows creating new users' },
+          ],
+        } as any,
       ],
       meta: {
         page: 1,
@@ -80,15 +71,17 @@ describe('GetAllActionsUseCase', () => {
       data: [
         {
           id: '1',
-          module_id: '10',
           key: 'users.create',
           description: 'Create user',
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),
           action_roles: [],
-          module: null as any,
-        },
+          translates: [
+            { key: 'key', es: 'Crear usuario', en: 'Create user' },
+            { key: 'comment', es: 'Permite crear nuevos usuarios', en: 'Allows creating new users' },
+          ],
+        } as any,
       ],
       meta: {
         page: 1,

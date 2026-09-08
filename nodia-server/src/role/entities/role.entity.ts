@@ -37,4 +37,6 @@ export class Role {
   role_actions: Relation<RoleAction>[];
 
   actions?: Relation<Action>[];
+
+  translates?: Array<{ key: string; es: string; en: string }>;
 }

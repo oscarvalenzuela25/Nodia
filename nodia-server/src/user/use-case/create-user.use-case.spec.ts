@@ -73,4 +73,36 @@ describe('CreateUserUseCase', () => {
     expect(userServiceMock.create).toHaveBeenCalledWith(dto);
     expect(result).toEqual(createdUser);
   });
+
+  it('should call userService.create with module IDs and return the user with assigned modules', async () => {
+    const dto: CreateUserDto = {
+      name: 'Alice Doe',
+      email: 'alice@example.com',
+      is_active: true,
+      modules: ['5', '6'],
+    };
+
+    const createdUser = {
+      id: '3',
+      name: 'Alice Doe',
+      email: 'alice@example.com',
+      is_active: true,
+      image_url: null,
+      created_at: new Date(),
+      updated_at: new Date(),
+      modules: [
+        { id: '5', key: 'users', group_by: 'settings', is_active: true },
+        { id: '6', key: 'roles', group_by: 'settings', is_active: true },
+      ],
+    };
+
+    vi.mocked(userServiceMock.create!).mockResolvedValue(createdUser as any);
+
+    const result = await useCase.execute(dto);
+
+    expect(userServiceMock.create).toHaveBeenCalledTimes(1);
+    expect(userServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(result).toEqual(createdUser);
+  });
 });
+

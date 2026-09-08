@@ -20,5 +20,10 @@ export class CreateUserDto {
   @IsArray()
   @IsString({ each: true })
   roles?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  modules?: string[];
 }
 

@@ -45,5 +45,15 @@ export class UserFilterDto implements RansackFilter<User> {
 
   @IsOptional()
   @IsString()
+  modules_id_eq?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  modules_id_in?: string[];
+
+  @IsOptional()
+  @IsString()
   s?: string; // Ej: "name asc", "created_at desc"
 }

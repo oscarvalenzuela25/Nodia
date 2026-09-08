@@ -23,18 +23,23 @@ describe('UpdateActionUseCase', () => {
     const dto: UpdateActionDto = {
       description: 'Updated description',
       is_active: false,
+      translates: [
+        { key: 'comment', es: 'Descripción actualizada', en: 'Updated description' },
+      ],
     };
 
     const updatedAction = {
       id,
       key: 'roles.delete',
-      module_id: '1',
       description: 'Updated description',
       is_active: false,
       created_at: new Date(),
       updated_at: new Date(),
       action_roles: [],
-      module: null,
+      translates: [
+        { key: 'key', es: 'Eliminar roles', en: 'Delete roles' },
+        { key: 'comment', es: 'Descripción actualizada', en: 'Updated description' },
+      ],
     };
 
     vi.mocked(actionServiceMock.update!).mockResolvedValue(updatedAction as any);

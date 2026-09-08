@@ -49,6 +49,7 @@
 - El 2026-08-26 se eliminó la entidad `Resources` en favor de acciones dinámicas (`actions`). Se agregaron campos `key` para soportar multiidioma y se removió `users.is_allowed`. Esto invalidó el PRD V2.
 - El 2026-09-05 se actualizó el modelo de datos (`03-domain-model-erd.md`) adoptando `bigint` autoincremental de forma universal para todas las tablas (entidades principales y tablas pivote `user_roles`, `role_actions`) en lugar de UUIDs, optimizando el rendimiento de índices y almacenamiento en PostgreSQL.
 - El 2026-09-07 se incorporó la tabla `translations` (ADR-002) para centralizar la gestión de traducciones multiidioma (i18n) en el backend y PostgreSQL, utilizando un catálogo indexado por `key` y `locale`.
+- El 2026-09-08 se actualizó el modelo de dominio (`03-domain-model-erd.md`) con 8 tablas definitivas: aplanamiento de `modules` agrupados por `group_by` (eliminando `parent_id` y `type`), desacoplamiento de `actions` sin `module_id`, creación de la tabla pivote `user_modules` para navegación de usuario, y extensión cuádruple de `translations(source_entity, source_id, source_key, locale)`.
 
 ## Próxima acción recomendada
 

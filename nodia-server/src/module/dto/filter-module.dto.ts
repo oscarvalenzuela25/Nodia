@@ -16,28 +16,17 @@ export class ModuleFilterDto implements RansackFilter<Module> {
 
   @IsOptional()
   @IsString()
-  type_eq?: string;
-
-  @IsOptional()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
-  @IsArray()
-  @IsString({ each: true })
-  type_in?: string[];
+  group_by_eq?: string;
 
   @IsOptional()
   @IsString()
-  parent_id_eq?: string;
+  group_by_cont?: string;
 
   @IsOptional()
   @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @IsArray()
   @IsString({ each: true })
-  parent_id_in?: string[];
-
-  @IsOptional()
-  @Transform(({ value }) => value === 'true' || value === true)
-  @IsBoolean()
-  parent_id_null?: boolean;
+  group_by_in?: string[];
 
   @IsOptional()
   @Transform(({ value }) => {

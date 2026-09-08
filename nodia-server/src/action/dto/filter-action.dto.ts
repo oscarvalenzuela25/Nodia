@@ -18,20 +18,6 @@ export class ActionFilterDto implements RansackFilter<Action> {
   @IsString()
   description_cont?: string;
 
-  @IsOptional()
-  @IsString()
-  module_id_eq?: string;
-
-  @IsOptional()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
-  @IsArray()
-  @IsString({ each: true })
-  module_id_in?: string[];
-
-  @IsOptional()
-  @Transform(({ value }) => value === 'true' || value === true)
-  @IsBoolean()
-  module_id_null?: boolean;
 
   @IsOptional()
   @Transform(({ value }) => {

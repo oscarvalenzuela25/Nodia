@@ -2,18 +2,18 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   type Relation,
 } from 'typeorm';
-import { Action } from '../../action/entities/action.entity.js';
+import { UserModule as UserModuleEntity } from '../../user/entities/user-module.entity.js';
 
 @Entity({
   name: 'modules',
 })
+@Index('idx_modules_group_by', ['group_by'])
 export class Module {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
@@ -22,10 +22,7 @@ export class Module {
   key: string;
 
   @Column({ type: 'varchar' })
-  type: string;
-
-  @Column({ type: 'bigint', nullable: true })
-  parent_id: string | null;
+  group_by: string;
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
@@ -36,15 +33,8 @@ export class Module {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @OneToMany(() => Action, (action) => action.module)
-  actions: Relation<Action>[];
+  @OneToMany(() => UserModuleEntity, (userModule) => userModule.module)
+  module_users: Relation<UserModuleEntity>[];
 
-  @ManyToOne(() => Module, (module) => module.children, { nullable: true })
-  @JoinColumn({ name: 'parent_id' })
-  parent: Relation<Module> | null;
-
-  @OneToMany(() => Module, (module) => module.parent)
-  children: Relation<Module>[];
-
-  parent_module?: Relation<Module> | null;
+  translates?: Array<{ key: string; es: string; en: string }>;
 }
