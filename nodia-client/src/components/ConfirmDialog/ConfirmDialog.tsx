@@ -27,10 +27,11 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   isLoading = false,
   size = "sm",
   showCloseButton = true,
-  disableEscapeKeyDown: _disableEscapeKeyDown = false,
+  disableEscapeKeyDown = false,
   ariaLabelledBy,
   ariaDescribedBy,
 }) => {
+  void disableEscapeKeyDown;
   const { t } = useTranslation();
   const generatedTitleId = useId();
   const generatedDescId = useId();

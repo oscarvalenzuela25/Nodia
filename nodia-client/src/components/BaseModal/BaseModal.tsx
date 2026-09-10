@@ -22,10 +22,11 @@ const BaseModal: FC<BaseModalProps> = ({
   children,
   actions,
   showCloseButton = true,
-  disableEscapeKeyDown: _disableEscapeKeyDown = false,
+  disableEscapeKeyDown = false,
   ariaLabelledBy,
   ariaDescribedBy,
 }) => {
+  void disableEscapeKeyDown;
   const generatedTitleId = useId();
   const generatedDescId = useId();
 

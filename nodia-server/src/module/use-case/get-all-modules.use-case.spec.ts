@@ -31,7 +31,8 @@ describe('GetAllModulesUseCase', () => {
         {
           id: '1',
           key: 'general_settings',
-          group_by: 'core',
+          module_group_id: '1',
+          link: '/general-settings',
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),
@@ -43,7 +44,8 @@ describe('GetAllModulesUseCase', () => {
         {
           id: '2',
           key: 'users',
-          group_by: 'core',
+          module_group_id: '1',
+          link: '/general-settings/users',
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),
@@ -83,7 +85,8 @@ describe('GetAllModulesUseCase', () => {
         {
           id: '1',
           key: 'general_settings',
-          group_by: 'core',
+          module_group_id: '1',
+          link: '/general-settings',
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),

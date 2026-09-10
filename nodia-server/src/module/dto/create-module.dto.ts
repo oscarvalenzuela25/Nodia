@@ -9,7 +9,11 @@ export class CreateModuleDto {
 
   @IsNotEmpty()
   @IsString()
-  group_by: string;
+  module_group_id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  link: string;
 
   @IsOptional()
   @IsBoolean()

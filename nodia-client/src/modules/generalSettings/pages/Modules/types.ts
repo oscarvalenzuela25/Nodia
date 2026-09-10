@@ -4,10 +4,68 @@ export type TranslateItem = {
   en: string;
 };
 
+export interface ModuleGroupSummary {
+  id: string;
+  key: string;
+  is_active?: boolean;
+  translates?: TranslateItem[];
+}
+
+export interface ModuleGroupEntity {
+  id: string;
+  key: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  translates?: TranslateItem[];
+}
+
+export type ModuleGroupItem = {
+  id: string;
+  key: string;
+  name?: string | null;
+  nameTranslations?: Record<string, string>;
+  isActive: boolean;
+  translates?: TranslateItem[];
+};
+
+export type ModuleGroupFormData = {
+  id?: string;
+  key: string;
+  nameTranslations: Record<string, string>;
+  isActive: boolean;
+  translates?: TranslateItem[];
+};
+
+export interface CreateModuleGroupPayload {
+  key: string;
+  is_active?: boolean;
+  translates?: TranslateItem[];
+}
+
+export interface UpdateModuleGroupPayload {
+  key?: string;
+  is_active?: boolean;
+  translates?: TranslateItem[];
+}
+
+export interface GetModuleGroupsParams {
+  page?: number;
+  limit?: number;
+  size?: number;
+  all?: boolean;
+  q?: Record<string, unknown>;
+}
+
 export type ModuleItem = {
   id: string;
   key: string;
-  group_by: string;
+  link?: string;
+  name?: string | null;
+  module_group_id?: string;
+  module_group?: ModuleGroupSummary;
+  groupName?: string | null;
+  groupKey?: string | null;
   nameTranslations?: Record<string, string>;
   isActive: boolean;
   translates?: TranslateItem[];
@@ -16,7 +74,8 @@ export type ModuleItem = {
 export type ModuleFormData = {
   id?: string;
   key: string;
-  group_by: string;
+  module_group_id: string;
+  link: string;
   nameTranslations: Record<string, string>;
   isActive: boolean;
   translates?: TranslateItem[];
@@ -25,7 +84,9 @@ export type ModuleFormData = {
 export interface ModuleEntity {
   id: string;
   key: string;
-  group_by: string;
+  link?: string;
+  module_group_id?: string;
+  module_group?: ModuleGroupSummary;
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -53,14 +114,16 @@ export interface PaginatedResponse<T> {
 
 export interface CreateModulePayload {
   key: string;
-  group_by: string;
+  module_group_id: string;
+  link: string;
   is_active?: boolean;
   translates?: TranslateItem[];
 }
 
 export interface UpdateModulePayload {
   key?: string;
-  group_by?: string;
+  module_group_id?: string;
+  link?: string;
   is_active?: boolean;
   translates?: TranslateItem[];
 }

@@ -9,6 +9,9 @@ export const configModuleEnvs = () => ({
   POSTGRES_HOST: process.env.POSTGRES_HOST || 'localhost',
   POSTGRES_USER: process.env.POSTGRES_USER || 'template_user',
   POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD || 'template_password',
+  REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+  REDIS_PORT: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
 });
 
 export const envs = configModuleEnvs();

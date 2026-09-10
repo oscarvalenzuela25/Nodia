@@ -11,6 +11,7 @@ import { applyRansack } from '../common/utils/ransack-query.builder.js';
 import { GetUsersResponse } from './types/user.types.js';
 
 import { TranslationService } from '../translation/translation.service.js';
+import { RedisService } from '../common/redis/redis.service.js';
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,7 @@ export class UserService {
     @InjectRepository(UserModuleEntity)
     private readonly userModuleRepository: Repository<UserModuleEntity>,
     private readonly translationService: TranslationService,
+    private readonly redisService: RedisService,
   ) {}
 
   async findAll({
@@ -163,6 +165,16 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
+    const normalizedEmail = createUserDto.email?.toLowerCase().trim();
+    if (normalizedEmail) {
+      const existing = await this.userRepository.findOne({
+        where: { email: normalizedEmail },
+      });
+      if (existing) {
+        return this.update(existing.id, createUserDto);
+      }
+    }
+
     const { roles, modules, ...userData } = createUserDto;
     const newUser = this.userRepository.create(userData);
     const savedUser = await this.userRepository.save(newUser);
@@ -187,6 +199,10 @@ export class UserService {
         }),
       );
       await this.userModuleRepository.save(userModules);
+    }
+
+    if (savedUser.email) {
+      await this.redisService.del(`auth:context:${savedUser.email.toLowerCase().trim()}`);
     }
 
     return this.findOne(savedUser.id);
@@ -267,6 +283,18 @@ export class UserService {
         );
         await this.userModuleRepository.save(userModules);
       }
+    }
+
+    if (user.email) {
+      await this.redisService.del(`auth:context:${user.email.toLowerCase().trim()}`);
+    }
+    if (
+      updateUserDto.email &&
+      updateUserDto.email.toLowerCase().trim() !== user.email?.toLowerCase().trim()
+    ) {
+      await this.redisService.del(
+        `auth:context:${updateUserDto.email.toLowerCase().trim()}`,
+      );
     }
 
     return this.findOne(id);

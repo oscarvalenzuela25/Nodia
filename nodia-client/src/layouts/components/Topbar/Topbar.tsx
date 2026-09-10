@@ -5,7 +5,7 @@ import { Avatar, Stack, IconButton, useTheme, Button } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import ThemeSelector from "../ThemeSelector";
-import LanguageSelector from "../LanguageSelector";
+import LanguageSelector from "../../../components/LanguageSelector";
 import { TopbarRoot } from "./styles";
 
 type Props = {

@@ -21,36 +21,7 @@ export class TranslationService {
     sourceId: string,
     translates?: TranslateItemDto[],
   ): Promise<void> {
-    if (!translates || translates.length === 0) return;
-
-    const rows: Partial<Translation>[] = [];
-    for (const item of translates) {
-      if (item.es !== undefined && item.es !== null) {
-        rows.push({
-          source_entity: sourceEntity,
-          source_id: String(sourceId),
-          source_key: item.key,
-          locale: 'es',
-          value: item.es,
-          is_active: true,
-        });
-      }
-      if (item.en !== undefined && item.en !== null) {
-        rows.push({
-          source_entity: sourceEntity,
-          source_id: String(sourceId),
-          source_key: item.key,
-          locale: 'en',
-          value: item.en,
-          is_active: true,
-        });
-      }
-    }
-
-    if (rows.length > 0) {
-      const entities = this.translationRepository.create(rows);
-      await this.translationRepository.save(entities);
-    }
+    return this.updateTranslations(sourceEntity, sourceId, translates);
   }
 
   async updateTranslations(
@@ -58,9 +29,16 @@ export class TranslationService {
     sourceId: string,
     translates?: TranslateItemDto[],
   ): Promise<void> {
-    if (translates === undefined) return;
+    if (!translates || translates.length === 0) return;
 
+    const mapByKeys = new Map<string, TranslateItemDto>();
     for (const item of translates) {
+      if (item && item.key) {
+        mapByKeys.set(item.key, item);
+      }
+    }
+
+    for (const item of mapByKeys.values()) {
       const locales: Array<{ locale: string; value: string }> = [
         { locale: 'es', value: item.es },
         { locale: 'en', value: item.en },
@@ -80,6 +58,7 @@ export class TranslationService {
 
         if (existing) {
           existing.value = value;
+          existing.is_active = true;
           await this.translationRepository.save(existing);
         } else {
           const created = this.translationRepository.create({

@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import useThemeStore from "../../../store/configStore";
+import useThemeStore from "../../store/configStore";
 import { SwapLabel, HiddenInput } from "./styles";
 
 const ThemeSelector: FC = () => {

@@ -20,9 +20,29 @@ services:
     networks:
       - template_network
 
+  redis:
+    image: redis:7-alpine
+    container_name: template_redis
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - template_redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - template_network
+
 volumes:
   template_postgres_data:
     name: template_postgres_data
+  template_redis_data:
+    name: template_redis_data
 
 networks:
   template_network:

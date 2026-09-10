@@ -3,7 +3,7 @@ import type { FC, MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Menu, MenuItem, Tooltip } from "@mui/material";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
-import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../../translate";
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../translate";
 import { Wrapper } from "./styles";
 
 const LanguageSelector: FC = () => {

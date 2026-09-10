@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import Home from "../modules/home/pages/Home/index";
 import BaseLayout from "../layouts/BaseLayout";
+import PublicLayout from "../layouts/PublicLayout";
 // import NoGuard from "./NoGuard";
 import Login from "../modules/auth/pages/Login";
 // import Register from "../modules/auth/pages/Register";
@@ -61,26 +62,43 @@ const router = createBrowserRouter([
         path: "login",
         element: (
           // <NoGuard>
-          //   <Login />
+          //   <PublicLayout>
+          //     <Login />
+          //   </PublicLayout>
           // </NoGuard>
-          <Login />
+          <PublicLayout>
+            <Login />
+          </PublicLayout>
         ),
       },
       // {
       //   path: "register",
       //   element: (
-      //     <NoGuard>
+      //     // <NoGuard>
+      //     //   <PublicLayout>
+      //     //     <Register />
+      //     //   </PublicLayout>
+      //     // </NoGuard>
+      //     <PublicLayout>
       //       <Register />
-      //     </NoGuard>
+      //     </PublicLayout>
       //   ),
       // },
       {
         path: "maintenance",
-        element: <Maintenance />,
+        element: (
+          <PublicLayout>
+            <Maintenance />
+          </PublicLayout>
+        ),
       },
       {
         path: "404",
-        element: <NotFound />,
+        element: (
+          <PublicLayout>
+            <NotFound />
+          </PublicLayout>
+        ),
       },
       {
         path: "*",

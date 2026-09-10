@@ -1,10 +1,12 @@
 import type { FC, FormEvent } from "react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
-import TextInput from "../../../../../../components/inputs/TextInput";
+import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
 import TranslationInput from "../../../../../../components/inputs/TranslationInput";
+import TextInput from "../../../../../../components/inputs/TextInput";
+import { useModuleGroups } from "../../infrastructure/useServices";
 import type { ModuleModalProps, ModuleFormData } from "./types";
 import {
   FormContainer,
@@ -21,24 +23,59 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
   initialData,
   isSubmitting = false,
 }) => {
-  const { t } = useTranslation(["modules", "core"]);
+  const { t, i18n } = useTranslation(["modules", "core"]);
   const isEditing = Boolean(initialData?.id);
+
+  const domain =
+    typeof window !== "undefined" && window.location?.origin
+      ? window.location.origin
+      : "http://localhost:5173";
+
+  const { data: groupsResponse, isLoading: isLoadingGroups } = useModuleGroups({
+    all: true,
+  });
 
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.isActive ?? true
   );
   const [moduleKey, setModuleKey] = useState<string>(initialData?.key ?? "");
-  const [groupBy, setGroupBy] = useState<string>(initialData?.group_by ?? "");
+  const [link, setLink] = useState<string>(initialData?.link ?? "");
+  const [moduleGroupId, setModuleGroupId] = useState<string | null>(
+    initialData?.module_group_id ?? null
+  );
   const [nameTranslations, setNameTranslations] = useState<
     Record<string, string>
   >(initialData?.nameTranslations ?? { es: "", en: "" });
 
+  const groupsData = groupsResponse?.data;
+  const groupOptions = useMemo(() => {
+    if (!groupsData) return [];
+    const lang = i18n.language?.startsWith("en") ? "en" : "es";
+    const altLang = lang === "en" ? "es" : "en";
+
+    return groupsData.map((group) => {
+      const trans = group.translates?.find((tr) => tr.key === "key");
+      const translatedName = trans?.[lang] || trans?.[altLang];
+      const label =
+        translatedName && translatedName !== group.key
+          ? `${translatedName} (${group.key})`
+          : group.key;
+
+      return {
+        value: group.id,
+        label,
+      };
+    });
+  }, [groupsData, i18n.language]);
+
   const isFormValid =
-    moduleKey.trim().length > 0 && groupBy.trim().length > 0;
+    moduleKey.trim().length > 0 &&
+    Boolean(moduleGroupId) &&
+    link.trim().length > 0;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!isFormValid || isSubmitting) return;
+    if (!isFormValid || !moduleGroupId || isSubmitting) return;
 
     const translates = [
       {
@@ -48,11 +85,16 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
       },
     ];
 
+    const normalizedLink = link.trim().startsWith("/")
+      ? link.trim()
+      : `/${link.trim()}`;
+
     const payload: ModuleFormData = {
       ...(initialData?.id ? { id: initialData.id } : {}),
       isActive,
       key: moduleKey.trim().toLowerCase(),
-      group_by: groupBy.trim(),
+      module_group_id: moduleGroupId,
+      link: normalizedLink,
       nameTranslations,
       translates,
     };
@@ -148,16 +190,35 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
         />
 
         <TextInput
-          label={t("modules:form.group_by", "Grupo")}
-          value={groupBy}
-          onChange={(e) => setGroupBy(e.target.value)}
-          placeholder={t(
-            "modules:form.group_by_placeholder",
-            "ej: settings, catalog..."
-          )}
+          label={t("modules:form.link", "Ruta")}
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder={t("modules:form.link_placeholder", "ej: /settings/users")}
+          helperText={
+            link.trim()
+              ? `${t("modules:form.link_preview", "URL completa")}: ${domain}${
+                  link.trim().startsWith("/") ? link.trim() : `/${link.trim()}`
+                }`
+              : t(
+                  "modules:form.link_helper",
+                  "Ruta relativa del módulo en la aplicación."
+                )
+          }
           required
           disabled={isSubmitting}
-          name="groupBy"
+        />
+
+        <SelectSingleInput
+          label={t("modules:form.group", "Grupo")}
+          options={groupOptions}
+          value={moduleGroupId}
+          onChange={setModuleGroupId}
+          placeholder={t(
+            "modules:form.group_placeholder",
+            "Seleccionar grupo..."
+          )}
+          required
+          disabled={isSubmitting || isLoadingGroups}
         />
       </FormContainer>
     </BaseModal>

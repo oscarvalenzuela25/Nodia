@@ -1,8 +1,18 @@
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { SvgIcon } from "@mui/material";
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import useLogin from "./hooks/useLogin";
-import { GoogleButton, Description, Page, Title, Card, LogoContainer } from "./styles";
-import logoImage from "../../../../assets/logo-transparent.png";
+import {
+  GoogleButton,
+  Description,
+  Page,
+  Title,
+  Card,
+  LogoContainer,
+  LogoTitle,
+  BackButton,
+} from "./styles";
 
 // Google Icon SVG
 const GoogleIcon = () => (
@@ -28,13 +38,14 @@ const GoogleIcon = () => (
 
 const Login = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { handleLogin } = useLogin();
 
   return (
     <Page>
       <Card>
         <LogoContainer>
-          <img src={logoImage} alt="Logo" style={{ height: 48, objectFit: "contain" }} />
+          <LogoTitle>Nodia</LogoTitle>
         </LogoContainer>
         <Title>{t("auth:login_title")}</Title>
         <Description>{t("auth:login_description")}</Description>
@@ -47,6 +58,15 @@ const Login = () => {
         >
           {t("auth:login_google_button")}
         </GoogleButton>
+        <BackButton
+          type="button"
+          variant="text"
+          onClick={() => navigate("/")}
+          startIcon={<ArrowBackOutlinedIcon />}
+          fullWidth
+        >
+          {t("auth:back_to_home")}
+        </BackButton>
       </Card>
     </Page>
   );

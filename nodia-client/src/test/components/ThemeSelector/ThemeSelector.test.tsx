@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import ThemeSelector from "../../../../../src/layouts/components/ThemeSelector/ThemeSelector";
-import useThemeStore from "../../../../../src/store/configStore";
+import ThemeSelector from "../../../../src/components/ThemeSelector/ThemeSelector";
+import useThemeStore from "../../../../src/store/configStore";
 
-vi.mock("../../../../../src/store/configStore", () => ({
+vi.mock("../../../../src/store/configStore", () => ({
   __esModule: true,
   default: vi.fn(),
 }));

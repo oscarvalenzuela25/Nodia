@@ -1,11 +1,11 @@
 import { styled, alpha } from "@mui/material/styles";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
+  marginBottom: theme.spacing(2),
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(1),
+  gap: theme.spacing(0.75),
 }));
 
 export const PageTitleContainer = styled(Box)(({ theme }) => ({
@@ -25,6 +25,84 @@ export const PageSubtitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   maxWidth: "680px",
   lineHeight: 1.6,
+}));
+
+export const HeaderRow = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  gap: theme.spacing(2),
+  flexWrap: "wrap",
+  marginBottom: theme.spacing(2.5),
+}));
+
+export const ViewModeContainer = styled(Box)(({ theme }) => {
+  const isDark = theme.palette.mode === "dark";
+  const borderColor = theme.palette.border?.default ?? theme.palette.divider;
+
+  return {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(0.5),
+    backgroundColor: isDark
+      ? alpha(theme.palette.background.paper, 0.7)
+      : alpha(theme.palette.grey[100], 0.9),
+    padding: "4px",
+    borderRadius:
+      typeof theme.shape.borderRadius === "number"
+        ? theme.shape.borderRadius * 2
+        : 12,
+    border: `1px solid ${borderColor}`,
+  };
+});
+
+export const GroupsSectionCard = styled(Paper)(({ theme }) => {
+  const borderColor = theme.palette.border?.default ?? theme.palette.divider;
+  const isDark = theme.palette.mode === "dark";
+
+  return {
+    borderRadius:
+      typeof theme.shape.borderRadius === "number"
+        ? theme.shape.borderRadius * 2
+        : 16,
+    overflow: "hidden",
+    boxShadow: theme.shadows[2],
+    backgroundColor: theme.palette.background.paper,
+    border: `1px solid ${borderColor}`,
+    marginBottom: theme.spacing(3.5),
+    position: "relative",
+    transition: theme.transitions.create(["box-shadow", "border-color"], {
+      duration: theme.transitions.duration.shorter,
+    }),
+    backgroundImage: isDark
+      ? "linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%)"
+      : "linear-gradient(180deg, rgba(0, 0, 0, 0.01) 0%, rgba(0, 0, 0, 0) 100%)",
+  };
+});
+
+export const GroupsSectionHeader = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: theme.spacing(1.75, 2.5),
+  gap: theme.spacing(2),
+  flexWrap: "wrap",
+  borderBottom: `1px solid ${
+    theme.palette.border?.default ?? theme.palette.divider
+  }`,
+}));
+
+export const GroupsHeaderInfo = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(1.5),
+}));
+
+export const GroupsHeaderActions = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(1.5),
+  flexWrap: "wrap",
 }));
 
 export const FilterRow = styled(Box)(({ theme }) => ({
@@ -83,4 +161,3 @@ export const KeyBadge = styled(Box)(({ theme }) => {
     letterSpacing: "0.2px",
   };
 });
-

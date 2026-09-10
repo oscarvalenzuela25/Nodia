@@ -20,14 +20,23 @@
     "name_es_placeholder": "ej: Ajustes Generales",
     "name_en": "Nombre (Inglés)",
     "name_en_placeholder": "ej: General Settings",
+    "group": "Grupo",
+    "group_placeholder": "Seleccionar grupo...",
     "group_by": "Grupo",
-    "group_by_placeholder": "ej: settings, catalog..."
+    "group_by_placeholder": "ej: settings, catalog...",
+    "link": "Ruta",
+    "link_placeholder": "ej: /settings/users",
+    "link_helper": "Ruta relativa del módulo en la aplicación.",
+    "link_preview": "URL completa"
   },
   "table": {
     "id": "Id",
     "name": "Nombre",
     "key": "Identificador",
-    "group_by": "Grupo",
+    "link": "Ruta",
+    "group_name": "Nombre de Grupo",
+    "group_key": "Identificador Grupal",
+    "group_by": "Identificador Grupal",
     "active": "Activo",
     "actions": "Acciones"
   },
@@ -36,8 +45,50 @@
   },
   "filter_chips": {
     "key": "Identificador: {{value}}",
+    "group": "Grupo: {{value}}",
     "group_by": "Grupo: {{value}}",
     "active_only": "Solo activos"
+  },
+  "groups": {
+    "title": "Grupos de Módulos",
+    "subtitle": "Administra los grupos lógicos para clasificar y organizar los módulos del sistema.",
+    "new_group": "Nuevo Grupo",
+    "create_modal_title": "Nuevo Grupo de Módulos",
+    "edit_modal_title": "Actualizar Grupo de Módulos",
+    "create_button": "Crear Grupo",
+    "update_button": "Actualizar Grupo",
+    "search_placeholder": "Buscar por nombre o identificador de grupo...",
+    "table": {
+      "id": "Id",
+      "name": "Nombre del Grupo",
+      "key": "Identificador",
+      "active": "Activo",
+      "actions": "Acciones"
+    },
+    "filter_by_group": "Filtrar módulos de este grupo",
+    "view_all": "Ver todos",
+    "empty_state": {
+      "title": "No hay grupos de módulos disponibles",
+      "description": "No se encontraron grupos actualmente. Comience agregando uno nuevo.",
+      "cta": "Crear primer grupo"
+    },
+    "confirm_deactivate_title": "¿Desactivar grupo de módulos?",
+    "confirm_activate_title": "¿Activar grupo de módulos?",
+    "confirm_deactivate_message": "¿Está seguro de que desea desactivar el grupo \"{{name}}\"?",
+    "confirm_activate_message": "¿Está seguro de que desea activar el grupo \"{{name}}\"?",
+    "notifications": {
+      "created_success": "Grupo de módulos creado correctamente",
+      "created_error": "No se pudo crear el grupo de módulos",
+      "updated_success": "Grupo de módulos actualizado correctamente",
+      "updated_error": "No se pudo actualizar el grupo de módulos"
+    }
+  },
+  "views": {
+    "split": "Vista Conjunta",
+    "modules": "Solo Módulos",
+    "groups": "Solo Grupos",
+    "collapse_groups": "Colapsar tabla de grupos",
+    "expand_groups": "Expandir tabla de grupos"
   },
   "module_names": {
     "general_settings": "Ajustes Generales",
@@ -55,6 +106,7 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copiar ID",
+  "copy_link": "Copiar enlace",
   "copied": "Copiado al portapapeles",
   "deactivate": "Desactivar",
   "activate": "Activar",
@@ -78,6 +130,8 @@
     "created_success": "Módulo creado correctamente",
     "created_error": "No se pudo crear el módulo",
     "updated_success": "Módulo actualizado correctamente",
-    "updated_error": "No se pudo actualizar el módulo"
+    "updated_error": "No se pudo actualizar el módulo",
+    "link_copied_title": "Enlace copiado",
+    "link_copied_desc": "La URL del módulo ha sido copiada al portapapeles."
   }
 }

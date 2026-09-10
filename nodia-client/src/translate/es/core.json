@@ -31,6 +31,8 @@
   "empty_state_description": "No se encontraron datos para mostrar en este momento.",
   "server_error_toast": "Error en el servidor. Por favor, inténtelo más tarde.",
   "server_error_alert": "Ocurrió un problema al cargar los datos desde el servidor.",
+  "auth_context_error_title": "Error al cargar información",
+  "auth_context_error_message": "Hubo un error al obtener la información de su usuario.",
   "pagination": {
     "rows_per_page": "Filas por página:",
     "of": "de",

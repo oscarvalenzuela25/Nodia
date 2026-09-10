@@ -6,11 +6,12 @@
 
 ## 1. Resumen del modelo
 
-El modelo cubre la base de identidad, autorización, navegación e internacionalización de Nodia con ocho tablas:
+El modelo cubre la base de identidad, autorización, navegación e internacionalización de Nodia con nueve tablas:
 
 - `users`: personas preautorizadas para iniciar sesión con Google.
 - `roles`: agrupaciones reutilizables de permisos funcionales, identificadas por un `key`.
-- `modules`: catálogo plano de módulos de la aplicación, agrupados por `group_by`.
+- `module_groups`: catálogo de grupos únicos para agrupar módulos de navegación, identificados por un `key`.
+- `modules`: catálogo plano de módulos de la aplicación, vinculados a un grupo mediante `module_group_id`.
 - `actions`: catálogo de acciones dinámicas (permisos de endpoints/operaciones), con un `key` globalmente único e independientes de módulos.
 - `role_actions`: permisos asignados por rol (pivote rol + acción).
 - `user_roles`: asignación de roles a usuarios (pivote usuario + rol).
@@ -22,12 +23,13 @@ El modelo cubre la base de identidad, autorización, navegación e internacional
 - Un usuario tiene muchos roles (`user_roles`).
 - Un usuario tiene muchos módulos asignados (`user_modules`).
 - Un rol tiene muchas acciones (`role_actions`).
+- Un módulo pertenece a un grupo de módulos (`module_groups` vía `module_group_id`).
 - Las acciones son independientes del árbol de navegación (`actions` no tiene `module_id`).
 - Las traducciones identifican de forma unívoca la traducción de cualquier campo por registro e idioma (`translations`).
 
 ### Supuestos importantes
 
-- Se eliminan la jerarquía recursiva de módulos (`parent_id`, `type = 'submodule'`); todos los módulos son homogéneos y se agrupan mediante la propiedad `group_by`.
+- Se eliminan la jerarquía recursiva de módulos (`parent_id`, `type = 'submodule'`) y el atributo de agrupación en string (`group_by`); ahora los módulos son homogéneos y se normalizan relacionalmente asociándose a una entidad `module_groups` mediante `module_group_id`.
 - Las acciones dinámicas quedan 100% desacopladas de los módulos de navegación, separando los permisos operativos (backend/acciones) de la navegación en UI (módulos asignados al usuario).
 - La gestión de traducciones (i18n) se centraliza en la tabla `translations` con clave cuádruple (`source_entity`, `source_id`, `source_key`, `locale`), permitiendo traducir dinámicamente atributos como `key`, `comment`, `description`, etc., en múltiples idiomas.
 - `Home` es un módulo exclusivamente de frontend (hardcodeado); no es una fila de `modules`.
@@ -41,7 +43,8 @@ El modelo cubre la base de identidad, autorización, navegación e internacional
 | Módulo / Funcionalidad | Entidad |
 |---|---|
 | `Home` (universal) | Sin tabla (frontend hardcodeado) |
-| `Módulos de navegación` | `modules` (agrupados por `group_by`) |
+| `Grupos de Módulos` | `module_groups` (agrupadores normalizados de módulos) |
+| `Módulos de navegación` | `modules` (vinculados a `module_groups` vía `module_group_id`) |
 | `Asignación de navegación` | `user_modules` (relación usuario - módulo) |
 | `Users` | `users` + `user_roles` + `user_modules` |
 | `Roles` | `roles` + `role_actions` |
@@ -55,7 +58,7 @@ El modelo cubre la base de identidad, autorización, navegación e internacional
 | Inicio de sesión por correo permitido | `users.email`, `is_active` |
 | Datos de Google completan identidad | `users.name`, `users.image_url` (nullable) |
 | Permisos efectivos por roles | `user_roles` → `role_actions` → `actions` |
-| Módulos visibles en frontend por usuario | `user_modules` → `modules` |
+| Módulos visibles en frontend por usuario | `user_modules` → `modules` → `module_groups` |
 | Borrado lógico | `is_active` en todas las entidades |
 | Traducción dinámica de entidades y campos | `translations(source_entity, source_id, source_key, locale)` |
 
@@ -68,7 +71,7 @@ El modelo cubre la base de identidad, autorización, navegación e internacional
 | Un rol no repite un permiso | índice único compuesto `(role_id, action_id)` en `role_actions` |
 | Un usuario no repite un rol | índice único compuesto `(user_id, role_id)` en `user_roles` |
 | Un usuario no repite un módulo | índice único compuesto `(user_id, module_id)` en `user_modules` |
-| Agrupación de módulos | `modules.group_by` con índice para consultas optimizadas |
+| Agrupación de módulos | `modules.module_group_id` con clave foránea a `module_groups.id` e índice `idx_modules_module_group_id` |
 | Soporte Multiidiomas (i18n) | Unicidad cuádruple en `translations(source_entity, source_id, source_key, locale)` con índice de búsqueda por `(locale, source_entity, source_id)` |
 
 ## 3. Modelo DBML
@@ -114,16 +117,25 @@ Table actions [headercolor: #175e7a] {
 	updated_at timestamp [ not null ]
 }
 
-Table modules [headercolor: #175e7a] {
+Table module_groups [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
 	key varchar(255) [ not null, unique ]
-	group_by varchar(255) [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table modules [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	module_group_id bigint [ not null ]
+	link varchar(255) [ not null ]
+	key varchar(255) [ not null, unique ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
 
 	indexes {
-		group_by [ name: 'idx_modules_group_by' ]
+		module_group_id [ name: 'idx_modules_module_group_id' ]
 	}
 }
 
@@ -192,6 +204,10 @@ Ref fk_user_modules_user {
 
 Ref fk_user_modules_module {
 	user_modules.module_id > modules.id [ delete: no action, update: no action ]
+}
+
+Ref fk_modules_module_group {
+	modules.module_group_id > module_groups.id [ delete: no action, update: no action ]
 }
 ```
 

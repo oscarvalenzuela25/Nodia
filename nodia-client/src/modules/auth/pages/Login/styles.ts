@@ -9,6 +9,7 @@ export const Page = styled("main")(({ theme }) => ({
   justifyContent: "center",
   padding: theme.spacing(4),
   backgroundColor: theme.palette.background.default,
+  position: "relative",
 }));
 
 export const Card = styled("div")(({ theme }) => ({
@@ -26,10 +27,20 @@ export const LogoContainer = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   marginBottom: theme.spacing(2),
-  color: theme.palette.primary.main,
-  "& svg": {
-    fontSize: 40,
-  }
+  userSelect: "none",
+}));
+
+export const LogoTitle = styled("span")(({ theme }) => ({
+  fontFamily: '"Karmatic Arcade", monospace, sans-serif',
+  fontSize: "24px",
+  fontWeight: 400,
+  letterSpacing: "0.08em",
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  lineHeight: 1.2,
+  userSelect: "none",
+  display: "inline-block",
 }));
 
 export const Title = styled("h1")(({ theme }) => ({
@@ -63,4 +74,20 @@ export const GoogleButton = styled(Button)(({ theme }) => ({
   "& .MuiButton-startIcon": {
     marginRight: theme.spacing(1.5),
   }
+}));
+
+export const BackButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  padding: theme.spacing(1.2),
+  fontSize: "0.95rem",
+  fontWeight: 500,
+  color: theme.palette.text.secondary,
+  textTransform: "none",
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
+    color: theme.palette.text.primary,
+  },
+  "& .MuiButton-startIcon": {
+    marginRight: theme.spacing(1),
+  },
 }));

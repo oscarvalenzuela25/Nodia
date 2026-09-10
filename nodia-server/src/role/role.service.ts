@@ -11,6 +11,7 @@ import { CreateRoleDto } from './dto/create-role.dto.js';
 import { UpdateRoleDto } from './dto/update-role.dto.js';
 
 import { TranslationService } from '../translation/translation.service.js';
+import { RedisService } from '../common/redis/redis.service.js';
 
 @Injectable()
 export class RoleService {
@@ -22,6 +23,7 @@ export class RoleService {
     @InjectRepository(Action)
     private readonly actionRepository: Repository<Action>,
     private readonly translationService: TranslationService,
+    private readonly redisService: RedisService,
   ) {}
 
   async findAll({
@@ -189,6 +191,13 @@ export class RoleService {
   }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
+    const existing = await this.roleRepository.findOne({
+      where: { key: createRoleDto.key },
+    });
+    if (existing) {
+      return this.update(existing.id, createRoleDto);
+    }
+
     const { actions, translates, ...roleData } = createRoleDto;
     const newRole = this.roleRepository.create(roleData);
     const savedRole = await this.roleRepository.save(newRole);
@@ -212,6 +221,8 @@ export class RoleService {
         translates,
       );
     }
+
+    await this.redisService.delByPattern('auth:context:*');
 
     return this.findOne(savedRole.id);
   }
@@ -274,6 +285,8 @@ export class RoleService {
     if (translates !== undefined) {
       await this.translationService.updateTranslations('roles', id, translates);
     }
+
+    await this.redisService.delByPattern('auth:context:*');
 
     return this.findOne(id);
   }

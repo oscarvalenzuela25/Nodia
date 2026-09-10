@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UpdateModuleUseCase } from './update-module.use-case.js';
 import type { ModuleService } from '../module.service.js';
 import type { UpdateModuleDto } from '../dto/update-module.dto.js';
-import type { Module } from '../entities/module.entity.js';
 
 describe('UpdateModuleUseCase', () => {
   let useCase: UpdateModuleUseCase;
@@ -23,7 +22,8 @@ describe('UpdateModuleUseCase', () => {
     const id = '2';
     const dto: UpdateModuleDto = {
       key: 'users_updated',
-      group_by: 'core_settings',
+      module_group_id: '1',
+      link: '/general-settings/users-updated',
       is_active: false,
       translates: [
         { key: 'key', es: 'Usuarios Actualizado', en: 'Users Updated' },
@@ -33,7 +33,8 @@ describe('UpdateModuleUseCase', () => {
     const mockUpdatedModule = {
       id: '2',
       key: 'users_updated',
-      group_by: 'core_settings',
+      module_group_id: '1',
+      link: '/general-settings/users-updated',
       is_active: false,
       created_at: new Date(),
       updated_at: new Date(),

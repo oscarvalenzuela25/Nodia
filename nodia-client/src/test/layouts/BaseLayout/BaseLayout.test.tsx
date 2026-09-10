@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import BaseLayout from "../../../../src/layouts/BaseLayout/BaseLayout";
 
+
 // Mock the components inside BaseLayout so we don't have to deal with their dependencies (like ThemeStore)
 vi.mock("../../../../src/layouts/components/Sidenav", () => ({
   __esModule: true,

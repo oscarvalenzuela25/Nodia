@@ -16,17 +16,21 @@ export class ModuleFilterDto implements RansackFilter<Module> {
 
   @IsOptional()
   @IsString()
-  group_by_eq?: string;
+  link_cont?: string;
 
   @IsOptional()
   @IsString()
-  group_by_cont?: string;
+  link_eq?: string;
+
+  @IsOptional()
+  @IsString()
+  module_group_id_eq?: string;
 
   @IsOptional()
   @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @IsArray()
   @IsString({ each: true })
-  group_by_in?: string[];
+  module_group_id_in?: string[];
 
   @IsOptional()
   @Transform(({ value }) => {

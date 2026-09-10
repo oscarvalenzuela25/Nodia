@@ -20,14 +20,23 @@
     "name_es_placeholder": "e.g.: Ajustes Generales",
     "name_en": "Name (English)",
     "name_en_placeholder": "e.g.: General Settings",
+    "group": "Group",
+    "group_placeholder": "Select group...",
     "group_by": "Group",
-    "group_by_placeholder": "e.g.: settings, catalog..."
+    "group_by_placeholder": "e.g.: settings, catalog...",
+    "link": "Route",
+    "link_placeholder": "e.g.: /settings/users",
+    "link_helper": "Relative route for the module in the application.",
+    "link_preview": "Full URL"
   },
   "table": {
     "id": "Id",
     "name": "Name",
     "key": "Identifier",
-    "group_by": "Group",
+    "link": "Route",
+    "group_name": "Group Name",
+    "group_key": "Group Identifier",
+    "group_by": "Group Identifier",
     "active": "Active",
     "actions": "Actions"
   },
@@ -36,8 +45,50 @@
   },
   "filter_chips": {
     "key": "Identifier: {{value}}",
+    "group": "Group: {{value}}",
     "group_by": "Group: {{value}}",
     "active_only": "Active only"
+  },
+  "groups": {
+    "title": "Module Groups",
+    "subtitle": "Manage logical groups to categorize and organize system modules.",
+    "new_group": "New Group",
+    "create_modal_title": "New Module Group",
+    "edit_modal_title": "Update Module Group",
+    "create_button": "Create Group",
+    "update_button": "Update Group",
+    "search_placeholder": "Search by group name or identifier...",
+    "table": {
+      "id": "Id",
+      "name": "Group Name",
+      "key": "Identifier",
+      "active": "Active",
+      "actions": "Actions"
+    },
+    "filter_by_group": "Filter modules by this group",
+    "view_all": "View all",
+    "empty_state": {
+      "title": "No module groups available",
+      "description": "No groups currently found. Get started by adding a new one.",
+      "cta": "Create first group"
+    },
+    "confirm_deactivate_title": "Deactivate module group?",
+    "confirm_activate_title": "Activate module group?",
+    "confirm_deactivate_message": "Are you sure you want to deactivate the group \"{{name}}\"?",
+    "confirm_activate_message": "Are you sure you want to activate the group \"{{name}}\"?",
+    "notifications": {
+      "created_success": "Module group created successfully",
+      "created_error": "Failed to create module group",
+      "updated_success": "Module group updated successfully",
+      "updated_error": "Failed to update module group"
+    }
+  },
+  "views": {
+    "split": "Combined View",
+    "modules": "Modules Only",
+    "groups": "Groups Only",
+    "collapse_groups": "Collapse groups table",
+    "expand_groups": "Expand groups table"
   },
   "module_names": {
     "general_settings": "General Settings",
@@ -55,29 +106,32 @@
   "no": "No",
   "empty_value": "-",
   "copy": "Copy ID",
+  "copy_link": "Copy link",
   "copied": "Copied to clipboard",
   "deactivate": "Deactivate",
   "activate": "Activate",
   "confirm_deactivate_title": "Deactivate module?",
   "confirm_activate_title": "Activate module?",
-  "confirm_deactivate_message": "Are you sure you want to deactivate the module \"{{name}}\"?",
-  "confirm_deactivate_with_children_message": "Are you sure you want to deactivate the module \"{{name}}\"? All associated submodules will also be deactivated.",
-  "confirm_activate_message": "Are you sure you want to activate the module \"{{name}}\"?",
+  "confirm_deactivate_message": "Are you sure you want to deactivate module \"{{name}}\"?",
+  "confirm_deactivate_with_children_message": "Are you sure you want to deactivate module \"{{name}}\"? All associated submodules will also be disabled.",
+  "confirm_activate_message": "Are you sure you want to activate module \"{{name}}\"?",
   "empty_state": {
     "title": "No modules available",
-    "description": "No modules currently found. Get started by adding a new one.",
+    "description": "No modules found currently. Start by adding a new one.",
     "cta": "Create first module"
   },
   "error_state": {
     "title": "Error loading modules",
-    "description": "Failed to fetch modules list from the server."
+    "description": "Could not retrieve the module list from the server."
   },
   "notifications": {
     "success_title": "Success",
     "error_title": "Error",
     "created_success": "Module created successfully",
-    "created_error": "Failed to create module",
+    "created_error": "Could not create module",
     "updated_success": "Module updated successfully",
-    "updated_error": "Failed to update module"
+    "updated_error": "Could not update module",
+    "link_copied_title": "Link copied",
+    "link_copied_desc": "Module URL has been copied to clipboard."
   }
 }

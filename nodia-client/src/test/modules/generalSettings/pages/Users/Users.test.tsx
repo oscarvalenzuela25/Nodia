@@ -142,7 +142,7 @@ describe("Users Page", () => {
     vi.clearAllMocks();
     vi.mocked(rolesServices.getRoles).mockResolvedValue(mockRolesResponse);
     vi.mocked(modulesServices.getModules).mockResolvedValue({
-      data: [{ id: "m1", key: "auth", group_by: "system", is_active: true }],
+      data: [{ id: "m1", key: "auth", is_active: true }],
       meta: { page: 1, limit: 10, total_items: 1, total_pages: 1 },
     });
   });
@@ -440,7 +440,6 @@ describe("Users Page", () => {
         {
           id: "m1",
           key: "settings",
-          group_by: "system",
           is_active: true,
           translates: [{ key: "key", es: "Ajustes", en: "Settings" }],
         },

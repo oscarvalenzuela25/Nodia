@@ -8,6 +8,7 @@ import { GetActionsDto } from './dto/get-actions.dto.js';
 import { applyRansack } from '../common/utils/ransack-query.builder.js';
 import { GetActionsResponse } from './types/action.types.js';
 import { TranslationService } from '../translation/translation.service.js';
+import { RedisService } from '../common/redis/redis.service.js';
 
 @Injectable()
 export class ActionService {
@@ -15,6 +16,7 @@ export class ActionService {
     @InjectRepository(Action)
     private readonly actionRepository: Repository<Action>,
     private readonly translationService: TranslationService,
+    private readonly redisService: RedisService,
   ) {}
 
   async findAll({
@@ -81,6 +83,13 @@ export class ActionService {
   }
 
   async create(createActionDto: CreateActionDto): Promise<Action> {
+    const existing = await this.actionRepository.findOne({
+      where: { key: createActionDto.key },
+    });
+    if (existing) {
+      return this.update(existing.id, createActionDto);
+    }
+
     const { translates, ...actionData } = createActionDto;
     const action = this.actionRepository.create(actionData);
     const savedAction = await this.actionRepository.save(action);
@@ -92,6 +101,8 @@ export class ActionService {
         translates,
       );
     }
+
+    await this.redisService.delByPattern('auth:context:*');
 
     return this.findOne(savedAction.id);
   }
@@ -109,6 +120,8 @@ export class ActionService {
     if (translates !== undefined) {
       await this.translationService.updateTranslations('actions', id, translates);
     }
+
+    await this.redisService.delByPattern('auth:context:*');
 
     return this.findOne(id);
   }

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router";
 import {
@@ -20,6 +20,10 @@ import ViewModuleOutlinedIcon from "@mui/icons-material/ViewModuleOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import { useUserModules, getModulePath } from "../../../store/generalSettings";
+import type {
+  TranslateItem,
+} from "../../../store/generalSettings/types";
 import {
   SidenavDrawer,
   LogoContainer,
@@ -31,40 +35,67 @@ import {
 } from "./styles";
 import type { SidenavItem } from "./types";
 
-const mockMenu: SidenavItem[] = [
-  { id: "inicio", nameKey: "menu_home", path: "/", icon: <HomeOutlinedIcon /> },
-  {
-    id: "ajustes-generales",
-    nameKey: "menu_general_settings",
-    icon: <SettingsOutlinedIcon />,
-    subModules: [
-      {
-        id: "usuarios",
-        nameKey: "menu_users",
-        path: "/settings/users",
-        icon: <AddReactionOutlinedIcon />,
-      },
-      {
-        id: "roles",
-        nameKey: "menu_roles",
-        path: "/settings/roles",
-        icon: <SecurityOutlinedIcon />,
-      },
-      {
-        id: "acciones",
-        nameKey: "menu_actions",
-        path: "/settings/actions",
-        icon: <BoltOutlinedIcon />,
-      },
-      {
-        id: "modulos",
-        nameKey: "menu_modules",
-        path: "/settings/modules",
-        icon: <ViewModuleOutlinedIcon />,
-      },
-    ],
-  },
-];
+const getModuleIcon = (key: string) => {
+  const normalized = key.toLowerCase();
+  switch (normalized) {
+    case "usuarios":
+    case "users":
+      return <AddReactionOutlinedIcon />;
+    case "roles":
+      return <SecurityOutlinedIcon />;
+    case "acciones":
+    case "actions":
+      return <BoltOutlinedIcon />;
+    case "modulos":
+    case "modules":
+      return <ViewModuleOutlinedIcon />;
+    default:
+      return <ViewModuleOutlinedIcon />;
+  }
+};
+
+const getGroupIcon = (key: string) => {
+  const normalized = key.toLowerCase();
+  switch (normalized) {
+    case "ajustes-generales":
+    case "general-settings":
+    case "general_settings":
+    case "settings":
+      return <SettingsOutlinedIcon />;
+    default:
+      return <SettingsOutlinedIcon />;
+  }
+};
+
+const getTranslatedLabel = (
+  translates: TranslateItem[] | undefined,
+  defaultKey: string,
+  lang: string,
+  t: (key: string) => string
+): string => {
+  if (translates && translates.length > 0) {
+    const isEn = lang.startsWith("en");
+    const preferred = isEn ? "en" : "es";
+    const secondary = isEn ? "es" : "en";
+
+    const item =
+      translates.find((tr) => tr.key === "key" || tr.key === "name") ||
+      translates[0];
+
+    if (item) {
+      const val = item[preferred] || item[secondary];
+      if (val && val.trim()) return val;
+    }
+  }
+
+  const i18nCandidate = `menu_${defaultKey.toLowerCase().replace(/[-_]/g, "_")}`;
+  const translated = t(i18nCandidate);
+  if (translated && translated !== i18nCandidate) {
+    return translated;
+  }
+
+  return defaultKey;
+};
 
 type Props = {
   mobileOpen: boolean;
@@ -77,22 +108,66 @@ const Sidenav: FC<Props> = ({
   onDrawerToggle,
   desktopCollapsed = false,
 }) => {
-  const { t } = useTranslation("layout");
+  const { t, i18n } = useTranslation("layout");
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
+  const userModules = useUserModules();
+  const lang = i18n.language || "es";
 
-  const [openModules, setOpenModules] = useState<Record<string, boolean>>({
-    "ajustes-generales": true,
-  });
+  const [openModules, setOpenModules] = useState<Record<string, boolean>>({});
 
   const toggleModule = (moduleId: string) => {
     setOpenModules((prev) => ({
       ...prev,
-      [moduleId]: !prev[moduleId],
+      [moduleId]: !(prev[moduleId] ?? true),
     }));
   };
+
+  const menuItems = useMemo<SidenavItem[]>(() => {
+    const homeItem: SidenavItem = {
+      id: "inicio",
+      nameKey: "menu_home",
+      path: "/",
+      icon: <HomeOutlinedIcon />,
+    };
+
+    if (!userModules || userModules.length === 0) {
+      return [homeItem];
+    }
+
+    const dynamicGroups: SidenavItem[] = userModules.map((group) => {
+      const groupTitle = getTranslatedLabel(
+        group.translates,
+        group.module_group_key,
+        lang,
+        t
+      );
+
+      const subModules = (group.modules ?? []).map((m) => {
+        const moduleTitle = getTranslatedLabel(m.translates, m.key, lang, t);
+        const path = getModulePath(m);
+        const icon = getModuleIcon(m.key);
+
+        return {
+          id: m.key,
+          name: moduleTitle,
+          path,
+          icon,
+        };
+      });
+
+      return {
+        id: group.module_group_key,
+        name: groupTitle,
+        icon: getGroupIcon(group.module_group_key),
+        subModules,
+      };
+    });
+
+    return [homeItem, ...dynamicGroups];
+  }, [userModules, lang, t]);
 
   const drawerVariant = isLgUp ? "permanent" : "temporary";
   const isCollapsed = desktopCollapsed;
@@ -113,13 +188,17 @@ const Sidenav: FC<Props> = ({
         )}
 
         <List disablePadding>
-          {mockMenu.map((moduleItem) => {
+          {menuItems.map((moduleItem) => {
             const hasSubModules =
               Boolean(moduleItem.subModules) &&
               (moduleItem.subModules?.length ?? 0) > 0;
 
+            const displayName =
+              moduleItem.name ||
+              (moduleItem.nameKey ? t(moduleItem.nameKey) : moduleItem.id);
+
             if (hasSubModules) {
-              const isModuleOpen = Boolean(openModules[moduleItem.id]);
+              const isModuleOpen = openModules[moduleItem.id] ?? true;
 
               return (
                 <Box key={moduleItem.id}>
@@ -143,7 +222,7 @@ const Sidenav: FC<Props> = ({
                             {moduleItem.icon}
                           </ListItemIcon>
                         )}
-                        <ModuleHeaderText primary={t(moduleItem.nameKey)} />
+                        <ModuleHeaderText primary={displayName} />
                       </Box>
                       <KeyboardArrowDownIcon
                         fontSize="small"
@@ -166,41 +245,49 @@ const Sidenav: FC<Props> = ({
                     unmountOnExit
                   >
                     <List disablePadding>
-                      {moduleItem.subModules?.map((subItem) => (
-                        <ListItem
-                          key={subItem.id}
-                          disablePadding
-                          sx={{ display: "block" }}
-                        >
-                          <NavItemButton
-                            selected={location.pathname === subItem.path}
-                            onClick={() => subItem.path && navigate(subItem.path)}
-                            sx={{
-                              justifyContent: isCollapsed
-                                ? "center"
-                                : "initial",
-                            }}
+                      {moduleItem.subModules?.map((subItem) => {
+                        const subDisplayName =
+                          subItem.name ||
+                          (subItem.nameKey ? t(subItem.nameKey) : subItem.id);
+
+                        return (
+                          <ListItem
+                            key={subItem.id}
+                            disablePadding
+                            sx={{ display: "block" }}
                           >
-                            {subItem.icon && (
-                              <ListItemIcon
-                                sx={{
-                                  minWidth: 0,
-                                  mr: isCollapsed ? 0 : 2,
-                                  justifyContent: "center",
-                                  color: "inherit",
-                                  transition:
-                                    "color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-                                }}
-                              >
-                                {subItem.icon}
-                              </ListItemIcon>
-                            )}
-                            {!isCollapsed && (
-                              <NavItemText primary={t(subItem.nameKey)} />
-                            )}
-                          </NavItemButton>
-                        </ListItem>
-                      ))}
+                            <NavItemButton
+                              selected={location.pathname === subItem.path}
+                              onClick={() =>
+                                subItem.path && navigate(subItem.path)
+                              }
+                              sx={{
+                                justifyContent: isCollapsed
+                                  ? "center"
+                                  : "initial",
+                              }}
+                            >
+                              {subItem.icon && (
+                                <ListItemIcon
+                                  sx={{
+                                    minWidth: 0,
+                                    mr: isCollapsed ? 0 : 2,
+                                    justifyContent: "center",
+                                    color: "inherit",
+                                    transition:
+                                      "color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+                                  }}
+                                >
+                                  {subItem.icon}
+                                </ListItemIcon>
+                              )}
+                              {!isCollapsed && (
+                                <NavItemText primary={subDisplayName} />
+                              )}
+                            </NavItemButton>
+                          </ListItem>
+                        );
+                      })}
                     </List>
                   </Collapse>
                 </Box>
@@ -232,9 +319,7 @@ const Sidenav: FC<Props> = ({
                       {moduleItem.icon}
                     </ListItemIcon>
                   )}
-                  {!isCollapsed && (
-                    <NavItemText primary={t(moduleItem.nameKey)} />
-                  )}
+                  {!isCollapsed && <NavItemText primary={displayName} />}
                 </NavItemButton>
               </ListItem>
             );
