@@ -1,3 +1,5 @@
+import cookieParser from 'cookie-parser';
+import { readAuthConfig } from './auth/auth.config.js';
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -11,6 +13,8 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableShutdownHooks();
+  app.set('trust proxy', envs.RATE_LIMIT.trustedProxies);
 
   // Parse nested query strings (Ransack queries like q[name_in][0]=Oscar, q[is_active_eq]=true)
   app.set('query parser', (str: string) =>
@@ -23,8 +27,9 @@ async function bootstrap() {
   // Set global prefix for all routes
   app.setGlobalPrefix('/api/v1');
 
-  // Enable CORS for all origins
-  app.enableCors();
+  const authConfig = readAuthConfig(process.env);
+  app.use(cookieParser());
+  app.enableCors({ origin: authConfig.origins, credentials: true, exposedHeaders: ['Retry-After'] });
 
   // Enable global validation pipe
   app.useGlobalPipes(
@@ -46,6 +51,7 @@ async function bootstrap() {
     .setTitle('Documentation API')
     .setDescription('API documentation')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/api/documentation', app, documentFactory);
@@ -53,6 +59,8 @@ async function bootstrap() {
   await app.listen(envs.PORT);
 
   logger.log(`🚀 Application running on: http://localhost:${envs.PORT}/api/v1`);
-  logger.log(`📚 Swagger documentation: http://localhost:${envs.PORT}/api/documentation`);
+  logger.log(
+    `📚 Swagger documentation: http://localhost:${envs.PORT}/api/documentation`,
+  );
 }
 await bootstrap();

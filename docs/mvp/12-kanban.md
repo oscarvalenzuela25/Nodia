@@ -1,6 +1,6 @@
 # Panel Kanban — Nodia Parte 1
 
-> Estado: en revisión
+> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
 > Última actualización: 2026-08-22
 > Dependencias: Documentos 01 al 11 aprobados
 
@@ -21,11 +21,15 @@ Derivar la especificación técnica en tickets o tareas funcionales trazables, o
 
 ## Épica 3: Autenticación (Core)
 
-- **[T3.1] UI Login (Front):** Implementar `/login` usando `@react-oauth/google`.
-- **[T3.2] Endpoint Login (Back):** Crear `POST /api/auth/login`. Valida el token de Google, verifica estado del usuario (`is_allowed`, `is_active`) y genera el JWT propio.
-- **[T3.3] Endpoint Perfil (Back):** Crear `GET /api/auth/me`. Retorna el usuario y la matriz calculada y deduplicada de sus permisos.
-- **[T3.4] Guards (Back):** Implementar AuthGuard (valida JWT) y PermissionsGuard (valida acción requerida sobre recurso objetivo).
-- **[T3.5] Estado Auth (Front):** Configurar store en Zustand para retener la sesión y un interceptor de Axios para inyectar el JWT en las cabeceras.
+- [x] **T3.1 UI Login:** botón oficial GoogleLogin, credencial ID token, loading y errores traducidos.
+- [x] **T3.2 Endpoint Login:** `POST /api/v1/auth/login`, usuario precreado/activo, JWT propio y refresh cookie.
+- [x] **T3.3 Perfil/contexto:** `GET /api/v1/auth/me` y `/api/v1/authorization/context` con identidad validada.
+- [x] **T3.4a AuthGuard:** JWT, sesión activa y usuario activo, API protegida por defecto.
+- [ ] **T3.4b PermissionsGuard:** autorización fina por acciones en endpoints; pendiente independiente de autenticación.
+- [x] **T3.5 Estado Auth:** store existente con persist, Axios Bearer, renovación y control de respuestas tardías.
+- [x] **T3.6 Sesiones renovables:** refresh de siete días, rotación atómica, hash en DB y revocación ante replay.
+- [x] **T3.7 Logout y perfil UI:** Home tras login, avatar, menú, cierre remoto y limpieza local.
+- [ ] **T3.8 Operación:** validar cuenta real/orígenes en Google Cloud y desplegar migración/configuración según [guía auth](14-authentication.md).
 
 ## Épica 4: Frontend Transversal y Enrutamiento
 

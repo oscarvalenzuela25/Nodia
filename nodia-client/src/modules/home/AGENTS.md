@@ -4,7 +4,7 @@ Contexto operativo para agentes IA que trabajen dentro de `src/modules/home`.
 
 ## Objetivo del modulo
 
-Este modulo contiene la experiencia principal de inicio (`/`) para usuarios autenticados.
+Este modulo contiene la experiencia principal de inicio (`/`) para visitantes en modo demo y usuarios autenticados.
 
 ## Archivos clave
 
@@ -14,7 +14,7 @@ Este modulo contiene la experiencia principal de inicio (`/`) para usuarios aute
 
 ## Reglas del modulo
 
-1. Esta pantalla se consume dentro de una ruta protegida (`Guard`).
+1. Esta pantalla usa `Guard`, que permite modo demo sin sesión. Las rutas `/settings/*` usan `GuardStrict` y requieren sesión validada más el módulo asignado. El detalle del contrato está en `docs/mvp/14-authentication.md` desde la raíz del repositorio.
 2. Todo texto visible debe usar `t("home:key")` o `t("translate:key")`.
 3. Si agregas nuevas claves, mapear en:
    - `src/translate/es/home.json`

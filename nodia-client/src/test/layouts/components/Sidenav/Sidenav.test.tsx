@@ -1,3 +1,4 @@
+import useAuthStore from "../../../../store/authStore";
 import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -9,9 +10,24 @@ import { RouterProvider } from "react-router/dom";
 
 describe("Sidenav", () => {
   beforeEach(() => {
+    useAuthStore.getState().logout();
+    useAuthStore.getState().login({ token: "jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test" } });
     act(() => {
       useGeneralSettingsStore.getState().clearContext();
     });
+  });
+
+  it("hides administrative links for a visitor even if stale assignments remain in memory", () => {
+    useAuthStore.getState().logout();
+    useGeneralSettingsStore.getState().setContext({ roles: [], actions: [], modules: [{
+      module_group_key: "settings", translates: [], modules: [{ key: "users", translates: [] }],
+    }] });
+    const router = createMemoryRouter([{ path: "/", element: <Sidenav mobileOpen onDrawerToggle={vi.fn()} /> }]);
+    render(<RouterProvider router={router} />);
+    expect(screen.getByText("Inicio")).toBeInTheDocument();
+    expect(screen.queryByText("Usuarios")).not.toBeInTheDocument();
+    expect(screen.queryByText("users")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ajustes Generales")).not.toBeInTheDocument();
   });
 
   it("should render Inicio by default when store is empty without dummy modules", () => {

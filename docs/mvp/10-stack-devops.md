@@ -1,7 +1,7 @@
 # Stack DevOps — Nodia Parte 1
 
-> Estado: aprobado
-> Última actualización: 2026-08-22
+> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
+> Última actualización: 2026-09-12
 > Dependencias: 08-stack-frontend.md y 09-stack-backend.md aprobados
 
 ## Objetivo
@@ -58,4 +58,18 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 
 ## Preguntas abiertas
 
+### Requisitos de despliegue del rate limit — 2026-09-12
+
+La implementación de [ADR-003](../architecture/decisions/ADR-003-api-rate-limiting.md) usa Redis compartido en entornos desplegados. Sigue pendiente confirmar/provisionar ese servicio en Northflank, sus permisos de scripts y su política de memoria/evicción. No se ha desplegado ni contratado infraestructura como parte de esta entrega.
+
+Configurar conexión Redis, prefijo por entorno y `TRUST_PROXY` con los IPs/CIDRs reales del ingreso. Su valor vacío confía solo en la conexión directa. Verificar identificación del cliente a través de la ruta pública y calibrar cuotas en staging. Una caída de Redis produce `503` en endpoints protegidos; memoria se admite exclusivamente en desarrollo/test.
+
+Tras integrar auth, configurar también `RATE_LIMIT_LOGIN_*`, `RATE_LIMIT_USER_*` y `RATE_LIMIT_USER_WRITES_*` de forma uniforme entre réplicas. Defaults: login 10 intentos/minuto por IP; usuario verificado 300 solicitudes/minuto y 30 escrituras/minuto, adicionales a los límites por IP existentes. TTL y bloqueo se expresan en milisegundos. No requiere migración de base de datos ni nuevas dependencias; las claves de estas políticas son independientes de las cuotas por IP.
+
+### Decisiones originales del MVP
+
 - Ninguna. Documento listo para revisión.
+
+## Operación auth — 2026-09-12
+
+Se requieren `GOOGLE_CLIENT_ID`, `AUTH_JWT_SECRET`, `AUTH_ALLOWED_ORIGINS` y configuración SameSite/Secure. CORS usa orígenes concretos con credenciales. Producción requiere HTTPS y migración de auth sobre el esquema existente; `synchronize` se desactiva en producción. Preferir frontend/API bajo el mismo sitio para evitar cookies de terceros. Ver [14-authentication.md](14-authentication.md).

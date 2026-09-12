@@ -28,7 +28,7 @@ Este modulo contiene la capa de autenticacion visible para usuario final:
    - `src/translate/es/auth.json`
    - `src/translate/en/auth.json`
 5. Login/Register deben mantener redireccion controlada (actualmente a `/`).
-6. Si agregas llamadas HTTP de auth, usar `mainInstance` o `createApiInstance`.
+6. Si agregas llamadas HTTP de auth, usar `mainInstance` o `createApiInstance` desde `src/config/api.ts`. La coordinación de restauración/renovación vive en `src/config/authSession.ts`.
 
 ## Skill obligatoria para componentes
 

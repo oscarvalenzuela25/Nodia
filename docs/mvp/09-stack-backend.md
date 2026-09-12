@@ -1,7 +1,7 @@
 # Stack Backend — Nodia Parte 1
 
-> Estado: aprobado
-> Última actualización: 2026-08-22
+> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
+> Última actualización: 2026-09-12
 > Dependencias: 03-domain-model-erd.md, 04-prd-v2.md y 06-route-specs.md aprobados
 
 ## Objetivo
@@ -27,9 +27,11 @@ Definir el lenguaje, framework, base de datos, ORM y estrategia de autenticació
 
 ## 4. Estrategia de Autenticación y Sesión
 
-- **Flujo inicial (Google OAuth2):** El frontend (React) utilizará la librería de Google para obtener un token de identidad (credential JWT de Google). Este token se enviará al endpoint `/api/auth/login` del backend. El backend validará el token de Google, buscará el correo en la base de datos de usuarios (`users`) y verificará que el usuario exista, esté activo (`is_active = true`) y tenga el acceso permitido (`is_allowed = true`).
-- **Manejo de Sesión (JWT Propio):** Una vez validado el acceso, el backend generará y firmará un **JWT propio** (JSON Web Token) y lo retornará al frontend.
-- **Justificación:** Usar un JWT propio para la sesión en lugar de depender exclusivamente del token de Google abstrae el método de autenticación. Esto preparará el sistema para soportar fácilmente el login tradicional con correo/contraseña en el futuro sin cambiar la arquitectura de sesiones.
+- **Flujo inicial (Google):** `GoogleLogin` entrega un ID token que se envía con `provider: "google"` a `POST /api/v1/auth/login`. Se valida mediante `google-auth-library`, se busca el correo normalizado y se exige un usuario precreado activo. Se vincula `users.google_sub`; Google solo completa nombre/imagen vacíos.
+- **Sesión propia:** `@nestjs/jwt` emite un access JWT de quince minutos, persistido en el store de Zustand, y un refresh JWT rotativo de siete días en cookie HttpOnly. `auth_sessions` almacena únicamente el hash del refresh y permite revocación inmediata.
+- **Renovación y logout:** `/api/v1/auth/refresh` rota dentro de una transacción; replay revoca la sesión. `/api/v1/auth/logout` revoca y borra cookie. El guard comprueba JWT, sesión y usuario activo en cada petición.
+- **Proveedores futuros:** la verificación Google está separada de `CreateSessionUseCase`; password u otros proveedores podrán emitir la misma sesión. No se implementan contraseñas en esta entrega.
+- **Especificación y operación:** [Guía auth](14-authentication.md), [ADR-004](../architecture/decisions/ADR-004-auth-sessions.md).
 
 ## 5. Manejo de Contexto de Autorización (Permisos)
 
@@ -38,9 +40,18 @@ Definir el lenguaje, framework, base de datos, ORM y estrategia de autenticació
 
 ## Hechos confirmados
 
+### Rate limiting — actualización técnica 2026-09-12
+
+- Se implementa `@nestjs/throttler` con almacenamiento Redis, conforme a la opción A aprobada en [ADR-003](../architecture/decisions/ADR-003-api-rate-limiting.md).
+- Guards globales en orden explícito: cuotas por IP → validación JWT/sesión → cuotas por usuario. La IP limita ráfagas, tráfico general, escrituras y login (10 intentos/minuto). El usuario verificado dispone de cuotas iniciales de 300 solicitudes/minuto y 30 escrituras/minuto, compartidas entre sesiones e IPs; se mantienen también los límites de red.
+- Contadores Redis atómicos; `429` con `Retry-After` al exceder cuota y `503` si el almacenamiento no está disponible. Configuración operativa y validación detalladas en el ADR.
+- NestJS 12 se conserva. Dos overrides limitados a las versiones fijadas de throttler y su adaptador resuelven los peers publicados; deben retirarse al existir releases compatibles.
+
+### Stack base
+
 - Stack: NestJS + TypeScript + PostgreSQL + TypeORM.
 - Autenticación mediante validación de token de Google y generación de JWT propio de la aplicación.
-- Arquitectura stateless para las sesiones (JWT).
+- JWT propio con estado de sesión en PostgreSQL para renovación/revocación; reemplaza la propuesta inicial enteramente stateless.
 
 ## Preguntas abiertas
 

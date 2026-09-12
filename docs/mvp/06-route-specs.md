@@ -1,12 +1,18 @@
 # Route Specs — Nodia Parte 1
 
-> Estado: aprobado
+> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
 > Última actualización: 2026-08-22
 > Dependencias: 03-domain-model-erd.md, 04-prd-v2.md y 05-sitemap.md aprobados
 
 ## Objetivo
 
 Especificar el comportamiento, los requerimientos de datos y los controles de acceso de cada ruta definida en el Sitemap para que pueda implementarse de manera estandarizada y sin ambigüedades.
+
+## Regla de navegación confirmada — 2026-09-12
+
+La implementación separa `GuardStrict` (sesión validada y módulo asignado para cada ruta `/settings/*`) y `Guard` (permite la vista demo sin sesión para `/` y futuros módulos públicos). `NoGuard` conserva el comportamiento de login. La navegación no agrega un chequeo por nombre de rol; las reglas administrativas de operaciones continúan en la autorización fina del backend.
+
+El acceso directo por URL tiene los mismos requisitos que el menú: se carga el contexto antes de montar la página; sin sesión se dirige a `/login`, sin módulo a `/404`, y si el contexto falla se permite reintentar sin cargar datos administrativos. Los enlaces y tarjetas solo muestran módulos asignados a una sesión validada. Detalle: [14-authentication.md](14-authentication.md).
 
 ## Especificaciones de Rutas
 
@@ -25,7 +31,7 @@ Especificar el comportamiento, los requerimientos de datos y los controles de ac
 - **Acceso:** Solo visitantes. Si un usuario ya autenticado entra, se redirige a `/`.
 - **Componentes UI:** Pantalla de inicio de sesión minimalista. Botón "Iniciar sesión con Google".
 - **Data (Frontend):** Implementa librería React OAuth2 Google para obtener token/credencial de Google.
-- **API (Backend):** `POST /api/auth/login` enviando el token de Google. El backend valida, establece la sesión y retorna el Contexto de Autorización.
+- **API (Backend):** `POST /api/v1/auth/login` con `{provider: "google", credential}`. Retorna `{token, expiresAt, user}` y cookie HttpOnly. Después se carga `/api/v1/authorization/context` con el JWT propio.
 - **Acciones:**
   - Éxito: Redirigir a `/` (o URL intentada) con sesión activa.
   - Rechazo (correo no existe, no permitido o inactivo): Mostrar Toast de error genérico.
@@ -111,3 +117,7 @@ Especificar el comportamiento, los requerimientos de datos y los controles de ac
 
 ## Preguntas abiertas
 - Ninguna.
+
+## Actualización de sesión — 2026-09-12
+
+Login exitoso redirige a `/`. Topbar utiliza el avatar de la sesión y muestra nombre/correo y logout. El cierre revoca la sesión remota y elimina los datos locales persistidos, el contexto y la caché. `/login` redirige al Home si ya existe sesión; `/settings/*` exige autenticación. Renovación y rutas técnicas: [14-authentication.md](14-authentication.md).

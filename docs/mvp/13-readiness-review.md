@@ -1,6 +1,6 @@
 # Revisión de preparación (Readiness Review) — Nodia Parte 1
 
-> Estado: aprobado
+> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
 > Última actualización: 2026-08-24
 > Dependencias: Documentos 01 al 12 aprobados
 
@@ -37,3 +37,7 @@ El proyecto cuenta con una base sólida, funcional y técnica. Las contradiccion
 
 ## Preguntas abiertas
 - ¿Apruebas este último documento para oficialmente marcar la fase de definición ("docs/mvp") como completada y proceder a crear la rama o empezar a codificar el backend/frontend?
+
+## Revisión posterior de auth — 2026-09-12
+
+La autorización original de desarrollo continúa vigente. La ampliación implementa JWT propio, refresh cookie, sesiones revocables, avatar y logout por solicitud explícita. Las revisiones documentales de la ampliación no se han marcado aprobadas. Antes de producción quedan la validación de Google con cuenta real, dominios/cookies, migración y PermissionsGuard como tarea independiente. Ver [14-authentication.md](14-authentication.md).

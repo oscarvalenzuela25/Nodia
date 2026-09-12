@@ -1,4 +1,4 @@
-import { mainInstance } from "../../../../../config/axiosInstance";
+import { mainInstance } from "../../../../../config/api";
 import type {
   ModuleEntity,
   GetModulesParams,

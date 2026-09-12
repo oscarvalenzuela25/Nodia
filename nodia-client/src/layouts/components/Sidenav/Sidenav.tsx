@@ -20,7 +20,7 @@ import ViewModuleOutlinedIcon from "@mui/icons-material/ViewModuleOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import { useUserModules, getModulePath } from "../../../store/generalSettings";
+import { useVisibleModules, getModulePath } from "../../../store/generalSettings";
 import type {
   TranslateItem,
 } from "../../../store/generalSettings/types";
@@ -113,7 +113,7 @@ const Sidenav: FC<Props> = ({
   const location = useLocation();
   const theme = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
-  const userModules = useUserModules();
+  const userModules = useVisibleModules();
   const lang = i18n.language || "es";
 
   const [openModules, setOpenModules] = useState<Record<string, boolean>>({});

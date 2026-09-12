@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import useAuth from "../../hooks/useAuth";
 import useGeneralSettingsStore from "./generalSettingsStore";
 import type {
   ActionContext,
@@ -32,6 +33,16 @@ export const useGeneralSettings = () => {
  */
 export const useUserModules = (): ModuleGroupContext[] => {
   return useGeneralSettingsStore((state) => state.modules);
+};
+
+/** Navigation only exposes assignments belonging to a validated session. */
+export const useVisibleModules = (): ModuleGroupContext[] => {
+  const { isSessionValid } = useAuth();
+  const modules = useUserModules();
+  const isLoaded = useGeneralSettingsStore((state) => state.isLoaded);
+  return useMemo(() => isSessionValid && isLoaded
+    ? modules.filter((group) => group.modules.length > 0)
+    : [], [isSessionValid, isLoaded, modules]);
 };
 
 /**

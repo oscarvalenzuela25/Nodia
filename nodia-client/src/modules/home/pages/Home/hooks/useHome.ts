@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type { AxiosError } from "axios";
 import {
-  useUserModules,
+  useVisibleModules,
   getModulePath,
   getTranslatedName,
 } from "../../../../../store/generalSettings";
@@ -14,7 +14,7 @@ import { useAuthorizationContext } from "../../../../../services/authorizationSe
 
 const useHome = () => {
   const { t, i18n } = useTranslation(["home", "core"]);
-  const userModules = useUserModules();
+  const userModules = useVisibleModules();
   const { isError, error, refetch, isLoading } = useAuthorizationContext();
   const currentLang = i18n.language || "es";
 

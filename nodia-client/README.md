@@ -115,18 +115,19 @@ Definido en `src/routes/index.tsx`:
 
 ### API (Axios)
 
-`src/config/axiosInstance.ts` expone:
+`src/config/api.ts` expone:
 
 - `mainInstance`: instancia base comun
-- `createApiInstance(...)`: crea nuevas instancias derivadas de la base
+- `createApiInstance(...)`: crea nuevas instancias con el mismo gestor de autenticacion
+- `restoreSession`, `refreshSession` y `waitForRefresh`: operaciones de sesion para providers y logout
 
-Incluye:
+La configuracion se separa por responsabilidad:
 
-- `baseURL` desde `envs.API_URL`
-- timeout por defecto
-- headers base JSON
-- interceptor request con `Authorization` si hay token
-- interceptor response que limpia sesion al recibir `401`
+- `axiosInstance.ts`: fabrica de transporte con `baseURL`, timeout, headers JSON, cookies y normalizacion de errores HTTP.
+- `authSession.ts`: restauracion y renovacion, Bearer, bloqueo de peticiones sin sesion activa, un reintento tras 401 y descarte de respuestas posteriores al logout.
+- `api.ts`: compone ambos y comparte una sola renovacion entre todas las instancias de API.
+
+Los servicios deben importar desde `config/api.ts`. Usar directamente `createAxiosInstance` omite la configuracion de autenticacion. El flujo completo esta en [la guia de autenticacion](../docs/mvp/14-authentication.md).
 
 ### React Query
 

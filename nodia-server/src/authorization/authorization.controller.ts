@@ -1,22 +1,16 @@
-import { Controller, Get, Headers } from '@nestjs/common';
+import { Controller, Get, Header, Req } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import type { AuthRequest } from '../auth/types/auth.types.js';
 import { GetAuthorizationContextUseCase } from './use-case/get-authorization-context.use-case.js';
 
+@ApiBearerAuth()
 @Controller('authorization')
 export class AuthorizationController {
-  constructor(
-    private readonly getAuthorizationContextUseCase: GetAuthorizationContextUseCase,
-  ) {}
+  constructor(private readonly getAuthorizationContextUseCase: GetAuthorizationContextUseCase) {}
 
   @Get('context')
-  async getContext(@Headers('authorization') _authHeader?: string) {
-    // TODO: In future authentication phase, extract email from Bearer token:
-    // const token = _authHeader?.replace(/^Bearer\s+/i, '');
-    // const payload = this.jwtService.decode(token);
-    // const email = payload?.email;
-
-    // Currently hardcoded developer email as requested:
-    const developerEmail = 'oavr.18@gmail.com';
-
-    return this.getAuthorizationContextUseCase.execute(developerEmail);
+  @Header('Cache-Control', 'no-store')
+  getContext(@Req() request: AuthRequest) {
+    return this.getAuthorizationContextUseCase.execute(request.auth.user.email);
   }
 }

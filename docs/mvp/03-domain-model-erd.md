@@ -1,13 +1,14 @@
 # Modelo de dominio ERD — Nodia Parte 1
 
-> Estado: aprobado
+> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
 > Última actualización: 2026-09-07
 > Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado
 
 ## 1. Resumen del modelo
 
-El modelo cubre la base de identidad, autorización, navegación e internacionalización de Nodia con nueve tablas:
+El modelo cubre la base de identidad, autorización, navegación e internacionalización de Nodia con diez tablas (incluida la ampliación técnica de sesiones):
 
+- `auth_sessions`: sesiones renovables, hash del refresh token, expiración y revocación.
 - `users`: personas preautorizadas para iniciar sesión con Google.
 - `roles`: agrupaciones reutilizables de permisos funcionales, identificadas por un `key`.
 - `module_groups`: catálogo de grupos únicos para agrupar módulos de navegación, identificados por un `key`.
@@ -247,3 +248,21 @@ Ref fk_modules_module_group {
 - Actualizar el modelo conceptual y eliminar referencias a "Resources".
 - Definir convención de nomenclatura de `keys` para las acciones (ej. `camelCase`, `dot.notation`) para facilitar i18n.
 - Revalidar permisos requeridos por cada módulo con las acciones dinámicas.
+## Ampliación de autenticación — 2026-09-12
+
+Implementación solicitada por el usuario; revisión documental pendiente. `users.google_sub` es nullable y único para vincular el identificador estable de Google. No se agrega una tabla de identidades externas.
+
+```dbml
+Table auth_sessions {
+  id bigint [pk, increment, not null]
+  public_id uuid [unique, not null]
+  user_id bigint [not null, ref: > users.id]
+  image_url text
+  refresh_token_hash varchar(64) [not null]
+  expires_at timestamptz [not null]
+  revoked_at timestamptz
+  created_at timestamptz [not null]
+}
+```
+
+El UUID es un identificador público adicional; la PK sigue siendo bigint. Una sesión se revoca mediante `revoked_at` y caduca por `expires_at`, sin borrar al usuario. Detalles: [ADR-004](../architecture/decisions/ADR-004-auth-sessions.md).

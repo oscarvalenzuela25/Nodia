@@ -25,8 +25,8 @@ export class AuthorizationService {
     private readonly redisService: RedisService,
   ) {}
 
-  async getContext(email?: string): Promise<AuthorizationContextResponse> {
-    const targetEmail = (email || 'oavr.18@gmail.com').toLowerCase().trim();
+  async getContext(email: string): Promise<AuthorizationContextResponse> {
+    const targetEmail = email.toLowerCase().trim();
     const cacheKey = `auth:context:${targetEmail}`;
 
     const cached =

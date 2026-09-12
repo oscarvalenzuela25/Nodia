@@ -25,6 +25,31 @@
 
 Este repositorio está diseñado como un **punto de partida profesional** para cualquier servicio o microservicio backend. Viene preconfigurado con las mejores prácticas arquitectónicas de la industria, tipado estricto en TypeScript, contenedorización con Docker, documentación interactiva autogenerada y un sistema de validación y manejo de errores uniforme.
 
+## Rate limiting
+
+La API aplica `@nestjs/throttler` globalmente con contadores Redis compartidos entre réplicas. Los valores iniciales por IP son 30 solicitudes/10 s, 300 solicitudes/minuto y 30 escrituras/minuto. Las cuotas se acumulan y se comparten entre rutas, alias, IDs y filtros. IPv4 se normaliza y las direcciones IPv6 se agrupan por /64.
+
+`POST /auth/login` añade 10 intentos/minuto por IP, incluidos fallos de credencial, DTO u origen. `refresh` y `logout` mantienen los límites por IP y de escrituras. Las rutas autenticadas, incluido `GET /auth/me`, añaden 300 solicitudes/minuto y 30 escrituras/minuto por usuario verificado, compartidas entre sus tokens, sesiones e IPs. Los límites por IP siguen aplicándose.
+
+`AppModule` registra los guards globales en orden explícito: IP → JWT/sesión → usuario. `AuthModule` y `RateLimitModule` exportan sus guards; cualquier aplicación que componga estos módulos debe registrar los tres en ese orden. No obtener la identidad de un token sin verificar ni cambiar cuotas generales mediante decoradores de una sola ruta.
+
+La configuración está en [.env.example](.env.example):
+
+- `RATE_LIMIT_STORAGE=redis` por defecto. Conecta mediante `RATE_LIMIT_REDIS_URL` (admite `rediss://`) o las variables `REDIS_HOST`, `REDIS_PORT` y `REDIS_PASSWORD` existentes.
+- Para desarrollo con un solo proceso sin Redis, establecer explícitamente `NODE_ENV=development` y `RATE_LIMIT_STORAGE=memory`. La memoria no está permitida en producción/staging y no se activa al fallar Redis.
+- `RATE_LIMIT_<BURST|GENERAL|WRITES|LOGIN|USER|USER_WRITES>_LIMIT`, `_TTL_MS` y `_BLOCK_MS` controlan cada política. El bloqueo predeterminado dura lo mismo que su ventana y empieza al exceder la cuota. Un cliente que sigue enviando solicitudes durante el bloqueo sigue consumiendo contador.
+- `RATE_LIMIT_KEY_PREFIX` separa despliegues; el valor por defecto es `nodia:<NODE_ENV>:rl:v1`. Todas las réplicas de un mismo despliegue deben usar la misma configuración.
+- `TRUST_PROXY` acepta IPs/CIDRs de proxies confiables separados por comas. Vacío significa acceso directo. Confirmar la red real del ingreso antes de configurarlo; los valores `true` o una cantidad de saltos se rechazan.
+- Redis debe admitir scripts atómicos y preservar claves durante su TTL. Evitar `flushAll()` o políticas de expulsión de caché que borren cuotas.
+
+Superar una cuota devuelve `429`, código `RATE_LIMIT_EXCEEDED`, clave de mensaje `core:rate_limit_exceeded` y `Retry-After` en segundos. Un fallo de Redis devuelve `503` con `RATE_LIMIT_UNAVAILABLE` / `core:rate_limit_unavailable`. El cliente traduce estas claves a es/en usando sus toasts y vistas de error existentes; no reintenta automáticamente.
+
+`OPTIONS` está excluido. `@Public()` solo omite autenticación; también el health `GET /api/v1` conserva sus cuotas por IP. No hay excepciones de negocio. Para eximir expresamente un health check del limiter, usar `@SkipThrottle({ burst: true, general: true, writes: true, login: true, user: true, userWrites: true })`. Swagger y las rutas que no llegan a un handler NestJS no quedan cubiertos por estos guards.
+
+**Compatibilidad:** throttler 6.5.0 y el adaptador Redis 1.2.0 están fijados con dos overrides de npm para usar NestJS 12. La combinación se verificó con instalación limpia, compilación y HTTP/Redis real entre dos procesos. Instalar con `npm ci`; no se necesitan flags para ignorar peers. Retirar los overrides cuando ambos paquetes publiquen soporte declarado para NestJS 12, repitiendo las verificaciones del [ADR-003](../docs/architecture/decisions/ADR-003-api-rate-limiting.md).
+
+Antes del despliegue se requiere validar Redis, `TRUST_PROXY`, identificación de IP real y cuotas con tráfico de staging. La implementación local no configura servicios de Northflank.
+
 ---
 
 ## 🛠️ Stack Tecnológico
@@ -237,3 +262,9 @@ npm run start:prod
 ## 📄 Licencia
 
 Este proyecto está bajo la licencia [UNLICENSED](LICENSE). Puedes adaptarlo y usarlo libremente como base para tus proyectos.
+
+## Autenticación
+
+Google Login, JWT propio de quince minutos, refresh rotativo en cookie HttpOnly y revocación de sesión. Configuración, migración y contrato: [Guía de autenticación](../docs/mvp/14-authentication.md).
+
+Configurar `GOOGLE_CLIENT_ID`, `AUTH_JWT_SECRET` y `AUTH_ALLOWED_ORIGINS` en `.env` antes de arrancar. `npm run migration:run` agrega las tablas/campos de auth sobre una base existente. En producción `synchronize` se desactiva. Los endpoints de negocio ahora requieren Bearer JWT; `authorization/context` utiliza la identidad autenticada.

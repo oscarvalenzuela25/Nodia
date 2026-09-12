@@ -1,5 +1,6 @@
 import {
   Column,
+  Index,
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
@@ -27,6 +28,10 @@ export class User {
 
   @Column({ type: 'text', nullable: true })
   image_url?: string | null;
+
+  @Index('uq_users_google_sub', { unique: true })
+  @Column({ type: 'varchar', nullable: true, select: false })
+  google_sub?: string | null;
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;

@@ -28,6 +28,7 @@ Esta carpeta contiene la definición del producto previa al desarrollo. Debe per
 | 11 | `11-architecture-overview.md` | Unificar componentes y decisiones técnicas |
 | 12 | `12-kanban.md` | Derivar tickets trazables para implementación |
 | 13 | `13-readiness-review.md` | Verificar si el MVP está listo para programarse |
+| 14 | `14-authentication.md` | Implementación, configuración y operación de la autenticación |
 
 ## Estados
 

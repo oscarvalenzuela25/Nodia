@@ -1,3 +1,4 @@
+import useAuth from "../../../../../hooks/useAuth";
 import type { AxiosError } from "axios";
 import {
   keepPreviousData,
@@ -40,24 +41,28 @@ export const moduleGroupKeys = {
 export const useModules = (
   params?: GetModulesParams,
   options?: { enabled?: boolean }
-) =>
-  useQuery({
+) => {
+  const { isSessionActive } = useAuth();
+  return useQuery({
     queryKey: moduleKeys.list(params),
     queryFn: () => getModules(params),
     placeholderData: keepPreviousData,
-    enabled: options?.enabled ?? true,
+    enabled: isSessionActive && (options?.enabled ?? true),
   });
+};
 
 export const useModuleGroups = (
   params?: GetModuleGroupsParams,
   options?: { enabled?: boolean }
-) =>
-  useQuery({
+) => {
+  const { isSessionActive } = useAuth();
+  return useQuery({
     queryKey: moduleGroupKeys.list(params),
     queryFn: () => getModuleGroups(params),
     placeholderData: keepPreviousData,
-    enabled: options?.enabled ?? true,
+    enabled: isSessionActive && (options?.enabled ?? true),
   });
+};
 
 const extractErrorMessage = (
   error: AxiosError<{ message?: string }> | Error

@@ -1,3 +1,4 @@
+import useAuthStore from "../../../../../../../store/authStore";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -82,6 +83,7 @@ const renderWithClient = (ui: ReactElement) => {
 
 describe("UserModal", () => {
   beforeEach(() => {
+    useAuthStore.getState().login({ token: "test-jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test user" } });
     vi.clearAllMocks();
     vi.mocked(rolesServices.getRoles).mockResolvedValue(mockRolesResponse);
     vi.mocked(modulesServices.getModules).mockResolvedValue(mockModulesResponse);

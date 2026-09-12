@@ -9,5 +9,5 @@ export const postgresConfig: TypeOrmModuleOptions = {
   username: envs.POSTGRES_USER,
   password: envs.POSTGRES_PASSWORD,
   autoLoadEntities: true,
-  synchronize: true,
+  synchronize: process.env.NODE_ENV !== 'production',
 };

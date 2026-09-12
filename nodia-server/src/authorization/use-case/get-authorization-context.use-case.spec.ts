@@ -62,21 +62,8 @@ describe('GetAuthorizationContextUseCase', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call authorizationService.getContext without arguments if email is not provided', async () => {
-    const mockResponse: AuthorizationContextResponse = {
-      roles: [],
-      actions: [],
-      modules: [],
-    };
-
-    vi.mocked(authorizationServiceMock.getContext!).mockResolvedValue(
-      mockResponse,
-    );
-
-    const result = await useCase.execute();
-
-    expect(authorizationServiceMock.getContext).toHaveBeenCalledTimes(1);
-    expect(authorizationServiceMock.getContext).toHaveBeenCalledWith(undefined);
-    expect(result).toEqual(mockResponse);
+  it('rejects missing identity instead of falling back to a developer account', async () => {
+    await expect(useCase.execute()).rejects.toThrow('auth:session_expired');
+    expect(authorizationServiceMock.getContext).not.toHaveBeenCalled();
   });
 });

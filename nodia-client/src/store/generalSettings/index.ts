@@ -2,6 +2,7 @@ export { default, useGeneralSettingsStore } from "./generalSettingsStore";
 export {
   useGeneralSettings,
   useUserModules,
+  useVisibleModules,
   useUserRoles,
   useUserActions,
   useHasAction,

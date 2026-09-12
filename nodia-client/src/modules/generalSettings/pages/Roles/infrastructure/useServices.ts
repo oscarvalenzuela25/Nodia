@@ -1,3 +1,4 @@
+import useAuth from "../../../../../hooks/useAuth";
 import type { AxiosError } from "axios";
 import {
   keepPreviousData,
@@ -23,13 +24,15 @@ export const roleKeys = {
 export const useRoles = (
   params?: GetRolesParams,
   options?: { enabled?: boolean }
-) =>
-  useQuery({
+) => {
+  const { isSessionActive } = useAuth();
+  return useQuery({
     queryKey: roleKeys.list(params),
     queryFn: () => getRoles(params),
     placeholderData: keepPreviousData,
-    enabled: options?.enabled ?? true,
+    enabled: isSessionActive && (options?.enabled ?? true),
   });
+};
 
 const extractErrorMessage = (
   error: AxiosError<{ message?: string }> | Error

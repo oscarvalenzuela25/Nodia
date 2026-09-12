@@ -2,7 +2,9 @@ import { createBrowserRouter, Navigate } from "react-router";
 import Home from "../modules/home/pages/Home/index";
 import BaseLayout from "../layouts/BaseLayout";
 import PublicLayout from "../layouts/PublicLayout";
-// import NoGuard from "./NoGuard";
+import NoGuard from "./NoGuard";
+import Guard from "./Guard";
+import GuardStrict from "./GuardStrict";
 import Login from "../modules/auth/pages/Login";
 // import Register from "../modules/auth/pages/Register";
 import NotFound from "../modules/core/pages/NotFound";
@@ -22,53 +24,60 @@ const router = createBrowserRouter([
         index: true,
         element: (
           <BaseLayout>
-            <Home />
+            <Guard>
+              <Home />
+            </Guard>
           </BaseLayout>
         ),
       },
       {
         path: "settings/users",
         element: (
-          <BaseLayout>
-            <Users />
-          </BaseLayout>
+          <GuardStrict modulePath="/settings/users">
+            <BaseLayout>
+              <Users />
+            </BaseLayout>
+          </GuardStrict>
         ),
       },
       {
         path: "settings/roles",
         element: (
-          <BaseLayout>
-            <Roles />
-          </BaseLayout>
+          <GuardStrict modulePath="/settings/roles">
+            <BaseLayout>
+              <Roles />
+            </BaseLayout>
+          </GuardStrict>
         ),
       },
       {
         path: "settings/actions",
         element: (
-          <BaseLayout>
-            <Actions />
-          </BaseLayout>
+          <GuardStrict modulePath="/settings/actions">
+            <BaseLayout>
+              <Actions />
+            </BaseLayout>
+          </GuardStrict>
         ),
       },
       {
         path: "settings/modules",
         element: (
-          <BaseLayout>
-            <Modules />
-          </BaseLayout>
+          <GuardStrict modulePath="/settings/modules">
+            <BaseLayout>
+              <Modules />
+            </BaseLayout>
+          </GuardStrict>
         ),
       },
       {
         path: "login",
         element: (
-          // <NoGuard>
-          //   <PublicLayout>
-          //     <Login />
-          //   </PublicLayout>
-          // </NoGuard>
-          <PublicLayout>
-            <Login />
-          </PublicLayout>
+          <NoGuard>
+            <PublicLayout>
+              <Login />
+            </PublicLayout>
+          </NoGuard>
         ),
       },
       // {

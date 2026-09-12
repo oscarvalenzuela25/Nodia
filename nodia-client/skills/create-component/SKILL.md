@@ -196,14 +196,14 @@ Aplicar estas reglas al crear o migrar componentes:
 
 ## Axios y TanStack Query 5
 
-No crear instancias Axios aisladas. Usar `mainInstance` o `createApiInstance` desde `src/config/axiosInstance.ts`.
+No crear instancias Axios aisladas. Usar `mainInstance` o `createApiInstance` desde `src/config/api.ts`, que instala y comparte la configuración de sesión de `authSession.ts`. La fábrica de transporte en `axiosInstance.ts` no debe usarse directamente desde servicios.
 
 Separar transporte y cache:
 
 ```ts
 // infrastructure/services.ts
 // Ajustar la ruta relativa segun la ubicacion del componente.
-import { mainInstance } from "../../../../config/axiosInstance";
+import { mainInstance } from "../../../../config/api";
 import type { Item, NewItem } from "../types";
 
 export const getItems = async (): Promise<Item[]> => {

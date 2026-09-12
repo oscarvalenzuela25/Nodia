@@ -8,7 +8,7 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 - UI: MUI + Emotion.
 - Estado: Zustand.
 - Datos remotos: Axios + React Query.
-- Ruteo: React Router con `Guard`/`NoGuard`.
+- Ruteo: React Router con `Guard` (demo), `GuardStrict` (sesión y módulo) y `NoGuard` (login).
 - Traducciones: i18next en `src/translate`.
 
 ## Arquitectura Base (Resumen)
@@ -16,10 +16,12 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 - Auth centralizada:
   - `src/store/authStore.tsx`
   - `src/hooks/useAuth.tsx`
+  - `src/config/authSession.ts` para restauración, renovación e interceptores de sesión
 - API:
-  - `src/config/axiosInstance.ts`
+  - `src/config/api.ts` conecta el transporte con un único gestor de sesión
   - `mainInstance` como base común
   - `createApiInstance(...)` para APIs derivadas
+  - `src/config/axiosInstance.ts` solo configura transporte y normaliza errores HTTP
 - Query client:
   - `src/config/reactQuery.ts`
 - Tema MUI:
@@ -29,6 +31,7 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 - Rutas:
   - `src/routes/index.tsx`
   - `src/routes/Guard.tsx`
+  - `src/routes/GuardStrict.tsx`
   - `src/routes/NoGuard.tsx`
 - Errores globales:
   - `src/modules/core/components/AppErrorBoundary/AppErrorBoundary.tsx`
@@ -36,11 +39,11 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 
 ## Reglas Operativas
 
-1. No duplicar auth fuera de `authStore` + `useAuth`.
-2. No crear instancias Axios aisladas; usar `mainInstance` o `createApiInstance`.
+1. Mantener estado de auth en `authStore`, acceso React en `useAuth` y coordinación HTTP de sesión en `config/authSession.ts`.
+2. Los servicios deben importar `mainInstance` o `createApiInstance` desde `config/api.ts`. No usar la fábrica de transporte `createAxiosInstance` directamente en servicios, porque no instala autenticación.
 3. Todo texto visible debe usar traduccion `t("namespace:key")`.
 4. Toda key nueva de traduccion debe existir en `src/translate/es/*` y `src/translate/en/*`.
-5. Respetar `Guard`/`NoGuard` al agregar rutas nuevas.
+5. Usar `Guard` para rutas que admiten demo y `GuardStrict` para `/settings/*`, con el `modulePath` correspondiente. Mantener `NoGuard` en login. Detalle en `docs/mvp/14-authentication.md` desde la raíz del repositorio.
 6. Mantener tipado estricto en TypeScript; evitar `any` innecesario.
 7. No crear themes MUI en componentes de modulo; la composicion del theme debe quedarse en `MUIProvider`.
 8. Todo componente que contenga logica debe tener un archivo de test correspondiente en `src/test`.

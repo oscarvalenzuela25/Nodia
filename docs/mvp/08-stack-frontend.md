@@ -1,6 +1,6 @@
 # Stack Frontend — Nodia Parte 1
 
-> Estado: en revisión
+> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
 > Última actualización: 2026-08-22
 > Dependencias: 07-design-constraints.md aprobado
 
@@ -105,3 +105,13 @@ src/
 
 ## Preguntas abiertas
 - Ninguna. Documento listo para revisión.
+
+## Integración auth — 2026-09-12
+
+`GoogleLogin` de `@react-oauth/google` obtiene la credencial JWT de identidad (no el access token del hook). Se usa `authStore` existente con persist para `{token, user, expiresAt}`, Axios con credenciales para la cookie HttpOnly y TanStack Query para login/logout. `AuthSessionProvider` renueva antes del vencimiento; Axios recupera un 401 una sola vez. El menú del topbar cierra sesión y limpia el contexto/caché. Detalles en [14-authentication.md](14-authentication.md).
+
+El estado de sesión activa se conserva solo en memoria. Al recargar, `/auth/me` o refresh valida las credenciales guardadas antes de montar la aplicación. Todas las consultas se habilitan con `isSessionActive`; Axios bloquea también mutaciones y refetch manual sin sesión. Sin token local no hay llamadas automáticas a la API. Los fallos de recuperación muestran reintento sin habilitar datos.
+
+La configuración HTTP se divide en `config/axiosInstance.ts` (transporte y errores HTTP), `config/authSession.ts` (ciclo de sesión e interceptores de auth) y `config/api.ts` (composición y exportaciones para servicios/providers). `mainInstance` y las instancias de `createApiInstance` comparten un único gestor de renovación.
+
+Los wrappers de rutas se separan en `GuardStrict` (sesión validada + módulo por destino), `Guard` (sesión o demo) y `NoGuard` (login). Se usa `useAuth().isDemo` para que futuros módulos elijan sus datos locales. La renovación anticipada conserva la vista estricta válida con controles inhabilitados; las consultas siguen condicionadas a `isSessionActive`.

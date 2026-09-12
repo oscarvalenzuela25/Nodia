@@ -1,9 +1,11 @@
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { Avatar, Stack, IconButton, useTheme, Button } from "@mui/material";
+import { Avatar, Stack, IconButton, useTheme, Button, Menu, MenuItem, ListItemIcon, ListItemText, Divider, Typography } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import useProfileMenu from "./hooks/useProfileMenu";
 import ThemeSelector from "../ThemeSelector";
 import LanguageSelector from "../../../components/LanguageSelector";
 import { TopbarRoot } from "./styles";
@@ -22,7 +24,7 @@ const Topbar: FC<Props> = ({
   const { t } = useTranslation("layout");
   const theme = useTheme();
   const navigate = useNavigate();
-  const isLogged = false;
+  const { user, isAuthenticated, isBusy, anchorEl, openMenu, closeMenu, handleLogout } = useProfileMenu();
 
   return (
     <TopbarRoot>
@@ -54,10 +56,35 @@ const Topbar: FC<Props> = ({
       <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
         <LanguageSelector />
         <ThemeSelector />
-        {isLogged ? (
-          <Avatar>O</Avatar>
+        {isAuthenticated ? (
+          <>
+            <IconButton
+              id="profile-menu-button"
+              aria-label={t("auth:account_menu")}
+              aria-controls={anchorEl ? "profile-menu" : undefined}
+              aria-haspopup="menu"
+              aria-expanded={Boolean(anchorEl)}
+              disabled={isBusy}
+              onClick={(event) => openMenu(event.currentTarget)}
+            >
+              <Avatar src={user?.image_url ?? undefined} alt={user?.name ?? ""}>
+                {(user?.name || user?.email || "?").slice(0, 1).toUpperCase()}
+              </Avatar>
+            </IconButton>
+            <Menu id="profile-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={closeMenu}
+              slotProps={{ list: { "aria-labelledby": "profile-menu-button" } }}>
+              <Typography sx={{ px: 2, pt: 1, fontWeight: 600 }}>{user?.name}</Typography>
+              <Typography variant="body2" sx={{ px: 2, pb: 1, color: "text.secondary" }}>{user?.email}</Typography>
+              <Divider />
+              <MenuItem onClick={handleLogout} disabled={isBusy}>
+                <ListItemIcon><LogoutOutlinedIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>{t("auth:logout")}</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
         ) : (
           <Button
+            disabled={isBusy}
             variant="contained"
             color="primary"
             onClick={() => navigate("/login")}

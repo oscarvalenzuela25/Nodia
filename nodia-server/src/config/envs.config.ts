@@ -1,6 +1,8 @@
 import 'dotenv/config';
+import { readRateLimitConfig } from '../rate-limit/rate-limit.config.js';
 
 export const configModuleEnvs = () => ({
+  RATE_LIMIT: readRateLimitConfig(process.env),
   PORT: process.env.PORT ? parseInt(process.env.PORT) : 3000,
   POSTGRES_DB: process.env.POSTGRES_DB || 'template_db',
   POSTGRES_PORT: process.env.POSTGRES_PORT

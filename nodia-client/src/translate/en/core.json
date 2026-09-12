@@ -30,6 +30,9 @@
   "empty_state_title": "No information available",
   "empty_state_description": "No data found to display at this time.",
   "server_error_toast": "Server error. Please try again later.",
+  "rate_limit_exceeded": "Too many requests. Wait a moment before trying again.",
+  "rate_limit_exceeded_retry": "Too many requests. Try again in {{seconds}} s.",
+  "rate_limit_unavailable": "The service is temporarily unavailable. Please try again later.",
   "server_error_alert": "A problem occurred while loading data from the server.",
   "auth_context_error_title": "Error loading information",
   "auth_context_error_message": "There was an error retrieving your user information.",
@@ -39,4 +42,3 @@
     "more_than": "more than"
   }
 }
-

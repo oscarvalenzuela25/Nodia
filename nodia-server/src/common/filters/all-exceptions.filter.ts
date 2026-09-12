@@ -41,10 +41,21 @@ export class AllExceptionsFilter implements ExceptionFilter {
       error = exception instanceof HttpException ? exception.name : 'Error';
     }
 
-    this.logger.error(
-      `[${request.method}] ${request.url} - Status: ${status} - Message: ${JSON.stringify(message)}`,
-      exception instanceof Error ? exception.stack : undefined,
-    );
+    // These expected failures are aggregated by the limiter/storage to avoid
+    // logging a stack trace for every rejected request during a flood/outage.
+    const rateLimitFailure =
+      (status === HttpStatus.TOO_MANY_REQUESTS &&
+        error === 'RATE_LIMIT_EXCEEDED') ||
+      (status === HttpStatus.SERVICE_UNAVAILABLE &&
+        error === 'RATE_LIMIT_UNAVAILABLE');
+    if (rateLimitFailure) {
+      response.setHeader('Cache-Control', 'no-store');
+    } else {
+      this.logger.error(
+        `[${request.method}] ${request.url} - Status: ${status} - Message: ${JSON.stringify(message)}`,
+        exception instanceof Error ? exception.stack : undefined,
+      );
+    }
 
     response.status(status).json({
       statusCode: status,

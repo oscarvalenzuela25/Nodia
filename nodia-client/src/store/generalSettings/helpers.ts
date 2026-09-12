@@ -1,12 +1,24 @@
-import type { ModuleContext, TranslateItem } from "./types";
+import type { ModuleContext, ModuleGroupContext, TranslateItem } from "./types";
+
+const normalizeModulePath = (path: string) => {
+  const pathname = path.trim().split(/[?#]/, 1)[0];
+  return `/${pathname.replace(/^\/+|\/+$/g, "")}`.toLowerCase();
+};
+
+/** Match an assigned module's destination, never a group or a path prefix. */
+export const hasModuleAccess = (groups: ModuleGroupContext[], path: string) =>
+  Array.isArray(groups) && groups.some((group) => Array.isArray(group.modules) && group.modules.some((module) =>
+    normalizeModulePath(getModulePath(module)) === normalizeModulePath(path)
+  ));
 
 /**
  * Normalizes and returns the navigation path for a module.
  * Prefers module.link if configured, otherwise maps known keys.
  */
 export const getModulePath = (module: ModuleContext): string => {
-  if (module.link && module.link.trim()) {
-    return module.link.startsWith("/") ? module.link : `/${module.link}`;
+  const link = module.link?.trim();
+  if (link) {
+    return link.startsWith("/") ? link : `/${link}`;
   }
   const normalized = module.key.toLowerCase();
   if (normalized === "users" || normalized === "usuarios") return "/settings/users";

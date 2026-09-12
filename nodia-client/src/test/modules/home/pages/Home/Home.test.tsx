@@ -1,3 +1,4 @@
+import useAuthStore from "../../../../../store/authStore";
 import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
@@ -15,6 +16,8 @@ describe("Home", () => {
   const mockRefetch = vi.fn();
 
   beforeEach(() => {
+    useAuthStore.getState().logout();
+    useAuthStore.getState().login({ token: "jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test" } });
     vi.clearAllMocks();
     act(() => {
       useGeneralSettingsStore.getState().clearContext();
@@ -119,5 +122,15 @@ describe("Home", () => {
     expect(
       screen.getByText(/actualmente no tienes módulos asignados/i)
     ).toBeInTheDocument();
+  });
+
+  it("hides administrative cards without a validated session", () => {
+    useAuthStore.getState().logout();
+    useGeneralSettingsStore.getState().setContext({ roles: [], actions: [], modules: [{
+      module_group_key: "settings", translates: [], modules: [{ key: "users", translates: [] }],
+    }] });
+    render(<MemoryRouter><MUIProvider><Home /></MUIProvider></MemoryRouter>);
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(screen.getByText(/sin módulos disponibles/i)).toBeInTheDocument();
   });
 });
