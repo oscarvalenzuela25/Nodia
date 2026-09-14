@@ -1,50 +1,70 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: template_postgres
+    container_name: nodia_postgres
     restart: unless-stopped
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-template_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-template_password}
-      POSTGRES_DB: ${POSTGRES_DB:-template_db}
+      POSTGRES_USER: ${POSTGRES_USER:-nodia_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nodia_password}
+      POSTGRES_DB: ${POSTGRES_DB:-nodia_db}
     volumes:
-      - template_postgres_data:/var/lib/postgresql/data
+      - nodia_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-template_user} -d ${POSTGRES_DB:-template_db}']
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-nodia_user} -d ${POSTGRES_DB:-nodia_db}',
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
     networks:
-      - template_network
+      - nodia_network
 
   redis:
     image: redis:7-alpine
-    container_name: template_redis
+    container_name: nodia_redis
     restart: unless-stopped
     ports:
       - '${REDIS_PORT:-6379}:6379'
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-nodia_redis_password}
     volumes:
-      - template_redis_data:/data
-    command: redis-server --appendonly yes
+      - nodia_redis_data:/data
+    command: >
+      sh -c '
+        if [ -n "$$REDIS_PASSWORD" ]; then
+          exec redis-server --requirepass "$$REDIS_PASSWORD" --appendonly yes
+        else
+          exec redis-server --appendonly yes
+        fi
+      '
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: >
+        sh -c '
+          if [ -n "$$REDIS_PASSWORD" ]; then
+            redis-cli -a "$$REDIS_PASSWORD" ping
+          else
+            redis-cli ping
+          fi
+        '
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 5s
     networks:
-      - template_network
+      - nodia_network
 
 volumes:
-  template_postgres_data:
-    name: template_postgres_data
-  template_redis_data:
-    name: template_redis_data
+  nodia_postgres_data:
+    name: nodia_postgres_data
+  nodia_redis_data:
+    name: nodia_redis_data
 
 networks:
-  template_network:
-    name: template_network
+  nodia_network:
+    name: nodia_network
     driver: bridge

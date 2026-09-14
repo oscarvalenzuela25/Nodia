@@ -12,12 +12,14 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { LoginDto } from './dto/login.dto.js';
+import { SeedAuthDto } from './dto/seed-auth.dto.js';
 import { Public } from './auth.guard.js';
 import { AuthOriginGuard } from './auth-origin.guard.js';
 import { AuthCookieService } from './auth-cookie.service.js';
 import { LoginUseCase } from './use-case/login.use-case.js';
 import { RefreshSessionUseCase } from './use-case/refresh-session.use-case.js';
 import { LogoutUseCase } from './use-case/logout.use-case.js';
+import { SeedAuthUseCase } from './use-case/seed-auth.use-case.js';
 import type { AuthRequest } from './types/auth.types.js';
 import { LimitLogin } from '../rate-limit/rate-limit.decorator.js';
 
@@ -29,6 +31,7 @@ export class AuthController {
     private readonly refresh: RefreshSessionUseCase,
     private readonly logout: LogoutUseCase,
     private readonly cookies: AuthCookieService,
+    private readonly seedAuth: SeedAuthUseCase,
   ) {}
 
   @Public()
@@ -82,5 +85,14 @@ export class AuthController {
   @Header('Cache-Control', 'no-store')
   me(@Req() request: AuthRequest) {
     return request.auth.user;
+  }
+
+  @Public()
+  @Post('seed')
+  @HttpCode(201)
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Seed initial database with super admin' })
+  async seed(@Body() dto: SeedAuthDto) {
+    return this.seedAuth.execute(dto);
   }
 }
