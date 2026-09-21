@@ -30,6 +30,7 @@ describe('SeedAuthUseCase', () => {
   let userRolesStore: UserRole[];
   let userModulesStore: UserModule[];
 
+  let idCounter = 1;
   function createMockRepo<T extends { id?: string; key?: string; email?: string }>(
     store: Map<string, T> | T[],
   ): Partial<Repository<T>> {
@@ -54,11 +55,11 @@ describe('SeedAuthUseCase', () => {
         return null;
       }),
       create: vi.fn().mockImplementation((entity: any) => ({
-        id: String(Math.floor(Math.random() * 1000) + 1),
+        id: String(idCounter++),
         ...entity,
       })),
       save: vi.fn().mockImplementation(async (entity: any) => {
-        if (!entity.id) entity.id = String(Math.floor(Math.random() * 1000) + 1);
+        if (!entity.id) entity.id = String(idCounter++);
         if (Array.isArray(store)) {
           const index = store.findIndex((i: any) => i.id === entity.id);
           if (index >= 0) store[index] = entity;
@@ -72,6 +73,7 @@ describe('SeedAuthUseCase', () => {
   }
 
   beforeEach(() => {
+    idCounter = 1;
     rolesStore = new Map();
     moduleGroupsStore = new Map();
     modulesStore = new Map();

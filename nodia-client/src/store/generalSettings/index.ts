@@ -10,4 +10,5 @@ export {
   useGeneralSettingsHandlers,
 } from "./useGeneralSettings";
 export * from "./helpers";
+export * from "./moduleIcons";
 export type * from "./types";

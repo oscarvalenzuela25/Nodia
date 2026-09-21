@@ -32,6 +32,7 @@
 El proyecto incluye varias skills locales en la carpeta `nodia-client/skills/` que extienden las capacidades de desarrollo. Antes de abordar tareas relacionadas con estas tecnologías, **debes leer el archivo `SKILL.md` correspondiente** (usando la herramienta `view_file` en `nodia-client/skills/<nombre-de-la-skill>/SKILL.md`) para seguir las mejores prácticas y guías del proyecto.
 
 Skills disponibles en `nodia-client/skills/`:
+
 - **accessibility**: Auditorías y mejoras de accesibilidad web (a11y) siguiendo WCAG 2.2.
 - **composition-patterns**: Patrones de composición en React escalables (compound components, render props, context).
 - **create-component**: **Obligatorio** al crear o modificar componentes, páginas o layouts en React. Define el uso de MUI, Emotion, Axios y TanStack Query.
@@ -46,13 +47,53 @@ Skills disponibles en `nodia-client/skills/`:
 
 ## Peticiones HTTP y Notificaciones (Snackbars / Toasts)
 
-- Después de **cualquier petición HTTP** (creación, actualización, borrado lógico o errores de transporte/servidor) es **obligatorio** emitir una notificación / snackbar utilizando `sileo` (`sileo.success(...)`, `sileo.error(...)`, `sileo.warning(...)`, etc.).
-- Todos los mensajes y títulos de las notificaciones **deben usar su respectiva traducción internacionalizada** (`t("namespace:key")` o `i18n.t(...)`) tanto en español (`src/translate/es/*`) como en inglés (`src/translate/en/*`).
+- Después de **cualquier petición HTTP de mutación (POST, PUT, DELETE, PATCH)** o acción que modifique el estado, es **obligatorio** emitir una notificación toast al finalizar utilizando `sileo`:
+  - **Éxito:** Emitir `sileo.success(...)` con su respectivo título y/o descripción internacionalizada (`t("namespace:key")` o `i18n.t(...)`).
+  - **Error:** Emitir `sileo.error(...)` incluyendo el mensaje específico del servidor si existe (`error.response?.data?.message`), o el mensaje genérico internacionalizado (`t("core:server_error_toast")`).
+- **Persistencia de Modales ante Errores:**
+  - Si una petición POST, PUT o DELETE falla, **EL MODAL DONDE ESTABA EL FORMULARIO NUNCA DEBE CERRARSE**.
+  - Los datos ingresados por el usuario deben permanecer intactos dentro de los inputs del modal para permitir su revisión, corrección y reintento.
+  - El modal únicamente se cerrará (`onClose()`, `setIsModalOpen(false)`) tras la resolución exitosa de la mutación.
+- Todos los mensajes y títulos de las notificaciones **deben usar su respectiva traducción internacionalizada** tanto en español (`src/translate/es/*`) como en inglés (`src/translate/en/*`).
 - No hardcodear texto en los mensajes de feedback al usuario.
+
+## Componentes de Formularios en Modales (`nodia-client`)
+
+- **Ecosistema de Inputs Reutilizables:**
+  - `TranslationInput`: Obligatorio para campos con traducciones dinámicas (`translates`).
+  - `TextInput`: Para campos simples de texto.
+  - `SelectSingleInput`: Selector individual con buscador y filtro integrado.
+  - `SelectMultipleInput`: Selector múltiple con buscador, chips y botón de seleccionar todo.
+  - `InputSearch`: Barra de búsqueda con debounce para tablas y listados.
+  - `ConfirmDialog`: Diálogo de confirmación para acciones destructivas o cambios de estado (`Activar/Desactivar`).
+- **Switch de Activo (`is_active` / `isActive`):**
+  - Debe implementar **obligatoriamente el patrón visual de Core (`UserModal`)**:
+    - Contenedor `SwitchWrapper`: Tarjeta con bordes redondeados, borde `theme.palette.divider` y fondo tenue adaptado al tema claro/oscuro.
+    - `StyledFormControlLabel` con `labelPlacement="start"`: Ubica la etiqueta a la izquierda en negrita (`fontWeight: 600`) y el switch al extremo derecho.
+    - `StyledSwitch`: Resaltado en color verde (`theme.palette.success.main`) cuando está activo.
+    - Etiqueta estandarizada e internacionalizada (generalmente _"Activo"_ / _"Active"_).
+
+## Estilo de Scrollbars (Barras de Desplazamiento)
+
+- **Regla obligatoria de diseño para contenedores con scroll (`overflow: auto` / `overflow-y: auto` / `overflow-x: auto`):**
+  - **Pista (`track`):** Debe ser siempre completamente transparente (`background: transparent !important`). Queda estrictamente prohibido mostrar fondos sólidos, blancos, grises u opacos en la barra de scroll.
+  - **Botones de flecha (`button`):** Se deben ocultar totalmente (`display: none !important; width: 0; height: 0`).
+  - **Barra/Indicador (`thumb`):** Debe ser sutil, redondeado (`border-radius: 9999px`), delgado (ancho/alto de 6px), sin bordes sólidos y adaptado al tema claro/oscuro con transparencia (`alpha("#ffffff", 0.2)` en dark, `alpha("#000000", 0.2)` en light, con efecto hover más visible al 0.35).
+  - **Soporte estándar:** Definir siempre `scrollbar-width: thin` y `scrollbar-color: <thumbColor> transparent` junto con las pseudo-clases `::-webkit-scrollbar*` para compatibilidad total entre navegadores (Firefox, Chrome, Safari, Edge).
+
+## Fuente de Verdad para Esquemas y Modelos (`nodia-server`)
+
+- Cuando se vaya a implementar una funcionalidad, vista, formulario o integración en frontend y no se tenga absoluta certeza de qué campos o validaciones se requieren:
+  - **Es obligatorio consultar el backend (`nodia-server`)**:
+    - Entidades TypeORM: `src/<recurso>/entities/<recurso>.entity.ts` (columnas, tipos, valores por defecto, nulabilidad).
+    - DTOs de validación: `src/<recurso>/dto/create-<recurso>.dto.ts` y `update-<recurso>.dto.ts` (decoradores de class-validator, campos opcionales vs requeridos).
+    - Casos de uso: `src/<recurso>/use-case/` (lógica de negocio y contratos de entrada/salida).
+  - Con base en estos esquemas del servidor se deben construir los formularios (React Hook Form + Zod) y las columnas de las tablas.
 
 ## Manejo de Estados en Frontend (`nodia-client`): Carga, Vacío y Error
 
 ### 1. Estados de Carga con TanStack Query (`isLoading`, `isFetching` e `isMutating`)
+
 - **Diferenciación estricta de flags:**
   - `isLoading`: Corresponde al primer fetch inicial cuando aún no existen datos en el caché de React Query.
   - `isFetching`: Corresponde a revalidaciones o refetches posteriores (por ejemplo, tras `invalidateQueries` o actualización en background) cuando ya existen datos en el caché.
@@ -65,18 +106,20 @@ Skills disponibles en `nodia-client/skills/`:
   - Los inputs y botones **no deben utilizar skeletons**.
 
 ### 2. Estados Vacíos (`Empty State`)
+
 - **Prohibido dejar vistas en blanco o nulas:** Si la petición HTTP devuelve un resultado vacío (ej. array vacío `[]` o sin registros), nunca se debe dejar el espacio en blanco ni retornar `null` sin feedback visual.
 - **Tablas, Paneles y Métodos Informativos:**
-  - Deben implementar un estado vacío (`Empty State`) claro (genérico o custom por sección) que informe al usuario que no hay información disponible actualmente (ej. *"No hay elementos para mostrar actualmente. Agregue un nuevo [elemento] para iniciar"*), preferentemente acompañado de un llamado a la acción (botón/CTA) si corresponde.
+  - Deben implementar un estado vacío (`Empty State`) claro (genérico o custom por sección) que informe al usuario que no hay información disponible actualmente (ej. _"No hay elementos para mostrar actualmente. Agregue un nuevo [elemento] para iniciar"_), preferentemente acompañado de un llamado a la acción (botón/CTA) si corresponde.
   - Todos los textos deben estar traducidos en `src/translate/es/*` y `src/translate/en/*`.
 - **Botones e Inputs:**
   - **No** tienen estado vacío con mensajes custom. Si el endpoint responde vacío o sin datos, los inputs simplemente permanecen vacíos en su estado normal / por defecto.
 
 ### 3. Estados de Error (`Error State`)
+
 - **Notificación obligatoria mediante Toast (`sileo.error(...)`):**
   - Ante cualquier fallo de petición HTTP, es mandatorio emitir un toast de error.
   - Si la respuesta del backend incluye un mensaje de error específico (`error.response?.data?.message`), debe incluirse en la descripción del toast.
-  - Si no viene un mensaje específico, se debe emitir un mensaje genérico internacionalizado (ej. *"Error en el servidor. Por favor, inténtelo más tarde"*).
+  - Si no viene un mensaje específico, se debe emitir un mensaje genérico internacionalizado (ej. _"Error en el servidor. Por favor, inténtelo más tarde"_).
 - **Tablas, Paneles y Métodos Informativos:**
   - Aparte del toast global que se dispara por el fallo HTTP, en componentes de contenido es obligatorio/necesario mostrar un estado visual de error en el propio componente (ej. un `Alert` de MUI con `severity="error"` o bloque de error custom con opción de reintentar), en lugar de dejar la pantalla rota o en blanco.
 - **Botones e Inputs:**
@@ -88,4 +131,3 @@ Skills disponibles en `nodia-client/skills/`:
 - **Controladores delgados (Skinny Controllers):** Solo definen rutas HTTP, Swagger y validan DTOs; delegan inmediatamente a Casos de Uso (`use-case/`). Cero lógica de negocio.
 - **Entidades TypeORM:** En relaciones bidireccionales, usar obligatoriamente `Relation<T>` de TypeORM para evitar errores de referencia circular (`ReferenceError`) en Node.js ESM.
 - **Testing exclusivo de Casos de Uso:** Únicamente se crean y mantienen pruebas unitarias para casos de uso (`use-case/*.use-case.spec.ts`). Está terminantemente prohibido crear pruebas de controladores o servicios (`*.controller.spec.ts`, `*.service.spec.ts`), priorizando tests que aporten verdadero valor de negocio.
-

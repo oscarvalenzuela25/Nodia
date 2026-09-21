@@ -13,6 +13,11 @@ import { Action } from '../action/entities/action.entity.js';
 import { Module } from '../module/entities/module.entity.js';
 import { ModuleGroup } from '../module-group/entities/module-group.entity.js';
 import { RedisService } from '../common/redis/redis.service.js';
+import {
+  canAnalyzeInvoice,
+  canUseGemini,
+  canUseMistral,
+} from '../config/envs.config.js';
 
 @Injectable()
 export class AuthorizationService {
@@ -32,7 +37,12 @@ export class AuthorizationService {
     const cached =
       await this.redisService.get<AuthorizationContextResponse>(cacheKey);
     if (cached) {
-      return cached;
+      return {
+        ...cached,
+        can_analyze_invoice: canAnalyzeInvoice(),
+        can_use_gemini: canUseGemini(),
+        can_use_mistral: canUseMistral(),
+      };
     }
 
     const user = await this.userRepository
@@ -174,6 +184,9 @@ export class AuthorizationService {
       roles: roleKeys,
       actions,
       modules: moduleGroupsContext,
+      can_analyze_invoice: canAnalyzeInvoice(),
+      can_use_gemini: canUseGemini(),
+      can_use_mistral: canUseMistral(),
     };
 
     await this.redisService.set(cacheKey, result, 3600);

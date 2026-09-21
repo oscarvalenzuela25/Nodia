@@ -21,13 +21,16 @@ export const userKeys = {
   list: (params?: GetUsersParams) => [...userKeys.lists(), params] as const,
 };
 
-export const useUsers = (params?: GetUsersParams) => {
+export const useUsers = (
+  params?: GetUsersParams,
+  options?: { enabled?: boolean }
+) => {
   const { isSessionActive } = useAuth();
   return useQuery({
     queryKey: userKeys.list(params),
     queryFn: () => getUsers(params),
     placeholderData: keepPreviousData,
-    enabled: isSessionActive,
+    enabled: isSessionActive && (options?.enabled ?? true),
   });
 };
 

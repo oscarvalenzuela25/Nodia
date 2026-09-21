@@ -5,6 +5,9 @@ import type {
   GetActionsParams,
   PaginatedResponse,
   UpdateActionPayload,
+  BusinessAction,
+  CreateBusinessActionPayload,
+  UpdateBusinessActionPayload,
 } from "../types";
 
 const getEndpoint = (path: string) => {
@@ -39,6 +42,46 @@ export const updateAction = async (
   const { data } = await mainInstance.put<Action>(
     getEndpoint(`/action/${actionId}`),
     payload
+  );
+  return data;
+};
+
+export const getBusinessActions = async (
+  params?: GetActionsParams
+): Promise<PaginatedResponse<BusinessAction>> => {
+  const { data } = await mainInstance.get<PaginatedResponse<BusinessAction>>(
+    getEndpoint("/business-action"),
+    { params }
+  );
+  return data;
+};
+
+export const createBusinessAction = async (
+  payload: CreateBusinessActionPayload
+): Promise<BusinessAction> => {
+  const { data } = await mainInstance.post<BusinessAction>(
+    getEndpoint("/business-action"),
+    payload
+  );
+  return data;
+};
+
+export const updateBusinessAction = async (
+  actionId: string,
+  payload: UpdateBusinessActionPayload
+): Promise<BusinessAction> => {
+  const { data } = await mainInstance.put<BusinessAction>(
+    getEndpoint(`/business-action/${actionId}`),
+    payload
+  );
+  return data;
+};
+
+export const deleteBusinessAction = async (
+  actionId: string
+): Promise<{ message: string }> => {
+  const { data } = await mainInstance.delete<{ message: string }>(
+    getEndpoint(`/business-action/${actionId}`)
   );
   return data;
 };

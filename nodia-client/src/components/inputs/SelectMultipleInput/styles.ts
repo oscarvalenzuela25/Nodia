@@ -203,11 +203,11 @@ export const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   },
 }));
 
-export const HelperTypography = styled(Typography)<{ isError?: boolean }>(
-  ({ theme, isError }) => ({
-    ...theme.typography.caption,
-    color: isError ? theme.palette.error.main : theme.palette.text.secondary,
-    fontSize: "0.75rem",
-    marginTop: "2px",
-  })
-);
+export const HelperTypography = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== "isError",
+})<{ isError?: boolean }>(({ theme, isError }) => ({
+  ...theme.typography.caption,
+  color: isError ? theme.palette.error.main : theme.palette.text.secondary,
+  fontSize: "0.75rem",
+  marginTop: "2px",
+}));

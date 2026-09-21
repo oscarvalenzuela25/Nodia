@@ -1,6 +1,13 @@
 {
   "title": "Acciones",
   "subtitle": "Gestiona los accionables y permisos del sistema, asignando módulos y configurando identificadores traducibles.",
+  "view_mode_split": "Vista Dividida",
+  "view_mode_system": "Acciones del Sistema",
+  "view_mode_business": "Acciones de Negocio",
+  "business_actions_title": "Acciones de Negocio",
+  "business_actions_subtitle": "Catálogo de permisos asignables a colaboradores dentro de cada negocio.",
+  "new_business_action": "Nueva Acción de Negocio",
+  "edit_business_action": "Actualizar Acción de Negocio",
   "new_action": "Nuevo Accionable",
   "create_modal_title": "Nuevo Accionable",
   "edit_modal_title": "Actualizar Accionable",
@@ -9,6 +16,7 @@
   "filter_modal_title": "Filtros de acciones",
   "filter_modal_subtitle": "Filtra la lista de accionables por identificador o estado activo.",
   "search_placeholder": "Buscar por identificador...",
+  "search_business_actions_placeholder": "Buscar acción de negocio...",
   "form": {
     "active": "Activo",
     "key": "Identificador",
@@ -82,12 +90,17 @@
     "created_success": "Acción creada correctamente",
     "created_error": "No se pudo crear la acción",
     "updated_success": "Acción actualizada correctamente",
-    "updated_error": "No se pudo actualizar la acción"
+    "updated_error": "No se pudo actualizar la acción",
+    "deleted_success": "Acción eliminada correctamente",
+    "deleted_error": "No se pudo eliminar la acción"
   },
   "deactivate": "Desactivar",
   "activate": "Activar",
+  "delete": "Eliminar",
   "confirm_deactivate_title": "¿Desactivar acción?",
   "confirm_activate_title": "¿Activar acción?",
+  "confirm_delete_title": "¿Eliminar acción de negocio?",
   "confirm_deactivate_message": "¿Está seguro de que desea desactivar la acción \"{{name}}\"?",
-  "confirm_activate_message": "¿Está seguro de que desea activar la acción \"{{name}}\"?"
+  "confirm_activate_message": "¿Está seguro de que desea activar la acción \"{{name}}\"?",
+  "confirm_delete_message": "¿Está seguro de que desea eliminar permanentemente la acción \"{{name}}\"?"
 }

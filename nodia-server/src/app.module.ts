@@ -12,6 +12,11 @@ import { ModuleModule } from './module/module.module.js';
 import { ModuleGroupModule } from './module-group/module-group.module.js';
 import { TranslationModule } from './translation/translation.module.js';
 import { AuthorizationModule } from './authorization/authorization.module.js';
+import { BusinessModule } from './business/business.module.js';
+import { BusinessActionModule } from './business-action/business-action.module.js';
+import { ProviderModule } from './provider/provider.module.js';
+import { InvoiceModule } from './invoice/invoice.module.js';
+import { ProductModule } from './product/product.module.js';
 import { RedisModule } from './common/redis/redis.module.js';
 import { RateLimitModule } from './rate-limit/rate-limit.module.js';
 import { RateLimitGuard } from './rate-limit/rate-limit.guard.js';
@@ -27,6 +32,11 @@ import { AuthGuard } from './auth/auth.guard.js';
     UserModule,
     RoleModule,
     ActionModule,
+    BusinessActionModule,
+    BusinessModule,
+    ProviderModule,
+    InvoiceModule,
+    ProductModule,
     ModuleGroupModule,
     ModuleModule,
     TranslationModule,

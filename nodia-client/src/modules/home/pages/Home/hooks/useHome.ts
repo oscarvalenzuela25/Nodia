@@ -5,6 +5,7 @@ import {
   useVisibleModules,
   getModulePath,
   getTranslatedName,
+  getModuleIcon,
 } from "../../../../../store/generalSettings";
 import type {
   ModuleContext,
@@ -68,15 +69,35 @@ const useHome = () => {
   );
 
   const getModuleDesc = useCallback(
-    (module: ModuleContext): string => {
-      const candidate = `home:${module.key.toLowerCase().replace(/[-_]/g, "_")}_desc`;
-      const i18nVal = t(candidate);
-      if (i18nVal && i18nVal !== candidate) {
-        return i18nVal;
+    (module: ModuleContext): string | null => {
+      // 1. Check if module has a translated description in module.translates
+      const descItem = module.translates?.find(
+        (tr) => tr.key === "description" || tr.key === "comment"
+      );
+      if (descItem) {
+        const isEn = currentLang.startsWith("en");
+        const val = isEn
+          ? descItem.en?.trim() || descItem.es?.trim()
+          : descItem.es?.trim() || descItem.en?.trim();
+        if (val) return val;
       }
-      return t("home:default_module_desc");
+
+      // 2. Check i18n candidate key in home namespace
+      const candidateKey = `${module.key.toLowerCase().replace(/[-_]/g, "_")}_desc`;
+      if (i18n.exists(`home:${candidateKey}`)) {
+        const i18nVal = t(`home:${candidateKey}`);
+        if (
+          i18nVal &&
+          i18nVal !== candidateKey &&
+          i18nVal !== `home:${candidateKey}`
+        ) {
+          return i18nVal;
+        }
+      }
+
+      return null;
     },
-    [t]
+    [currentLang, i18n, t]
   );
 
   return {
@@ -90,6 +111,7 @@ const useHome = () => {
     getModuleTitle,
     getModuleDesc,
     getModulePath,
+    getModuleIcon,
   };
 };
 

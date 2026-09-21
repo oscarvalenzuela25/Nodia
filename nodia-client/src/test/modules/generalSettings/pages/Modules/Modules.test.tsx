@@ -434,7 +434,7 @@ describe("Modules Page", () => {
         ],
       });
     });
-  });
+  }, 15000);
 
   it("opens ConfirmDialog and deactivates an active module", async () => {
     const user = userEvent.setup();

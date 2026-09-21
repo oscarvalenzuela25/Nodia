@@ -11,6 +11,7 @@ import usersEs from "./es/users.json";
 import rolesEs from "./es/roles.json";
 import actionsEs from "./es/actions.json";
 import modulesEs from "./es/modules.json";
+import businessEs from "./es/business.json";
 
 // en
 import authEn from "./en/auth.json";
@@ -22,6 +23,7 @@ import usersEn from "./en/users.json";
 import rolesEn from "./en/roles.json";
 import actionsEn from "./en/actions.json";
 import modulesEn from "./en/modules.json";
+import businessEn from "./en/business.json";
 
 export const SUPPORTED_LANGUAGES = ["es", "en"] as const;
 export const DEFAULT_LANGUAGE = "es";
@@ -67,6 +69,7 @@ const resources = {
     roles: rolesEs,
     actions: actionsEs,
     modules: modulesEs,
+    business: businessEs,
   },
   en: {
     auth: authEn,
@@ -78,6 +81,7 @@ const resources = {
     roles: rolesEn,
     actions: actionsEn,
     modules: modulesEn,
+    business: businessEn,
   },
 };
 
@@ -98,6 +102,7 @@ i18n
       "roles",
       "actions",
       "modules",
+      "business",
     ],
     defaultNS: "home",
     interpolation: {

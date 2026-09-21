@@ -6,6 +6,9 @@ const generalSettingsStore: StateCreator<GeneralSettingsState> = (set) => ({
   actions: [],
   modules: [],
   isLoaded: false,
+  can_analyze_invoice: false,
+  can_use_gemini: false,
+  can_use_mistral: false,
 
   setContext: (data) =>
     set({
@@ -13,6 +16,9 @@ const generalSettingsStore: StateCreator<GeneralSettingsState> = (set) => ({
       actions: data.actions ?? [],
       modules: data.modules ?? [],
       isLoaded: true,
+      can_analyze_invoice: Boolean(data.can_analyze_invoice),
+      can_use_gemini: Boolean(data.can_use_gemini),
+      can_use_mistral: Boolean(data.can_use_mistral),
     }),
 
   clearContext: () =>
@@ -21,6 +27,9 @@ const generalSettingsStore: StateCreator<GeneralSettingsState> = (set) => ({
       actions: [],
       modules: [],
       isLoaded: false,
+      can_analyze_invoice: false,
+      can_use_gemini: false,
+      can_use_mistral: false,
     }),
 });
 

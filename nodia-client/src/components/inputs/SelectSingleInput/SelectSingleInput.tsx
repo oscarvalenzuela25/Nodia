@@ -43,10 +43,13 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   id,
   fullWidth = true,
   clearable = true,
+  "data-testid": dataTestIdProp,
+  dataTestId,
 }) => {
   const { t } = useTranslation("core");
   const generatedId = useId();
   const inputId = id ?? generatedId;
+  const testId = dataTestIdProp ?? dataTestId;
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -115,7 +118,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   };
 
   return (
-    <SelectContainer fullWidth={fullWidth}>
+    <SelectContainer fullWidth={fullWidth} data-testid={testId}>
       {label && (
         <LabelTypography htmlFor={inputId} required={required}>
           {label}

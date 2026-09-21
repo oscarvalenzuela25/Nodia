@@ -27,12 +27,15 @@ const TextInput: FC<TextInputProps> = ({
   rows,
   minRows,
   maxRows,
+  "data-testid": dataTestIdProp,
+  dataTestId,
 }) => {
   const generatedId = useId();
   const inputId = id ?? generatedId;
+  const testId = dataTestIdProp ?? dataTestId;
 
   return (
-    <InputContainer fullWidth={fullWidth}>
+    <InputContainer fullWidth={fullWidth} data-testid={testId}>
       {label && (
         <LabelTypography htmlFor={inputId}>
           {label}

@@ -13,14 +13,14 @@ import {
   Collapse,
 } from "@mui/material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import AddReactionOutlinedIcon from "@mui/icons-material/AddReactionOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
-import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
-import ViewModuleOutlinedIcon from "@mui/icons-material/ViewModuleOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-import { useVisibleModules, getModulePath } from "../../../store/generalSettings";
+import {
+  useVisibleModules,
+  getModulePath,
+  getModuleIcon,
+  getGroupIcon,
+} from "../../../store/generalSettings";
 import type {
   TranslateItem,
 } from "../../../store/generalSettings/types";
@@ -34,38 +34,6 @@ import {
   ModuleHeaderText,
 } from "./styles";
 import type { SidenavItem } from "./types";
-
-const getModuleIcon = (key: string) => {
-  const normalized = key.toLowerCase();
-  switch (normalized) {
-    case "usuarios":
-    case "users":
-      return <AddReactionOutlinedIcon />;
-    case "roles":
-      return <SecurityOutlinedIcon />;
-    case "acciones":
-    case "actions":
-      return <BoltOutlinedIcon />;
-    case "modulos":
-    case "modules":
-      return <ViewModuleOutlinedIcon />;
-    default:
-      return <ViewModuleOutlinedIcon />;
-  }
-};
-
-const getGroupIcon = (key: string) => {
-  const normalized = key.toLowerCase();
-  switch (normalized) {
-    case "ajustes-generales":
-    case "general-settings":
-    case "general_settings":
-    case "settings":
-      return <SettingsOutlinedIcon />;
-    default:
-      return <SettingsOutlinedIcon />;
-  }
-};
 
 const getTranslatedLabel = (
   translates: TranslateItem[] | undefined,

@@ -1,6 +1,13 @@
 {
   "title": "Actions",
   "subtitle": "Manage system actions and permissions, assign modules, and configure translatable identifiers.",
+  "view_mode_split": "Split View",
+  "view_mode_system": "System Actions",
+  "view_mode_business": "Business Actions",
+  "business_actions_title": "Business Actions",
+  "business_actions_subtitle": "Catalog of permissions assignable to collaborators within each business.",
+  "new_business_action": "New Business Action",
+  "edit_business_action": "Update Business Action",
   "new_action": "New Action",
   "create_modal_title": "New Action",
   "edit_modal_title": "Update Action",
@@ -9,6 +16,7 @@
   "filter_modal_title": "Action Filters",
   "filter_modal_subtitle": "Filter the action list by identifier or active status.",
   "search_placeholder": "Search by identifier...",
+  "search_business_actions_placeholder": "Search business action...",
   "form": {
     "active": "Active",
     "key": "Key",
@@ -82,12 +90,17 @@
     "created_success": "Action created successfully",
     "created_error": "Failed to create action",
     "updated_success": "Action updated successfully",
-    "updated_error": "Failed to update action"
+    "updated_error": "Failed to update action",
+    "deleted_success": "Action deleted successfully",
+    "deleted_error": "Failed to delete action"
   },
   "deactivate": "Deactivate",
   "activate": "Activate",
+  "delete": "Delete",
   "confirm_deactivate_title": "Deactivate action?",
   "confirm_activate_title": "Activate action?",
+  "confirm_delete_title": "Delete business action?",
   "confirm_deactivate_message": "Are you sure you want to deactivate the action \"{{name}}\"?",
-  "confirm_activate_message": "Are you sure you want to activate the action \"{{name}}\"?"
+  "confirm_activate_message": "Are you sure you want to activate the action \"{{name}}\"?",
+  "confirm_delete_message": "Are you sure you want to permanently delete the action \"{{name}}\"?"
 }

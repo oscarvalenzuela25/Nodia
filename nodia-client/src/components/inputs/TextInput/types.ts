@@ -19,4 +19,6 @@ export type TextInputProps = {
   rows?: number;
   minRows?: number;
   maxRows?: number;
+  "data-testid"?: string;
+  dataTestId?: string;
 };

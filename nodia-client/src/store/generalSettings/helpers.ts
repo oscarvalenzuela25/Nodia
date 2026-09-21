@@ -25,6 +25,7 @@ export const getModulePath = (module: ModuleContext): string => {
   if (normalized === "roles") return "/settings/roles";
   if (normalized === "actions" || normalized === "acciones") return "/settings/actions";
   if (normalized === "modules" || normalized === "modulos") return "/settings/modules";
+  if (normalized === "business" || normalized === "businesses" || normalized === "negocios") return "/business";
   return "/";
 };
 

@@ -27,6 +27,7 @@
   "no_options_found": "No results found",
   "close": "Close",
   "save": "Save",
+  "actions": "Actions",
   "empty_state_title": "No information available",
   "empty_state_description": "No data found to display at this time.",
   "server_error_toast": "Server error. Please try again later.",

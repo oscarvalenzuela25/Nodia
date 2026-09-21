@@ -53,6 +53,7 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 12. Botones, formularios, menús e inputs: ante cualquier petición en curso (`isLoading`, `isFetching` o `isMutating`), el estado debe representarse exclusivamente como `disabled` o `loading` (sin skeletons) para evitar dobles envíos o interacciones inválidas. No tienen estado vacío ni estado de error custom en la vista si el endpoint falla o viene vacío; permanecen vacíos en su estado normal.
 13. Estados vacíos: prohibido dejar vistas o contenedores en blanco o nulos (`null`). Si un endpoint responde vacío, mostrar un Empty State con mensaje informativo (genérico o custom) y llamado a la acción (CTA) si corresponde, usando traducción i18n.
 14. Estados de error y feedback: toda petición HTTP debe emitir un toast con `sileo` (`sileo.error(...)`), extrayendo el mensaje del backend o fallback genérico i18n. En tablas y paneles, además del toast, se debe renderizar un estado visual de error (ej. `Alert` de MUI con opción de reintento) en lugar de dejar el componente roto.
+15. Scrollbars: en cualquier contenedor con scroll (`overflow: auto`, `overflow-y: auto`, etc.), el track debe ser completamente transparente (`background: transparent !important`), sin botones de flecha (`display: none`), y el thumb sutil, redondeado (`border-radius: 9999px`) y adaptado al tema claro/oscuro.
 
 ## Manejo de Estados: Carga (Loading), Vacío (Empty) y Error
 

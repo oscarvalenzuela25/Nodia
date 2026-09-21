@@ -49,6 +49,9 @@ describe('GetAuthorizationContextUseCase', () => {
           ],
         },
       ],
+      can_analyze_invoice: true,
+      can_use_gemini: true,
+      can_use_mistral: true,
     };
 
     vi.mocked(authorizationServiceMock.getContext!).mockResolvedValue(

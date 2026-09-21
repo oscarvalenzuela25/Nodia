@@ -14,6 +14,8 @@ import Users from "../modules/generalSettings/pages/Users";
 import Roles from "../modules/generalSettings/pages/Roles";
 import Actions from "../modules/generalSettings/pages/Actions";
 import Modules from "../modules/generalSettings/pages/Modules";
+import Business from "../modules/business/pages/Business";
+import BusinessDetail from "../modules/business/pages/BusinessDetail";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +28,26 @@ const router = createBrowserRouter([
           <BaseLayout>
             <Guard>
               <Home />
+            </Guard>
+          </BaseLayout>
+        ),
+      },
+      {
+        path: "business",
+        element: (
+          <BaseLayout>
+            <Guard>
+              <Business />
+            </Guard>
+          </BaseLayout>
+        ),
+      },
+      {
+        path: "business/:id",
+        element: (
+          <BaseLayout>
+            <Guard>
+              <BusinessDetail />
             </Guard>
           </BaseLayout>
         ),

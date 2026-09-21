@@ -76,6 +76,8 @@ describe("Home", () => {
 
     expect(screen.getByText("Usuarios")).toBeInTheDocument();
     expect(screen.getByText("Roles")).toBeInTheDocument();
+    expect(screen.getByTestId("card-icon-users")).toBeInTheDocument();
+    expect(screen.getByTestId("card-icon-roles")).toBeInTheDocument();
   });
 
   it("renders error alert with retry button when isError is true", async () => {
@@ -124,12 +126,63 @@ describe("Home", () => {
     ).toBeInTheDocument();
   });
 
+  it("does not render description on card when module has no description", () => {
+    act(() => {
+      useGeneralSettingsStore.getState().setContext({
+        roles: ["admin"],
+        actions: [],
+        modules: [
+          {
+            module_group_key: "negocios",
+            translates: [
+              { key: "key", es: "Negocios", en: "Businesses" },
+            ],
+            modules: [
+              {
+                key: "businesses",
+                link: "/business",
+                translates: [{ key: "key", es: "Mis Negocios", en: "My Businesses" }],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    render(
+      <MemoryRouter>
+        <MUIProvider>
+          <Home />
+        </MUIProvider>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Mis Negocios")).toBeInTheDocument();
+    expect(screen.getByTestId("card-icon-businesses")).toBeInTheDocument();
+    expect(screen.queryByText(/businesses_desc/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/acceder al módulo/i)).not.toBeInTheDocument();
+  });
+
   it("hides administrative cards without a validated session", () => {
     useAuthStore.getState().logout();
-    useGeneralSettingsStore.getState().setContext({ roles: [], actions: [], modules: [{
-      module_group_key: "settings", translates: [], modules: [{ key: "users", translates: [] }],
-    }] });
-    render(<MemoryRouter><MUIProvider><Home /></MUIProvider></MemoryRouter>);
+    useGeneralSettingsStore.getState().setContext({
+      roles: [],
+      actions: [],
+      modules: [
+        {
+          module_group_key: "settings",
+          translates: [],
+          modules: [{ key: "users", translates: [] }],
+        },
+      ],
+    });
+    render(
+      <MemoryRouter>
+        <MUIProvider>
+          <Home />
+        </MUIProvider>
+      </MemoryRouter>
+    );
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(screen.getByText(/sin módulos disponibles/i)).toBeInTheDocument();
   });

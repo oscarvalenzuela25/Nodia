@@ -1,13 +1,14 @@
-# Modelo de dominio ERD — Nodia Parte 1
+# Modelo de dominio ERD — Nodia
 
-> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
-> Última actualización: 2026-09-07
+> Estado: en revisión — ampliación auth y recursos de negocio (businesses, products, providers, invoices)
+> Última actualización: 2026-09-19
 > Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado
 
 ## 1. Resumen del modelo
 
-El modelo cubre la base de identidad, autorización, navegación e internacionalización de Nodia con diez tablas (incluida la ampliación técnica de sesiones):
+El modelo cubre la base de identidad, autorización, navegación, internacionalización y el ecosistema de negocios de Nodia con las siguientes tablas:
 
+### Core & Seguridad (Identidad, Permisos, Navegación e i18n)
 - `auth_sessions`: sesiones renovables, hash del refresh token, expiración y revocación.
 - `users`: personas preautorizadas para iniciar sesión con Google.
 - `roles`: agrupaciones reutilizables de permisos funcionales, identificadas por un `key`.
@@ -19,137 +20,34 @@ El modelo cubre la base de identidad, autorización, navegación e internacional
 - `user_modules`: asignación de visibilidad de módulos a usuarios (pivote usuario + módulo).
 - `translations`: catálogo centralizado de traducciones i18n para cualquier entidad y campo (`source_entity`, `source_id`, `source_key`, `locale`).
 
-### Relaciones clave
+### Dominio de Negocios y Facturación
+- `businesses`: entidades comerciales gestionadas por un `owner_id` (PK uuid).
+- `business_collaborators`: usuarios asociados a un negocio con su cargo y conjunto de permisos (`action_ids bigint[]`).
+- `business_actions`: catálogo de permisos operativos específicos del contexto de negocio (ej. gestionar colaboradores, ver analítica, escanear facturas).
+- `providers`: proveedores de insumos/mercancía de un negocio. Incluye `fields json` con la plantilla de columnas y formato de sus facturas (por defecto `{}`).
+- `products`: catálogo de productos de un negocio con códigos/SKU, costos, impuestos, márgenes y precio de venta.
+- `product_logs`: registro histórico e inmutable de auditoría para cada variación de producto (generado automáticamente tras creación o actualización).
+- `invoices`: comprobantes de facturación asociados a un negocio y proveedor, con su código/número de factura (`code`), monto total (`total_amount`), ubicación física en storage R2/S3 (`path_storage`) y el contenido/items extraídos embebidos directamente en el campo estructurado `data json` (por defecto `{}`).
 
-- Un usuario tiene muchos roles (`user_roles`).
-- Un usuario tiene muchos módulos asignados (`user_modules`).
-- Un rol tiene muchas acciones (`role_actions`).
-- Un módulo pertenece a un grupo de módulos (`module_groups` vía `module_group_id`).
-- Las acciones son independientes del árbol de navegación (`actions` no tiene `module_id`).
-- Las traducciones identifican de forma unívoca la traducción de cualquier campo por registro e idioma (`translations`).
+---
 
-### Supuestos importantes
-
-- Se eliminan la jerarquía recursiva de módulos (`parent_id`, `type = 'submodule'`) y el atributo de agrupación en string (`group_by`); ahora los módulos son homogéneos y se normalizan relacionalmente asociándose a una entidad `module_groups` mediante `module_group_id`.
-- Las acciones dinámicas quedan 100% desacopladas de los módulos de navegación, separando los permisos operativos (backend/acciones) de la navegación en UI (módulos asignados al usuario).
-- La gestión de traducciones (i18n) se centraliza en la tabla `translations` con clave cuádruple (`source_entity`, `source_id`, `source_key`, `locale`), permitiendo traducir dinámicamente atributos como `key`, `comment`, `description`, etc., en múltiples idiomas.
-- `Home` es un módulo exclusivamente de frontend (hardcodeado); no es una fila de `modules`.
-- La identidad externa de Google no tiene tabla propia: `users` guarda nombre, correo e imagen, y Google completa los campos vacíos tras el primer acceso válido.
-- El correo se persiste normalizado en minúsculas y es único.
-
-## 2. Mapeo funcional → entidades
-
-### Módulos detectados → entidades
-
-| Módulo / Funcionalidad | Entidad |
-|---|---|
-| `Home` (universal) | Sin tabla (frontend hardcodeado) |
-| `Grupos de Módulos` | `module_groups` (agrupadores normalizados de módulos) |
-| `Módulos de navegación` | `modules` (vinculados a `module_groups` vía `module_group_id`) |
-| `Asignación de navegación` | `user_modules` (relación usuario - módulo) |
-| `Users` | `users` + `user_roles` + `user_modules` |
-| `Roles` | `roles` + `role_actions` |
-| `Actions` | `actions` (catálogo dinámico de permisos sin `module_id`) |
-| `Traducciones (i18n)` | `translations` (catálogo centralizado cuádruple) |
-
-### Flujos relevantes → relaciones necesarias
-
-| Flujo | Relación que lo soporta |
-|---|---|
-| Inicio de sesión por correo permitido | `users.email`, `is_active` |
-| Datos de Google completan identidad | `users.name`, `users.image_url` (nullable) |
-| Permisos efectivos por roles | `user_roles` → `role_actions` → `actions` |
-| Módulos visibles en frontend por usuario | `user_modules` → `modules` → `module_groups` |
-| Borrado lógico | `is_active` en todas las entidades |
-| Traducción dinámica de entidades y campos | `translations(source_entity, source_id, source_key, locale)` |
-
-### Reglas de negocio → campos o estructuras que las soportan
-
-| Regla | Soporte en el modelo |
-|---|---|
-| Sesión válida exige usuario activo | `users.is_active` |
-| Alta de usuario requiere solo correo | `users.email` `not null, unique`; `name`/`image_url` nullable |
-| Un rol no repite un permiso | índice único compuesto `(role_id, action_id)` en `role_actions` |
-| Un usuario no repite un rol | índice único compuesto `(user_id, role_id)` en `user_roles` |
-| Un usuario no repite un módulo | índice único compuesto `(user_id, module_id)` en `user_modules` |
-| Agrupación de módulos | `modules.module_group_id` con clave foránea a `module_groups.id` e índice `idx_modules_module_group_id` |
-| Soporte Multiidiomas (i18n) | Unicidad cuádruple en `translations(source_entity, source_id, source_key, locale)` con índice de búsqueda por `(locale, source_entity, source_id)` |
-
-## 3. Modelo DBML
+## 2. Modelo DBML Unificado
 
 ```dbml
-Table user_modules [headercolor: #175e7a] {
+Table translations [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
-	user_id bigint [ not null ]
-	module_id bigint [ not null ]
+	source_entity varchar(255) [ not null ]
+	source_id varchar(255) [ not null ]
+	source_key varchar(255) [ not null ]
+	locale varchar(10) [ not null ]
+	value text [ not null ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
 
 	indexes {
-		(user_id, module_id) [ name: 'uq_user_module', unique ]
-	}
-}
-
-Table users [headercolor: #175e7a] {
-	id bigint [ pk, increment, not null ]
-	name varchar(255)
-	email text [ not null, unique ]
-	image_url text
-	is_active boolean [ not null, default: true ]
-	created_at timestamp [ not null ]
-	updated_at timestamp [ not null ]
-}
-
-Table roles [headercolor: #175e7a] {
-	id bigint [ pk, increment, not null ]
-	key text [ not null, unique ]
-	is_active boolean [ not null, default: true ]
-	created_at timestamp [ not null ]
-	updated_at timestamp [ not null ]
-}
-
-Table actions [headercolor: #175e7a] {
-	id bigint [ pk, increment, not null ]
-	key text [ not null, unique ]
-	description text
-	is_active boolean [ not null, default: true ]
-	created_at timestamp [ not null ]
-	updated_at timestamp [ not null ]
-}
-
-Table module_groups [headercolor: #175e7a] {
-	id bigint [ pk, increment, not null ]
-	key varchar(255) [ not null, unique ]
-	is_active boolean [ not null, default: true ]
-	created_at timestamp [ not null ]
-	updated_at timestamp [ not null ]
-}
-
-Table modules [headercolor: #175e7a] {
-	id bigint [ pk, increment, not null ]
-	module_group_id bigint [ not null ]
-	link varchar(255) [ not null ]
-	key varchar(255) [ not null, unique ]
-	is_active boolean [ not null, default: true ]
-	created_at timestamp [ not null ]
-	updated_at timestamp [ not null ]
-
-	indexes {
-		module_group_id [ name: 'idx_modules_module_group_id' ]
-	}
-}
-
-Table role_actions [headercolor: #175e7a] {
-	id bigint [ pk, increment, not null ]
-	role_id bigint [ not null ]
-	action_id bigint [ not null ]
-	is_active boolean [ not null, default: true ]
-	created_at timestamp [ not null ]
-	updated_at timestamp [ not null ]
-
-	indexes {
-		(role_id, action_id) [ name: 'uq_role_action', unique ]
+		(source_entity, source_id, source_key, locale) [ name: 'uq_translation_entity_id_key_locale', unique ]
+		(locale, source_entity, source_id) [ name: 'idx_translation_lookup' ]
 	}
 }
 
@@ -166,20 +64,205 @@ Table user_roles [headercolor: #175e7a] {
 	}
 }
 
-Table translations [headercolor: #175e7a] {
+Table role_actions [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
-	source_entity varchar(255) [ not null ]
-	source_id varchar(255) [ not null ]
-	source_key varchar(255) [ not null ]
-	locale varchar(10) [ not null ]
-	value text [ not null ]
+	role_id bigint [ not null ]
+	action_id bigint [ not null ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
 
 	indexes {
-		(source_entity, source_id, source_key, locale) [ name: 'uq_translation_entity_id_key_locale', unique ]
-		(locale, source_entity, source_id) [ name: 'idx_translation_lookup' ]
+		(role_id, action_id) [ name: 'uq_role_action', unique ]
+	}
+}
+
+Table modules [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key varchar(255) [ not null, unique ]
+	module_group_id bigint [ not null ]
+	link varchar(255) [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(module_group_id) [ name: 'idx_modules_module_group_id' ]
+	}
+}
+
+Table module_groups [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key varchar(255) [ not null, unique ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table actions [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key text [ not null, unique ]
+	description text
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table roles [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key text [ not null, unique ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table users [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	name varchar(255)
+	email text [ not null, unique ]
+	image_url text
+	google_sub varchar(255) [ unique ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table user_modules [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	user_id bigint [ not null ]
+	module_id bigint [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(user_id, module_id) [ name: 'uq_user_module', unique ]
+	}
+}
+
+Table businesses [headercolor: #4f46e5] {
+	id uuid [ pk, not null ]
+	name varchar(255) [ not null ]
+	owner_id bigint [ not null ]
+	has_description boolean [ not null, default: false ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(owner_id) [ name: 'idx_businesses_owner_id' ]
+	}
+}
+
+Table business_collaborators [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	position varchar(255)
+	user_id bigint [ not null ]
+	business_id uuid [ not null ]
+	action_ids "bigint[]" [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id, user_id) [ name: 'uq_business_collaborator_user', unique ]
+	}
+}
+
+Table business_actions [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	key varchar(255) [ not null, unique ]
+	has_description boolean [ not null, default: false ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table products [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	business_id uuid [ not null ]
+	provider_id bigint
+	code varchar(255) [ not null ]
+	name varchar(255) [ not null ]
+	cost_price integer [ not null ]
+	cost_price_tax integer [ not null ]
+	profit_percentage integer [ not null ]
+	sale_price integer [ not null ]
+	stock integer [ not null, default: 0 ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id, code) [ name: 'uq_business_product_code', unique ]
+		(business_id) [ name: 'idx_products_business_id' ]
+		(provider_id) [ name: 'idx_products_provider_id' ]
+	}
+}
+
+Table product_logs [headercolor: #4f46e5] {
+	id uuid [ pk, not null ]
+	product_id bigint [ not null ]
+	code varchar(255) [ not null ]
+	name varchar(255) [ not null ]
+	cost_price integer [ not null ]
+	cost_price_tax integer [ not null ]
+	profit_percentage integer [ not null ]
+	sale_price integer [ not null ]
+	stock integer [ not null, default: 0 ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(product_id) [ name: 'idx_product_logs_product_id' ]
+	}
+}
+
+Table providers [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	business_id uuid [ not null ]
+	name varchar(255) [ not null ]
+	fields json [ not null, default: '{}' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id) [ name: 'idx_providers_business_id' ]
+	}
+}
+
+Table invoices [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	business_id uuid [ not null ]
+	provider_id bigint
+	code varchar(255) [ not null ]
+	total_amount integer [ not null, default: 0 ]
+	path_storage varchar(255) [ not null ]
+	data json [ not null, default: '{}' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id) [ name: 'idx_invoices_business_id' ]
+		(provider_id) [ name: 'idx_invoices_provider_id' ]
+	}
+}
+
+Table auth_sessions [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	public_id uuid [ not null, unique ]
+	user_id bigint [ not null ]
+	image_url text
+	refresh_token_hash varchar(64) [ not null ]
+	expires_at timestamp [ not null ]
+	revoked_at timestamp
+	created_at timestamp [ not null ]
+
+	indexes {
+		(user_id) [ name: 'idx_auth_sessions_user_id' ]
+		(expires_at) [ name: 'idx_auth_sessions_expires_at' ]
 	}
 }
 
@@ -210,59 +293,44 @@ Ref fk_user_modules_module {
 Ref fk_modules_module_group {
 	modules.module_group_id > module_groups.id [ delete: no action, update: no action ]
 }
-```
 
-## 4. Decisiones y supuestos del modelo
+Ref fk_users_id_businesses {
+	users.id < businesses.owner_id [ delete: no action, update: no action ]
+}
 
-### Hechos confirmados
+Ref fk_users_id_user_businesses {
+	users.id < business_collaborators.user_id [ delete: no action, update: no action ]
+}
 
-- `Home` es solo frontend y está hardcodeado; no se persiste.
-- Eliminación de la entidad `resources` en favor de `actions` dinámicas, simplificando la relación permisos-roles.
-- Uso generalizado de `key` en lugar de campos de texto descriptivo (`name`, `label`) para soportar internacionalización (i18n).
-- La gestión de i18n reside en el backend en la tabla `translations`, con un catálogo indexado por `(key, locale)` para proveer traducciones de forma ultra rápida tanto en bundles completos como en consultas individuales.
-- La acción (`action`) se asocia opcionalmente a un módulo (`module_id`), permitiendo acciones transversales (nulas) o anidadas.
-- No existe tabla de identidad externa: `users` es suficiente para el MVP; Google rellena `name` y `image_url` tras el primer acceso válido si siguen vacíos.
-- El correo es `not null` y `unique`, y se persiste normalizado en minúsculas.
-- La unicidad de los pivotes y pares de traducción es compuesta y se declara con `indexes`.
+Ref fk_businesses_id_user_businesses {
+	businesses.id < business_collaborators.business_id [ delete: no action, update: no action ]
+}
 
-### Inferencias razonables
+Ref fk_businesses_id_products {
+	businesses.id < products.business_id [ delete: no action, update: no action ]
+}
 
-- `type` en módulos admite valores que distinguen módulo de submódulo (p. ej. `module` / `submodule`); el valor exacto se fijará con el dominio de Route Specs o el seed.
-- El rol `super admin` es un registro sembrado de `roles` con `key = 'super_admin'` y `is_active = true`.
-- Los textos legibles de roles, acciones y módulos son resueltos contra la tabla `translations` usando el token `key` de cada registro.
+Ref fk_products_id_product_logs {
+	products.id < product_logs.product_id [ delete: no action, update: no action ]
+}
 
-### Pendientes no bloqueantes
+Ref fk_businesses_id_providers {
+	businesses.id < providers.business_id [ delete: no action, update: no action ]
+}
 
-- `google_id` y soporte de múltiples proveedores quedan fuera del MVP; se considerarán en una iteración futura.
-- La protección del último super admin operativo es una regla de aplicación (backend), no una restricción de base de datos.
+Ref fk_providers_id_invoices {
+	providers.id < invoices.provider_id [ delete: no action, update: no action ]
+}
 
-## 5. Dudas y vacíos detectados
+Ref fk_providers_id_products {
+	providers.id < products.provider_id [ delete: no action, update: no action ]
+}
 
-- **`actions.key` único global**: Al no haber contexto de resource, la `key` de la acción debe ser globalmente única y descriptiva (ej. `user.view`, `module.create`), para evitar colisiones.
-- **`users.is_allowed` eliminado**: Al removerse este campo, se asume que un usuario validado por OAuth ingresa si `is_active = true` o si su correo existe previamente, esto se terminará de definir en las Specs.
-- **Estrategia de PKs**: Se establece el uso universal de `bigint` autoincremental (`increment`) para todas las tablas del modelo (entidades principales `users`, `roles`, `actions`, `modules`, `translations` y tablas pivote `user_roles`, `role_actions`), optimizando el rendimiento de índices B-Tree y garantizando consistencia total en PostgreSQL.
-- **Navegación administrativa separada de Home**: se resuelve en Sitemap y Route Specs, no en el modelo.
+Ref fk_businesses_id_invoices {
+	businesses.id < invoices.business_id [ delete: no action, update: no action ]
+}
 
-## 6. Insumos recomendados para PRD V2
-
-- Actualizar el modelo conceptual y eliminar referencias a "Resources".
-- Definir convención de nomenclatura de `keys` para las acciones (ej. `camelCase`, `dot.notation`) para facilitar i18n.
-- Revalidar permisos requeridos por cada módulo con las acciones dinámicas.
-## Ampliación de autenticación — 2026-09-12
-
-Implementación solicitada por el usuario; revisión documental pendiente. `users.google_sub` es nullable y único para vincular el identificador estable de Google. No se agrega una tabla de identidades externas.
-
-```dbml
-Table auth_sessions {
-  id bigint [pk, increment, not null]
-  public_id uuid [unique, not null]
-  user_id bigint [not null, ref: > users.id]
-  image_url text
-  refresh_token_hash varchar(64) [not null]
-  expires_at timestamptz [not null]
-  revoked_at timestamptz
-  created_at timestamptz [not null]
+Ref fk_auth_sessions_user {
+	auth_sessions.user_id > users.id [ delete: cascade, update: no action ]
 }
 ```
-
-El UUID es un identificador público adicional; la PK sigue siendo bigint. Una sesión se revoca mediante `revoked_at` y caduca por `expires_at`, sin borrar al usuario. Detalles: [ADR-004](../architecture/decisions/ADR-004-auth-sessions.md).

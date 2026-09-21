@@ -66,3 +66,37 @@ export type PaginatedResponse<T> = {
     total_pages: number;
   };
 };
+
+export type BusinessAction = {
+  id: string;
+  key: string;
+  has_description?: boolean;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  translates?: TranslateItem[];
+};
+
+export type CreateBusinessActionPayload = {
+  key: string;
+  has_description?: boolean;
+  is_active?: boolean;
+  translates?: TranslateItem[];
+};
+
+export type UpdateBusinessActionPayload = {
+  key?: string;
+  has_description?: boolean;
+  is_active?: boolean;
+  translates?: TranslateItem[];
+};
+
+export type BusinessActionFormData = {
+  id?: string;
+  key: string;
+  has_description?: boolean;
+  is_active?: boolean;
+  nameTranslations?: Record<string, string>;
+  descriptionTranslations?: Record<string, string>;
+  translates?: TranslateItem[];
+};

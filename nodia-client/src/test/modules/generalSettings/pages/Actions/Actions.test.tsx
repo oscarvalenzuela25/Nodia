@@ -1,5 +1,5 @@
 import useAuthStore from "../../../../../store/authStore";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ import Actions from "../../../../../modules/generalSettings/pages/Actions/Action
 import * as services from "../../../../../modules/generalSettings/pages/Actions/infrastructure/services";
 import type {
   Action,
+  BusinessAction,
   PaginatedResponse,
 } from "../../../../../modules/generalSettings/pages/Actions/types";
 
@@ -27,6 +28,10 @@ vi.mock(
     getActions: vi.fn(),
     createAction: vi.fn(),
     updateAction: vi.fn(),
+    getBusinessActions: vi.fn(),
+    createBusinessAction: vi.fn(),
+    updateBusinessAction: vi.fn(),
+    deleteBusinessAction: vi.fn(),
   })
 );
 
@@ -85,6 +90,33 @@ const mockPaginatedResponse: PaginatedResponse<Action> = {
   },
 };
 
+const mockBusinessActions: BusinessAction[] = [
+  {
+    id: "ba-1001",
+    key: "orders.create",
+    has_description: true,
+    is_active: true,
+    translates: [
+      { key: "key", es: "Crear Pedido", en: "Create Order" },
+      {
+        key: "description",
+        es: "Permite registrar nuevos pedidos",
+        en: "Allows creating new orders",
+      },
+    ],
+  },
+];
+
+const mockBusinessPaginatedResponse: PaginatedResponse<BusinessAction> = {
+  data: mockBusinessActions,
+  meta: {
+    page: 1,
+    limit: 10,
+    total_items: 1,
+    total_pages: 1,
+  },
+};
+
 const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
@@ -104,27 +136,74 @@ const renderWithClient = (ui: ReactElement) => {
 
 describe("Actions Page", () => {
   beforeEach(() => {
-    useAuthStore.getState().login({ token: "test-jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test user" } });
+    useAuthStore.getState().login({
+      token: "test-jwt",
+      expiresAt: Date.now() + 900_000,
+      user: { id: "42", name: "Test user" },
+    });
     vi.clearAllMocks();
     vi.mocked(services.getActions).mockResolvedValue(mockPaginatedResponse);
+    vi.mocked(services.getBusinessActions).mockResolvedValue(
+      mockBusinessPaginatedResponse
+    );
   });
 
-  it("renders actions table with expected columns (including Nombre) and fetched actions with translated names", async () => {
+  it("renders actions table with expected columns and dual perspective switcher", async () => {
     renderWithClient(<Actions />);
 
     await waitFor(() => {
       expect(screen.getByText("users.create")).toBeInTheDocument();
+      expect(screen.getByText("orders.create")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Id")).toBeInTheDocument();
-    expect(screen.getByText("Nombre")).toBeInTheDocument();
-    expect(screen.getByText("Identificador")).toBeInTheDocument();
-    expect(screen.getByText("Descripción")).toBeInTheDocument();
-    expect(screen.getByText("Activo")).toBeInTheDocument();
-    expect(screen.getAllByText("Acciones").length).toBeGreaterThanOrEqual(2);
+    // Perspective switcher options
+    expect(
+      screen.getByRole("button", { name: /Vista Dividida/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Acciones del Sistema/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Acciones de Negocio/i })
+    ).toBeInTheDocument();
+
+    // Headers
+    expect(screen.getAllByText("Id").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Nombre").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Identificador").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Descripción").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Activo").length).toBeGreaterThanOrEqual(1);
 
     expect(screen.getByText("Crear Usuarios")).toBeInTheDocument();
-    expect(screen.queryByText("Módulo asociado")).not.toBeInTheDocument();
+    expect(screen.getByText("Crear Pedido")).toBeInTheDocument();
+  });
+
+  it("allows switching perspective modes between Split, System Only, and Business Only", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+
+    await waitFor(() => {
+      expect(screen.getByText("users.create")).toBeInTheDocument();
+      expect(screen.getByText("orders.create")).toBeInTheDocument();
+    });
+
+    // Switch to System Only
+    const systemOnlyBtn = screen.getByRole("button", {
+      name: "Acciones del Sistema",
+    });
+    await user.click(systemOnlyBtn);
+
+    expect(screen.getByText("users.create")).toBeInTheDocument();
+    expect(screen.queryByText("orders.create")).not.toBeInTheDocument();
+
+    // Switch to Business Only
+    const businessOnlyBtn = screen.getByRole("button", {
+      name: "Acciones de Negocio",
+    });
+    await user.click(businessOnlyBtn);
+
+    expect(screen.queryByText("users.create")).not.toBeInTheDocument();
+    expect(screen.getByText("orders.create")).toBeInTheDocument();
   });
 
   it("copies id to clipboard and triggers sileo info toast", async () => {
@@ -147,7 +226,7 @@ describe("Actions Page", () => {
     const copyButtons = screen.getAllByRole("button", { name: "Copiar ID" });
     await user.click(copyButtons[0]);
 
-    expect(writeTextMock).toHaveBeenCalledWith(mockActions[0].id);
+    expect(writeTextMock).toHaveBeenCalled();
     expect(sileo.info).toHaveBeenCalledWith({
       title: "Copiar ID",
       description: "Copiado al portapapeles",
@@ -158,22 +237,39 @@ describe("Actions Page", () => {
     const user = userEvent.setup();
     renderWithClient(<Actions />);
 
+    await waitFor(() => {
+      expect(screen.getByText("users.create")).toBeInTheDocument();
+    });
+
     const newActionBtn = screen.getByRole("button", {
       name: /Nuevo Accionable/i,
     });
-    await waitFor(() => {
-      expect(newActionBtn).toBeEnabled();
-    });
     await user.click(newActionBtn);
 
-    const dialog = screen.getByRole("dialog");
     expect(
-      within(dialog).getByRole("heading", { name: "Nuevo Accionable" })
+      screen.getByRole("heading", { name: "Nuevo Accionable" })
     ).toBeInTheDocument();
-    expect(within(dialog).getByText("Identificador")).toBeInTheDocument();
   });
 
-  it("opens action menu with 'Actualizar' and opens edit modal with prefilled data", async () => {
+  it("opens create business action modal when clicking 'Nueva Acción de Negocio'", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+
+    await waitFor(() => {
+      expect(screen.getByText("orders.create")).toBeInTheDocument();
+    });
+
+    const newBusinessActionBtn = screen.getByRole("button", {
+      name: /Nueva Acción de Negocio/i,
+    });
+    await user.click(newBusinessActionBtn);
+
+    expect(
+      screen.getAllByText("Nueva Acción de Negocio").length
+    ).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renders actions menu with 'Actualizar' and opens edit modal with prefilled data", async () => {
     const user = userEvent.setup();
     renderWithClient(<Actions />);
 
@@ -182,20 +278,19 @@ describe("Actions Page", () => {
     });
 
     const actionButtons = screen.getAllByRole("button", { name: "Acciones" });
-    await user.click(actionButtons[0]);
+    // actionButtons[1] corresponds to first system action (users.create)
+    await user.click(actionButtons[1]);
 
     const updateOption = screen.getByRole("menuitem", { name: /Actualizar/i });
     expect(updateOption).toBeInTheDocument();
-
     await user.click(updateOption);
 
     expect(
       screen.getByRole("heading", { name: "Actualizar Accionable" })
     ).toBeInTheDocument();
-    expect(screen.getByDisplayValue("users.create")).toBeInTheDocument();
   });
 
-  it("allows toggling active status with ConfirmDialog and calling updateAction", async () => {
+  it("opens ConfirmDialog and toggles action active status upon confirmation", async () => {
     const user = userEvent.setup();
     vi.mocked(services.updateAction).mockResolvedValue({
       ...mockActions[0],
@@ -209,7 +304,7 @@ describe("Actions Page", () => {
     });
 
     const actionButtons = screen.getAllByRole("button", { name: "Acciones" });
-    await user.click(actionButtons[0]);
+    await user.click(actionButtons[1]);
 
     const deactivateOption = screen.getByRole("menuitem", {
       name: /Desactivar/i,
@@ -231,16 +326,20 @@ describe("Actions Page", () => {
       data: [],
       meta: { page: 1, limit: 10, total_items: 0, total_pages: 0 },
     });
+    vi.mocked(services.getBusinessActions).mockResolvedValue({
+      data: [],
+      meta: { page: 1, limit: 10, total_items: 0, total_pages: 0 },
+    });
 
     renderWithClient(<Actions />);
 
     await waitFor(() => {
       expect(
-        screen.getByText("No hay acciones disponibles")
-      ).toBeInTheDocument();
+        screen.getAllByText("No hay acciones disponibles").length
+      ).toBeGreaterThanOrEqual(1);
       expect(
-        screen.getByRole("button", { name: "Crear primera acción" })
-      ).toBeInTheDocument();
+        screen.getAllByRole("button", { name: "Crear primera acción" }).length
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 

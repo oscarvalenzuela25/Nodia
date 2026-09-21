@@ -27,6 +27,7 @@
   "no_options_found": "No se encontraron resultados",
   "close": "Cerrar",
   "save": "Guardar",
+  "actions": "Acciones",
   "empty_state_title": "No hay información disponible",
   "empty_state_description": "No se encontraron datos para mostrar en este momento.",
   "server_error_toast": "Error en el servidor. Por favor, inténtelo más tarde.",

@@ -45,6 +45,9 @@ const mockContextData: AuthorizationContextResponse = {
       ],
     },
   ],
+  can_analyze_invoice: true,
+  can_use_gemini: true,
+  can_use_mistral: true,
 };
 
 describe("generalSettingsStore", () => {
@@ -59,6 +62,9 @@ describe("generalSettingsStore", () => {
     expect(state.roles).toEqual([]);
     expect(state.actions).toEqual([]);
     expect(state.modules).toEqual([]);
+    expect(state.can_analyze_invoice).toBe(false);
+    expect(state.can_use_gemini).toBe(false);
+    expect(state.can_use_mistral).toBe(false);
     expect(state.isLoaded).toBe(false);
   });
 
@@ -71,6 +77,9 @@ describe("generalSettingsStore", () => {
     expect(state.roles).toEqual(["admin", "editor"]);
     expect(state.actions).toHaveLength(2);
     expect(state.modules).toHaveLength(1);
+    expect(state.can_analyze_invoice).toBe(true);
+    expect(state.can_use_gemini).toBe(true);
+    expect(state.can_use_mistral).toBe(true);
     expect(state.isLoaded).toBe(true);
   });
 

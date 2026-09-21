@@ -24,6 +24,44 @@ body {
      dejamos el body limpio para que herede correctamente. */
 }
 
+/* ==========================================================================
+   Custom Scrollbar Styles (Transparent Track & Subtle Rounded Thumb)
+   ========================================================================== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.4) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.35);
+  border-radius: 9999px;
+  border: none;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(155, 155, 155, 0.6);
+}
+
+*::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0;
+  height: 0;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
 /* Asegurar que el contenedor principal ocupe toda la pantalla y fluya bien */
 #root {
   min-height: 100vh;
