@@ -9,9 +9,10 @@ import {
 } from '@nestjs/common';
 import { GoogleGenAI } from '@google/genai';
 import { envs } from '../../config/envs.config.js';
-import type {
-  ExtractedInvoiceData,
-  ExtractedInvoiceItem,
+import {
+  type ExtractedInvoiceData,
+  type ExtractedInvoiceItem,
+  extractProviderConfig,
 } from './ai.types.js';
 
 export type { ExtractedInvoiceData, ExtractedInvoiceItem };
@@ -43,12 +44,14 @@ export class GeminiService {
     buffer: Buffer,
     mimeType: string,
     providerFields?: Record<string, any>,
+    providerTax: number = 19,
   ): Promise<ExtractedInvoiceData> {
     // 1. Try Gemini Microservice first (Gemini Pro)
     const microserviceResult = await this.extractViaMicroservice(
       buffer,
       mimeType,
       providerFields,
+      providerTax,
     );
     if (microserviceResult) {
       return microserviceResult;
@@ -61,27 +64,36 @@ export class GeminiService {
       );
     }
 
+    const config = extractProviderConfig(providerFields);
     let providerInstructions = '';
 
-    const hasCodeConfig = Boolean(
-      providerFields?.code && String(providerFields.code).trim().length > 0,
-    );
-    const hasCostPriceConfig = Boolean(
-      providerFields?.cost_price && String(providerFields.cost_price).trim().length > 0,
-    );
-    const hasCostPriceTaxConfig = Boolean(
-      providerFields?.cost_price_tax && String(providerFields.cost_price_tax).trim().length > 0,
-    );
+    if (config.hasAnyConfig) {
+      const codeRule = config.hasCodeConfig
+        ? `- "code": busca el código de producto / SKU correspondiente estrictamente a la columna "${config.codeConfig!.value}".${config.codeConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.codeConfig!.instructions}.` : ''} Si no viene para ese ítem, devuelve null.`
+        : `- "code": null (el proveedor NO tiene configurado campo de código; devuelve estrictamente null).`;
 
-    const hasAnyConfig = hasCodeConfig || hasCostPriceConfig || hasCostPriceTaxConfig;
+      const costPriceRule = config.hasCostPriceConfig
+        ? `- "cost_price": costo unitario sin impuestos (neto) correspondiente estrictamente a la columna "${config.costPriceConfig!.value}".${config.costPriceConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.costPriceConfig!.instructions}.` : ''} Si no aparece en la fila, devuelve null.`
+        : `- "cost_price": null (el proveedor NO tiene configurado costo sin impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`;
 
-    if (hasAnyConfig) {
+      const costPriceTaxRule = config.hasCostPriceTaxConfig
+        ? `- "cost_price_tax": costo unitario con impuestos (bruto / con IVA) correspondiente estrictamente a la columna "${config.costPriceTaxConfig!.value}".${config.costPriceTaxConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.costPriceTaxConfig!.instructions}.` : ''} Si no aparece en la fila, devuelve null.`
+        : `- "cost_price_tax": null (el proveedor NO tiene configurado costo con impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`;
+
+      const packagesRule = config.hasPackagesConfig
+        ? `- "packages": cantidad de cajas/bultos/embalajes comprados correspondiente estrictamente a la columna "${config.packagesConfig!.value}".${config.packagesConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.packagesConfig!.instructions}.` : ''} (número entero o float, o null si no aparece).`
+        : `- "packages": null (no configurado en la plantilla).`;
+
+      const unitsPerPackageRule = config.hasUnitsPerPackageConfig
+        ? `- "units_per_package": cantidad de unidades o productos por caja/embalaje correspondiente estrictamente a la columna "${config.unitsPerPackageConfig!.value}".${config.unitsPerPackageConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.unitsPerPackageConfig!.instructions}.` : ''} (número entero o float, o null si no aparece).`
+        : `- "units_per_package": null (no configurado en la plantilla).`;
+
       providerInstructions = `
 Plantilla de columnas/campos configurada para este proveedor:
 ${JSON.stringify(
   Object.fromEntries(
     Object.entries(providerFields || {}).filter(
-      ([, v]) => v && String(v).trim().length > 0,
+      ([k, v]) => k !== 'tax' && Boolean(v),
     ),
   ),
   null,
@@ -94,23 +106,13 @@ SOLO se deben extraer los campos que están configurados en la plantilla.
 CUALQUIER OTRO CAMPO NO CONFIGURADO DEBE DEVOLVERSE ESTRICTAMENTE COMO null, INCLUSO SI LA FACTURA CONTIENE ESE DATO.
 
 Para cada ítem en "items":
-${
-  hasCodeConfig
-    ? `- "code": busca el código de producto / SKU correspondiente a la columna "${providerFields!.code}". Si no viene para ese ítem, devuelve null.`
-    : `- "code": null (el proveedor NO tiene configurado campo de código; devuelve estrictamente null).`
-}
+${codeRule}
 - "name": descripción o nombre del producto (string obligatorio).
-- "quantity": cantidad de unidades (número, si no aparece usa 1).
-${
-  hasCostPriceConfig
-    ? `- "cost_price": costo unitario sin impuestos (neto) correspondiente a la columna "${providerFields!.cost_price}". Si no aparece en la fila, devuelve null.`
-    : `- "cost_price": null (el proveedor NO tiene configurado costo sin impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`
-}
-${
-  hasCostPriceTaxConfig
-    ? `- "cost_price_tax": costo unitario con impuestos (bruto / con IVA) correspondiente a la columna "${providerFields!.cost_price_tax}". Si no aparece en la fila, devuelve null.`
-    : `- "cost_price_tax": null (el proveedor NO tiene configurado costo con impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`
-}
+${costPriceRule}
+${costPriceTaxRule}
+${packagesRule}
+${unitsPerPackageRule}
+- "quantity": si se detectan "packages" y "units_per_package", calcula su multiplicación como la cantidad total de unidades. Si solo existe uno, usa ese valor. Si no existe ninguno, usa la cantidad detectada o 0.
 - "total_price": total o subtotal del renglón (número, si existe, o null).`;
     } else {
       providerInstructions = `
@@ -118,7 +120,9 @@ El proveedor no tiene plantilla de campos configurada. Aplica el criterio genera
 Para cada ítem en "items":
 - "code": código de barras, SKU o código de producto (string, si existe en la fila o comprobante, o null).
 - "name": descripción o nombre del producto (string obligatorio).
-- "quantity": cantidad adquirida (número, por defecto 1).
+- "packages": cantidad de bultos/cajas si existe, o null.
+- "units_per_package": unidades por caja si existe, o null.
+- "quantity": cantidad adquirida total (número, por defecto 1).
 - "cost_price": costo unitario neto sin impuestos (número, si se indica o calcula en la factura, o null).
 - "cost_price_tax": costo unitario bruto con impuestos / IVA incluido (número, si se indica o calcula en la factura, o null).
 - "unit_price": precio unitario indicado (número, si existe).
@@ -172,10 +176,11 @@ Devuelve exclusivamente el objeto JSON válido.`;
 
         const items = this.normalizeItems(
           parsed.items,
-          hasAnyConfig,
-          hasCodeConfig,
-          hasCostPriceConfig,
-          hasCostPriceTaxConfig,
+          config.hasAnyConfig,
+          config.hasCodeConfig,
+          config.hasCostPriceConfig,
+          config.hasCostPriceTaxConfig,
+          providerTax,
         );
 
         return {
@@ -214,6 +219,7 @@ Devuelve exclusivamente el objeto JSON válido.`;
     buffer: Buffer,
     mimeType: string,
     providerFields?: Record<string, any>,
+    providerTax: number = 19,
   ): Promise<ExtractedInvoiceData | null> {
     const baseUrl = envs.GEMINI_MICROSERVICE_URL;
     if (!baseUrl) {
@@ -233,9 +239,12 @@ Devuelve exclusivamente el objeto JSON válido.`;
       const blob = new Blob([new Uint8Array(buffer)], { type: mimeType });
       formData.append('file', blob, `invoice.${extension}`);
 
-      if (providerFields) {
-        formData.append('provider_fields', JSON.stringify(providerFields));
-      }
+      const mergedFields = {
+        ...providerFields,
+        tax: providerTax,
+      };
+      formData.append('provider_fields', JSON.stringify(mergedFields));
+      formData.append('provider_tax', String(providerTax));
 
       const response = await fetch(`${baseUrl}/analyze-invoice`, {
         method: 'POST',
@@ -257,27 +266,26 @@ Devuelve exclusivamente el objeto JSON válido.`;
         return null;
       }
 
-      const hasCodeConfig = Boolean(
-        providerFields?.code && String(providerFields.code).trim().length > 0,
-      );
-      const hasCostPriceConfig = Boolean(
-        providerFields?.cost_price &&
-          String(providerFields.cost_price).trim().length > 0,
-      );
-      const hasCostPriceTaxConfig = Boolean(
-        providerFields?.cost_price_tax &&
-          String(providerFields.cost_price_tax).trim().length > 0,
-      );
-      const hasAnyConfig =
-        hasCodeConfig || hasCostPriceConfig || hasCostPriceTaxConfig;
+      const config = extractProviderConfig(providerFields);
 
       const rawItems = parsed.data?.items || parsed.items || [];
+      const hasRawOutput = Boolean(parsed.data?.raw_output || parsed.raw_output);
+
+      // Si el microservicio devolvió 0 items y contiene un mensaje de error o raw_output de rechazo, hacer fallback a API Key
+      if (rawItems.length === 0 && (hasRawOutput || (!parsed.code && !parsed.total_amount))) {
+        this.logger.warn(
+          'Gemini Microservice returned empty extraction / non-invoice response. Falling back to official Gemini API Key...',
+        );
+        return null;
+      }
+
       const items = this.normalizeItems(
         rawItems,
-        hasAnyConfig,
-        hasCodeConfig,
-        hasCostPriceConfig,
-        hasCostPriceTaxConfig,
+        config.hasAnyConfig,
+        config.hasCodeConfig,
+        config.hasCostPriceConfig,
+        config.hasCostPriceTaxConfig,
+        providerTax,
       );
 
       this.logger.log(
@@ -308,10 +316,13 @@ Devuelve exclusivamente el objeto JSON válido.`;
     hasCodeConfig: boolean,
     hasCostPriceConfig: boolean,
     hasCostPriceTaxConfig: boolean,
+    providerTax: number = 19,
   ): ExtractedInvoiceItem[] {
     if (!Array.isArray(rawItems)) {
       return [];
     }
+
+    const taxMultiplier = 1 + providerTax / 100;
 
     return rawItems.map((it: any) => {
       let code =
@@ -319,7 +330,38 @@ Devuelve exclusivamente el objeto JSON válido.`;
           ? String(it.code).trim()
           : null;
       const name = String(it.name || 'Producto sin nombre').trim();
-      const quantity = Number(it.quantity) > 0 ? Number(it.quantity) : 1;
+
+      const rawPackages =
+        it.packages !== null &&
+        it.packages !== undefined &&
+        !isNaN(Number(it.packages)) &&
+        Number(it.packages) > 0
+          ? Number(it.packages)
+          : null;
+
+      const rawUnitsPerPackage =
+        it.units_per_package !== null &&
+        it.units_per_package !== undefined &&
+        !isNaN(Number(it.units_per_package)) &&
+        Number(it.units_per_package) > 0
+          ? Number(it.units_per_package)
+          : null;
+
+      let quantity: number;
+      if (rawPackages !== null && rawUnitsPerPackage !== null) {
+        quantity = Math.round(rawPackages * rawUnitsPerPackage);
+      } else if (rawPackages !== null) {
+        quantity = Math.round(rawPackages);
+      } else if (rawUnitsPerPackage !== null) {
+        quantity = Math.round(rawUnitsPerPackage);
+      } else {
+        quantity =
+          Number(it.quantity) > 0
+            ? Number(it.quantity)
+            : hasAnyConfig
+              ? 0
+              : 1;
+      }
 
       let cost_price =
         it.cost_price !== null &&
@@ -336,17 +378,63 @@ Devuelve exclusivamente el objeto JSON válido.`;
           : null;
 
       if (hasAnyConfig) {
+        // 1. Regla de código estricto
         if (!hasCodeConfig) {
           code = null;
         }
-        if (!hasCostPriceConfig) {
+
+        // 2. Reglas de costos basadas en campos configurados del proveedor
+        if (hasCostPriceConfig && !hasCostPriceTaxConfig) {
+          // Solo se configuró costo sin impuestos -> extraerlo y calcular el impuesto
+          if (
+            cost_price === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price = Math.round(Number(it.unit_price));
+          }
+          cost_price_tax =
+            cost_price !== null ? Math.round(cost_price * taxMultiplier) : null;
+        } else if (!hasCostPriceConfig && hasCostPriceTaxConfig) {
+          // Solo se configuró costo con impuestos -> extraerlo y calcular el costo base
+          if (
+            cost_price_tax === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price_tax = Math.round(Number(it.unit_price));
+          }
+          cost_price =
+            cost_price_tax !== null
+              ? Math.round(cost_price_tax / taxMultiplier)
+              : null;
+        } else if (hasCostPriceConfig && hasCostPriceTaxConfig) {
+          // Ambos están configurados -> se toman de sus respectivas columnas sin recálculo
+          if (
+            cost_price === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price = Math.round(Number(it.unit_price));
+          }
+          if (
+            cost_price_tax === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price_tax = Math.round(Number(it.unit_price));
+          }
+        } else {
+          // Ni costo neto ni bruto configurados (ej. solo código)
           cost_price = null;
-        }
-        if (!hasCostPriceTaxConfig) {
           cost_price_tax = null;
         }
 
-        const unit_price = cost_price ?? cost_price_tax ?? null;
+        const unit_price = cost_price_tax ?? cost_price ?? null;
         const total_price =
           it.total_price !== null &&
           it.total_price !== undefined &&
@@ -362,12 +450,15 @@ Devuelve exclusivamente el objeto JSON válido.`;
           code,
           name,
           quantity,
+          packages: rawPackages,
+          units_per_package: rawUnitsPerPackage,
           cost_price,
           cost_price_tax,
           unit_price,
           total_price,
         };
       } else {
+        // Criterio general contable libre si el proveedor no tiene campos configurados
         const rawUnitPrice =
           it.unit_price !== null &&
           it.unit_price !== undefined &&
@@ -383,17 +474,17 @@ Devuelve exclusivamente el objeto JSON válido.`;
             : null;
 
         if (cost_price !== null && cost_price_tax !== null) {
-          // Both present
+          // Ambos presentes
         } else if (cost_price !== null && cost_price_tax === null) {
-          cost_price_tax = Math.round(cost_price * 1.19);
+          cost_price_tax = Math.round(cost_price * taxMultiplier);
         } else if (cost_price_tax !== null && cost_price === null) {
-          cost_price = Math.round(cost_price_tax / 1.19);
+          cost_price = Math.round(cost_price_tax / taxMultiplier);
         } else if (rawUnitPrice !== null) {
           cost_price = rawUnitPrice;
-          cost_price_tax = Math.round(cost_price * 1.19);
+          cost_price_tax = Math.round(cost_price * taxMultiplier);
         } else if (rawTotalPrice !== null && quantity > 0) {
           cost_price = Math.round(rawTotalPrice / quantity);
-          cost_price_tax = Math.round(cost_price * 1.19);
+          cost_price_tax = Math.round(cost_price * taxMultiplier);
         }
 
         const unit_price = cost_price_tax ?? cost_price ?? rawUnitPrice;
@@ -409,6 +500,8 @@ Devuelve exclusivamente el objeto JSON válido.`;
           code,
           name,
           quantity,
+          packages: rawPackages,
+          units_per_package: rawUnitsPerPackage,
           cost_price,
           cost_price_tax,
           unit_price,

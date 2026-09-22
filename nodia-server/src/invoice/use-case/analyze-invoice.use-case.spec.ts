@@ -105,6 +105,7 @@ describe('AnalyzeInvoiceUseCase', () => {
       id: '99',
       business_id: 'other-business-uuid',
       name: 'Molinos S.A.',
+      tax: 19,
       fields: {},
       is_active: true,
       created_at: new Date(),
@@ -124,6 +125,7 @@ describe('AnalyzeInvoiceUseCase', () => {
       mockFile.buffer,
       mockFile.mimetype,
       undefined,
+      19,
     );
     expect(result).toEqual({
       business_id: mockDto.business_id,
@@ -147,7 +149,7 @@ describe('AnalyzeInvoiceUseCase', () => {
     });
   });
 
-  it('should process invoice successfully with provider_id and pass template fields to Gemini', async () => {
+  it('should process invoice successfully with provider_id and pass template fields and tax to Gemini', async () => {
     const dtoWithProvider: AnalyzeInvoiceDto = {
       ...mockDto,
       provider_id: '1',
@@ -157,6 +159,7 @@ describe('AnalyzeInvoiceUseCase', () => {
       id: '1',
       business_id: mockDto.business_id,
       name: 'Molinos S.A.',
+      tax: 19,
       fields: { folio_key: 'NroFactura', rut_key: 'RUT' },
       is_active: true,
       created_at: new Date(),
@@ -173,9 +176,47 @@ describe('AnalyzeInvoiceUseCase', () => {
       mockFile.buffer,
       mockFile.mimetype,
       providerMock.fields,
+      19,
     );
     expect(result.provider_id).toBe('1');
     expect(result.code).toBe('F-00129');
+  });
+
+  it('should process invoice with structured provider fields { value, instructions } and custom tax', async () => {
+    const dtoWithProvider: AnalyzeInvoiceDto = {
+      ...mockDto,
+      provider_id: '2',
+    };
+
+    const providerMock = {
+      id: '2',
+      business_id: mockDto.business_id,
+      name: 'Distribuidora Central',
+      tax: 10,
+      fields: {
+        code: { value: 'CODIGO', instructions: 'Tomar la parte izquierda antes del guion' },
+        cost_price: { value: 'PRECIO_NETO' },
+        packages: { value: 'BULTOS' },
+        units_per_package: { value: 'UNIDADES_X_CAJA' },
+      },
+      is_active: true,
+      created_at: new Date(),
+      updated_at: new Date(),
+      business: {} as any,
+    };
+
+    vi.mocked(providerServiceMock.findOne!).mockResolvedValue(providerMock);
+
+    const result = await useCase.execute(mockFile, dtoWithProvider);
+
+    expect(providerServiceMock.findOne).toHaveBeenCalledWith('2');
+    expect(geminiServiceMock.extractInvoiceData).toHaveBeenCalledWith(
+      mockFile.buffer,
+      mockFile.mimetype,
+      providerMock.fields,
+      10,
+    );
+    expect(result.provider_id).toBe('2');
   });
 
   it('should process invoice successfully using Mistral when ai_provider is mistral', async () => {
@@ -190,6 +231,7 @@ describe('AnalyzeInvoiceUseCase', () => {
       mockFile.buffer,
       mockFile.mimetype,
       undefined,
+      19,
     );
     expect(geminiServiceMock.extractInvoiceData).not.toHaveBeenCalled();
     expect(result.code).toBe('M-0089');
@@ -217,6 +259,7 @@ describe('AnalyzeInvoiceUseCase', () => {
       mockFile.buffer,
       mockFile.mimetype,
       undefined,
+      19,
     );
     expect(mistralServiceMock.extractInvoiceData).not.toHaveBeenCalled();
     expect(result.code).toBe('F-00129');

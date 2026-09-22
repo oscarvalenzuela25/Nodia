@@ -8,9 +8,11 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { envs } from '../../config/envs.config.js';
-import type {
-  ExtractedInvoiceData,
-  ExtractedInvoiceItem,
+import {
+  type ExtractedInvoiceData,
+  type ExtractedInvoiceItem,
+  type ProviderParsedConfig,
+  extractProviderConfig,
 } from './ai.types.js';
 
 interface MistralOcrPage {
@@ -48,6 +50,7 @@ export class MistralService {
     buffer: Buffer,
     mimeType: string,
     providerFields?: Record<string, any>,
+    providerTax: number = 19,
   ): Promise<ExtractedInvoiceData> {
     if (!this.apiKey) {
       throw new InternalServerErrorException(
@@ -72,13 +75,30 @@ export class MistralService {
       attempt++;
       try {
         // Step 1: Extract high-fidelity markdown using Mistral OCR
-        const ocrData = await this.performOcr(documentPayload);
-        const markdown = (ocrData.pages || [])
-          .map((p) => p.markdown || '')
-          .join('\n\n--- PAGE BREAK ---\n\n')
-          .trim();
+        let markdown = '';
+        try {
+          const ocrData = await this.performOcr(documentPayload);
+          markdown = (ocrData.pages || [])
+            .map((p) => p.markdown || '')
+            .join('\n\n--- PAGE BREAK ---\n\n')
+            .trim();
+        } catch (ocrError: any) {
+          const { statusCode, cleanMessage } = this.analyzeMistralError(ocrError);
+          // If OCR endpoint is rate-limited (code 1300 / quota 0 on free tier) or restricted, fallback to Vision for images
+          if (!isPdf && (statusCode === 429 || statusCode === 400 || cleanMessage.includes('rate limit'))) {
+            this.logger.warn(
+              `Mistral OCR endpoint restricted or rate-limited (${statusCode} - ${cleanMessage}). Falling back to Mistral Vision (pixtral-12b-2409)...`,
+            );
+            return await this.extractViaVision(dataUri, providerFields, providerTax);
+          }
+          throw ocrError;
+        }
 
         if (!markdown) {
+          if (!isPdf) {
+            this.logger.warn('No text extracted from Mistral OCR. Falling back to Mistral Vision...');
+            return await this.extractViaVision(dataUri, providerFields, providerTax);
+          }
           throw new BadRequestException(
             'El documento fue procesado pero no se detectó texto legible por OCR.',
           );
@@ -88,6 +108,7 @@ export class MistralService {
         const structured = await this.structureInvoiceMarkdown(
           markdown,
           providerFields,
+          providerTax,
         );
 
         return structured;
@@ -143,34 +164,37 @@ export class MistralService {
     return (await response.json()) as MistralOcrResponse;
   }
 
-  private async structureInvoiceMarkdown(
-    markdown: string,
-    providerFields?: Record<string, any>,
-  ): Promise<ExtractedInvoiceData> {
-    let providerInstructions = '';
+  private buildProviderInstructions(
+    providerFields: Record<string, any> | undefined,
+    config: ProviderParsedConfig,
+  ): string {
+    if (config.hasAnyConfig) {
+      const codeRule = config.hasCodeConfig
+        ? `- "code": busca el código de producto / SKU correspondiente estrictamente a la columna "${config.codeConfig!.value}".${config.codeConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.codeConfig!.instructions}.` : ''} Si no viene para ese ítem, devuelve null.`
+        : `- "code": null (el proveedor NO tiene configurado campo de código; devuelve estrictamente null).`;
 
-    const hasCodeConfig = Boolean(
-      providerFields?.code && String(providerFields.code).trim().length > 0,
-    );
-    const hasCostPriceConfig = Boolean(
-      providerFields?.cost_price &&
-        String(providerFields.cost_price).trim().length > 0,
-    );
-    const hasCostPriceTaxConfig = Boolean(
-      providerFields?.cost_price_tax &&
-        String(providerFields.cost_price_tax).trim().length > 0,
-    );
+      const costPriceRule = config.hasCostPriceConfig
+        ? `- "cost_price": costo unitario sin impuestos (neto) correspondiente estrictamente a la columna "${config.costPriceConfig!.value}".${config.costPriceConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.costPriceConfig!.instructions}.` : ''} Si no aparece en la fila, devuelve null.`
+        : `- "cost_price": null (el proveedor NO tiene configurado costo sin impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`;
 
-    const hasAnyConfig =
-      hasCodeConfig || hasCostPriceConfig || hasCostPriceTaxConfig;
+      const costPriceTaxRule = config.hasCostPriceTaxConfig
+        ? `- "cost_price_tax": costo unitario con impuestos (bruto / con IVA) correspondiente estrictamente a la columna "${config.costPriceTaxConfig!.value}".${config.costPriceTaxConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.costPriceTaxConfig!.instructions}.` : ''} Si no aparece en la fila, devuelve null.`
+        : `- "cost_price_tax": null (el proveedor NO tiene configurado costo con impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`;
 
-    if (hasAnyConfig) {
-      providerInstructions = `
+      const packagesRule = config.hasPackagesConfig
+        ? `- "packages": cantidad de cajas/bultos/embalajes comprados correspondiente estrictamente a la columna "${config.packagesConfig!.value}".${config.packagesConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.packagesConfig!.instructions}.` : ''} (número entero o float, o null si no aparece).`
+        : `- "packages": null (no configurado en la plantilla).`;
+
+      const unitsPerPackageRule = config.hasUnitsPerPackageConfig
+        ? `- "units_per_package": cantidad de unidades o productos por caja/embalaje correspondiente estrictamente a la columna "${config.unitsPerPackageConfig!.value}".${config.unitsPerPackageConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.unitsPerPackageConfig!.instructions}.` : ''} (número entero o float, o null si no aparece).`
+        : `- "units_per_package": null (no configurado en la plantilla).`;
+
+      return `
 Plantilla de columnas/campos configurada para este proveedor:
 ${JSON.stringify(
   Object.fromEntries(
     Object.entries(providerFields || {}).filter(
-      ([, v]) => v && String(v).trim().length > 0,
+      ([k, v]) => k !== 'tax' && Boolean(v),
     ),
   ),
   null,
@@ -183,36 +207,236 @@ SOLO se deben extraer los campos que están configurados en la plantilla.
 CUALQUIER OTRO CAMPO NO CONFIGURADO DEBE DEVOLVERSE ESTRICTAMENTE COMO null, INCLUSO SI LA FACTURA CONTIENE ESE DATO.
 
 Para cada ítem en "items":
-${
-  hasCodeConfig
-    ? `- "code": busca el código de producto / SKU correspondiente a la columna "${providerFields!.code}". Si no viene para ese ítem, devuelve null.`
-    : `- "code": null (el proveedor NO tiene configurado campo de código; devuelve estrictamente null).`
-}
+${codeRule}
 - "name": descripción o nombre del producto (string obligatorio).
-- "quantity": cantidad de unidades (número, si no aparece usa 1).
-${
-  hasCostPriceConfig
-    ? `- "cost_price": costo unitario sin impuestos (neto) correspondiente a la columna "${providerFields!.cost_price}". Si no aparece en la fila, devuelve null.`
-    : `- "cost_price": null (el proveedor NO tiene configurado costo sin impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`
-}
-${
-  hasCostPriceTaxConfig
-    ? `- "cost_price_tax": costo unitario con impuestos (bruto / con IVA) correspondiente a la columna "${providerFields!.cost_price_tax}". Si no aparece en la fila, devuelve null.`
-    : `- "cost_price_tax": null (el proveedor NO tiene configurado costo con impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`
-}
+${costPriceRule}
+${costPriceTaxRule}
+${packagesRule}
+${unitsPerPackageRule}
+- "quantity": si se detectan "packages" y "units_per_package", calcula su multiplicación como la cantidad total de unidades. Si solo existe uno, usa ese valor. Si no existe ninguno, usa la cantidad detectada o 0.
 - "total_price": total o subtotal del renglón (número, si existe, o null).`;
-    } else {
-      providerInstructions = `
+    }
+
+    return `
 El proveedor no tiene plantilla de campos configurada. Aplica el criterio general de extracción contable completa:
 Para cada ítem en "items":
 - "code": código de barras, SKU o código de producto (string, si existe en la fila o comprobante, o null).
 - "name": descripción o nombre del producto (string obligatorio).
-- "quantity": cantidad adquirida (número, por defecto 1).
+- "packages": cantidad de bultos/cajas si existe, o null.
+- "units_per_package": unidades por caja si existe, o null.
+- "quantity": cantidad adquirida total (número, por defecto 1).
 - "cost_price": costo unitario neto sin impuestos (número, si se indica o calcula en la factura, o null).
 - "cost_price_tax": costo unitario bruto con impuestos / IVA incluido (número, si se indica o calcula en la factura, o null).
 - "unit_price": precio unitario indicado (número, si existe).
 - "total_price": subtotal o precio total del renglón (número, si existe).`;
+  }
+
+  private normalizeItems(
+    rawItems: any[],
+    hasAnyConfig: boolean,
+    hasCodeConfig: boolean,
+    hasCostPriceConfig: boolean,
+    hasCostPriceTaxConfig: boolean,
+    providerTax: number = 19,
+  ): ExtractedInvoiceItem[] {
+    if (!Array.isArray(rawItems)) {
+      return [];
     }
+
+    const taxMultiplier = 1 + providerTax / 100;
+
+    return rawItems.map((it: any) => {
+      let code =
+        it.code !== null && it.code !== undefined && String(it.code).trim() !== ''
+          ? String(it.code).trim()
+          : null;
+      const name = String(it.name || 'Producto sin nombre').trim();
+      const rawPackages =
+        it.packages !== null &&
+        it.packages !== undefined &&
+        !isNaN(Number(it.packages)) &&
+        Number(it.packages) > 0
+          ? Number(it.packages)
+          : null;
+
+      const rawUnitsPerPackage =
+        it.units_per_package !== null &&
+        it.units_per_package !== undefined &&
+        !isNaN(Number(it.units_per_package)) &&
+        Number(it.units_per_package) > 0
+          ? Number(it.units_per_package)
+          : null;
+
+      let quantity: number;
+      if (rawPackages !== null && rawUnitsPerPackage !== null) {
+        quantity = Math.round(rawPackages * rawUnitsPerPackage);
+      } else if (rawPackages !== null) {
+        quantity = Math.round(rawPackages);
+      } else if (rawUnitsPerPackage !== null) {
+        quantity = Math.round(rawUnitsPerPackage);
+      } else {
+        quantity =
+          Number(it.quantity) > 0
+            ? Number(it.quantity)
+            : hasAnyConfig
+              ? 0
+              : 1;
+      }
+
+      let cost_price =
+        it.cost_price !== null &&
+        it.cost_price !== undefined &&
+        !isNaN(Number(it.cost_price))
+          ? Math.round(Number(it.cost_price))
+          : null;
+
+      let cost_price_tax =
+        it.cost_price_tax !== null &&
+        it.cost_price_tax !== undefined &&
+        !isNaN(Number(it.cost_price_tax))
+          ? Math.round(Number(it.cost_price_tax))
+          : null;
+
+      if (hasAnyConfig) {
+        // 1. Regla de código estricto
+        if (!hasCodeConfig) {
+          code = null;
+        }
+
+        // 2. Reglas de costos basadas en campos configurados del proveedor
+        if (hasCostPriceConfig && !hasCostPriceTaxConfig) {
+          if (
+            cost_price === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price = Math.round(Number(it.unit_price));
+          }
+          cost_price_tax =
+            cost_price !== null ? Math.round(cost_price * taxMultiplier) : null;
+        } else if (!hasCostPriceConfig && hasCostPriceTaxConfig) {
+          if (
+            cost_price_tax === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price_tax = Math.round(Number(it.unit_price));
+          }
+          cost_price =
+            cost_price_tax !== null
+              ? Math.round(cost_price_tax / taxMultiplier)
+              : null;
+        } else if (hasCostPriceConfig && hasCostPriceTaxConfig) {
+          if (
+            cost_price === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price = Math.round(Number(it.unit_price));
+          }
+          if (
+            cost_price_tax === null &&
+            it.unit_price !== null &&
+            it.unit_price !== undefined &&
+            !isNaN(Number(it.unit_price))
+          ) {
+            cost_price_tax = Math.round(Number(it.unit_price));
+          }
+        } else {
+          cost_price = null;
+          cost_price_tax = null;
+        }
+
+        const unit_price = cost_price ?? cost_price_tax ?? null;
+        const total_price =
+          it.total_price !== null &&
+          it.total_price !== undefined &&
+          !isNaN(Number(it.total_price))
+            ? Math.round(Number(it.total_price))
+            : cost_price_tax
+              ? cost_price_tax * quantity
+              : cost_price
+                ? cost_price * quantity
+                : null;
+
+        return {
+          code,
+          name,
+          quantity,
+          packages: rawPackages,
+          units_per_package: rawUnitsPerPackage,
+          cost_price,
+          cost_price_tax,
+          unit_price,
+          total_price,
+        };
+      } else {
+        const rawUnitPrice =
+          it.unit_price !== null &&
+          it.unit_price !== undefined &&
+          !isNaN(Number(it.unit_price))
+            ? Math.round(Number(it.unit_price))
+            : null;
+
+        const rawTotalPrice =
+          it.total_price !== null &&
+          it.total_price !== undefined &&
+          !isNaN(Number(it.total_price))
+            ? Math.round(Number(it.total_price))
+            : null;
+
+        if (cost_price !== null && cost_price_tax !== null) {
+          // Ambos presentes
+        } else if (cost_price !== null && cost_price_tax === null) {
+          cost_price_tax = Math.round(cost_price * taxMultiplier);
+        } else if (cost_price_tax !== null && cost_price === null) {
+          cost_price = Math.round(cost_price_tax / taxMultiplier);
+        } else if (rawUnitPrice !== null) {
+          cost_price = rawUnitPrice;
+          cost_price_tax = Math.round(cost_price * taxMultiplier);
+        } else if (rawTotalPrice !== null && quantity > 0) {
+          cost_price = Math.round(rawTotalPrice / quantity);
+          cost_price_tax = Math.round(cost_price * taxMultiplier);
+        }
+
+        const unit_price = cost_price_tax ?? cost_price ?? rawUnitPrice;
+        const total_price =
+          rawTotalPrice ??
+          (cost_price_tax
+            ? cost_price_tax * quantity
+            : cost_price
+              ? cost_price * quantity
+              : null);
+
+        return {
+          code,
+          name,
+          quantity,
+          packages: rawPackages,
+          units_per_package: rawUnitsPerPackage,
+          cost_price,
+          cost_price_tax,
+          unit_price,
+          total_price,
+        };
+      }
+    });
+  }
+
+  private async structureInvoiceMarkdown(
+    markdown: string,
+    providerFields?: Record<string, any>,
+    providerTax: number = 19,
+  ): Promise<ExtractedInvoiceData> {
+    const config = extractProviderConfig(providerFields);
+
+    const providerInstructions = this.buildProviderInstructions(
+      providerFields,
+      config,
+    );
 
     const userPrompt = `
 Texto extraído por OCR de la factura:
@@ -274,113 +498,107 @@ Devuelve únicamente el objeto JSON.`;
 
     const parsed = JSON.parse(cleanJson);
 
-    const items: ExtractedInvoiceItem[] = Array.isArray(parsed.items)
-      ? parsed.items.map((it: any) => {
-          let code =
-            it.code !== null && it.code !== undefined && String(it.code).trim() !== ''
-              ? String(it.code).trim()
-              : null;
-          const name = String(it.name || 'Producto sin nombre').trim();
-          const quantity = Number(it.quantity) > 0 ? Number(it.quantity) : 1;
+    const items = this.normalizeItems(
+      parsed.items || [],
+      config.hasAnyConfig,
+      config.hasCodeConfig,
+      config.hasCostPriceConfig,
+      config.hasCostPriceTaxConfig,
+      providerTax,
+    );
 
-          let cost_price =
-            it.cost_price !== null &&
-            it.cost_price !== undefined &&
-            !isNaN(Number(it.cost_price))
-              ? Math.round(Number(it.cost_price))
-              : null;
+    return {
+      code: String(parsed.code || 'SIN-NUMERO'),
+      total_amount: Math.round(Number(parsed.total_amount) || 0),
+      issue_date: parsed.issue_date || undefined,
+      items,
+      raw_data: parsed.raw_data || undefined,
+    };
+  }
 
-          let cost_price_tax =
-            it.cost_price_tax !== null &&
-            it.cost_price_tax !== undefined &&
-            !isNaN(Number(it.cost_price_tax))
-              ? Math.round(Number(it.cost_price_tax))
-              : null;
+  /**
+   * Directly extracts invoice data from an image document using Mistral's Vision model (pixtral-12b-2409).
+   * Used as a high-compatibility fallback when the dedicated /v1/ocr endpoint is rate-limited or restricted on free tier.
+   */
+  private async extractViaVision(
+    dataUri: string,
+    providerFields?: Record<string, any>,
+    providerTax: number = 19,
+  ): Promise<ExtractedInvoiceData> {
+    const config = extractProviderConfig(providerFields);
 
-          if (hasAnyConfig) {
-            // CASO 2: Proveedor con campos de plantilla configurados
-            if (!hasCodeConfig) {
-              code = null;
-            }
-            if (!hasCostPriceConfig) {
-              cost_price = null;
-            }
-            if (!hasCostPriceTaxConfig) {
-              cost_price_tax = null;
-            }
+    const providerInstructions = this.buildProviderInstructions(
+      providerFields,
+      config,
+    );
 
-            const unit_price = cost_price ?? cost_price_tax ?? null;
-            const total_price =
-              it.total_price !== null &&
-              it.total_price !== undefined &&
-              !isNaN(Number(it.total_price))
-                ? Math.round(Number(it.total_price))
-                : cost_price_tax
-                  ? cost_price_tax * quantity
-                  : cost_price
-                    ? cost_price * quantity
-                    : null;
+    const userPrompt = `
+Analiza detenidamente la factura o comprobante adjunto y extrae los siguientes datos estrictamente en un objeto JSON:
+- "code": número de factura, folio o comprobante (string).
+- "total_amount": monto total a pagar de la factura como número entero sin decimales ni signos de moneda.
+- "issue_date": fecha de emisión de la factura en formato ISO YYYY-MM-DD (string, opcional).
+- "items": arreglo con cada producto listado en la factura.
+${providerInstructions}
+- "raw_data": metadatos contables adicionales detectados (ej. subtotal, impuesto, razón social).
 
-            return {
-              code,
-              name,
-              quantity,
-              cost_price,
-              cost_price_tax,
-              unit_price,
-              total_price,
-            };
-          } else {
-            // CASO 1: Proveedor sin campos configurados (criterio general)
-            const rawUnitPrice =
-              it.unit_price !== null &&
-              it.unit_price !== undefined &&
-              !isNaN(Number(it.unit_price))
-                ? Math.round(Number(it.unit_price))
-                : null;
+Devuelve únicamente el objeto JSON.`;
 
-            const rawTotalPrice =
-              it.total_price !== null &&
-              it.total_price !== undefined &&
-              !isNaN(Number(it.total_price))
-                ? Math.round(Number(it.total_price))
-                : null;
+    const chatResponse = await fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'pixtral-12b-2409',
+        response_format: { type: 'json_object' },
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Eres un asistente contable y de inventario de alta precisión. Devuelve única y estrictamente un objeto JSON válido.',
+          },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: userPrompt },
+              { type: 'image_url', image_url: dataUri },
+            ],
+          },
+        ],
+      }),
+    });
 
-            if (cost_price !== null && cost_price_tax !== null) {
-              // Ambos presentes
-            } else if (cost_price !== null && cost_price_tax === null) {
-              cost_price_tax = Math.round(cost_price * 1.19);
-            } else if (cost_price_tax !== null && cost_price === null) {
-              cost_price = Math.round(cost_price_tax / 1.19);
-            } else if (rawUnitPrice !== null) {
-              cost_price = rawUnitPrice;
-              cost_price_tax = Math.round(cost_price * 1.19);
-            } else if (rawTotalPrice !== null && quantity > 0) {
-              cost_price = Math.round(rawTotalPrice / quantity);
-              cost_price_tax = Math.round(cost_price * 1.19);
-            }
+    if (!chatResponse.ok) {
+      const errorBody = await chatResponse.json().catch(() => ({}));
+      const errorObj = new Error(
+        errorBody.message || errorBody.detail || chatResponse.statusText || 'Mistral Vision call failed',
+      ) as any;
+      errorObj.status = chatResponse.status;
+      errorObj.response = { status: chatResponse.status, data: errorBody };
+      throw errorObj;
+    }
 
-            const unit_price = cost_price_tax ?? cost_price ?? rawUnitPrice;
-            const total_price =
-              rawTotalPrice ??
-              (cost_price_tax
-                ? cost_price_tax * quantity
-                : cost_price
-                  ? cost_price * quantity
-                  : null);
+    const completionData = await chatResponse.json();
+    const rawContent =
+      completionData.choices?.[0]?.message?.content || '{}';
 
-            return {
-              code,
-              name,
-              quantity,
-              cost_price,
-              cost_price_tax,
-              unit_price,
-              total_price,
-            };
-          }
-        })
-      : [];
+    const cleanJson = rawContent
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```\s*$/i, '')
+      .trim();
+
+    const parsed = JSON.parse(cleanJson);
+
+    const items = this.normalizeItems(
+      parsed.items || [],
+      config.hasAnyConfig,
+      config.hasCodeConfig,
+      config.hasCostPriceConfig,
+      config.hasCostPriceTaxConfig,
+      providerTax,
+    );
 
     return {
       code: String(parsed.code || 'SIN-NUMERO'),

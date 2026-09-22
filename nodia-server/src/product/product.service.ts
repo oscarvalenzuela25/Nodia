@@ -43,7 +43,28 @@ export class ProductService {
       qb.leftJoinAndSelect('product.provider', 'provider');
     }
 
-    applyRansack(qb, q, 'product');
+    const { stock_status_in, ...cleanQ } = q ?? {};
+
+    if (stock_status_in) {
+      const statuses = Array.isArray(stock_status_in)
+        ? stock_status_in
+        : [stock_status_in];
+      const conditions: string[] = [];
+      if (statuses.includes('out')) {
+        conditions.push('product.stock <= 0');
+      }
+      if (statuses.includes('low') || statuses.includes('medium') || statuses.includes('medio')) {
+        conditions.push('(product.stock > 0 AND product.stock < 10)');
+      }
+      if (statuses.includes('normal')) {
+        conditions.push('product.stock >= 10');
+      }
+      if (conditions.length > 0) {
+        qb.andWhere(`(${conditions.join(' OR ')})`);
+      }
+    }
+
+    applyRansack(qb, cleanQ, 'product');
 
     if (all) {
       const data = await qb.getMany();

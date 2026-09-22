@@ -143,10 +143,14 @@ export interface GetProductsParams {
   q?: {
     business_id_eq?: string;
     provider_id_eq?: string;
+    provider_id_in?: string[];
     code_cont?: string;
     code_eq?: string;
+    code_in?: string[];
     name_cont?: string;
+    name_in?: string[];
     is_active_eq?: boolean;
+    stock_status_in?: string[];
     s?: string;
     [key: string]: unknown;
   };
@@ -155,18 +159,22 @@ export interface GetProductsParams {
 // ----------------------------------------------------
 // Provider Types
 // ----------------------------------------------------
+export interface ProviderFieldConfig {
+  value: string;
+  instructions?: string;
+}
+
+export type ProviderFieldsMapping = Record<
+  string,
+  ProviderFieldConfig | string | unknown
+>;
+
 export interface ProviderEntity {
   id: string;
   business_id: string;
   name: string;
-  fields?: {
-    email?: string;
-    phone?: string;
-    category?: string;
-    address?: string;
-    rut_nit?: string;
-    [key: string]: unknown;
-  };
+  tax: number;
+  fields?: ProviderFieldsMapping;
   is_active: boolean;
   created_at: string;
   updated_at?: string;
@@ -175,12 +183,14 @@ export interface ProviderEntity {
 export interface CreateProviderPayload {
   business_id: string;
   name: string;
+  tax?: number;
   fields?: Record<string, unknown>;
   is_active?: boolean;
 }
 
 export interface UpdateProviderPayload {
   name?: string;
+  tax?: number;
   fields?: Record<string, unknown>;
   is_active?: boolean;
 }

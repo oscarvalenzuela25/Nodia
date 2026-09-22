@@ -5,7 +5,11 @@ export const SearchTextField = styled(TextField)(({ theme }) => {
   const borderColor = theme.palette.border?.default ?? theme.palette.divider;
 
   return {
+    "&.MuiFormControl-fullWidth": {
+      width: "100%",
+    },
     "& .MuiInput-root": {
+      width: "100%",
       backgroundColor: "transparent",
       fontSize: "0.875rem",
       "&::before": {

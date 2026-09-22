@@ -139,6 +139,26 @@ export const StatusDot = styled("span", {
     : `0 0 6px ${theme.palette.error.main}`,
 }));
 
+export const StockDot = styled("span", {
+  shouldForwardProp: (prop) => prop !== "status",
+})<{ status: "normal" | "low" | "out" }>(({ theme, status }) => {
+  const color =
+    status === "normal"
+      ? theme.palette.success.main
+      : status === "low"
+      ? theme.palette.warning.main
+      : theme.palette.error.main;
+
+  return {
+    display: "inline-block",
+    width: 7,
+    height: 7,
+    borderRadius: "50%",
+    backgroundColor: color,
+    boxShadow: `0 0 6px ${color}`,
+  };
+});
+
 // KPI Cards for Overview
 export const KpiCard = styled(Card)(({ theme }) => {
   const isDark = theme.palette.mode === "dark";

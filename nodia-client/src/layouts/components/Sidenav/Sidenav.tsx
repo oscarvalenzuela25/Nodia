@@ -71,6 +71,19 @@ type Props = {
   desktopCollapsed?: boolean;
 };
 
+const getGroupPriority = (key: string): number => {
+  const normalized = key.toLowerCase().replace(/[-_]/g, "");
+  if (normalized.includes("business") || normalized.includes("negocio")) return 1;
+  if (
+    normalized.includes("setting") ||
+    normalized.includes("ajuste") ||
+    normalized.includes("admin")
+  ) {
+    return 99;
+  }
+  return 50;
+};
+
 const Sidenav: FC<Props> = ({
   mobileOpen,
   onDrawerToggle,
@@ -105,7 +118,11 @@ const Sidenav: FC<Props> = ({
       return [homeItem];
     }
 
-    const dynamicGroups: SidenavItem[] = userModules.map((group) => {
+    const sortedGroups = [...userModules].reverse().sort((a, b) => {
+      return getGroupPriority(a.module_group_key) - getGroupPriority(b.module_group_key);
+    });
+
+    const dynamicGroups: SidenavItem[] = sortedGroups.map((group) => {
       const groupTitle = getTranslatedLabel(
         group.translates,
         group.module_group_key,

@@ -32,6 +32,10 @@ export const getModuleIcon = (key: string): ReactNode => {
 export const getGroupIcon = (key: string): ReactNode => {
   const normalized = key.toLowerCase();
   switch (normalized) {
+    case "negocios":
+    case "business":
+    case "businesses":
+      return <StorefrontOutlinedIcon />;
     case "ajustes-generales":
     case "general-settings":
     case "general_settings":

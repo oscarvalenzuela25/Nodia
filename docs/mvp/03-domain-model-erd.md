@@ -24,7 +24,7 @@ El modelo cubre la base de identidad, autorización, navegación, internacionali
 - `businesses`: entidades comerciales gestionadas por un `owner_id` (PK uuid).
 - `business_collaborators`: usuarios asociados a un negocio con su cargo y conjunto de permisos (`action_ids bigint[]`).
 - `business_actions`: catálogo de permisos operativos específicos del contexto de negocio (ej. gestionar colaboradores, ver analítica, escanear facturas).
-- `providers`: proveedores de insumos/mercancía de un negocio. Incluye `fields json` con la plantilla de columnas y formato de sus facturas (por defecto `{}`).
+- `providers`: proveedores de insumos/mercancía de un negocio. Incluye `tax integer` (impuesto aplicable, default 19) y `fields json` con la plantilla de mapeo de columnas e instrucciones para la extracción contable IA (`{ [field]: { value: string, instructions?: string } }` para `code`, `cost_price`, `cost_price_tax`, `packages`, `units_per_package`).
 - `products`: catálogo de productos de un negocio con códigos/SKU, costos, impuestos, márgenes y precio de venta.
 - `product_logs`: registro histórico e inmutable de auditoría para cada variación de producto (generado automáticamente tras creación o actualización).
 - `invoices`: comprobantes de facturación asociados a un negocio y proveedor, con su código/número de factura (`code`), monto total (`total_amount`), ubicación física en storage R2/S3 (`path_storage`) y el contenido/items extraídos embebidos directamente en el campo estructurado `data json` (por defecto `{}`).
@@ -222,6 +222,7 @@ Table providers [headercolor: #4f46e5] {
 	id bigint [ pk, increment, not null ]
 	business_id uuid [ not null ]
 	name varchar(255) [ not null ]
+	tax integer [ not null, default: 19 ]
 	fields json [ not null, default: '{}' ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]

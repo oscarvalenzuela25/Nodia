@@ -13,7 +13,7 @@ const InputSearch: FC<InputSearchProps> = ({
   placeholder,
   onClear,
   disabled = false,
-  fullWidth = false,
+  fullWidth = true,
   size = "small",
   variant = "standard",
   className,

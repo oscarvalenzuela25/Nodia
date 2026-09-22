@@ -35,6 +35,10 @@ env/
 temp_uploads/
 *.tmp
 
+# Browser Profile & Session Cache
+browser_profile/
+.cached_cookies_*.json
+
 # IDEs
 .vscode/
 .idea/

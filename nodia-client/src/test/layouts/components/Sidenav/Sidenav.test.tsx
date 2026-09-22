@@ -181,4 +181,73 @@ describe("Sidenav", () => {
     expect(screen.getByText("Grupo Personalizado")).toBeInTheDocument();
     expect(screen.getByText("Módulo Custom")).toBeInTheDocument();
   });
+
+  it("should display module groups inversely with Negocios before Ajustes Generales", () => {
+    act(() => {
+      useGeneralSettingsStore.getState().setContext({
+        roles: ["admin"],
+        actions: [],
+        modules: [
+          {
+            module_group_key: "general_settings",
+            translates: [
+              { key: "key", es: "Ajustes Generales", en: "General Settings" },
+            ],
+            modules: [
+              {
+                key: "users",
+                link: "/settings/users",
+                translates: [{ key: "key", es: "Usuarios", en: "Users" }],
+              },
+            ],
+          },
+          {
+            module_group_key: "business",
+            translates: [
+              { key: "key", es: "Negocios", en: "Business" },
+            ],
+            modules: [
+              {
+                key: "businesses",
+                link: "/business",
+                translates: [{ key: "key", es: "Mis Negocios", en: "My Businesses" }],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/",
+          element: (
+            <Sidenav
+              mobileOpen={true}
+              onDrawerToggle={vi.fn()}
+              desktopCollapsed={false}
+            />
+          ),
+        },
+      ],
+      { initialEntries: ["/"] }
+    );
+
+    render(<RouterProvider router={router} />);
+
+    const businessHeader = screen.getByText("Negocios");
+    const settingsHeader = screen.getByText("Ajustes Generales");
+
+    expect(businessHeader).toBeInTheDocument();
+    expect(settingsHeader).toBeInTheDocument();
+
+    // Verify Negocios is rendered before Ajustes Generales in DOM order
+    expect(
+      Boolean(
+        businessHeader.compareDocumentPosition(settingsHeader) &
+          Node.DOCUMENT_POSITION_FOLLOWING
+      )
+    ).toBe(true);
+  });
 });

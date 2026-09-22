@@ -151,4 +151,30 @@ describe("InputSearch", () => {
       expect(input).toHaveFocus();
     });
   });
+
+  it("renders with fullWidth by default to fill container width", () => {
+    const { container } = render(
+      <InputSearch
+        value=""
+        onChange={vi.fn()}
+        placeholder="Buscar..."
+      />
+    );
+
+    expect(container.querySelector(".MuiFormControl-fullWidth")).toBeInTheDocument();
+  });
+
+  it("allows disabling fullWidth when fullWidth={false}", () => {
+    const { container } = render(
+      <InputSearch
+        value=""
+        onChange={vi.fn()}
+        placeholder="Buscar..."
+        fullWidth={false}
+      />
+    );
+
+    expect(container.querySelector(".MuiFormControl-fullWidth")).not.toBeInTheDocument();
+  });
 });
+

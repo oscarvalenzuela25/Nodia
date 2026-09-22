@@ -143,6 +143,7 @@ export const InvoicesTab: FC<Props> = ({
             value={search}
             onChange={(val: string) => setSearch(val)}
             placeholder={t("business:search_invoices_placeholder")}
+            fullWidth
           />
         </Box>
 

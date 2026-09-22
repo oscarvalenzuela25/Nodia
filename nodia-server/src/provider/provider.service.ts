@@ -75,6 +75,10 @@ export class ProviderService {
   async create(createProviderDto: CreateProviderDto): Promise<Provider> {
     const payload = {
       ...createProviderDto,
+      tax:
+        createProviderDto.tax !== undefined && createProviderDto.tax !== null
+          ? Number(createProviderDto.tax)
+          : 19,
       name: createProviderDto.name ? createProviderDto.name.trim().toLowerCase() : createProviderDto.name,
     };
     const provider = this.providerRepository.create(payload);
@@ -85,6 +89,9 @@ export class ProviderService {
     const provider = await this.findOne(id);
     const payload = {
       ...updateProviderDto,
+      ...(updateProviderDto.tax !== undefined && {
+        tax: Number(updateProviderDto.tax),
+      }),
       ...(updateProviderDto.name !== undefined && {
         name: updateProviderDto.name ? updateProviderDto.name.trim().toLowerCase() : updateProviderDto.name,
       }),

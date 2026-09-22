@@ -367,7 +367,11 @@ export const OverviewTab: FC<Props> = ({
                       {prov.name}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {prov.fields?.phone || prov.fields?.email || "Proveedor activo"}
+                      {typeof prov.fields?.phone === "string"
+                        ? prov.fields.phone
+                        : typeof prov.fields?.email === "string"
+                        ? prov.fields.email
+                        : "Proveedor activo"}
                     </Typography>
                   </Box>
                 ))}

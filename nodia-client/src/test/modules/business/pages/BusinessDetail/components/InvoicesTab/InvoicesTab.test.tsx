@@ -41,6 +41,7 @@ const mockProviders: ProviderEntity[] = [
     id: "prov-1",
     business_id: "biz-123",
     name: "Distribuidora Mayorista",
+    tax: 19,
     fields: {},
     is_active: true,
     created_at: "2026-01-01T00:00:00Z",

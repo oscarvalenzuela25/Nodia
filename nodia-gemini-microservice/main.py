@@ -72,12 +72,81 @@ async def health_check():
     }
 
 
+@app.get("/auth/status", tags=["Authentication"])
+async def auth_status():
+    """Retorna el estado de autenticación de Gemini y el perfil del navegador."""
+    status_info = await gemini_service.get_status()
+    return {
+        "authenticated": status_info["initialized"],
+        "has_cookies": status_info["has_cookies"],
+        "has_browser_profile": status_info["has_browser_profile"],
+        "last_refresh_time": status_info["last_refresh_time"],
+        "tier": status_info["tier"],
+        "model": status_info.get("model", "gemini-flash"),
+        "model_display": status_info.get("model_display", "3.8 Flash"),
+    }
+
+
+@app.post("/auth/login", tags=["Authentication"])
+async def interactive_login():
+    """
+    Abre una ventana visible de Google Chrome para que el usuario inicie sesión
+    en su cuenta de Google. Extrae automáticamente las cookies y las guarda.
+    """
+    logger.info("Triggered interactive browser login from API...")
+    result = await gemini_service.browser_manager.login_interactive(timeout_seconds=300)
+    if result["success"]:
+        cookies = result.get("cookies", {})
+        if cookies.get("secure_1psid") and cookies.get("secure_1psidts"):
+            await gemini_service.reload_cookies(cookies["secure_1psid"], cookies["secure_1psidts"])
+        return {
+            "status": "success",
+            "message": "Autenticación completada exitosamente.",
+            "initialized": gemini_service.is_initialized,
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result.get("message", "No se completó la autenticación."),
+        )
+
+
+@app.post("/auth/refresh", tags=["Authentication"])
+async def refresh_auth():
+    """
+    Ejecuta una renovación silenciosa (headless) de cookies usando el perfil guardado.
+    """
+    if not gemini_service.browser_manager.has_profile():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No existe un perfil de navegador guardado. Realice primero un login interactivo en /auth/login.",
+        )
+
+    refreshed = await gemini_service.browser_manager.refresh_cookies_headless()
+    if refreshed:
+        await gemini_service.reload_cookies(refreshed["secure_1psid"], refreshed["secure_1psidts"])
+        return {
+            "status": "success",
+            "message": "Cookies renovadas exitosamente en segundo plano.",
+            "initialized": gemini_service.is_initialized,
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No se pudieron renovar las cookies automáticamente. La sesión puede haber expirado en Google.",
+        )
+
+
 @app.post("/analyze-invoice", tags=["Invoice OCR"])
 async def analyze_invoice(
     file: UploadFile = File(..., description="Documento o imagen de la factura (PDF, JPG, PNG, WEBP)"),
     provider_fields: Optional[str] = Form(
         None,
         description="JSON opcional con campos o reglas del proveedor",
+    ),
+    provider_tax: Optional[int] = Form(
+        None,
+        description="Porcentaje de impuesto (tax) del proveedor (default 19)",
     ),
 ):
     """
@@ -117,6 +186,7 @@ async def analyze_invoice(
         result = await gemini_service.analyze_invoice(
             file_path=temp_path,
             provider_fields=parsed_fields,
+            provider_tax=provider_tax,
         )
 
         return JSONResponse(content=result)

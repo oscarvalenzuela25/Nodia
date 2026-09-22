@@ -1,12 +1,15 @@
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
+  IsInt,
   IsNotEmpty,
   IsObject,
   IsOptional,
   IsString,
   IsUUID,
   Length,
+  Max,
+  Min,
 } from 'class-validator';
 
 export class CreateProviderDto {
@@ -21,6 +24,12 @@ export class CreateProviderDto {
     typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   name: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  tax?: number = 19;
 
   @IsOptional()
   @IsObject()

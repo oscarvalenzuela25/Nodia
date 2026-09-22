@@ -252,6 +252,7 @@ const Business: FC = () => {
             onChange={setSearchTerm}
             placeholder={t("business:search_placeholder")}
             disabled={isBusy}
+            fullWidth
           />
         </Box>
 

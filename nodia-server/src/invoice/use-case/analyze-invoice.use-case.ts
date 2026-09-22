@@ -39,6 +39,7 @@ export class AnalyzeInvoiceUseCase {
     }
 
     let providerFields: Record<string, any> | undefined;
+    let providerTax = 19;
 
     if (dto.provider_id && dto.provider_id.trim().length > 0) {
       const provider = await this.providerService.findOne(dto.provider_id);
@@ -48,6 +49,10 @@ export class AnalyzeInvoiceUseCase {
         );
       }
       providerFields = provider.fields;
+      providerTax =
+        provider.tax !== undefined && provider.tax !== null
+          ? Number(provider.tax)
+          : 19;
     }
 
     const selectedProvider =
@@ -74,6 +79,7 @@ export class AnalyzeInvoiceUseCase {
       file.buffer,
       file.mimetype,
       providerFields,
+      providerTax,
     );
 
     return {

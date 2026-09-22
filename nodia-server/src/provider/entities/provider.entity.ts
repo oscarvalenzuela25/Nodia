@@ -25,6 +25,9 @@ export class Provider {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
+  @Column({ type: 'int', default: 19 })
+  tax: number;
+
   @Column({ type: 'jsonb', default: () => "'{}'" })
   fields: Record<string, any>;
 

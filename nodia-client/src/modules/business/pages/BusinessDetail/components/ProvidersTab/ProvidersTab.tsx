@@ -16,7 +16,9 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -24,6 +26,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Skeleton } from "boneyard-js/react";
 
 import InputSearch from "../../../../../../components/inputs/InputSearch";
@@ -51,6 +54,8 @@ export const ProvidersTab: FC<Props> = ({
   const { t } = useTranslation(["business", "core"]);
 
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(50);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<ProviderEntity | null>(null);
 
@@ -64,12 +69,14 @@ export const ProvidersTab: FC<Props> = ({
   const {
     data: providersData,
     isLoading,
+    isFetching,
   } = useProviders({
+    page: page + 1,
+    limit: rowsPerPage,
     q: {
       business_id_eq: businessId,
-      name_cont: search || undefined,
+      name_cont: search.trim() || undefined,
     },
-    limit: 100,
   });
   const providers = providersData?.data ?? [];
 
@@ -119,6 +126,7 @@ export const ProvidersTab: FC<Props> = ({
           id: selectedProvider.id,
           payload: {
             name: data.name,
+            tax: data.tax,
             fields: data.fields,
             is_active: data.is_active,
           },
@@ -127,6 +135,7 @@ export const ProvidersTab: FC<Props> = ({
         await createMutation.mutateAsync({
           business_id: businessId,
           name: data.name,
+          tax: data.tax,
           fields: data.fields,
           is_active: data.is_active,
         });
@@ -147,8 +156,12 @@ export const ProvidersTab: FC<Props> = ({
         <Box sx={{ width: { xs: "100%", sm: 320 } }}>
           <InputSearch
             value={search}
-            onChange={(val: string) => setSearch(val)}
+            onChange={(val: string) => {
+              setSearch(val);
+              setPage(0);
+            }}
             placeholder={t("business:search_providers_placeholder")}
+            fullWidth
           />
         </Box>
 
@@ -165,19 +178,21 @@ export const ProvidersTab: FC<Props> = ({
 
       {/* Table */}
       <Skeleton loading={isLoading}>
-        <TableContainer
-          component={Paper}
+        <Paper
           sx={{
             borderRadius: 3,
             border: (theme) => `1px solid ${theme.palette.divider}`,
             boxShadow: "none",
+            overflow: "hidden",
           }}
         >
-          <Table>
+          <TableContainer>
+            <Table>
             <TableHead>
               <TableRow>
                 <TableCell width={100}>{t("business:provider_id")}</TableCell>
                 <TableCell>{t("business:provider_name")}</TableCell>
+                <TableCell align="center" width={110}>{t("business:provider_tax")}</TableCell>
                 <TableCell>{t("business:provider_fields_label")}</TableCell>
                 <TableCell align="center">{t("business:product_status")}</TableCell>
                 <TableCell align="right" width={80}>{t("core:actions")}</TableCell>
@@ -186,7 +201,7 @@ export const ProvidersTab: FC<Props> = ({
             <TableBody>
               {providers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
                       {t("business:providers_empty_title")}
                     </Typography>
@@ -206,31 +221,131 @@ export const ProvidersTab: FC<Props> = ({
                     {/* Name */}
                     <TableCell sx={{ fontWeight: 600 }}>{prov.name}</TableCell>
 
-                    {/* Fields (Dynamic JSON chips or empty message) */}
-                    <TableCell>
-                      {prov.fields && Object.keys(prov.fields).length > 0 ? (
-                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
-                          {Object.entries(prov.fields).map(([k, v]) => (
-                            <Chip
-                              key={k}
-                              size="small"
-                              variant="outlined"
-                              label={`${k}: ${String(v)}`}
-                              sx={{ fontSize: "0.75rem", borderRadius: 1.5 }}
-                              data-testid={`provider-field-chip-${prov.id}-${k}`}
-                            />
-                          ))}
-                        </Box>
-                      ) : (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ fontStyle: "italic" }}
-                          data-testid={`no-fields-${prov.id}`}
-                        >
-                          {t("business:no_custom_fields")}
-                        </Typography>
-                      )}
+                    {/* Tax */}
+                    <TableCell align="center">
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        label={`${prov.tax ?? 19}%`}
+                        sx={{ fontWeight: 600, borderRadius: 1.5 }}
+                        data-testid={`provider-tax-chip-${prov.id}`}
+                      />
+                    </TableCell>
+
+                    {/* Fields: Structured format with support for { value, instructions } */}
+                    <TableCell data-testid={`provider-fields-cell-${prov.id}`}>
+                      {(() => {
+                        const getFieldConfig = (
+                          field: unknown,
+                        ): { value: string; instructions: string } => {
+                          if (!field) return { value: "", instructions: "" };
+                          if (typeof field === "string")
+                            return { value: field, instructions: "" };
+                          if (
+                            typeof field === "object" &&
+                            field !== null &&
+                            "value" in field
+                          ) {
+                            const val = (field as Record<string, unknown>).value;
+                            const inst = (field as Record<string, unknown>).instructions;
+                            return {
+                              value: typeof val === "string" ? val : "",
+                              instructions: typeof inst === "string" ? inst : "",
+                            };
+                          }
+                          return { value: "", instructions: "" };
+                        };
+
+                        const codeConfig = getFieldConfig(prov.fields?.code);
+                        const costPriceConfig = getFieldConfig(prov.fields?.cost_price);
+                        const costPriceTaxConfig = getFieldConfig(prov.fields?.cost_price_tax);
+                        const packagesConfig = getFieldConfig(prov.fields?.packages);
+                        const unitsPerPackageConfig = getFieldConfig(prov.fields?.units_per_package);
+
+                        const renderFieldRow = (
+                          label: string,
+                          config: { value: string; instructions: string },
+                          testId: string,
+                        ) => (
+                          <Typography
+                            variant="caption"
+                            component="div"
+                            sx={{
+                              lineHeight: 1.5,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                            }}
+                            data-testid={testId}
+                          >
+                            <Box component="span" sx={{ fontWeight: 600 }}>
+                              {label}:
+                            </Box>{" "}
+                            <Box
+                              component="span"
+                              sx={{
+                                ml: 0.5,
+                                color: config.value ? "text.primary" : "text.secondary",
+                                fontStyle: config.value ? "normal" : "italic",
+                              }}
+                            >
+                              {config.value || t("business:no_info")}
+                            </Box>
+                            {config.instructions ? (
+                              <Tooltip
+                                title={`${t("business:mapping_field_instructions_label")}: ${config.instructions}`}
+                                arrow
+                                placement="top"
+                              >
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    cursor: "help",
+                                    ml: 0.5,
+                                  }}
+                                  data-testid={`${testId}-instructions`}
+                                >
+                                  <InfoOutlinedIcon
+                                    sx={{ fontSize: 13, color: "info.main" }}
+                                  />
+                                </Box>
+                              </Tooltip>
+                            ) : null}
+                          </Typography>
+                        );
+
+                        return (
+                          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
+                            {renderFieldRow(
+                              t("business:provider_col_code"),
+                              codeConfig,
+                              `provider-field-code-${prov.id}`,
+                            )}
+                            {renderFieldRow(
+                              t("business:provider_col_cost_price"),
+                              costPriceConfig,
+                              `provider-field-cost-price-${prov.id}`,
+                            )}
+                            {renderFieldRow(
+                              t("business:provider_col_cost_price_tax"),
+                              costPriceTaxConfig,
+                              `provider-field-cost-price-tax-${prov.id}`,
+                            )}
+                            {renderFieldRow(
+                              t("business:provider_col_packages"),
+                              packagesConfig,
+                              `provider-field-packages-${prov.id}`,
+                            )}
+                            {renderFieldRow(
+                              t("business:provider_col_units_per_package"),
+                              unitsPerPackageConfig,
+                              `provider-field-units-per-package-${prov.id}`,
+                            )}
+                          </Box>
+                        );
+                      })()}
                     </TableCell>
 
                     {/* Status */}
@@ -261,7 +376,27 @@ export const ProvidersTab: FC<Props> = ({
             </TableBody>
           </Table>
         </TableContainer>
-      </Skeleton>
+        <TablePagination
+          component="div"
+          count={providersData?.meta?.total_items ?? providers.length}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[25, 50, 100, 150, 200]}
+          disabled={isLoading || isFetching || isBusy}
+          labelRowsPerPage={t("core:pagination.rows_per_page")}
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}–${to} ${t("core:pagination.of")} ${
+              count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
+            }`
+          }
+        />
+      </Paper>
+    </Skeleton>
 
       {/* 3-Dots Actions Menu */}
       <Menu
