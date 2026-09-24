@@ -27,10 +27,17 @@
     "link": "Ruta",
     "link_placeholder": "ej: /settings/users",
     "link_helper": "Ruta relativa del módulo en la aplicación.",
-    "link_preview": "URL completa"
+    "link_preview": "URL completa",
+    "icon": "Ícono",
+    "icon_placeholder": "Por defecto (automático)",
+    "icon_helper": "Selecciona un ícono representativo de Material-UI para este elemento.",
+    "search_icon": "Buscar ícono...",
+    "default_icon": "Usar ícono por defecto",
+    "no_icons_found": "No se encontraron íconos"
   },
   "table": {
     "id": "Id",
+    "icon": "Ícono",
     "name": "Nombre",
     "key": "Identificador",
     "link": "Ruta",
@@ -60,6 +67,7 @@
     "search_placeholder": "Buscar por nombre o identificador de grupo...",
     "table": {
       "id": "Id",
+      "icon": "Ícono",
       "name": "Nombre del Grupo",
       "key": "Identificador",
       "active": "Activo",

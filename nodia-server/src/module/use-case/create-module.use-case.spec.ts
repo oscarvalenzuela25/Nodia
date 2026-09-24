@@ -23,6 +23,7 @@ describe('CreateModuleUseCase', () => {
       key: 'users',
       module_group_id: '1',
       link: '/general-settings/users',
+      icon: 'PersonOutlined',
       is_active: true,
       translates: [
         { key: 'key', es: 'Usuarios', en: 'Users' },
@@ -34,6 +35,7 @@ describe('CreateModuleUseCase', () => {
       key: 'users',
       module_group_id: '1',
       link: '/general-settings/users',
+      icon: 'PersonOutlined',
       is_active: true,
       created_at: new Date(),
       updated_at: new Date(),

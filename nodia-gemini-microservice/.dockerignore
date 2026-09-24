@@ -1,0 +1,10 @@
+.env
+.env.*
+.venv/
+venv/
+browser_profile/
+session_state/
+temp_uploads/
+__pycache__/
+*.pyc
+.git/

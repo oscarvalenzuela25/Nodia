@@ -1,12 +1,39 @@
+import asyncio
 import json
 import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from dotenv import dotenv_values
 from loguru import logger
 from gemini_webapi import GeminiClient
-from gemini_webapi.exceptions import AuthError, GeminiError
+from gemini_webapi.exceptions import AuthError, ModelInvalidError
 from browser_manager import BrowserCookieManager
+from session_store import SESSION_FILE, read_session, save_session
+
+os.environ.setdefault("GEMINI_COOKIE_PATH", str(SESSION_FILE.parent))
+
+def is_refusal_response(text: str) -> bool:
+    """Checks if Gemini returned a standard model refusal or reported inability to see/process attachments."""
+    t = text.lower()
+    refusal_keywords = [
+        "solo soy una ia basada en texto",
+        "ia basada en texto",
+        "modelo de lenguaje basado en texto",
+        "no puedo ayudarte con eso",
+        "no puedo ver imágenes",
+        "no puedo procesar imágenes",
+        "no puedo analizar imágenes",
+        "no has adjuntado",
+        "no se adjuntó",
+        "no adjuntaste",
+        "adjunta el documento",
+        "text-based ai",
+        "i am a text-based",
+        "i cannot view images",
+        "cannot process files",
+    ]
+    return any(k in t for k in refusal_keywords)
 
 def parse_field_config(field: Any) -> Optional[Dict[str, str]]:
     if not field:
@@ -24,72 +51,131 @@ def parse_field_config(field: Any) -> Optional[Dict[str, str]]:
 class GeminiWebService:
     def __init__(self):
         self.browser_manager = BrowserCookieManager()
-        self.secure_1psid = os.getenv("GEMINI_SECURE_1PSID", "").strip()
-        self.secure_1psidts = os.getenv("GEMINI_SECURE_1PSIDTS", "").strip()
+        self.secure_1psid = ""
+        self.secure_1psidts = ""
         self.model_name = os.getenv("GEMINI_MODEL", "gemini-flash").strip() or "gemini-flash"
         self.client: Optional[GeminiClient] = None
         self.is_initialized = False
         self.tier = "UNKNOWN"
         self.credits_remaining = None
+        self._env_credentials: Optional[tuple[str, str]] = None
+        self._client_lock = asyncio.Lock()
+        self._persist_task: Optional[asyncio.Task] = None
+
+    def _read_env(self) -> tuple[str, str, str]:
+        env_path = Path(__file__).resolve().parent / ".env"
+        values = dotenv_values(env_path) if env_path.exists() else {}
+        psid = (values.get("GEMINI_SECURE_1PSID") or os.getenv("GEMINI_SECURE_1PSID", "")).strip()
+        psidts = (values.get("GEMINI_SECURE_1PSIDTS") or os.getenv("GEMINI_SECURE_1PSIDTS", "")).strip()
+        model = (values.get("GEMINI_MODEL") or os.getenv("GEMINI_MODEL", "gemini-flash")).strip() or "gemini-flash"
+        return psid, psidts, model
+
+    def _persist_live_cookies(self) -> None:
+        if not self.client:
+            return
+        cookies = self.client.cookies
+        psid = cookies.get("__Secure-1PSID") or self.secure_1psid
+        psidts = cookies.get("__Secure-1PSIDTS") or self.secure_1psidts
+        if psid and psidts:
+            save_session(psid, psidts)
+            self.secure_1psid = psid
+            self.secure_1psidts = psidts
+
+    async def _persist_periodically(self) -> None:
+        while True:
+            try:
+                await asyncio.sleep(15)
+                self._persist_live_cookies()
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                logger.warning(f"Could not persist rotated Gemini cookies: {exc}")
+
+    async def _connect(self, psid: str, psidts: str) -> None:
+        if self.client:
+            await self.client.close()
+        self.client = GeminiClient(psid, psidts)
+        await self.client.init(timeout=60, auto_refresh=True, refresh_interval=180)
+        if self.client.account_status.name == "UNAUTHENTICATED":
+            raise AuthError("Gemini Web session is not authenticated")
+        self.secure_1psid = psid
+        self.secure_1psidts = psidts
+        self.is_initialized = True
+        self._persist_live_cookies()
+        if self._persist_task is None or self._persist_task.done():
+            self._persist_task = asyncio.create_task(self._persist_periodically())
+        logger.success("Gemini Web session initialized.")
 
     async def init_client(self, force_refresh: bool = False):
-        if self.client and self.is_initialized and not force_refresh:
-            return
+        async with self._client_lock:
+            disk_psid, disk_psidts, disk_model = self._read_env()
+            disk_credentials = (disk_psid, disk_psidts)
+            env_path = Path(__file__).resolve().parent / ".env"
+            stored = read_session()
+            if self._env_credentials is None:
+                # An interactive login replaces .env. Otherwise use the latest rotated cookie.
+                store_is_newer = stored and (not env_path.exists() or SESSION_FILE.stat().st_mtime >= env_path.stat().st_mtime)
+                credentials = stored if store_is_newer else disk_credentials
+            elif disk_psid and disk_psidts and disk_credentials != self._env_credentials:
+                credentials = disk_credentials
+                force_refresh = True
+                logger.info("New Gemini login found in .env; reconnecting.")
+            else:
+                credentials = (self.secure_1psid, self.secure_1psidts)
+            self._env_credentials = disk_credentials
+            self.model_name = disk_model
 
-        # Re-read from environment in case .env was refreshed
-        self.model_name = os.getenv("GEMINI_MODEL", "gemini-flash").strip() or "gemini-flash"
-        if not self.secure_1psid or not self.secure_1psidts or force_refresh:
-            self.secure_1psid = os.getenv("GEMINI_SECURE_1PSID", "").strip()
-            self.secure_1psidts = os.getenv("GEMINI_SECURE_1PSIDTS", "").strip()
+            if self.client and self.is_initialized and not force_refresh:
+                self._persist_live_cookies()
+                return
 
-        # If cookies are missing, attempt headless refresh if a persistent profile exists
-        if (not self.secure_1psid or not self.secure_1psidts) and self.browser_manager.has_profile():
-            logger.info("Cookies missing in .env. Attempting silent headless refresh from browser profile...")
-            refreshed = await self.browser_manager.refresh_cookies_headless()
-            if refreshed:
-                self.secure_1psid = refreshed.get("secure_1psid", "")
-                self.secure_1psidts = refreshed.get("secure_1psidts", "")
-
-        if not self.secure_1psid or not self.secure_1psidts:
-            logger.warning("Gemini cookies not configured in .env and no valid browser profile found.")
-            self.is_initialized = False
-            return
-
-        try:
-            logger.info("Initializing Gemini Web API client...")
-            if self.client:
-                try:
-                    await self.client.close()
-                except Exception:
-                    pass
-
-            self.client = GeminiClient(self.secure_1psid, self.secure_1psidts)
-            # auto_refresh keeps session cookies updated in background every 3 minutes (180s)
-            await self.client.init(timeout=60, auto_refresh=True, refresh_interval=180)
-            self.is_initialized = True
-            logger.success("Gemini Web API client successfully connected and authenticated.")
-        except AuthError as e:
-            logger.warning(f"Authentication failed with existing cookies: {e}")
-            if self.browser_manager.has_profile() and not force_refresh:
-                logger.info("Attempting automatic recovery via headless browser refresh...")
+            psid, psidts = credentials
+            if (not psid or not psidts) and self.browser_manager.has_profile():
                 refreshed = await self.browser_manager.refresh_cookies_headless()
                 if refreshed:
-                    self.secure_1psid = refreshed["secure_1psid"]
-                    self.secure_1psidts = refreshed["secure_1psidts"]
-                    return await self.init_client(force_refresh=True)
+                    psid, psidts = refreshed["secure_1psid"], refreshed["secure_1psidts"]
+                    self._env_credentials = (psid, psidts)
+            if not psid or not psidts:
+                self.is_initialized = False
+                logger.warning("Gemini login is missing. Run auth.py or use /auth/login.")
+                return
+
             self.is_initialized = False
-            logger.error("Authentication failed. Run 'python auth.py' to sign in again.")
-            raise e
-        except Exception as e:
-            self.is_initialized = False
-            logger.error(f"Failed to initialize Gemini Web API client: {e}")
-            raise e
+            try:
+                await self._connect(psid, psidts)
+            except AuthError:
+                if not self.browser_manager.has_profile():
+                    logger.error("Gemini session expired; interactive login required.")
+                    raise
+                logger.warning("Gemini authentication expired; refreshing browser profile once.")
+                refreshed = await self.browser_manager.refresh_cookies_headless()
+                if not refreshed:
+                    raise
+                self._env_credentials = (refreshed["secure_1psid"], refreshed["secure_1psidts"])
+                await self._connect(*self._env_credentials)
 
     async def reload_cookies(self, secure_1psid: str, secure_1psidts: str):
-        """Reloads the client with fresh cookies in memory."""
-        self.secure_1psid = secure_1psid
-        self.secure_1psidts = secure_1psidts
-        await self.init_client(force_refresh=True)
+        """Reconnect with cookies from an explicit login or browser refresh."""
+        async with self._client_lock:
+            self.is_initialized = False
+            self._env_credentials = (secure_1psid, secure_1psidts)
+            await self._connect(secure_1psid, secure_1psidts)
+
+    async def recover_auth(self, failed_client: Optional[GeminiClient] = None) -> None:
+        async with self._client_lock:
+            # Another request may already have replaced the failed client.
+            if failed_client and self.client is not failed_client and self.is_initialized:
+                return
+            if not self.browser_manager.has_profile():
+                self.is_initialized = False
+                raise AuthError("Gemini session expired; run auth.py or /auth/login")
+            refreshed = await self.browser_manager.refresh_cookies_headless()
+            if not refreshed:
+                self.is_initialized = False
+                raise AuthError("Gemini browser profile could not renew the session")
+            self.is_initialized = False
+            self._env_credentials = (refreshed["secure_1psid"], refreshed["secure_1psidts"])
+            await self._connect(*self._env_credentials)
 
     async def get_status(self) -> Dict[str, Any]:
         model_name = self.model_name
@@ -101,13 +187,13 @@ class GeminiWebService:
             model_display = "3.5 Flash-Lite"
         else:
             model_display = model_name
-
+        authenticated = bool(self.is_initialized and self.client and self.client.account_status.name == "AVAILABLE")
         return {
-            "initialized": self.is_initialized,
+            "initialized": authenticated,
             "has_cookies": bool(self.secure_1psid and self.secure_1psidts),
             "has_browser_profile": self.browser_manager.has_profile(),
             "last_refresh_time": self.browser_manager.last_refresh_time,
-            "tier": getattr(self.client, "tier", "PRO" if self.is_initialized else "UNKNOWN"),
+            "tier": getattr(self.client, "tier", "PRO" if authenticated else "UNKNOWN"),
             "model": self.model_name,
             "model_display": model_display,
         }
@@ -115,22 +201,16 @@ class GeminiWebService:
     async def generate_text(self, prompt: str, files: Optional[List[Path]] = None) -> str:
         await self.init_client()
         if not self.client or not self.is_initialized:
-            raise RuntimeError("Gemini Web client is not initialized. Please check cookies in .env.")
-
+            raise AuthError("Gemini Web session is not initialized")
         file_args = [f for f in files if f.exists()] if files else None
+        active_client = self.client
         try:
+            response = await active_client.generate_content(prompt, files=file_args, model=self.model_name)
+        except AuthError:
+            await self.recover_auth(active_client)
             response = await self.client.generate_content(prompt, files=file_args, model=self.model_name)
-            return response.text or ""
-        except AuthError as e:
-            logger.warning(f"AuthError in generate_text ({e}). Attempting headless recovery...")
-            if self.browser_manager.has_profile():
-                refreshed = await self.browser_manager.refresh_cookies_headless()
-                if refreshed:
-                    await self.reload_cookies(refreshed["secure_1psid"], refreshed["secure_1psidts"])
-                    response = await self.client.generate_content(prompt, files=file_args, model=self.model_name)
-                    return response.text or ""
-            raise e
-
+        self._persist_live_cookies()
+        return response.text or ""
     async def analyze_invoice(
         self,
         file_path: Path,
@@ -282,21 +362,39 @@ Reglas estrictas:
 3. Asegúrate de que todos los valores numéricos sean válidos (sin símbolos '$', puntos de miles o comas).
 """
 
+        async def _do_generation(target_model: Optional[str]) -> str:
+            resp = await self.client.generate_content(prompt, files=[file_path], model=target_model)
+            return resp.text or ""
+
+        raw_text = ""
+        active_client = self.client
         try:
-            response = await self.client.generate_content(prompt, files=[file_path], model=self.model_name)
-        except AuthError as e:
-            logger.warning(f"AuthError in analyze_invoice ({e}). Attempting headless recovery via Playwright...")
-            if self.browser_manager.has_profile():
-                refreshed = await self.browser_manager.refresh_cookies_headless()
-                if refreshed:
-                    await self.reload_cookies(refreshed["secure_1psid"], refreshed["secure_1psidts"])
-                    response = await self.client.generate_content(prompt, files=[file_path], model=self.model_name)
-                else:
-                    raise e
-            else:
-                raise e
-        raw_text = response.text or ""
+            raw_text = await _do_generation(self.model_name)
+        except AuthError:
+            await self.recover_auth(active_client)
+            raw_text = await _do_generation(self.model_name)
+        except ModelInvalidError:
+            logger.warning("Configured Gemini Web model is unavailable; using the default model.")
+            raw_text = await _do_generation(None)
+
+        self._persist_live_cookies()
+
         logger.info(f"Gemini raw response length: {len(raw_text)}")
+
+        # 2. Check if Gemini returned a text-only refusal (happens when media upload is rejected or dropped)
+        if is_refusal_response(raw_text):
+            logger.warning(f"Gemini returned refusal response ('{raw_text[:100]}...'). Attempting session recovery...")
+            if self.browser_manager.has_profile():
+                await self.recover_auth(active_client)
+                raw_text = await _do_generation(self.model_name)
+                self._persist_live_cookies()
+                logger.info(f"Retried Gemini raw response length after recovery: {len(raw_text)}")
+
+        if is_refusal_response(raw_text):
+            raise RuntimeError(
+                f"Gemini Web API rechazó el documento adjunto ('{raw_text.strip()}'). "
+                f"Por favor ejecute 'login.bat' para renovar la sesión de Google o intente nuevamente."
+            )
 
         return self._clean_and_parse_json(
             raw_text,
@@ -316,23 +414,59 @@ Reglas estrictas:
         has_cost_price_tax_config: bool = False,
         tax_val: int = 19,
     ) -> Dict[str, Any]:
-        # Extract markdown json block if present
-        json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw_text, re.DOTALL)
-        if json_match:
-            candidate_json = json_match.group(1).strip()
-        else:
-            # Try to find the outermost braces
-            first_brace = raw_text.find("{")
-            last_brace = raw_text.rfind("}")
-            if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
-                candidate_json = raw_text[first_brace : last_brace + 1].strip()
-            else:
-                candidate_json = raw_text.strip()
+        parsed = None
 
-        try:
-            parsed = json.loads(candidate_json)
-        except Exception as e:
-            logger.error(f"Failed to parse JSON from Gemini response: {e}\nRaw: {raw_text}")
+        # Strategy 1: Split by markdown blocks (``` or ```json) and inspect in reverse order
+        # Stream retries or multiple candidates append the final valid block at the end.
+        parts = re.split(r"```(?:json)?", raw_text)
+        for p in reversed(parts):
+            p_strip = p.strip()
+            first_b = p_strip.find("{")
+            last_b = p_strip.rfind("}")
+            if first_b != -1 and last_b != -1 and last_b > first_b:
+                snippet = p_strip[first_b : last_b + 1]
+                try:
+                    obj = json.loads(snippet)
+                    if isinstance(obj, dict) and ("code" in obj or "total_amount" in obj or "data" in obj or "items" in obj):
+                        parsed = obj
+                        break
+                except Exception:
+                    clean_snippet = re.sub(r",\s*([\]}])", r"\1", snippet)
+                    clean_snippet = re.sub(r"//.*$", "", clean_snippet, flags=re.MULTILINE)
+                    try:
+                        obj = json.loads(clean_snippet)
+                        if isinstance(obj, dict):
+                            parsed = obj
+                            break
+                    except Exception:
+                        pass
+
+        # Strategy 2: Search backwards across all '{' in raw_text matching the last '}'
+        if parsed is None:
+            last_brace = raw_text.rfind("}")
+            if last_brace != -1:
+                start_indices = [m.start() for m in re.finditer(r"\{", raw_text)]
+                for start_idx in reversed(start_indices):
+                    if start_idx < last_brace:
+                        snippet = raw_text[start_idx : last_brace + 1].strip()
+                        try:
+                            obj = json.loads(snippet)
+                            if isinstance(obj, dict):
+                                parsed = obj
+                                break
+                        except Exception:
+                            clean_snippet = re.sub(r",\s*([\]}])", r"\1", snippet)
+                            clean_snippet = re.sub(r"//.*$", "", clean_snippet, flags=re.MULTILINE)
+                            try:
+                                obj = json.loads(clean_snippet)
+                                if isinstance(obj, dict):
+                                    parsed = obj
+                                    break
+                            except Exception:
+                                pass
+
+        if parsed is None or not isinstance(parsed, dict):
+            logger.error(f"Failed to parse JSON from Gemini response:\nRaw: {raw_text}")
             raise RuntimeError(f"Gemini Web API no devolvió una extracción válida: {raw_text[:200]}")
 
         # Normalize structure
@@ -479,8 +613,16 @@ Reglas estrictas:
         }
 
     async def close(self):
+        if self._persist_task:
+            self._persist_task.cancel()
+            try:
+                await self._persist_task
+            except asyncio.CancelledError:
+                pass
+            self._persist_task = None
         if self.client:
             try:
+                self._persist_live_cookies()
                 await self.client.close()
             except Exception:
                 pass

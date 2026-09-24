@@ -2,7 +2,7 @@
 
 > Estado: borrador preliminar para contraste con base de datos
 > Fecha de creación: 2026-09-15
-> Tecnologías: Gemini 2.5 Flash Multimodal, Cloudflare R2 / S3 Storage, TypeScript
+> Tecnologías: Gemini Web (microservicio Python), Cloudflare R2 / S3 Storage, TypeScript
 
 ---
 
@@ -13,27 +13,18 @@
 2. **Fragilidad ante proveedores variables:** Cada factura emitida por un proveedor distinto tiene un formato, tipografía y distribución espacial diferente. Tesseract exigiría crear y mantener expresiones regulares (regex) artesanales e hiperfrágiles por cada proveedor.
 3. **Sensibilidad a imágenes de baja calidad:** Las fotografías de facturas tomadas con smartphones (con sombras, inclinación o arrugas) generan tasas de error inaceptables en OCR tradicional.
 
-### Ventajas de Gemini 2.5 Flash Multimodal
+### Ventajas del análisis visual con Gemini Web
 1. **Comprensión contextual de documentos:** El modelo comprende la jerarquía visual humana (cabeceras, totales, tablas de ítems, descuentos y recargos).
-2. **Salida JSON Estricta (Structured Outputs):** Mediante `responseSchema`, garantiza que el resultado sea siempre un objeto JSON válido con los tipos de datos exactos (números para precios, strings limpios para nombres).
-3. **Eficiencia en costos y latencia:** Gemini 2.5 Flash ofrece procesamiento en menos de 2 segundos y costos de fracciones de centavo por comprobante (~$0.0001 USD), permitiendo operar dentro de los tiers gratuitos de Google AI Studio.
+2. **Extracción estructurada:** El microservicio solicita JSON y valida la respuesta antes de entregarla al backend. La salida del modelo puede fallar y requiere manejo de errores.
+3. **Aprovechamiento de la sesión existente:** El flujo actual usa la cuenta autenticada en Gemini Web; su disponibilidad y límites dependen de esa sesión.
 
 ---
 
-## 2. Estrategia de Autenticación y Consumo de IA (Google AI Pro / BYOK)
+## 2. Estrategia de autenticación y consumo de IA
 
-* **Soporte Híbrido (Clave del Sistema o Plan Propio del Usuario):**
-  1. **Clave por Defecto del Sistema:** Si el usuario no proporciona una clave, el backend utiliza la clave configurada en sus variables de entorno (`GEMINI_API_KEY`).
-  2. **Plan Propio Google AI Pro (BYOK - Bring Your Own Key):**
-     * Si el usuario cuenta con suscripción / facturación de **Google AI Pro** en su cuenta de Google, genera su API Key en [Google AI Studio](https://aistudio.google.com/) con un clic.
-     * En Nodia, el usuario ingresa su API Key en la configuración del negocio (guardada de forma cifrada en `businesses.gemini_api_key`).
-     * Al procesar una factura, las peticiones se autentican con esa clave, consumiendo directamente los tokens y cuotas de su plan Pro.
-* **Selección de Modelo en UI:**
-  * **Modo Rápido:** `gemini-2.5-flash` (alta velocidad, costo mínimo).
-  * **Modo Pro / Razonamiento Avanzado:** `gemini-2.5-pro` (aprovecha la potencia del plan Pro para deducir tablas contables complejas).
-* **Métrica de Tokens Consumidos:**
-  * En cada respuesta, Gemini devuelve el objeto `usageMetadata` con `promptTokenCount` y `candidatesTokenCount`.
-  * El backend registra automáticamente el total en `invoices.tokens_consumed` y `invoices.model_used` para que el usuario pueda auditar su consumo exacto en la pestaña de Analítica del Negocio.
+El flujo Gemini actual usa `nodia-server` → `nodia-gemini-microservice` → sesión de Gemini Web. El login interactivo guarda las cookies iniciales; el microservicio conserva las rotaciones en `session_state/` y recupera la sesión desde el perfil de navegador si recibe un error de autenticación. No se usa `GEMINI_API_KEY` ni se presupone que la suscripción web otorgue cuota para API.
+
+El modelo Web se configura en `nodia-gemini-microservice/.env` mediante `GEMINI_MODEL`. Mistral permanece como proveedor separado cuando está configurado. Una futura configuración de múltiples proveedores y claves de API requiere diseño e implementación propios; no forma parte de este flujo. Véase [ADR-005](../../architecture/decisions/ADR-005-gemini-web-session.md).
 
 ---
 
@@ -59,7 +50,7 @@
    └── Mapeo de columnas específicas del proveedor
          │
          ▼
-[ Gemini 2.5 Flash / Pro ] ──> JSON Estructurado: { proveedor, items: [...], delivery_cost }
+[ Microservicio Gemini Web ] ──> JSON estructurado: { code, total_amount, data: { items: [...] } }
          │
          ▼
 [ Algoritmo de Matching & Cálculo de Costo ]

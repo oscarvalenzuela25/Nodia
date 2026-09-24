@@ -1,13 +1,9 @@
 import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
+  BadGatewayException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { GoogleGenAI } from '@google/genai';
 import { envs } from '../../config/envs.config.js';
 import {
   type ExtractedInvoiceData,
@@ -20,293 +16,102 @@ export type { ExtractedInvoiceData, ExtractedInvoiceItem };
 @Injectable()
 export class GeminiService {
   private readonly logger = new Logger(GeminiService.name);
-  private readonly aiClient: GoogleGenAI | null = null;
-  private readonly modelName: string;
 
-  constructor() {
-    this.modelName = envs.GEMINI_MODEL || 'gemini-3.6-flash';
-    if (envs.GEMINI_API_KEY) {
-      this.aiClient = new GoogleGenAI({
-        apiKey: envs.GEMINI_API_KEY,
-      });
-    }
-  }
-
-  /**
-   * Analyzes an invoice document (image or PDF) and extracts structured data.
-   * Prioritizes Gemini Microservice (Gemini Pro via Web API) and falls back
-   * to the official Gemini API Key if the microservice is offline or fails.
-   * @param buffer Document binary buffer
-   * @param mimeType Document MIME type (e.g. "application/pdf", "image/png", "image/jpeg")
-   * @param providerFields Optional template/fields mapping registered for the provider
-   */
   async extractInvoiceData(
     buffer: Buffer,
     mimeType: string,
     providerFields?: Record<string, any>,
     providerTax: number = 19,
   ): Promise<ExtractedInvoiceData> {
-    // 1. Try Gemini Microservice first (Gemini Pro)
-    const microserviceResult = await this.extractViaMicroservice(
-      buffer,
-      mimeType,
-      providerFields,
-      providerTax,
-    );
-    if (microserviceResult) {
-      return microserviceResult;
+    const baseUrl = envs.GEMINI_MICROSERVICE_URL;
+    if (!baseUrl) {
+      throw new ServiceUnavailableException(
+        'El microservicio de Gemini no está configurado.',
+      );
     }
 
-    // 2. Fall back to official Gemini API Key
-    if (!this.aiClient) {
-      throw new InternalServerErrorException(
-        'El servicio de Gemini AI no está disponible. El microservicio está inaccesible y no hay GEMINI_API_KEY configurada.',
+    const formData = new FormData();
+    const extension =
+      mimeType === 'application/pdf'
+        ? 'pdf'
+        : mimeType.replace('image/', '') || 'jpg';
+    const blob = new Blob([new Uint8Array(buffer)], { type: mimeType });
+    formData.append('file', blob, `invoice.${extension}`);
+    formData.append(
+      'provider_fields',
+      JSON.stringify({ ...providerFields, tax: providerTax }),
+    );
+    formData.append('provider_tax', String(providerTax));
+
+    let response: Response;
+    try {
+      response = await fetch(`${baseUrl}/analyze-invoice`, {
+        method: 'POST',
+        body: formData,
+        signal: AbortSignal.timeout(140000),
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Gemini microservice request failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw new ServiceUnavailableException(
+        'No se pudo conectar con el microservicio de Gemini.',
+      );
+    }
+
+    if (!response.ok) {
+      this.logger.warn(`Gemini microservice returned HTTP ${response.status}`);
+      if (response.status === 400 || response.status === 415) {
+        throw new BadGatewayException('Gemini rechazó el archivo enviado.');
+      }
+      throw new ServiceUnavailableException(
+        response.status === 401 || response.status === 503
+          ? 'La sesión de Gemini Web necesita renovarse. Inicie sesión nuevamente en el microservicio.'
+          : 'Gemini Web no pudo procesar la factura. Reintente más tarde.',
+      );
+    }
+
+    let parsed: any;
+    try {
+      parsed = await response.json();
+    } catch {
+      throw new BadGatewayException('Gemini devolvió una respuesta inválida.');
+    }
+    const rawItems = parsed?.data?.items ?? parsed?.items;
+    if (
+      !parsed ||
+      typeof parsed !== 'object' ||
+      !Array.isArray(rawItems) ||
+      rawItems.length === 0
+    ) {
+      throw new BadGatewayException(
+        'Gemini no pudo extraer productos de la imagen.',
       );
     }
 
     const config = extractProviderConfig(providerFields);
-    let providerInstructions = '';
-
-    if (config.hasAnyConfig) {
-      const codeRule = config.hasCodeConfig
-        ? `- "code": busca el código de producto / SKU correspondiente estrictamente a la columna "${config.codeConfig!.value}".${config.codeConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.codeConfig!.instructions}.` : ''} Si no viene para ese ítem, devuelve null.`
-        : `- "code": null (el proveedor NO tiene configurado campo de código; devuelve estrictamente null).`;
-
-      const costPriceRule = config.hasCostPriceConfig
-        ? `- "cost_price": costo unitario sin impuestos (neto) correspondiente estrictamente a la columna "${config.costPriceConfig!.value}".${config.costPriceConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.costPriceConfig!.instructions}.` : ''} Si no aparece en la fila, devuelve null.`
-        : `- "cost_price": null (el proveedor NO tiene configurado costo sin impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`;
-
-      const costPriceTaxRule = config.hasCostPriceTaxConfig
-        ? `- "cost_price_tax": costo unitario con impuestos (bruto / con IVA) correspondiente estrictamente a la columna "${config.costPriceTaxConfig!.value}".${config.costPriceTaxConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.costPriceTaxConfig!.instructions}.` : ''} Si no aparece en la fila, devuelve null.`
-        : `- "cost_price_tax": null (el proveedor NO tiene configurado costo con impuestos en su plantilla; NO extraigas, NO calcules y NO inventes este valor, devuelve estrictamente null).`;
-
-      const packagesRule = config.hasPackagesConfig
-        ? `- "packages": cantidad de cajas/bultos/embalajes comprados correspondiente estrictamente a la columna "${config.packagesConfig!.value}".${config.packagesConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.packagesConfig!.instructions}.` : ''} (número entero o float, o null si no aparece).`
-        : `- "packages": null (no configurado en la plantilla).`;
-
-      const unitsPerPackageRule = config.hasUnitsPerPackageConfig
-        ? `- "units_per_package": cantidad de unidades o productos por caja/embalaje correspondiente estrictamente a la columna "${config.unitsPerPackageConfig!.value}".${config.unitsPerPackageConfig!.instructions ? ` Instrucciones adicionales para este campo: ${config.unitsPerPackageConfig!.instructions}.` : ''} (número entero o float, o null si no aparece).`
-        : `- "units_per_package": null (no configurado en la plantilla).`;
-
-      providerInstructions = `
-Plantilla de columnas/campos configurada para este proveedor:
-${JSON.stringify(
-  Object.fromEntries(
-    Object.entries(providerFields || {}).filter(
-      ([k, v]) => k !== 'tax' && Boolean(v),
-    ),
-  ),
-  null,
-  2,
-)}
-
-REGLAS ESTRICTAS DE EXTRACCIÓN SEGÚN LA PLANTILLA DEL PROVEEDOR:
-El usuario ha configurado explícitamente cuáles campos desea extraer automáticamente.
-SOLO se deben extraer los campos que están configurados en la plantilla.
-CUALQUIER OTRO CAMPO NO CONFIGURADO DEBE DEVOLVERSE ESTRICTAMENTE COMO null, INCLUSO SI LA FACTURA CONTIENE ESE DATO.
-
-Para cada ítem en "items":
-${codeRule}
-- "name": descripción o nombre del producto (string obligatorio).
-${costPriceRule}
-${costPriceTaxRule}
-${packagesRule}
-${unitsPerPackageRule}
-- "quantity": si se detectan "packages" y "units_per_package", calcula su multiplicación como la cantidad total de unidades. Si solo existe uno, usa ese valor. Si no existe ninguno, usa la cantidad detectada o 0.
-- "total_price": total o subtotal del renglón (número, si existe, o null).`;
-    } else {
-      providerInstructions = `
-El proveedor no tiene plantilla de campos configurada. Aplica el criterio general de extracción contable completa:
-Para cada ítem en "items":
-- "code": código de barras, SKU o código de producto (string, si existe en la fila o comprobante, o null).
-- "name": descripción o nombre del producto (string obligatorio).
-- "packages": cantidad de bultos/cajas si existe, o null.
-- "units_per_package": unidades por caja si existe, o null.
-- "quantity": cantidad adquirida total (número, por defecto 1).
-- "cost_price": costo unitario neto sin impuestos (número, si se indica o calcula en la factura, o null).
-- "cost_price_tax": costo unitario bruto con impuestos / IVA incluido (número, si se indica o calcula en la factura, o null).
-- "unit_price": precio unitario indicado (número, si existe).
-- "total_price": subtotal o precio total del renglón (número, si existe).`;
-    }
-
-    const prompt = `
-Eres un asistente contable y de inventario de alta precisión. Analiza la factura o comprobante adjunto.
-
-Debes extraer y estructurar los siguientes campos estrictamente en formato JSON:
-- "code": número de factura, folio o comprobante (string). Si no se distingue con claridad, genera uno identificativo con la fecha.
-- "total_amount": monto total a pagar de la factura como número entero (sin decimales ni signos de moneda).
-- "issue_date": fecha de emisión de la factura en formato ISO YYYY-MM-DD (string, opcional).
-- "items": arreglo con cada ítem o producto listado en la factura.
-${providerInstructions}
-- "raw_data": cualquier metadato contable adicional relevante detectado (ej. subtotal, impuesto, razón social del proveedor).
-
-Devuelve exclusivamente el objeto JSON válido.`;
-
-    const maxRetries = 3;
-    let attempt = 0;
-
-    while (attempt < maxRetries) {
-      attempt++;
-      try {
-        const response = await this.aiClient.models.generateContent({
-          model: this.modelName,
-          contents: [
-            {
-              inlineData: {
-                data: buffer.toString('base64'),
-                mimeType,
-              },
-            },
-            prompt,
-          ],
-          config: {
-            responseMimeType: 'application/json',
-          },
-        });
-
-        const rawText = response.text || '{}';
-        // Clean possible markdown wrapper if present
-        const cleanJson = rawText
-          .replace(/^```json\s*/i, '')
-          .replace(/^```\s*/i, '')
-          .replace(/```\s*$/i, '')
-          .trim();
-
-        const parsed = JSON.parse(cleanJson);
-
-        const items = this.normalizeItems(
-          parsed.items,
-          config.hasAnyConfig,
-          config.hasCodeConfig,
-          config.hasCostPriceConfig,
-          config.hasCostPriceTaxConfig,
-          providerTax,
-        );
-
-        return {
-          code: String(parsed.code || 'SIN-NUMERO'),
-          total_amount: Math.round(Number(parsed.total_amount) || 0),
-          issue_date: parsed.issue_date || undefined,
-          items,
-          raw_data: parsed.raw_data || undefined,
-        };
-      } catch (error: any) {
-        const { isTransient, statusCode, cleanMessage } = this.analyzeGeminiError(error);
-
-        if (isTransient && attempt < maxRetries) {
-          const delayMs = attempt * 1500;
-          this.logger.warn(
-            `Gemini API transient error (${statusCode || 'UNAVAILABLE'} - ${cleanMessage}). Retrying attempt ${attempt}/${maxRetries} in ${delayMs}ms...`,
-          );
-          await new Promise((resolve) => setTimeout(resolve, delayMs));
-          continue;
-        }
-
-        this.handleFinalGeminiError(error);
-      }
-    }
-
-    throw new ServiceUnavailableException(
-      'El servicio de inteligencia artificial no pudo responder tras varios intentos. Por favor, reintente en unos instantes.',
+    const items = this.normalizeItems(
+      rawItems,
+      config.hasAnyConfig,
+      config.hasCodeConfig,
+      config.hasCostPriceConfig,
+      config.hasCostPriceTaxConfig,
+      providerTax,
     );
+    const {
+      issue_date: _issueDate,
+      items: _rawItems,
+      ...metadata
+    } = parsed.data && typeof parsed.data === 'object' ? parsed.data : {};
+
+    return {
+      code: String(parsed.code || 'SIN-NUMERO'),
+      total_amount: Math.round(Number(parsed.total_amount) || 0),
+      issue_date: parsed.data?.issue_date || parsed.issue_date || undefined,
+      items,
+      raw_data: metadata,
+    };
   }
-
-  /**
-   * Attempts to extract invoice data using the local/remote Gemini Microservice (Gemini Pro Web).
-   * Returns null if the microservice is unreachable, times out, or encounters an error.
-   */
-  private async extractViaMicroservice(
-    buffer: Buffer,
-    mimeType: string,
-    providerFields?: Record<string, any>,
-    providerTax: number = 19,
-  ): Promise<ExtractedInvoiceData | null> {
-    const baseUrl = envs.GEMINI_MICROSERVICE_URL;
-    if (!baseUrl) {
-      return null;
-    }
-
-    try {
-      this.logger.log(
-        `Attempting invoice extraction via Gemini Microservice (${baseUrl}/analyze-invoice)...`,
-      );
-
-      const formData = new FormData();
-      const extension =
-        mimeType === 'application/pdf'
-          ? 'pdf'
-          : mimeType.replace('image/', '') || 'jpg';
-      const blob = new Blob([new Uint8Array(buffer)], { type: mimeType });
-      formData.append('file', blob, `invoice.${extension}`);
-
-      const mergedFields = {
-        ...providerFields,
-        tax: providerTax,
-      };
-      formData.append('provider_fields', JSON.stringify(mergedFields));
-      formData.append('provider_tax', String(providerTax));
-
-      const response = await fetch(`${baseUrl}/analyze-invoice`, {
-        method: 'POST',
-        body: formData,
-        signal: AbortSignal.timeout(60000),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text().catch(() => '');
-        this.logger.warn(
-          `Gemini Microservice returned HTTP ${response.status}: ${errorText}`,
-        );
-        return null;
-      }
-
-      const parsed = (await response.json()) as any;
-      if (!parsed || typeof parsed !== 'object') {
-        this.logger.warn('Gemini Microservice returned invalid response format');
-        return null;
-      }
-
-      const config = extractProviderConfig(providerFields);
-
-      const rawItems = parsed.data?.items || parsed.items || [];
-      const hasRawOutput = Boolean(parsed.data?.raw_output || parsed.raw_output);
-
-      // Si el microservicio devolvió 0 items y contiene un mensaje de error o raw_output de rechazo, hacer fallback a API Key
-      if (rawItems.length === 0 && (hasRawOutput || (!parsed.code && !parsed.total_amount))) {
-        this.logger.warn(
-          'Gemini Microservice returned empty extraction / non-invoice response. Falling back to official Gemini API Key...',
-        );
-        return null;
-      }
-
-      const items = this.normalizeItems(
-        rawItems,
-        config.hasAnyConfig,
-        config.hasCodeConfig,
-        config.hasCostPriceConfig,
-        config.hasCostPriceTaxConfig,
-        providerTax,
-      );
-
-      this.logger.log(
-        'Invoice successfully analyzed via Gemini Microservice (Gemini Pro).',
-      );
-
-      return {
-        code: String(parsed.code || 'SIN-NUMERO'),
-        total_amount: Math.round(Number(parsed.total_amount) || 0),
-        issue_date: parsed.data?.issue_date || parsed.issue_date || undefined,
-        items,
-        raw_data: parsed.data || undefined,
-      };
-    } catch (error: any) {
-      this.logger.warn(
-        `Gemini Microservice unavailable (${error.message}). Falling back to official Gemini API Key...`,
-      );
-      return null;
-    }
-  }
-
   /**
    * Normalizes invoice items according to the provider template configuration and tax calculation rules.
    */
@@ -326,7 +131,9 @@ Devuelve exclusivamente el objeto JSON válido.`;
 
     return rawItems.map((it: any) => {
       let code =
-        it.code !== null && it.code !== undefined && String(it.code).trim() !== ''
+        it.code !== null &&
+        it.code !== undefined &&
+        String(it.code).trim() !== ''
           ? String(it.code).trim()
           : null;
       const name = String(it.name || 'Producto sin nombre').trim();
@@ -356,11 +163,7 @@ Devuelve exclusivamente el objeto JSON válido.`;
         quantity = Math.round(rawUnitsPerPackage);
       } else {
         quantity =
-          Number(it.quantity) > 0
-            ? Number(it.quantity)
-            : hasAnyConfig
-              ? 0
-              : 1;
+          Number(it.quantity) > 0 ? Number(it.quantity) : hasAnyConfig ? 0 : 1;
       }
 
       let cost_price =
@@ -509,105 +312,5 @@ Devuelve exclusivamente el objeto JSON válido.`;
         };
       }
     });
-  }
-
-  private analyzeGeminiError(error: any): {
-    isTransient: boolean;
-    statusCode?: number;
-    cleanMessage: string;
-  } {
-    let statusCode = error?.status || error?.code || error?.response?.status;
-    let message = error?.message || '';
-
-    // Check if error message is a JSON string from Google GenAI SDK
-    if (
-      typeof message === 'string' &&
-      (message.trim().startsWith('{') || message.includes('{"error":'))
-    ) {
-      try {
-        const jsonStart = message.indexOf('{');
-        const parsed = JSON.parse(message.slice(jsonStart));
-        if (parsed.error) {
-          statusCode = parsed.error.code || statusCode;
-          message = parsed.error.message || message;
-        }
-      } catch {
-        // Ignore parsing failure and keep message
-      }
-    }
-
-    const msgLower = (message || '').toLowerCase();
-    const isTransient =
-      statusCode === 503 ||
-      statusCode === 429 ||
-      statusCode === 500 ||
-      statusCode === 502 ||
-      statusCode === 504 ||
-      msgLower.includes('unavailable') ||
-      msgLower.includes('high demand') ||
-      msgLower.includes('spikes in demand') ||
-      msgLower.includes('overloaded') ||
-      msgLower.includes('resource_exhausted') ||
-      msgLower.includes('rate limit') ||
-      msgLower.includes('quota');
-
-    return {
-      isTransient,
-      statusCode,
-      cleanMessage: message,
-    };
-  }
-
-  private handleFinalGeminiError(error: any): never {
-    const { statusCode, cleanMessage } = this.analyzeGeminiError(error);
-    const msgLower = cleanMessage.toLowerCase();
-
-    if (
-      statusCode === 503 ||
-      msgLower.includes('unavailable') ||
-      msgLower.includes('high demand') ||
-      msgLower.includes('spikes in demand') ||
-      msgLower.includes('overloaded')
-    ) {
-      throw new ServiceUnavailableException(
-        'El servicio de inteligencia artificial está experimentando alta demanda temporalmente. Por favor, reintente en unos instantes.',
-      );
-    }
-
-    if (
-      statusCode === 429 ||
-      msgLower.includes('resource_exhausted') ||
-      msgLower.includes('rate limit') ||
-      msgLower.includes('quota')
-    ) {
-      throw new HttpException(
-        'Se ha superado temporalmente la cuota de solicitudes de IA. Por favor, espere unos segundos antes de reintentar.',
-        HttpStatus.TOO_MANY_REQUESTS,
-      );
-    }
-
-    if (
-      statusCode === 400 ||
-      msgLower.includes('invalid_argument') ||
-      msgLower.includes('unsupported mime type')
-    ) {
-      throw new BadRequestException(
-        'El archivo no pudo ser interpretado por el servicio de IA. Verifique que sea legible y en formato PDF, PNG o JPEG.',
-      );
-    }
-
-    if (
-      statusCode === 404 ||
-      msgLower.includes('not_found') ||
-      msgLower.includes('no longer available')
-    ) {
-      throw new InternalServerErrorException(
-        `El modelo de IA configurado no está disponible actualmente. Detalle: ${cleanMessage}`,
-      );
-    }
-
-    throw new InternalServerErrorException(
-      `No se pudo procesar la factura con el servicio de IA: ${cleanMessage || 'Error inesperado'}`,
-    );
   }
 }

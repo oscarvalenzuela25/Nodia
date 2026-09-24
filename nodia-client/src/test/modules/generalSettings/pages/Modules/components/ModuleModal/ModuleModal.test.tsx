@@ -99,6 +99,7 @@ describe("ModuleModal", () => {
       key: "analytics",
       module_group_id: "grp-reports",
       link: "/analytics/reports",
+      icon: null,
       isActive: true,
       nameTranslations: { es: "", en: "" },
       translates: [
@@ -172,6 +173,7 @@ describe("ModuleModal", () => {
       key: "users",
       link: "/settings/users",
       module_group_id: "grp-admin",
+      icon: null,
       nameTranslations: {
         es: "Usuarios",
         en: "Users",

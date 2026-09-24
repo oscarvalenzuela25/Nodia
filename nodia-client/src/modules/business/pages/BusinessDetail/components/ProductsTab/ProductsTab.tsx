@@ -208,6 +208,7 @@ export const ProductsTab: FC<Props> = ({
           : appliedFilterActive === "inactive"
           ? false
           : undefined,
+      s: "created_at desc",
     },
   });
   const products = productsData?.data ?? [];

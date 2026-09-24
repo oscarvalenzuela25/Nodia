@@ -27,6 +27,8 @@ import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { Skeleton } from "boneyard-js/react";
 
 import InputSearch from "../../../../../../components/inputs/InputSearch";
@@ -38,6 +40,7 @@ import {
 } from "../../../../infrastructure/useServices";
 import type { ProviderEntity } from "../../../../infrastructure/types";
 import ProviderModal, { type ProviderFormData } from "./components/ProviderModal";
+import { ProviderBulkImport } from "./components/ProviderBulkImport";
 import { StatusDot } from "../../styles";
 
 interface Props {
@@ -58,6 +61,8 @@ export const ProvidersTab: FC<Props> = ({
   const [rowsPerPage, setRowsPerPage] = useState<number>(50);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<ProviderEntity | null>(null);
+  const [isBulkMode, setIsBulkMode] = useState(false);
+  const [manageMenuAnchorEl, setManageMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   // 3-Dots Action Menu state
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -70,12 +75,14 @@ export const ProvidersTab: FC<Props> = ({
     data: providersData,
     isLoading,
     isFetching,
+    refetch,
   } = useProviders({
     page: page + 1,
     limit: rowsPerPage,
     q: {
       business_id_eq: businessId,
       name_cont: search.trim() || undefined,
+      s: "created_at desc",
     },
   });
   const providers = providersData?.data ?? [];
@@ -149,6 +156,20 @@ export const ProvidersTab: FC<Props> = ({
     }
   };
 
+  // If bulk import view is active
+  if (isBulkMode) {
+    return (
+      <ProviderBulkImport
+        businessId={businessId}
+        onCancel={() => setIsBulkMode(false)}
+        onSuccess={() => {
+          setIsBulkMode(false);
+          void refetch();
+        }}
+      />
+    );
+  }
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Toolbar */}
@@ -165,15 +186,49 @@ export const ProvidersTab: FC<Props> = ({
           />
         </Box>
 
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenCreate}
-          sx={{ borderRadius: 2 }}
-          data-testid="new-provider-btn"
-        >
-          {t("business:new_provider_btn")}
-        </Button>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Button
+            variant="contained"
+            endIcon={<KeyboardArrowDownIcon />}
+            onClick={(e) => setManageMenuAnchorEl(e.currentTarget)}
+            sx={{ borderRadius: 2 }}
+            data-testid="manage-providers-btn"
+          >
+            {t("business:manage_providers")}
+          </Button>
+          <Menu
+            anchorEl={manageMenuAnchorEl}
+            open={Boolean(manageMenuAnchorEl)}
+            onClose={() => setManageMenuAnchorEl(null)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <MenuItem
+              onClick={() => {
+                setManageMenuAnchorEl(null);
+                handleOpenCreate();
+              }}
+              data-testid="add-single-provider-menu-item"
+            >
+              <ListItemIcon>
+                <AddIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("business:add_single_provider")}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setManageMenuAnchorEl(null);
+                setIsBulkMode(true);
+              }}
+              data-testid="add-bulk-providers-menu-item"
+            >
+              <ListItemIcon>
+                <CloudUploadOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("business:add_bulk_providers")}</ListItemText>
+            </MenuItem>
+          </Menu>
+        </Box>
       </Box>
 
       {/* Table */}

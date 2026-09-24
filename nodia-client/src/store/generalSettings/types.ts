@@ -13,11 +13,13 @@ export interface ActionContext {
 export interface ModuleContext {
   key: string;
   link?: string;
+  icon?: string | null;
   translates: TranslateItem[];
 }
 
 export interface ModuleGroupContext {
   module_group_key: string;
+  icon?: string | null;
   translates: TranslateItem[];
   modules: ModuleContext[];
 }

@@ -62,10 +62,12 @@ import {
   EmptyStateContainer,
 } from "./styles";
 
-const LOREM_PROVIDERS = [
-  { name: "Nexus Distribución", color: "#0288d1", bg: "rgba(2, 136, 209, 0.08)" },
-  { name: "Andina Logistics", color: "#2e7d32", bg: "rgba(46, 125, 50, 0.08)" },
-  { name: "Global Imports", color: "#ed6c02", bg: "rgba(237, 108, 2, 0.08)" },
+const PROVIDER_COLORS = [
+  { color: "#0288d1", bg: "rgba(2, 136, 209, 0.08)" },
+  { color: "#2e7d32", bg: "rgba(46, 125, 50, 0.08)" },
+  { color: "#ed6c02", bg: "rgba(237, 108, 2, 0.08)" },
+  { color: "#9c27b0", bg: "rgba(156, 39, 176, 0.08)" },
+  { color: "#00acc1", bg: "rgba(0, 172, 193, 0.08)" },
 ];
 
 const Business: FC = () => {
@@ -378,29 +380,67 @@ const Business: FC = () => {
                     </DescriptionLine>
                   </Tooltip>
 
-                  {/* Aesthetic Provider Chips (Lorem Ipsum) */}
-                  <ChipsContainer onClick={(e) => e.stopPropagation()}>
-                    {LOREM_PROVIDERS.map((prov) => (
-                      <Chip
-                        key={prov.name}
-                        label={prov.name}
-                        size="small"
-                        sx={{
-                          fontWeight: 500,
-                          fontSize: "0.75rem",
-                          color: prov.color,
-                          backgroundColor: prov.bg,
-                          border: `1px solid ${prov.color}20`,
-                        }}
-                      />
-                    ))}
-                  </ChipsContainer>
+                  {/* Provider Chips (Top 3 providers with most products + ellipsis if more) */}
+                  {business.top_providers && business.top_providers.length > 0 && (
+                    <ChipsContainer onClick={(e) => e.stopPropagation()}>
+                      {business.top_providers.map((prov, index) => {
+                        const colorScheme =
+                          PROVIDER_COLORS[index % PROVIDER_COLORS.length];
+                        return (
+                          <Tooltip
+                            key={prov.id}
+                            title={t("business:provider_products_tooltip", {
+                              name: prov.name,
+                              count: prov.products_count ?? 0,
+                              defaultValue: `${prov.name} (${prov.products_count ?? 0} productos)`,
+                            })}
+                            arrow
+                          >
+                            <Chip
+                              label={prov.name}
+                              size="small"
+                              sx={{
+                                fontWeight: 500,
+                                fontSize: "0.75rem",
+                                color: colorScheme.color,
+                                backgroundColor: colorScheme.bg,
+                                border: `1px solid ${colorScheme.color}20`,
+                              }}
+                            />
+                          </Tooltip>
+                        );
+                      })}
+                      {business.has_more_providers && (
+                        <Tooltip
+                          title={t("business:more_providers", {
+                            defaultValue: "Más proveedores",
+                          })}
+                          arrow
+                        >
+                          <Chip
+                            label="..."
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              fontWeight: 700,
+                              fontSize: "0.75rem",
+                              letterSpacing: "1px",
+                              minWidth: 32,
+                              cursor: "default",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </ChipsContainer>
+                  )}
 
-                  {/* Card Footer: 999 Products & Collaborators Count */}
+                  {/* Card Footer: Products Count & Collaborators Count */}
                   <CardFooter>
                     <Chip
                       icon={<Inventory2OutlinedIcon fontSize="small" />}
-                      label={t("business:products_count", { count: 999 })}
+                      label={t("business:products_count", {
+                        count: business.products_count ?? 0,
+                      })}
                       size="small"
                       variant="outlined"
                       sx={{ fontWeight: 600, fontSize: "0.75rem" }}

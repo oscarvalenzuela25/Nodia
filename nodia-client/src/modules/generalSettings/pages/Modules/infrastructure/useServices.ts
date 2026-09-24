@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import i18n from "../../../../../translate";
+import { authorizationKeys } from "../../../../../services/authorizationService";
 import {
   createModule,
   getModules,
@@ -80,6 +81,7 @@ export const useCreateModule = () => {
     mutationFn: (payload: CreateModulePayload) => createModule(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: moduleKeys.all });
+      await queryClient.invalidateQueries({ queryKey: authorizationKeys.all });
       sileo.success({
         title: i18n.t("modules:notifications.success_title"),
         description: i18n.t("modules:notifications.created_success"),
@@ -109,6 +111,7 @@ export const useUpdateModule = () => {
     }) => updateModule(moduleId, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: moduleKeys.all });
+      await queryClient.invalidateQueries({ queryKey: authorizationKeys.all });
       sileo.success({
         title: i18n.t("modules:notifications.success_title"),
         description: i18n.t("modules:notifications.updated_success"),
@@ -134,6 +137,7 @@ export const useCreateModuleGroup = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: moduleGroupKeys.all });
       await queryClient.invalidateQueries({ queryKey: moduleKeys.all });
+      await queryClient.invalidateQueries({ queryKey: authorizationKeys.all });
       sileo.success({
         title: i18n.t("modules:notifications.success_title"),
         description: i18n.t("modules:groups.notifications.created_success"),
@@ -165,6 +169,7 @@ export const useUpdateModuleGroup = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: moduleGroupKeys.all });
       await queryClient.invalidateQueries({ queryKey: moduleKeys.all });
+      await queryClient.invalidateQueries({ queryKey: authorizationKeys.all });
       sileo.success({
         title: i18n.t("modules:notifications.success_title"),
         description: i18n.t("modules:groups.notifications.updated_success"),

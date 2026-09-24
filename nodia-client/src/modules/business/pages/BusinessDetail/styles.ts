@@ -196,6 +196,14 @@ export const KpiLabel = styled(Typography)(({ theme }) => ({
   textTransform: "uppercase",
 }));
 
+export const KpiTitle = styled(Typography)(({ theme }) => ({
+  fontSize: "1.25rem",
+  fontWeight: 600,
+  lineHeight: 1.4,
+  color: theme.palette.text.primary,
+  marginBottom: theme.spacing(0.5),
+}));
+
 export const KpiValue = styled(Box)(({ theme }) => ({
   ...theme.typography.h4,
   fontWeight: 700,
@@ -241,12 +249,50 @@ export const SectionHeader = styled(Box)(({ theme }) => ({
 
 export const SectionTitle = styled(Box)(({ theme }) => ({
   ...theme.typography.h6,
+  fontSize: "1.25rem",
   fontWeight: 600,
   color: theme.palette.text.primary,
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1),
 }));
+
+export const ScrollablePanelContent = styled(Box)(({ theme }) => {
+  const isDark = theme.palette.mode === "dark";
+  const thumbColor = isDark
+    ? alpha("#ffffff", 0.2)
+    : alpha("#000000", 0.2);
+  const thumbHoverColor = isDark
+    ? alpha("#ffffff", 0.35)
+    : alpha("#000000", 0.35);
+
+  return {
+    maxHeight: 490,
+    overflowY: "auto",
+    overflowX: "hidden",
+    scrollbarWidth: "thin",
+    scrollbarColor: `${thumbColor} transparent`,
+    "&::-webkit-scrollbar": {
+      width: 6,
+      height: 6,
+    },
+    "&::-webkit-scrollbar-track": {
+      background: "transparent !important",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      borderRadius: 9999,
+      backgroundColor: thumbColor,
+      "&:hover": {
+        backgroundColor: thumbHoverColor,
+      },
+    },
+    "&::-webkit-scrollbar-button": {
+      display: "none !important",
+      width: 0,
+      height: 0,
+    },
+  };
+});
 
 // Dropzone for Bulk Import
 export const DropzoneBox = styled(Box)(({ theme }) => {

@@ -15,9 +15,7 @@ export const configModuleEnvs = () => ({
   REDIS_PORT: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
   SECRET_SEED: process.env.SECRET_SEED || '',
-  // Google Gemini AI
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
-  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
+  // Gemini Web microservice (browser session)
   GEMINI_MICROSERVICE_URL:
     process.env.GEMINI_MICROSERVICE_URL || 'http://127.0.0.1:8000',
   // Mistral AI
@@ -44,7 +42,7 @@ export const hasR2Config = (): boolean => {
 };
 
 export const canUseGemini = (): boolean => {
-  return Boolean(envs.GEMINI_API_KEY && hasR2Config());
+  return Boolean(envs.GEMINI_MICROSERVICE_URL && hasR2Config());
 };
 
 export const canUseMistral = (): boolean => {
@@ -52,7 +50,5 @@ export const canUseMistral = (): boolean => {
 };
 
 export const canAnalyzeInvoice = (): boolean => {
-  return Boolean(
-    (canUseGemini() || canUseMistral()) && hasR2Config(),
-  );
+  return Boolean((canUseGemini() || canUseMistral()) && hasR2Config());
 };

@@ -9,6 +9,8 @@ import { In, Repository } from 'typeorm';
 import { Business } from './entities/business.entity.js';
 import { BusinessCollaborator } from './entities/business-collaborator.entity.js';
 import { BusinessAction } from '../business-action/entities/business-action.entity.js';
+import { Product } from '../product/entities/product.entity.js';
+import { Provider } from '../provider/entities/provider.entity.js';
 import { CreateBusinessDto } from './dto/create-business.dto.js';
 import { UpdateBusinessDto } from './dto/update-business.dto.js';
 import { GetBusinessesDto } from './dto/get-businesses.dto.js';
@@ -26,6 +28,10 @@ export class BusinessService {
     private readonly collaboratorRepository: Repository<BusinessCollaborator>,
     @InjectRepository(BusinessAction)
     private readonly businessActionRepository: Repository<BusinessAction>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    @InjectRepository(Provider)
+    private readonly providerRepository: Repository<Provider>,
     private readonly translationService: TranslationService,
   ) {}
 
@@ -52,43 +58,101 @@ export class BusinessService {
 
       const businessIds = businesses.map((b) => b.id);
 
-      // Obtener los datos de colaboración del usuario actual en estos negocios
-      const myCollaborations = await this.collaboratorRepository.find({
-        where: {
-          business_id: In(businessIds),
-          user_id: String(userId),
-          is_active: true,
-        },
-      });
+      // Ejecutar consultas de agregación en paralelo
+      const [
+        myCollaborations,
+        collabCountsRaw,
+        productsCountsRaw,
+        providersWithCountsRaw,
+        translated,
+      ] = await Promise.all([
+        // 1. Datos de colaboración del usuario actual
+        this.collaboratorRepository.find({
+          where: {
+            business_id: In(businessIds),
+            user_id: String(userId),
+            is_active: true,
+          },
+        }),
+        // 2. Conteo de colaboradores por negocio
+        this.collaboratorRepository
+          .createQueryBuilder('bc')
+          .select('bc.business_id', 'business_id')
+          .addSelect('COUNT(bc.id)', 'count')
+          .where('bc.business_id IN (:...businessIds)', { businessIds })
+          .andWhere('bc.is_active = true')
+          .groupBy('bc.business_id')
+          .getRawMany(),
+        // 3. Conteo de productos activos por negocio
+        this.productRepository
+          .createQueryBuilder('p')
+          .select('p.business_id', 'business_id')
+          .addSelect('COUNT(p.id)', 'count')
+          .where('p.business_id IN (:...businessIds)', { businessIds })
+          .andWhere('p.is_active = true')
+          .groupBy('p.business_id')
+          .getRawMany(),
+        // 4. Proveedores ordenados por cantidad de productos activos
+        this.providerRepository
+          .createQueryBuilder('pr')
+          .leftJoin(Product, 'p', 'p.provider_id = pr.id AND p.is_active = true')
+          .select('pr.business_id', 'business_id')
+          .addSelect('pr.id', 'provider_id')
+          .addSelect('pr.name', 'provider_name')
+          .addSelect('COUNT(p.id)', 'products_count')
+          .where('pr.business_id IN (:...businessIds)', { businessIds })
+          .andWhere('pr.is_active = true')
+          .groupBy('pr.business_id')
+          .addGroupBy('pr.id')
+          .addGroupBy('pr.name')
+          .orderBy('pr.business_id', 'ASC')
+          .addOrderBy('COUNT(p.id)', 'DESC')
+          .addOrderBy('pr.name', 'ASC')
+          .getRawMany(),
+        // 5. Traducciones
+        this.translationService.attachTranslations('businesses', businesses),
+      ]);
+
       const collabMap = new Map(myCollaborations.map((c) => [c.business_id, c]));
-
-      // Obtener conteo de colaboradores por negocio
-      const countsRaw = await this.collaboratorRepository
-        .createQueryBuilder('bc')
-        .select('bc.business_id', 'business_id')
-        .addSelect('COUNT(bc.id)', 'count')
-        .where('bc.business_id IN (:...businessIds)', { businessIds })
-        .andWhere('bc.is_active = true')
-        .groupBy('bc.business_id')
-        .getRawMany();
-
-      const countsMap = new Map(
-        countsRaw.map((r) => [r.business_id, parseInt(r.count, 10)]),
+      const collabCountsMap = new Map(
+        collabCountsRaw.map((r) => [r.business_id, parseInt(r.count, 10) || 0]),
+      );
+      const productsCountMap = new Map(
+        productsCountsRaw.map((r) => [r.business_id, parseInt(r.count, 10) || 0]),
       );
 
-      const translated = await this.translationService.attachTranslations(
-        'businesses',
-        businesses,
-      );
+      const providersByBusinessMap = new Map<
+        string,
+        Array<{ id: string; name: string; products_count: number }>
+      >();
+
+      for (const row of providersWithCountsRaw) {
+        const bId = row.business_id;
+        if (!providersByBusinessMap.has(bId)) {
+          providersByBusinessMap.set(bId, []);
+        }
+        providersByBusinessMap.get(bId)!.push({
+          id: String(row.provider_id),
+          name: String(row.provider_name),
+          products_count: parseInt(row.products_count, 10) || 0,
+        });
+      }
 
       return (translated as Business[]).map((b) => {
         const isOwner = String(b.owner_id) === String(userId);
         const myCollab = collabMap.get(b.id);
+        const collabsCount = collabCountsMap.get(b.id) ?? 0;
+        const allProviders = providersByBusinessMap.get(b.id) ?? [];
 
         b.user_role = isOwner ? 'owner' : 'collaborator';
         b.user_position = isOwner ? 'Owner' : (myCollab?.position ?? null);
         b.user_action_ids = isOwner ? [] : (myCollab?.action_ids ?? []);
-        b.collaborators_count = countsMap.get(b.id) ?? 0;
+        b.collaborators_count = collabsCount;
+        b.has_collaborators = collabsCount > 0;
+        b.products_count = productsCountMap.get(b.id) ?? 0;
+        b.top_providers = allProviders.slice(0, 3);
+        b.has_more_providers = allProviders.length > 3;
+        b.total_providers_count = allProviders.length;
 
         return b;
       });
@@ -159,6 +223,42 @@ export class BusinessService {
       business.user_position = isOwner ? 'Owner' : (collaborator?.position ?? null);
       business.user_action_ids = isOwner ? [] : (collaborator?.action_ids ?? []);
     }
+
+    const [productsCount, collaborators, allProviders] = await Promise.all([
+      this.productRepository.count({
+        where: { business_id: id, is_active: true },
+      }),
+      this.collaboratorRepository.find({
+        where: { business_id: id, is_active: true },
+        relations: { user: true },
+        order: { created_at: 'DESC' },
+      }),
+      this.providerRepository
+        .createQueryBuilder('pr')
+        .leftJoin(Product, 'p', 'p.provider_id = pr.id AND p.is_active = true')
+        .select('pr.id', 'provider_id')
+        .addSelect('pr.name', 'provider_name')
+        .addSelect('COUNT(p.id)', 'products_count')
+        .where('pr.business_id = :id', { id })
+        .andWhere('pr.is_active = true')
+        .groupBy('pr.id')
+        .addGroupBy('pr.name')
+        .orderBy('COUNT(p.id)', 'DESC')
+        .addOrderBy('pr.name', 'ASC')
+        .getRawMany(),
+    ]);
+
+    business.products_count = productsCount;
+    business.collaborators = collaborators;
+    business.collaborators_count = collaborators.length;
+    business.has_collaborators = collaborators.length > 0;
+    business.top_providers = allProviders.slice(0, 3).map((pr) => ({
+      id: String(pr.provider_id),
+      name: String(pr.provider_name),
+      products_count: parseInt(pr.products_count, 10) || 0,
+    }));
+    business.has_more_providers = allProviders.length > 3;
+    business.total_providers_count = allProviders.length;
 
     return business;
   }

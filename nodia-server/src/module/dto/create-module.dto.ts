@@ -16,6 +16,10 @@ export class CreateModuleDto {
   link: string;
 
   @IsOptional()
+  @IsString()
+  icon?: string | null;
+
+  @IsOptional()
   @IsBoolean()
   is_active?: boolean = true;
 

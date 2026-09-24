@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
 import TranslationInput from "../../../../../../components/inputs/TranslationInput";
+import IconSelect from "../../../../../../components/inputs/IconSelect";
+import { DEFAULT_GROUP_ICON_KEY } from "../../../../../../store/generalSettings/moduleIcons";
 import type { ModuleGroupModalProps, ModuleGroupFormData } from "./types";
 import {
   FormContainer,
@@ -27,6 +29,7 @@ const ModuleGroupModalInner: FC<ModuleGroupModalProps> = ({
     initialData?.isActive ?? true
   );
   const [groupKey, setGroupKey] = useState<string>(initialData?.key ?? "");
+  const [icon, setIcon] = useState<string | null>(initialData?.icon ?? null);
   const [nameTranslations, setNameTranslations] = useState<
     Record<string, string>
   >(initialData?.nameTranslations ?? { es: "", en: "" });
@@ -49,6 +52,7 @@ const ModuleGroupModalInner: FC<ModuleGroupModalProps> = ({
       ...(initialData?.id ? { id: initialData.id } : {}),
       isActive,
       key: groupKey.trim().toLowerCase(),
+      icon: icon || null,
       nameTranslations,
       translates,
     };
@@ -101,7 +105,7 @@ const ModuleGroupModalInner: FC<ModuleGroupModalProps> = ({
       open={open}
       onClose={onClose}
       title={modalTitle}
-      size="sm"
+      size="md"
       actions={modalActions}
     >
       <FormContainer id="module-group-form" onSubmit={handleSubmit}>
@@ -141,6 +145,20 @@ const ModuleGroupModalInner: FC<ModuleGroupModalProps> = ({
           required
           autoFocus={!isEditing}
           disabled={isSubmitting}
+        />
+
+        <IconSelect
+          label={t("modules:form.icon", "Ícono")}
+          value={icon}
+          onChange={setIcon}
+          defaultIconKey={DEFAULT_GROUP_ICON_KEY}
+          placeholder={t("modules:form.icon_placeholder", "Por defecto (automático)")}
+          helperText={t(
+            "modules:form.icon_helper",
+            "Selecciona un ícono representativo de Material-UI para este elemento."
+          )}
+          disabled={isSubmitting}
+          data-testid="module-group-icon-select"
         />
       </FormContainer>
     </BaseModal>

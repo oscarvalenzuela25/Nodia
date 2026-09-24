@@ -368,11 +368,59 @@ describe("ProductInvoiceImport Component", () => {
   });
 
   const selectProvider = async () => {
-    const combobox = screen.getByRole("combobox", { name: /Proveedor vinculado/i });
-    await user.click(combobox);
+    const trigger = screen.getByRole("button", { name: /Proveedor vinculado/i });
+    await user.click(trigger);
     const option = await screen.findByRole("option", { name: "Distribuidora Central" });
     await user.click(option);
   };
+
+  it("allows searching providers in SelectSingleInput and does not render a none option", async () => {
+    vi.mocked(businessServices.getProviders).mockResolvedValueOnce({
+      data: [
+        {
+          id: "prov-1",
+          name: "Distribuidora Central",
+          business_id: "biz-123",
+          tax: 19,
+          is_active: true,
+          created_at: "2026-01-01T00:00:00Z",
+        },
+        {
+          id: "prov-2",
+          name: "Importadora Andes",
+          business_id: "biz-123",
+          tax: 19,
+          is_active: true,
+          created_at: "2026-01-01T00:00:00Z",
+        },
+      ],
+      meta: { total_items: 2, page: 1, limit: 100, total_pages: 1 },
+    });
+
+    renderWithClient(
+      <ProductInvoiceImport
+        businessId="biz-123"
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    const trigger = screen.getByRole("button", { name: /Proveedor vinculado/i });
+    await user.click(trigger);
+
+    // Verify "None" / "Ninguno" option is NOT present
+    expect(screen.queryByRole("option", { name: /none|ninguno/i })).not.toBeInTheDocument();
+
+    // Verify search input filters options
+    const searchInput = screen.getByPlaceholderText(/buscar proveedor|buscar/i);
+    await user.type(searchInput, "Andes");
+
+    expect(screen.getByRole("option", { name: "Importadora Andes" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Distribuidora Central" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("option", { name: "Importadora Andes" }));
+    expect(screen.getByText("Importadora Andes")).toBeInTheDocument();
+  });
 
   it("disables upload input and dropzone when no provider is selected", async () => {
     renderWithClient(

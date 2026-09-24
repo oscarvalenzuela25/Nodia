@@ -51,5 +51,10 @@ export class Business {
   user_position?: string | null;
   user_action_ids?: string[];
   collaborators_count?: number;
+  has_collaborators?: boolean;
+  products_count?: number;
+  top_providers?: Array<{ id: string; name: string; products_count: number }>;
+  has_more_providers?: boolean;
+  total_providers_count?: number;
   translates?: Array<{ key: string; es: string; en: string }>;
 }

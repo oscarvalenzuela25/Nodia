@@ -61,6 +61,8 @@ Comenzar con la implementación técnica del proyecto, desarrollando los módulo
 
 ## Seguimiento técnico
 
+- 2026-09-23: flujo Gemini Web para imágenes corregido según [ADR-005](../architecture/decisions/ADR-005-gemini-web-session.md) (en revisión documental). El microservicio persiste cookies rotadas, detecta nuevos logins y recupera autenticación con el perfil; NestJS dejó de recurrir a `GEMINI_API_KEY`. Prueba local con cuenta real e imagen de factura sintética: extracción correcta; reinicio posterior autenticado. Pendiente: observar la sesión tras varias horas de inactividad.
+
 - 2026-09-12: opción A de [ADR-003 — Rate limiting distribuido](../architecture/decisions/ADR-003-api-rate-limiting.md) aprobada por el usuario e implementada con `@nestjs/throttler` y Redis. Compatibilidad con NestJS 12 resuelta mediante overrides acotados y verificada localmente. Incluye cuotas por IP, `429`/`Retry-After`, `503` ante fallo de Redis y feedback es/en del cliente. Pendientes de operación: confirmar Redis/proxy y ajustar cuotas con tráfico de staging. Login y cuotas por usuario se completan en la ampliación posterior a auth registrada abajo. No se realizó despliegue.
 
 - 2026-09-12: autenticación solicitada e implementada en [ADR-004](../architecture/decisions/ADR-004-auth-sessions.md) y [guía operativa](14-authentication.md). Login Google, JWT propio, refresh rotativo HttpOnly, guard global, contexto real, persist, avatar/logout y migración. Pendientes externos: Google Cloud/cuenta real y despliegue. Autorización fina por acciones sigue en T3.4b. Se reabren las revisiones documentales afectadas por ampliar la estrategia de sesiones.

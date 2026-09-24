@@ -11,4 +11,4 @@ if __name__ == "__main__":
     print(f"  Iniciando Nodia Gemini Microservice en http://{host}:{port}")
     print(f"  Documentación Swagger en http://localhost:{port}/docs")
     print(f"=======================================================")
-    uvicorn.run("main:app", host=host, port=port, reload=True)
+    uvicorn.run("main:app", host=host, port=port)

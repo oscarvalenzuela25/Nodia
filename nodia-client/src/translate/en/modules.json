@@ -27,10 +27,17 @@
     "link": "Route",
     "link_placeholder": "e.g.: /settings/users",
     "link_helper": "Relative route for the module in the application.",
-    "link_preview": "Full URL"
+    "link_preview": "Full URL",
+    "icon": "Icon",
+    "icon_placeholder": "Default (automatic)",
+    "icon_helper": "Select a representative Material-UI icon for this item.",
+    "search_icon": "Search icon...",
+    "default_icon": "Use default icon",
+    "no_icons_found": "No icons found"
   },
   "table": {
     "id": "Id",
+    "icon": "Icon",
     "name": "Name",
     "key": "Identifier",
     "link": "Route",
@@ -60,6 +67,7 @@
     "search_placeholder": "Search by group name or identifier...",
     "table": {
       "id": "Id",
+      "icon": "Icon",
       "name": "Group Name",
       "key": "Identifier",
       "active": "Active",

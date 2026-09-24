@@ -8,6 +8,10 @@ export class CreateModuleGroupDto {
   key: string;
 
   @IsOptional()
+  @IsString()
+  icon?: string | null;
+
+  @IsOptional()
   @IsBoolean()
   is_active?: boolean = true;
 

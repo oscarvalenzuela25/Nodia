@@ -46,6 +46,7 @@ describe("ModuleGroupModal", () => {
 
     expect(handleSubmit).toHaveBeenCalledWith({
       key: "settings",
+      icon: null,
       isActive: true,
       nameTranslations: { es: "", en: "" },
       translates: [
@@ -113,6 +114,7 @@ describe("ModuleGroupModal", () => {
     expect(handleSubmit).toHaveBeenCalledWith({
       id: "grp-1",
       key: "settings",
+      icon: null,
       nameTranslations: {
         es: "Ajustes",
         en: "Settings",

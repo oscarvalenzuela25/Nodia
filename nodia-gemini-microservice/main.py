@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
 from pydantic import BaseModel
+from gemini_webapi.exceptions import AuthError
 
 # Load environment variables from .env
 load_dotenv()
@@ -191,6 +192,12 @@ async def analyze_invoice(
 
         return JSONResponse(content=result)
 
+    except AuthError as e:
+        logger.warning(f"Gemini authentication unavailable: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="La sesión de Gemini expiró. Inicie sesión nuevamente en el microservicio.",
+        )
     except Exception as e:
         logger.error(f"Error analizando factura con Gemini: {e}")
         raise HTTPException(

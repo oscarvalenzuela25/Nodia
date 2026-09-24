@@ -27,6 +27,9 @@ export class Module {
   @Column({ type: 'varchar', length: 255 })
   link: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  icon?: string | null;
+
   @Column({ type: 'varchar', unique: true })
   key: string;
 

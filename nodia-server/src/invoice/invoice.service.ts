@@ -29,7 +29,31 @@ export class InvoiceService {
         .leftJoinAndSelect('invoice.provider', 'provider');
     }
 
-    applyRansack(qb, q, 'invoice');
+    if (q) {
+      const qCopy = { ...q };
+
+      if (qCopy.issue_date_gteq) {
+        qb.andWhere(
+          "(COALESCE(invoice.data->>'issue_date', to_char(invoice.created_at, 'YYYY-MM-DD')) >= :issueDateFrom)",
+          { issueDateFrom: qCopy.issue_date_gteq },
+        );
+        delete qCopy.issue_date_gteq;
+      }
+
+      if (qCopy.issue_date_lteq) {
+        qb.andWhere(
+          "(COALESCE(invoice.data->>'issue_date', to_char(invoice.created_at, 'YYYY-MM-DD')) <= :issueDateTo)",
+          { issueDateTo: qCopy.issue_date_lteq },
+        );
+        delete qCopy.issue_date_lteq;
+      }
+
+      applyRansack(qb, qCopy, 'invoice');
+    }
+
+    if (!q?.s) {
+      qb.addOrderBy('invoice.created_at', 'DESC');
+    }
 
     if (all) {
       const data = await qb.getMany();

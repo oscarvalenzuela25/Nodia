@@ -238,6 +238,7 @@ describe("ProvidersTab Component", () => {
       q: {
         business_id_eq: "biz-123",
         name_cont: undefined,
+        s: "created_at desc",
       },
     });
 
@@ -263,6 +264,7 @@ describe("ProvidersTab Component", () => {
         q: {
           business_id_eq: "biz-123",
           name_cont: undefined,
+          s: "created_at desc",
         },
       });
     });

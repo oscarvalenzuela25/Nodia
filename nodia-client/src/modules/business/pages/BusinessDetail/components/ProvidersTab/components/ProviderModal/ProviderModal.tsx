@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC, ChangeEvent } from "react";
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -250,9 +250,11 @@ export const ProviderModal: FC<Props> = ({
               label={t("business:provider_tax")}
               placeholder="19"
               value={field.value !== undefined ? String(field.value) : ""}
-              onChange={(e: any) => {
+              onChange={(e: ChangeEvent<HTMLInputElement> | string) => {
                 const val =
-                  typeof e === "object" && e?.target ? e.target.value : e;
+                  typeof e === "object" && e && "target" in e
+                    ? (e.target as HTMLInputElement).value
+                    : e;
                 field.onChange(val === "" ? "" : Number(val));
               }}
               onBlur={field.onBlur}

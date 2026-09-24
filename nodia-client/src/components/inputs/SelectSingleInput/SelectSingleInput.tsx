@@ -245,6 +245,8 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
               return (
                 <StyledMenuItem
                   key={opt.value}
+                  role="option"
+                  aria-selected={isSelected}
                   selected={isSelected}
                   onClick={() => handleSelectOption(opt.value)}
                 >

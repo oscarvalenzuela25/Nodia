@@ -6,6 +6,7 @@ import BaseModal from "../../../../../../components/BaseModal";
 import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
 import TranslationInput from "../../../../../../components/inputs/TranslationInput";
 import TextInput from "../../../../../../components/inputs/TextInput";
+import IconSelect from "../../../../../../components/inputs/IconSelect";
 import { useModuleGroups } from "../../infrastructure/useServices";
 import type { ModuleModalProps, ModuleFormData } from "./types";
 import {
@@ -40,6 +41,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
   );
   const [moduleKey, setModuleKey] = useState<string>(initialData?.key ?? "");
   const [link, setLink] = useState<string>(initialData?.link ?? "");
+  const [icon, setIcon] = useState<string | null>(initialData?.icon ?? null);
   const [moduleGroupId, setModuleGroupId] = useState<string | null>(
     initialData?.module_group_id ?? null
   );
@@ -95,6 +97,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
       key: moduleKey.trim().toLowerCase(),
       module_group_id: moduleGroupId,
       link: normalizedLink,
+      icon: icon || null,
       nameTranslations,
       translates,
     };
@@ -147,7 +150,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
       open={open}
       onClose={onClose}
       title={modalTitle}
-      size="sm"
+      size="md"
       actions={modalActions}
     >
       <FormContainer id="module-form" onSubmit={handleSubmit}>
@@ -206,6 +209,19 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           }
           required
           disabled={isSubmitting}
+        />
+
+        <IconSelect
+          label={t("modules:form.icon", "Ícono")}
+          value={icon}
+          onChange={setIcon}
+          placeholder={t("modules:form.icon_placeholder", "Por defecto (automático)")}
+          helperText={t(
+            "modules:form.icon_helper",
+            "Selecciona un ícono representativo de Material-UI para este elemento."
+          )}
+          disabled={isSubmitting}
+          data-testid="module-icon-select"
         />
 
         <SelectSingleInput

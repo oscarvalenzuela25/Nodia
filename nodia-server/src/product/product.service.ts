@@ -66,6 +66,10 @@ export class ProductService {
 
     applyRansack(qb, cleanQ, 'product');
 
+    if (!cleanQ?.s) {
+      qb.addOrderBy('product.created_at', 'DESC');
+    }
+
     if (all) {
       const data = await qb.getMany();
       return {

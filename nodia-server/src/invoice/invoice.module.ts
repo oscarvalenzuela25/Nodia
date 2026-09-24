@@ -7,6 +7,7 @@ import { InvoiceController } from './invoice.controller.js';
 // Invoices use cases
 import { GetAllInvoicesUseCase } from './use-case/get-all-invoices.use-case.js';
 import { GetInvoiceByIdUseCase } from './use-case/get-invoice-by-id.use-case.js';
+import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-case.js';
 import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
@@ -27,6 +28,7 @@ import { ProviderModule } from '../provider/provider.module.js';
     // Invoices
     GetAllInvoicesUseCase,
     GetInvoiceByIdUseCase,
+    GetInvoiceViewUrlUseCase,
     CreateInvoiceUseCase,
     UpdateInvoiceUseCase,
     AnalyzeInvoiceUseCase,

@@ -21,6 +21,7 @@ describe('CreateModuleGroupUseCase', () => {
   it('should call moduleGroupService.create with CreateModuleGroupDto and return created group', async () => {
     const dto: CreateModuleGroupDto = {
       key: 'settings',
+      icon: 'SettingsOutlined',
       is_active: true,
       translates: [
         { key: 'key', es: 'Ajustes', en: 'Settings' },
@@ -30,6 +31,7 @@ describe('CreateModuleGroupUseCase', () => {
     const mockCreatedGroup = {
       id: '1',
       key: 'settings',
+      icon: 'SettingsOutlined',
       is_active: true,
       created_at: new Date(),
       updated_at: new Date(),

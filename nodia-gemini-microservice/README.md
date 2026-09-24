@@ -5,8 +5,9 @@ Microservicio en Python (FastAPI + Uvicorn) que permite interactuar con **Google
 Cuenta con **automatización integral de sesión mediante Playwright**:
 - Perfil de navegador persistente (`browser_profile/`).
 - Inicio de sesión interactivo de 1 clic (`auth.py` / `login.bat` / `POST /auth/login`).
-- Renovación silenciosa 100% invisible en segundo plano (**Headless Auto-Refresh**) ante rotaciones de token de Google.
-- Recuperación automática ante `AuthError` (401) en medio de peticiones de análisis de factura.
+- Rotación automática de cookies por `gemini-webapi`, con persistencia en `session_state/` para reinicios.
+- Recuperación mediante el perfil de Playwright ante `AuthError` y ante rechazos de adjuntos. Si el perfil expiró, se requiere un nuevo login interactivo.
+- NestJS utiliza exclusivamente este microservicio para Gemini; no se requiere `GEMINI_API_KEY`.
 
 ---
 
@@ -18,6 +19,7 @@ nodia-gemini-microservice/
 ├── .env                     # Variables de entorno y cookies de sesión
 ├── .env.example             # Plantilla de configuración
 ├── browser_profile/         # Perfil persistente de Chrome para Playwright (ignorado por git)
+├── session_state/           # Cookies rotadas y caché de sesión (ignorado por git)
 ├── requirements.txt         # Dependencias congeladas (incluye Playwright)
 ├── browser_manager.py       # Gestor de Playwright (login interactivo y refresh headless)
 ├── auth.py                  # Script CLI para autenticación y verificación de cookies
@@ -70,7 +72,7 @@ Ejecuta el script de autenticación interactiva:
   ./login.sh
   ```
 
-Se abrirá una ventana de Chrome navegando a `https://gemini.google.com`. Inicia sesión con tu cuenta de Google. En cuanto el login se complete, Playwright extraerá automáticamente las cookies `__Secure-1PSID` y `__Secure-1PSIDTS`, las guardará en tu `.env` y persistirá la sesión en `browser_profile/`.
+Se abrirá una ventana de Chrome navegando a `https://gemini.google.com`. Inicia sesión con tu cuenta de Google. Playwright guardará las cookies iniciales en `.env` y el perfil en `browser_profile/`. El servicio guardará las cookies renovadas en `session_state/`. Conserva este directorio entre reinicios y no lo subas a Git.
 
 ### 3. Selección de Modelo Web (`GEMINI_MODEL`)
 
@@ -98,7 +100,7 @@ start.bat
 .\.venv\Scripts\python.exe run.py
 ```
 
-El microservicio se iniciará en **`http://localhost:8000`**.
+El microservicio se iniciará en **`http://localhost:8000`**. `run.py` usa un solo proceso sin recarga automática para mantener la sesión en memoria. Después de cambiar código, reinicia el servicio; un nuevo login en `.env` se detecta en la siguiente solicitud.
 
 ---
 
@@ -178,5 +180,6 @@ Si durante la llamada las cookies vencen, el microservicio ejecuta automáticame
 
 ## 🛡️ Mecanismo de Auto-Recuperación y Auto-Refresh
 
-1. **Auto-refresh en segundo plano:** Cada 3 minutos (`refresh_interval=180`), el microservicio sincroniza y rota la cookie `__Secure-1PSIDTS` para evitar que Google la inactive.
-2. **Auto-recovery con Playwright:** Si Google invalida la cookie externamente y se recibe un `AuthError` (401), el microservicio activa Playwright en modo **Headless** (invisible), refresca las cookies nativamente con Google, las reinyecta en memoria y completa la petición sin arrojar error al usuario.
+1. **Rotación:** `gemini-webapi` intenta renovar la sesión aproximadamente cada 3 minutos. El microservicio guarda las cookies vigentes cada 15 segundos, al terminar una petición y al cerrar.
+2. **Recuperación:** ante un `AuthError`, el servicio intenta actualizar las cookies desde el perfil de Playwright y reintenta una vez. Si no puede hacerlo, `/analyze-invoice` responde `503` para indicar que hace falta iniciar sesión de nuevo.
+3. **Límite:** la sesión web puede ser revocada por Google; este mecanismo mejora la continuidad, pero no garantiza una sesión permanente.

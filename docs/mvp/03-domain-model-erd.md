@@ -12,8 +12,8 @@ El modelo cubre la base de identidad, autorización, navegación, internacionali
 - `auth_sessions`: sesiones renovables, hash del refresh token, expiración y revocación.
 - `users`: personas preautorizadas para iniciar sesión con Google.
 - `roles`: agrupaciones reutilizables de permisos funcionales, identificadas por un `key`.
-- `module_groups`: catálogo de grupos únicos para agrupar módulos de navegación, identificados por un `key`.
-- `modules`: catálogo plano de módulos de la aplicación, vinculados a un grupo mediante `module_group_id`.
+- `module_groups`: catálogo de grupos únicos para agrupar módulos de navegación, identificados por un `key` e ícono opcional `icon`.
+- `modules`: catálogo plano de módulos de la aplicación, vinculados a un grupo mediante `module_group_id`, con ruta `link` e ícono opcional `icon`.
 - `actions`: catálogo de acciones dinámicas (permisos de endpoints/operaciones), con un `key` globalmente único e independientes de módulos.
 - `role_actions`: permisos asignados por rol (pivote rol + acción).
 - `user_roles`: asignación de roles a usuarios (pivote usuario + rol).
@@ -82,6 +82,7 @@ Table modules [headercolor: #175e7a] {
 	key varchar(255) [ not null, unique ]
 	module_group_id bigint [ not null ]
 	link varchar(255) [ not null ]
+	icon varchar(255)
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
@@ -94,6 +95,7 @@ Table modules [headercolor: #175e7a] {
 Table module_groups [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
 	key varchar(255) [ not null, unique ]
+	icon varchar(255)
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]

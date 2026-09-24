@@ -17,6 +17,8 @@ import {
   getProviders,
   createProvider,
   updateProvider,
+  bulkCreateProviders,
+  bulkUpdateProviders,
   getInvoices,
   createInvoice,
   updateInvoice,
@@ -332,6 +334,56 @@ export const useUpdateProvider = () => {
       await queryClient.invalidateQueries({ queryKey: providerKeys.all });
       sileo.success({
         title: i18n.t("business:provider_updated_success"),
+      });
+    },
+    onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+      const serverMessage =
+        error.response?.data?.message || error.response?.data?.error;
+      sileo.error({
+        title: i18n.t("core:server_error_toast"),
+        description: serverMessage,
+      });
+    },
+  });
+};
+
+export const useBulkCreateProviders = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (items: import("./types").CreateProviderPayload[]) =>
+      bulkCreateProviders(items),
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: providerKeys.all });
+      sileo.success({
+        title: i18n.t("business:providers_bulk_created_success", {
+          count: data.length,
+        }),
+      });
+    },
+    onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+      const serverMessage =
+        error.response?.data?.message || error.response?.data?.error;
+      sileo.error({
+        title: i18n.t("core:server_error_toast"),
+        description: serverMessage,
+      });
+    },
+  });
+};
+
+export const useBulkUpdateProviders = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (items: import("./types").BulkUpdateProviderItemPayload[]) =>
+      bulkUpdateProviders(items),
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: providerKeys.all });
+      sileo.success({
+        title: i18n.t("business:providers_bulk_updated_success", {
+          count: data.length,
+        }),
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {

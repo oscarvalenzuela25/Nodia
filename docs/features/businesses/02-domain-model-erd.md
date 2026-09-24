@@ -103,6 +103,7 @@ Table role_actions [headercolor: #175e7a] {
 Table module_groups [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
 	key varchar(255) [ not null, unique ]
+	icon varchar(255)
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
@@ -113,6 +114,7 @@ Table modules [headercolor: #175e7a] {
 	key varchar(255) [ not null, unique ]
 	module_group_id bigint [ not null ]
 	link varchar(255) [ not null ]
+	icon varchar(255)
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]

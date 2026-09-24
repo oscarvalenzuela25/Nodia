@@ -37,6 +37,7 @@ temp_uploads/
 
 # Browser Profile & Session Cache
 browser_profile/
+session_state/
 .cached_cookies_*.json
 
 # IDEs

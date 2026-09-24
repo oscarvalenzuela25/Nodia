@@ -52,6 +52,7 @@ import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInp
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import ModuleModal from "./components/ModuleModal";
 import ModuleGroupModal from "./components/ModuleGroupModal";
+import { getModuleIcon, getGroupIcon } from "../../../../store/generalSettings";
 import type {
   ModuleEntity,
   ModuleFormData,
@@ -368,6 +369,7 @@ const Modules: FC = () => {
         id: targetModule.id,
         key: targetModule.key,
         link: targetModule.link || "",
+        icon: targetModule.icon || null,
         module_group_id:
           targetModule.module_group_id ||
           targetModule.module_group?.id ||
@@ -419,6 +421,7 @@ const Modules: FC = () => {
             key: data.key,
             module_group_id: data.module_group_id,
             link: data.link,
+            icon: data.icon,
             is_active: data.isActive,
             translates: data.translates,
           },
@@ -428,6 +431,7 @@ const Modules: FC = () => {
           key: data.key,
           module_group_id: data.module_group_id,
           link: data.link,
+          icon: data.icon,
           is_active: data.isActive,
           translates: data.translates,
         });
@@ -464,6 +468,7 @@ const Modules: FC = () => {
       setSelectedGroupForEdit({
         id: targetGroup.id,
         key: targetGroup.key,
+        icon: targetGroup.icon || null,
         nameTranslations: {
           es: transItem?.es || "",
           en: transItem?.en || "",
@@ -509,6 +514,7 @@ const Modules: FC = () => {
           groupId: data.id,
           payload: {
             key: data.key,
+            icon: data.icon,
             is_active: data.isActive,
             translates: data.translates,
           },
@@ -516,6 +522,7 @@ const Modules: FC = () => {
       } else {
         await createGroupMutation.mutateAsync({
           key: data.key,
+          icon: data.icon,
           is_active: data.isActive,
           translates: data.translates,
         });
@@ -748,6 +755,9 @@ const Modules: FC = () => {
                   >
                     <TableRow>
                       <TableCell>{t("modules:groups.table.id", "Id")}</TableCell>
+                      <TableCell align="center">
+                        {t("modules:groups.table.icon", "Ícono")}
+                      </TableCell>
                       <TableCell>
                         {t("modules:groups.table.name", "Nombre del Grupo")}
                       </TableCell>
@@ -766,7 +776,7 @@ const Modules: FC = () => {
                     {!isLoadingGroups && groupsList.length === 0 ? (
                       <TableRow>
                         <TableCell
-                          colSpan={5}
+                          colSpan={6}
                           align="center"
                           sx={{ py: 4, color: "text.secondary" }}
                         >
@@ -870,6 +880,29 @@ const Modules: FC = () => {
                                   </IconButton>
                                 </Tooltip>
                               </Box>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Tooltip
+                                title={
+                                  g.icon
+                                    ? `${g.icon}`
+                                    : t("modules:form.default_icon", "Ícono por defecto")
+                                }
+                                arrow
+                                placement="top"
+                              >
+                                <Box
+                                  sx={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    color: "primary.main",
+                                  }}
+                                  data-testid={`group-icon-${g.key}`}
+                                >
+                                  {getGroupIcon(g.key, g.icon)}
+                                </Box>
+                              </Tooltip>
                             </TableCell>
                             <TableCell>
                               <Box
@@ -1181,6 +1214,9 @@ const Modules: FC = () => {
                   >
                     <TableRow>
                       <TableCell>{t("modules:table.id")}</TableCell>
+                      <TableCell align="center">
+                        {t("modules:table.icon", "Ícono")}
+                      </TableCell>
                       <TableCell>{t("modules:table.name")}</TableCell>
                       <TableCell>{t("modules:table.key")}</TableCell>
                       <TableCell>{t("modules:table.link", "Ruta")}</TableCell>
@@ -1196,7 +1232,7 @@ const Modules: FC = () => {
                     {!isLoadingModules && modulesList.length === 0 ? (
                       <TableRow>
                         <TableCell
-                          colSpan={8}
+                          colSpan={9}
                           align="center"
                           sx={{ py: 6, color: "text.secondary" }}
                         >
@@ -1295,6 +1331,29 @@ const Modules: FC = () => {
                                   </IconButton>
                                 </Tooltip>
                               </Box>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Tooltip
+                                title={
+                                  m.icon
+                                    ? `${m.icon}`
+                                    : t("modules:form.default_icon", "Ícono por defecto")
+                                }
+                                arrow
+                                placement="top"
+                              >
+                                <Box
+                                  sx={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    color: "primary.main",
+                                  }}
+                                  data-testid={`module-icon-${m.key}`}
+                                >
+                                  {getModuleIcon(m.key, m.icon)}
+                                </Box>
+                              </Tooltip>
                             </TableCell>
                             <TableCell>
                               <Typography

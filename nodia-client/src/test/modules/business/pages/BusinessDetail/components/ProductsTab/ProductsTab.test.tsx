@@ -147,6 +147,7 @@ describe("ProductsTab Component", () => {
       q: {
         business_id_eq: "biz-123",
         name_cont: undefined,
+        s: "created_at desc",
       },
     });
 
@@ -194,6 +195,7 @@ describe("ProductsTab Component", () => {
         q: {
           business_id_eq: "biz-123",
           name_cont: undefined,
+          s: "created_at desc",
         },
       });
     });
@@ -216,6 +218,7 @@ describe("ProductsTab Component", () => {
         q: {
           business_id_eq: "biz-123",
           name_cont: "Café",
+          s: "created_at desc",
         },
       });
     });
@@ -342,8 +345,13 @@ describe("ProductsTab Component", () => {
       expect(screen.getByText(/Nombre:\s*Matcha/i)).toBeInTheDocument();
     });
 
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
     // Re-open filter modal
-    await user.click(screen.getByRole("button", { name: /abrir filtros|filtro/i }));
+    const reopenFilterBtn = await screen.findByRole("button", { name: /abrir filtros/i });
+    await user.click(reopenFilterBtn);
     await waitFor(() => {
       expect(screen.getByText("Filtros de productos")).toBeInTheDocument();
     });

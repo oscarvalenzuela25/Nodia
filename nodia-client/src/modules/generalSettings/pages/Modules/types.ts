@@ -7,6 +7,7 @@ export type TranslateItem = {
 export interface ModuleGroupSummary {
   id: string;
   key: string;
+  icon?: string | null;
   is_active?: boolean;
   translates?: TranslateItem[];
 }
@@ -14,6 +15,7 @@ export interface ModuleGroupSummary {
 export interface ModuleGroupEntity {
   id: string;
   key: string;
+  icon?: string | null;
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -23,6 +25,7 @@ export interface ModuleGroupEntity {
 export type ModuleGroupItem = {
   id: string;
   key: string;
+  icon?: string | null;
   name?: string | null;
   nameTranslations?: Record<string, string>;
   isActive: boolean;
@@ -32,6 +35,7 @@ export type ModuleGroupItem = {
 export type ModuleGroupFormData = {
   id?: string;
   key: string;
+  icon?: string | null;
   nameTranslations: Record<string, string>;
   isActive: boolean;
   translates?: TranslateItem[];
@@ -39,12 +43,14 @@ export type ModuleGroupFormData = {
 
 export interface CreateModuleGroupPayload {
   key: string;
+  icon?: string | null;
   is_active?: boolean;
   translates?: TranslateItem[];
 }
 
 export interface UpdateModuleGroupPayload {
   key?: string;
+  icon?: string | null;
   is_active?: boolean;
   translates?: TranslateItem[];
 }
@@ -61,6 +67,7 @@ export type ModuleItem = {
   id: string;
   key: string;
   link?: string;
+  icon?: string | null;
   name?: string | null;
   module_group_id?: string;
   module_group?: ModuleGroupSummary;
@@ -76,6 +83,7 @@ export type ModuleFormData = {
   key: string;
   module_group_id: string;
   link: string;
+  icon?: string | null;
   nameTranslations: Record<string, string>;
   isActive: boolean;
   translates?: TranslateItem[];
@@ -85,6 +93,7 @@ export interface ModuleEntity {
   id: string;
   key: string;
   link?: string;
+  icon?: string | null;
   module_group_id?: string;
   module_group?: ModuleGroupSummary;
   is_active?: boolean;
@@ -116,6 +125,7 @@ export interface CreateModulePayload {
   key: string;
   module_group_id: string;
   link: string;
+  icon?: string | null;
   is_active?: boolean;
   translates?: TranslateItem[];
 }
@@ -124,6 +134,7 @@ export interface UpdateModulePayload {
   key?: string;
   module_group_id?: string;
   link?: string;
+  icon?: string | null;
   is_active?: boolean;
   translates?: TranslateItem[];
 }

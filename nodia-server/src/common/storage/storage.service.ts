@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { envs } from '../../config/envs.config.js';
 
 @Injectable()
@@ -22,6 +23,8 @@ export class StorageService {
           accessKeyId: envs.R2_ACCESS_KEY_ID,
           secretAccessKey: envs.R2_SECRET_ACCESS_KEY,
         },
+        requestChecksumCalculation: 'WHEN_REQUIRED',
+        responseChecksumValidation: 'WHEN_REQUIRED',
       });
     }
   }
@@ -53,6 +56,35 @@ export class StorageService {
     } catch (error: any) {
       throw new InternalServerErrorException(
         `Failed to upload file to storage: ${error.message}`,
+      );
+    }
+  }
+
+  /**
+   * Generates a temporary signed URL for viewing/downloading a file from Cloudflare R2 / S3
+   * @param key Storage path / key
+   * @param expiresInSeconds Duration in seconds for URL validity (default: 1800s = 30min)
+   * @returns Temporary presigned URL
+   */
+  async getSignedFileUrl(key: string, expiresInSeconds = 1800): Promise<string> {
+    if (!this.s3Client || !this.bucketName) {
+      throw new InternalServerErrorException(
+        'Storage service is not configured. Missing R2 credentials.',
+      );
+    }
+
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      });
+
+      return await getSignedUrl(this.s3Client, command, {
+        expiresIn: expiresInSeconds,
+      });
+    } catch (error: any) {
+      throw new InternalServerErrorException(
+        `Failed to generate signed URL for file: ${error.message}`,
       );
     }
   }

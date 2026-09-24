@@ -6,7 +6,9 @@ import { ProviderController } from './provider.controller.js';
 import { GetAllProvidersUseCase } from './use-case/get-all-providers.use-case.js';
 import { GetProviderByIdUseCase } from './use-case/get-provider-by-id.use-case.js';
 import { CreateProviderUseCase } from './use-case/create-provider.use-case.js';
+import { CreateBulkProvidersUseCase } from './use-case/create-bulk-providers.use-case.js';
 import { UpdateProviderUseCase } from './use-case/update-provider.use-case.js';
+import { UpdateBulkProvidersUseCase } from './use-case/update-bulk-providers.use-case.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Provider])],
@@ -16,7 +18,9 @@ import { UpdateProviderUseCase } from './use-case/update-provider.use-case.js';
     GetAllProvidersUseCase,
     GetProviderByIdUseCase,
     CreateProviderUseCase,
+    CreateBulkProvidersUseCase,
     UpdateProviderUseCase,
+    UpdateBulkProvidersUseCase,
   ],
   exports: [ProviderService],
 })

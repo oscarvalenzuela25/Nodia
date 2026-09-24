@@ -8,13 +8,9 @@ import {
   Checkbox,
   Chip,
   CircularProgress,
-  FormControl,
   Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -40,6 +36,7 @@ import { sileo } from "sileo";
 
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
+import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
 import {
   useCanUseGemini,
   useCanUseMistral,
@@ -163,6 +160,13 @@ export const ProductInvoiceImport: FC<Props> = ({
     limit: 100,
   });
   const providers = providersData?.data ?? [];
+
+  const providerOptions = useMemo(() => {
+    return providers.map((p) => ({
+      value: p.id,
+      label: p.name,
+    }));
+  }, [providers]);
 
   const { data: productsData } = useProducts({
     q: { business_id_eq: businessId },
@@ -552,30 +556,20 @@ export const ProductInvoiceImport: FC<Props> = ({
         <InvoiceDropzoneContainer>
           {/* Linked Provider Selector */}
           <Box sx={{ maxWidth: 400 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="invoice-provider-label">{t("business:select_provider_required")}</InputLabel>
-              <Select
-                labelId="invoice-provider-label"
-                value={selectedProviderId}
-                label={t("business:select_provider_required")}
-                onChange={(e) => setSelectedProviderId(e.target.value)}
-                disabled={isBusy}
-                data-testid="invoice-provider-select"
-                inputProps={{ "data-testid": "invoice-provider-select-input" }}
-              >
-                <MenuItem value="">
-                  <em>{t("core:none")}</em>
-                </MenuItem>
-                {providers.map((p) => (
-                  <MenuItem key={p.id} value={p.id}>
-                    {p.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
-              {t("business:select_provider_helper")}
-            </Typography>
+            <SelectSingleInput
+              id="invoice-provider-select"
+              label={t("business:select_provider_required")}
+              required
+              options={providerOptions}
+              value={selectedProviderId || null}
+              onChange={(val) => setSelectedProviderId(val ?? "")}
+              placeholder={t("business:select_provider_placeholder", "Seleccionar proveedor...")}
+              searchPlaceholder={t("business:search_provider_placeholder", "Buscar proveedor...")}
+              disabled={isBusy}
+              dataTestId="invoice-provider-select"
+              helperText={t("business:select_provider_helper")}
+              clearable
+            />
           </Box>
 
           {/* Hidden File Input */}

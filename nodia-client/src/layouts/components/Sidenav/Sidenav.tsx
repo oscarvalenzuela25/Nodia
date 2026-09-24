@@ -133,7 +133,7 @@ const Sidenav: FC<Props> = ({
       const subModules = (group.modules ?? []).map((m) => {
         const moduleTitle = getTranslatedLabel(m.translates, m.key, lang, t);
         const path = getModulePath(m);
-        const icon = getModuleIcon(m.key);
+        const icon = getModuleIcon(m.key, m.icon);
 
         return {
           id: m.key,
@@ -146,7 +146,7 @@ const Sidenav: FC<Props> = ({
       return {
         id: group.module_group_key,
         name: groupTitle,
-        icon: getGroupIcon(group.module_group_key),
+        icon: getGroupIcon(group.module_group_key, group.icon),
         subModules,
       };
     });

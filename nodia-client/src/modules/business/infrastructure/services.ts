@@ -145,6 +145,26 @@ export const updateProvider = async (
   return data;
 };
 
+export const bulkCreateProviders = async (
+  items: import("./types").CreateProviderPayload[]
+): Promise<import("./types").ProviderEntity[]> => {
+  const { data } = await mainInstance.post<import("./types").ProviderEntity[]>(
+    apiPath("/providers/bulk"),
+    { items }
+  );
+  return data;
+};
+
+export const bulkUpdateProviders = async (
+  items: import("./types").BulkUpdateProviderItemPayload[]
+): Promise<import("./types").ProviderEntity[]> => {
+  const { data } = await mainInstance.put<import("./types").ProviderEntity[]>(
+    apiPath("/providers/bulk"),
+    { items }
+  );
+  return data;
+};
+
 // ----------------------------------------------------
 // Invoice Services
 // ----------------------------------------------------
@@ -179,6 +199,15 @@ export const updateInvoice = async (
   return data;
 };
 
+export const getInvoiceViewUrl = async (
+  id: string
+): Promise<{ url: string; path_storage: string }> => {
+  const { data } = await mainInstance.get<{ url: string; path_storage: string }>(
+    apiPath(`/invoices/${id}/view-url`)
+  );
+  return data;
+};
+
 export const analyzeInvoice = async (
   params: import("./types").AnalyzeInvoiceParams
 ): Promise<import("./types").AnalyzeInvoiceResponse> => {
@@ -199,6 +228,7 @@ export const analyzeInvoice = async (
       headers: {
         "Content-Type": undefined,
       },
+      timeout: 150000,
     }
   );
   return data;

@@ -42,9 +42,9 @@ describe("InvoiceModal Component", () => {
     expect(screen.getByTestId("invoice-code-input")).toBeInTheDocument();
     expect(screen.getByTestId("invoice-provider-select")).toBeInTheDocument();
     expect(screen.getByTestId("invoice-total-amount-input")).toBeInTheDocument();
-    expect(screen.getByTestId("invoice-status-select")).toBeInTheDocument();
+    expect(screen.queryByTestId("invoice-status-select")).not.toBeInTheDocument();
     expect(screen.getByTestId("invoice-issue-date-input")).toBeInTheDocument();
-    expect(screen.getByTestId("invoice-due-date-input")).toBeInTheDocument();
+    expect(screen.queryByTestId("invoice-due-date-input")).not.toBeInTheDocument();
     expect(screen.getByTestId("invoice-path-input")).toBeInTheDocument();
     expect(screen.getByTestId("invoice-notes-input")).toBeInTheDocument();
     expect(screen.getByTestId("save-invoice-btn")).toBeInTheDocument();
@@ -82,7 +82,6 @@ describe("InvoiceModal Component", () => {
         code: "FAC-2026-888",
         total_amount: 450000,
         path_storage: "https://storage.nodia.app/invoices/fac-2026-888.pdf",
-        status: "paid",
         is_active: true,
       })
     );
@@ -129,7 +128,6 @@ describe("InvoiceModal Component", () => {
         code: "FAC-PDF-101",
         total_amount: 320000,
         file,
-        status: "paid",
         is_active: true,
       })
     );

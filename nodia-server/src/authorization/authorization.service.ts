@@ -168,6 +168,7 @@ export class AuthorizationService {
       modulesByGroupId.get(groupId)!.push({
         key: m.key,
         link: m.link,
+        icon: m.icon ?? null,
         translates: m.translates ?? [],
       });
     }
@@ -175,6 +176,7 @@ export class AuthorizationService {
     const moduleGroupsContext: ModuleGroupContext[] = translatedGroups.map(
       (group) => ({
         module_group_key: group.key,
+        icon: group.icon ?? null,
         translates: group.translates ?? [],
         modules: modulesByGroupId.get(String(group.id)) ?? [],
       }),

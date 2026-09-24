@@ -36,9 +36,7 @@ const invoiceSchema = z.object({
   provider_id: z.string().nullable().optional(),
   total_amount: z.number().min(0, "Monto debe ser >= 0"),
   path_storage: z.string(),
-  status: z.enum(["paid", "pending", "overdue"]),
   issue_date: z.string(),
-  due_date: z.string(),
   notes: z.string(),
   is_active: z.boolean(),
 });
@@ -127,9 +125,7 @@ export const InvoiceModal: FC<Props> = ({
       provider_id: null,
       total_amount: 0,
       path_storage: "",
-      status: "paid",
       issue_date: "",
-      due_date: "",
       notes: "",
       is_active: true,
     },
@@ -142,9 +138,7 @@ export const InvoiceModal: FC<Props> = ({
         provider_id: initialData.provider_id || null,
         total_amount: initialData.total_amount,
         path_storage: initialData.path_storage || "",
-        status: (initialData.data?.status as "paid" | "pending" | "overdue") || "paid",
         issue_date: (initialData.data?.issue_date as string) || "",
-        due_date: (initialData.data?.due_date as string) || "",
         notes: (initialData.data?.notes as string) || "",
         is_active: initialData.is_active,
       });
@@ -154,9 +148,7 @@ export const InvoiceModal: FC<Props> = ({
         provider_id: null,
         total_amount: 0,
         path_storage: "",
-        status: "paid",
         issue_date: "",
-        due_date: "",
         notes: "",
         is_active: true,
       });
@@ -169,12 +161,6 @@ export const InvoiceModal: FC<Props> = ({
       label: p.name,
     }));
   }, [providers]);
-
-  const statusOptions = useMemo(() => [
-    { value: "paid", label: t("business:invoice_status_paid") },
-    { value: "pending", label: t("business:invoice_status_pending") },
-    { value: "overdue", label: t("business:invoice_status_overdue") },
-  ], [t]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -529,25 +515,6 @@ export const InvoiceModal: FC<Props> = ({
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <SelectSingleInput
-                  id="invoice-status"
-                  label={t("business:invoice_status")}
-                  options={statusOptions}
-                  value={field.value}
-                  onChange={(val) => field.onChange((val as "paid" | "pending" | "overdue") || "paid")}
-                  disabled={isSubmitting}
-                  clearable={false}
-                  data-testid="invoice-status-select"
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Controller
               name="issue_date"
               control={control}
               render={({ field }) => (
@@ -561,26 +528,6 @@ export const InvoiceModal: FC<Props> = ({
                   onBlur={field.onBlur}
                   disabled={isSubmitting}
                   data-testid="invoice-issue-date-input"
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <Controller
-              name="due_date"
-              control={control}
-              render={({ field }) => (
-                <TextInput
-                  id="invoice-due-date"
-                  name={field.name}
-                  type="date"
-                  label={t("business:invoice_due_date")}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  disabled={isSubmitting}
-                  data-testid="invoice-due-date-input"
                 />
               )}
             />

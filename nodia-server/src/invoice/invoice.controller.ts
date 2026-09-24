@@ -16,6 +16,7 @@ import { GetInvoicesDto } from './dto/get-invoices.dto.js';
 import { AnalyzeInvoiceDto } from './dto/analyze-invoice.dto.js';
 import { GetAllInvoicesUseCase } from './use-case/get-all-invoices.use-case.js';
 import { GetInvoiceByIdUseCase } from './use-case/get-invoice-by-id.use-case.js';
+import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-case.js';
 import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
@@ -25,6 +26,7 @@ export class InvoiceController {
   constructor(
     private readonly getAllInvoicesUseCase: GetAllInvoicesUseCase,
     private readonly getInvoiceByIdUseCase: GetInvoiceByIdUseCase,
+    private readonly getInvoiceViewUrlUseCase: GetInvoiceViewUrlUseCase,
     private readonly createInvoiceUseCase: CreateInvoiceUseCase,
     private readonly updateInvoiceUseCase: UpdateInvoiceUseCase,
     private readonly analyzeInvoiceUseCase: AnalyzeInvoiceUseCase,
@@ -33,6 +35,11 @@ export class InvoiceController {
   @Get()
   findAll(@Query() queryParams: GetInvoicesDto) {
     return this.getAllInvoicesUseCase.execute(queryParams);
+  }
+
+  @Get(':id/view-url')
+  getViewUrl(@Param('id') id: string) {
+    return this.getInvoiceViewUrlUseCase.execute(id);
   }
 
   @Get(':id')

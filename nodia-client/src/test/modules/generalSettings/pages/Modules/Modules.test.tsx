@@ -316,6 +316,7 @@ describe("Modules Page", () => {
     await waitFor(() => {
       expect(services.createModuleGroup).toHaveBeenCalledWith({
         key: "finance",
+        icon: null,
         is_active: true,
         translates: [
           {
@@ -424,6 +425,7 @@ describe("Modules Page", () => {
         key: "billing",
         module_group_id: "mg1",
         link: "/settings/billing",
+        icon: null,
         is_active: true,
         translates: [
           {

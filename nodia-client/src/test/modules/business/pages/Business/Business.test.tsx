@@ -36,6 +36,15 @@ const mockBusinesses: BusinessEntity[] = [
     has_description: true,
     is_active: true,
     collaborators_count: 3,
+    has_collaborators: true,
+    products_count: 120,
+    top_providers: [
+      { id: "prov-1", name: "Nexus Distribución", products_count: 50 },
+      { id: "prov-2", name: "Andina Logistics", products_count: 40 },
+      { id: "prov-3", name: "Global Imports", products_count: 30 },
+    ],
+    has_more_providers: true,
+    total_providers_count: 5,
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",
     translates: [
@@ -53,6 +62,11 @@ const mockBusinesses: BusinessEntity[] = [
     has_description: false,
     is_active: false,
     collaborators_count: 0,
+    has_collaborators: false,
+    products_count: 0,
+    top_providers: [],
+    has_more_providers: false,
+    total_providers_count: 0,
     created_at: "2026-01-02T00:00:00Z",
     updated_at: "2026-01-02T00:00:00Z",
     translates: [],
@@ -114,13 +128,17 @@ describe("Business Page", () => {
       expect(screen.getByText("Tech Solutions")).toBeInTheDocument();
     });
 
-    // 999 productos and collaborators count
-    expect(screen.getAllByText("999 productos").length).toBe(2);
+    // Products and collaborators count
+    expect(screen.getByText("120 productos")).toBeInTheDocument();
+    expect(screen.getByText("0 productos")).toBeInTheDocument();
     expect(screen.getByText("3 colaboradores")).toBeInTheDocument();
     expect(screen.getByText("Sin colaboradores")).toBeInTheDocument();
 
-    // Provider chips (Lorem Ipsum)
-    expect(screen.getAllByText("Nexus Distribución").length).toBe(2);
+    // Provider chips & ellipsis
+    expect(screen.getByText("Nexus Distribución")).toBeInTheDocument();
+    expect(screen.getByText("Andina Logistics")).toBeInTheDocument();
+    expect(screen.getByText("Global Imports")).toBeInTheDocument();
+    expect(screen.getByText("...")).toBeInTheDocument();
   });
 
   it("opens create business modal when clicking 'Nuevo Negocio'", async () => {

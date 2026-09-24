@@ -20,6 +20,12 @@ export interface BusinessCollaborator {
   user?: BusinessOwner;
 }
 
+export interface BusinessProviderSummary {
+  id: string;
+  name: string;
+  products_count?: number;
+}
+
 export interface BusinessEntity {
   id: string;
   name: string;
@@ -34,6 +40,11 @@ export interface BusinessEntity {
   user_position?: string | null;
   user_action_ids?: string[];
   collaborators_count?: number;
+  has_collaborators?: boolean;
+  products_count?: number;
+  top_providers?: BusinessProviderSummary[];
+  has_more_providers?: boolean;
+  total_providers_count?: number;
   translates?: TranslateItem[];
 }
 
@@ -195,6 +206,10 @@ export interface UpdateProviderPayload {
   is_active?: boolean;
 }
 
+export interface BulkUpdateProviderItemPayload extends UpdateProviderPayload {
+  id: string;
+}
+
 export interface GetProvidersResponse {
   data: ProviderEntity[];
   meta: PaginationMeta;
@@ -225,9 +240,7 @@ export interface InvoiceEntity {
   total_amount: number;
   path_storage: string;
   data?: {
-    status?: "paid" | "pending" | "overdue";
     issue_date?: string;
-    due_date?: string;
     notes?: string;
     [key: string]: unknown;
   };
@@ -268,8 +281,12 @@ export interface GetInvoicesParams {
   q?: {
     business_id_eq?: string;
     provider_id_eq?: string;
+    provider_id_in?: string[];
     code_cont?: string;
     code_eq?: string;
+    code_in?: string[];
+    issue_date_gteq?: string;
+    issue_date_lteq?: string;
     is_active_eq?: boolean;
     s?: string;
     [key: string]: unknown;

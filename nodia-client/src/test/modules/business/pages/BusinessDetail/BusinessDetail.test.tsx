@@ -158,8 +158,8 @@ describe("BusinessDetail Page", () => {
     ).toBeInTheDocument();
 
     // Default tab: Resumen general KPIs
-    expect(screen.getByText(/Cadena de Abastecimiento/i)).toBeInTheDocument();
-    expect(screen.getByText(/Operación de Almacén/i)).toBeInTheDocument();
+    expect(screen.getByText(/Catálogo de Productos/i)).toBeInTheDocument();
+    expect(screen.getByText(/Proveedores Registrados/i)).toBeInTheDocument();
     expect(screen.getByText(/Rendimiento Comercial/i)).toBeInTheDocument();
   });
 
@@ -224,7 +224,7 @@ describe("BusinessDetail Page", () => {
     await user.click(providersTab);
 
     expect(
-      await screen.findByRole("button", { name: /Nuevo Proveedor/i })
+      await screen.findByRole("button", { name: /Administrar proveedores/i })
     ).toBeInTheDocument();
 
     // 2. Switch to Productos tab

@@ -7,6 +7,7 @@ services:
       - "127.0.0.1:8000:8000"
     volumes:
       - ./browser_profile:/app/browser_profile
+      - ./session_state:/app/session_state
       - ./.env:/app/.env
     environment:
       - PORT=8000

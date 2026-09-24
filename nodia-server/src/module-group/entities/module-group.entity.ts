@@ -19,6 +19,9 @@ export class ModuleGroup {
   @Column({ type: 'varchar', unique: true })
   key: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  icon?: string | null;
+
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 

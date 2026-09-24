@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Provider } from './entities/provider.entity.js';
 import { CreateProviderDto } from './dto/create-provider.dto.js';
+import { BulkCreateProviderDto } from './dto/bulk-create-provider.dto.js';
 import { UpdateProviderDto } from './dto/update-provider.dto.js';
+import { BulkUpdateProviderDto } from './dto/bulk-update-provider.dto.js';
 import { GetProvidersDto } from './dto/get-providers.dto.js';
 import { applyRansack } from '../common/utils/ransack-query.builder.js';
 import { GetProvidersResponse } from './types/provider.types.js';
@@ -29,6 +31,10 @@ export class ProviderService {
     }
 
     applyRansack(qb, q, 'provider');
+
+    if (!q?.s) {
+      qb.addOrderBy('provider.created_at', 'DESC');
+    }
 
     if (all) {
       const data = await qb.getMany();
@@ -98,5 +104,36 @@ export class ProviderService {
     };
     Object.assign(provider, payload);
     return this.providerRepository.save(provider);
+  }
+
+  async createBulk(bulkDto: BulkCreateProviderDto): Promise<Provider[]> {
+    const payload = bulkDto.items.map((item) => ({
+      ...item,
+      tax: item.tax !== undefined && item.tax !== null ? Number(item.tax) : 19,
+      name: item.name ? item.name.trim().toLowerCase() : item.name,
+      fields: item.fields ?? {},
+    }));
+    const entities = this.providerRepository.create(payload);
+    return this.providerRepository.save(entities);
+  }
+
+  async updateBulk(bulkDto: BulkUpdateProviderDto): Promise<Provider[]> {
+    const updatedProviders: Provider[] = [];
+    for (const item of bulkDto.items) {
+      const { id, ...attrs } = item;
+      const provider = await this.findOne(id);
+      const payload = {
+        ...attrs,
+        ...(attrs.tax !== undefined && {
+          tax: Number(attrs.tax),
+        }),
+        ...(attrs.name !== undefined && {
+          name: attrs.name ? attrs.name.trim().toLowerCase() : attrs.name,
+        }),
+      };
+      Object.assign(provider, payload);
+      updatedProviders.push(provider);
+    }
+    return this.providerRepository.save(updatedProviders);
   }
 }

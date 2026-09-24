@@ -77,7 +77,7 @@ const Home: FC = () => {
                     <Grid size={{ xs: 12, sm: 6, md: 3 }} key={m.key}>
                       <SettingsCard to={path}>
                         <CardIconWrapper className="card-icon-wrapper" data-testid={`card-icon-${m.key}`}>
-                          {getModuleIcon(m.key)}
+                          {getModuleIcon(m.key, m.icon)}
                         </CardIconWrapper>
                         <CardTitle>{title}</CardTitle>
                         {desc ? <CardDescription>{desc}</CardDescription> : null}
