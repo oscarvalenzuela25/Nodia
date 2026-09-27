@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 from loguru import logger
 from playwright.async_api import BrowserContext, async_playwright
+from gemini_webapi import GeminiClient
 
 BASE_DIR = Path(__file__).resolve().parent
 PROFILE_DIR = BASE_DIR / "browser_profile"
@@ -126,9 +127,9 @@ class BrowserCookieManager:
 
                 page = context.pages[0] if context.pages else await context.new_page()
 
-                logger.info("Navigating to https://gemini.google.com ...")
+                logger.info("Navigating to https://gemini.google.com/app ...")
                 try:
-                    await page.goto("https://gemini.google.com", timeout=60000)
+                    await page.goto("https://gemini.google.com/app", timeout=60000)
                 except Exception as e:
                     logger.warning(f"Initial navigation issue: {e}")
 
@@ -139,25 +140,46 @@ class BrowserCookieManager:
                 while time.time() - start_time < timeout_seconds:
                     try:
                         # Check if browser was closed by user
-                        if not context.pages:
+                        if not context.pages or page.is_closed():
+                            logger.info("Browser window closed by the user.")
                             break
 
-                        cookies = await self._extract_cookies(context)
                         url = page.url.lower()
 
-                        if cookies.get("secure_1psid") and cookies.get("secure_1psidts"):
-                            if "accounts.google.com" not in url:
-                                logger.success("Active Gemini session detected!")
-                                # Give Google a moment to finalize session sync
-                                await asyncio.sleep(2)
-                                extracted_cookies = await self._extract_cookies(context)
-                                break
+                        # If user is still on Google auth pages, keep waiting
+                        is_auth_page = any(
+                            domain in url
+                            for domain in ["accounts.google.com", "servicelogin", "signin", "v3/signin"]
+                        )
+
+                        if not is_auth_page and "gemini.google.com" in url:
+                            cookies = await self._extract_cookies(context)
+                            psid = cookies.get("secure_1psid")
+                            psidts = cookies.get("secure_1psidts")
+
+                            if psid and psidts:
+                                # Validate the live session with GeminiClient before closing the browser window
+                                try:
+                                    test_client = GeminiClient(psid, psidts)
+                                    await test_client.init(timeout=10, auto_refresh=False)
+                                    if test_client.account_status.name != "UNAUTHENTICATED":
+                                        logger.success("Active and authenticated Gemini session confirmed!")
+                                        await test_client.close()
+                                        extracted_cookies = cookies
+                                        break
+                                    await test_client.close()
+                                except Exception as exc:
+                                    logger.debug(f"Cookies extracted but not yet authenticated by Gemini: {exc}")
+
                     except Exception as e:
                         logger.debug(f"Polling loop: {e}")
 
                     await asyncio.sleep(2)
 
-                await context.close()
+                try:
+                    await context.close()
+                except Exception:
+                    pass
 
                 if extracted_cookies.get("secure_1psid") and extracted_cookies.get("secure_1psidts"):
                     update_env_file(
@@ -208,8 +230,8 @@ class BrowserCookieManager:
                 page = context.pages[0] if context.pages else await context.new_page()
 
                 try:
-                    logger.debug("Headless navigation to https://gemini.google.com...")
-                    await page.goto("https://gemini.google.com", timeout=timeout_seconds * 1000)
+                    logger.debug("Headless navigation to https://gemini.google.com/app...")
+                    await page.goto("https://gemini.google.com/app", timeout=timeout_seconds * 1000)
                     await page.wait_for_load_state("domcontentloaded", timeout=20000)
                     await asyncio.sleep(3)
 

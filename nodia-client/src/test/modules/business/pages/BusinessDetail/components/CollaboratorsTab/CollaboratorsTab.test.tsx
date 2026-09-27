@@ -1,8 +1,35 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactElement } from "react";
 import { CollaboratorsTab } from "../../../../../../../modules/business/pages/BusinessDetail/components/CollaboratorsTab/CollaboratorsTab";
 import type { BusinessCollaborator } from "../../../../../../../modules/business/infrastructure/types";
+import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
+import * as actionServices from "../../../../../../../modules/generalSettings/pages/Actions/infrastructure/services";
+
+vi.mock("sileo", () => ({
+  sileo: {
+    info: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+  },
+}));
+
+vi.mock(
+  "../../../../../../../modules/generalSettings/pages/Actions/infrastructure/services",
+  () => ({
+    getBusinessActions: vi.fn(),
+  })
+);
+
+vi.mock(
+  "../../../../../../../modules/business/infrastructure/services",
+  () => ({
+    assignCollaborators: vi.fn(),
+  })
+);
 
 const mockCollaborators: BusinessCollaborator[] = [
   {
@@ -31,11 +58,38 @@ const mockCollaborators: BusinessCollaborator[] = [
   },
 ];
 
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+
+const renderWithClient = (ui: ReactElement) => {
+  const queryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+  );
+};
+
 describe("CollaboratorsTab Component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(actionServices.getBusinessActions).mockResolvedValue({
+      data: [],
+      meta: { page: 1, limit: 10, total_items: 0, total_pages: 1 },
+    });
+    vi.mocked(businessServices.assignCollaborators).mockResolvedValue([]);
+  });
+
   it("renders empty state when there are no collaborators", () => {
     const onOpenAdd = vi.fn();
-    render(
+    renderWithClient(
       <CollaboratorsTab
+        businessId="biz-1"
         collaborators={[]}
         onOpenAddCollaborator={onOpenAdd}
       />
@@ -51,8 +105,9 @@ describe("CollaboratorsTab Component", () => {
 
   it("renders table with collaborator list including avatars, names, positions, action chips, and status", () => {
     const onOpenAdd = vi.fn();
-    render(
+    renderWithClient(
       <CollaboratorsTab
+        businessId="biz-1"
         collaborators={mockCollaborators}
         onOpenAddCollaborator={onOpenAdd}
       />
@@ -82,11 +137,12 @@ describe("CollaboratorsTab Component", () => {
     expect(screen.getByText("Inactivo")).toBeInTheDocument();
   });
 
-  it("calls onOpenAddCollaborator when clicking header button or row edit button", async () => {
+  it("calls onOpenAddCollaborator when clicking header button", async () => {
     const user = userEvent.setup();
     const onOpenAdd = vi.fn();
-    render(
+    renderWithClient(
       <CollaboratorsTab
+        businessId="biz-1"
         collaborators={mockCollaborators}
         onOpenAddCollaborator={onOpenAdd}
       />
@@ -95,9 +151,68 @@ describe("CollaboratorsTab Component", () => {
     const headerAddBtn = screen.getByTestId("add-collab-tab-btn");
     await user.click(headerAddBtn);
     expect(onOpenAdd).toHaveBeenCalledTimes(1);
+  });
 
-    const rowEditBtn = screen.getByTestId("edit-collab-btn-collab-1");
-    await user.click(rowEditBtn);
-    expect(onOpenAdd).toHaveBeenCalledTimes(2);
+  it("opens 3-dots action menu and allows opening edit modal", async () => {
+    const user = userEvent.setup();
+    renderWithClient(
+      <CollaboratorsTab
+        businessId="biz-1"
+        collaborators={mockCollaborators}
+        onOpenAddCollaborator={vi.fn()}
+      />
+    );
+
+    const actionBtn = screen.getByTestId("collab-actions-btn-collab-1");
+    await user.click(actionBtn);
+
+    const editMenuItem = screen.getByTestId("menu-item-edit-collab");
+    const removeMenuItem = screen.getByTestId("menu-item-remove-collab");
+
+    expect(editMenuItem).toBeInTheDocument();
+    expect(removeMenuItem).toBeInTheDocument();
+
+    await user.click(editMenuItem);
+
+    // Edit modal opens
+    expect(screen.getByText("Editar Colaborador")).toBeInTheDocument();
+    expect(screen.getAllByText("Carlos Sanchez").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("opens ConfirmDialog and removes collaborator when clicking remove option", async () => {
+    const user = userEvent.setup();
+    renderWithClient(
+      <CollaboratorsTab
+        businessId="biz-1"
+        collaborators={mockCollaborators}
+        onOpenAddCollaborator={vi.fn()}
+      />
+    );
+
+    const actionBtn = screen.getByTestId("collab-actions-btn-collab-1");
+    await user.click(actionBtn);
+
+    const removeMenuItem = screen.getByTestId("menu-item-remove-collab");
+    await user.click(removeMenuItem);
+
+    // Confirm dialog is displayed
+    expect(screen.getByText("¿Quitar colaborador?")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        '¿Estás seguro de que deseas quitar a "Carlos Sanchez" como colaborador de este negocio?'
+      )
+    ).toBeInTheDocument();
+
+    const confirmBtn = screen.getByRole("button", { name: "Quitar colaborador" });
+    await user.click(confirmBtn);
+
+    expect(businessServices.assignCollaborators).toHaveBeenCalledWith("biz-1", {
+      users: [
+        {
+          user_id: "101",
+          action_ids: [],
+        },
+      ],
+    });
   });
 });

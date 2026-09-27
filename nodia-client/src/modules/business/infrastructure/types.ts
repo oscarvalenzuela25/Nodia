@@ -162,6 +162,7 @@ export interface GetProductsParams {
     name_in?: string[];
     is_active_eq?: boolean;
     stock_status_in?: string[];
+    price_change_in?: string[];
     s?: string;
     [key: string]: unknown;
   };
@@ -326,6 +327,11 @@ export interface AnalyzeInvoiceParams {
   ai_provider?: 'gemini' | 'mistral';
 }
 
+export interface VerifyIaProvidersResponse {
+  gemini: boolean;
+  mistral: boolean;
+}
+
 export interface CreateInvoiceWithFileParams {
   file?: File;
   business_id: string;
@@ -375,3 +381,24 @@ export interface GetProductLogsParams {
     [key: string]: unknown;
   };
 }
+
+export interface QueryProductLogsPayload {
+  product_ids?: string[];
+  codes?: string[];
+  q?: {
+    product_id_eq?: string;
+    product_id_in?: string[];
+    code_cont?: string;
+    code_eq?: string;
+    code_in?: string[];
+    name_cont?: string;
+    s?: string;
+    [key: string]: unknown;
+  };
+  all?: boolean;
+  page?: number;
+  limit?: number;
+  includes?: boolean;
+  s?: string;
+}
+

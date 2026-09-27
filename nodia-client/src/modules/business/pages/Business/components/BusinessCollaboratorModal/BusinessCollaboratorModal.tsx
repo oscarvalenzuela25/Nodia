@@ -63,30 +63,29 @@ const BusinessCollaboratorModalInner: FC<BusinessCollaboratorModalProps> = ({
 
   const assignMutation = useAssignCollaborators();
 
-  // Rows state initialized directly
-  const [rows, setRows] = useState<CollaboratorRowState[]>(() => {
-    if (initialCollaborators && initialCollaborators.length > 0) {
-      return initialCollaborators.map((c) => ({
-        tempId: Math.random().toString(36).substring(2, 9),
-        user_id: c.user_id,
-        position: c.position || "",
-        action_ids: c.action_ids || [],
-      }));
-    }
-    return [createEmptyRow()];
-  });
+  // Rows state initialized empty for assigning new collaborators
+  const [rows, setRows] = useState<CollaboratorRowState[]>([createEmptyRow()]);
 
-  // Options for users (excluding the current authenticated user)
+  // Set of already assigned collaborator user IDs to exclude from selection
+  const existingCollabUserIds = useMemo(() => {
+    return new Set(
+      (initialCollaborators ?? []).map((c) => String(c.user_id))
+    );
+  }, [initialCollaborators]);
+
+  // Options for users (excluding the current authenticated user and existing collaborators)
   const userOptions = useMemo(() => {
     return (usersResponse?.data ?? [])
       .filter(
-        (u: User) => !currentUserId || String(u.id) !== String(currentUserId)
+        (u: User) =>
+          (!currentUserId || String(u.id) !== String(currentUserId)) &&
+          !existingCollabUserIds.has(String(u.id))
       )
       .map((u: User) => ({
         value: String(u.id),
         label: `${u.name} (${u.email})`,
       }));
-  }, [usersResponse, currentUserId]);
+  }, [usersResponse, currentUserId, existingCollabUserIds]);
 
   // Options for business actions
   const actionOptions = useMemo(() => {

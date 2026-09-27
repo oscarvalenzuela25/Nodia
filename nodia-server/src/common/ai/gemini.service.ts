@@ -17,6 +17,107 @@ export type { ExtractedInvoiceData, ExtractedInvoiceItem };
 export class GeminiService {
   private readonly logger = new Logger(GeminiService.name);
 
+  async verifyProvider(): Promise<boolean> {
+    const baseUrl = envs.GEMINI_MICROSERVICE_URL;
+    if (!baseUrl) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${baseUrl}/auth/status`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+      return Boolean(data?.authenticated);
+    } catch (error) {
+      this.logger.warn(
+        `Gemini microservice verification failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      return false;
+    }
+  }
+
+  async getModelsAndQuota(): Promise<any> {
+    const baseUrl = envs.GEMINI_MICROSERVICE_URL;
+    const defaultWebModels = [
+      {
+        id: 'gemini-flash',
+        name: 'gemini-flash',
+        display_name: '3.8 Flash',
+        description: 'Asistencia general rápida y balanceada',
+        context_window: 1000000,
+      },
+      {
+        id: 'gemini-pro',
+        name: 'gemini-pro',
+        display_name: '3.1 Pro',
+        description: 'Razonamiento avanzado, análisis profundo y alta precisión',
+        context_window: 2000000,
+      },
+    ];
+
+    if (!baseUrl) {
+      return {
+        authenticated: false,
+        tier: 'UNKNOWN',
+        plan_label: 'Microservicio no configurado',
+        active_model: 'gemini-flash',
+        models: defaultWebModels,
+        usage_info: null,
+        quotas: null,
+      };
+    }
+
+    try {
+      const response = await fetch(`${baseUrl}/models`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(6000),
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+
+      // Fallback to /auth/status
+      const fallbackResponse = await fetch(`${baseUrl}/auth/status`, {
+        method: 'GET',
+        signal: AbortSignal.timeout(4000),
+      });
+      if (fallbackResponse.ok) {
+        const statusData = await fallbackResponse.json();
+        return {
+          authenticated: Boolean(statusData?.authenticated),
+          tier: statusData?.tier || 'UNKNOWN',
+          plan_label: statusData?.tier ? `Plan ${statusData.tier}` : 'Plan Web',
+          active_model: statusData?.model || 'gemini-flash',
+          models: defaultWebModels,
+          usage_info: null,
+          quotas: null,
+        };
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Gemini getModelsAndQuota failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+
+    return {
+      authenticated: false,
+      tier: 'UNKNOWN',
+      plan_label: 'Microservicio no disponible',
+      active_model: 'gemini-flash',
+      models: defaultWebModels,
+      usage_info: null,
+      quotas: null,
+    };
+  }
+
   async extractInvoiceData(
     buffer: Buffer,
     mimeType: string,

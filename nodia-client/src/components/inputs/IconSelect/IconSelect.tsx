@@ -89,7 +89,8 @@ const IconSelect: FC<IconSelectProps> = ({
       (item) =>
         item.key.toLowerCase().includes(term) ||
         item.label.toLowerCase().includes(term) ||
-        item.category.toLowerCase().includes(term)
+        item.category.toLowerCase().includes(term) ||
+        item.keywords?.some((k) => k.toLowerCase().includes(term))
     );
   }, [searchTerm]);
 

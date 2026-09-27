@@ -55,6 +55,46 @@ const components: Components = {
       },
     },
   },
+  MuiTableHead: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        backgroundColor: theme.palette.primary.main,
+        "& .MuiTableCell-head": {
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 700,
+        },
+      }),
+    },
+  },
+  MuiTableCell: {
+    styleOverrides: {
+      head: ({ theme }) => ({
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+        fontWeight: 700,
+      }),
+    },
+  },
+  MuiTableSortLabel: {
+    styleOverrides: {
+      root: {
+        color: "inherit",
+        "&:hover": {
+          color: "inherit",
+        },
+        "&.Mui-active": {
+          color: "inherit",
+          "& .MuiTableSortLabel-icon": {
+            color: "inherit !important",
+          },
+        },
+      },
+      icon: {
+        color: "inherit !important",
+      },
+    },
+  },
 };
 
 export default components;

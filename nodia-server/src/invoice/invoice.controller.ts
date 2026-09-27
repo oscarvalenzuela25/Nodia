@@ -20,6 +20,7 @@ import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-ca
 import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
+import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
 
 @Controller(['invoice', 'invoices'])
 export class InvoiceController {
@@ -30,11 +31,17 @@ export class InvoiceController {
     private readonly createInvoiceUseCase: CreateInvoiceUseCase,
     private readonly updateInvoiceUseCase: UpdateInvoiceUseCase,
     private readonly analyzeInvoiceUseCase: AnalyzeInvoiceUseCase,
+    private readonly verifyIaProvidersUseCase: VerifyIaProvidersUseCase,
   ) {}
 
   @Get()
   findAll(@Query() queryParams: GetInvoicesDto) {
     return this.getAllInvoicesUseCase.execute(queryParams);
+  }
+
+  @Get(['verify-ia-providers', 'verify-ia-provider'])
+  verifyIaProviders() {
+    return this.verifyIaProvidersUseCase.execute();
   }
 
   @Get(':id/view-url')

@@ -31,6 +31,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 
+import { TableSkeleton } from "../../../../../../components/skeletons";
 import Filter from "../../../../../../components/Filter";
 import FilterChips from "../../../../../../components/Filter/components/FilterChips";
 import TextInput from "../../../../../../components/inputs/TextInput";
@@ -557,7 +558,24 @@ export const InvoicesTab: FC<Props> = ({
       </Box>
 
       {/* Table */}
-      <Skeleton loading={isLoading}>
+      <Skeleton
+        loading={isLoading}
+        fallback={
+          <TableSkeleton
+            columns={[
+              { header: t("business:invoice_code") },
+              { header: t("business:invoice_provider") },
+              { align: "right", header: t("business:invoice_total") },
+              { header: t("business:invoice_issue_date_col") },
+              { header: t("business:invoice_path") },
+              { align: "center", header: t("business:invoice_view_file_column") },
+              { align: "center", header: t("business:active_label") },
+              { align: "right", header: t("core:actions") },
+            ]}
+            rows={8}
+          />
+        }
+      >
         <TableContainer
           component={Paper}
           sx={{
@@ -580,7 +598,7 @@ export const InvoicesTab: FC<Props> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {invoices.length === 0 ? (
+              {!isLoading && invoices.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>

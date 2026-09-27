@@ -7,7 +7,20 @@
     <title>Nodia - Tools</title>
   </head>
   <body>
+    <script>
+      // Prevent third-party browser extensions (e.g. daily.dev companion) from bubbling errors to Vite dev overlay
+      window.addEventListener('error', function (event) {
+        if (
+          event.message?.includes('daily-companion-app') ||
+          event.filename?.includes('chrome-extension://')
+        ) {
+          event.stopImmediatePropagation();
+        }
+      });
+    </script>
     <div id="root"></div>
+    <!-- Dummy element to prevent chrome extension 'daily.dev' companion from throwing react-modal selector errors -->
+    <daily-companion-app style="display: none;"></daily-companion-app>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

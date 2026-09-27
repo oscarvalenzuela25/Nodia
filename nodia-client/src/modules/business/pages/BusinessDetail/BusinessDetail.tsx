@@ -23,13 +23,12 @@ import { Skeleton } from "boneyard-js/react";
 import { useIsMutating } from "@tanstack/react-query";
 
 import Breadcrumb from "../../../../components/Breadcrumb";
+import { HeaderCardSkeleton } from "../../../../components/skeletons";
 import BusinessModal from "../Business/components/BusinessModal";
 import BusinessCollaboratorModal from "../Business/components/BusinessCollaboratorModal";
 import {
   useBusiness,
   useUpdateBusiness,
-  useProducts,
-  useProviders,
   useInvoices,
 } from "../../infrastructure/useServices";
 import type { BusinessFormData } from "../../infrastructure/types";
@@ -74,13 +73,11 @@ const BusinessDetail: FC = () => {
   const { data: business, isLoading, isFetching, isError, refetch } = useBusiness(id);
   const updateMutation = useUpdateBusiness();
 
-  // Queries for badge counts
-  const { data: productsData } = useProducts({ q: { business_id_eq: id }, limit: 1 });
-  const { data: providersData } = useProviders({ q: { business_id_eq: id }, limit: 1 });
+  // Badge counts (products, providers and collaborators are already available in business entity)
   const { data: invoicesData } = useInvoices({ q: { business_id_eq: id }, limit: 1 });
 
-  const totalProducts = productsData?.meta?.total_items ?? 0;
-  const totalProviders = providersData?.meta?.total_items ?? 0;
+  const totalProducts = business?.products_count ?? 0;
+  const totalProviders = business?.total_providers_count ?? 0;
   const totalInvoices = invoicesData?.meta?.total_items ?? 0;
   const totalCollaborators = business?.collaborators?.length ?? business?.collaborators_count ?? 0;
 
@@ -154,7 +151,7 @@ const BusinessDetail: FC = () => {
       />
 
       {/* Header Card with Business Info and Embedded Tabs */}
-      <Skeleton loading={isLoading}>
+      <Skeleton loading={isLoading} fallback={<HeaderCardSkeleton />}>
         <HeaderCard>
           <HeaderTopSection>
             <HeaderInfoContainer>
@@ -339,9 +336,12 @@ const BusinessDetail: FC = () => {
 
           {activeTab === 4 && (
             <CollaboratorsTab
+              businessId={business.id}
+              businessName={business.name}
               collaborators={business.collaborators}
               onOpenAddCollaborator={() => setIsCollaboratorModalOpen(true)}
               isBusy={isBusy}
+              isLoading={isLoading}
             />
           )}
         </Box>

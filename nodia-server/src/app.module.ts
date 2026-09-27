@@ -12,6 +12,7 @@ import { ModuleModule } from './module/module.module.js';
 import { ModuleGroupModule } from './module-group/module-group.module.js';
 import { TranslationModule } from './translation/translation.module.js';
 import { AuthorizationModule } from './authorization/authorization.module.js';
+import { AiProviderModule } from './ai-provider/ai-provider.module.js';
 import { BusinessModule } from './business/business.module.js';
 import { BusinessActionModule } from './business-action/business-action.module.js';
 import { ProviderModule } from './provider/provider.module.js';
@@ -41,6 +42,7 @@ import { AuthGuard } from './auth/auth.guard.js';
     ModuleModule,
     TranslationModule,
     AuthorizationModule,
+    AiProviderModule,
   ],
   controllers: [AppController],
   providers: [

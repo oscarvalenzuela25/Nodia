@@ -25,3 +25,9 @@ export interface AnalyzeInvoiceResponse {
     [key: string]: any;
   };
 }
+
+export interface VerifyIaProvidersResponse {
+  gemini: boolean;
+  mistral: boolean;
+  [key: string]: boolean;
+}

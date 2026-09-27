@@ -5,9 +5,9 @@ import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
 import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
 import TranslationInput from "../../../../../../components/inputs/TranslationInput";
-import TextInput from "../../../../../../components/inputs/TextInput";
 import IconSelect from "../../../../../../components/inputs/IconSelect";
-import { useModuleGroups } from "../../infrastructure/useServices";
+import { useModuleGroups, useModules } from "../../infrastructure/useServices";
+import { APP_AVAILABLE_ROUTES } from "../../constants/routes";
 import type { ModuleModalProps, ModuleFormData } from "./types";
 import {
   FormContainer,
@@ -33,6 +33,10 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
       : "http://localhost:5173";
 
   const { data: groupsResponse, isLoading: isLoadingGroups } = useModuleGroups({
+    all: true,
+  });
+
+  const { data: modulesResponse, isLoading: isLoadingModules } = useModules({
     all: true,
   });
 
@@ -69,6 +73,54 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
       };
     });
   }, [groupsData, i18n.language]);
+
+  const occupiedLinks = useMemo(() => {
+    const list = modulesResponse?.data ?? [];
+    const set = new Set<string>();
+    for (const mod of list) {
+      if (isEditing && String(mod.id) === String(initialData?.id)) {
+        continue;
+      }
+      if (mod.link) {
+        const norm = mod.link.trim().startsWith("/")
+          ? mod.link.trim()
+          : `/${mod.link.trim()}`;
+        set.add(norm);
+      }
+    }
+    return set;
+  }, [modulesResponse?.data, isEditing, initialData?.id]);
+
+  const routeOptions = useMemo(() => {
+    const currentLink = initialData?.link
+      ? initialData.link.trim().startsWith("/")
+        ? initialData.link.trim()
+        : `/${initialData.link.trim()}`
+      : null;
+
+    const available = APP_AVAILABLE_ROUTES.filter(
+      (r) => !occupiedLinks.has(r.value) || r.value === currentLink,
+    ).map((r) => {
+      const translatedName = t(r.labelKey, r.defaultLabel);
+      const label = translatedName.includes(`(${r.value})`)
+        ? translatedName
+        : `${translatedName} (${r.value})`;
+
+      return {
+        value: r.value,
+        label,
+      };
+    });
+
+    if (currentLink && !available.some((opt) => opt.value === currentLink)) {
+      available.unshift({
+        value: currentLink,
+        label: `${currentLink} (${t("modules:routes.current", "Actual")})`,
+      });
+    }
+
+    return available;
+  }, [occupiedLinks, initialData?.link, t]);
 
   const isFormValid =
     moduleKey.trim().length > 0 &&
@@ -192,11 +244,19 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           disabled={isSubmitting}
         />
 
-        <TextInput
+        <SelectSingleInput
           label={t("modules:form.link", "Ruta")}
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          placeholder={t("modules:form.link_placeholder", "ej: /settings/users")}
+          options={routeOptions}
+          value={link ? (link.startsWith("/") ? link : `/${link}`) : null}
+          onChange={(val) => setLink(val ?? "")}
+          placeholder={t(
+            "modules:form.link_select_placeholder",
+            "Seleccionar ruta disponible..."
+          )}
+          searchPlaceholder={t(
+            "modules:form.link_search_placeholder",
+            "Buscar ruta..."
+          )}
           helperText={
             link.trim()
               ? `${t("modules:form.link_preview", "URL completa")}: ${domain}${
@@ -208,7 +268,8 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
                 )
           }
           required
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoadingModules}
+          dataTestId="module-link-select"
         />
 
         <IconSelect

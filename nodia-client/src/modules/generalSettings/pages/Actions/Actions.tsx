@@ -826,10 +826,10 @@ const Actions: FC = () => {
                 <Table size="small">
                   <TableHead
                     sx={{
-                      bgcolor: "action.hover",
+                      bgcolor: "primary.main",
                       "& th": {
                         fontWeight: "bold",
-                        color: "text.primary",
+                        color: "primary.contrastText",
                       },
                     }}
                   >

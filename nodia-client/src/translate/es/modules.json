@@ -26,6 +26,8 @@
     "group_by_placeholder": "ej: settings, catalog...",
     "link": "Ruta",
     "link_placeholder": "ej: /settings/users",
+    "link_select_placeholder": "Seleccionar ruta disponible...",
+    "link_search_placeholder": "Buscar ruta...",
     "link_helper": "Ruta relativa del módulo en la aplicación.",
     "link_preview": "URL completa",
     "icon": "Ícono",
@@ -108,6 +110,17 @@
     "modules": "Módulos",
     "audit": "Auditoría",
     "export_logs": "Exportación de Datos"
+  },
+  "routes": {
+    "home": "Inicio",
+    "business": "Negocios",
+    "users": "Usuarios",
+    "roles": "Roles",
+    "actions": "Acciones",
+    "modules": "Módulos",
+    "ai_providers": "Proveedores de IA",
+    "current": "Actual",
+    "no_routes_available": "No hay rutas disponibles"
   },
   "no_parent": "Sin módulo padre",
   "yes": "Sí",

@@ -315,3 +315,76 @@ export const generateTemplateCSV = (lang: string = "es"): string => {
     "Nestle Chile,19,true,SKU,En columna descripcion,VALOR_NETO,,TOTAL_UNITARIO,,CAJAS,,FACTOR,12345\n"
   );
 };
+
+export const escapeCsvValue = (val: unknown): string => {
+  if (val === null || val === undefined) return "";
+  const str = String(val);
+  if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+export const exportProvidersToCSV = (
+  providers: import("../../../../../../infrastructure/types").ProviderEntity[],
+  lang: string = "es"
+): string => {
+  const isEn = lang.startsWith("en");
+  const header = isEn
+    ? "Name (name),Tax % (tax),Active (is_active),Code Column (field_code),Code Instructions (instructions_code),Net Cost Column (field_cost_price),Net Cost Instructions (instructions_cost_price),Tax Cost Column (field_cost_price_tax),Tax Cost Instructions (instructions_cost_price_tax),Packages Column (field_packages),Packages Instructions (instructions_packages),Units Per Package Column (field_units_per_package),Units Per Package Instructions (instructions_units_per_package),ID (id)"
+    : "Nombre (name),Impuesto % (tax),Activo (is_active),Columna Código (field_code),Instrucciones Código (instructions_code),Columna Costo Neto (field_cost_price),Instrucciones Costo Neto (instructions_cost_price),Columna Costo IVA (field_cost_price_tax),Instrucciones Costo IVA (instructions_cost_price_tax),Columna Bultos (field_packages),Instrucciones Bultos (instructions_packages),Columna Unidades por Bulto (field_units_per_package),Instrucciones Unidades por Bulto (instructions_units_per_package),ID (id)";
+
+  const extractField = (raw: unknown): { value: string; instructions: string } => {
+    if (!raw) return { value: "", instructions: "" };
+    if (typeof raw === "string") return { value: raw, instructions: "" };
+    if (typeof raw === "object" && raw !== null) {
+      const obj = raw as Record<string, unknown>;
+      return {
+        value: typeof obj.value === "string" ? obj.value : "",
+        instructions: typeof obj.instructions === "string" ? obj.instructions : "",
+      };
+    }
+    return { value: "", instructions: "" };
+  };
+
+  const lines = [header];
+  for (const p of providers) {
+    const fields = p.fields || {};
+    const codeField = extractField(fields.code);
+    const costPriceField = extractField(fields.cost_price);
+    const costPriceTaxField = extractField(fields.cost_price_tax);
+    const packagesField = extractField(fields.packages);
+    const unitsPerPackageField = extractField(fields.units_per_package);
+
+    const row = [
+      escapeCsvValue(p.name),
+      escapeCsvValue(p.tax ?? 19),
+      escapeCsvValue(p.is_active),
+      escapeCsvValue(codeField.value),
+      escapeCsvValue(codeField.instructions),
+      escapeCsvValue(costPriceField.value),
+      escapeCsvValue(costPriceField.instructions),
+      escapeCsvValue(costPriceTaxField.value),
+      escapeCsvValue(costPriceTaxField.instructions),
+      escapeCsvValue(packagesField.value),
+      escapeCsvValue(packagesField.instructions),
+      escapeCsvValue(unitsPerPackageField.value),
+      escapeCsvValue(unitsPerPackageField.instructions),
+      escapeCsvValue(p.id),
+    ].join(",");
+    lines.push(row);
+  }
+  return lines.join("\n");
+};
+
+export const downloadCSVFile = (content: string, filename: string): void => {
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};

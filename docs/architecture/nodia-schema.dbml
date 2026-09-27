@@ -1,0 +1,407 @@
+// ==========================================
+// NODIA DATABASE SCHEMA (DBML)
+// ==========================================
+
+Enum ai_connection_mode {
+  web_session
+  api_key
+}
+
+Enum ai_key_health_state {
+  untested
+  valid
+  needs_review
+  cooldown
+}
+
+// ------------------------------------------
+// CORE & SEGURIDAD (Identidad, Permisos, i18n)
+// ------------------------------------------
+
+Table translations [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	source_entity varchar(255) [ not null ]
+	source_id varchar(255) [ not null ]
+	source_key varchar(255) [ not null ]
+	locale varchar(10) [ not null ]
+	value text [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(source_entity, source_id, source_key, locale) [ name: 'uq_translation_entity_id_key_locale', unique ]
+		(locale, source_entity, source_id) [ name: 'idx_translation_lookup' ]
+	}
+}
+
+Table user_roles [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	user_id bigint [ not null ]
+	role_id bigint [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(user_id, role_id) [ name: 'uq_user_role', unique ]
+	}
+}
+
+Table role_actions [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	role_id bigint [ not null ]
+	action_id bigint [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(role_id, action_id) [ name: 'uq_role_action', unique ]
+	}
+}
+
+Table modules [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key varchar(255) [ not null, unique ]
+	module_group_id bigint [ not null ]
+	link varchar(255) [ not null ]
+	icon varchar(255)
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(module_group_id) [ name: 'idx_modules_module_group_id' ]
+	}
+}
+
+Table module_groups [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key varchar(255) [ not null, unique ]
+	icon varchar(255)
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table actions [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key text [ not null, unique ]
+	description text
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table roles [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	key text [ not null, unique ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table users [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	name varchar(255)
+	email text [ not null, unique ]
+	image_url text
+	google_sub varchar(255) [ unique ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table user_modules [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	user_id bigint [ not null ]
+	module_id bigint [ not null ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(user_id, module_id) [ name: 'uq_user_module', unique ]
+	}
+}
+
+Table auth_sessions [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	public_id uuid [ not null, unique ]
+	user_id bigint [ not null ]
+	image_url text
+	refresh_token_hash varchar(64) [ not null ]
+	expires_at timestamptz [ not null ]
+	revoked_at timestamptz
+	created_at timestamptz [ not null ]
+
+	indexes {
+		(user_id) [ name: 'idx_auth_sessions_user_id' ]
+		(expires_at) [ name: 'idx_auth_sessions_expires_at' ]
+	}
+}
+
+// ------------------------------------------
+// DOMINIO DE NEGOCIOS Y FACTURACIÓN
+// ------------------------------------------
+
+Table businesses [headercolor: #4f46e5] {
+	id uuid [ pk, not null ]
+	name varchar(255) [ not null ]
+	owner_id bigint [ not null ]
+	has_description boolean [ not null, default: false ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(owner_id) [ name: 'idx_businesses_owner_id' ]
+	}
+}
+
+Table business_collaborators [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	position varchar(255)
+	user_id bigint [ not null ]
+	business_id uuid [ not null ]
+	action_ids "bigint[]" [ not null, default: '{}' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id, user_id) [ name: 'uq_business_collaborator_user', unique ]
+	}
+}
+
+Table business_actions [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	key varchar(255) [ not null, unique ]
+	has_description boolean [ not null, default: false ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table products [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	business_id uuid [ not null ]
+	provider_id bigint
+	code varchar(255) [ not null ]
+	name varchar(255) [ not null ]
+	cost_price integer [ not null ]
+	cost_price_tax integer [ not null ]
+	profit_percentage integer [ not null ]
+	sale_price integer [ not null ]
+	stock integer [ not null, default: 0 ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id, code) [ name: 'uq_business_product_code', unique ]
+		(business_id) [ name: 'idx_products_business_id' ]
+		(provider_id) [ name: 'idx_products_provider_id' ]
+	}
+}
+
+Table product_logs [headercolor: #4f46e5] {
+	id uuid [ pk, not null ]
+	product_id bigint [ not null ]
+	code varchar(255) [ not null ]
+	name varchar(255) [ not null ]
+	cost_price integer [ not null ]
+	cost_price_tax integer [ not null ]
+	profit_percentage integer [ not null ]
+	sale_price integer [ not null ]
+	stock integer [ not null, default: 0 ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(product_id) [ name: 'idx_product_logs_product_id' ]
+	}
+}
+
+Table providers [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	business_id uuid [ not null ]
+	name varchar(255) [ not null ]
+	tax integer [ not null, default: 19 ]
+	fields jsonb [ not null, default: '{}' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id) [ name: 'idx_providers_business_id' ]
+	}
+}
+
+Table invoices [headercolor: #4f46e5] {
+	id bigint [ pk, increment, not null ]
+	business_id uuid [ not null ]
+	provider_id bigint
+	code varchar(255) [ not null ]
+	total_amount integer [ not null, default: 0 ]
+	path_storage varchar(255) [ not null, default: '' ]
+	data jsonb [ not null, default: '{}' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(business_id) [ name: 'idx_invoices_business_id' ]
+		(provider_id) [ name: 'idx_invoices_provider_id' ]
+	}
+}
+
+// ------------------------------------------
+// PROVEEDORES DE INTELIGENCIA ARTIFICIAL (IA)
+// ------------------------------------------
+
+Table ai_providers [headercolor: #49e3e3] {
+	id bigint [ pk, increment ]
+	key varchar(64) [ not null, unique, note: 'Clave técnica del adaptador: gemini, mistral, openai' ]
+	mode ai_connection_mode [ note: 'Método de conexión activo: web_session o api_key' ]
+	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_model' ]
+	fields_version smallint [ not null, default: 1 ]
+	auto_rotate_api_keys boolean [ not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)' ]
+	is_active boolean [ not null, default: true, note: 'Habilitación administrativa general' ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table ai_api_keys [headercolor: #49e3e3] {
+	id bigint [ pk, increment ]
+	provider_id bigint [ not null, note: 'Proveedor al que pertenece la clave' ]
+	label varchar(100) [ not null ]
+	secret_ciphertext text [ not null, note: 'Sobre cifrado con AES-256-GCM' ]
+	secret_fingerprint varchar(64) [ not null, note: 'Huella HMAC-SHA256 para detectar duplicados sin guardar el secreto plano' ]
+	display_hint varchar(16) [ not null, note: 'Máscara visual, ej: ...a1b2' ]
+	sort_order int [ not null, default: 0 ]
+	is_selected boolean [ not null, default: false, note: 'Clave actualmente activa/seleccionada' ]
+	health_state ai_key_health_state [ not null, default: 'untested' ]
+	last_error_code varchar(64)
+	last_error_message text [ note: 'Mensaje redactado sin credenciales ni datos sensibles' ]
+	last_error_at timestamptz
+	last_success_at timestamptz
+	cooldown_until timestamptz
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(provider_id, secret_fingerprint) [ name: 'uq_ai_api_key_fingerprint', unique ]
+		(provider_id, sort_order, id) [ name: 'idx_ai_api_key_rotation' ]
+		(provider_id, is_selected) [ name: 'idx_ai_api_key_selection' ]
+	}
+}
+
+Table ai_provider_events [headercolor: #49e3e3] {
+	id bigint [ pk, increment ]
+	provider_id bigint [ not null ]
+	api_key_id bigint
+	actor_user_id bigint [ note: 'Usuario responsable o null para eventos automáticos del sistema' ]
+	event_type varchar(64) [ not null ]
+	reason_code varchar(64)
+	message text [ note: 'Resumen redactado del evento' ]
+	metadata jsonb [ note: 'Metadatos no sensibles del evento' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(provider_id, created_at) [ name: 'idx_ai_provider_events_recent' ]
+		(api_key_id, created_at) [ name: 'idx_ai_api_key_events_recent' ]
+	}
+}
+
+// ------------------------------------------
+// RELACIONES (Foreign Keys)
+// ------------------------------------------
+
+Ref fk_role_actions_role {
+	role_actions.role_id > roles.id [ delete: no action, update: no action ]
+}
+
+Ref fk_role_actions_action {
+	role_actions.action_id > actions.id [ delete: no action, update: no action ]
+}
+
+Ref fk_user_roles_user {
+	user_roles.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_user_roles_role {
+	user_roles.role_id > roles.id [ delete: no action, update: no action ]
+}
+
+Ref fk_user_modules_user {
+	user_modules.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_user_modules_module {
+	user_modules.module_id > modules.id [ delete: no action, update: no action ]
+}
+
+Ref fk_modules_module_group {
+	modules.module_group_id > module_groups.id [ delete: no action, update: no action ]
+}
+
+Ref fk_users_id_businesses {
+	users.id < businesses.owner_id [ delete: no action, update: no action ]
+}
+
+Ref fk_users_id_user_businesses {
+	users.id < business_collaborators.user_id [ delete: cascade, update: no action ]
+}
+
+Ref fk_businesses_id_user_businesses {
+	businesses.id < business_collaborators.business_id [ delete: cascade, update: no action ]
+}
+
+Ref fk_businesses_id_products {
+	businesses.id < products.business_id [ delete: no action, update: no action ]
+}
+
+Ref fk_products_id_product_logs {
+	products.id < product_logs.product_id [ delete: cascade, update: no action ]
+}
+
+Ref fk_businesses_id_providers {
+	businesses.id < providers.business_id [ delete: no action, update: no action ]
+}
+
+Ref fk_providers_id_invoices {
+	providers.id < invoices.provider_id [ delete: set null, update: no action ]
+}
+
+Ref fk_providers_id_products {
+	providers.id < products.provider_id [ delete: set null, update: no action ]
+}
+
+Ref fk_businesses_id_invoices {
+	businesses.id < invoices.business_id [ delete: no action, update: no action ]
+}
+
+Ref fk_auth_sessions_user {
+	auth_sessions.user_id > users.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_keys_provider {
+	ai_api_keys.provider_id > ai_providers.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_events_provider {
+	ai_provider_events.provider_id > ai_providers.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_events_api_key {
+	ai_provider_events.api_key_id > ai_api_keys.id [ delete: set null, update: no action ]
+}
+
+Ref fk_ai_events_actor_user {
+	ai_provider_events.actor_user_id > users.id [ delete: set null, update: no action ]
+}

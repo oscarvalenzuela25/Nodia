@@ -414,8 +414,19 @@ describe("Modules Page", () => {
     const adminOption = screen.getByText("Administración (administration)");
     await user.click(adminOption);
 
-    const linkInput = screen.getByPlaceholderText(/\/settings\/users/i);
-    await user.type(linkInput, "/settings/billing");
+    const linkSelect = screen.getByRole("button", { name: "Ruta" });
+    await user.click(linkSelect);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Proveedores de IA \(\/settings\/ai-providers\)/i)
+      ).toBeInTheDocument();
+    });
+
+    const routeOption = screen.getByText(
+      /Proveedores de IA \(\/settings\/ai-providers\)/i
+    );
+    await user.click(routeOption);
 
     const submitBtn = screen.getByRole("button", { name: "Crear Módulo" });
     await user.click(submitBtn);
@@ -424,7 +435,7 @@ describe("Modules Page", () => {
       expect(services.createModule).toHaveBeenCalledWith({
         key: "billing",
         module_group_id: "mg1",
-        link: "/settings/billing",
+        link: "/settings/ai-providers",
         icon: null,
         is_active: true,
         translates: [

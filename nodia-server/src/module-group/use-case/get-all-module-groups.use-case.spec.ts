@@ -42,6 +42,7 @@ describe('GetAllModuleGroupsUseCase', () => {
           translates: [
             { key: 'key', es: 'Ajustes', en: 'Settings' },
           ],
+          modules: [],
         },
       ],
       meta: {

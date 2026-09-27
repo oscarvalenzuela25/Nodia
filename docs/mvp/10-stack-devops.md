@@ -1,7 +1,7 @@
 # Stack DevOps — Nodia Parte 1
 
-> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
-> Última actualización: 2026-09-12
+> Estado: en revisión — ampliación IA y cambio de despliegue 2026-09-25; aprobación histórica del MVP conservada
+> Última actualización: 2026-09-25
 > Dependencias: 08-stack-frontend.md y 09-stack-backend.md aprobados
 
 ## Objetivo
@@ -16,7 +16,8 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
   ```text
   Nodia/
   ├── nodia-client/   # Frontend (React + Vite)
-  └── nodia-api/      # Backend (NestJS)
+  ├── nodia-server/   # Backend (NestJS)
+  └── nodia-gemini-microservice/ # Adaptador Gemini Web
   ```
 - **Despliegues aislados:** Aunque comparten repositorio, el frontend y el backend se desplegarán de forma independiente basados en los cambios de sus respectivas carpetas.
 
@@ -27,21 +28,21 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 - **Justificación:** Excelente capa gratuita para MVPs, distribución global (CDN rápida), integraciones nativas con repositorios y tiempos de compilación muy rápidos para proyectos Vite/React.
 
 ### Backend y Base de Datos
-- **Proveedor:** **Northflank**.
-- **Servicios:**
-  1. Un servicio para la API de **NestJS** (conectado directamente a GitHub).
-  2. Un addon/servicio para la base de datos **PostgreSQL**.
-- **Justificación:** Northflank provee una experiencia PaaS moderna, sencilla y con capa gratuita/barata para MVPs, permitiendo conectar la API y la BD fácilmente en el mismo clúster.
+- **API NestJS y microservicio Gemini:** VPS gestionado por el proyecto. La elección del VPS responde también al objetivo de aprender su operación.
+- **PostgreSQL:** servicio gestionado externo, pendiente de escoger entre Neon y Northflank.
+- **Redis:** servicio gestionado externo; proveedor y parámetros operativos pendientes.
+- **Archivos de facturas:** Cloudflare R2, sin cambio.
+- **Diseño operativo detallado:** proxy/TLS, red privada entre NestJS y microservicio, backups, despliegue y recuperación pendientes en [la especificación IA](16-ai-provider-management-handoff.md).
 
 ## 3. Contenedores (Docker)
 
-- **Decisión:** Excluido para el MVP.
-- **Justificación:** Dado que Cloudflare Pages y Northflank resuelven el entorno de ejecución conectándose al repositorio (buildpacks nativos o Node.js runtime), no se invertirá esfuerzo en configuración de Docker o Docker Compose en esta etapa temprana.
+- **Decisión actual:** el microservicio Gemini se ejecutará en Docker en el VPS con volumen persistente para perfil de navegador y sesión. La forma de ejecutar NestJS en el VPS se definirá en el plan operativo.
+- **Decisión histórica:** Docker se había excluido en la Parte 1, antes de incorporar el microservicio con sesión web.
 
 ## 4. Integración y Entrega Continua (CI/CD)
 
 ### GitHub Actions (Automatización de Despliegues)
-- Se configurarán pipelines para despliegue automático hacia Cloudflare Pages (cuando detecte cambios en `nodia-client`) y Northflank (mediante su integración de repositorio o webhook al detectar cambios en `nodia-api`).
+- Cloudflare Pages mantiene el despliegue del frontend. La entrega de NestJS y microservicio al VPS queda pendiente de diseñar (pipeline, despliegue seguro y rollback).
 
 ### Pre-commit Hooks (Calidad Local)
 - **Herramienta:** `Husky` + `lint-staged`.
@@ -49,18 +50,19 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 
 ## Hechos confirmados
 
-- Monorepo con carpetas separadas para front y back.
+- Monorepo con carpetas separadas para frontend, backend y microservicio Gemini.
 - Frontend alojado en Cloudflare Pages.
-- Backend y PostgreSQL alojados en Northflank.
-- Despliegue automático vía GitHub Actions.
+- NestJS y microservicio Gemini en VPS.
+- PostgreSQL gestionado externamente (Neon o Northflank por decidir); Redis gestionado externamente.
+- Despliegue automático del frontend; pipeline hacia VPS pendiente de especificar.
 - Control de calidad local (lint/test) mediante pre-commit hooks (Husky).
-- Docker excluido temporalmente.
+- Docker para microservicio y volumen de sesión; ejecución de NestJS por definir.
 
 ## Preguntas abiertas
 
 ### Requisitos de despliegue del rate limit — 2026-09-12
 
-La implementación de [ADR-003](../architecture/decisions/ADR-003-api-rate-limiting.md) usa Redis compartido en entornos desplegados. Sigue pendiente confirmar/provisionar ese servicio en Northflank, sus permisos de scripts y su política de memoria/evicción. No se ha desplegado ni contratado infraestructura como parte de esta entrega.
+La implementación de [ADR-003](../architecture/decisions/ADR-003-api-rate-limiting.md) usa Redis compartido en entornos desplegados. Sigue pendiente confirmar/provisionar un servicio gestionado externo, sus permisos de scripts y su política de memoria/evicción. No se ha desplegado ni contratado infraestructura como parte de esta entrega.
 
 Configurar conexión Redis, prefijo por entorno y `TRUST_PROXY` con los IPs/CIDRs reales del ingreso. Su valor vacío confía solo en la conexión directa. Verificar identificación del cliente a través de la ruta pública y calibrar cuotas en staging. Una caída de Redis produce `503` en endpoints protegidos; memoria se admite exclusivamente en desarrollo/test.
 

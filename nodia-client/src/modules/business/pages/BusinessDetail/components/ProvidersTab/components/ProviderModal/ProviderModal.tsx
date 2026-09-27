@@ -250,11 +250,8 @@ export const ProviderModal: FC<Props> = ({
               label={t("business:provider_tax")}
               placeholder="19"
               value={field.value !== undefined ? String(field.value) : ""}
-              onChange={(e: ChangeEvent<HTMLInputElement> | string) => {
-                const val =
-                  typeof e === "object" && e && "target" in e
-                    ? (e.target as HTMLInputElement).value
-                    : e;
+              onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                const val = e.target.value;
                 field.onChange(val === "" ? "" : Number(val));
               }}
               onBlur={field.onBlur}

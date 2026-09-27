@@ -6,6 +6,7 @@ import type { ReactElement } from "react";
 import ProvidersTab from "../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/ProvidersTab";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
 import type { ProviderEntity } from "../../../../../../../modules/business/infrastructure/types";
+import { sileo } from "sileo";
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -32,6 +33,7 @@ vi.mock("../../../../../../../modules/business/infrastructure/services", () => (
   getProviders: vi.fn(),
   createProvider: vi.fn(),
   updateProvider: vi.fn(),
+  exportProvidersCsv: vi.fn(),
 }));
 
 const mockProviders: ProviderEntity[] = [
@@ -80,6 +82,9 @@ describe("ProvidersTab Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    window.URL.createObjectURL = vi.fn(() => "blob:mock-url");
+    window.URL.revokeObjectURL = vi.fn();
+    vi.mocked(businessServices.exportProvidersCsv).mockResolvedValue("Name (name),Tax % (tax)\nLácteos,19");
     vi.mocked(businessServices.getProviders).mockResolvedValue({
       data: mockProviders,
       meta: { total_items: 2, page: 1, limit: 50, total_pages: 1 },
@@ -268,5 +273,83 @@ describe("ProvidersTab Component", () => {
         },
       });
     });
+  });
+
+  it("opens download CSV menu and triggers client-side download for current view", async () => {
+    renderWithClient(<ProvidersTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Lácteos del Sur")).toBeInTheDocument();
+    });
+
+    const downloadBtn = screen.getByTestId("download-providers-csv-btn");
+    await user.click(downloadBtn);
+
+    const currentViewOption = await screen.findByTestId("menu-download-current-view-providers");
+    expect(currentViewOption).toBeInTheDocument();
+
+    await user.click(currentViewOption);
+
+    expect(window.URL.createObjectURL).toHaveBeenCalled();
+    expect(sileo.success).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: expect.any(String),
+      })
+    );
+  });
+
+  it("opens download CSV menu and calls exportProvidersCsv to download all data", async () => {
+    renderWithClient(<ProvidersTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Lácteos del Sur")).toBeInTheDocument();
+    });
+
+    const downloadBtn = screen.getByTestId("download-providers-csv-btn");
+    await user.click(downloadBtn);
+
+    const allDataOption = await screen.findByTestId("menu-download-all-providers");
+    expect(allDataOption).toBeInTheDocument();
+
+    await user.click(allDataOption);
+
+    await waitFor(() => {
+      expect(businessServices.exportProvidersCsv).toHaveBeenCalledWith(
+        expect.objectContaining({
+          business_id: "biz-123",
+        })
+      );
+    });
+    expect(window.URL.createObjectURL).toHaveBeenCalled();
+    expect(sileo.success).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: expect.any(String),
+      })
+    );
+  });
+
+  it("shows warning toast when downloading current view with empty providers", async () => {
+    vi.mocked(businessServices.getProviders).mockResolvedValueOnce({
+      data: [],
+      meta: { total_items: 0, page: 1, limit: 50, total_pages: 0 },
+    });
+
+    renderWithClient(<ProvidersTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Lácteos del Sur")).not.toBeInTheDocument();
+    });
+
+    const downloadBtn = screen.getByTestId("download-providers-csv-btn");
+    await user.click(downloadBtn);
+
+    const currentViewOption = await screen.findByTestId("menu-download-current-view-providers");
+    await user.click(currentViewOption);
+
+    expect(sileo.warning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: expect.any(String),
+      })
+    );
   });
 });

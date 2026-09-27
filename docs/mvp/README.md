@@ -30,6 +30,15 @@ Esta carpeta contiene la definición del producto previa al desarrollo. Debe per
 | 13 | `13-readiness-review.md` | Verificar si el MVP está listo para programarse |
 | 14 | `14-authentication.md` | Implementación, configuración y operación de la autenticación |
 
+## Ampliación previa a producción en revisión
+
+| Documento | Propósito |
+|---|---|
+| `15-ai-providers-interview.md` | Entrevista y decisiones confirmadas sobre gestión global de IA |
+| `16-ai-provider-management-handoff.md` | Especificación de entrega para un agente implementador |
+
+Estos documentos no están aprobados. Amplían el alcance previo al lanzamiento y requieren reconciliar los documentos del MVP afectados antes de implementación definitiva.
+
 ## Estados
 
 - `pendiente`: aún no trabajado.

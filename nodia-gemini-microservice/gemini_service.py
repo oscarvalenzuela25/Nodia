@@ -198,6 +198,118 @@ class GeminiWebService:
             "model_display": model_display,
         }
 
+    async def get_models_and_quota(self) -> Dict[str, Any]:
+        """
+        Retorna la lista de modelos disponibles para la sesión web de Gemini y el
+        estado de cuotas / créditos restantes del plan.
+        """
+        try:
+            await self.init_client()
+        except Exception as e:
+            logger.warning(f"Could not initialize Gemini client for models/quota: {e}")
+
+        status = await self.get_status()
+        is_auth = status.get("initialized", False)
+
+        default_web_models = [
+            {
+                "id": "gemini-flash",
+                "name": "gemini-flash",
+                "display_name": "3.8 Flash",
+                "description": "Asistencia general rápida y balanceada",
+                "capabilities": ["text", "vision", "documents"],
+                "context_window": 1000000,
+            },
+            {
+                "id": "gemini-pro",
+                "name": "gemini-pro",
+                "display_name": "3.1 Pro",
+                "description": "Razonamiento avanzado, análisis profundo y alta precisión",
+                "capabilities": ["text", "vision", "documents", "deep_research"],
+                "context_window": 2000000,
+            },
+        ]
+
+        if not is_auth or not self.client:
+            return {
+                "authenticated": False,
+                "tier": status.get("tier", "UNKNOWN"),
+                "plan_label": "Sin sesión activa",
+                "active_model": status.get("model", "gemini-flash"),
+                "models": default_web_models,
+                "usage_info": None,
+                "quotas": None,
+            }
+
+        usage_info = None
+        try:
+            await self.client._fetch_usage_info()
+            usage_info = self.client.usage_info
+        except Exception as e:
+            logger.warning(f"Could not fetch usage info: {e}")
+
+        quotas = None
+        try:
+            await self.client._fetch_quota()
+            quotas = self.client.quotas
+        except Exception as e:
+            logger.warning(f"Could not fetch quotas: {e}")
+
+        discovered_models = []
+        try:
+            raw_models = self.client.list_models()
+            if raw_models:
+                for m in raw_models:
+                    m_name = getattr(m, "model_name", str(m))
+                    desc = getattr(m, "description", "")
+                    if "flash" in m_name.lower() and "lite" not in m_name.lower():
+                        discovered_models.append({
+                            "id": "gemini-flash",
+                            "name": "gemini-flash",
+                            "display_name": "3.8 Flash",
+                            "description": desc or "Asistencia general rápida y balanceada",
+                            "capabilities": ["text", "vision", "documents"],
+                            "context_window": 1000000,
+                        })
+                    elif "pro" in m_name.lower():
+                        discovered_models.append({
+                            "id": "gemini-pro",
+                            "name": "gemini-pro",
+                            "display_name": "3.1 Pro",
+                            "description": desc or "Razonamiento avanzado, análisis profundo y alta precisión",
+                            "capabilities": ["text", "vision", "documents", "deep_research"],
+                            "context_window": 2000000,
+                        })
+        except Exception as e:
+            logger.warning(f"Could not list models: {e}")
+
+        models = discovered_models if len(discovered_models) >= 1 else default_web_models
+
+        for m in models:
+            m_id = m["id"]
+            if quotas:
+                target_action = 4 if "pro" in m_id else (11 if "flash" in m_id else None)
+                for q_key, q_val in quotas.items():
+                    if isinstance(q_val, dict) and q_val.get("action_id") == target_action:
+                        m["remaining_credits"] = q_val.get("remaining")
+                        m["total_credits"] = q_val.get("total")
+                        m["usage_percentage"] = q_val.get("usage_percentage")
+                        m["reset_time"] = q_val.get("reset_time")
+                        break
+
+        tier_label = status.get("tier", "PRO")
+        plan_label = "Google One AI Premium (Gemini Advanced)" if tier_label in ("PRO", "ULTRA", "PLUS") else (f"Plan {tier_label}" if tier_label != "UNKNOWN" else "Plan no identificado")
+
+        return {
+            "authenticated": True,
+            "tier": tier_label,
+            "plan_label": plan_label,
+            "active_model": status.get("model", "gemini-flash"),
+            "models": models,
+            "usage_info": usage_info,
+            "quotas": quotas,
+        }
+
     async def generate_text(self, prompt: str, files: Optional[List[Path]] = None) -> str:
         await self.init_client()
         if not self.client or not self.is_initialized:

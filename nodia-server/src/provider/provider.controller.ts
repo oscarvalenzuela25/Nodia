@@ -1,15 +1,17 @@
-import { Controller, Get, Post, Put, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Query, Header } from '@nestjs/common';
 import { CreateProviderDto } from './dto/create-provider.dto.js';
 import { BulkCreateProviderDto } from './dto/bulk-create-provider.dto.js';
 import { UpdateProviderDto } from './dto/update-provider.dto.js';
 import { BulkUpdateProviderDto } from './dto/bulk-update-provider.dto.js';
 import { GetProvidersDto } from './dto/get-providers.dto.js';
+import { ExportProvidersCsvDto } from './dto/export-providers-csv.dto.js';
 import { GetAllProvidersUseCase } from './use-case/get-all-providers.use-case.js';
 import { GetProviderByIdUseCase } from './use-case/get-provider-by-id.use-case.js';
 import { CreateProviderUseCase } from './use-case/create-provider.use-case.js';
 import { CreateBulkProvidersUseCase } from './use-case/create-bulk-providers.use-case.js';
 import { UpdateProviderUseCase } from './use-case/update-provider.use-case.js';
 import { UpdateBulkProvidersUseCase } from './use-case/update-bulk-providers.use-case.js';
+import { ExportProvidersCsvUseCase } from './use-case/export-providers-csv.use-case.js';
 
 @Controller(['provider', 'providers'])
 export class ProviderController {
@@ -20,6 +22,7 @@ export class ProviderController {
     private readonly createBulkProvidersUseCase: CreateBulkProvidersUseCase,
     private readonly updateProviderUseCase: UpdateProviderUseCase,
     private readonly updateBulkProvidersUseCase: UpdateBulkProvidersUseCase,
+    private readonly exportProvidersCsvUseCase: ExportProvidersCsvUseCase,
   ) {}
 
   @Get()
@@ -35,6 +38,13 @@ export class ProviderController {
   @Put('bulk')
   updateBulk(@Body() bulkUpdateProviderDto: BulkUpdateProviderDto) {
     return this.updateBulkProvidersUseCase.execute(bulkUpdateProviderDto);
+  }
+
+  @Get('export-csv')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @Header('Content-Disposition', 'attachment; filename="providers.csv"')
+  exportCsv(@Query() dto: ExportProvidersCsvDto) {
+    return this.exportProvidersCsvUseCase.execute(dto);
   }
 
   @Get(':id')

@@ -9,6 +9,7 @@ import { CreateProviderUseCase } from './use-case/create-provider.use-case.js';
 import { CreateBulkProvidersUseCase } from './use-case/create-bulk-providers.use-case.js';
 import { UpdateProviderUseCase } from './use-case/update-provider.use-case.js';
 import { UpdateBulkProvidersUseCase } from './use-case/update-bulk-providers.use-case.js';
+import { ExportProvidersCsvUseCase } from './use-case/export-providers-csv.use-case.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Provider])],
@@ -21,7 +22,8 @@ import { UpdateBulkProvidersUseCase } from './use-case/update-bulk-providers.use
     CreateBulkProvidersUseCase,
     UpdateProviderUseCase,
     UpdateBulkProvidersUseCase,
+    ExportProvidersCsvUseCase,
   ],
-  exports: [ProviderService],
+  exports: [ProviderService, ExportProvidersCsvUseCase],
 })
 export class ProviderModule {}

@@ -158,9 +158,11 @@ describe("BusinessDetail Page", () => {
     ).toBeInTheDocument();
 
     // Default tab: Resumen general KPIs
-    expect(screen.getByText(/Catálogo de Productos/i)).toBeInTheDocument();
-    expect(screen.getByText(/Proveedores Registrados/i)).toBeInTheDocument();
-    expect(screen.getByText(/Rendimiento Comercial/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Catálogo de Productos/i)).toBeInTheDocument();
+      expect(screen.getByText(/Proveedores Registrados/i)).toBeInTheDocument();
+      expect(screen.getByText(/Rendimiento Comercial/i)).toBeInTheDocument();
+    });
   });
 
   it("navigates back to business list when clicking breadcrumb link", async () => {
@@ -207,7 +209,7 @@ describe("BusinessDetail Page", () => {
     await user.click(addCollabBtn);
 
     expect(
-      screen.getByText("Gestionar Colaboradores del Negocio")
+      screen.getByText("Asignación de Colaboradores")
     ).toBeInTheDocument();
   });
 

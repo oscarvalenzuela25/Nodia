@@ -10,6 +10,8 @@ import { CreateProductLogUseCase } from './use-case/create-product-log.use-case.
 import { CreateBulkProductLogsUseCase } from './use-case/create-bulk-product-logs.use-case.js';
 import { UpdateProductLogUseCase } from './use-case/update-product-log.use-case.js';
 import { UpdateBulkProductLogsUseCase } from './use-case/update-bulk-product-logs.use-case.js';
+import { QueryProductLogsUseCase } from './use-case/query-product-logs.use-case.js';
+import { QueryProductLogsDto } from './dto/query-product-logs.dto.js';
 
 @Controller(['product-log', 'product-logs'])
 export class ProductLogController {
@@ -20,11 +22,17 @@ export class ProductLogController {
     private readonly createBulkProductLogsUseCase: CreateBulkProductLogsUseCase,
     private readonly updateProductLogUseCase: UpdateProductLogUseCase,
     private readonly updateBulkProductLogsUseCase: UpdateBulkProductLogsUseCase,
+    private readonly queryProductLogsUseCase: QueryProductLogsUseCase,
   ) {}
 
   @Get()
   findAll(@Query() queryParams: GetProductLogsDto) {
     return this.getAllProductLogsUseCase.execute(queryParams);
+  }
+
+  @Post(['query', 'by-products'])
+  query(@Body() queryProductLogsDto: QueryProductLogsDto) {
+    return this.queryProductLogsUseCase.execute(queryProductLogsDto);
   }
 
   @Post('bulk')

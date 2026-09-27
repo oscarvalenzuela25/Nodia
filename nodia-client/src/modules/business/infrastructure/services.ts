@@ -111,6 +111,17 @@ export const bulkUpdateProducts = async (
   return data;
 };
 
+export const exportProductsCsv = async (params?: {
+  business_id?: string;
+  lang?: string;
+}): Promise<string> => {
+  const { data } = await mainInstance.get<string>(
+    apiPath("/products/export-csv"),
+    { params, responseType: "text" }
+  );
+  return data;
+};
+
 // ----------------------------------------------------
 // Provider Services
 // ----------------------------------------------------
@@ -161,6 +172,17 @@ export const bulkUpdateProviders = async (
   const { data } = await mainInstance.put<import("./types").ProviderEntity[]>(
     apiPath("/providers/bulk"),
     { items }
+  );
+  return data;
+};
+
+export const exportProvidersCsv = async (params?: {
+  business_id?: string;
+  lang?: string;
+}): Promise<string> => {
+  const { data } = await mainInstance.get<string>(
+    apiPath("/providers/export-csv"),
+    { params, responseType: "text" }
   );
   return data;
 };
@@ -234,6 +256,13 @@ export const analyzeInvoice = async (
   return data;
 };
 
+export const verifyIaProviders = async (): Promise<import("./types").VerifyIaProvidersResponse> => {
+  const { data } = await mainInstance.get<import("./types").VerifyIaProvidersResponse>(
+    apiPath("/invoices/verify-ia-providers")
+  );
+  return data;
+};
+
 export const createInvoiceWithFile = async (
   params: import("./types").CreateInvoiceWithFileParams
 ): Promise<import("./types").InvoiceEntity> => {
@@ -272,12 +301,37 @@ export const createInvoiceWithFile = async (
 // ----------------------------------------------------
 // Product Log Services
 // ----------------------------------------------------
+export const queryProductLogs = async (
+  payload: import("./types").QueryProductLogsPayload
+): Promise<import("./types").GetProductLogsResponse> => {
+  const { data } = await mainInstance.post<import("./types").GetProductLogsResponse>(
+    apiPath("/product-logs/query"),
+    payload
+  );
+  return data;
+};
+
 export const getProductLogs = async (
   params?: import("./types").GetProductLogsParams
 ): Promise<import("./types").GetProductLogsResponse> => {
+  const productIds = params?.q?.product_id_in;
+  if (Array.isArray(productIds) && productIds.length > 10) {
+    return queryProductLogs({
+      product_ids: productIds.map(String),
+      codes: params?.q?.code_in ? (params.q.code_in as string[]).map(String) : undefined,
+      q: params?.q,
+      all: params?.all,
+      page: params?.page,
+      limit: params?.limit,
+      includes: params?.includes,
+      s: (params?.q?.s as string) || undefined,
+    });
+  }
+
   const { data } = await mainInstance.get<import("./types").GetProductLogsResponse>(
     apiPath("/product-logs"),
     { params }
   );
   return data;
 };
+

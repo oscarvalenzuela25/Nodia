@@ -113,7 +113,30 @@ export const InvoicePreviewModal: FC<InvoicePreviewModalProps> = ({
     >
       <Box sx={{ minHeight: 320, width: "100%", position: "relative" }}>
         {isLoading && (
-          <Skeleton loading={isLoading}>
+          <Skeleton
+            loading={isLoading}
+            fallback={
+              <Box
+                data-testid="preview-skeleton-loader"
+                sx={{
+                  width: "100%",
+                  height: { xs: 350, sm: 500, md: 580 },
+                  borderRadius: 2,
+                  backgroundColor: (theme) =>
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.background.paper, 0.4)
+                      : alpha(theme.palette.grey[200], 0.6),
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  {t("core:loading")}
+                </Typography>
+              </Box>
+            }
+          >
             <Box
               data-testid="preview-skeleton-loader"
               sx={{

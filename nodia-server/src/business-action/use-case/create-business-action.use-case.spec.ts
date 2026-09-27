@@ -26,8 +26,7 @@ describe('CreateBusinessActionUseCase', () => {
       has_description: true,
       is_active: true,
       translates: [
-        { locale: 'es', key: 'name', value: 'Crear productos' },
-        { locale: 'en', key: 'name', value: 'Create products' },
+        { key: 'name', es: 'Crear productos', en: 'Create products' },
       ],
     };
 

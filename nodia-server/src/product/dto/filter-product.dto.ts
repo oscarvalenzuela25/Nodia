@@ -56,6 +56,12 @@ export class FilterProductDto {
   stock_status_in?: string[];
 
   @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  price_change_in?: string[];
+
+  @IsOptional()
   @IsString()
   s?: string;
 }

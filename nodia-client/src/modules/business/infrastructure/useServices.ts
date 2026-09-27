@@ -23,6 +23,7 @@ import {
   createInvoice,
   updateInvoice,
   analyzeInvoice,
+  verifyIaProviders,
   createInvoiceWithFile,
   getProducts,
   createProduct,
@@ -30,6 +31,9 @@ import {
   bulkCreateProducts,
   bulkUpdateProducts,
   getProductLogs,
+  queryProductLogs,
+  exportProductsCsv,
+  exportProvidersCsv,
 } from "./services";
 import type {
   AssignCollaboratorsPayload,
@@ -131,11 +135,14 @@ export const useAssignCollaborators = () => {
     }: {
       businessId: string;
       payload: AssignCollaboratorsPayload;
+      successTitle?: string;
     }) => assignCollaborators(businessId, payload),
-    onSuccess: async () => {
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
-        title: i18n.t("business:collaborators_assigned_success"),
+        title:
+          variables.successTitle ||
+          i18n.t("business:collaborators_assigned_success"),
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
@@ -152,11 +159,26 @@ export const useAssignCollaborators = () => {
 // ----------------------------------------------------
 // Product Hooks
 // ----------------------------------------------------
+const normalizeProductParams = (
+  params?: import("./types").GetProductsParams
+): import("./types").GetProductsParams | undefined => {
+  if (!params) return undefined;
+  if (params.all) return params;
+  return {
+    ...params,
+    page: params.page ?? 1,
+    q: {
+      ...params.q,
+      s: params.q?.s ?? "created_at desc",
+    },
+  };
+};
+
 export const productKeys = {
   all: ["products"] as const,
   lists: () => [...productKeys.all, "list"] as const,
   list: (params?: import("./types").GetProductsParams) =>
-    [...productKeys.lists(), params] as const,
+    [...productKeys.lists(), normalizeProductParams(params)] as const,
 };
 
 export const useProducts = (
@@ -164,9 +186,10 @@ export const useProducts = (
   options?: { enabled?: boolean }
 ) => {
   const { isSessionActive } = useAuth();
+  const normalizedParams = normalizeProductParams(params);
   return useQuery({
-    queryKey: productKeys.list(params),
-    queryFn: () => getProducts(params),
+    queryKey: productKeys.list(normalizedParams),
+    queryFn: () => getProducts(normalizedParams),
     placeholderData: keepPreviousData,
     enabled: isSessionActive && (options?.enabled ?? true),
   });
@@ -180,6 +203,7 @@ export const useCreateProduct = () => {
       createProduct(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: productKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:product_created_success"),
       });
@@ -208,6 +232,7 @@ export const useUpdateProduct = () => {
     }) => updateProduct(id, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: productKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:product_updated_success"),
       });
@@ -231,6 +256,7 @@ export const useBulkCreateProducts = () => {
       bulkCreateProducts(items),
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: productKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:products_bulk_created_success", {
           count: data.length,
@@ -256,6 +282,7 @@ export const useBulkUpdateProducts = () => {
       bulkUpdateProducts(items),
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: productKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:products_bulk_updated_success", {
           count: data.length,
@@ -276,11 +303,26 @@ export const useBulkUpdateProducts = () => {
 // ----------------------------------------------------
 // Provider Hooks
 // ----------------------------------------------------
+const normalizeProviderParams = (
+  params?: import("./types").GetProvidersParams
+): import("./types").GetProvidersParams | undefined => {
+  if (!params) return undefined;
+  if (params.all) return params;
+  return {
+    ...params,
+    page: params.page ?? 1,
+    q: {
+      ...params.q,
+      s: params.q?.s ?? "created_at desc",
+    },
+  };
+};
+
 export const providerKeys = {
   all: ["providers"] as const,
   lists: () => [...providerKeys.all, "list"] as const,
   list: (params?: import("./types").GetProvidersParams) =>
-    [...providerKeys.lists(), params] as const,
+    [...providerKeys.lists(), normalizeProviderParams(params)] as const,
 };
 
 export const useProviders = (
@@ -288,9 +330,10 @@ export const useProviders = (
   options?: { enabled?: boolean }
 ) => {
   const { isSessionActive } = useAuth();
+  const normalizedParams = normalizeProviderParams(params);
   return useQuery({
-    queryKey: providerKeys.list(params),
-    queryFn: () => getProviders(params),
+    queryKey: providerKeys.list(normalizedParams),
+    queryFn: () => getProviders(normalizedParams),
     placeholderData: keepPreviousData,
     enabled: isSessionActive && (options?.enabled ?? true),
   });
@@ -304,6 +347,7 @@ export const useCreateProvider = () => {
       createProvider(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: providerKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:provider_created_success"),
       });
@@ -332,6 +376,7 @@ export const useUpdateProvider = () => {
     }) => updateProvider(id, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: providerKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:provider_updated_success"),
       });
@@ -355,6 +400,7 @@ export const useBulkCreateProviders = () => {
       bulkCreateProviders(items),
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: providerKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:providers_bulk_created_success", {
           count: data.length,
@@ -380,6 +426,7 @@ export const useBulkUpdateProviders = () => {
       bulkUpdateProviders(items),
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: providerKeys.all });
+      await queryClient.invalidateQueries({ queryKey: businessKeys.all });
       sileo.success({
         title: i18n.t("business:providers_bulk_updated_success", {
           count: data.length,
@@ -503,6 +550,18 @@ export const useAnalyzeInvoice = () => {
   });
 };
 
+export const useVerifyIaProviders = (options?: { enabled?: boolean }) => {
+  const { isSessionActive } = useAuth();
+
+  return useQuery({
+    queryKey: ["invoice", "verify-ia-providers"],
+    queryFn: () => verifyIaProviders(),
+    enabled: isSessionActive && (options?.enabled ?? true),
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+  });
+};
+
 export const useCreateInvoiceWithFile = () => {
   const queryClient = useQueryClient();
 
@@ -543,5 +602,49 @@ export const useProductLogs = (
     queryFn: () => getProductLogs(params),
     enabled: isSessionActive && (options?.enabled ?? true),
     placeholderData: keepPreviousData,
+  });
+};
+
+export const useQueryProductLogs = (
+  payload?: import("./types").QueryProductLogsPayload,
+  options?: { enabled?: boolean }
+) => {
+  const { isSessionActive } = useAuth();
+
+  return useQuery({
+    queryKey: [...productLogKeys.all, "query", payload] as const,
+    queryFn: () => queryProductLogs(payload!),
+    enabled: isSessionActive && (options?.enabled ?? true) && Boolean(payload),
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useExportProductsCsv = () => {
+  return useMutation({
+    mutationFn: (params?: { business_id?: string; lang?: string }) =>
+      exportProductsCsv(params),
+    onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+      const serverMessage =
+        error.response?.data?.message || error.response?.data?.error;
+      sileo.error({
+        title: i18n.t("business:download_error"),
+        description: serverMessage,
+      });
+    },
+  });
+};
+
+export const useExportProvidersCsv = () => {
+  return useMutation({
+    mutationFn: (params?: { business_id?: string; lang?: string }) =>
+      exportProvidersCsv(params),
+    onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+      const serverMessage =
+        error.response?.data?.message || error.response?.data?.error;
+      sileo.error({
+        title: i18n.t("business:download_error"),
+        description: serverMessage,
+      });
+    },
   });
 };

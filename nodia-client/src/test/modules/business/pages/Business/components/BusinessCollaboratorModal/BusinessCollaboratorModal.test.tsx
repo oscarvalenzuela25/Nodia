@@ -136,7 +136,7 @@ describe("BusinessCollaboratorModal", () => {
     );
 
     expect(
-      screen.getByText("Gestionar Colaboradores del Negocio")
+      screen.getByText("Asignación de Colaboradores")
     ).toBeInTheDocument();
     expect(screen.getByText("Colaborador #1")).toBeInTheDocument();
     expect(

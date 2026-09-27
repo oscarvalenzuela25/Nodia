@@ -7,7 +7,11 @@ export class FilterProductLogDto {
   product_id_eq?: string;
 
   @IsOptional()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Transform(({ value }) => {
+    if (value === undefined || value === null) return undefined;
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.map((v) => String(v));
+  })
   @IsArray()
   @IsString({ each: true })
   product_id_in?: string[];
@@ -21,7 +25,11 @@ export class FilterProductLogDto {
   code_eq?: string;
 
   @IsOptional()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Transform(({ value }) => {
+    if (value === undefined || value === null) return undefined;
+    const arr = Array.isArray(value) ? value : [value];
+    return arr.map((v) => String(v));
+  })
   @IsArray()
   @IsString({ each: true })
   code_in?: string[];

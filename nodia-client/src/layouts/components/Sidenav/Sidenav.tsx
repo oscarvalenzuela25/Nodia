@@ -242,6 +242,7 @@ const Sidenav: FC<Props> = ({
                             sx={{ display: "block" }}
                           >
                             <NavItemButton
+                              isSubItem={!isCollapsed}
                               selected={location.pathname === subItem.path}
                               onClick={() =>
                                 subItem.path && navigate(subItem.path)
@@ -250,6 +251,7 @@ const Sidenav: FC<Props> = ({
                                 justifyContent: isCollapsed
                                   ? "center"
                                   : "initial",
+                                ...(isCollapsed ? { pl: 1.5 } : { pl: "24px" }),
                               }}
                             >
                               {subItem.icon && (

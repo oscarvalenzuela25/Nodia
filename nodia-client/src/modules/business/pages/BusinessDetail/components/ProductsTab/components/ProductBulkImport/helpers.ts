@@ -204,3 +204,51 @@ export const generateTemplateCSV = (lang: string = "es"): string => {
     "PROD-003,Galleta Chocolate 80g,300,57,40,700,20,true,uuid-existente-si-actualiza\n"
   );
 };
+
+export const escapeCsvValue = (val: unknown): string => {
+  if (val === null || val === undefined) return "";
+  const str = String(val);
+  if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+export const exportProductsToCSV = (
+  products: import("../../../../../../infrastructure/types").ProductEntity[],
+  lang: string = "es"
+): string => {
+  const isEn = lang.startsWith("en");
+  const header = isEn
+    ? "Code (code),Name (name),Base cost (cost_price),Tax (cost_price_tax),Margin % (profit_percentage),Sale price (sale_price),Stock (stock),Active (is_active),ID (id)"
+    : "Código (code),Nombre (name),Costo base (cost_price),Impuesto (cost_price_tax),Margen % (profit_percentage),Precio de venta (sale_price),Stock (stock),Activo (is_active),ID (id)";
+
+  const lines = [header];
+  for (const p of products) {
+    const row = [
+      escapeCsvValue(p.code),
+      escapeCsvValue(p.name),
+      escapeCsvValue(p.cost_price),
+      escapeCsvValue(p.cost_price_tax),
+      escapeCsvValue(p.profit_percentage),
+      escapeCsvValue(p.sale_price),
+      escapeCsvValue(p.stock),
+      escapeCsvValue(p.is_active),
+      escapeCsvValue(p.id),
+    ].join(",");
+    lines.push(row);
+  }
+  return lines.join("\n");
+};
+
+export const downloadCSVFile = (content: string, filename: string): void => {
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};

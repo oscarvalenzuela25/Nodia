@@ -43,6 +43,7 @@ import {
 import type { BusinessEntity, BusinessFormData } from "../../infrastructure/types";
 import { getTranslatedName } from "../../../../store/generalSettings/helpers";
 import useAuthStore from "../../../../store/authStore";
+import { CardsGridSkeleton } from "../../../../components/skeletons";
 import {
   PageHeader,
   HeaderTopBar,
@@ -288,7 +289,7 @@ const Business: FC = () => {
       )}
 
       {/* Cards Grid with Skeleton */}
-      <Skeleton loading={isLoading}>
+      <Skeleton loading={isLoading} fallback={<CardsGridSkeleton count={6} />}>
         {businesses.length === 0 && !isLoading ? (
           <EmptyStateContainer>
             <StorefrontOutlinedIcon

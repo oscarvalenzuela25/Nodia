@@ -250,4 +250,52 @@ describe("Sidenav", () => {
       )
     ).toBe(true);
   });
+
+  it("renders clickable submodules with a padding-left of 24px", () => {
+    act(() => {
+      useGeneralSettingsStore.getState().setContext({
+        roles: ["admin"],
+        actions: [],
+        modules: [
+          {
+            module_group_key: "ajustes-generales",
+            translates: [
+              { key: "key", es: "Ajustes Generales", en: "General Settings" },
+            ],
+            modules: [
+              {
+                key: "usuarios",
+                link: "/settings/users",
+                translates: [{ key: "key", es: "Usuarios", en: "Users" }],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/",
+          element: (
+            <Sidenav
+              mobileOpen={true}
+              onDrawerToggle={vi.fn()}
+              desktopCollapsed={false}
+            />
+          ),
+        },
+      ],
+      { initialEntries: ["/"] }
+    );
+
+    render(<RouterProvider router={router} />);
+
+    const usersText = screen.getByText("Usuarios");
+    const moduleButton = usersText.closest("div[role='button']");
+    expect(moduleButton).toBeInTheDocument();
+    expect(moduleButton).toHaveStyle({ paddingLeft: "24px" });
+  });
 });
+

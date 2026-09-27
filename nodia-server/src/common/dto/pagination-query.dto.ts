@@ -6,7 +6,7 @@ export class PaginationQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page: number = 1;
+  page?: number = 1;
 
   @IsOptional()
   @Transform(({ obj, value }) => {
@@ -17,7 +17,7 @@ export class PaginationQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  limit: number = 10;
+  limit?: number = 10;
 
   @IsOptional()
   @Type(() => Number)
@@ -28,7 +28,7 @@ export class PaginationQueryDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
-  all: boolean = false;
+  all?: boolean = false;
 
   @IsOptional()
   @Transform(({ value }) => {
@@ -38,5 +38,5 @@ export class PaginationQueryDto {
     return true;
   })
   @IsBoolean()
-  includes: boolean = true;
+  includes?: boolean = true;
 }

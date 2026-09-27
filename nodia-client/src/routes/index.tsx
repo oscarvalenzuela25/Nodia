@@ -14,6 +14,7 @@ import Users from "../modules/generalSettings/pages/Users";
 import Roles from "../modules/generalSettings/pages/Roles";
 import Actions from "../modules/generalSettings/pages/Actions";
 import Modules from "../modules/generalSettings/pages/Modules";
+import AiProviders from "../modules/generalSettings/pages/AiProviders";
 import Business from "../modules/business/pages/Business";
 import BusinessDetail from "../modules/business/pages/BusinessDetail";
 
@@ -88,6 +89,16 @@ const router = createBrowserRouter([
           <GuardStrict modulePath="/settings/modules">
             <BaseLayout>
               <Modules />
+            </BaseLayout>
+          </GuardStrict>
+        ),
+      },
+      {
+        path: "settings/ai-providers",
+        element: (
+          <GuardStrict modulePath="/settings/ai-providers">
+            <BaseLayout>
+              <AiProviders />
             </BaseLayout>
           </GuardStrict>
         ),

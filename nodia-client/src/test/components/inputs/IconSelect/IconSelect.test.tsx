@@ -150,4 +150,54 @@ describe("IconSelect", () => {
       expect(screen.queryByTestId("icon-select-options")).not.toBeInTheDocument();
     });
   });
+
+  it("finds and selects the robot / AI icon (SmartToy / SmartToyOutlined) via search", async () => {
+    const handleChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <IconSelect
+        label="Ícono de IA"
+        value={null}
+        onChange={handleChange}
+      />
+    );
+
+    const trigger = screen.getByTestId("icon-select-trigger");
+    await user.click(trigger);
+
+    const searchInput = screen.getByTestId("icon-select-search").querySelector("input")!;
+    await user.type(searchInput, "robot");
+
+    const smartToyOption = screen.getByTestId("icon-select-option-SmartToy");
+    const smartToyOutlinedOption = screen.getByTestId("icon-select-option-SmartToyOutlined");
+    expect(smartToyOption).toBeInTheDocument();
+    expect(smartToyOutlinedOption).toBeInTheDocument();
+
+    await user.click(smartToyOption);
+
+    expect(handleChange).toHaveBeenCalledWith("SmartToy");
+  });
+
+  it("finds robot icons when searching by keyword like 'proveedores de ia'", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <IconSelect
+        label="Ícono"
+        value={null}
+        onChange={vi.fn()}
+      />
+    );
+
+    const trigger = screen.getByTestId("icon-select-trigger");
+    await user.click(trigger);
+
+    const searchInput = screen.getByTestId("icon-select-search").querySelector("input")!;
+    await user.type(searchInput, "proveedores de ia");
+
+    expect(screen.getByTestId("icon-select-option-SmartToy")).toBeInTheDocument();
+    expect(screen.getByTestId("icon-select-option-SmartToyOutlined")).toBeInTheDocument();
+  });
 });
+

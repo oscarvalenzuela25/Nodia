@@ -125,6 +125,13 @@ Skills disponibles en `nodia-client/skills/`:
 - **Botones e Inputs:**
   - **No** muestran estados ni mensajes custom de error de datos generales; si el endpoint falla, los inputs se quedan en su estado normal o vacío (los errores de validación de campos se gestionan aparte mediante React Hook Form y Zod).
 
+## Lineamientos de Diseño de Paneles y Espaciado (`nodia-client`)
+
+- **Padding de Paneles y Tarjetas Principales:** Los contenedores principales, paneles de configuración y tarjetas destacadas deben usar un padding estandarizado de **32px** (`p: 4` en MUI o `padding: 32px`).
+- **Espaciado (Gap) entre Paneles:**
+  - **Vertical:** Separación estándar de **24px** (`rowGap: 3` / `24px`).
+  - **Horizontal:** Separación estándar de **16px** (`columnGap: 2` / `16px`).
+
 ## Arquitectura Backend y Testing (`nodia-server`)
 
 - Seguir estrictamente el patrón modular vertical de recursos detallado en `nodia-server/AGENTS.md` (modelo de referencia `src/user/`).

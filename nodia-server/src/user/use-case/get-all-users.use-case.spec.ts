@@ -37,6 +37,7 @@ describe('GetAllUsersUseCase', () => {
           created_at: new Date(),
           updated_at: new Date(),
           user_roles: [],
+          user_modules: [],
         },
       ],
       meta: {
@@ -76,6 +77,7 @@ describe('GetAllUsersUseCase', () => {
           updated_at: new Date(),
           user_roles: [],
           roles: [],
+          user_modules: [],
         },
       ],
       meta: {
@@ -114,6 +116,7 @@ describe('GetAllUsersUseCase', () => {
           updated_at: new Date(),
           user_roles: [],
           roles: [],
+          user_modules: [],
           modules: [
             {
               id: '10',

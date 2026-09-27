@@ -1,7 +1,7 @@
 # Arquitectura Inicial — Nodia Parte 1
 
-> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
-> Última actualización: 2026-09-12
+> Estado: en revisión — ampliaciones auth e IA y cambio de despliegue; aprobación histórica del MVP conservada
+> Última actualización: 2026-09-25
 > Dependencias: Documentos 01 al 10 aprobados.
 
 ## Objetivo
@@ -63,11 +63,11 @@ flowchart TD
   - Generar un JWT propio para el manejo de sesiones *stateless*.
   - Exponer endpoints RESTful para la gestión administrativa de Usuarios, Roles, Recursos y Módulos.
   - Interceptar peticiones mediante `Guards` para validar que el usuario tenga los permisos exactos (`view`, `create`, `update`, `delete`) sobre el recurso objetivo.
-- **Despliegue:** Northflank (PaaS, contenedorizado/orquestado por el proveedor).
+- **Despliegue actualizado:** VPS para NestJS. El microservicio Gemini también residirá allí, aislado de Internet y con volumen Docker persistente para la sesión web. Ver [ampliación IA](16-ai-provider-management-handoff.md).
 
 ### 2.3. Persistencia (Base de Datos)
-- **Motor:** PostgreSQL (alojado en Northflank como Addon/Servicio).
-- **Diseño (ERD):** Implementa claves foráneas estrictas, índices únicos compuestos para evitar permisos y roles duplicados, y borrado lógico (`is_active = false`) universal en todas las tablas y tablas pivote. Usa `UUIDs` nativos.
+- **Motor:** PostgreSQL gestionado externamente; Neon o Northflank por decidir. Redis gestionado externamente y Cloudflare R2 para archivos.
+- **Diseño (ERD):** Implementa claves foráneas estrictas, índices únicos compuestos para evitar permisos y roles duplicados, y borrado lógico (`is_active = false`) en las entidades pertinentes. El modelo actual adopta `BIGINT` autoincremental para claves primarias; ver `03-domain-model-erd.md`.
 
 ## 3. Flujo Crítico de Autenticación y Autorización
 
@@ -79,11 +79,15 @@ flowchart TD
 
 ## 4. Estrategia de CI/CD y DevOps
 
-- **Estructura:** Monorepo (`nodia-client` y `nodia-api`).
+- **Estructura:** Monorepo (`nodia-client`, `nodia-server` y `nodia-gemini-microservice`).
 - **Pruebas Locales:** Uso de `Husky` y `lint-staged` para forzar linting y pre-commits locales, garantizando calidad del código antes del *push*.
-- **Despliegue Continuo:** GitHub Actions (y las integraciones nativas de Cloudflare/Northflank) detectan cambios en las carpetas respectivas y redespliegan el Frontend y el Backend por separado, de manera automática.
+- **Despliegue Continuo:** Cloudflare Pages conserva la entrega del frontend. El pipeline/rollback de NestJS y microservicio en VPS está pendiente de diseñar y probar.
 
 ## Preguntas abiertas
+
+### Ampliación IA y VPS — 2026-09-25
+
+La arquitectura detallada de adaptadores Gemini Web/Gemini API/Mistral, configuración en BD, rotación de keys, navegador remoto y seguridad de secretos se propone en [la especificación para agente](16-ai-provider-management-handoff.md). El diagrama histórico de Parte 1 aún requiere actualización antes de aprobar este documento. No se ha realizado despliegue ni prueba de login remoto en VPS.
 
 ### Rate limiting — actualización técnica 2026-09-12
 

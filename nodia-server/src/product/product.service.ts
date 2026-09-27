@@ -43,7 +43,7 @@ export class ProductService {
       qb.leftJoinAndSelect('product.provider', 'provider');
     }
 
-    const { stock_status_in, ...cleanQ } = q ?? {};
+    const { stock_status_in, price_change_in, ...cleanQ } = q ?? {};
 
     if (stock_status_in) {
       const statuses = Array.isArray(stock_status_in)
@@ -58,6 +58,60 @@ export class ProductService {
       }
       if (statuses.includes('normal')) {
         conditions.push('product.stock >= 10');
+      }
+      if (conditions.length > 0) {
+        qb.andWhere(`(${conditions.join(' OR ')})`);
+      }
+    }
+
+    if (price_change_in) {
+      const variations = Array.isArray(price_change_in)
+        ? price_change_in
+        : [price_change_in];
+      const conditions: string[] = [];
+
+      const prevPriceSql = `COALESCE(
+        CASE
+          WHEN (
+            SELECT pl_top.sale_price
+            FROM product_logs pl_top
+            WHERE pl_top.product_id = product.id
+            ORDER BY pl_top.created_at DESC
+            LIMIT 1
+          ) != product.sale_price
+          THEN (
+            SELECT pl_top.sale_price
+            FROM product_logs pl_top
+            WHERE pl_top.product_id = product.id
+            ORDER BY pl_top.created_at DESC
+            LIMIT 1
+          )
+          ELSE (
+            SELECT pl_prev.sale_price
+            FROM product_logs pl_prev
+            WHERE pl_prev.product_id = product.id
+              AND pl_prev.id != (
+                SELECT pl_first.id
+                FROM product_logs pl_first
+                WHERE pl_first.product_id = product.id
+                ORDER BY pl_first.created_at DESC
+                LIMIT 1
+              )
+            ORDER BY pl_prev.created_at DESC
+            LIMIT 1
+          )
+        END,
+        product.sale_price
+      )`;
+
+      if (variations.includes('increased') || variations.includes('up') || variations.includes('subio')) {
+        conditions.push(`product.sale_price > (${prevPriceSql})`);
+      }
+      if (variations.includes('decreased') || variations.includes('down') || variations.includes('bajo')) {
+        conditions.push(`product.sale_price < (${prevPriceSql})`);
+      }
+      if (variations.includes('unchanged') || variations.includes('same') || variations.includes('mantuvo')) {
+        conditions.push(`product.sale_price = (${prevPriceSql})`);
       }
       if (conditions.length > 0) {
         qb.andWhere(`(${conditions.join(' OR ')})`);

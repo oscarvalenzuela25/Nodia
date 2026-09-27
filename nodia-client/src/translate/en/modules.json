@@ -26,6 +26,8 @@
     "group_by_placeholder": "e.g.: settings, catalog...",
     "link": "Route",
     "link_placeholder": "e.g.: /settings/users",
+    "link_select_placeholder": "Select available route...",
+    "link_search_placeholder": "Search route...",
     "link_helper": "Relative route for the module in the application.",
     "link_preview": "Full URL",
     "icon": "Icon",
@@ -108,6 +110,17 @@
     "modules": "Modules",
     "audit": "Audit",
     "export_logs": "Data Export"
+  },
+  "routes": {
+    "home": "Home",
+    "business": "Businesses",
+    "users": "Users",
+    "roles": "Roles",
+    "actions": "Actions",
+    "modules": "Modules",
+    "ai_providers": "AI Providers",
+    "current": "Current",
+    "no_routes_available": "No routes available"
   },
   "no_parent": "No parent module",
   "yes": "Yes",

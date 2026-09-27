@@ -1,7 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import ModuleModal from "../../../../../../../modules/generalSettings/pages/Modules/components/ModuleModal";
+
+let mockModulesData: any[] = [];
 
 vi.mock(
   "../../../../../../../modules/generalSettings/pages/Modules/infrastructure/useServices",
@@ -25,10 +27,20 @@ vi.mock(
       },
       isLoading: false,
     }),
+    useModules: () => ({
+      data: {
+        data: mockModulesData,
+      },
+      isLoading: false,
+    }),
   })
 );
 
 describe("ModuleModal", () => {
+  beforeEach(() => {
+    mockModulesData = [];
+  });
+
   it("renders create modal with empty fields, active switch enabled, and disabled submit button", () => {
     render(
       <ModuleModal
@@ -48,7 +60,7 @@ describe("ModuleModal", () => {
     expect(submitBtn).toBeDisabled();
   });
 
-  it("enables submit button when key, link, and group are entered, and submits properly", async () => {
+  it("enables submit button when key, link, and group are selected, and submits properly", async () => {
     const handleSubmit = vi.fn();
     const handleClose = vi.fn();
     const user = userEvent.setup();
@@ -86,9 +98,16 @@ describe("ModuleModal", () => {
     // Still disabled without link
     expect(submitBtn).toBeDisabled();
 
-    // Type link
-    const linkInput = screen.getByPlaceholderText(/\/settings\/users/i);
-    await user.type(linkInput, "/analytics/reports");
+    // Select link via SelectSingleInput
+    const linkSelectTrigger = screen.getByRole("button", { name: "Ruta" });
+    await user.click(linkSelectTrigger);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Usuarios \(\/settings\/users\)/i)).toBeInTheDocument();
+    });
+
+    const routeOption = screen.getByText(/Usuarios \(\/settings\/users\)/i);
+    await user.click(routeOption);
 
     // Enabled now
     expect(submitBtn).toBeEnabled();
@@ -98,7 +117,7 @@ describe("ModuleModal", () => {
     expect(handleSubmit).toHaveBeenCalledWith({
       key: "analytics",
       module_group_id: "grp-reports",
-      link: "/analytics/reports",
+      link: "/settings/users",
       icon: null,
       isActive: true,
       nameTranslations: { es: "", en: "" },
@@ -111,6 +130,37 @@ describe("ModuleModal", () => {
       ],
     });
     expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  it("does not show occupied routes in the route options dropdown", async () => {
+    mockModulesData = [
+      { id: "mod-1", link: "/settings/users" },
+      { id: "mod-2", link: "/settings/roles" },
+    ];
+
+    const user = userEvent.setup();
+
+    render(
+      <ModuleModal
+        open={true}
+        onClose={vi.fn()}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    const linkSelectTrigger = screen.getByRole("button", { name: "Ruta" });
+    await user.click(linkSelectTrigger);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Acciones \(\/settings\/actions\)/i)).toBeInTheDocument();
+    });
+
+    // Occupied routes should NOT be in the document
+    expect(screen.queryByText(/Usuarios \(\/settings\/users\)/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Roles \(\/settings\/roles\)/i)).not.toBeInTheDocument();
+    // Free route should be available
+    expect(screen.getByText(/Acciones \(\/settings\/actions\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Proveedores de IA \(\/settings\/ai-providers\)/i)).toBeInTheDocument();
   });
 
   it("calls onClose when cancel button is clicked", async () => {
@@ -132,6 +182,11 @@ describe("ModuleModal", () => {
   });
 
   it("renders edit modal with pre-populated data and allows updating", async () => {
+    mockModulesData = [
+      { id: "mod-123", link: "/settings/users" },
+      { id: "mod-456", link: "/settings/roles" },
+    ];
+
     const handleSubmit = vi.fn();
     const user = userEvent.setup();
 
@@ -158,7 +213,7 @@ describe("ModuleModal", () => {
       screen.getByRole("heading", { name: "Actualizar Módulo" })
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("users")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("/settings/users")).toBeInTheDocument();
+    expect(screen.getByText(/Usuarios \(\/settings\/users\)/i)).toBeInTheDocument();
     expect(
       screen.getByText("Administración (administration)")
     ).toBeInTheDocument();

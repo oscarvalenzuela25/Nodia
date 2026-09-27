@@ -11,9 +11,11 @@ import { GetInvoiceViewUrlUseCase } from './use-case/get-invoice-view-url.use-ca
 import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
+import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
 import { StorageModule } from '../common/storage/storage.module.js';
 import { GeminiModule } from '../common/ai/gemini.module.js';
 import { ProviderModule } from '../provider/provider.module.js';
+import { AiProviderModule } from '../ai-provider/ai-provider.module.js';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { ProviderModule } from '../provider/provider.module.js';
     StorageModule,
     GeminiModule,
     ProviderModule,
+    AiProviderModule,
   ],
   controllers: [InvoiceController],
   providers: [
@@ -32,7 +35,8 @@ import { ProviderModule } from '../provider/provider.module.js';
     CreateInvoiceUseCase,
     UpdateInvoiceUseCase,
     AnalyzeInvoiceUseCase,
+    VerifyIaProvidersUseCase,
   ],
-  exports: [InvoiceService],
+  exports: [InvoiceService, VerifyIaProvidersUseCase],
 })
 export class InvoiceModule {}

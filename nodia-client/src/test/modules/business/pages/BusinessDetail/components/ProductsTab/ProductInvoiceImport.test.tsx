@@ -67,6 +67,10 @@ vi.mock("../../../../../../../modules/business/infrastructure/services", () => (
     meta: { total_items: 0 },
   }),
   analyzeInvoice: vi.fn(),
+  verifyIaProviders: vi.fn().mockResolvedValue({
+    gemini: true,
+    mistral: true,
+  }),
   createInvoiceWithFile: vi.fn(),
   bulkCreateProducts: vi.fn(),
   bulkUpdateProducts: vi.fn(),
@@ -1248,12 +1252,10 @@ describe("ProductInvoiceImport Component", () => {
     expect(screen.getByDisplayValue("FAC-MISTRAL-001")).toBeInTheDocument();
   });
 
-  it("disables the Mistral button when can_use_mistral is false in authorization context", async () => {
-    useGeneralSettingsStore.setState({
-      isLoaded: true,
-      can_use_gemini: true,
-      can_use_mistral: false,
-      can_analyze_invoice: true,
+  it("disables the Mistral button when mistral is false in verify-ia-providers", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce({
+      gemini: true,
+      mistral: false,
     });
 
     renderWithClient(
@@ -1273,16 +1275,16 @@ describe("ProductInvoiceImport Component", () => {
     const geminiBtn = screen.getByTestId("analyze-invoice-btn");
     const mistralBtn = screen.getByTestId("analyze-invoice-mistral-btn");
 
-    expect(geminiBtn).not.toBeDisabled();
-    expect(mistralBtn).toBeDisabled();
+    await waitFor(() => {
+      expect(geminiBtn).not.toBeDisabled();
+      expect(mistralBtn).toBeDisabled();
+    });
   });
 
-  it("disables the Gemini button when can_use_gemini is false in authorization context", async () => {
-    useGeneralSettingsStore.setState({
-      isLoaded: true,
-      can_use_gemini: false,
-      can_use_mistral: true,
-      can_analyze_invoice: true,
+  it("disables the Gemini button and displays info icon when gemini is false in verify-ia-providers", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce({
+      gemini: false,
+      mistral: true,
     });
 
     renderWithClient(
@@ -1302,8 +1304,11 @@ describe("ProductInvoiceImport Component", () => {
     const geminiBtn = screen.getByTestId("analyze-invoice-btn");
     const mistralBtn = screen.getByTestId("analyze-invoice-mistral-btn");
 
-    expect(geminiBtn).toBeDisabled();
-    expect(mistralBtn).not.toBeDisabled();
+    await waitFor(() => {
+      expect(geminiBtn).toBeDisabled();
+      expect(mistralBtn).not.toBeDisabled();
+      expect(screen.getByTestId("gemini-disabled-info-icon")).toBeInTheDocument();
+    });
   });
 });
 

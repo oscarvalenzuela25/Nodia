@@ -1,7 +1,9 @@
 import type { FC } from "react";
 import Grid from "@mui/material/Grid";
 import { Alert, Box, Button, Typography } from "@mui/material";
+import { Skeleton } from "boneyard-js/react";
 import useHome from "./hooks/useHome";
+import { SettingsCardsGridSkeleton } from "../../../../components/skeletons";
 import {
   ContainerPage,
   WelcomeMessage,
@@ -16,6 +18,7 @@ const Home: FC = () => {
   const {
     t,
     userModules,
+    isLoading,
     isError,
     errorMessage,
     refetchAuthContext,
@@ -58,49 +61,51 @@ const Home: FC = () => {
         </Alert>
       )}
 
-      {userModules && userModules.length > 0 ? (
-        userModules.map((group) => {
-          const groupTitle = getGroupTitle(group);
-          const modules = group.modules ?? [];
-          if (modules.length === 0) return null;
+      <Skeleton loading={isLoading} fallback={<SettingsCardsGridSkeleton count={8} />}>
+        {userModules && userModules.length > 0 ? (
+          userModules.map((group) => {
+            const groupTitle = getGroupTitle(group);
+            const modules = group.modules ?? [];
+            if (modules.length === 0) return null;
 
-          return (
-            <Box key={group.module_group_key} sx={{ mb: 4 }}>
-              <SectionTitle>{groupTitle}</SectionTitle>
-              <Grid container spacing={3}>
-                {modules.map((m) => {
-                  const title = getModuleTitle(m);
-                  const desc = getModuleDesc(m);
-                  const path = getModulePath(m);
+            return (
+              <Box key={group.module_group_key} sx={{ mb: 4 }}>
+                <SectionTitle>{groupTitle}</SectionTitle>
+                <Grid container spacing={3}>
+                  {modules.map((m) => {
+                    const title = getModuleTitle(m);
+                    const desc = getModuleDesc(m);
+                    const path = getModulePath(m);
 
-                  return (
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={m.key}>
-                      <SettingsCard to={path}>
-                        <CardIconWrapper className="card-icon-wrapper" data-testid={`card-icon-${m.key}`}>
-                          {getModuleIcon(m.key, m.icon)}
-                        </CardIconWrapper>
-                        <CardTitle>{title}</CardTitle>
-                        {desc ? <CardDescription>{desc}</CardDescription> : null}
-                      </SettingsCard>
-                    </Grid>
-                  );
-                })}
-              </Grid>
+                    return (
+                      <Grid size={{ xs: 12, sm: 6, md: 3 }} key={m.key}>
+                        <SettingsCard to={path}>
+                          <CardIconWrapper className="card-icon-wrapper" data-testid={`card-icon-${m.key}`}>
+                            {getModuleIcon(m.key, m.icon)}
+                          </CardIconWrapper>
+                          <CardTitle>{title}</CardTitle>
+                          {desc ? <CardDescription>{desc}</CardDescription> : null}
+                        </SettingsCard>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Box>
+            );
+          })
+        ) : (
+          !isError && !isLoading && (
+            <Box sx={{ py: 6, textAlign: "center" }}>
+              <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                {t("home:no_modules_title")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {t("home:no_modules_desc")}
+              </Typography>
             </Box>
-          );
-        })
-      ) : (
-        !isError && (
-          <Box sx={{ py: 6, textAlign: "center" }}>
-            <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-              {t("home:no_modules_title")}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {t("home:no_modules_desc")}
-            </Typography>
-          </Box>
-        )
-      )}
+          )
+        )}
+      </Skeleton>
     </ContainerPage>
   );
 };

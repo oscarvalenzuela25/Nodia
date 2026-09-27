@@ -32,20 +32,18 @@ import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { sileo } from "sileo";
 
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
 import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
-import {
-  useCanUseGemini,
-  useCanUseMistral,
-} from "../../../../../../../../store/generalSettings/useGeneralSettings";
 import { getProductLogs } from "../../../../../../infrastructure/services";
 import {
   useProviders,
   useProducts,
   useAnalyzeInvoice,
+  useVerifyIaProviders,
   useCreateInvoiceWithFile,
   useBulkCreateProducts,
   useBulkUpdateProducts,
@@ -106,8 +104,9 @@ export const ProductInvoiceImport: FC<Props> = ({
   const [editTaxRate, setEditTaxRate] = useState<number>(19);
   const [isSaving, setIsSaving] = useState(false);
 
-  const canUseGemini = useCanUseGemini();
-  const canUseMistral = useCanUseMistral();
+  const { data: iaProviders, isLoading: isVerifyingProviders } = useVerifyIaProviders();
+  const isGeminiAvailable = Boolean(iaProviders?.gemini);
+  const isMistralAvailable = iaProviders?.mistral ?? true;
   const [analyzingProvider, setAnalyzingProvider] = useState<"gemini" | "mistral" | null>(null);
   const [lastUsedProvider, setLastUsedProvider] = useState<"gemini" | "mistral">("gemini");
   const previewUrl = useMemo(() => {
@@ -709,60 +708,71 @@ export const ProductInvoiceImport: FC<Props> = ({
               }}
             >
               {/* Gemini Button */}
-              <Tooltip
-                title={!canUseGemini ? t("business:provider_not_configured_tooltip") : ""}
-                disableHoverListener={canUseGemini}
-              >
-                <span>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={
-                      isAnalyzing && analyzingProvider === "gemini" ? (
-                        <CircularProgress size={18} color="inherit" />
-                      ) : (
-                        <AutoAwesomeOutlinedIcon />
-                      )
-                    }
-                    disabled={isUploadDisabled || !file || !canUseGemini}
-                    onClick={() => handleAnalyze("gemini")}
-                    data-testid="analyze-invoice-btn"
-                    sx={{ borderRadius: 2 }}
+              <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={
+                    isAnalyzing && analyzingProvider === "gemini" ? (
+                      <CircularProgress size={18} color="inherit" />
+                    ) : (
+                      <AutoAwesomeOutlinedIcon />
+                    )
+                  }
+                  disabled={isUploadDisabled || !file || !isGeminiAvailable || isVerifyingProviders}
+                  onClick={() => handleAnalyze("gemini")}
+                  data-testid="analyze-invoice-btn"
+                  sx={{ borderRadius: 2 }}
+                >
+                  {isAnalyzing && analyzingProvider === "gemini"
+                    ? t("business:analyzing_with_gemini")
+                    : t("business:analyze_with_gemini")}
+                </Button>
+
+                {!isGeminiAvailable && !isVerifyingProviders && (
+                  <Tooltip
+                    title={t("business:gemini_session_expired_tooltip")}
+                    arrow
+                    placement="top"
                   >
-                    {isAnalyzing && analyzingProvider === "gemini"
-                      ? t("business:analyzing_with_gemini")
-                      : t("business:analyze_with_gemini")}
-                  </Button>
-                </span>
-              </Tooltip>
+                    <Box
+                      component="span"
+                      data-testid="gemini-disabled-info-icon"
+                      sx={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        cursor: "help",
+                        color: "text.secondary",
+                        "&:hover": { color: "warning.main" },
+                        transition: "color 0.15s ease",
+                      }}
+                    >
+                      <InfoOutlinedIcon sx={{ fontSize: 20 }} />
+                    </Box>
+                  </Tooltip>
+                )}
+              </Box>
 
               {/* Mistral Button */}
-              <Tooltip
-                title={!canUseMistral ? t("business:provider_not_configured_tooltip") : ""}
-                disableHoverListener={canUseMistral}
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={
+                  isAnalyzing && analyzingProvider === "mistral" ? (
+                    <CircularProgress size={18} color="inherit" />
+                  ) : (
+                    <AutoAwesomeOutlinedIcon />
+                  )
+                }
+                disabled={isUploadDisabled || !file || !isMistralAvailable}
+                onClick={() => handleAnalyze("mistral")}
+                data-testid="analyze-invoice-mistral-btn"
+                sx={{ borderRadius: 2 }}
               >
-                <span>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={
-                      isAnalyzing && analyzingProvider === "mistral" ? (
-                        <CircularProgress size={18} color="inherit" />
-                      ) : (
-                        <AutoAwesomeOutlinedIcon />
-                      )
-                    }
-                    disabled={isUploadDisabled || !file || !canUseMistral}
-                    onClick={() => handleAnalyze("mistral")}
-                    data-testid="analyze-invoice-mistral-btn"
-                    sx={{ borderRadius: 2 }}
-                  >
-                    {isAnalyzing && analyzingProvider === "mistral"
-                      ? t("business:analyzing_with_mistral")
-                      : t("business:analyze_with_mistral")}
-                  </Button>
-                </span>
-              </Tooltip>
+                {isAnalyzing && analyzingProvider === "mistral"
+                  ? t("business:analyzing_with_mistral")
+                  : t("business:analyze_with_mistral")}
+              </Button>
             </Box>
           )}
 
@@ -899,9 +909,6 @@ export const ProductInvoiceImport: FC<Props> = ({
               <TableHead>
                 <TableRow>
                   <TableCell width={36}></TableCell>
-                  <TableCell width={48} align="center">
-                    <LockOutlinedIcon fontSize="small" sx={{ color: "text.secondary" }} />
-                  </TableCell>
                   <TableCell width={110}>{t("business:product_status")}</TableCell>
                   <TableCell>{t("business:product_code")}</TableCell>
                   <TableCell>{t("business:product_name")}</TableCell>
@@ -910,6 +917,9 @@ export const ProductInvoiceImport: FC<Props> = ({
                   <TableCell align="right">{t("business:product_profit_margin")}</TableCell>
                   <TableCell align="right">{t("business:product_sale_price")}</TableCell>
                   <TableCell align="right">{t("business:product_stock")}</TableCell>
+                  <TableCell width={48} align="center">
+                    <LockOutlinedIcon fontSize="small" sx={{ color: "text.secondary" }} />
+                  </TableCell>
                   <TableCell align="right" width={110}>{t("core:actions")}</TableCell>
                 </TableRow>
               </TableHead>
@@ -945,28 +955,6 @@ export const ProductInvoiceImport: FC<Props> = ({
                               <ErrorBadge data-testid={`error-dot-${idx}`} />
                             )}
                           </Box>
-                        </Tooltip>
-                      </TableCell>
-
-                      {/* Lock Checkbox */}
-                      <TableCell align="center" width={48}>
-                        <Tooltip
-                          title={
-                            row.isLocked
-                              ? t("business:unlock_row_tooltip")
-                              : t("business:lock_row_tooltip")
-                          }
-                        >
-                          <Checkbox
-                            size="small"
-                            icon={<LockOpenOutlinedIcon fontSize="small" color="action" />}
-                            checkedIcon={<LockOutlinedIcon fontSize="small" color="success" />}
-                            checked={Boolean(row.isLocked)}
-                            onChange={() => handleToggleLock(idx)}
-                            disabled={isBusy}
-                            data-testid={`lock-checkbox-${idx}`}
-                            sx={{ p: 0.5 }}
-                          />
                         </Tooltip>
                       </TableCell>
 
@@ -1043,6 +1031,29 @@ export const ProductInvoiceImport: FC<Props> = ({
                         </Box>
                       </TableCell>
                       <TableCell align="right">{row.stock}</TableCell>
+
+                      {/* Lock Checkbox (Moved to the right) */}
+                      <TableCell align="center" width={48}>
+                        <Tooltip
+                          title={
+                            row.isLocked
+                              ? t("business:unlock_row_tooltip")
+                              : t("business:lock_row_tooltip")
+                          }
+                        >
+                          <Checkbox
+                            size="small"
+                            icon={<LockOpenOutlinedIcon fontSize="small" color="action" />}
+                            checkedIcon={<LockOutlinedIcon fontSize="small" color="success" />}
+                            checked={Boolean(row.isLocked)}
+                            onChange={() => handleToggleLock(idx)}
+                            disabled={isBusy}
+                            data-testid={`lock-checkbox-${idx}`}
+                            sx={{ p: 0.5 }}
+                          />
+                        </Tooltip>
+                      </TableCell>
+
                       <TableCell align="right">
                         <Tooltip title={t("business:edit_row_tooltip")}>
                           <span>
@@ -1091,7 +1102,6 @@ export const ProductInvoiceImport: FC<Props> = ({
                         }}
                         data-testid={`historical-row-${idx}`}
                       >
-                        <TableCell align="center" />
                         <TableCell align="center">
                           <HistoryOutlinedIcon sx={{ fontSize: 16, color: "text.secondary" }} />
                         </TableCell>
@@ -1128,6 +1138,9 @@ export const ProductInvoiceImport: FC<Props> = ({
                         </TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary" }}>
                           {row.historicalProduct.stock}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Typography variant="caption" color="text.disabled">-</Typography>
                         </TableCell>
                         <TableCell align="right">
                           <Typography variant="caption" color="text.disabled">-</Typography>

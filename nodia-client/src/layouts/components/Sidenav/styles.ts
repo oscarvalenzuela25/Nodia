@@ -101,9 +101,14 @@ export const ModuleHeaderText = styled(ListItemText)({
   },
 });
 
-export const NavItemButton = styled(ListItemButton)(({ theme }) => ({
+export const NavItemButton = styled(ListItemButton, {
+  shouldForwardProp: (prop) => prop !== "isSubItem",
+})<{ isSubItem?: boolean }>(({ theme, isSubItem }) => ({
   borderRadius: typeof theme.shape.borderRadius === "number" ? theme.shape.borderRadius * 1.5 : 8,
   padding: theme.spacing(1, 1.5),
+  ...(isSubItem && {
+    paddingLeft: "24px",
+  }),
   marginBottom: theme.spacing(0.5),
   width: "100%",
   boxSizing: "border-box",

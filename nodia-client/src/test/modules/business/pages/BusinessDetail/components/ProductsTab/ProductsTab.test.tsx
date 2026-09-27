@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import ProductsTab from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
-import type { ProductEntity, ProviderEntity } from "../../../../../../../modules/business/infrastructure/types";
+import type { ProductEntity, ProviderEntity, ProductLogEntity } from "../../../../../../../modules/business/infrastructure/types";
+import { sileo } from "sileo";
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -33,7 +34,64 @@ vi.mock("../../../../../../../modules/business/infrastructure/services", () => (
   createProduct: vi.fn(),
   updateProduct: vi.fn(),
   getProviders: vi.fn(),
+  exportProductsCsv: vi.fn(),
+  getProductLogs: vi.fn(),
 }));
+
+const mockProductLogs: ProductLogEntity[] = [
+  {
+    id: "log-1",
+    product_id: "prod-1",
+    code: "PROD-001",
+    name: "Café de Especialidad 250g",
+    cost_price: 5000,
+    cost_price_tax: 5950,
+    profit_percentage: 40,
+    sale_price: 8330,
+    stock: 25,
+    created_at: "2026-09-20T14:30:00Z",
+    updated_at: "2026-09-20T14:30:00Z",
+  },
+  {
+    id: "log-2",
+    product_id: "prod-1",
+    code: "PROD-001-OLD",
+    name: "Café de Especialidad 250g Antiguo",
+    cost_price: 4000,
+    cost_price_tax: 4760,
+    profit_percentage: 30,
+    sale_price: 6188,
+    stock: 15,
+    created_at: "2026-08-01T10:00:00Z",
+    updated_at: "2026-08-01T10:00:00Z",
+  },
+  {
+    id: "log-3",
+    product_id: "prod-2",
+    code: "PROD-002",
+    name: "Té Matcha Premium",
+    cost_price: 12000,
+    cost_price_tax: 14280,
+    profit_percentage: 35,
+    sale_price: 19278,
+    stock: 5,
+    created_at: "2026-09-21T10:15:00Z",
+    updated_at: "2026-09-21T10:15:00Z",
+  },
+  {
+    id: "log-4",
+    product_id: "prod-2",
+    code: "PROD-002",
+    name: "Té Matcha Premium Anterior",
+    cost_price: 15000,
+    cost_price_tax: 17850,
+    profit_percentage: 40,
+    sale_price: 24990,
+    stock: 10,
+    created_at: "2026-07-15T09:00:00Z",
+    updated_at: "2026-07-15T09:00:00Z",
+  },
+];
 
 const mockProviders: ProviderEntity[] = [
   {
@@ -99,6 +157,13 @@ describe("ProductsTab Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    window.URL.createObjectURL = vi.fn(() => "blob:mock-url");
+    window.URL.revokeObjectURL = vi.fn();
+    vi.mocked(businessServices.exportProductsCsv).mockResolvedValue("Code (code),Name (name)\nPROD-001,Café");
+    vi.mocked(businessServices.getProductLogs).mockResolvedValue({
+      data: [],
+      meta: { total_items: 0, page: 1, limit: 100, total_pages: 1 },
+    });
     vi.mocked(businessServices.getProviders).mockResolvedValue({
       data: mockProviders,
       meta: { total_items: 1, page: 1, limit: 100, total_pages: 1 },
@@ -112,12 +177,12 @@ describe("ProductsTab Component", () => {
       }
       return {
         data: mockProducts,
-        meta: { total_items: 2, page: params?.page ?? 1, limit: 50, total_pages: 1 },
+        meta: { total_items: 2, page: params?.page ?? 1, limit: 25, total_pages: 1 },
       };
     });
   });
 
-  it("renders table with columns, product data and calls getProducts with 50 limit and page 1 by default", async () => {
+  it("renders table with columns, product data and calls getProducts with 25 limit and page 1 by default", async () => {
     renderWithClient(<ProductsTab businessId="biz-123" />);
 
     await waitFor(() => {
@@ -141,18 +206,19 @@ describe("ProductsTab Component", () => {
     expect(screen.getByTestId("stock-dot-prod-2")).toBeInTheDocument();
 
     // Verify initial call to getProducts with table pagination params
-    expect(businessServices.getProducts).toHaveBeenCalledWith({
-      page: 1,
-      limit: 50,
-      q: {
-        business_id_eq: "biz-123",
-        name_cont: undefined,
-        s: "created_at desc",
-      },
-    });
+    expect(businessServices.getProducts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 1,
+        limit: 25,
+        q: expect.objectContaining({
+          business_id_eq: "biz-123",
+          s: "created_at desc",
+        }),
+      })
+    );
 
-    // Verify default pagination rows per page is 50
-    expect(screen.getByText("50")).toBeInTheDocument();
+    // Verify default pagination rows per page is 25
+    expect(screen.getByRole("combobox")).toHaveTextContent("25");
     expect(screen.getByText(/1–2 de 2|1–2 of 2/i)).toBeInTheDocument();
   });
 
@@ -169,8 +235,8 @@ describe("ProductsTab Component", () => {
         meta: {
           total_items: 110,
           page: params?.page ?? 1,
-          limit: 50,
-          total_pages: 3,
+          limit: 25,
+          total_pages: 5,
         },
       };
     });
@@ -181,7 +247,7 @@ describe("ProductsTab Component", () => {
       expect(screen.getByText("Café de Especialidad 250g")).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/1[–-]50\s+(de|of)\s+110/i)).toBeInTheDocument();
+    expect(screen.getByText(/1[–-]25\s+(de|of)\s+110/i)).toBeInTheDocument();
 
     const nextPageBtn = screen.getByRole("button", { name: /siguiente|next/i });
     expect(nextPageBtn).toBeEnabled();
@@ -189,15 +255,16 @@ describe("ProductsTab Component", () => {
     await user.click(nextPageBtn);
 
     await waitFor(() => {
-      expect(businessServices.getProducts).toHaveBeenCalledWith({
-        page: 2,
-        limit: 50,
-        q: {
-          business_id_eq: "biz-123",
-          name_cont: undefined,
-          s: "created_at desc",
-        },
-      });
+      expect(businessServices.getProducts).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 2,
+          limit: 25,
+          q: expect.objectContaining({
+            business_id_eq: "biz-123",
+            s: "created_at desc",
+          }),
+        })
+      );
     });
   });
 
@@ -212,15 +279,17 @@ describe("ProductsTab Component", () => {
     await user.type(searchInput, "Café");
 
     await waitFor(() => {
-      expect(businessServices.getProducts).toHaveBeenCalledWith({
-        page: 1,
-        limit: 50,
-        q: {
-          business_id_eq: "biz-123",
-          name_cont: "Café",
-          s: "created_at desc",
-        },
-      });
+      expect(businessServices.getProducts).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 1,
+          limit: 25,
+          q: expect.objectContaining({
+            business_id_eq: "biz-123",
+            name_cont: "Café",
+            s: "created_at desc",
+          }),
+        })
+      );
     });
   });
 
@@ -364,5 +433,183 @@ describe("ProductsTab Component", () => {
     await waitFor(() => {
       expect(screen.queryByText(/Nombre:\s*Matcha/i)).not.toBeInTheDocument();
     });
+  });
+
+  it("opens download CSV menu and triggers client-side download for current view", async () => {
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Café de Especialidad 250g")).toBeInTheDocument();
+    });
+
+    const downloadBtn = screen.getByTestId("download-products-csv-btn");
+    await user.click(downloadBtn);
+
+    const currentViewOption = await screen.findByTestId("menu-download-current-view");
+    expect(currentViewOption).toBeInTheDocument();
+
+    await user.click(currentViewOption);
+
+    expect(window.URL.createObjectURL).toHaveBeenCalled();
+    expect(sileo.success).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: expect.any(String),
+      })
+    );
+  });
+
+  it("opens download CSV menu and calls exportProductsCsv to download all data", async () => {
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Café de Especialidad 250g")).toBeInTheDocument();
+    });
+
+    const downloadBtn = screen.getByTestId("download-products-csv-btn");
+    await user.click(downloadBtn);
+
+    const allDataOption = await screen.findByTestId("menu-download-all");
+    expect(allDataOption).toBeInTheDocument();
+
+    await user.click(allDataOption);
+
+    await waitFor(() => {
+      expect(businessServices.exportProductsCsv).toHaveBeenCalledWith(
+        expect.objectContaining({
+          business_id: "biz-123",
+        })
+      );
+    });
+    expect(window.URL.createObjectURL).toHaveBeenCalled();
+    expect(sileo.success).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: expect.any(String),
+      })
+    );
+  });
+
+  it("shows warning toast when downloading current view with empty products", async () => {
+    vi.mocked(businessServices.getProducts).mockImplementation(async () => ({
+      data: [],
+      meta: { total_items: 0, page: 1, limit: 25, total_pages: 0 },
+    }));
+
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Café de Especialidad 250g")).not.toBeInTheDocument();
+    });
+
+    const downloadBtn = screen.getByTestId("download-products-csv-btn");
+    await user.click(downloadBtn);
+
+    const currentViewOption = await screen.findByTestId("menu-download-current-view");
+    await user.click(currentViewOption);
+
+    expect(sileo.warning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: expect.any(String),
+      })
+    );
+  });
+
+  it("renders expand icon, price variation indicators, and toggles historical sub-row", async () => {
+    vi.mocked(businessServices.getProductLogs).mockResolvedValue({
+      data: mockProductLogs,
+      meta: { total_items: 4, page: 1, limit: 100, total_pages: 1 },
+    });
+
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Café de Especialidad 250g")).toBeInTheDocument();
+    });
+
+    // Check that price diff badges are rendered
+    await waitFor(() => {
+      expect(screen.getByTestId("price-diff-prod-1")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("price-diff-prod-1")).toHaveTextContent("+34%");
+    expect(screen.getByTestId("price-diff-prod-2")).toBeInTheDocument();
+    expect(screen.getByTestId("price-diff-prod-2")).toHaveTextContent("-22%");
+
+    // Expand button should exist for prod-1
+    const expandBtn = screen.getByTestId("expand-product-btn-prod-1");
+    expect(expandBtn).toBeInTheDocument();
+
+    // Initially historical row is not rendered
+    expect(screen.queryByTestId("historical-row-prod-1")).not.toBeInTheDocument();
+
+    // Click to expand
+    await user.click(expandBtn);
+
+    // Now historical row is visible
+    await waitFor(() => {
+      expect(screen.getByTestId("historical-row-prod-1")).toBeInTheDocument();
+    });
+
+    // Check historical values inside sub-row
+    expect(screen.getByText("PROD-001-OLD")).toBeInTheDocument();
+    expect(screen.getByText("Café de Especialidad 250g Antiguo")).toBeInTheDocument();
+    expect(screen.getByText("Histórico")).toBeInTheDocument();
+    expect(screen.getByText(/\$4[.,\s]?760/)).toBeInTheDocument();
+    expect(screen.getByText(/\$6[.,\s]?188/)).toBeInTheDocument();
+
+    // Click again to collapse
+    await user.click(expandBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("historical-row-prod-1")).not.toBeInTheDocument();
+    });
+  });
+
+  it("filters products by price change status (increased, decreased, unchanged)", async () => {
+    vi.mocked(businessServices.getProductLogs).mockResolvedValue({
+      data: mockProductLogs,
+      meta: { total_items: 4, page: 1, limit: 100, total_pages: 1 },
+    });
+
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Café de Especialidad 250g")).toBeInTheDocument();
+    });
+
+    // Open filter modal
+    const filterBtn = screen.getByRole("button", { name: /abrir filtros|filtro/i });
+    await user.click(filterBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Filtros de productos")).toBeInTheDocument();
+    });
+
+    // Click on the price change selector
+    const priceChangeSelect = screen.getByRole("button", { name: /Variación de precio/i });
+    await user.click(priceChangeSelect);
+
+    // Option "Subió de precio" should be visible
+    const optionIncreased = await screen.findByText("Subió de precio");
+    await user.click(optionIncreased);
+
+    // Close select dropdown
+    await user.keyboard("{Escape}");
+
+    // Click on "Filtrar"
+    const applyBtn = screen.getByRole("button", { name: /^filtrar$/i });
+    await user.click(applyBtn);
+
+    // Chip should be displayed
+    await waitFor(() => {
+      expect(screen.getByText(/Variación:\s*Subió de precio/i)).toBeInTheDocument();
+    });
+
+    // getProducts called with price_change_in: ["increased"]
+    expect(businessServices.getProducts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        q: expect.objectContaining({
+          price_change_in: ["increased"],
+        }),
+      })
+    );
   });
 });

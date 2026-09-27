@@ -1,12 +1,12 @@
 # Modelo de dominio ERD — Nodia
 
-> Estado: en revisión — ampliación auth y recursos de negocio (businesses, products, providers, invoices)
-> Última actualización: 2026-09-19
-> Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado
+> Estado: en revisión — ampliación auth, recursos de negocio e IA (ADR-006)
+> Última actualización: 2026-09-26
+> Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado, 15-ai-providers-interview.md, 16-ai-provider-management-handoff.md
 
 ## 1. Resumen del modelo
 
-El modelo cubre la base de identidad, autorización, navegación, internacionalización y el ecosistema de negocios de Nodia con las siguientes tablas:
+El modelo cubre la base de identidad, autorización, navegación, internacionalización, el ecosistema de negocios y la gestión global de proveedores de Inteligencia Artificial (IA) de Nodia:
 
 ### Core & Seguridad (Identidad, Permisos, Navegación e i18n)
 - `auth_sessions`: sesiones renovables, hash del refresh token, expiración y revocación.
@@ -24,16 +24,37 @@ El modelo cubre la base de identidad, autorización, navegación, internacionali
 - `businesses`: entidades comerciales gestionadas por un `owner_id` (PK uuid).
 - `business_collaborators`: usuarios asociados a un negocio con su cargo y conjunto de permisos (`action_ids bigint[]`).
 - `business_actions`: catálogo de permisos operativos específicos del contexto de negocio (ej. gestionar colaboradores, ver analítica, escanear facturas).
-- `providers`: proveedores de insumos/mercancía de un negocio. Incluye `tax integer` (impuesto aplicable, default 19) y `fields json` con la plantilla de mapeo de columnas e instrucciones para la extracción contable IA (`{ [field]: { value: string, instructions?: string } }` para `code`, `cost_price`, `cost_price_tax`, `packages`, `units_per_package`).
+- `providers`: proveedores de insumos/mercancía de un negocio. Incluye `tax integer` (impuesto aplicable, default 19) y `fields jsonb` con la plantilla de mapeo de columnas e instrucciones para la extracción contable IA (`{ [field]: { value: string, instructions?: string } }` para `code`, `cost_price`, `cost_price_tax`, `packages`, `units_per_package`).
 - `products`: catálogo de productos de un negocio con códigos/SKU, costos, impuestos, márgenes y precio de venta.
 - `product_logs`: registro histórico e inmutable de auditoría para cada variación de producto (generado automáticamente tras creación o actualización).
-- `invoices`: comprobantes de facturación asociados a un negocio y proveedor, con su código/número de factura (`code`), monto total (`total_amount`), ubicación física en storage R2/S3 (`path_storage`) y el contenido/items extraídos embebidos directamente en el campo estructurado `data json` (por defecto `{}`).
+- `invoices`: comprobantes de facturación asociados a un negocio y proveedor, con su código/número de factura (`code`), monto total (`total_amount`), ubicación física en storage R2/S3 (`path_storage`) y el contenido/items extraídos embebidos directamente en el campo estructurado `data jsonb` (por defecto `{}`).
+
+### Proveedores de Inteligencia Artificial (IA)
+- `ai_providers`: catálogo de adaptadores de IA integrados (`gemini`, `mistral`, `openai`) con configuración directa 1:1: método de conexión activo (`mode`: `web_session`, `api_key`), campos no secretos tipados (`fields jsonb`: `available_models`, `selected_model`, `ocr_model`) y configuración de rotación de claves (`auto_rotate_api_keys`).
+- `ai_api_keys`: claves API cifradas en reposo (`secret_ciphertext`), asociadas directamente a `provider_id`, con huella HMAC para deduplicación (`secret_fingerprint`), máscara no sensible (`display_hint`), orden de rotación (`sort_order`), clave activa (`is_selected`) y monitoreo de salud (`health_state`: `untested`, `valid`, `needs_review`, `cooldown`).
+- `ai_provider_events`: registro inmutable de auditoría para eventos operativos, cambios de modo, rotación de claves, inicios de sesión web y fallos del sistema sin exponer credenciales ni facturas.
 
 ---
 
 ## 2. Modelo DBML Unificado
 
 ```dbml
+Enum ai_connection_mode {
+  web_session
+  api_key
+}
+
+Enum ai_key_health_state {
+  untested
+  valid
+  needs_review
+  cooldown
+}
+
+// ------------------------------------------
+// CORE & SEGURIDAD (Identidad, Permisos, i18n)
+// ------------------------------------------
+
 Table translations [headercolor: #175e7a] {
 	id bigint [ pk, increment, not null ]
 	source_entity varchar(255) [ not null ]
@@ -142,6 +163,26 @@ Table user_modules [headercolor: #175e7a] {
 	}
 }
 
+Table auth_sessions [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null ]
+	public_id uuid [ not null, unique ]
+	user_id bigint [ not null ]
+	image_url text
+	refresh_token_hash varchar(64) [ not null ]
+	expires_at timestamptz [ not null ]
+	revoked_at timestamptz
+	created_at timestamptz [ not null ]
+
+	indexes {
+		(user_id) [ name: 'idx_auth_sessions_user_id' ]
+		(expires_at) [ name: 'idx_auth_sessions_expires_at' ]
+	}
+}
+
+// ------------------------------------------
+// DOMINIO DE NEGOCIOS Y FACTURACIÓN
+// ------------------------------------------
+
 Table businesses [headercolor: #4f46e5] {
 	id uuid [ pk, not null ]
 	name varchar(255) [ not null ]
@@ -161,7 +202,7 @@ Table business_collaborators [headercolor: #4f46e5] {
 	position varchar(255)
 	user_id bigint [ not null ]
 	business_id uuid [ not null ]
-	action_ids "bigint[]" [ not null ]
+	action_ids "bigint[]" [ not null, default: '{}' ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
@@ -225,7 +266,7 @@ Table providers [headercolor: #4f46e5] {
 	business_id uuid [ not null ]
 	name varchar(255) [ not null ]
 	tax integer [ not null, default: 19 ]
-	fields json [ not null, default: '{}' ]
+	fields jsonb [ not null, default: '{}' ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
@@ -241,8 +282,8 @@ Table invoices [headercolor: #4f46e5] {
 	provider_id bigint
 	code varchar(255) [ not null ]
 	total_amount integer [ not null, default: 0 ]
-	path_storage varchar(255) [ not null ]
-	data json [ not null, default: '{}' ]
+	path_storage varchar(255) [ not null, default: '' ]
+	data jsonb [ not null, default: '{}' ]
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
@@ -253,21 +294,70 @@ Table invoices [headercolor: #4f46e5] {
 	}
 }
 
-Table auth_sessions [headercolor: #175e7a] {
-	id bigint [ pk, increment, not null ]
-	public_id uuid [ not null, unique ]
-	user_id bigint [ not null ]
-	image_url text
-	refresh_token_hash varchar(64) [ not null ]
-	expires_at timestamp [ not null ]
-	revoked_at timestamp
+// ------------------------------------------
+// PROVEEDORES DE INTELIGENCIA ARTIFICIAL (IA)
+// ------------------------------------------
+
+Table ai_providers [headercolor: #49e3e3] {
+	id bigint [ pk, increment ]
+	key varchar(64) [ not null, unique, note: 'Clave técnica del adaptador: gemini, mistral, openai' ]
+	mode ai_connection_mode [ note: 'Método de conexión activo: web_session o api_key' ]
+	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_model' ]
+	fields_version smallint [ not null, default: 1 ]
+	auto_rotate_api_keys boolean [ not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)' ]
+	is_active boolean [ not null, default: true, note: 'Habilitación administrativa general' ]
 	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
+Table ai_api_keys [headercolor: #49e3e3] {
+	id bigint [ pk, increment ]
+	provider_id bigint [ not null, note: 'Proveedor al que pertenece la clave' ]
+	label varchar(100) [ not null ]
+	secret_ciphertext text [ not null, note: 'Sobre cifrado con AES-256-GCM' ]
+	secret_fingerprint varchar(64) [ not null, note: 'Huella HMAC-SHA256 para detectar duplicados sin guardar el secreto plano' ]
+	display_hint varchar(16) [ not null, note: 'Máscara visual, ej: ...a1b2' ]
+	sort_order int [ not null, default: 0 ]
+	is_selected boolean [ not null, default: false, note: 'Clave actualmente activa/seleccionada' ]
+	health_state ai_key_health_state [ not null, default: 'untested' ]
+	last_error_code varchar(64)
+	last_error_message text [ note: 'Mensaje redactado sin credenciales ni datos sensibles' ]
+	last_error_at timestamptz
+	last_success_at timestamptz
+	cooldown_until timestamptz
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
 
 	indexes {
-		(user_id) [ name: 'idx_auth_sessions_user_id' ]
-		(expires_at) [ name: 'idx_auth_sessions_expires_at' ]
+		(provider_id, secret_fingerprint) [ name: 'uq_ai_api_key_fingerprint', unique ]
+		(provider_id, sort_order, id) [ name: 'idx_ai_api_key_rotation' ]
+		(provider_id, is_selected) [ name: 'idx_ai_api_key_selection' ]
 	}
 }
+
+Table ai_provider_events [headercolor: #49e3e3] {
+	id bigint [ pk, increment ]
+	provider_id bigint [ not null ]
+	api_key_id bigint
+	actor_user_id bigint [ note: 'Usuario responsable o null para eventos automáticos del sistema' ]
+	event_type varchar(64) [ not null ]
+	reason_code varchar(64)
+	message text [ note: 'Resumen redactado del evento' ]
+	metadata jsonb [ note: 'Metadatos no sensibles del evento' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+
+	indexes {
+		(provider_id, created_at) [ name: 'idx_ai_provider_events_recent' ]
+		(api_key_id, created_at) [ name: 'idx_ai_api_key_events_recent' ]
+	}
+}
+
+// ------------------------------------------
+// RELACIONES (Foreign Keys)
+// ------------------------------------------
 
 Ref fk_role_actions_role {
 	role_actions.role_id > roles.id [ delete: no action, update: no action ]
@@ -302,11 +392,11 @@ Ref fk_users_id_businesses {
 }
 
 Ref fk_users_id_user_businesses {
-	users.id < business_collaborators.user_id [ delete: no action, update: no action ]
+	users.id < business_collaborators.user_id [ delete: cascade, update: no action ]
 }
 
 Ref fk_businesses_id_user_businesses {
-	businesses.id < business_collaborators.business_id [ delete: no action, update: no action ]
+	businesses.id < business_collaborators.business_id [ delete: cascade, update: no action ]
 }
 
 Ref fk_businesses_id_products {
@@ -314,7 +404,7 @@ Ref fk_businesses_id_products {
 }
 
 Ref fk_products_id_product_logs {
-	products.id < product_logs.product_id [ delete: no action, update: no action ]
+	products.id < product_logs.product_id [ delete: cascade, update: no action ]
 }
 
 Ref fk_businesses_id_providers {
@@ -322,11 +412,11 @@ Ref fk_businesses_id_providers {
 }
 
 Ref fk_providers_id_invoices {
-	providers.id < invoices.provider_id [ delete: no action, update: no action ]
+	providers.id < invoices.provider_id [ delete: set null, update: no action ]
 }
 
 Ref fk_providers_id_products {
-	providers.id < products.provider_id [ delete: no action, update: no action ]
+	providers.id < products.provider_id [ delete: set null, update: no action ]
 }
 
 Ref fk_businesses_id_invoices {
@@ -335,5 +425,21 @@ Ref fk_businesses_id_invoices {
 
 Ref fk_auth_sessions_user {
 	auth_sessions.user_id > users.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_keys_provider {
+	ai_api_keys.provider_id > ai_providers.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_events_provider {
+	ai_provider_events.provider_id > ai_providers.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_events_api_key {
+	ai_provider_events.api_key_id > ai_api_keys.id [ delete: set null, update: no action ]
+}
+
+Ref fk_ai_events_actor_user {
+	ai_provider_events.actor_user_id > users.id [ delete: set null, update: no action ]
 }
 ```

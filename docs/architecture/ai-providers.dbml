@@ -1,0 +1,75 @@
+// Esquema oficial para Proveedores de IA en Nodia (PostgreSQL).
+// Modelo 1:1 simplificado: los campos de conexion residen directamente en ai_providers.
+
+Enum ai_connection_mode {
+  web_session
+  api_key
+}
+
+Enum ai_key_health_state {
+  untested
+  valid
+  needs_review
+  cooldown
+}
+
+Table ai_providers {
+  id bigint [pk, increment]
+  key varchar(64) [not null, unique, note: 'Clave tecnica del adaptador: gemini, mistral, openai']
+  mode ai_connection_mode [note: 'Metodo de conexion activo: web_session o api_key']
+  fields jsonb [not null, default: '{}', note: 'Configuracion no secreta: available_models, selected_model, ocr_model']
+  fields_version smallint [not null, default: 1]
+  auto_rotate_api_keys boolean [not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)']
+  is_active boolean [not null, default: true, note: 'Habilitacion administrativa general']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table ai_api_keys {
+  id bigint [pk, increment]
+  provider_id bigint [not null, note: 'Proveedor al que pertenece la clave']
+  label varchar(100) [not null]
+  secret_ciphertext text [not null, note: 'Sobre cifrado con AES-256-GCM']
+  secret_fingerprint varchar(64) [not null, note: 'Huella HMAC-SHA256 para detectar duplicados sin guardar secreto plano']
+  display_hint varchar(16) [not null, note: 'Identificador enmascarado visible en el panel']
+  sort_order int [not null, default: 0]
+  is_selected boolean [not null, default: false, note: 'Clave activa/seleccionada']
+  health_state ai_key_health_state [not null, default: 'untested']
+  last_error_code varchar(64)
+  last_error_message text [note: 'Mensaje redactado, sin credenciales ni datos de facturas']
+  last_error_at timestamptz
+  last_success_at timestamptz
+  cooldown_until timestamptz
+  is_active boolean [not null, default: true, note: 'Habilitacion manual']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (provider_id, secret_fingerprint) [unique, name: 'uq_ai_api_key_fingerprint']
+    (provider_id, sort_order, id) [name: 'idx_ai_api_key_rotation']
+    (provider_id, is_selected) [name: 'idx_ai_api_key_selection']
+  }
+}
+
+Table ai_provider_events {
+  id bigint [pk, increment]
+  provider_id bigint [not null]
+  api_key_id bigint
+  actor_user_id bigint [note: 'FK a users.id al integrar con el esquema completo; null para eventos automaticos']
+  event_type varchar(64) [not null]
+  reason_code varchar(64)
+  message text [note: 'Resumen redactado del evento']
+  metadata jsonb [note: 'Metadatos no sensibles']
+  is_active boolean [not null, default: true]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (provider_id, created_at) [name: 'idx_ai_provider_events_recent']
+    (api_key_id, created_at) [name: 'idx_ai_api_key_events_recent']
+  }
+}
+
+Ref: ai_api_keys.provider_id > ai_providers.id [delete: cascade]
+Ref: ai_provider_events.provider_id > ai_providers.id [delete: cascade]
+Ref: ai_provider_events.api_key_id > ai_api_keys.id [delete: set null]

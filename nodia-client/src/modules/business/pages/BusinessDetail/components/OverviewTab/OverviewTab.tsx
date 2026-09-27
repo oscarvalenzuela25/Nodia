@@ -27,6 +27,8 @@ import {
   useProviders,
   useInvoices,
 } from "../../../../infrastructure/useServices";
+import { Skeleton } from "boneyard-js/react";
+import { KpiCardsGridSkeleton, TableSkeleton } from "../../../../../../components/skeletons";
 import {
   KpiCard,
   KpiTop,
@@ -55,18 +57,28 @@ export const OverviewTab: FC<Props> = ({
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
 
-  const { data: productsData } = useProducts({
+  const { data: productsData, isLoading: isLoadingProducts } = useProducts({
+    page: 1,
+    limit: 50,
+    q: {
+      business_id_eq: businessId,
+      s: "created_at desc",
+    },
+  });
+  const { data: providersData, isLoading: isLoadingProviders } = useProviders({
+    page: 1,
+    limit: 50,
+    q: {
+      business_id_eq: businessId,
+      s: "created_at desc",
+    },
+  });
+  const { data: invoicesData, isLoading: isLoadingInvoices } = useInvoices({
     q: { business_id_eq: businessId },
     limit: 50,
   });
-  const { data: providersData } = useProviders({
-    q: { business_id_eq: businessId },
-    limit: 50,
-  });
-  const { data: invoicesData } = useInvoices({
-    q: { business_id_eq: businessId },
-    limit: 50,
-  });
+
+  const isLoadingOverview = isLoadingProducts || isLoadingProviders || isLoadingInvoices;
 
   const products = productsData?.data ?? [];
   const providers = providersData?.data ?? [];
@@ -156,7 +168,11 @@ export const OverviewTab: FC<Props> = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* 3 Top KPI Cards */}
-      <Grid container spacing={3}>
+      <Skeleton
+        loading={isLoadingOverview}
+        fallback={<KpiCardsGridSkeleton />}
+      >
+        <Grid container spacing={3}>
         {/* KPI 1: Catálogo de Productos */}
         <Grid size={{ xs: 12, md: 4 }}>
           <KpiCard>
@@ -332,6 +348,7 @@ export const OverviewTab: FC<Props> = ({
           </KpiCard>
         </Grid>
       </Grid>
+      </Skeleton>
 
       {/* Middle Section: Recent Invoices (8 cols) & Key Providers (4 cols) */}
       <Grid container spacing={3}>
@@ -352,44 +369,59 @@ export const OverviewTab: FC<Props> = ({
               </Button>
             </SectionHeader>
 
-            {invoices.length > 0 ? (
-              <ScrollablePanelContent data-testid="recent-invoices-scroll-panel">
-                <Table size="small" stickyHeader>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t("business:invoice_code")}</TableCell>
-                      <TableCell>{t("business:invoice_provider")}</TableCell>
-                      <TableCell align="right">{t("business:invoice_total")}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {invoices.map((inv) => (
-                      <TableRow key={inv.id} hover>
-                        <TableCell sx={{ fontWeight: 600 }}>{inv.code}</TableCell>
-                        <TableCell>{inv.provider?.name ?? "Proveedor Central"}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600 }}>
-                          ${(inv.total_amount || 0).toLocaleString()}
-                        </TableCell>
+            <Skeleton
+              loading={isLoadingInvoices}
+              fallback={
+                <TableSkeleton
+                  columns={[
+                    { header: t("business:invoice_code") },
+                    { header: t("business:invoice_provider") },
+                    { align: "right", header: t("business:invoice_total") },
+                  ]}
+                  rows={4}
+                  paperSx={{ borderRadius: 2 }}
+                />
+              }
+            >
+              {invoices.length > 0 ? (
+                <ScrollablePanelContent data-testid="recent-invoices-scroll-panel">
+                  <Table size="small" stickyHeader>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>{t("business:invoice_code")}</TableCell>
+                        <TableCell>{t("business:invoice_provider")}</TableCell>
+                        <TableCell align="right">{t("business:invoice_total")}</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </ScrollablePanelContent>
-            ) : (
-              <Box sx={{ py: 4, textAlign: "center" }}>
-                <Typography variant="body2" color="text.secondary">
-                  {t("business:invoices_empty_desc")}
-                </Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => onOpenNewInvoice?.()}
-                  sx={{ mt: 1.5, borderRadius: 2 }}
-                >
-                  {t("business:new_invoice_btn")}
-                </Button>
-              </Box>
-            )}
+                    </TableHead>
+                    <TableBody>
+                      {invoices.map((inv) => (
+                        <TableRow key={inv.id} hover>
+                          <TableCell sx={{ fontWeight: 600 }}>{inv.code}</TableCell>
+                          <TableCell>{inv.provider?.name ?? "Proveedor Central"}</TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 600 }}>
+                            ${(inv.total_amount || 0).toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollablePanelContent>
+              ) : (
+                <Box sx={{ py: 4, textAlign: "center" }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {t("business:invoices_empty_desc")}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => onOpenNewInvoice?.()}
+                    sx={{ mt: 1.5, borderRadius: 2 }}
+                  >
+                    {t("business:new_invoice_btn")}
+                  </Button>
+                </Box>
+              )}
+            </Skeleton>
           </SectionCard>
         </Grid>
 

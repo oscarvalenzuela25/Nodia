@@ -76,6 +76,11 @@ async def health_check():
 @app.get("/auth/status", tags=["Authentication"])
 async def auth_status():
     """Retorna el estado de autenticación de Gemini y el perfil del navegador."""
+    try:
+        if not gemini_service.is_initialized:
+            await gemini_service.init_client()
+    except Exception as e:
+        logger.warning(f"Connection attempt failed during auth status check: {e}")
     status_info = await gemini_service.get_status()
     return {
         "authenticated": status_info["initialized"],
@@ -88,6 +93,15 @@ async def auth_status():
     }
 
 
+@app.get("/models", tags=["Models"])
+async def get_models():
+    """
+    Retorna los modelos seleccionables de Gemini Web y la cuota/créditos restantes
+    del plan (tier, 5h, semanal y límites por modelo).
+    """
+    return await gemini_service.get_models_and_quota()
+
+
 @app.post("/auth/login", tags=["Authentication"])
 async def interactive_login():
     """
@@ -95,20 +109,35 @@ async def interactive_login():
     en su cuenta de Google. Extrae automáticamente las cookies y las guarda.
     """
     logger.info("Triggered interactive browser login from API...")
-    result = await gemini_service.browser_manager.login_interactive(timeout_seconds=300)
-    if result["success"]:
-        cookies = result.get("cookies", {})
-        if cookies.get("secure_1psid") and cookies.get("secure_1psidts"):
-            await gemini_service.reload_cookies(cookies["secure_1psid"], cookies["secure_1psidts"])
-        return {
-            "status": "success",
-            "message": "Autenticación completada exitosamente.",
-            "initialized": gemini_service.is_initialized,
-        }
-    else:
+    try:
+        result = await gemini_service.browser_manager.login_interactive(timeout_seconds=300)
+        if result["success"]:
+            cookies = result.get("cookies", {})
+            if cookies.get("secure_1psid") and cookies.get("secure_1psidts"):
+                await gemini_service.reload_cookies(cookies["secure_1psid"], cookies["secure_1psidts"])
+            return {
+                "status": "success",
+                "message": "Autenticación completada exitosamente.",
+                "initialized": gemini_service.is_initialized,
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=result.get("message", "No se completó la autenticación."),
+            )
+    except HTTPException:
+        raise
+    except AuthError as e:
+        logger.error(f"AuthError during interactive login: {e}")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=result.get("message", "No se completó la autenticación."),
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="La sesión no pudo ser verificada por Google. Por favor, asegúrese de completar el inicio de sesión en el navegador.",
+        )
+    except Exception as e:
+        logger.error(f"Unexpected error during interactive login: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error en el proceso de autenticación: {str(e)}",
         )
 
 

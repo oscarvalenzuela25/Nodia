@@ -79,7 +79,6 @@ Se abrirá una ventana de Chrome navegando a `https://gemini.google.com`. Inicia
 En tu archivo `.env` puedes especificar el modelo de Gemini Web a utilizar:
 - `gemini-flash` (*Por defecto*): **Gemini 3.8 Flash** (~48.300 créditos/día, ultra rápido y preciso para facturas).
 - `gemini-pro`: **Gemini 3.1 Pro** (~2.400 créditos/día, razonamiento avanzado para facturas complejas).
-- `gemini-flash-lite`: **Gemini 3.5 Flash-Lite** (respuestas ultralivianas).
 
 ```env
 GEMINI_MODEL=gemini-flash

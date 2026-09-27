@@ -1,9 +1,10 @@
 import type { FC, MouseEvent } from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
+  Chip,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -29,8 +30,16 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
+import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { Skeleton } from "boneyard-js/react";
+import { sileo } from "sileo";
 
+import { TableSkeleton } from "../../../../../../components/skeletons";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
 import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
@@ -43,15 +52,28 @@ import {
   useCreateProduct,
   useUpdateProduct,
   useProviders,
+  useExportProductsCsv,
+  useProductLogs,
 } from "../../../../infrastructure/useServices";
 import type {
   ProductEntity,
+  ProductLogEntity,
   CreateProductPayload,
   UpdateProductPayload,
 } from "../../../../infrastructure/types";
 import ProductModal, { type ProductFormData } from "./components/ProductModal";
 import ProductBulkImport from "./components/ProductBulkImport";
 import ProductInvoiceImport from "./components/ProductInvoiceImport";
+import {
+  exportProductsToCSV,
+  downloadCSVFile,
+} from "./components/ProductBulkImport/helpers";
+import {
+  calculatePriceDiff,
+  resolveHistoricalLog,
+  getPriceChangeStatus,
+  type PriceChangeStatus,
+} from "./helpers";
 import { StatusDot, StockDot } from "../../styles";
 
 const ActiveFilters = styled(Box)(({ theme }) => ({
@@ -94,10 +116,11 @@ export const ProductsTab: FC<Props> = ({
 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(50);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [isBulkMode, setIsBulkMode] = useState(false);
   const [isInvoiceMode, setIsInvoiceMode] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [isSingleModalOpen, setIsSingleModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductEntity | null>(null);
 
@@ -114,6 +137,7 @@ export const ProductsTab: FC<Props> = ({
   const [draftFilterProviders, setDraftFilterProviders] = useState<string[]>([]);
   const [draftFilterStock, setDraftFilterStock] = useState<("out" | "low" | "normal")[]>([]);
   const [draftFilterActive, setDraftFilterActive] = useState<"active" | "inactive" | null>(null);
+  const [draftFilterPriceChange, setDraftFilterPriceChange] = useState<PriceChangeStatus[]>([]);
 
   // Applied filter state
   const [appliedFilterCodes, setAppliedFilterCodes] = useState<string[]>([]);
@@ -121,12 +145,23 @@ export const ProductsTab: FC<Props> = ({
   const [appliedFilterProviders, setAppliedFilterProviders] = useState<string[]>([]);
   const [appliedFilterStock, setAppliedFilterStock] = useState<("out" | "low" | "normal")[]>([]);
   const [appliedFilterActive, setAppliedFilterActive] = useState<"active" | "inactive" | null>(null);
+  const [appliedFilterPriceChange, setAppliedFilterPriceChange] = useState<PriceChangeStatus[]>([]);
+
+  // Expanded rows state for historical log
+  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+
+  const handleToggleExpand = (productId: string) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [productId]: !prev[productId],
+    }));
+  };
 
   const { data: providersData } = useProviders({
     q: { business_id_eq: businessId },
     all: true,
   });
-  const providers = providersData?.data ?? [];
+  const providers = useMemo(() => providersData?.data ?? [], [providersData?.data]);
 
   // All products to populate distinct product codes in filter
   const { data: allProductsData } = useProducts({
@@ -168,6 +203,15 @@ export const ProductsTab: FC<Props> = ({
     [t]
   );
 
+  const priceChangeOptions = useMemo(
+    () => [
+      { value: "increased", label: t("business:price_change_increased") },
+      { value: "decreased", label: t("business:price_change_decreased") },
+      { value: "unchanged", label: t("business:price_change_unchanged") },
+    ],
+    [t]
+  );
+
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (appliedFilterCodes.length > 0) count += appliedFilterCodes.length;
@@ -175,6 +219,7 @@ export const ProductsTab: FC<Props> = ({
     if (appliedFilterProviders.length > 0) count += appliedFilterProviders.length;
     if (appliedFilterStock.length > 0) count += appliedFilterStock.length;
     if (appliedFilterActive !== null) count += 1;
+    if (appliedFilterPriceChange.length > 0) count += appliedFilterPriceChange.length;
     return count;
   }, [
     appliedFilterCodes,
@@ -182,6 +227,7 @@ export const ProductsTab: FC<Props> = ({
     appliedFilterProviders,
     appliedFilterStock,
     appliedFilterActive,
+    appliedFilterPriceChange,
   ]);
 
   const {
@@ -202,6 +248,8 @@ export const ProductsTab: FC<Props> = ({
         appliedFilterProviders.length > 0 ? appliedFilterProviders : undefined,
       stock_status_in:
         appliedFilterStock.length > 0 ? appliedFilterStock : undefined,
+      price_change_in:
+        appliedFilterPriceChange.length > 0 ? appliedFilterPriceChange : undefined,
       is_active_eq:
         appliedFilterActive === "active"
           ? true
@@ -211,11 +259,66 @@ export const ProductsTab: FC<Props> = ({
       s: "created_at desc",
     },
   });
-  const products = productsData?.data ?? [];
+  const products = useMemo(() => productsData?.data ?? [], [productsData?.data]);
+
+  // Fetch product logs for currently displayed products
+  const productIds = useMemo(
+    () => products.map((p) => p.id).filter(Boolean),
+    [products]
+  );
+
+  const { data: productLogsData } = useProductLogs(
+    {
+      all: true,
+      q: {
+        product_id_in: productIds.length > 0 ? productIds : undefined,
+        s: "created_at desc",
+      },
+    },
+    { enabled: productIds.length > 0 }
+  );
+  const productLogs = useMemo(() => productLogsData?.data ?? [], [productLogsData?.data]);
+
+  const logsByProductId = useMemo(() => {
+    const map = new Map<string, ProductLogEntity[]>();
+    for (const log of productLogs) {
+      if (!log.product_id) continue;
+      const arr = map.get(log.product_id) || [];
+      arr.push(log);
+      map.set(log.product_id, arr);
+    }
+    return map;
+  }, [productLogs]);
+
+  const logsByCode = useMemo(() => {
+    const map = new Map<string, ProductLogEntity[]>();
+    for (const log of productLogs) {
+      if (!log.code) continue;
+      const key = log.code.trim().toLowerCase();
+      const arr = map.get(key) || [];
+      arr.push(log);
+      map.set(key, arr);
+    }
+    return map;
+  }, [productLogs]);
+
+  const displayedProducts = useMemo(() => {
+    if (appliedFilterPriceChange.length === 0) return products;
+    return products.filter((prod) => {
+      const pLogs = (logsByProductId.get(prod.id) || []).concat(
+        logsByCode.get(prod.code?.trim().toLowerCase()) || []
+      );
+      const histLog = resolveHistoricalLog(prod, pLogs);
+      const status = getPriceChangeStatus(prod, histLog);
+      return appliedFilterPriceChange.includes(status);
+    });
+  }, [products, appliedFilterPriceChange, logsByProductId, logsByCode]);
 
   const createMutation = useCreateProduct();
   const updateMutation = useUpdateProduct();
+  const exportMutation = useExportProductsCsv();
   const isBusy = createMutation.isPending || updateMutation.isPending;
+  const isExporting = exportMutation.isPending;
 
   const handleOpenMenu = (e: MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(e.currentTarget);
@@ -223,6 +326,51 @@ export const ProductsTab: FC<Props> = ({
 
   const handleCloseMenu = () => {
     setMenuAnchorEl(null);
+  };
+
+  const handleOpenDownloadMenu = (e: MouseEvent<HTMLButtonElement>) => {
+    setDownloadMenuAnchorEl(e.currentTarget);
+  };
+
+  const handleCloseDownloadMenu = () => {
+    setDownloadMenuAnchorEl(null);
+  };
+
+  const handleDownloadCurrentView = () => {
+    handleCloseDownloadMenu();
+    if (products.length === 0) {
+      sileo.warning({
+        title: t("business:download_empty_warning"),
+      });
+      return;
+    }
+    const csvContent = exportProductsToCSV(products, i18n.language);
+    const filename = i18n.language?.startsWith("en")
+      ? "products_view.csv"
+      : "productos_vista.csv";
+    downloadCSVFile(csvContent, filename);
+    sileo.success({
+      title: t("business:download_success_title"),
+    });
+  };
+
+  const handleDownloadAll = async () => {
+    handleCloseDownloadMenu();
+    try {
+      const csvData = await exportMutation.mutateAsync({
+        business_id: businessId,
+        lang: i18n.language,
+      });
+      const filename = i18n.language?.startsWith("en")
+        ? "products_all.csv"
+        : "productos_todos.csv";
+      downloadCSVFile(csvData, filename);
+      sileo.success({
+        title: t("business:download_success_title"),
+      });
+    } catch {
+      // Handled by onError in useExportProductsCsv hook
+    }
   };
 
   const handleOpenAddSingle = () => {
@@ -277,6 +425,7 @@ export const ProductsTab: FC<Props> = ({
     setAppliedFilterProviders(draftFilterProviders);
     setAppliedFilterStock(draftFilterStock);
     setAppliedFilterActive(draftFilterActive);
+    setAppliedFilterPriceChange(draftFilterPriceChange);
     setPage(0);
   };
 
@@ -286,11 +435,13 @@ export const ProductsTab: FC<Props> = ({
     setDraftFilterProviders([]);
     setDraftFilterStock([]);
     setDraftFilterActive(null);
+    setDraftFilterPriceChange([]);
     setAppliedFilterCodes([]);
     setAppliedFilterName("");
     setAppliedFilterProviders([]);
     setAppliedFilterStock([]);
     setAppliedFilterActive(null);
+    setAppliedFilterPriceChange([]);
     setPage(0);
   };
 
@@ -416,6 +567,15 @@ export const ProductsTab: FC<Props> = ({
             disabled={isLoading || isFetching}
             clearable
           />
+
+          <SelectMultipleInput
+            label={t("business:filter_price_change_label")}
+            placeholder={t("business:filter_price_change_placeholder")}
+            options={priceChangeOptions}
+            value={draftFilterPriceChange}
+            onChange={(vals) => setDraftFilterPriceChange(vals as PriceChangeStatus[])}
+            disabled={isLoading || isFetching}
+          />
         </Filter>
       </Box>
 
@@ -492,6 +652,25 @@ export const ProductsTab: FC<Props> = ({
               }}
             />
           )}
+          {appliedFilterPriceChange.map((variation) => {
+            const label =
+              variation === "increased"
+                ? t("business:price_change_increased")
+                : variation === "decreased"
+                ? t("business:price_change_decreased")
+                : t("business:price_change_unchanged");
+            return (
+              <FilterChips
+                key={`price-change-${variation}`}
+                label={t("business:filter_chips_price_change", { value: label })}
+                onAction={() => {
+                  setAppliedFilterPriceChange((prev) => prev.filter((v) => v !== variation));
+                  setDraftFilterPriceChange((prev) => prev.filter((v) => v !== variation));
+                  setPage(0);
+                }}
+              />
+            );
+          })}
         </ActiveFilters>
       )}
 
@@ -510,6 +689,45 @@ export const ProductsTab: FC<Props> = ({
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Button
+            variant="outlined"
+            startIcon={<FileDownloadOutlinedIcon />}
+            endIcon={<KeyboardArrowDownIcon />}
+            onClick={handleOpenDownloadMenu}
+            disabled={isExporting || isLoading}
+            sx={{ borderRadius: 2 }}
+            data-testid="download-products-csv-btn"
+          >
+            {t("business:download_csv")}
+          </Button>
+
+          <Menu
+            anchorEl={downloadMenuAnchorEl}
+            open={Boolean(downloadMenuAnchorEl)}
+            onClose={handleCloseDownloadMenu}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <MenuItem
+              onClick={handleDownloadCurrentView}
+              data-testid="menu-download-current-view"
+            >
+              <ListItemIcon>
+                <TableChartOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("business:download_current_view")}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={handleDownloadAll}
+              data-testid="menu-download-all"
+            >
+              <ListItemIcon>
+                <CloudDownloadOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("business:download_all_data")}</ListItemText>
+            </MenuItem>
+          </Menu>
+
           <Button
             variant="contained"
             endIcon={<KeyboardArrowDownIcon />}
@@ -544,7 +762,27 @@ export const ProductsTab: FC<Props> = ({
       </Box>
 
       {/* Products Table */}
-      <Skeleton loading={isLoading}>
+      <Skeleton
+        loading={isLoading}
+        fallback={
+          <TableSkeleton
+            columns={[
+              { width: 48, align: "center" },
+              { header: t("business:product_code") },
+              { header: t("business:product_name") },
+              { header: t("business:product_provider") },
+              { align: "right", header: t("business:product_cost_tax") },
+              { align: "right", header: t("business:product_profit_margin") },
+              { align: "right", header: t("business:product_sale_price") },
+              { align: "right", header: t("business:product_stock") },
+              { align: "center", header: t("business:product_status") },
+              { align: "center", header: t("business:product_updated_at") },
+              { align: "right", header: t("core:actions") },
+            ]}
+            rows={rowsPerPage > 10 ? 10 : rowsPerPage}
+          />
+        }
+      >
         <Paper
           sx={{
             borderRadius: 3,
@@ -557,6 +795,7 @@ export const ProductsTab: FC<Props> = ({
             <Table>
             <TableHead>
               <TableRow>
+                <TableCell sx={{ width: 48, p: 0.5 }} align="center" />
                 <TableCell>{t("business:product_code")}</TableCell>
                 <TableCell>{t("business:product_name")}</TableCell>
                 <TableCell>{t("business:product_provider")}</TableCell>
@@ -570,9 +809,9 @@ export const ProductsTab: FC<Props> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.length === 0 ? (
+              {!isLoading && displayedProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} align="center" sx={{ py: 6 }}>
+                  <TableCell colSpan={11} align="center" sx={{ py: 6 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
                       {t("business:products_empty_title")}
                     </Typography>
@@ -582,69 +821,210 @@ export const ProductsTab: FC<Props> = ({
                   </TableCell>
                 </TableRow>
               ) : (
-                products.map((prod) => (
-                  <TableRow key={prod.id} hover>
-                    <TableCell sx={{ fontWeight: 600 }}>{prod.code}</TableCell>
-                    <TableCell>{prod.name}</TableCell>
-                    <TableCell>{prod.provider?.name ?? "-"}</TableCell>
-                    <TableCell align="right">${(prod.cost_price_tax || 0).toLocaleString()}</TableCell>
-                    <TableCell align="right">{prod.profit_percentage}%</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 700 }}>
-                      ${(prod.sale_price || 0).toLocaleString()}
-                    </TableCell>
-                    <TableCell align="right">
-                      <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, justifyContent: "flex-end" }}>
-                        <span>{prod.stock}</span>
-                        {(() => {
-                          const stock = prod.stock;
-                          const status = stock <= 0 ? "out" : stock < 10 ? "low" : "normal";
-                          const label =
-                            status === "out"
-                              ? t("business:stock_out_of_stock")
-                              : status === "low"
-                              ? t("business:stock_low")
-                              : t("business:stock_normal");
-                          return (
-                            <Tooltip title={label} arrow>
-                              <Box component="span" sx={{ display: "inline-flex", alignItems: "center" }}>
-                                <StockDot status={status} data-testid={`stock-dot-${prod.id}`} />
-                              </Box>
-                            </Tooltip>
-                          );
-                        })()}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, justifyContent: "center" }}>
-                        <StatusDot active={prod.is_active} />
-                        <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                          {prod.is_active ? t("business:status_active") : t("business:status_inactive")}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="center" sx={{ color: "text.secondary", fontSize: "0.8125rem", whiteSpace: "nowrap" }}>
-                      {formatDateTime(prod.updated_at || prod.created_at)}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleOpenActionMenu(e, prod)}
-                        disabled={isBusy}
-                        data-testid={`product-actions-btn-${prod.id}`}
-                        aria-label={t("core:actions")}
-                      >
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
+                displayedProducts.map((prod) => {
+                  const pLogs = (logsByProductId.get(prod.id) || []).concat(
+                    logsByCode.get(prod.code?.trim().toLowerCase()) || []
+                  );
+                  const historicalLog = resolveHistoricalLog(prod, pLogs);
+                  const priceDiff = calculatePriceDiff(prod.sale_price, historicalLog?.sale_price);
+                  const isExpanded = Boolean(expandedRows[prod.id]);
+
+                  return (
+                    <Fragment key={prod.id}>
+                      <TableRow hover>
+                        <TableCell sx={{ width: 48, p: 0.5 }} align="center">
+                          <Tooltip
+                            title={
+                              isExpanded
+                                ? t("business:collapse_historical_tooltip")
+                                : t("business:expand_historical_tooltip")
+                            }
+                          >
+                            <span>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleToggleExpand(prod.id)}
+                                disabled={!historicalLog}
+                                aria-label={
+                                  isExpanded
+                                    ? t("business:collapse_historical_tooltip")
+                                    : t("business:expand_historical_tooltip")
+                                }
+                                data-testid={`expand-product-btn-${prod.id}`}
+                                sx={{
+                                  transition: "transform 0.2s ease-in-out",
+                                  transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                                }}
+                              >
+                                <KeyboardArrowDownIcon fontSize="small" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>{prod.code}</TableCell>
+                        <TableCell>{prod.name}</TableCell>
+                        <TableCell>{prod.provider?.name ?? "-"}</TableCell>
+                        <TableCell align="right">${(prod.cost_price_tax || 0).toLocaleString()}</TableCell>
+                        <TableCell align="right">{prod.profit_percentage}%</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700 }}>
+                          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                            <span>${(prod.sale_price || 0).toLocaleString()}</span>
+                            {priceDiff && (
+                              <Tooltip
+                                title={
+                                  priceDiff.isIncrease
+                                    ? t("business:price_increased_tooltip", { percent: priceDiff.percent })
+                                    : t("business:price_decreased_tooltip", { percent: priceDiff.percent })
+                                }
+                              >
+                                <Box
+                                  sx={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 0.25,
+                                    color: priceDiff.isIncrease ? "error.main" : "success.main",
+                                    fontSize: "0.75rem",
+                                    fontWeight: 700,
+                                  }}
+                                  data-testid={`price-diff-${prod.id}`}
+                                >
+                                  {priceDiff.isIncrease ? (
+                                    <ArrowUpwardIcon sx={{ fontSize: 13 }} />
+                                  ) : (
+                                    <ArrowDownwardIcon sx={{ fontSize: 13 }} />
+                                  )}
+                                  <span>
+                                    {priceDiff.isIncrease
+                                      ? `+${priceDiff.percent}%`
+                                      : `-${priceDiff.percent}%`}
+                                  </span>
+                                </Box>
+                              </Tooltip>
+                            )}
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, justifyContent: "flex-end" }}>
+                            <span>{prod.stock}</span>
+                            {(() => {
+                              const stock = prod.stock;
+                              const status = stock <= 0 ? "out" : stock < 10 ? "low" : "normal";
+                              const label =
+                                status === "out"
+                                  ? t("business:stock_out_of_stock")
+                                  : status === "low"
+                                  ? t("business:stock_low")
+                                  : t("business:stock_normal");
+                              return (
+                                <Tooltip title={label} arrow>
+                                  <Box component="span" sx={{ display: "inline-flex", alignItems: "center" }}>
+                                    <StockDot status={status} data-testid={`stock-dot-${prod.id}`} />
+                                  </Box>
+                                </Tooltip>
+                              );
+                            })()}
+                          </Box>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, justifyContent: "center" }}>
+                            <StatusDot active={prod.is_active} />
+                            <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                              {prod.is_active ? t("business:status_active") : t("business:status_inactive")}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="center" sx={{ color: "text.secondary", fontSize: "0.8125rem", whiteSpace: "nowrap" }}>
+                          {formatDateTime(prod.updated_at || prod.created_at)}
+                        </TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            size="small"
+                            onClick={(e) => handleOpenActionMenu(e, prod)}
+                            disabled={isBusy}
+                            data-testid={`product-actions-btn-${prod.id}`}
+                            aria-label={t("core:actions")}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+
+                      {/* Historical Comparison Sub-row */}
+                      {isExpanded && historicalLog && (
+                        <TableRow
+                          key={`${prod.id}-historical`}
+                          sx={{
+                            backgroundColor: (theme) =>
+                              theme.palette.mode === "dark"
+                                ? "rgba(255, 255, 255, 0.03)"
+                                : "rgba(0, 0, 0, 0.02)",
+                            "& > td": {
+                              borderBottom: (theme) => `1px dashed ${theme.palette.divider}`,
+                              color: "text.secondary",
+                              fontSize: "0.8125rem",
+                              py: 0.75,
+                            },
+                          }}
+                          data-testid={`historical-row-${prod.id}`}
+                        >
+                          <TableCell align="center">
+                            <HistoryOutlinedIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <span>{historicalLog.code}</span>
+                              <Chip
+                                label={t("business:historical_badge")}
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  fontSize: "0.7rem",
+                                  height: 20,
+                                  color: "text.secondary",
+                                  borderColor: "divider",
+                                }}
+                              />
+                            </Box>
+                          </TableCell>
+                          <TableCell sx={{ color: "text.secondary" }}>
+                            <Typography variant="caption" sx={{ fontStyle: "italic", color: "text.secondary" }}>
+                              {historicalLog.name}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={{ color: "text.secondary" }}>-</TableCell>
+                          <TableCell align="right" sx={{ color: "text.secondary" }}>
+                            ${(historicalLog.cost_price_tax || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ color: "text.secondary" }}>
+                            {historicalLog.profit_percentage}%
+                          </TableCell>
+                          <TableCell align="right" sx={{ color: "text.secondary", fontWeight: 500 }}>
+                            ${(historicalLog.sale_price || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell align="right" sx={{ color: "text.secondary" }}>
+                            {historicalLog.stock}
+                          </TableCell>
+                          <TableCell align="center" sx={{ color: "text.secondary" }}>
+                            -
+                          </TableCell>
+                          <TableCell align="center" sx={{ color: "text.secondary", fontSize: "0.8125rem", whiteSpace: "nowrap" }}>
+                            {formatDateTime(historicalLog.created_at || historicalLog.updated_at)}
+                          </TableCell>
+                          <TableCell align="right">
+                            <Typography variant="caption" color="text.disabled">-</Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </Fragment>
+                  );
+                })
               )}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           component="div"
-          count={productsData?.meta?.total_items ?? products.length}
+          count={productsData?.meta?.total_items ?? displayedProducts.length}
           page={page}
           onPageChange={(_, newPage) => setPage(newPage)}
           rowsPerPage={rowsPerPage}

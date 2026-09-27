@@ -1,7 +1,7 @@
 # Progreso del MVP — Nodia
 
 > Estado general: en desarrollo
-> Última revisión: 2026-09-12
+> Última revisión: 2026-09-25
 
 ## Checklist
 
@@ -9,7 +9,7 @@
 - [x] 02. PRD V1 aprobado — `02-prd-v1.md`
 - [ ] 03. Modelo de dominio ERD aprobado — `03-domain-model-erd.md`
 - [x] 04. PRD V2 aprobado — `04-prd-v2.md`
-- [x] 05. Sitemap aprobado — `05-sitemap.md`
+- [ ] 05. Sitemap en revisión por ampliación IA — `05-sitemap.md`
 - [ ] 06. Route Specs aprobados — `06-route-specs.md`
 - [x] 07. Restricciones de diseño aprobadas — `07-design-constraints.md`
 - [ ] 08. Stack frontend definido — `08-stack-frontend.md`
@@ -21,7 +21,7 @@
 
 - [ ] 14. Guía de autenticación y operación — `14-authentication.md` (implementación completada; documento en revisión)
 
-Las casillas reabiertas señalan documentos afectados por la ampliación de auth; la autorización total para desarrollar continúa vigente. No se han aprobado automáticamente nuevos documentos.
+Las casillas reabiertas señalan documentos afectados por las ampliaciones de auth e IA; la autorización total para desarrollar continúa vigente. No se han aprobado automáticamente nuevos documentos.
 
 ## Estado operativo
 
@@ -31,7 +31,7 @@ Las casillas reabiertas señalan documentos afectados por la ampliación de auth
 | 02 | aprobado | Aprobado tal como estaba en revisión el 2026-08-19 |
 | 03 | en revisión | Ampliación auth implementada; revisión documental pendiente. Historial:  Aprobado el 2026-08-26; actualizado el 2026-09-05 con PKs bigint universales; actualizado el 2026-09-07 con tabla translations para i18n centralizado (ADR-002) |
 | 04 | aprobado | Aprobado el 2026-08-26; reconciliado modelo de acciones dinámicas e i18n con flujos de negocio |
-| 05 | aprobado | Aprobado el 2026-08-21; incluye login con React OAuth2 y CRUDs por modales |
+| 05 | en revisión | Aprobado históricamente el 2026-08-21; reabierto el 2026-09-25 para incorporar Ajustes Generales > IA y login remoto propuestos |
 | 06 | en revisión | Ampliación auth implementada; revisión documental pendiente. Historial:  Aprobado el 2026-08-22; confirmada paginación server-side y acceso administrativo en Header |
 | 07 | aprobado | Aprobado el 2026-08-22; incluye uso de MUI, Light/Dark theme y Full Responsive |
 | 08 | en revisión | Ampliación auth implementada; revisión documental pendiente. Historial:  Aprobado el 2026-08-22; stack Vite+React+MUI confirmado, tokens y tema integrados en código |
@@ -47,6 +47,9 @@ Las casillas reabiertas señalan documentos afectados por la ampliación de auth
 
 ## Decisiones que invalidaron pasos posteriores
 
+- El 2026-09-26 se simplificó el modelo de dominio de Proveedores de IA consolidando los campos operativos (`mode`, `fields`, `fields_version`, `auto_rotate_api_keys`, `is_active`) directamente en `ai_providers` (relación 1:1), eliminando la tabla puente `ai_provider_connections` para prevenir colisiones de unicidad y simplificar la persistencia. `ai_api_keys` se relaciona ahora directamente con `ai_providers.id`. Se integró el catálogo oficial de proveedores en servidor (`GET /ai-providers/catalog`) con autoselección de modelos por defecto (`available_models`, `selected_model`) y selector de modelos en frontend.
+- El 2026-09-25 se confirmó una ampliación de IA previa a producción con nueva navegación en Ajustes Generales; se reabre `05-sitemap.md`. El despliegue de API cambia a VPS, por lo que `10-stack-devops.md` y `11-architecture-overview.md` permanecen en revisión; `06-route-specs.md`, `12-kanban.md` y `13-readiness-review.md` también requieren reconciliación. La Parte 1 histórica del PRD V2 conserva su aprobación; la ampliación se especifica aparte y aún no está aprobada.
+
 - El 2026-08-17 se separaron `Modules` y `Resources` como submódulos de `Ajustes Generales`; el PRD V1 en revisión ya reconcilia este cambio.
 - El 2026-08-21 se eliminaron `/auth/google`, `/auth/callback`, y las rutas de detalle/edición `/:id` en el Sitemap; las ediciones se harán con modales.
 - El 2026-08-22 se decidió que la paginación será asíncrona (server-side) desde el principio para evitar deuda técnica.
@@ -57,9 +60,12 @@ Las casillas reabiertas señalan documentos afectados por la ampliación de auth
 
 ## Próxima acción recomendada
 
-Comenzar con la implementación técnica del proyecto, desarrollando los módulos, componentes y endpoints acordados, y avanzando en las épicas descritas en el tablero Kanban (`12-kanban.md`).
+Revisar la [especificación de gestión de IA](16-ai-provider-management-handoff.md) y el [ADR-006 propuesto](../architecture/decisions/ADR-006-ai-provider-configuration.md). La implementación de esta ampliación comienza con una prueba de login remoto en VPS y la reconciliación de los documentos afectados, sin aprobarlos automáticamente.
 
 ## Seguimiento técnico
+
+- 2026-09-25: se abrió la [entrevista de operación de proveedores de IA](15-ai-providers-interview.md) como ampliación previa a producción. Se confirmó despliegue híbrido: NestJS y microservicio en VPS; frontend en Cloudflare Pages; R2 para archivos; PostgreSQL y Redis gestionados externamente. Gemini Web/Gemini API se alternan manualmente. El cambio de API en Northflank y el uso de Docker requieren reconciliar el stack y la arquitectura del MVP.
+- 2026-09-25: entrevista cerrada como borrador en revisión; [especificación para agente](16-ai-provider-management-handoff.md) redactada y no aprobada. Se reabrió el sitemap afectado. Las decisiones confirmadas y propuestas técnicas están diferenciadas en la especificación.
 
 - 2026-09-23: flujo Gemini Web para imágenes corregido según [ADR-005](../architecture/decisions/ADR-005-gemini-web-session.md) (en revisión documental). El microservicio persiste cookies rotadas, detecta nuevos logins y recupera autenticación con el perfil; NestJS dejó de recurrir a `GEMINI_API_KEY`. Prueba local con cuenta real e imagen de factura sintética: extracción correcta; reinicio posterior autenticado. Pendiente: observar la sesión tras varias horas de inactividad.
 

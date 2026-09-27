@@ -29,18 +29,30 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
+import CloudDownloadOutlinedIcon from "@mui/icons-material/CloudDownloadOutlined";
 import { Skeleton } from "boneyard-js/react";
+import { sileo } from "sileo";
 
+import { TableSkeleton } from "../../../../../../components/skeletons";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
 import {
   useProviders,
   useCreateProvider,
   useUpdateProvider,
+  useExportProvidersCsv,
 } from "../../../../infrastructure/useServices";
 import type { ProviderEntity } from "../../../../infrastructure/types";
 import ProviderModal, { type ProviderFormData } from "./components/ProviderModal";
-import { ProviderBulkImport } from "./components/ProviderBulkImport";
+import {
+  ProviderBulkImport,
+} from "./components/ProviderBulkImport";
+import {
+  exportProvidersToCSV,
+  downloadCSVFile,
+} from "./components/ProviderBulkImport/helpers";
 import { StatusDot } from "../../styles";
 
 interface Props {
@@ -54,7 +66,7 @@ export const ProvidersTab: FC<Props> = ({
   isCreateModalOpenDirectly = false,
   onCloseDirectCreateModal,
 }) => {
-  const { t } = useTranslation(["business", "core"]);
+  const { t, i18n } = useTranslation(["business", "core"]);
 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState<number>(0);
@@ -63,6 +75,7 @@ export const ProvidersTab: FC<Props> = ({
   const [selectedProvider, setSelectedProvider] = useState<ProviderEntity | null>(null);
   const [isBulkMode, setIsBulkMode] = useState(false);
   const [manageMenuAnchorEl, setManageMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   // 3-Dots Action Menu state
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -89,7 +102,46 @@ export const ProvidersTab: FC<Props> = ({
 
   const createMutation = useCreateProvider();
   const updateMutation = useUpdateProvider();
+  const exportMutation = useExportProvidersCsv();
   const isBusy = createMutation.isPending || updateMutation.isPending;
+  const isExporting = exportMutation.isPending;
+
+  const handleDownloadCurrentView = () => {
+    setDownloadMenuAnchorEl(null);
+    if (providers.length === 0) {
+      sileo.warning({
+        title: t("business:download_empty_warning"),
+      });
+      return;
+    }
+    const csvContent = exportProvidersToCSV(providers, i18n.language);
+    const filename = i18n.language?.startsWith("en")
+      ? "providers_view.csv"
+      : "proveedores_vista.csv";
+    downloadCSVFile(csvContent, filename);
+    sileo.success({
+      title: t("business:download_success_title"),
+    });
+  };
+
+  const handleDownloadAll = async () => {
+    setDownloadMenuAnchorEl(null);
+    try {
+      const csvData = await exportMutation.mutateAsync({
+        business_id: businessId,
+        lang: i18n.language,
+      });
+      const filename = i18n.language?.startsWith("en")
+        ? "providers_all.csv"
+        : "proveedores_todos.csv";
+      downloadCSVFile(csvData, filename);
+      sileo.success({
+        title: t("business:download_success_title"),
+      });
+    } catch {
+      // Handled by onError in useExportProvidersCsv hook
+    }
+  };
 
   const handleOpenCreate = () => {
     setSelectedProvider(null);
@@ -188,6 +240,45 @@ export const ProvidersTab: FC<Props> = ({
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <Button
+            variant="outlined"
+            startIcon={<FileDownloadOutlinedIcon />}
+            endIcon={<KeyboardArrowDownIcon />}
+            onClick={(e) => setDownloadMenuAnchorEl(e.currentTarget)}
+            disabled={isExporting || isLoading}
+            sx={{ borderRadius: 2 }}
+            data-testid="download-providers-csv-btn"
+          >
+            {t("business:download_csv")}
+          </Button>
+
+          <Menu
+            anchorEl={downloadMenuAnchorEl}
+            open={Boolean(downloadMenuAnchorEl)}
+            onClose={() => setDownloadMenuAnchorEl(null)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <MenuItem
+              onClick={handleDownloadCurrentView}
+              data-testid="menu-download-current-view-providers"
+            >
+              <ListItemIcon>
+                <TableChartOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("business:download_current_view")}</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={handleDownloadAll}
+              data-testid="menu-download-all-providers"
+            >
+              <ListItemIcon>
+                <CloudDownloadOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>{t("business:download_all_data")}</ListItemText>
+            </MenuItem>
+          </Menu>
+
+          <Button
             variant="contained"
             endIcon={<KeyboardArrowDownIcon />}
             onClick={(e) => setManageMenuAnchorEl(e.currentTarget)}
@@ -232,7 +323,22 @@ export const ProvidersTab: FC<Props> = ({
       </Box>
 
       {/* Table */}
-      <Skeleton loading={isLoading}>
+      <Skeleton
+        loading={isLoading}
+        fallback={
+          <TableSkeleton
+            columns={[
+              { width: 100, header: t("business:provider_id") },
+              { header: t("business:provider_name") },
+              { width: 110, align: "center", header: t("business:provider_tax") },
+              { header: t("business:provider_fields_label") },
+              { align: "center", header: t("business:product_status") },
+              { width: 80, align: "right", header: t("core:actions") },
+            ]}
+            rows={rowsPerPage > 10 ? 10 : rowsPerPage}
+          />
+        }
+      >
         <Paper
           sx={{
             borderRadius: 3,
@@ -254,7 +360,7 @@ export const ProvidersTab: FC<Props> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {providers.length === 0 ? (
+              {!isLoading && providers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
