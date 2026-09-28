@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AiProvider } from './entities/ai-provider.entity.js';
 import { AiApiKey } from './entities/ai-api-key.entity.js';
 import { AiProviderEvent } from './entities/ai-provider-event.entity.js';
+import { AiProviderCatalog } from './entities/ai-provider-catalog.entity.js';
 import { AiProviderService } from './ai-provider.service.js';
 import { AiProviderController } from './ai-provider.controller.js';
 import { AiApiKeyController } from './ai-api-key.controller.js';
@@ -16,6 +17,8 @@ import { GetSelectableModelsUseCase } from './use-case/get-selectable-models.use
 import { GetAiProvidersHealthUseCase } from './use-case/get-ai-providers-health.use-case.js';
 import { GetEnabledWebAiProvidersUseCase } from './use-case/get-enabled-web-ai-providers.use-case.js';
 import { GetSupportedAiProvidersUseCase } from './use-case/get-supported-ai-providers.use-case.js';
+import { GetAiProviderCatalogUseCase } from './use-case/get-ai-provider-catalog.use-case.js';
+import { SyncAiProviderModelsUseCase } from './use-case/sync-ai-provider-models.use-case.js';
 
 // AiApiKey Use Cases
 import { GetAllAiApiKeysUseCase } from './use-case/get-all-ai-api-keys.use-case.js';
@@ -36,6 +39,7 @@ import { TranslationModule } from '../translation/translation.module.js';
       AiProvider,
       AiApiKey,
       AiProviderEvent,
+      AiProviderCatalog,
     ]),
     GeminiModule,
     TranslationModule,
@@ -55,6 +59,8 @@ import { TranslationModule } from '../translation/translation.module.js';
     GetAiProvidersHealthUseCase,
     GetEnabledWebAiProvidersUseCase,
     GetSupportedAiProvidersUseCase,
+    GetAiProviderCatalogUseCase,
+    SyncAiProviderModelsUseCase,
     // AiApiKey
     GetAllAiApiKeysUseCase,
     CreateAiApiKeyUseCase,
@@ -73,6 +79,8 @@ import { TranslationModule } from '../translation/translation.module.js';
     GetAiProvidersHealthUseCase,
     GetEnabledWebAiProvidersUseCase,
     GetSupportedAiProvidersUseCase,
+    GetAiProviderCatalogUseCase,
+    SyncAiProviderModelsUseCase,
     GetAllAiApiKeysUseCase,
     CreateAiApiKeyUseCase,
     UpdateAiApiKeyUseCase,

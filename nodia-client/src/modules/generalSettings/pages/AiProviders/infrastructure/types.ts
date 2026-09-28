@@ -126,8 +126,19 @@ export interface AiApiKeyEntity {
   updated_at: string;
 }
 
+export interface AiProviderCatalogEntity {
+  id: string;
+  key: string;
+  name: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface AiProviderEntity {
   id: string;
+  catalog_id?: string | null;
+  name?: string | null;
   key: string;
   mode?: AiConnectionMode | null;
   fields?: Record<string, any>;
@@ -136,8 +147,37 @@ export interface AiProviderEntity {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  catalog?: AiProviderCatalogEntity;
   api_keys?: AiApiKeyEntity[];
   translates?: Array<{ key: string; es: string; en: string }>;
+}
+
+export interface DiscoveredModelItem {
+  id: string;
+  name: string;
+  displayName?: string;
+  description?: string;
+  contextWindow?: number;
+  capabilities?: string[];
+  isRecommended?: boolean;
+  role?: 'chat' | 'multimodal' | 'ocr';
+}
+
+export interface SyncModelsResult {
+  providerId?: string;
+  providerName?: string;
+  currentSelectedModel?: string | null;
+  isSelectedModelAvailable?: boolean;
+  models: DiscoveredModelItem[];
+  tokenPlan?: {
+    tier: string;
+    planLabel: string;
+    authenticated: boolean;
+  } | null;
+  provider?: AiProviderEntity;
+  synced_count?: number;
+  selected_model?: string;
+  is_selected_model_deprecated?: boolean;
 }
 
 export interface AiProviderEventEntity {
@@ -186,6 +226,8 @@ export interface GetAiProviderEventsParams {
 }
 
 export interface CreateAiProviderPayload {
+  catalog_id?: string;
+  name?: string;
   key: string;
   mode?: AiConnectionMode;
   fields?: Record<string, any>;
@@ -196,6 +238,8 @@ export interface CreateAiProviderPayload {
 }
 
 export interface UpdateAiProviderPayload {
+  catalog_id?: string;
+  name?: string;
   mode?: AiConnectionMode;
   fields?: Record<string, any>;
   fields_version?: number;

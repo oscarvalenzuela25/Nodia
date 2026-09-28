@@ -27,7 +27,4 @@ export interface AuthorizationContextResponse {
   roles: string[];
   actions: ActionContext[];
   modules: ModuleGroupContext[];
-  can_analyze_invoice: boolean;
-  can_use_gemini: boolean;
-  can_use_mistral: boolean;
 }

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { AiProvider } from './entities/ai-provider.entity.js';
 import { AiApiKey } from './entities/ai-api-key.entity.js';
 import { AiProviderEvent } from './entities/ai-provider-event.entity.js';
+import { AiProviderCatalog } from './entities/ai-provider-catalog.entity.js';
 import { CreateAiProviderDto } from './dto/create-ai-provider.dto.js';
 import { UpdateAiProviderDto } from './dto/update-ai-provider.dto.js';
 import { GetAiProvidersDto } from './dto/get-ai-providers.dto.js';
@@ -38,6 +39,8 @@ export class AiProviderService {
     private readonly aiApiKeyRepository: Repository<AiApiKey>,
     @InjectRepository(AiProviderEvent)
     private readonly aiProviderEventRepository: Repository<AiProviderEvent>,
+    @InjectRepository(AiProviderCatalog)
+    private readonly aiProviderCatalogRepository: Repository<AiProviderCatalog>,
     private readonly translationService: TranslationService,
   ) {}
 
@@ -55,6 +58,7 @@ export class AiProviderService {
     const qb = this.aiProviderRepository.createQueryBuilder('ai_provider');
 
     if (includes) {
+      qb.leftJoinAndSelect('ai_provider.catalog', 'catalog');
       qb.leftJoinAndSelect('ai_provider.api_keys', 'api_keys');
     }
 
@@ -105,6 +109,7 @@ export class AiProviderService {
     const provider = await this.aiProviderRepository.findOne({
       where: { id },
       relations: {
+        catalog: true,
         api_keys: true,
       },
     });
@@ -123,28 +128,35 @@ export class AiProviderService {
   async createProvider(createDto: CreateAiProviderDto): Promise<AiProvider> {
     const { translates, ...providerData } = createDto;
 
-    const supported = getSupportedProviderByKey(providerData.key);
-    const fields = providerData.fields ? { ...providerData.fields } : {};
+    let catalog: AiProviderCatalog | null = null;
+    if (providerData.catalog_id) {
+      catalog = await this.aiProviderCatalogRepository.findOne({
+        where: { id: providerData.catalog_id },
+      });
+    } else if (providerData.key) {
+      catalog = await this.aiProviderCatalogRepository.findOne({
+        where: { key: providerData.key },
+      });
+    }
 
+    const effectiveKey = providerData.key || catalog?.key || 'unknown';
+    const effectiveName = providerData.name || catalog?.name || effectiveKey;
+    const supported = getSupportedProviderByKey(effectiveKey);
     let mode = providerData.mode;
     if (!mode && supported) {
       mode = supported.defaultMode;
     }
 
-    if (supported) {
-      if (!fields.available_models) {
-        fields.available_models = supported.availableModels;
-      }
-      if (!fields.selected_model) {
-        fields.selected_model = supported.defaultSelectedModel;
-      }
-      if (supported.defaultOcrModel && !fields.ocr_model) {
-        fields.ocr_model = supported.defaultOcrModel;
-      }
+    const fields = providerData.fields ? { ...providerData.fields } : {};
+    if (!fields.available_models) {
+      fields.available_models = [];
     }
 
     const provider = this.aiProviderRepository.create({
       ...providerData,
+      catalog_id: catalog?.id ?? providerData.catalog_id,
+      key: effectiveKey,
+      name: effectiveName,
       mode: mode || (supported?.defaultMode ?? undefined),
       fields,
     });
@@ -168,26 +180,35 @@ export class AiProviderService {
     const existing = await this.findProviderById(id);
     const { translates, ...rest } = updateDto;
 
-    if (rest.fields) {
-      const supported = getSupportedProviderByKey(existing.key);
-      const updatedFields = { ...existing.fields, ...rest.fields };
+    let catalogId = rest.catalog_id ?? existing.catalog_id;
+    let key = rest.key ?? existing.key;
+    let name = rest.name ?? existing.name;
 
-      if (supported) {
-        if (!updatedFields.available_models) {
-          updatedFields.available_models =
-            existing.fields?.available_models || supported.availableModels;
-        }
-        if (!updatedFields.selected_model) {
-          updatedFields.selected_model =
-            existing.fields?.selected_model || supported.defaultSelectedModel;
+    if (rest.catalog_id && rest.catalog_id !== existing.catalog_id) {
+      const cat = await this.aiProviderCatalogRepository.findOne({
+        where: { id: rest.catalog_id },
+      });
+      if (cat) {
+        key = cat.key;
+        if (!rest.name) {
+          name = cat.name;
         }
       }
-      const dummy = { key: existing.key, fields: updatedFields };
+    }
+
+    if (rest.fields) {
+      const updatedFields = { ...existing.fields, ...rest.fields };
+      const dummy = { key: key || existing.key, fields: updatedFields };
       sanitizeProviderFields(dummy);
       rest.fields = dummy.fields;
     }
 
-    await this.aiProviderRepository.update(id, rest);
+    await this.aiProviderRepository.update(id, {
+      ...rest,
+      catalog_id: catalogId,
+      key,
+      name,
+    });
 
     if (translates !== undefined) {
       await this.translationService.updateTranslations(
@@ -198,6 +219,24 @@ export class AiProviderService {
     }
 
     return this.findProviderById(id);
+  }
+
+  // ===========================================================================
+  // AI PROVIDER CATALOG
+  // ===========================================================================
+
+  async findAllCatalogs(): Promise<AiProviderCatalog[]> {
+    return this.aiProviderCatalogRepository.find({
+      order: { id: 'ASC' },
+    });
+  }
+
+  async findCatalogById(id: string): Promise<AiProviderCatalog | null> {
+    return this.aiProviderCatalogRepository.findOne({ where: { id } });
+  }
+
+  async findCatalogByKey(key: string): Promise<AiProviderCatalog | null> {
+    return this.aiProviderCatalogRepository.findOne({ where: { key } });
   }
 
   // ===========================================================================
@@ -382,4 +421,30 @@ export class AiProviderService {
     const event = this.aiProviderEventRepository.create(createDto);
     return this.aiProviderEventRepository.save(event);
   }
+
+  async getActiveApiKeySecret(providerId: string): Promise<string | null> {
+    const keyEntity = await this.aiApiKeyRepository
+      .createQueryBuilder('key')
+      .addSelect('key.secret_ciphertext')
+      .where('key.provider_id = :providerId', { providerId })
+      .andWhere('key.is_active = true')
+      .orderBy('key.is_selected', 'DESC')
+      .addOrderBy('key.sort_order', 'ASC')
+      .getOne();
+
+    if (!keyEntity || !keyEntity.secret_ciphertext) {
+      return null;
+    }
+
+    try {
+      return decryptSecret(keyEntity.secret_ciphertext);
+    } catch {
+      return null;
+    }
+  }
+
+  async updateProviderFields(id: string, fields: Record<string, any>): Promise<void> {
+    await this.aiProviderRepository.update(id, { fields });
+  }
 }
+

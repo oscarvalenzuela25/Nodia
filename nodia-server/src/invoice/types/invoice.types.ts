@@ -27,7 +27,7 @@ export interface AnalyzeInvoiceResponse {
 }
 
 export interface VerifyIaProvidersResponse {
-  gemini: boolean;
-  mistral: boolean;
-  [key: string]: boolean;
+  gemini?: boolean;
+  mistral?: boolean;
+  [key: string]: boolean | undefined;
 }

@@ -43,6 +43,8 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
 }) => {
   const { t } = useTranslation(["ai_providers", "core"]);
 
+  const [catalogId, setCatalogId] = useState("");
+  const [instanceName, setInstanceName] = useState("");
   const [key, setKey] = useState("");
   const [nameTranslations, setNameTranslations] = useState<Record<string, string>>({
     es: "",
@@ -68,82 +70,48 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
     );
   }, [webProvidersData?.enabled_providers]);
 
-  const selectedSupportedProvider = useMemo(() => {
-    if (!key) return null;
-    return (
-      supportedProviders.find(
-        (p) => p.key.toLowerCase() === key.toLowerCase()
-      ) || null
-    );
-  }, [supportedProviders, key]);
-
   const isWebSupported = Boolean(
-    key &&
-      enabledWebProviders.includes(key.toLowerCase()) &&
-      selectedSupportedProvider?.supportedModes?.includes("web_session")
+    key && enabledWebProviders.includes(key.toLowerCase())
   );
 
   const providerOptions = useMemo(() => {
     return supportedProviders.map((p) => ({
       value: p.key,
       label: p.name,
-      description: p.description,
     }));
   }, [supportedProviders]);
 
-  const modelOptions = useMemo(() => {
-    const list = selectedSupportedProvider?.availableModels || [];
-    return list.map((m) => ({
-      value: m.id,
-      label: `${m.name}${m.isRecommended ? ` (${t("core:recommended", "Recomendado")})` : ""}`,
-      description: m.description,
-    }));
-  }, [selectedSupportedProvider, t]);
+  const modelOptions: { value: string; label: string; description?: string }[] = [];
+  const ocrModelOptions: { value: string; label: string; description?: string }[] = [];
+  const hasOcrSupport = false;
 
-  const ocrModelOptions = useMemo(() => {
-    const list = selectedSupportedProvider?.availableModels || [];
-    const ocrCandidates = list.filter(
-      (m) =>
-        m.role === "ocr" ||
-        m.capabilities?.includes("ocr") ||
-        m.capabilities?.includes("vision")
-    );
-    const optionsSource = ocrCandidates.length > 0 ? ocrCandidates : list;
-    return optionsSource.map((m) => ({
-      value: m.id,
-      label: `${m.name}${m.role === "ocr" ? ` (${t("ai_providers:modal_create.ocr_badge", "Especializado OCR")})` : ""}`,
-      description: m.description,
-    }));
-  }, [selectedSupportedProvider, t]);
-
-  const hasOcrSupport = Boolean(
-    selectedSupportedProvider?.defaultOcrModel ||
-      selectedSupportedProvider?.availableModels?.some((m) => m.role === "ocr")
-  );
+  const isCatalogSelected = Boolean(catalogId);
 
   const handleSelectProvider = (val: string | number | null) => {
+    if (!val) {
+      handleReset();
+      return;
+    }
     const selectedKey = String(val || "").toLowerCase();
-    setKey(selectedKey);
     const found = supportedProviders.find(
-      (p) => p.key.toLowerCase() === selectedKey
+      (p) => p.key?.toLowerCase() === selectedKey || p.id === selectedKey
     );
     if (found) {
+      setCatalogId(found.id || "");
+      setKey(found.key || selectedKey);
+      setInstanceName(found.name || "");
       setNameTranslations({
         es: found.name,
         en: found.name,
       });
-      const webAllowed =
-        enabledWebProviders.includes(selectedKey) &&
-        found.supportedModes?.includes("web_session");
-      if (found.defaultMode === "web_session" && webAllowed) {
+      const webAllowed = enabledWebProviders.includes(found.key?.toLowerCase() || selectedKey);
+      if (webAllowed) {
         setMode("web_session");
       } else {
         setMode("api_key");
       }
-      setSelectedModel(
-        found.defaultSelectedModel || (found.availableModels?.[0]?.id ?? "")
-      );
-      setOcrModel(found.defaultOcrModel || "");
+      setSelectedModel("");
+      setOcrModel("");
       setApiKeySecret("");
       setApiKeyLabel("Primary Key");
       setAutoRotate(true);
@@ -151,6 +119,8 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
   };
 
   const handleReset = () => {
+    setCatalogId("");
+    setInstanceName("");
     setKey("");
     setNameTranslations({ es: "", en: "" });
     setIsActive(true);
@@ -180,8 +150,8 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
     const translates = [
       {
         key: "key",
-        es: nameTranslations.es?.trim() || cleanKey,
-        en: nameTranslations.en?.trim() || cleanKey,
+        es: nameTranslations.es?.trim() || instanceName.trim() || cleanKey,
+        en: nameTranslations.en?.trim() || instanceName.trim() || cleanKey,
       },
     ];
 
@@ -192,15 +162,14 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
     if (ocrModel) {
       fields.ocr_model = ocrModel;
     }
-    if (selectedSupportedProvider?.availableModels) {
-      fields.available_models = selectedSupportedProvider.availableModels;
-    }
     if (mode === "web_session") {
       fields.profile = "puppeteer_headless_v2";
     }
 
     try {
       const created = await createProviderMutation.mutateAsync({
+        catalog_id: catalogId || undefined,
+        name: instanceName.trim() || undefined,
         key: cleanKey,
         mode,
         fields: Object.keys(fields).length > 0 ? fields : undefined,
@@ -310,6 +279,28 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
           />
         )}
 
+        <TextInput
+          label={t("ai_providers:modal_create.instance_name_label", "Nombre de la Conexión")}
+          placeholder={t(
+            "ai_providers:modal_create.instance_name_placeholder",
+            "ej: Google Gemini, OpenAI Backup, Claude Personal"
+          )}
+          helperText={
+            isCatalogSelected
+              ? t(
+                  "ai_providers:modal_create.locked_by_catalog",
+                  "Bloqueado según el catálogo oficial seleccionado para garantizar consistencia."
+                )
+              : t(
+                  "ai_providers:modal_create.instance_name_helper",
+                  "Nombre descriptivo para distinguir esta conexión en el sistema."
+                )
+          }
+          value={instanceName}
+          onChange={(e) => setInstanceName(e.target.value)}
+          disabled={isSubmitting || isCatalogSelected}
+        />
+
         <TranslationInput
           label={t("ai_providers:modal_create.key", "Identificador")}
           value={key}
@@ -318,10 +309,17 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
             "ai_providers:modal_create.key_placeholder",
             "ej: gemini, mistral, openai, anthropic"
           )}
-          keyHelperText={t(
-            "ai_providers:modal_create.key_helper",
-            "Clave técnica en minúsculas para identificar el proveedor en el sistema."
-          )}
+          keyHelperText={
+            isCatalogSelected
+              ? t(
+                  "ai_providers:modal_create.locked_by_catalog",
+                  "Bloqueado según el catálogo oficial seleccionado para garantizar consistencia."
+                )
+              : t(
+                  "ai_providers:modal_create.key_helper",
+                  "Clave técnica en minúsculas para identificar el proveedor en el sistema."
+                )
+          }
           translations={nameTranslations}
           onChangeTranslations={setNameTranslations}
           sectionTitle={t(
@@ -334,7 +332,7 @@ const AddProviderModal: FC<AddProviderModalProps> = ({
           )}
           required
           autoFocus={!key}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isCatalogSelected}
         />
 
         {/* MODE SELECTION */}

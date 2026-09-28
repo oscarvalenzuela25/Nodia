@@ -22,7 +22,6 @@ import {
   useEnabledWebAiProviders,
   useUpdateAiProvider,
   useCreateAiApiKey,
-  useSupportedAiProviders,
 } from "../../infrastructure/useServices";
 import type { ConfigureProviderModalProps } from "./types";
 import {
@@ -45,7 +44,6 @@ const ConfigureProviderModal: FC<ConfigureProviderModalProps> = ({
   const { t } = useTranslation(["ai_providers", "core"]);
 
   const { data: webProvidersData } = useEnabledWebAiProviders();
-  const { data: supportedProviders = [] } = useSupportedAiProviders();
 
   const enabledWebProviders = (webProvidersData?.enabled_providers || []).map(
     (p: string) => p.toLowerCase()
@@ -55,40 +53,8 @@ const ConfigureProviderModal: FC<ConfigureProviderModalProps> = ({
     provider?.key && enabledWebProviders.includes(provider.key.toLowerCase())
   );
 
-  const currentSupportedProvider = useMemo(() => {
-    if (!provider?.key) return null;
-    return supportedProviders.find(
-      (sp) => sp.key.toLowerCase() === provider.key.toLowerCase()
-    );
-  }, [supportedProviders, provider?.key]);
-
-  const isGemini =
-    (provider?.key || currentSupportedProvider?.key)?.toLowerCase() === "gemini";
-
   const modelOptions = useMemo(() => {
-    let rawModels =
-      provider?.availableModels && provider.availableModels.length > 0
-        ? provider.availableModels
-        : currentSupportedProvider?.availableModels || [];
-
-    if (isGemini) {
-      const filtered = rawModels.filter((m: any) => {
-        const id = String(typeof m === "string" ? m : m.id || m.name || "").toLowerCase();
-        const name = String(typeof m === "string" ? m : m.name || "").toLowerCase();
-        return (
-          !id.includes("2.5") &&
-          !id.includes("2.0") &&
-          !id.includes("1.5") &&
-          !name.includes("2.5") &&
-          !name.includes("2.0") &&
-          !name.includes("1.5")
-        );
-      });
-      rawModels =
-        filtered.length > 0
-          ? filtered
-          : currentSupportedProvider?.availableModels || [];
-    }
+    const rawModels = provider?.availableModels || [];
 
     return rawModels.map((m: any) => {
       if (typeof m === "string") {
@@ -100,24 +66,10 @@ const ConfigureProviderModal: FC<ConfigureProviderModalProps> = ({
         description: m.description,
       };
     });
-  }, [provider?.availableModels, currentSupportedProvider, isGemini, t]);
+  }, [provider?.availableModels, t]);
 
   const ocrModelOptions = useMemo(() => {
-    let rawModels =
-      provider?.availableModels && provider.availableModels.length > 0
-        ? provider.availableModels
-        : currentSupportedProvider?.availableModels || [];
-
-    if (isGemini) {
-      const filtered = rawModels.filter((m: any) => {
-        const id = String(typeof m === "string" ? m : m.id || m.name || "").toLowerCase();
-        return !id.includes("2.5") && !id.includes("2.0") && !id.includes("1.5");
-      });
-      rawModels =
-        filtered.length > 0
-          ? filtered
-          : currentSupportedProvider?.availableModels || [];
-    }
+    const rawModels = provider?.availableModels || [];
 
     const ocrCandidateModels = rawModels.filter(
       (m: any) =>
@@ -137,12 +89,11 @@ const ConfigureProviderModal: FC<ConfigureProviderModalProps> = ({
         description: m.description,
       };
     });
-  }, [provider?.availableModels, currentSupportedProvider, isGemini, t]);
+  }, [provider?.availableModels, t]);
 
   const hasOcrSupport = Boolean(
-    currentSupportedProvider?.defaultOcrModel ||
-      provider?.assignedModels?.ocr ||
-      currentSupportedProvider?.availableModels?.some((m) => m.role === "ocr")
+    provider?.assignedModels?.ocr ||
+      provider?.availableModels?.some((m: any) => m.role === "ocr")
   );
 
   const [mode, setMode] = useState<"api_key" | "web_session">("api_key");
@@ -163,29 +114,15 @@ const ConfigureProviderModal: FC<ConfigureProviderModalProps> = ({
         setMode("api_key");
       }
 
-      let defaultModel =
+      const defaultModel =
         provider.selectedModel ||
-        currentSupportedProvider?.defaultSelectedModel ||
         (provider.availableModels?.[0]
           ? typeof provider.availableModels[0] === "string"
             ? provider.availableModels[0]
             : provider.availableModels[0].id
-          : currentSupportedProvider?.availableModels?.[0]?.id || "");
+          : "");
 
-      if (
-        isGemini &&
-        (!defaultModel ||
-          defaultModel.includes("2.5") ||
-          defaultModel.includes("2.0") ||
-          defaultModel.includes("1.5"))
-      ) {
-        defaultModel = "gemini-flash";
-      }
-
-      const defaultOcr =
-        provider.assignedModels?.ocr ||
-        currentSupportedProvider?.defaultOcrModel ||
-        "";
+      const defaultOcr = provider.assignedModels?.ocr || "";
 
       setSelectedModel(defaultModel);
       setOcrModel(defaultOcr);
@@ -194,7 +131,7 @@ const ConfigureProviderModal: FC<ConfigureProviderModalProps> = ({
       setAutoRotate(provider.autoFailover !== "Desactivado");
       setIsActive(provider.isActive ?? true);
     }
-  }, [provider, isWebSupported, currentSupportedProvider, open]);
+  }, [provider, isWebSupported, open]);
 
   const updateProviderMutation = useUpdateAiProvider();
   const createApiKeyMutation = useCreateAiApiKey();

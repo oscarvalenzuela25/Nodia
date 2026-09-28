@@ -1,10 +1,11 @@
 import type { FC } from "react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Box } from "@mui/material";
+import { Button, Box, LinearProgress } from "@mui/material";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import {
@@ -55,14 +56,24 @@ const AiProviders: FC = () => {
   // Queries
   const {
     data: providersResponse,
+    isLoading: isLoadingProviders,
+    isFetching: isFetchingProviders,
     refetch: refetchProviders,
   } = useAiProviders({ all: true });
 
   const {
     data: healthResponse,
+    isLoading: isLoadingHealth,
     isFetching: isFetchingHealth,
     refetch: refetchHealth,
   } = useAiProvidersHealth();
+
+  const isInitialLoading =
+    isLoadingProviders ||
+    isLoadingHealth ||
+    (!healthResponse && isFetchingHealth);
+  const isSoftLoading = (isFetchingHealth || isFetchingProviders) && !isInitialLoading;
+  const isBusy = isInitialLoading || isFetchingHealth || isFetchingProviders;
 
   const queryParams = useMemo(() => {
     const q: Record<string, any> = {};
@@ -163,13 +174,6 @@ const AiProviders: FC = () => {
     setIsLoginModalOpen(true);
   };
 
-  const handleTestPing = (provider: AiProviderHealthItem) => {
-    sileo.success({
-      title: `Ping a ${provider.name} completado`,
-      description: `Latencia registrada: ${provider.latencyMs > 0 ? provider.latencyMs : 185} ms`,
-    });
-  };
-
   return (
     <PageContainer>
       {/* HEADER PANEL */}
@@ -208,7 +212,7 @@ const AiProviders: FC = () => {
               color="primary"
               startIcon={<SyncOutlinedIcon />}
               onClick={handleVerifyAll}
-              disabled={isFetchingHealth}
+              disabled={isBusy}
               sx={{
                 borderRadius: 2,
                 px: 2,
@@ -227,6 +231,7 @@ const AiProviders: FC = () => {
               color="primary"
               startIcon={<AddCircleOutlineOutlinedIcon />}
               onClick={() => setIsAddModalOpen(true)}
+              disabled={isBusy}
               sx={{
                 borderRadius: 2,
                 px: 2.5,
@@ -264,31 +269,46 @@ const AiProviders: FC = () => {
           />
 
           {/* CARDS GRID */}
-          <CardsGrid>
-            {displayProviders.map((prov) => (
-              <ProviderCard
-                key={prov.id}
-                provider={prov}
-                onGoToDetail={(p) => setSelectedView(p.key)}
-                onConfigure={(p) => setConfigureProvider(p)}
-                onTestPing={handleTestPing}
-                onRenewSession={handleRenewSession}
-                onManageKeys={() => {
-                  sileo.info({
-                    title: `API Keys de ${prov.name}`,
-                    description: `Pool activo: ${prov.validKeysCount || 1}/${prov.apiKeysCount || 1} llaves disponibles con rotación automática.`,
-                  });
-                }}
-                onViewModels={() => {
-                  sileo.info({
-                    title: `Modelos de ${prov.name}`,
-                    description:
-                      "Modelos configurados: OCR (mistral-ocr-latest) e Inferencia (mistral-large-latest).",
-                  });
+          <Box sx={{ position: "relative" }}>
+            {isSoftLoading && (
+              <LinearProgress
+                sx={{
+                  position: "absolute",
+                  top: -8,
+                  left: 0,
+                  right: 0,
+                  height: 2,
+                  borderRadius: 1,
                 }}
               />
-            ))}
-          </CardsGrid>
+            )}
+            <Skeleton loading={isInitialLoading}>
+              <CardsGrid>
+                {displayProviders.map((prov) => (
+                  <ProviderCard
+                    key={prov.id}
+                    provider={prov}
+                    onGoToDetail={(p) => setSelectedView(p.key)}
+                    onConfigure={(p) => setConfigureProvider(p)}
+                    onRenewSession={handleRenewSession}
+                    onManageKeys={() => {
+                      sileo.info({
+                        title: `API Keys de ${prov.name}`,
+                        description: `Pool activo: ${prov.validKeysCount || 1}/${prov.apiKeysCount || 1} llaves disponibles con rotación automática.`,
+                      });
+                    }}
+                    onViewModels={() => {
+                      sileo.info({
+                        title: `Modelos de ${prov.name}`,
+                        description:
+                          "Modelos configurados: OCR (mistral-ocr-latest) e Inferencia (mistral-large-latest).",
+                      });
+                    }}
+                  />
+                ))}
+              </CardsGrid>
+            </Skeleton>
+          </Box>
 
           {/* AUDIT LOGS TABLE */}
           <AiEventsTable

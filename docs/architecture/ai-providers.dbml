@@ -13,11 +13,22 @@ Enum ai_key_health_state {
   cooldown
 }
 
+Table ai_provider_catalog {
+  id bigint [pk, increment]
+  key varchar(64) [not null, unique, note: 'Clave canonica del proveedor: gemini, openai, anthropic, mistral, etc.']
+  name varchar(128) [not null, note: 'Nombre comercial del proveedor']
+  is_active boolean [not null, default: true]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
 Table ai_providers {
   id bigint [pk, increment]
-  key varchar(64) [not null, unique, note: 'Clave tecnica del adaptador: gemini, mistral, openai']
+  catalog_id bigint [note: 'FK a ai_provider_catalog.id']
+  name varchar(128) [note: 'Nombre descriptivo de la conexion o instancia']
+  key varchar(64) [note: 'Clave tecnica del adaptador: gemini, mistral, openai']
   mode ai_connection_mode [note: 'Metodo de conexion activo: web_session o api_key']
-  fields jsonb [not null, default: '{}', note: 'Configuracion no secreta: available_models, selected_model, ocr_model']
+  fields jsonb [not null, default: '{}', note: 'Configuracion no secreta: available_models, selected_model, ocr_focus_model, enable_extended_thinking']
   fields_version smallint [not null, default: 1]
   auto_rotate_api_keys boolean [not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)']
   is_active boolean [not null, default: true, note: 'Habilitacion administrativa general']
@@ -70,6 +81,7 @@ Table ai_provider_events {
   }
 }
 
+Ref: ai_providers.catalog_id > ai_provider_catalog.id [delete: cascade]
 Ref: ai_api_keys.provider_id > ai_providers.id [delete: cascade]
 Ref: ai_provider_events.provider_id > ai_providers.id [delete: cascade]
 Ref: ai_provider_events.api_key_id > ai_api_keys.id [delete: set null]

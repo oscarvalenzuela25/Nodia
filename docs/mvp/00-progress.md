@@ -47,6 +47,12 @@ Las casillas reabiertas señalan documentos afectados por las ampliaciones de au
 
 ## Decisiones que invalidaron pasos posteriores
 
+- El 2026-09-27 se modernizó y desacopló el subsistema de IA en backend, base de datos, microservicio y frontend:
+  1. Se separó la tabla `ai_provider_catalog` (`id`, `key`, `name`, `is_active`) de las instancias operativas en `ai_providers` (`catalog_id`, `name`, `key` no única), permitiendo múltiples conexiones para un mismo proveedor (ej. plan web principal + API Key de contingencia).
+  2. Sincronización dinámica de modelos bajo demanda (`POST /ai-providers/:id/sync-models`), eliminando filtros y listas de modelos hardcodeadas.
+  3. Soporte para Razonamiento Extendido (Extended Thinking) detectado en modelos con capacidad `reasoning`, controlado por switch y validado en `AnalyzeInvoiceUseCase`.
+  4. Switch de Foco OCR informativo (`ocr_focus_model`), manteniendo `selected_model` como el modelo estricto de ejecución.
+  5. Limpieza de UI (remoción de Latencia Media y Test Ping) e implementación de skeletons con `boneyard-js` y soft loading sin parpadeos.
 - El 2026-09-26 se simplificó el modelo de dominio de Proveedores de IA consolidando los campos operativos (`mode`, `fields`, `fields_version`, `auto_rotate_api_keys`, `is_active`) directamente en `ai_providers` (relación 1:1), eliminando la tabla puente `ai_provider_connections` para prevenir colisiones de unicidad y simplificar la persistencia. `ai_api_keys` se relaciona ahora directamente con `ai_providers.id`. Se integró el catálogo oficial de proveedores en servidor (`GET /ai-providers/catalog`) con autoselección de modelos por defecto (`available_models`, `selected_model`) y selector de modelos en frontend.
 - El 2026-09-25 se confirmó una ampliación de IA previa a producción con nueva navegación en Ajustes Generales; se reabre `05-sitemap.md`. El despliegue de API cambia a VPS, por lo que `10-stack-devops.md` y `11-architecture-overview.md` permanecen en revisión; `06-route-specs.md`, `12-kanban.md` y `13-readiness-review.md` también requieren reconciliación. La Parte 1 histórica del PRD V2 conserva su aprobación; la ampliación se especifica aparte y aún no está aprobada.
 

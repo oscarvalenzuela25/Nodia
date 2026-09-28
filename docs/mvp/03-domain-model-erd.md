@@ -1,7 +1,7 @@
 # Modelo de dominio ERD — Nodia
 
 > Estado: en revisión — ampliación auth, recursos de negocio e IA (ADR-006)
-> Última actualización: 2026-09-26
+> Última actualización: 2026-09-27
 > Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado, 15-ai-providers-interview.md, 16-ai-provider-management-handoff.md
 
 ## 1. Resumen del modelo
@@ -30,7 +30,8 @@ El modelo cubre la base de identidad, autorización, navegación, internacionali
 - `invoices`: comprobantes de facturación asociados a un negocio y proveedor, con su código/número de factura (`code`), monto total (`total_amount`), ubicación física en storage R2/S3 (`path_storage`) y el contenido/items extraídos embebidos directamente en el campo estructurado `data jsonb` (por defecto `{}`).
 
 ### Proveedores de Inteligencia Artificial (IA)
-- `ai_providers`: catálogo de adaptadores de IA integrados (`gemini`, `mistral`, `openai`) con configuración directa 1:1: método de conexión activo (`mode`: `web_session`, `api_key`), campos no secretos tipados (`fields jsonb`: `available_models`, `selected_model`, `ocr_model`) y configuración de rotación de claves (`auto_rotate_api_keys`).
+- `ai_provider_catalog`: catálogo maestro de proveedores de IA reconocidos (`gemini`, `openai`, `anthropic`, `mistral`, `deepseek`, `groq`, `perplexity`, etc.) con su clave canónica, nombre comercial y estado de activación.
+- `ai_providers`: instancias o conexiones configuradas asociadas opcionalmente a un proveedor del catálogo (`catalog_id`), con nombre descriptivo (`name`), clave técnica (`key`), método de conexión activo (`mode`: `web_session`, `api_key`), campos no secretos tipados (`fields jsonb`: `available_models`, `selected_model`, `ocr_focus_model`, `enable_extended_thinking`) y rotación automática de claves (`auto_rotate_api_keys`). Permite múltiples instancias por proveedor (ej. cuenta principal headless + API Key secundaria de respaldo).
 - `ai_api_keys`: claves API cifradas en reposo (`secret_ciphertext`), asociadas directamente a `provider_id`, con huella HMAC para deduplicación (`secret_fingerprint`), máscara no sensible (`display_hint`), orden de rotación (`sort_order`), clave activa (`is_selected`) y monitoreo de salud (`health_state`: `untested`, `valid`, `needs_review`, `cooldown`).
 - `ai_provider_events`: registro inmutable de auditoría para eventos operativos, cambios de modo, rotación de claves, inicios de sesión web y fallos del sistema sin exponer credenciales ni facturas.
 
@@ -298,11 +299,22 @@ Table invoices [headercolor: #4f46e5] {
 // PROVEEDORES DE INTELIGENCIA ARTIFICIAL (IA)
 // ------------------------------------------
 
+Table ai_provider_catalog [headercolor: #49e3e3] {
+	id bigint [ pk, increment, not null ]
+	key varchar(64) [ not null, unique, note: 'Clave canónica del proveedor: gemini, openai, anthropic, mistral, etc.' ]
+	name varchar(128) [ not null, note: 'Nombre comercial del proveedor' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
 Table ai_providers [headercolor: #49e3e3] {
-	id bigint [ pk, increment ]
-	key varchar(64) [ not null, unique, note: 'Clave técnica del adaptador: gemini, mistral, openai' ]
+	id bigint [ pk, increment, not null ]
+	catalog_id bigint [ note: 'Referencia al catálogo de proveedor de IA' ]
+	name varchar(128) [ note: 'Nombre descriptivo de la instancia o conexión' ]
+	key varchar(64) [ note: 'Clave técnica del adaptador (ej: gemini, mistral, openai)' ]
 	mode ai_connection_mode [ note: 'Método de conexión activo: web_session o api_key' ]
-	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_model' ]
+	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_focus_model, enable_extended_thinking' ]
 	fields_version smallint [ not null, default: 1 ]
 	auto_rotate_api_keys boolean [ not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)' ]
 	is_active boolean [ not null, default: true, note: 'Habilitación administrativa general' ]
@@ -425,6 +437,10 @@ Ref fk_businesses_id_invoices {
 
 Ref fk_auth_sessions_user {
 	auth_sessions.user_id > users.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_providers_catalog {
+	ai_providers.catalog_id > ai_provider_catalog.id [ delete: cascade, update: no action ]
 }
 
 Ref fk_ai_keys_provider {

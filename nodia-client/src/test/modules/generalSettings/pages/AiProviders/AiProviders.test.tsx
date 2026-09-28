@@ -166,38 +166,20 @@ describe("AiProviders Page", () => {
     });
     vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue([
       {
+        id: "cat-1",
         key: "gemini",
         name: "Google Gemini",
-        description: "Google models",
-        defaultMode: "web_session" as any,
-        supportedModes: ["web_session" as any, "api_key" as any],
-        defaultSelectedModel: "gemini-flash",
-        availableModels: [
-          {
-            id: "gemini-flash",
-            name: "Gemini 3.8 Flash",
-            description: "Google Flagship",
-            capabilities: ["text", "vision"],
-            isRecommended: true,
-          },
-        ],
+        is_active: true,
+        created_at: "2026-09-20",
+        updated_at: "2026-09-20",
       },
       {
+        id: "cat-2",
         key: "mistral",
         name: "Mistral AI",
-        description: "Mistral models",
-        defaultMode: "api_key" as any,
-        supportedModes: ["api_key" as any],
-        defaultSelectedModel: "mistral-large-latest",
-        availableModels: [
-          {
-            id: "mistral-large-latest",
-            name: "Mistral Large",
-            description: "Mistral Flagship",
-            capabilities: ["text"],
-            isRecommended: true,
-          },
-        ],
+        is_active: true,
+        created_at: "2026-09-20",
+        updated_at: "2026-09-20",
       },
     ]);
     vi.mocked(aiServices.updateAiProvider).mockResolvedValue({
@@ -306,6 +288,7 @@ describe("AiProviders Page", () => {
     renderWithClient(<AiProviders />);
 
     const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
+    await waitFor(() => expect(addBtn).toBeEnabled());
     await user.click(addBtn);
 
     await waitFor(() => {
@@ -350,6 +333,7 @@ describe("AiProviders Page", () => {
     renderWithClient(<AiProviders />);
 
     const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
+    await waitFor(() => expect(addBtn).toBeEnabled());
     await user.click(addBtn);
 
     await waitFor(() => {
@@ -486,6 +470,7 @@ describe("AiProviders Page", () => {
     renderWithClient(<AiProviders />);
 
     const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
+    await waitFor(() => expect(addBtn).toBeEnabled());
     await user.click(addBtn);
 
     await waitFor(() => {
@@ -512,12 +497,13 @@ describe("AiProviders Page", () => {
     await waitFor(() => {
       expect(aiServices.createAiProvider).toHaveBeenCalledWith(
         expect.objectContaining({
+          catalog_id: "cat-1",
+          name: "Google Gemini",
           key: "gemini",
           mode: "web_session",
           auto_rotate_api_keys: true,
           is_active: true,
           fields: expect.objectContaining({
-            selected_model: "gemini-flash",
             profile: "puppeteer_headless_v2",
           }),
           translates: [
@@ -546,6 +532,7 @@ describe("AiProviders Page", () => {
     renderWithClient(<AiProviders />);
 
     const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
+    await waitFor(() => expect(addBtn).toBeEnabled());
     await user.click(addBtn);
 
     await waitFor(() => {
@@ -570,13 +557,12 @@ describe("AiProviders Page", () => {
     await waitFor(() => {
       expect(aiServices.createAiProvider).toHaveBeenCalledWith(
         expect.objectContaining({
+          catalog_id: "cat-2",
+          name: "Mistral AI",
           key: "mistral",
           mode: "api_key",
           auto_rotate_api_keys: true,
           is_active: true,
-          fields: expect.objectContaining({
-            selected_model: "mistral-large-latest",
-          }),
         })
       );
       expect(aiServices.createAiApiKey).toHaveBeenCalledWith(

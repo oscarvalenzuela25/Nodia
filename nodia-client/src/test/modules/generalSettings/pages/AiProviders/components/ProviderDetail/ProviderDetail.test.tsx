@@ -17,6 +17,7 @@ vi.mock(
     getSelectableModels: vi.fn(),
     getEnabledWebAiProviders: vi.fn(),
     getSupportedAiProviders: vi.fn(),
+    syncAiProviderModels: vi.fn(),
     getAiApiKeys: vi.fn(),
     createAiApiKey: vi.fn(),
     updateAiApiKey: vi.fn(),
@@ -58,6 +59,24 @@ const mockProviders = [
     fields: {
       selected_model: "gemini-flash",
       auto_reconnect: true,
+      available_models: [
+        {
+          id: "gemini-flash",
+          name: "Gemini 3.8 Flash",
+          description: "Ultra rápido y multimodal",
+          contextWindow: 1000000,
+          capabilities: ["text", "vision"],
+          isRecommended: true,
+        },
+        {
+          id: "gemini-pro",
+          name: "Gemini 3.1 Pro",
+          description: "Razonamiento profundo",
+          contextWindow: 2000000,
+          capabilities: ["text", "vision"],
+          isRecommended: false,
+        },
+      ],
     },
     created_at: "2026-09-20",
     updated_at: "2026-09-20",
@@ -113,30 +132,12 @@ const mockHealthData = {
 
 const mockSupported = [
   {
+    id: "cat-1",
     key: "gemini",
     name: "Google Gemini",
-    description: "Google models",
-    defaultMode: "web_session" as any,
-    supportedModes: ["web_session" as any, "api_key" as any],
-    defaultSelectedModel: "gemini-flash",
-    availableModels: [
-      {
-        id: "gemini-flash",
-        name: "Gemini 3.8 Flash",
-        description: "Ultra rápido y multimodal",
-        contextWindow: 1000000,
-        capabilities: ["text", "vision"],
-        isRecommended: true,
-      },
-      {
-        id: "gemini-pro",
-        name: "Gemini 3.1 Pro",
-        description: "Razonamiento profundo",
-        contextWindow: 2000000,
-        capabilities: ["text", "vision"],
-        isRecommended: false,
-      },
-    ],
+    is_active: true,
+    created_at: "2026-09-20",
+    updated_at: "2026-09-20",
   },
 ];
 
@@ -176,6 +177,9 @@ describe("ProviderDetail Component", () => {
       meta: { total_items: 0, total_pages: 1, page: 1, limit: 10 },
     });
     vi.mocked(aiServices.updateAiProvider).mockResolvedValue({} as any);
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({
+      models: mockHealthData.providers[0].availableModels,
+    } as any);
     vi.mocked(aiServices.updateAiApiKey).mockResolvedValue({} as any);
     vi.mocked(aiServices.deleteAiApiKey).mockResolvedValue(undefined);
   });
@@ -213,7 +217,7 @@ describe("ProviderDetail Component", () => {
     });
 
     const cardPro = screen.getByText("Gemini 3.1 Pro").closest(".MuiPaper-root")!;
-    const switchPro = within(cardPro as HTMLElement).getByRole("switch");
+    const switchPro = within(cardPro as HTMLElement).getAllByRole("switch")[0];
     expect(switchPro).toBeInTheDocument();
 
     // Click switch on gemini-pro
@@ -366,5 +370,42 @@ describe("ProviderDetail Component", () => {
         expect(aiServices.deleteAiApiKey).toHaveBeenCalledWith("key-1");
       });
     }
+  });
+
+  it("renders empty state when provider has no available_models and opens SyncModelsModal", async () => {
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
+      data: [
+        {
+          id: "prov-empty",
+          key: "gemini",
+          mode: "web_session" as any,
+          is_active: true,
+          fields: {
+            available_models: [],
+          },
+          created_at: "2026-09-20",
+          updated_at: "2026-09-20",
+        },
+      ],
+      meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
+    });
+
+    const user = userEvent.setup();
+    renderWithClient(
+      <ProviderDetail providerKey="gemini" onBack={() => {}} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Sin modelos asignados")).toBeInTheDocument();
+    });
+
+    const syncBtn = screen.getAllByRole("button", { name: "Actualizar modelos" })[0];
+    await user.click(syncBtn);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Sincronizar y configurar modelos")
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -194,7 +194,7 @@ export const ModelBadge = styled(Box)(({ theme }) => ({
 
 export const ModelMetricsGrid = styled(Box)(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
+  gridTemplateColumns: "1fr 1fr",
   gap: theme.spacing(1.5),
   paddingTop: theme.spacing(1.5),
   borderTop: `1px solid ${theme.palette.divider}`,

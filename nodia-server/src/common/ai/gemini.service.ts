@@ -123,6 +123,8 @@ export class GeminiService {
     mimeType: string,
     providerFields?: Record<string, any>,
     providerTax: number = 19,
+    selectedModel?: string,
+    extendedThinking?: boolean,
   ): Promise<ExtractedInvoiceData> {
     const baseUrl = envs.GEMINI_MICROSERVICE_URL;
     if (!baseUrl) {
@@ -143,6 +145,12 @@ export class GeminiService {
       JSON.stringify({ ...providerFields, tax: providerTax }),
     );
     formData.append('provider_tax', String(providerTax));
+    if (selectedModel) {
+      formData.append('model', selectedModel);
+    }
+    if (extendedThinking) {
+      formData.append('extended_thinking', 'true');
+    }
 
     let response: Response;
     try {

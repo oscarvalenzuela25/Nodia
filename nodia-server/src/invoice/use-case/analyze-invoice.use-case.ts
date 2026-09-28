@@ -1,10 +1,12 @@
 import {
   BadRequestException,
   Injectable,
+  Optional,
 } from '@nestjs/common';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import { MistralService } from '../../common/ai/mistral.service.js';
 import { ProviderService } from '../../provider/provider.service.js';
+import { AiProviderService } from '../../ai-provider/ai-provider.service.js';
 import { AnalyzeInvoiceDto } from '../dto/analyze-invoice.dto.js';
 import { AnalyzeInvoiceResponse } from '../types/invoice.types.js';
 import { canUseGemini, canUseMistral } from '../../config/envs.config.js';
@@ -22,6 +24,7 @@ export class AnalyzeInvoiceUseCase {
     private readonly geminiService: GeminiService,
     private readonly mistralService: MistralService,
     private readonly providerService: ProviderService,
+    @Optional() private readonly aiProviderService?: AiProviderService,
   ) {}
 
   async execute(
@@ -55,10 +58,38 @@ export class AnalyzeInvoiceUseCase {
           : 19;
     }
 
-    const selectedProvider =
-      dto.ai_provider || (canUseGemini() ? 'gemini' : 'mistral');
+    // Resolve configured AI connection
+    let configuredAiProvider: any = null;
+    if (this.aiProviderService) {
+      if (dto.ai_provider_id) {
+        try {
+          configuredAiProvider = await this.aiProviderService.findProviderById(
+            dto.ai_provider_id,
+          );
+        } catch {
+          // ignore not found and fallback
+        }
+      }
+      if (!configuredAiProvider) {
+        const allProvidersRes = await this.aiProviderService.findAllProviders({
+          all: true,
+        });
+        const allProviders = allProvidersRes.data || [];
+        configuredAiProvider =
+          allProviders.find(
+            (p: any) => p.is_active && p.fields?.is_default_for_invoices,
+          ) || allProviders.find((p: any) => p.is_active);
+      }
+    }
 
-    if (selectedProvider === 'mistral') {
+    const engineKey = (
+      configuredAiProvider?.catalog?.key ||
+      configuredAiProvider?.key ||
+      dto.ai_provider ||
+      (canUseGemini() ? 'gemini' : 'mistral')
+    ).toLowerCase();
+
+    if (engineKey === 'mistral') {
       if (!canUseMistral()) {
         throw new BadRequestException(
           'El servicio de Mistral AI no está disponible o no está configurado.',
@@ -72,15 +103,48 @@ export class AnalyzeInvoiceUseCase {
       }
     }
 
-    const aiService =
-      selectedProvider === 'mistral' ? this.mistralService : this.geminiService;
+    const selectedModel = configuredAiProvider?.fields?.selected_model;
 
-    const extractedData = await aiService.extractInvoiceData(
-      file.buffer,
-      file.mimetype,
-      providerFields,
-      providerTax,
-    );
+    // Validate extended thinking capability and permission
+    if (dto.extended_thinking) {
+      const availableModels =
+        configuredAiProvider?.fields?.available_models || [];
+      const modelDef = availableModels.find(
+        (m: any) => m.id === selectedModel,
+      );
+      const supportsReasoning = Boolean(
+        modelDef?.capabilities?.includes('reasoning'),
+      );
+      const isEnabledInConfig = Boolean(
+        configuredAiProvider?.fields?.enable_extended_thinking,
+      );
+
+      if (!supportsReasoning || !isEnabledInConfig) {
+        throw new BadRequestException(
+          'El razonamiento extendido no está habilitado para el modelo configurado en este proveedor.',
+        );
+      }
+    }
+
+    const aiService =
+      engineKey === 'mistral' ? this.mistralService : this.geminiService;
+
+    const extractedData =
+      selectedModel !== undefined || dto.extended_thinking !== undefined
+        ? await aiService.extractInvoiceData(
+            file.buffer,
+            file.mimetype,
+            providerFields,
+            providerTax,
+            selectedModel,
+            dto.extended_thinking,
+          )
+        : await aiService.extractInvoiceData(
+            file.buffer,
+            file.mimetype,
+            providerFields,
+            providerTax,
+          );
 
     return {
       business_id: dto.business_id,

@@ -28,9 +28,6 @@ export interface AuthorizationContextResponse {
   roles: string[];
   actions: ActionContext[];
   modules: ModuleGroupContext[];
-  can_analyze_invoice?: boolean;
-  can_use_gemini?: boolean;
-  can_use_mistral?: boolean;
 }
 
 export interface GeneralSettingsState {
@@ -38,9 +35,6 @@ export interface GeneralSettingsState {
   actions: ActionContext[];
   modules: ModuleGroupContext[];
   isLoaded: boolean;
-  can_analyze_invoice: boolean;
-  can_use_gemini: boolean;
-  can_use_mistral: boolean;
 
   setContext: (data: AuthorizationContextResponse) => void;
   clearContext: () => void;

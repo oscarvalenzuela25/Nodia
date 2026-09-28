@@ -261,11 +261,22 @@ Table invoices [headercolor: #4f46e5] {
 // PROVEEDORES DE INTELIGENCIA ARTIFICIAL (IA)
 // ------------------------------------------
 
+Table ai_provider_catalog [headercolor: #49e3e3] {
+	id bigint [ pk, increment, not null ]
+	key varchar(64) [ not null, unique, note: 'Clave canónica del proveedor: gemini, openai, anthropic, mistral, etc.' ]
+	name varchar(128) [ not null, note: 'Nombre comercial del proveedor' ]
+	is_active boolean [ not null, default: true ]
+	created_at timestamp [ not null ]
+	updated_at timestamp [ not null ]
+}
+
 Table ai_providers [headercolor: #49e3e3] {
-	id bigint [ pk, increment ]
-	key varchar(64) [ not null, unique, note: 'Clave técnica del adaptador: gemini, mistral, openai' ]
+	id bigint [ pk, increment, not null ]
+	catalog_id bigint [ note: 'Referencia al catálogo de proveedor de IA' ]
+	name varchar(128) [ note: 'Nombre descriptivo de la instancia o conexión' ]
+	key varchar(64) [ note: 'Clave técnica del adaptador (ej: gemini, mistral, openai)' ]
 	mode ai_connection_mode [ note: 'Método de conexión activo: web_session o api_key' ]
-	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_model' ]
+	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_focus_model, enable_extended_thinking' ]
 	fields_version smallint [ not null, default: 1 ]
 	auto_rotate_api_keys boolean [ not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)' ]
 	is_active boolean [ not null, default: true, note: 'Habilitación administrativa general' ]
@@ -388,6 +399,10 @@ Ref fk_businesses_id_invoices {
 
 Ref fk_auth_sessions_user {
 	auth_sessions.user_id > users.id [ delete: cascade, update: no action ]
+}
+
+Ref fk_ai_providers_catalog {
+	ai_providers.catalog_id > ai_provider_catalog.id [ delete: cascade, update: no action ]
 }
 
 Ref fk_ai_keys_provider {

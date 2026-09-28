@@ -106,7 +106,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
   const { data: iaProviders, isLoading: isVerifyingProviders } = useVerifyIaProviders();
   const isGeminiAvailable = Boolean(iaProviders?.gemini);
-  const isMistralAvailable = iaProviders?.mistral ?? true;
+  const isMistralAvailable = Boolean(iaProviders?.mistral);
   const [analyzingProvider, setAnalyzingProvider] = useState<"gemini" | "mistral" | null>(null);
   const [lastUsedProvider, setLastUsedProvider] = useState<"gemini" | "mistral">("gemini");
   const previewUrl = useMemo(() => {

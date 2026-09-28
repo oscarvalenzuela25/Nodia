@@ -15,9 +15,6 @@ export const useGeneralSettings = () => {
   const actions = useGeneralSettingsStore((state) => state.actions);
   const modules = useGeneralSettingsStore((state) => state.modules);
   const isLoaded = useGeneralSettingsStore((state) => state.isLoaded);
-  const canAnalyzeInvoice = useGeneralSettingsStore((state) => state.can_analyze_invoice);
-  const canUseGemini = useGeneralSettingsStore((state) => state.can_use_gemini);
-  const canUseMistral = useGeneralSettingsStore((state) => state.can_use_mistral);
   const setContext = useGeneralSettingsStore((state) => state.setContext);
   const clearContext = useGeneralSettingsStore((state) => state.clearContext);
 
@@ -26,9 +23,6 @@ export const useGeneralSettings = () => {
     actions,
     modules,
     isLoaded,
-    canAnalyzeInvoice,
-    canUseGemini,
-    canUseMistral,
     setContext,
     clearContext,
   };
@@ -83,32 +77,6 @@ export const useHasRole = (roleKey: string): boolean => {
   );
 };
 
-/**
- * Hook to check if invoice analysis is possible (requires storage and at least one AI engine).
- */
-export const useCanAnalyzeInvoice = (): boolean => {
-  return useGeneralSettingsStore((state) =>
-    state.isLoaded ? state.can_analyze_invoice : true
-  );
-};
-
-/**
- * Hook to check if Gemini AI engine is configured and ready.
- */
-export const useCanUseGemini = (): boolean => {
-  return useGeneralSettingsStore((state) =>
-    state.isLoaded ? state.can_use_gemini : true
-  );
-};
-
-/**
- * Hook to check if Mistral AI engine is configured and ready.
- */
-export const useCanUseMistral = (): boolean => {
-  return useGeneralSettingsStore((state) =>
-    state.isLoaded ? state.can_use_mistral : true
-  );
-};
 
 /**
  * Hook to access only the store handlers/mutators.

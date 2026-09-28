@@ -11,11 +11,12 @@ import type {
   GetAiProviderEventsParams,
   PaginatedResponse,
   EnabledWebAiProvidersResponse,
-  SupportedProviderItem,
   CreateAiApiKeyPayload,
   UpdateAiApiKeyPayload,
   GetAiApiKeysParams,
   AiApiKeyEntity,
+  AiProviderCatalogEntity,
+  SyncModelsResult,
 } from "./types";
 
 const getEndpoint = (path: string) => {
@@ -23,9 +24,22 @@ const getEndpoint = (path: string) => {
   return hasV1 ? path : `/api/v1${path}`;
 };
 
-export const getSupportedAiProviders = async (): Promise<SupportedProviderItem[]> => {
-  const { data } = await mainInstance.get<SupportedProviderItem[]>(
+export const getAiProviderCatalog = async (): Promise<AiProviderCatalogEntity[]> => {
+  const { data } = await mainInstance.get<AiProviderCatalogEntity[]>(
     getEndpoint("/ai-providers/catalog")
+  );
+  return data;
+};
+
+export const getSupportedAiProviders = getAiProviderCatalog;
+
+export const syncAiProviderModels = async (
+  id: string,
+  persist?: boolean
+): Promise<SyncModelsResult> => {
+  const query = persist !== undefined ? `?persist=${persist}` : "";
+  const { data } = await mainInstance.post<SyncModelsResult>(
+    getEndpoint(`/ai-providers/${id}/sync-models${query}`)
   );
   return data;
 };

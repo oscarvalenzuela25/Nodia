@@ -13,31 +13,12 @@ describe('VerifyIaProvidersUseCase', () => {
     useCase = new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService);
   });
 
-  it('should return gemini true and mistral true when gemini service is active', async () => {
-    vi.mocked(geminiServiceMock.verifyProvider!).mockResolvedValue(true);
-
+  it('should return empty result when no aiProviderService is provided', async () => {
     const result = await useCase.execute();
-
-    expect(result).toEqual({
-      gemini: true,
-      mistral: true,
-    });
-    expect(geminiServiceMock.verifyProvider).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({});
   });
 
-  it('should return gemini false and mistral true when gemini service is inactive or session expired', async () => {
-    vi.mocked(geminiServiceMock.verifyProvider!).mockResolvedValue(false);
-
-    const result = await useCase.execute();
-
-    expect(result).toEqual({
-      gemini: false,
-      mistral: true,
-    });
-    expect(geminiServiceMock.verifyProvider).toHaveBeenCalledTimes(1);
-  });
-
-  it('should verify providers using aiProviderService directly when available', async () => {
+  it('should verify providers strictly from ai_providers table with active model and valid credentials', async () => {
     process.env.ENABLED_WEB_AI_PROVIDERS = 'gemini';
     vi.mocked(geminiServiceMock.verifyProvider!).mockResolvedValue(true);
 
@@ -49,12 +30,18 @@ describe('VerifyIaProvidersUseCase', () => {
             key: 'gemini',
             is_active: true,
             mode: 'web_session',
+            fields: {
+              selected_model: 'gemini-flash',
+            },
           },
           {
             id: '2',
             key: 'mistral',
             is_active: true,
             mode: 'api_key',
+            fields: {
+              selected_model: 'mistral-large-latest',
+            },
             api_keys: [
               {
                 id: 'k1',
@@ -80,10 +67,39 @@ describe('VerifyIaProvidersUseCase', () => {
     });
   });
 
-  it('should mark provider as false if connection has no active api keys', async () => {
-    process.env.ENABLED_WEB_AI_PROVIDERS = 'gemini';
-    vi.mocked(geminiServiceMock.verifyProvider!).mockResolvedValue(true);
+  it('should mark provider as false if selected_model is missing or empty', async () => {
+    const aiProviderServiceMock = {
+      findAllProviders: vi.fn().mockResolvedValue({
+        data: [
+          {
+            id: '1',
+            key: 'openai',
+            is_active: true,
+            mode: 'api_key',
+            fields: {}, // No selected_model!
+            api_keys: [
+              {
+                id: 'k1',
+                is_active: true,
+                health_state: 'valid',
+              },
+            ],
+          },
+        ],
+      }),
+    };
 
+    const dbUseCase = new VerifyIaProvidersUseCase(
+      geminiServiceMock as GeminiService,
+      aiProviderServiceMock as any,
+    );
+
+    const result = await dbUseCase.execute();
+
+    expect(result.openai).toBe(false);
+  });
+
+  it('should mark provider as false if connection has no active api keys', async () => {
     const aiProviderServiceMock = {
       findAllProviders: vi.fn().mockResolvedValue({
         data: [
@@ -92,6 +108,9 @@ describe('VerifyIaProvidersUseCase', () => {
             key: 'mistral',
             is_active: true,
             mode: 'api_key',
+            fields: {
+              selected_model: 'mistral-large-latest',
+            },
             api_keys: [], // No keys
           },
         ],

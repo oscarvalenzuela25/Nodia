@@ -2,7 +2,6 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsObject,
   IsOptional,
@@ -14,9 +13,17 @@ import { TranslateItemDto } from '../../translation/dto/translate-item.dto.js';
 import { AiConnectionMode } from '../types/ai-provider.types.js';
 
 export class CreateAiProviderDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  key: string;
+  catalog_id?: string;
+
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  key?: string;
 
   @IsOptional()
   @IsEnum(AiConnectionMode)

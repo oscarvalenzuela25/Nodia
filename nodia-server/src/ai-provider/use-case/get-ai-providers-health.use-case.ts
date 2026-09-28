@@ -31,12 +31,6 @@ export interface AiProviderHealthItem {
   serviceState: string;
   lastCheck: string;
   latencyMs: number;
-  containerStatus?: string;
-  autoFailover?: string;
-  remoteBrowserProfile?: {
-    location: string;
-    engine: string;
-  };
   monthlyQuotaUsed?: string;
   failoverSwitch?: string;
   assignedModels?: Record<string, string>;
@@ -62,95 +56,41 @@ export interface AiProvidersHealthResponse {
 
 function resolveGeminiHealthModels(
   provFields: any,
-  authData: any,
 ): { selectedModel: string; availableModels: any[] } {
-  const supported = getSupportedProviderByKey('gemini');
-  const fallbackModels = supported?.availableModels || [
-    {
-      id: 'gemini-flash',
-      name: 'Gemini 3.8 Flash',
-      description:
-        'Modelo insignia de Google: ultra rápido, multimodal y alta precisión (Recomendado)',
-      contextWindow: 1000000,
-      capabilities: ['text', 'vision', 'audio', 'documents'],
-      isRecommended: true,
-      role: 'multimodal',
-    },
-    {
-      id: 'gemini-pro',
-      name: 'Gemini 3.1 Pro',
-      description:
-        'Razonamiento complejo avanzado, análisis profundo y código',
-      contextWindow: 2000000,
-      capabilities: ['text', 'vision', 'audio', 'documents'],
-      isRecommended: false,
-      role: 'multimodal',
-    },
-  ];
-
   const sourceModels = provFields?.available_models?.length
     ? provFields.available_models
-    : authData?.models?.length
-    ? authData.models
-    : fallbackModels;
+    : [];
 
-  const cleanModels = sourceModels
-    .filter((m: any) => {
-      const id = String(m?.id || m?.name || '').toLowerCase();
-      const name = String(m?.name || m?.display_name || '').toLowerCase();
-      return (
-        !id.includes('2.5') &&
-        !id.includes('2.0') &&
-        !id.includes('1.5') &&
-        !name.includes('2.5') &&
-        !name.includes('2.0') &&
-        !name.includes('1.5')
-      );
-    })
-    .map((m: any) => {
-      const id = m.id || m.name || 'gemini-flash';
-      const base = fallbackModels.find((b) => b.id === id);
-      return {
-        id,
-        name:
-          base?.name ||
-          (id === 'gemini-pro' ? 'Gemini 3.1 Pro' : 'Gemini 3.8 Flash'),
-        description:
-          base?.description ||
-          m.description ||
-          (id === 'gemini-pro'
-            ? 'Razonamiento complejo avanzado, análisis profundo y código'
-            : 'Modelo insignia de Google: ultra rápido, multimodal y alta precisión (Recomendado)'),
-        contextWindow:
-          base?.contextWindow ||
-          m.contextWindow ||
-          m.context_window ||
-          1000000,
-        capabilities: base?.capabilities ||
-          m.capabilities || ['text', 'vision', 'audio', 'documents'],
-        isRecommended: id === 'gemini-flash',
-        role: 'multimodal',
-        remaining_credits: m.remaining_credits,
-        total_credits: m.total_credits,
-        usage_percentage: m.usage_percentage,
-        reset_time: m.reset_time,
-      };
-    });
+  const cleanModels = sourceModels.map((m: any) => {
+    const id = m.id || m.name;
+    const name = m.name || id;
+    const displayName = m.display_name || m.displayName || name;
+    return {
+      id,
+      name,
+      displayName,
+      description: m.description || '',
+      contextWindow: m.context_window || m.contextWindow || 1000000,
+      capabilities: m.capabilities || ['text', 'vision', 'documents'],
+      isRecommended: Boolean(
+        m.isRecommended ?? String(id).toLowerCase().includes('flash'),
+      ),
+      role: 'multimodal',
+      remaining_credits: m.remaining_credits,
+      total_credits: m.total_credits,
+      usage_percentage: m.usage_percentage,
+      reset_time: m.reset_time,
+    };
+  });
 
-  const availableModels = cleanModels.length > 0 ? cleanModels : fallbackModels;
+  const selectedModel =
+    provFields?.selected_model ||
+    (cleanModels.length > 0 ? cleanModels[0].id : '');
 
-  let selectedModel = provFields?.selected_model;
-  if (
-    !selectedModel ||
-    String(selectedModel).includes('2.5') ||
-    String(selectedModel).includes('2.0') ||
-    String(selectedModel).includes('1.5') ||
-    !availableModels.some((m: any) => m.id === selectedModel)
-  ) {
-    selectedModel = 'gemini-flash';
-  }
-
-  return { selectedModel, availableModels };
+  return {
+    selectedModel,
+    availableModels: cleanModels,
+  };
 }
 
 @Injectable()
@@ -173,19 +113,42 @@ export class GetAiProvidersHealthUseCase {
     let healthyCount = 0;
 
     for (const prov of providers) {
+      const engineKey = (prov.catalog?.key || prov.key || '').toLowerCase();
       const displayName =
-        prov.key === 'gemini'
+        prov.name ||
+        prov.catalog?.name ||
+        (engineKey === 'gemini'
           ? 'Google Gemini'
-          : prov.key === 'mistral'
+          : engineKey === 'mistral'
           ? 'Mistral AI'
-          : prov.key === 'openai'
+          : engineKey === 'openai'
           ? 'OpenAI'
-          : prov.key.charAt(0).toUpperCase() + prov.key.slice(1);
+          : engineKey.charAt(0).toUpperCase() + engineKey.slice(1));
 
       const mode = prov.mode || AiConnectionMode.API_KEY;
       const keys = prov.api_keys || [];
       const hasConnection =
         mode === AiConnectionMode.WEB_SESSION || keys.length > 0;
+
+      // Inactive providers
+      if (!prov.is_active) {
+        providerHealthList.push({
+          id: prov.id,
+          key: engineKey,
+          name: displayName,
+          isActive: false,
+          mode,
+          status: 'unconfigured',
+          statusBadge: 'INACTIVO',
+          serviceState: 'Desactivado',
+          lastCheck: 'Hoy',
+          latencyMs: 0,
+          selectedModel: prov.fields?.selected_model || 'none',
+          availableModels: prov.fields?.available_models || [],
+          hasConnection,
+        });
+        continue;
+      }
 
       if (mode === AiConnectionMode.WEB_SESSION) {
         const start = performance.now();
@@ -199,14 +162,13 @@ export class GetAiProvidersHealthUseCase {
         const isAuthenticated = Boolean(authData?.authenticated);
         const { selectedModel, availableModels } = resolveGeminiHealthModels(
           prov.fields,
-          authData,
         );
 
         if (isAuthenticated) {
           healthyCount++;
           providerHealthList.push({
             id: prov.id,
-            key: prov.key,
+            key: engineKey,
             name: displayName,
             isActive: prov.is_active,
             mode: AiConnectionMode.WEB_SESSION,
@@ -214,13 +176,7 @@ export class GetAiProvidersHealthUseCase {
             statusBadge: 'DISPONIBLE',
             serviceState: 'Disponible',
             lastCheck: 'Hace 1 min',
-            latencyMs: latencyMs > 0 ? latencyMs : 210,
-            containerStatus: 'Cluster-04:IDLE',
-            autoFailover: 'INACTIVO PARA MODO WEB',
-            remoteBrowserProfile: {
-              location: '/var/vault/gemini-session-v2.enc',
-              engine: 'Puppeteer Node',
-            },
+            latencyMs,
             assignedModels: {
               infer: selectedModel,
             },
@@ -231,21 +187,15 @@ export class GetAiProvidersHealthUseCase {
         } else {
           providerHealthList.push({
             id: prov.id,
-            key: prov.key,
+            key: engineKey,
             name: displayName,
             isActive: prov.is_active,
             mode: AiConnectionMode.WEB_SESSION,
             status: 'expired',
             statusBadge: 'REQUIERE INICIAR SESIÓN',
             serviceState: 'Caducado (401)',
-            lastCheck: 'Hoy, 10:24 AM',
-            latencyMs: latencyMs > 0 ? latencyMs : 420,
-            containerStatus: 'Cluster-04:IDLE',
-            autoFailover: 'INACTIVO PARA MODO WEB',
-            remoteBrowserProfile: {
-              location: '/var/vault/gemini-session-v2.enc',
-              engine: 'Puppeteer Node',
-            },
+            lastCheck: 'Hoy',
+            latencyMs,
             assignedModels: {
               infer: selectedModel,
             },
@@ -255,15 +205,15 @@ export class GetAiProvidersHealthUseCase {
           });
 
           alerts.push({
-            id: `alert-${prov.key}-expired`,
-            provider: prov.key,
+            id: `alert-${prov.id}-expired`,
+            provider: engineKey,
             type: 'incident',
-            severity: 'warning',
+            severity: 'error',
             title: `INCIDENTE ACTIVO: ${displayName.toUpperCase()}`,
             message:
-              'Sesión web remota caducada (401 Unauthorized). La extracción de documentos no estructurados está pausada en colas de inferencia.',
+              'Sesión web remota caducada (401 Unauthorized). Requiere renovar sesión de Google.',
             timestamp: new Date().toISOString(),
-            timeAgo: '42 min atrás',
+            timeAgo: 'Reciente',
             actionType: 'renew_session',
             actionLabel: 'Renovar Sesión Ahora',
           });
@@ -285,13 +235,28 @@ export class GetAiProvidersHealthUseCase {
           (validKeys.length === 0 && cooldownKeys.length > 0);
         const hasFailover = cooldownKeys.length > 0 && validKeys.length > 0;
 
+        if (hasFailover) {
+          alerts.push({
+            id: `alert-${prov.id}-failover`,
+            provider: engineKey,
+            type: 'failover',
+            severity: 'info',
+            title: `FAILOVER OPERATIVO: ${displayName.toUpperCase()}`,
+            message: `Una o más llaves están en enfriamiento. Tráfico enrutado a llave activa de respaldo.`,
+            timestamp: new Date().toISOString(),
+            timeAgo: 'En curso',
+            actionType: 'manage_quotas',
+            actionLabel: 'Gestionar Cuotas',
+          });
+        }
+
         if (!hasIncident && activeKeys.length > 0) {
           healthyCount++;
         }
 
         const fallbackKeyHint =
           activeKeys.find((k: any) => k.health_state === AiKeyHealthState.VALID)
-            ?.label || 'mistral-prod-sec';
+            ?.label || 'key-sec';
 
         const status =
           activeKeys.length === 0
@@ -314,7 +279,7 @@ export class GetAiProvidersHealthUseCase {
 
         providerHealthList.push({
           id: prov.id,
-          key: prov.key,
+          key: engineKey,
           name: displayName,
           isActive: prov.is_active,
           mode: prov.mode || AiConnectionMode.API_KEY,
@@ -328,55 +293,59 @@ export class GetAiProvidersHealthUseCase {
             ? `Activo (Failover a ${fallbackKeyHint})`
             : 'Desactivado',
           assignedModels: {
-            ocr: prov.fields?.ocr_model || (prov.key === 'mistral' ? 'mistral-ocr-latest' : undefined),
+            ocr:
+              prov.fields?.ocr_model ||
+              (engineKey === 'mistral' ? 'mistral-ocr-latest' : undefined),
             infer:
-              prov.key === 'gemini'
+              engineKey === 'gemini'
                 ? resolveGeminiHealthModels(prov.fields, null).selectedModel
                 : prov.fields?.selected_model ||
                   prov.fields?.chat_model ||
                   prov.fields?.model ||
-                  getSupportedProviderByKey(prov.key)?.defaultSelectedModel ||
+                  getSupportedProviderByKey(engineKey)?.defaultSelectedModel ||
                   'default',
           },
           selectedModel:
-            prov.key === 'gemini'
-              ? resolveGeminiHealthModels(prov.fields, null).selectedModel
-              : prov.fields?.selected_model ||
-                prov.fields?.chat_model ||
-                prov.fields?.model ||
-                getSupportedProviderByKey(prov.key)?.defaultSelectedModel ||
-                'default',
+            prov.fields?.selected_model ||
+            getSupportedProviderByKey(engineKey)?.defaultSelectedModel ||
+            'default',
           availableModels:
-            prov.key === 'gemini'
-              ? resolveGeminiHealthModels(prov.fields, null).availableModels
-              : prov.fields?.available_models?.length
-              ? prov.fields.available_models
-              : getSupportedProviderByKey(prov.key)?.availableModels || [],
-          apiKeysCount: activeKeys.length,
+            prov.fields?.available_models ||
+            getSupportedProviderByKey(engineKey)?.availableModels ||
+            [],
+          apiKeysCount: keys.length,
           validKeysCount: validKeys.length,
           hasConnection,
         });
 
-        if (hasFailover || cooldownKeys.length > 0) {
+        if (activeKeys.length === 0) {
           alerts.push({
-            id: `alert-${prov.key}-failover`,
-            provider: prov.key,
-            type: 'failover',
-            severity: 'info',
-            title: `FAILOVER OPERATIVO: ${displayName.toUpperCase()}`,
-            message: `Key de contingencia ${fallbackKeyHint} activada automáticamente tras agotamiento de tokens en el pool primario.`,
-            actionType: 'manage_quotas',
-            actionLabel: 'Gestionar Cuotas',
+            id: `alert-${prov.id}-no-keys`,
+            provider: engineKey,
+            type: 'warning',
+            severity: 'warning',
+            title: `CONFIGURACIÓN INCOMPLETA: ${displayName.toUpperCase()}`,
+            message:
+              'No hay llaves de API activas registradas para este proveedor.',
+            timestamp: new Date().toISOString(),
+            timeAgo: 'Pendiente',
+            actionType: 'configure',
+            actionLabel: 'Añadir API Key',
           });
         }
       }
     }
 
-    const overallStatus = alerts.some((a) => a.type === 'incident')
+    const hasIncidents = alerts.some((a) => a.severity === 'error');
+    const hasWarnings = alerts.some((a) => a.severity === 'warning');
+
+    const overallStatus: 'healthy' | 'degraded' | 'incident' = hasIncidents
       ? 'incident'
-      : alerts.some((a) => a.type === 'failover')
+      : hasWarnings
       ? 'degraded'
       : 'healthy';
+
+    const activeCount = providers.filter((p) => p.is_active).length;
 
     return {
       timestamp: new Date().toISOString(),
@@ -385,7 +354,7 @@ export class GetAiProvidersHealthUseCase {
       providers: providerHealthList,
       summary: {
         totalProviders: providers.length,
-        activeProviders: providers.filter((p: any) => p.is_active).length,
+        activeProviders: activeCount,
         healthyProviders: healthyCount,
         incidentsCount: alerts.length,
       },

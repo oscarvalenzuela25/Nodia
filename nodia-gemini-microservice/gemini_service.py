@@ -216,8 +216,8 @@ class GeminiWebService:
                 "id": "gemini-flash",
                 "name": "gemini-flash",
                 "display_name": "3.8 Flash",
-                "description": "Asistencia general rápida y balanceada",
-                "capabilities": ["text", "vision", "documents"],
+                "description": "Asistencia general rápida y balanceada con soporte para razonamiento extendido",
+                "capabilities": ["text", "vision", "documents", "reasoning"],
                 "context_window": 1000000,
             },
             {
@@ -225,7 +225,7 @@ class GeminiWebService:
                 "name": "gemini-pro",
                 "display_name": "3.1 Pro",
                 "description": "Razonamiento avanzado, análisis profundo y alta precisión",
-                "capabilities": ["text", "vision", "documents", "deep_research"],
+                "capabilities": ["text", "vision", "documents", "reasoning", "deep_research"],
                 "context_window": 2000000,
             },
         ]
@@ -236,7 +236,7 @@ class GeminiWebService:
                 "tier": status.get("tier", "UNKNOWN"),
                 "plan_label": "Sin sesión activa",
                 "active_model": status.get("model", "gemini-flash"),
-                "models": default_web_models,
+                "models": [],
                 "usage_info": None,
                 "quotas": None,
             }
@@ -260,30 +260,36 @@ class GeminiWebService:
             raw_models = self.client.list_models()
             if raw_models:
                 for m in raw_models:
-                    m_name = getattr(m, "model_name", str(m))
-                    desc = getattr(m, "description", "")
-                    if "flash" in m_name.lower() and "lite" not in m_name.lower():
-                        discovered_models.append({
-                            "id": "gemini-flash",
-                            "name": "gemini-flash",
-                            "display_name": "3.8 Flash",
-                            "description": desc or "Asistencia general rápida y balanceada",
-                            "capabilities": ["text", "vision", "documents"],
-                            "context_window": 1000000,
-                        })
-                    elif "pro" in m_name.lower():
-                        discovered_models.append({
-                            "id": "gemini-pro",
-                            "name": "gemini-pro",
-                            "display_name": "3.1 Pro",
-                            "description": desc or "Razonamiento avanzado, análisis profundo y alta precisión",
-                            "capabilities": ["text", "vision", "documents", "deep_research"],
-                            "context_window": 2000000,
-                        })
+                    m_id = getattr(m, "model_id", getattr(m, "id", str(m)))
+                    m_name = getattr(m, "model_name", getattr(m, "name", str(m)))
+                    m_display = getattr(m, "display_name", m_name)
+                    m_desc = getattr(m, "description", "")
+
+                    # In Gemini Web, both Flash (3.8 Flash) and Pro (3.1 Pro) support extended thinking ("Flash Extendido").
+                    # Only Lite / Nano models (e.g. 3.5 Flash-Lite) do not support extended reasoning.
+                    is_reasoning = (
+                        ("flash" in m_name.lower() and "lite" not in m_name.lower())
+                        or "pro" in m_name.lower()
+                        or "thinking" in m_name.lower()
+                        or "reasoning" in m_desc.lower()
+                    )
+
+                    caps = ["text", "vision", "documents"]
+                    if is_reasoning:
+                        caps.append("reasoning")
+
+                    discovered_models.append({
+                        "id": m_name,
+                        "name": m_name,
+                        "display_name": m_display,
+                        "description": m_desc or f"Modelo {m_display} en Gemini Web",
+                        "capabilities": caps,
+                        "context_window": 2000000 if ("pro" in m_name.lower()) else 1000000,
+                    })
         except Exception as e:
             logger.warning(f"Could not list models: {e}")
 
-        models = discovered_models if len(discovered_models) >= 1 else default_web_models
+        models = discovered_models if discovered_models else default_web_models
 
         for m in models:
             m_id = m["id"]
@@ -328,6 +334,8 @@ class GeminiWebService:
         file_path: Path,
         provider_fields: Optional[Dict[str, Any]] = None,
         provider_tax: Optional[int] = None,
+        model: Optional[str] = None,
+        extended_thinking: Optional[bool] = False,
     ) -> Dict[str, Any]:
         await self.init_client()
         if not self.client or not self.is_initialized:
@@ -474,19 +482,27 @@ Reglas estrictas:
 3. Asegúrate de que todos los valores numéricos sean válidos (sin símbolos '$', puntos de miles o comas).
 """
 
+        effective_model = model or self.model_name
+        is_extended = bool(extended_thinking)
+
         async def _do_generation(target_model: Optional[str]) -> str:
-            resp = await self.client.generate_content(prompt, files=[file_path], model=target_model)
+            resp = await self.client.generate_content(
+                prompt,
+                files=[file_path],
+                model=target_model,
+                extended_thinking=is_extended,
+            )
             return resp.text or ""
 
         raw_text = ""
         active_client = self.client
         try:
-            raw_text = await _do_generation(self.model_name)
+            raw_text = await _do_generation(effective_model)
         except AuthError:
             await self.recover_auth(active_client)
-            raw_text = await _do_generation(self.model_name)
+            raw_text = await _do_generation(effective_model)
         except ModelInvalidError:
-            logger.warning("Configured Gemini Web model is unavailable; using the default model.")
+            logger.warning(f"Configured Gemini Web model '{effective_model}' is unavailable; using the default model.")
             raw_text = await _do_generation(None)
 
         self._persist_live_cookies()
@@ -498,7 +514,7 @@ Reglas estrictas:
             logger.warning(f"Gemini returned refusal response ('{raw_text[:100]}...'). Attempting session recovery...")
             if self.browser_manager.has_profile():
                 await self.recover_auth(active_client)
-                raw_text = await _do_generation(self.model_name)
+                raw_text = await _do_generation(effective_model)
                 self._persist_live_cookies()
                 logger.info(f"Retried Gemini raw response length after recovery: {len(raw_text)}")
 

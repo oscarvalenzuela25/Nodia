@@ -10,6 +10,8 @@ import { GetSelectableModelsUseCase } from './use-case/get-selectable-models.use
 import { GetAiProvidersHealthUseCase } from './use-case/get-ai-providers-health.use-case.js';
 import { GetEnabledWebAiProvidersUseCase } from './use-case/get-enabled-web-ai-providers.use-case.js';
 import { GetSupportedAiProvidersUseCase } from './use-case/get-supported-ai-providers.use-case.js';
+import { GetAiProviderCatalogUseCase } from './use-case/get-ai-provider-catalog.use-case.js';
+import { SyncAiProviderModelsUseCase } from './use-case/sync-ai-provider-models.use-case.js';
 
 @Controller(['ai-provider', 'ai-providers'])
 export class AiProviderController {
@@ -21,9 +23,16 @@ export class AiProviderController {
     private readonly getAiProvidersHealthUseCase: GetAiProvidersHealthUseCase,
     private readonly getEnabledWebAiProvidersUseCase: GetEnabledWebAiProvidersUseCase,
     private readonly getSupportedAiProvidersUseCase: GetSupportedAiProvidersUseCase,
+    private readonly getAiProviderCatalogUseCase: GetAiProviderCatalogUseCase,
+    private readonly syncAiProviderModelsUseCase: SyncAiProviderModelsUseCase,
   ) {}
 
-  @Get(['catalog', 'supported', 'supported-providers'])
+  @Get(['catalog', 'provider-catalogs'])
+  getCatalog() {
+    return this.getAiProviderCatalogUseCase.execute();
+  }
+
+  @Get(['supported', 'supported-providers'])
   getSupportedProviders() {
     return this.getSupportedAiProvidersUseCase.execute();
   }
@@ -51,6 +60,15 @@ export class AiProviderController {
   @Post()
   create(@Body() createDto: CreateAiProviderDto) {
     return this.createAiProviderUseCase.execute(createDto);
+  }
+
+  @Post(':id/sync-models')
+  syncModels(
+    @Param('id') id: string,
+    @Query('persist') persist?: string,
+  ) {
+    const shouldPersist = persist === undefined ? true : persist === 'true';
+    return this.syncAiProviderModelsUseCase.execute(id, { persist: shouldPersist });
   }
 
   @Put(':id')

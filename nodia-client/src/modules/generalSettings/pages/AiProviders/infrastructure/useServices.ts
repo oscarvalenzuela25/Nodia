@@ -8,6 +8,8 @@ import {
   getSelectableModels,
   getEnabledWebAiProviders,
   getSupportedAiProviders,
+  getAiProviderCatalog,
+  syncAiProviderModels,
   createAiApiKey,
   getAiApiKeys,
   updateAiApiKey,
@@ -23,6 +25,31 @@ import type {
   GetAiApiKeysParams,
   UpdateAiApiKeyPayload,
 } from "./types";
+
+export const useAiProviderCatalog = () => {
+  return useQuery({
+    queryKey: ["ai-provider-catalog"],
+    queryFn: () => getAiProviderCatalog(),
+    staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+};
+
+export const useSyncAiProviderModels = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (args: string | { id: string; persist?: boolean }) => {
+      if (typeof args === "string") {
+        return syncAiProviderModels(args);
+      }
+      return syncAiProviderModels(args.id, args.persist);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
+      queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
+    },
+  });
+};
 
 export const useSupportedAiProviders = () => {
   return useQuery({

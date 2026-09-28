@@ -10,7 +10,6 @@ import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import DevicesOutlinedIcon from "@mui/icons-material/DevicesOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import SpeedOutlinedIcon from "@mui/icons-material/SpeedOutlined";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
@@ -42,7 +41,6 @@ import {
 
 interface ProviderCardProps {
   provider: AiProviderHealthItem;
-  onTestPing?: (provider: AiProviderHealthItem) => void;
   onRenewSession?: (provider: AiProviderHealthItem) => void;
   onManageKeys?: (provider: AiProviderHealthItem) => void;
   onViewModels?: (provider: AiProviderHealthItem) => void;
@@ -52,7 +50,6 @@ interface ProviderCardProps {
 
 const ProviderCard: FC<ProviderCardProps> = ({
   provider,
-  onTestPing,
   onRenewSession,
   onManageKeys,
   onViewModels,
@@ -184,15 +181,6 @@ const ProviderCard: FC<ProviderCardProps> = ({
           <MetricValue>{provider.lastCheck}</MetricValue>
         </MetricBlock>
 
-        {/* Avg Latency */}
-        <MetricBlock>
-          <MetricLabel>{t("ai_providers:cards.avg_latency", "Latencia media")}</MetricLabel>
-          <MetricValue sx={{ color: "#38bdf8" }}>
-            <SpeedOutlinedIcon sx={{ fontSize: 16 }} />
-            {provider.latencyMs > 0 ? `${provider.latencyMs} ms` : "185 ms"}
-          </MetricValue>
-        </MetricBlock>
-
         {/* Container or Monthly Quota */}
         <MetricBlock>
           <MetricLabel>
@@ -289,17 +277,6 @@ const ProviderCard: FC<ProviderCardProps> = ({
             sx={{ borderRadius: 1.5, textTransform: "none" }}
           >
             {t("ai_providers:cards.configure_button", "Configurar")}
-          </Button>
-
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => onTestPing?.(provider)}
-            sx={{ borderRadius: 1.5, textTransform: "none" }}
-          >
-            {isWebMode
-              ? t("ai_providers:cards.test_ping_button", "Test Ping")
-              : t("ai_providers:cards.test_endpoint_button", "Test Endpoint")}
           </Button>
 
           {!isWebMode && (

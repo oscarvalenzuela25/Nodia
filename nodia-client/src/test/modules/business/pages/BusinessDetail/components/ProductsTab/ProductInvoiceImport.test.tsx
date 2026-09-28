@@ -365,9 +365,6 @@ describe("ProductInvoiceImport Component", () => {
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
     useGeneralSettingsStore.setState({
       isLoaded: false,
-      can_use_gemini: false,
-      can_use_mistral: false,
-      can_analyze_invoice: false,
     });
   });
 

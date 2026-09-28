@@ -178,9 +178,17 @@ async def analyze_invoice(
         None,
         description="Porcentaje de impuesto (tax) del proveedor (default 19)",
     ),
+    model: Optional[str] = Form(
+        None,
+        description="Modelo específico de Gemini a ejecutar (opcional)",
+    ),
+    extended_thinking: Optional[bool] = Form(
+        False,
+        description="Habilitar razonamiento extendido (Chain of Thought)",
+    ),
 ):
     """
-    Analiza un archivo de factura comercial utilizando Gemini Pro y extrae
+    Analiza un archivo de factura comercial utilizando Gemini y extrae
     código de comprobante, monto total, fecha de emisión y listado de ítems.
     """
     if not file.filename:
@@ -217,6 +225,8 @@ async def analyze_invoice(
             file_path=temp_path,
             provider_fields=parsed_fields,
             provider_tax=provider_tax,
+            model=model,
+            extended_thinking=extended_thinking,
         )
 
         return JSONResponse(content=result)

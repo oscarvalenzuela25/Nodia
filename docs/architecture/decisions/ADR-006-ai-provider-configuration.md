@@ -30,6 +30,9 @@ Para el login remoto, proponer una pestaña temporal de Nodia que permita contro
 
 Gemini Web y Gemini API no hacen fallback mutuo. Las API keys de un mismo proveedor pueden rotar en la misma factura si el switch de rotación está activado y el error corresponde a credencial/cuota. No hay fallback automático entre proveedores.
 
+### Actualización 2026-09-27: Catálogo maestro y soporte multi-instancia
+Se desacopló `ai_provider_catalog` (`id`, `key`, `name`, `is_active`) como tabla maestra de proveedores de IA soportados del mercado (`gemini`, `openai`, `anthropic`, `mistral`, `deepseek`, `groq`, `perplexity`, etc.) respecto de las instancias operativas en `ai_providers` (`catalog_id`, `name`, `key` no única). Esto permite registrar múltiples instancias o conexiones para un mismo proveedor (ej. cuenta headless con plan web ilimitado + API Key de contingencia). Los modelos se sincronizan dinámicamente bajo demanda (`POST /ai-providers/:id/sync-models`), sin listas estáticas hardcodeadas. Se incorpora soporte para Razonamiento Extendido (Extended Thinking) en modelos con capacidad `reasoning`, así como un switch informativo de Foco OCR (`ocr_focus_model`), preservando `selected_model` como el ejecutor estricto de inferencia.
+
 ## Consecuencias
 
 - `verify-ia-providers` debe comprobar la vía seleccionada y dejar de devolver Mistral como disponible por constante.

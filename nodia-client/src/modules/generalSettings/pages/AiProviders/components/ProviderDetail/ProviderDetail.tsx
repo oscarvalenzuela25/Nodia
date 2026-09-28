@@ -15,6 +15,7 @@ import {
   TableCell,
   TablePagination,
   LinearProgress,
+  alpha,
 } from "@mui/material";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
@@ -27,6 +28,9 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import RadioButtonUncheckedOutlinedIcon from "@mui/icons-material/RadioButtonUncheckedOutlined";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
+import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
+import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
@@ -34,12 +38,14 @@ import InputSearch from "../../../../../../components/inputs/InputSearch";
 import AiEventsTable from "../AiEventsTable";
 import TraceModal from "../TraceModal";
 import AddApiKeyModal from "./components/AddApiKeyModal";
+import SyncModelsModal from "./components/SyncModelsModal";
 import {
   useAiProviders,
   useAiProvidersHealth,
   useSupportedAiProviders,
   useEnabledWebAiProviders,
   useUpdateAiProvider,
+  useSyncAiProviderModels,
   useAiApiKeys,
   useUpdateAiApiKey,
   useDeleteAiApiKey,
@@ -97,11 +103,17 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const logsRef = useRef<HTMLDivElement | null>(null);
 
   // Queries
-  const { data: providersResponse, refetch: refetchProviders } = useAiProviders({
+  const {
+    data: providersResponse,
+    isLoading: isLoadingProviders,
+    isFetching: isFetchingProviders,
+    refetch: refetchProviders,
+  } = useAiProviders({
     all: true,
   });
   const {
     data: healthResponse,
+    isLoading: isLoadingHealth,
     isFetching: isFetchingHealth,
     refetch: refetchHealth,
   } = useAiProvidersHealth();
@@ -134,12 +146,11 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   }, [webProvidersData?.enabled_providers]);
 
   const isWebSupported = Boolean(
-    providerKey &&
-      enabledWebProviders.includes(providerKey.toLowerCase()) &&
-      supportedDef?.supportedModes?.includes("web_session")
+    providerKey && enabledWebProviders.includes(providerKey.toLowerCase())
   );
 
   const providerName =
+    currentDbProvider?.name ||
     currentHealthProvider?.name ||
     supportedDef?.name ||
     providerKey.charAt(0).toUpperCase() + providerKey.slice(1);
@@ -147,68 +158,48 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const currentMode =
     currentDbProvider?.mode ||
     currentHealthProvider?.mode ||
-    supportedDef?.defaultMode ||
-    "api_key";
+    (isWebSupported ? "web_session" : "api_key");
 
-  // Models list
+  // Models list (dynamic, strictly from DB fields)
   const availableModels: SupportedModelDef[] = useMemo(() => {
-    let list: SupportedModelDef[] = [];
     if (
       currentDbProvider?.fields?.available_models &&
-      currentDbProvider.fields.available_models.length > 0
+      Array.isArray(currentDbProvider.fields.available_models)
     ) {
-      list = currentDbProvider.fields.available_models;
-    } else if (
-      currentHealthProvider?.availableModels &&
-      currentHealthProvider.availableModels.length > 0
-    ) {
-      list = currentHealthProvider.availableModels;
-    } else {
-      list = supportedDef?.availableModels || [];
+      return currentDbProvider.fields.available_models;
     }
-
-    if (providerKey.toLowerCase() === "gemini") {
-      const filtered = list.filter((m) => {
-        const id = String(m?.id || "").toLowerCase();
-        const name = String(m?.name || "").toLowerCase();
-        return (
-          !id.includes("2.5") &&
-          !id.includes("2.0") &&
-          !id.includes("1.5") &&
-          !name.includes("2.5") &&
-          !name.includes("2.0") &&
-          !name.includes("1.5")
-        );
-      });
-      return filtered.length > 0 ? filtered : supportedDef?.availableModels || [];
-    }
-    return list;
-  }, [currentDbProvider, currentHealthProvider, supportedDef, providerKey]);
+    return [];
+  }, [currentDbProvider]);
 
   // Active Model
   const [selectedModel, setSelectedModel] = useState<string>("");
 
   useEffect(() => {
-    let activeModel =
-      currentDbProvider?.fields?.selected_model ||
-      currentHealthProvider?.selectedModel ||
-      supportedDef?.defaultSelectedModel ||
-      availableModels[0]?.id ||
-      "";
-
-    if (
-      providerKey.toLowerCase() === "gemini" &&
-      (!activeModel ||
-        activeModel.includes("2.5") ||
-        activeModel.includes("2.0") ||
-        activeModel.includes("1.5") ||
-        !availableModels.some((m) => m.id === activeModel))
-    ) {
-      activeModel = "gemini-flash";
-    }
-
+    const activeModel = currentDbProvider?.fields?.selected_model || "";
     setSelectedModel(activeModel);
-  }, [currentDbProvider, currentHealthProvider, supportedDef, availableModels, providerKey]);
+  }, [currentDbProvider]);
+
+  // Extended Thinking capability detection
+  const activeModelDef = useMemo(() => {
+    return availableModels.find((m) => m.id === selectedModel);
+  }, [availableModels, selectedModel]);
+
+  const supportsReasoning = Boolean(
+    activeModelDef?.capabilities?.includes("reasoning") ||
+      activeModelDef?.id?.toLowerCase().includes("thinking") ||
+      (providerKey.toLowerCase() === "gemini" &&
+        !activeModelDef?.id?.toLowerCase().includes("lite"))
+  );
+
+  const extendedThinkingEnabled = Boolean(
+    currentDbProvider?.fields?.enable_extended_thinking
+  );
+
+  // Informative OCR focus model
+  const ocrFocusedModelId =
+    currentDbProvider?.fields?.ocr_focus_model ||
+    currentDbProvider?.fields?.ocr_model ||
+    "";
 
   // Auto-reconnect switch state
   const [autoReconnect, setAutoReconnect] = useState(true);
@@ -286,11 +277,22 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
   // Mutations
   const updateProviderMutation = useUpdateAiProvider();
+  const syncModelsMutation = useSyncAiProviderModels();
   const updateApiKeyMutation = useUpdateAiApiKey();
   const deleteApiKeyMutation = useDeleteAiApiKey();
 
+  const isInitialLoading = !currentDbProvider && (isLoadingProviders || isLoadingHealth);
+  const isSoftLoading = (isFetchingHealth || isFetchingProviders) && !isInitialLoading;
+  const isBusy =
+    isInitialLoading ||
+    isFetchingHealth ||
+    isFetchingProviders ||
+    updateProviderMutation.isPending ||
+    syncModelsMutation.isPending;
+
   // Modals
   const [isAddKeyModalOpen, setIsAddKeyModalOpen] = useState(false);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<AiApiKeyEntity | null>(null);
 
   // Actions
@@ -316,6 +318,63 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       });
       refetchProviders();
       refetchHealth();
+    } catch {
+      sileo.error({
+        title: t("core:server_error_toast", "Error en el servidor"),
+      });
+    }
+  };
+
+  const handleOpenSyncModal = () => {
+    setIsSyncModalOpen(true);
+  };
+
+  const handleToggleExtendedThinking = async (checked: boolean) => {
+    if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
+    try {
+      await updateProviderMutation.mutateAsync({
+        id: currentDbProvider.id,
+        data: {
+          fields: {
+            ...currentDbProvider.fields,
+            enable_extended_thinking: checked,
+          },
+        },
+      });
+      sileo.success({
+        title: t(
+          "ai_providers:detail.extended_thinking_saved",
+          "Preferencia de razonamiento extendido actualizada"
+        ),
+      });
+      refetchProviders();
+    } catch {
+      sileo.error({
+        title: t("core:server_error_toast", "Error en el servidor"),
+      });
+    }
+  };
+
+  const handleToggleOcrFocus = async (modelId: string) => {
+    if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
+    const newFocus = ocrFocusedModelId === modelId ? null : modelId;
+    try {
+      await updateProviderMutation.mutateAsync({
+        id: currentDbProvider.id,
+        data: {
+          fields: {
+            ...currentDbProvider.fields,
+            ocr_focus_model: newFocus,
+          },
+        },
+      });
+      sileo.success({
+        title: t(
+          "ai_providers:detail.ocr_focus_saved",
+          "Preferencia de foco OCR actualizada"
+        ),
+      });
+      refetchProviders();
     } catch {
       sileo.error({
         title: t("core:server_error_toast", "Error en el servidor"),
@@ -500,7 +559,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               )
             }
             onClick={handleVerify}
-            disabled={isFetchingHealth}
+            disabled={isBusy}
             sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
           >
             {t("ai_providers:detail.verify_state", "Verificar estado")}
@@ -512,6 +571,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               color="primary"
               startIcon={<SettingsOutlinedIcon fontSize="small" />}
               onClick={() => onConfigure(currentHealthProvider)}
+              disabled={isBusy}
               sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
             >
               {t("ai_providers:detail.configure_provider", "Configurar")}
@@ -519,6 +579,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
           )}
         </Box>
       </TopNavigationBox>
+
+      {isSoftLoading && (
+        <LinearProgress sx={{ height: 2, borderRadius: 1 }} />
+      )}
 
       {/* PANEL 1: PRODUCTION MODELS & AI PIPELINES */}
       <DetailPanel>
@@ -534,123 +598,282 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               )}
             </PanelSubtitle>
           </Box>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            startIcon={<SyncOutlinedIcon fontSize="small" />}
+            onClick={handleOpenSyncModal}
+            disabled={!currentDbProvider?.id}
+            sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
+          >
+            {t("ai_providers:detail.sync_models_button", "Actualizar modelos")}
+          </Button>
         </PanelHeader>
 
         {/* MODELS GRID */}
-        <ModelsGrid>
-          {availableModels.map((model) => {
-            const isSelected = selectedModel === model.id;
-            const badgeAbbr = model.id.toLowerCase().includes("pro")
-              ? "PRO"
-              : model.id.toLowerCase().includes("flash")
-              ? "FL"
-              : model.id.toLowerCase().includes("ocr")
-              ? "OCR"
-              : model.id.toLowerCase().includes("gpt-4o-mini")
-              ? "4OM"
-              : model.id.toLowerCase().includes("gpt-4o")
-              ? "4O"
-              : model.id.slice(0, 3).toUpperCase();
+        <Skeleton loading={isInitialLoading}>
+          {availableModels.length === 0 ? (
+            <Box
+              sx={(theme) => ({
+                p: 4,
+                textAlign: "center",
+                borderRadius: 3,
+                border: `1px dashed ${theme.palette.divider}`,
+                backgroundColor:
+                  theme.palette.mode === "dark"
+                    ? alpha("#ffffff", 0.02)
+                    : alpha("#000000", 0.01),
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1.5,
+                my: 2,
+              })}
+            >
+              <PsychologyOutlinedIcon
+                sx={{ fontSize: 44, color: "text.secondary", opacity: 0.7 }}
+              />
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                {t("ai_providers:detail.empty_models_title", "Sin modelos asignados")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 480 }}>
+                {t(
+                  "ai_providers:detail.empty_models_desc",
+                  "Este proveedor aún no tiene modelos cargados. Haz clic en 'Actualizar modelos' para consultar y sincronizar los modelos disponibles directamente desde la API del proveedor."
+                )}
+              </Typography>
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<SyncOutlinedIcon fontSize="small" />}
+                onClick={handleOpenSyncModal}
+                disabled={!currentDbProvider?.id}
+                sx={{ mt: 1, borderRadius: 2, textTransform: "none", fontWeight: 600 }}
+              >
+                {t("ai_providers:detail.sync_models_button", "Actualizar modelos")}
+              </Button>
+            </Box>
+          ) : (
+            <ModelsGrid>
+              {availableModels.map((model) => {
+                const isSelected = selectedModel === model.id;
+              const isOcrFocused = ocrFocusedModelId === model.id;
+              const badgeAbbr = model.id.toLowerCase().includes("pro")
+                ? "PRO"
+                : model.id.toLowerCase().includes("flash")
+                ? "FL"
+                : model.id.toLowerCase().includes("ocr")
+                ? "OCR"
+                : model.id.toLowerCase().includes("gpt-4o-mini")
+                ? "4OM"
+                : model.id.toLowerCase().includes("gpt-4o")
+                ? "4O"
+                : model.id.slice(0, 3).toUpperCase();
 
-            const roleSubtitle =
-              model.role === "ocr"
-                ? t(
-                    "ai_providers:detail.model_specialized_ocr",
-                    "Extracción Óptica Especializada de Documentos"
-                  )
-                : model.isRecommended
-                ? t(
-                    "ai_providers:detail.model_primary_reasoning",
-                    "Modelo Primario de Razonamiento Complejo"
-                  )
-                : t(
-                    "ai_providers:detail.model_fast_extractor",
-                    "Extractor Ligero & Micro-tareas de Alta Velocidad"
-                  );
+              const roleSubtitle =
+                model.role === "ocr"
+                  ? t(
+                      "ai_providers:detail.model_specialized_ocr",
+                      "Extracción Óptica Especializada de Documentos"
+                    )
+                  : model.isRecommended
+                  ? t(
+                      "ai_providers:detail.model_primary_reasoning",
+                      "Modelo Primario de Razonamiento Complejo"
+                    )
+                  : t(
+                      "ai_providers:detail.model_fast_extractor",
+                      "Extractor Ligero & Micro-tareas de Alta Velocidad"
+                    );
 
-            const contextText = model.contextWindow
-              ? `${(model.contextWindow / 1000000).toFixed(1).replace(".0", "")}M Tokens`
-              : "128K Tokens";
-            const latencyText = model.id.toLowerCase().includes("flash")
-              ? "<115 ms"
-              : "<1.20 ms";
-            const capText = model.capabilities?.includes("vision")
-              ? "Texto/Audio/Video"
-              : model.role === "ocr"
-              ? "OCR / Docs"
-              : "Texto / JSON";
+              const contextText = model.contextWindow
+                ? `${(model.contextWindow / 1000000).toFixed(1).replace(".0", "")}M Tokens`
+                : "128K Tokens";
+              const capText = model.capabilities?.includes("vision")
+                ? "Texto/Audio/Video"
+                : model.role === "ocr"
+                ? "OCR / Docs"
+                : "Texto / JSON";
 
-            return (
-              <ModelCardPaper key={model.id} selected={isSelected}>
-                <ModelCardHeader>
-                  <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
-                    <ModelBadge>{badgeAbbr}</ModelBadge>
-                    <Box>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              return (
+                <ModelCardPaper key={model.id} selected={isSelected}>
+                  <ModelCardHeader>
+                    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
+                      <ModelBadge>{badgeAbbr}</ModelBadge>
+                      <Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ fontWeight: 700 }}
+                          >
+                            {model.name || model.id}
+                          </Typography>
+                          <StatusDot
+                            color={isSelected ? "#10b981" : "#64748b"}
+                          />
+                        </Box>
                         <Typography
-                          variant="subtitle2"
-                          sx={{ fontWeight: 700 }}
+                          variant="caption"
+                          sx={{ fontFamily: "monospace", color: "text.secondary", display: "block" }}
                         >
-                          {model.name || model.id}
+                          {model.id}
                         </Typography>
-                        <StatusDot
-                          color={isSelected ? "#10b981" : "#64748b"}
-                        />
+                        <Typography variant="caption" color="text.secondary">
+                          {roleSubtitle}
+                        </Typography>
                       </Box>
+                    </Box>
+
+                    <StyledSwitch
+                      checked={isSelected}
+                      onChange={() => handleModelSelect(model.id)}
+                      disabled={isBusy}
+                      size="small"
+                    />
+                  </ModelCardHeader>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ lineHeight: 1.5, fontSize: "0.8125rem" }}
+                  >
+                    {model.description}
+                  </Typography>
+
+                  <ModelMetricsGrid>
+                    <MetricColumn>
+                      <MetricTitle>
+                        {t("ai_providers:detail.context_window", "Ventana Contexto")}
+                      </MetricTitle>
+                      <MetricVal>{contextText}</MetricVal>
+                    </MetricColumn>
+                    <MetricColumn>
+                      <MetricTitle>
+                        {t("ai_providers:detail.capacity_multimodal", "Capacidad")}
+                      </MetricTitle>
+                      <MetricVal>{capText}</MetricVal>
+                    </MetricColumn>
+                  </ModelMetricsGrid>
+
+                  {/* INFORMATIVE OCR FOCUS SWITCH */}
+                  <Box
+                    sx={(theme) => ({
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      pt: 1.5,
+                      borderTop: `1px dashed ${theme.palette.divider}`,
+                    })}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                      <DocumentScannerOutlinedIcon
+                        sx={{
+                          fontSize: 18,
+                          color: isOcrFocused ? "info.main" : "text.secondary",
+                        }}
+                      />
                       <Typography
                         variant="caption"
-                        sx={{ fontFamily: "monospace", color: "text.secondary", display: "block" }}
+                        sx={{
+                          fontWeight: 600,
+                          color: isOcrFocused ? "info.main" : "text.secondary",
+                        }}
                       >
-                        {model.id}
+                        {t("ai_providers:detail.ocr_focus_tag", "Foco OCR (Informativo)")}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {roleSubtitle}
-                      </Typography>
+                      <Tooltip
+                        title={t(
+                          "ai_providers:detail.ocr_focus_desc",
+                          "Marca este modelo como recomendado para tareas de OCR. Nota: La inferencia se ejecutará con el modelo seleccionado actualmente."
+                        )}
+                      >
+                        <InfoOutlinedIcon
+                          sx={{ fontSize: 15, color: "text.disabled", cursor: "pointer" }}
+                        />
+                      </Tooltip>
                     </Box>
+
+                    <StyledSwitch
+                      checked={isOcrFocused}
+                      onChange={() => handleToggleOcrFocus(model.id)}
+                      disabled={isBusy}
+                      size="small"
+                    />
                   </Box>
+                </ModelCardPaper>
+              );
+            })}
+          </ModelsGrid>
+        )}
+        </Skeleton>
 
-                  <StyledSwitch
-                    checked={isSelected}
-                    onChange={() => handleModelSelect(model.id)}
-                    disabled={updateProviderMutation.isPending}
-                    size="small"
-                  />
-                </ModelCardHeader>
-
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ lineHeight: 1.5, fontSize: "0.8125rem" }}
-                >
-                  {model.description}
-                </Typography>
-
-                <ModelMetricsGrid>
-                  <MetricColumn>
-                    <MetricTitle>
-                      {t("ai_providers:detail.context_window", "Ventana Contexto")}
-                    </MetricTitle>
-                    <MetricVal>{contextText}</MetricVal>
-                  </MetricColumn>
-                  <MetricColumn>
-                    <MetricTitle>
-                      {t("ai_providers:detail.avg_latency", "Latencia Media")}
-                    </MetricTitle>
-                    <MetricVal sx={{ color: "success.main" }}>
-                      {latencyText}
-                    </MetricVal>
-                  </MetricColumn>
-                  <MetricColumn>
-                    <MetricTitle>
-                      {t("ai_providers:detail.capacity_multimodal", "Capacidad")}
-                    </MetricTitle>
-                    <MetricVal>{capText}</MetricVal>
-                  </MetricColumn>
-                </ModelMetricsGrid>
-              </ModelCardPaper>
-            );
-          })}
-        </ModelsGrid>
+        {/* EXTENDED THINKING SECTION */}
+        <Box sx={{ mt: 1 }}>
+          <SwitchWrapper>
+            <StyledFormControlLabel
+              control={
+                <StyledSwitch
+                  checked={extendedThinkingEnabled && supportsReasoning}
+                  disabled={!supportsReasoning || isBusy}
+                  onChange={(e) => handleToggleExtendedThinking(e.target.checked)}
+                />
+              }
+              label={
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                    <PsychologyOutlinedIcon
+                      sx={{
+                        fontSize: 20,
+                        color: supportsReasoning ? "primary.main" : "text.disabled",
+                      }}
+                    />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                      {t(
+                        "ai_providers:detail.extended_thinking_title",
+                        "Razonamiento Extendido"
+                      )}
+                    </Typography>
+                    {supportsReasoning ? (
+                      <Chip
+                        size="small"
+                        label={t(
+                          "ai_providers:detail.extended_thinking_supported",
+                          "Razonamiento Soportado"
+                        )}
+                        color="primary"
+                        sx={{ height: 20, fontSize: "0.6875rem", fontWeight: 700 }}
+                      />
+                    ) : (
+                      <Chip
+                        size="small"
+                        label={t(
+                          "ai_providers:detail.extended_thinking_not_supported",
+                          "No disponible para este modelo"
+                        )}
+                        variant="outlined"
+                        sx={{ height: 20, fontSize: "0.6875rem" }}
+                      />
+                    )}
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">
+                    {supportsReasoning
+                      ? t(
+                          "ai_providers:detail.extended_thinking_desc",
+                          "Habilita pasos de deliberación y razonamiento profundo previo a la respuesta. Aplica solo a modelos con capacidad de razonamiento detectada."
+                        )
+                      : t(
+                          "ai_providers:detail.extended_thinking_not_supported",
+                          "Este modelo no cuenta con capacidad de razonamiento extendido."
+                        )}
+                  </Typography>
+                </Box>
+              }
+              labelPlacement="start"
+            />
+          </SwitchWrapper>
+        </Box>
       </DetailPanel>
 
       {/* PANEL 2: EXCLUSIVE OPERATION MODE */}
@@ -1154,6 +1377,19 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
           onClose={() => setIsAddKeyModalOpen(false)}
           onSuccess={() => {
             refetchApiKeys();
+            refetchHealth();
+          }}
+        />
+      )}
+
+      {/* MODAL: SYNC MODELS */}
+      {currentDbProvider && (
+        <SyncModelsModal
+          open={isSyncModalOpen}
+          provider={currentDbProvider}
+          onClose={() => setIsSyncModalOpen(false)}
+          onSuccess={() => {
+            refetchProviders();
             refetchHealth();
           }}
         />

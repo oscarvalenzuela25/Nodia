@@ -45,48 +45,22 @@ export const getSupportedProviderByKey = (
 
 export const sanitizeProviderFields = (provider: any): any => {
   if (!provider) return provider;
-  const key = provider.key?.toLowerCase();
-  const supported = getSupportedProviderByKey(key);
-  if (supported) {
-    const fields = { ...(provider.fields || {}) };
-    const validModelIds = new Set(supported.availableModels.map((m) => m.id));
+  if (!provider.fields) {
+    provider.fields = {};
+  }
 
-    if (key === 'gemini') {
-      fields.available_models = supported.availableModels;
-      if (
-        !fields.selected_model ||
-        !validModelIds.has(fields.selected_model) ||
-        String(fields.selected_model).includes('2.5') ||
-        String(fields.selected_model).includes('2.0') ||
-        String(fields.selected_model).includes('1.5')
-      ) {
-        fields.selected_model = supported.defaultSelectedModel || 'gemini-flash';
-      }
-    } else {
-      if (fields.available_models && Array.isArray(fields.available_models)) {
-        fields.available_models = fields.available_models.filter(
-          (m: any) =>
-            !m.id?.includes('2.5') &&
-            !m.id?.includes('2.0') &&
-            !m.id?.includes('1.5'),
-        );
-        if (fields.available_models.length === 0) {
-          fields.available_models = supported.availableModels;
-        }
-      } else {
-        fields.available_models = supported.availableModels;
-      }
-      if (
-        fields.selected_model &&
-        (String(fields.selected_model).includes('2.5') ||
-          String(fields.selected_model).includes('2.0') ||
-          String(fields.selected_model).includes('1.5'))
-      ) {
-        fields.selected_model = supported.defaultSelectedModel;
-      }
+  // Ensure available_models is an array if present, but never inject default models
+  if (provider.fields.available_models && !Array.isArray(provider.fields.available_models)) {
+    provider.fields.available_models = [];
+  }
+
+  // Mask any direct sensitive keys in fields if any exist
+  const sensitiveKeys = ['secret', 'api_key', 'apiKey', 'password', 'token', 'access_token'];
+  for (const k of sensitiveKeys) {
+    if (provider.fields[k] && typeof provider.fields[k] === 'string') {
+      const val = provider.fields[k];
+      provider.fields[k] = val.length > 8 ? `${val.slice(0, 4)}...${val.slice(-4)}` : '****';
     }
-
-    provider.fields = fields;
   }
   return provider;
 };
