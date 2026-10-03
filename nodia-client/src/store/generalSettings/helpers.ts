@@ -26,6 +26,16 @@ export const getModulePath = (module: ModuleContext): string => {
   if (normalized === "actions" || normalized === "acciones") return "/settings/actions";
   if (normalized === "modules" || normalized === "modulos") return "/settings/modules";
   if (normalized === "business" || normalized === "businesses" || normalized === "negocios") return "/business";
+  if (
+    normalized === "ai-providers" ||
+    normalized === "ai_providers" ||
+    normalized === "ai-provider" ||
+    normalized === "ai_provider" ||
+    normalized === "proveedores_ia" ||
+    normalized === "proveedores-ia"
+  ) {
+    return "/settings/ai-providers";
+  }
   return "/";
 };
 

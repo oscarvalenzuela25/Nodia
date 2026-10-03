@@ -1,22 +1,44 @@
+import { Suspense, type ReactNode } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
-import Home from "../modules/home/pages/Home/index";
 import BaseLayout from "../layouts/BaseLayout";
 import PublicLayout from "../layouts/PublicLayout";
 import NoGuard from "./NoGuard";
 import Guard from "./Guard";
 import GuardStrict from "./GuardStrict";
-import Login from "../modules/auth/pages/Login";
-// import Register from "../modules/auth/pages/Register";
-import NotFound from "../modules/core/pages/NotFound";
-import Maintenance from "../modules/core/pages/Maintenance";
 import RouteError from "../modules/core/pages/RouteError";
-import Users from "../modules/generalSettings/pages/Users";
-import Roles from "../modules/generalSettings/pages/Roles";
-import Actions from "../modules/generalSettings/pages/Actions";
-import Modules from "../modules/generalSettings/pages/Modules";
-import AiProviders from "../modules/generalSettings/pages/AiProviders";
-import Business from "../modules/business/pages/Business";
-import BusinessDetail from "../modules/business/pages/BusinessDetail";
+import RouteLoader from "../components/RouteLoader";
+import { lazyWithRetry } from "./lazyRoute";
+
+// Lazy-loaded route pages (Code Splitting per route)
+const Home = lazyWithRetry(() => import("../modules/home/pages/Home"));
+const Business = lazyWithRetry(() => import("../modules/business/pages/Business"));
+const BusinessDetail = lazyWithRetry(
+  () => import("../modules/business/pages/BusinessDetail"),
+);
+const Users = lazyWithRetry(() => import("../modules/generalSettings/pages/Users"));
+const Roles = lazyWithRetry(() => import("../modules/generalSettings/pages/Roles"));
+const Actions = lazyWithRetry(
+  () => import("../modules/generalSettings/pages/Actions"),
+);
+const Modules = lazyWithRetry(
+  () => import("../modules/generalSettings/pages/Modules"),
+);
+const AiProviders = lazyWithRetry(
+  () => import("../modules/generalSettings/pages/AiProviders"),
+);
+const Login = lazyWithRetry(() => import("../modules/auth/pages/Login"));
+const Maintenance = lazyWithRetry(
+  () => import("../modules/core/pages/Maintenance"),
+);
+const NotFound = lazyWithRetry(() => import("../modules/core/pages/NotFound"));
+
+const renderLazyPage = (children: ReactNode) => (
+  <Suspense fallback={<RouteLoader variant="page" />}>{children}</Suspense>
+);
+
+const renderLazyPublic = (children: ReactNode) => (
+  <Suspense fallback={<RouteLoader variant="fullscreen" />}>{children}</Suspense>
+);
 
 const router = createBrowserRouter([
   {
@@ -27,39 +49,31 @@ const router = createBrowserRouter([
         index: true,
         element: (
           <BaseLayout>
-            <Guard>
-              <Home />
-            </Guard>
+            <Guard>{renderLazyPage(<Home />)}</Guard>
           </BaseLayout>
         ),
       },
       {
         path: "business",
         element: (
-          <BaseLayout>
-            <Guard>
-              <Business />
-            </Guard>
-          </BaseLayout>
+          <GuardStrict modulePath="/business">
+            <BaseLayout>{renderLazyPage(<Business />)}</BaseLayout>
+          </GuardStrict>
         ),
       },
       {
         path: "business/:id",
         element: (
-          <BaseLayout>
-            <Guard>
-              <BusinessDetail />
-            </Guard>
-          </BaseLayout>
+          <GuardStrict modulePath="/business">
+            <BaseLayout>{renderLazyPage(<BusinessDetail />)}</BaseLayout>
+          </GuardStrict>
         ),
       },
       {
         path: "settings/users",
         element: (
           <GuardStrict modulePath="/settings/users">
-            <BaseLayout>
-              <Users />
-            </BaseLayout>
+            <BaseLayout>{renderLazyPage(<Users />)}</BaseLayout>
           </GuardStrict>
         ),
       },
@@ -67,9 +81,7 @@ const router = createBrowserRouter([
         path: "settings/roles",
         element: (
           <GuardStrict modulePath="/settings/roles">
-            <BaseLayout>
-              <Roles />
-            </BaseLayout>
+            <BaseLayout>{renderLazyPage(<Roles />)}</BaseLayout>
           </GuardStrict>
         ),
       },
@@ -77,9 +89,7 @@ const router = createBrowserRouter([
         path: "settings/actions",
         element: (
           <GuardStrict modulePath="/settings/actions">
-            <BaseLayout>
-              <Actions />
-            </BaseLayout>
+            <BaseLayout>{renderLazyPage(<Actions />)}</BaseLayout>
           </GuardStrict>
         ),
       },
@@ -87,9 +97,7 @@ const router = createBrowserRouter([
         path: "settings/modules",
         element: (
           <GuardStrict modulePath="/settings/modules">
-            <BaseLayout>
-              <Modules />
-            </BaseLayout>
+            <BaseLayout>{renderLazyPage(<Modules />)}</BaseLayout>
           </GuardStrict>
         ),
       },
@@ -97,9 +105,7 @@ const router = createBrowserRouter([
         path: "settings/ai-providers",
         element: (
           <GuardStrict modulePath="/settings/ai-providers">
-            <BaseLayout>
-              <AiProviders />
-            </BaseLayout>
+            <BaseLayout>{renderLazyPage(<AiProviders />)}</BaseLayout>
           </GuardStrict>
         ),
       },
@@ -107,40 +113,19 @@ const router = createBrowserRouter([
         path: "login",
         element: (
           <NoGuard>
-            <PublicLayout>
-              <Login />
-            </PublicLayout>
+            <PublicLayout>{renderLazyPublic(<Login />)}</PublicLayout>
           </NoGuard>
         ),
       },
-      // {
-      //   path: "register",
-      //   element: (
-      //     // <NoGuard>
-      //     //   <PublicLayout>
-      //     //     <Register />
-      //     //   </PublicLayout>
-      //     // </NoGuard>
-      //     <PublicLayout>
-      //       <Register />
-      //     </PublicLayout>
-      //   ),
-      // },
       {
         path: "maintenance",
         element: (
-          <PublicLayout>
-            <Maintenance />
-          </PublicLayout>
+          <PublicLayout>{renderLazyPublic(<Maintenance />)}</PublicLayout>
         ),
       },
       {
         path: "404",
-        element: (
-          <PublicLayout>
-            <NotFound />
-          </PublicLayout>
-        ),
+        element: <PublicLayout>{renderLazyPublic(<NotFound />)}</PublicLayout>,
       },
       {
         path: "*",

@@ -52,7 +52,7 @@ describe("SelectMultipleInput", () => {
     expect(screen.queryByText("User")).not.toBeInTheDocument();
 
     // Clear search button should appear and restore all options
-    const clearBtn = screen.getByLabelText("clear search");
+    const clearBtn = screen.getByLabelText("Limpiar búsqueda");
     expect(clearBtn).toBeInTheDocument();
     await user.click(clearBtn);
 
@@ -221,5 +221,14 @@ describe("SelectMultipleInput", () => {
 
     await user.click(deselectCheckbox);
     expect(handleChange).toHaveBeenCalledWith(["User"]);
+  });
+  it("keeps selected values outside remote results when selecting the loaded page", async () => {
+    const user = userEvent.setup(), change = vi.fn(), search = vi.fn(), load = vi.fn();
+    render(<SelectMultipleInput label="Remote" options={[{ value: "new", label: "New result" }, { value: "other", label: "Other result" }]} value={["previous"]} onChange={change} onSearchChange={search} hasMore onLoadMore={load} />);
+    await user.click(screen.getByRole("button", { name: "Remote" }));
+    await user.click(screen.getByRole("checkbox", { name: "Seleccionar resultados cargados" }));
+    expect(change).toHaveBeenCalledWith(["previous", "new", "other"]);
+    await user.click(screen.getByRole("button", { name: "Cargar más" })); expect(load).toHaveBeenCalledOnce();
+    await user.type(screen.getByPlaceholderText("Buscar..."), "rare"); expect(search).toHaveBeenLastCalledWith("rare");
   });
 });

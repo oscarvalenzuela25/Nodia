@@ -120,7 +120,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
     }
 
     return available;
-  }, [occupiedLinks, initialData?.link, t]);
+  }, [occupiedLinks, initialData, t]);
 
   const isFormValid =
     moduleKey.trim().length > 0 &&

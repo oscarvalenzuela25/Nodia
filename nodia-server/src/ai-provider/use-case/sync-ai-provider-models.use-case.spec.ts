@@ -133,4 +133,103 @@ describe('SyncAiProviderModelsUseCase', () => {
 
     expect(result.isSelectedModelAvailable).toBe(false);
   });
+
+  it('should discover models for Gemini when mode is api_key via Google Gemini API', async () => {
+    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
+      id: '1',
+      key: 'gemini',
+      name: 'Google Gemini',
+      default_mode: 'api_key',
+      fields: {
+        api_key: {
+          selected_model: 'gemini-2.5-flash',
+        },
+      },
+    } as any);
+
+    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue('AQ.valid_test_key');
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        models: [
+          {
+            name: 'models/gemini-2.5-flash',
+            displayName: 'Gemini 2.5 Flash',
+            description: 'Fast and versatile model',
+            inputTokenLimit: 1048576,
+            supportedGenerationMethods: ['generateContent'],
+          },
+          {
+            name: 'models/text-embedding-004',
+            displayName: 'Text Embedding',
+            supportedGenerationMethods: ['embedContent'],
+          },
+        ],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await useCase.execute('1', { mode: 'api_key' });
+
+    expect(result.providerId).toBe('1');
+    expect(result.currentSelectedModel).toBe('gemini-2.5-flash');
+    expect(result.isSelectedModelAvailable).toBe(true);
+    // Should filter out embedContent-only models
+    expect(result.models).toHaveLength(1);
+    expect(result.models[0].id).toBe('gemini-2.5-flash');
+    expect(result.models[0].displayName).toBe('Gemini 2.5 Flash');
+    expect(result.models[0].capabilities).toContain('ocr');
+
+    // Verify it called Google Gemini endpoint with x-goog-api-key, NOT api.openai.com
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('generativelanguage.googleapis.com'),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'x-goog-api-key': 'AQ.valid_test_key',
+        }),
+      }),
+    );
+
+    vi.unstubAllGlobals();
+  });
+
+  it('should throw BadRequestException when Gemini API key fails, reporting Gemini error', async () => {
+    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
+      id: '1',
+      key: 'gemini',
+      name: 'Google Gemini',
+      default_mode: 'api_key',
+    } as any);
+
+    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue('AQ.invalid_key');
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      text: async () => JSON.stringify({ error: { message: 'API key not valid' } }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow(
+      'Error al consultar API de Gemini (401)',
+    );
+
+    vi.unstubAllGlobals();
+  });
+
+  it('should throw BadRequestException when unrecognized provider has no baseUrl', async () => {
+    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
+      id: '99',
+      key: 'unknown-custom-llm',
+      name: 'Custom LLM',
+      default_mode: 'api_key',
+    } as any);
+
+    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue('some_secret_key');
+
+    await expect(useCase.execute('99', { mode: 'api_key' })).rejects.toThrow(
+      'no tiene un endpoint de modelos configurado por defecto',
+    );
+  });
 });

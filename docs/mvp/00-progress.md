@@ -1,14 +1,14 @@
 # Progreso del MVP — Nodia
 
 > Estado general: en desarrollo
-> Última revisión: 2026-09-25
+> Última revisión: 2026-10-03
 
 ## Checklist
 
 - [x] 01. Entrevista aprobada — `01-interview.md`
 - [x] 02. PRD V1 aprobado — `02-prd-v1.md`
 - [ ] 03. Modelo de dominio ERD aprobado — `03-domain-model-erd.md`
-- [x] 04. PRD V2 aprobado — `04-prd-v2.md`
+- [ ] 04. PRD V2 en revisión parcial de autorización por acceso global confirmado — `04-prd-v2.md`
 - [ ] 05. Sitemap en revisión por ampliación IA — `05-sitemap.md`
 - [ ] 06. Route Specs aprobados — `06-route-specs.md`
 - [x] 07. Restricciones de diseño aprobadas — `07-design-constraints.md`
@@ -43,7 +43,8 @@ Las casillas reabiertas señalan documentos afectados por las ampliaciones de au
 
 ## Bloqueos actuales
 
-- Ninguno registrado.
+- Lanzamiento público pendiente de los P0 de autorización/aislamiento/consultas de Server y de la integridad de importaciones; ver [revisión técnica](19-prelaunch-review.md).
+- Cierre de Client pendiente de contratos de agregados, confirmación transaccional/idempotente y capacidades dinámicas; operación agéntica/cuotas reales y validación en staging pendientes.
 
 ## Decisiones que invalidaron pasos posteriores
 
@@ -68,7 +69,43 @@ Las casillas reabiertas señalan documentos afectados por las ampliaciones de au
 
 Revisar la [especificación de gestión de IA](16-ai-provider-management-handoff.md) y el [ADR-006 propuesto](../architecture/decisions/ADR-006-ai-provider-configuration.md). La implementación de esta ampliación comienza con una prueba de login remoto en VPS y la reconciliación de los documentos afectados, sin aprobarlos automáticamente.
 
+El [plan de seguridad](17-security-hardening-plan.md) queda en revisión desde el 2026-09-28. Sus etapas 0 a 5 definen las puertas de salida para el despliegue público de NestJS y Gemini; no cambia el estado de aprobación de los documentos existentes.
+
+El 2026-09-28 el usuario eligió [acceso interno exclusivo de Nodia Server al microservicio Gemini](../architecture/decisions/ADR-007-gemini-internal-access.md). Postman podrá consumir los endpoints autorizados de Nodia Server; FastAPI no se publicará directamente. Implementación y verificación en VPS pendientes.
+
+La primera implementación local de seguridad añadió autenticación entre servicios, permisos por acción para administración de IA y análisis, límites/validación de archivos, cifrado sin clave fija y pruebas. El [plan](17-security-hardening-plan.md#avance-de-implementación--2026-09-28) distingue los controles locales de los pendientes de infraestructura y autorización por ámbito. No se ha declarado el sistema listo para producción.
+
+Se retiró la llamada directa del cliente a `localhost:8000/auth/login`. El botón de Settings puede iniciar y consultar un trabajo de login local a través de Nodia Server, con sesión y acción `ai:manage`, solo en desarrollo con Gemini en loopback; Chrome se abre en el host Python. El visor gráfico remoto del VPS sigue pendiente. El [runbook de seguridad](18-security-deployment-runbook.md) detalla la migración, comprobaciones externas y reversión; no se ha ejecutado en VPS.
+
+Para los próximos microservicios, el usuario confirmó el mismo acceso interno exclusivo mediante [ADR-008](../architecture/decisions/ADR-008-internal-microservices-only.md). La [guía de incorporación](../architecture/internal-microservice-security.md) fija los pasos de token propio, red privada, autorización en Nodia Server, pruebas y despliegue. Esta documentación no declara aprobado ni verificado el despliegue de Gemini.
+
 ## Seguimiento técnico
+
+- 2026-10-03: normalizados a LF los 78 archivos de texto que contenían CRLF: Client (63), Gemini (9), Server (4) y documentación (2). Se incorporan `.gitattributes` y `.editorconfig` en la raíz para conservar LF en checkouts y ediciones; Prettier de Server ya exige LF. Verificación por bytes/hash: contenido preservado excepto los finales de línea y estas reglas/entrada; ningún CRLF restante en los textos incluidos. Dependencias, generados, perfiles, sesiones y binarios excluidos; sin iniciar servicios, modificar valores de configuración ni alterar el índice de Git.
+
+- 2026-10-03: limpieza de configuración local: `.env` y `.env.example` quedan con las mismas variables, orden y posiciones de línea en Client (3), Server (39) y Gemini (10). Se conservaron todas las asignaciones vigentes y los valores de ejemplo; faltantes opcionales se completaron con vacío o defaults verificados del código. Se retiró únicamente el marcador obsoleto `ANTIGRAVITY_AGENT`, que el runtime ignora. Validación de parser dotenv y alineación correcta, sin imprimir credenciales, iniciar servicios ni modificar código.
+
+- 2026-10-03: QA temporal con Quick Tunnel de Cloudflare: el usuario reprodujo login Google rechazado por `AuthOriginGuard` (`403 auth:invalid_origin`). Se añade proxy Vite para `/api/v1` conservando Origin/cookies/Bearer, puerto estricto y destino local configurable sin exponerlo al bundle. Cliente local y ejemplo usan `/api/v1`; Server local autoriza el hostname exacto recibido y activa cookie Secure/Lax. [Guía de autenticación](14-authentication.md#qa-remoto-temporal-con-cloudflare-quick-tunnel--2026-10-03) registra configuración, diagnóstico y renovación de hostnames. 458 pruebas/71 archivos, tipado, lint y build correctos; cuatro regresiones nuevas con Vite real/backend sintético, sin Google. Configuración auth validada con su lector real; túnel responde HTML 200 con COOP correcto y API 403 desde el proceso todavía sin reiniciar. Pendientes: reiniciar Server/recargar cliente, completar login, renovación y logout con cuenta real. No se desactiva el guard, no se publica Gemini ni se aprueban documentos automáticamente.
+
+- 2026-10-03: Ransack reforzado en Server con políticas explícitas para 14 consultas, sufijos completos, operadores negativos/nulos, valores parametrizados, búsquedas literales y límites del objeto q antes de filtros de dominio. DTO de productos habilita predicados adicionales sin cambio de acceso global. S-03 corregido localmente; S-09 y PostgreSQL/staging siguen pendientes. [ADR-010 propuesto](../architecture/decisions/ADR-010-ransack-query-policies.md) registra el contrato; AGENTS actualizado. Build correcto, lint sin errores con 7 advertencias previas, 287 pruebas/74 archivos correctos (42 regresiones nuevas); 14 políticas/111 columnas comprobadas en ESM sin conexión. No se ejecutaron consultas reales, migraciones, despliegue ni se aprobaron documentos automáticamente. Ver seguimiento al final de `19-prelaunch-review.md`.
+
+- 2026-10-03: aclaración del usuario: administración sin permisos por acción y acceso global a productos/facturas/archivos entre negocios son intencionales para el público específico. S-01/S-02 se reclasifican por alcance, no se declaran corregidos ni se implementan restricciones. S-03 SQL dinámico continúa abierto. Se reabre parcialmente PRD V2 por contradicción con permisos de endpoints y se mantiene pendiente reconciliar documentos posteriores ya en revisión. Autenticación y demás invariantes no se modifican. Ver aclaración al final de `19-prelaunch-review.md`.
+
+- 2026-10-03: revisión actualizada de Nodia Server y plan secuencial registrados en [19-prelaunch-review.md](19-prelaunch-review.md#revisión-actualizada-de-nodia-server--2026-10-03). Continúan abiertos permisos administrativos, aislamiento entre negocios y SQL dinámico (P0), además de integridad, migraciones y configuración IA. Se confirmó offline aceptación de factura inválida, paginación sin máximo, metadata de query borrada y saneamiento JSON superficial. Build correcto, lint sin errores con 7 advertencias, 245 pruebas/74 archivos correctos; audit de producción con 2 paquetes de severidad alta en la cadena Nest/Express/Multer. Se amplió `backend-service-quality` y creó `nestjs-service-quality` en el repositorio de skills/backend; ambas instaladas en Server y obligatorias en su AGENTS, copia genérica de Gemini sincronizada. No se modificó código de producto, lockfile, infraestructura ni estados de aprobación; correcciones del plan pendientes.
+
+- 2026-10-03: por instrucción del usuario, se crearon `backend-service-quality` y `python-microservice-quality` en `C:\Users\Oscar\Desktop\skills\backend\` y se instalaron copias completas en `nodia-gemini-microservice/skills/`. AGENTS exige leer y aplicar ambas en desarrollo/revisión de código, contratos, configuración, pruebas y despliegue, junto con las skills específicas existentes. Las guías reutilizables separan garantías generales de mecanismos Python y contienen referencias condicionales; las restricciones de proveedores, acceso privado y estado real de Antigravity permanecen locales. Se validan formato, metadata, enlaces y equivalencia de copias. Esta entrega modifica instrucciones, no código de producto ni estados de aprobación.
+
+- 2026-10-03: mejoras locales de Gemini implementadas por autorización del usuario; ver [seguimiento](19-prelaunch-review.md#seguimiento-de-implementación-de-gemini--2026-10-03) y [ADR-009 propuesto](../architecture/decisions/ADR-009-truthful-gemini-engines.md). Inicialización por lifespan/inyección y runner aislado, motor agéntico sin disponibilidad/fallback/cuota ficticios, modelo explícito exacto, parser Pydantic único, errores seguros/propagados, admisión/cuerpo/cancelación acotados, cuotas con caché/consulta compartida y contenedor no root con un worker. Server conserva ceros/nulos y clasificación/plazo HTTP; Client actualiza el tipo nullable del total. Validación: 57 pruebas Python en Windows/Linux sin Google, imagen Linux sin privilegios y pip check correctos, auditoría del manifiesto sin vulnerabilidades conocidas; Server build y 245 pruebas, Client build y 43 pruebas de importación/selección correctos. El usuario confirmó Antigravity de escritorio; su instalación local no demuestra un adaptador de sesión. Continúan pendientes esa integración real, sesión/login privado en VPS, volúmenes/reinicio con cuenta real y verificación externa. No se modificaron secretos ni se desplegó; no se aprueban documentos automáticamente.
+
+- 2026-10-03: secuencia de mejoras de Gemini concretada en [19-prelaunch-review.md](19-prelaunch-review.md#gemini-microservice): aislamiento de pruebas, identidad real de motores, modelos dinámicos exactos, parser/contratos, errores y recuperación, admisión de cargas, consultas/limpieza y operación privada en VPS. Se contrastaron los hallazgos con el código actual; no se ejecutó la suite con acceso a Google ni se modificó código del microservicio. La viabilidad de Antigravity sin API keys, los cambios coordinados en Server y las pruebas de VPS continúan pendientes. El plan conserva el estado de revisión y no crea otro documento temporal.
+
+- 2026-10-02: por instrucción del usuario, se creó la skill reutilizable `frontend-quality` en su repositorio de skills y se instaló una copia en `nodia-client/skills/frontend-quality`. El AGENTS del cliente exige leerla y aplicarla en los cambios de código frontend junto con las skills locales correspondientes; incluye referencia condicional a escenarios de regresión y evidencia de cierre. Esta entrega modifica instrucciones, no código de producto ni estados de aprobación.
+
+- 2026-10-02: mejoras de Client implementadas con los contratos actuales; seguimiento en [19-prelaunch-review.md](19-prelaunch-review.md#seguimiento-de-implementación-de-client--2026-10-02). Identidad IA por instancia/modo, sin controles de API keys ni disponibilidad/cuotas inventadas; errores deduplicados y reintento, formularios preservados, cancelación de login, paginación y selectores remotos, revisión estricta de borradores e indicadores parciales ocultos. Lint/build correctos, 454 pruebas en 70 archivos y npm audit sin vulnerabilidades. Portada/login verificados localmente; contratos de Server/Gemini y staging siguen pendientes. El plan temporal y sus referencias se retiraron por petición del usuario, sin aprobar documentos automáticamente.
+
+- 2026-10-02: revisión previa al lanzamiento de Client, Server y Gemini documentada en [19-prelaunch-review.md](19-prelaunch-review.md), en revisión. Incluye huecos de autorización por acción/negocio, consultas dinámicas, importación sin atomicidad/idempotencia, conversión de datos en migraciones, métricas/paginación y discrepancias del motor agéntico con la política sin API keys. Últimos checks: Client build correcto, lint con 6 errores y 448 tests correctos; Server build/lint correctos y 236 tests; Python 27 tests correctos, pero parte de la suite conectó realmente a Google y debe aislarse. No se modificó código ni se ejecutaron migraciones/despliegues; verificaciones de VPS y navegador real siguen pendientes. No se aprueba automáticamente el lanzamiento ni los documentos.
+
+- 2026-09-29: revisión interna de `nodia-gemini-microservice`: se añadió `AGENTS.md` con selección de skills locales y límites del adaptador privado; se auditó `.env`/`.env.example` por consumidores y no se encontraron variables sin uso. Se reforzó la persistencia atómica de cookies, el cierre de Playwright ante cancelación, la limpieza de clientes Gemini fallidos, los contratos de respuesta y los scripts de arranque. Docker monta `.env` de solo lectura y persiste rotaciones en `session_state/`. Esto no sustituye la prueba de login remoto ni la verificación en VPS.
 
 - 2026-09-25: se abrió la [entrevista de operación de proveedores de IA](15-ai-providers-interview.md) como ampliación previa a producción. Se confirmó despliegue híbrido: NestJS y microservicio en VPS; frontend en Cloudflare Pages; R2 para archivos; PostgreSQL y Redis gestionados externamente. Gemini Web/Gemini API se alternan manualmente. El cambio de API en Northflank y el uso de Docker requieren reconciliar el stack y la arquitectura del MVP.
 - 2026-09-25: entrevista cerrada como borrador en revisión; [especificación para agente](16-ai-provider-management-handoff.md) redactada y no aprobada. Se reabrió el sitemap afectado. Las decisiones confirmadas y propuestas técnicas están diferenciadas en la especificación.

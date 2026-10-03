@@ -297,5 +297,33 @@ describe("Sidenav", () => {
     expect(moduleButton).toBeInTheDocument();
     expect(moduleButton).toHaveStyle({ paddingLeft: "24px" });
   });
+
+  it("calls onDrawerToggle when a navigation item is clicked on mobile", async () => {
+    const user = userEvent.setup();
+    const handleDrawerToggle = vi.fn();
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/",
+          element: (
+            <Sidenav
+              mobileOpen={true}
+              onDrawerToggle={handleDrawerToggle}
+              desktopCollapsed={false}
+            />
+          ),
+        },
+      ],
+      { initialEntries: ["/"] }
+    );
+
+    render(<RouterProvider router={router} />);
+
+    const homeItem = screen.getByText("Inicio");
+    await user.click(homeItem);
+
+    expect(handleDrawerToggle).toHaveBeenCalledTimes(1);
+  });
 });
 

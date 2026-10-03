@@ -13,6 +13,10 @@ export type SelectMultipleInputProps = {
   placeholder?: string;
   searchPlaceholder?: string;
   disabled?: boolean;
+  onSearchChange?: (value: string) => void;
+  onLoadMore?: () => void;
+  hasMore?: boolean;
+  loadingOptions?: boolean;
   required?: boolean;
   error?: boolean;
   helperText?: ReactNode;

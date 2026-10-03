@@ -7,9 +7,9 @@ from gemini_webapi import GeminiClient
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
 async def main():
+    load_dotenv()
     parser = argparse.ArgumentParser(
         description="Utilidad de autenticación de Gemini Pro con Playwright para Nodia."
     )
@@ -32,8 +32,8 @@ async def main():
         psidts = os.getenv("GEMINI_SECURE_1PSIDTS", "").strip()
         has_profile = manager.has_profile()
 
-        model_env = os.getenv("GEMINI_MODEL", "gemini-flash").strip() or "gemini-flash"
-        model_display = "3.8 Flash" if "flash" in model_env and "lite" not in model_env else ("3.1 Pro" if "pro" in model_env else model_env)
+        model_env = os.getenv("GEMINI_MODEL", "").strip()
+        model_display = model_env or "Sin modelo asignado"
         logger.info("--- Estado de Autenticación Gemini ---")
         logger.info(f"¿Tiene cookies en .env?: {'Sí' if psid and psidts else 'No'}")
         logger.info(f"¿Existe perfil de navegador guardado?: {'Sí' if has_profile else 'No'}")
@@ -41,17 +41,20 @@ async def main():
 
         if psid and psidts:
             logger.info("Probando conexión con Google Gemini...")
+            client = None
             try:
                 client = GeminiClient(psid, psidts)
                 await client.init(timeout=30)
                 logger.success("¡Autenticación VÁLIDA y operativa con Gemini Pro!")
-                await client.close()
             except Exception as e:
-                logger.error(f"Las cookies actuales no son válidas o expiraron: {e}")
+                logger.error("La sesión no pudo verificarse: {}", type(e).__name__)
                 if has_profile:
                     logger.info("Puedes ejecutar: python auth.py --headless para intentar renovarlas automáticamente.")
                 else:
                     logger.info("Ejecuta: python auth.py para iniciar sesión nuevamente.")
+            finally:
+                if client is not None:
+                    await client.close()
         return
 
     if args.headless:

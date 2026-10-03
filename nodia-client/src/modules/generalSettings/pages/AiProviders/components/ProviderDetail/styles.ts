@@ -10,7 +10,86 @@ import {
   TableHead,
   TableCell,
   TableRow,
+  Tabs,
+  Tab,
 } from "@mui/material";
+
+export const TopHeaderPanel = styled(Paper)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(3), // 24px gap between navigation bar and tabs
+  padding: theme.spacing(2, 2.5),
+  backgroundColor: alpha(theme.palette.background.paper, 0.6),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  backdropFilter: "blur(8px)",
+}));
+
+export const TopNavigationRow = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  gap: theme.spacing(2),
+  width: "100%",
+}));
+
+export const TopNavigationBox = TopNavigationRow;
+export const TabsContainer = styled(Box)({});
+
+export const StyledTabs = styled(Tabs)(({ theme }) => ({
+  minHeight: 46,
+  "& .MuiTabs-indicator": {
+    height: 3,
+    borderRadius: "3px 3px 0 0",
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
+
+export const StyledTab = styled(Tab)(({ theme }) => ({
+  minHeight: 46,
+  textTransform: "none",
+  fontWeight: 600,
+  fontSize: "0.875rem",
+  padding: theme.spacing(1, 2.5),
+  color: theme.palette.text.secondary,
+  gap: theme.spacing(1),
+  transition: theme.transitions.create(["color", "background-color"], {
+    duration: theme.transitions.duration.shorter,
+  }),
+  borderRadius: theme.shape.borderRadius,
+  "&.Mui-selected": {
+    color: theme.palette.primary.main,
+    fontWeight: 700,
+  },
+  "&:hover": {
+    color: theme.palette.text.primary,
+    backgroundColor: alpha(theme.palette.primary.main, 0.05),
+  },
+}));
+
+export const EmptyModesBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  padding: theme.spacing(6, 3),
+  gap: theme.spacing(2),
+  borderRadius: Number(theme.shape.borderRadius) * 1.5,
+  border: `1px dashed ${theme.palette.divider}`,
+  backgroundColor: alpha(theme.palette.background.paper, 0.5),
+}));
+
+export const AgenticStatusCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2.5, 3),
+  borderRadius: Number(theme.shape.borderRadius) * 1.5,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: alpha(theme.palette.primary.main, 0.03),
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1.5),
+}));
 
 export const DetailContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -19,18 +98,6 @@ export const DetailContainer = styled(Box)(({ theme }) => ({
   width: "100%",
 }));
 
-export const TopNavigationBox = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  flexWrap: "wrap",
-  gap: theme.spacing(2),
-  padding: theme.spacing(1.5, 2.5),
-  backgroundColor: alpha(theme.palette.background.paper, 0.6),
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
-  backdropFilter: "blur(8px)",
-}));
 
 export const BreadcrumbBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -508,4 +575,28 @@ export const EmptyBox = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
   textAlign: "center",
 }));
+
+export const QuotaGrid = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  gap: theme.spacing(2),
+  width: "100%",
+}));
+
+export const QuotaCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2.5),
+  borderRadius: Number(theme.shape.borderRadius) * 1.5,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: alpha(theme.palette.background.paper, 0.6),
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1.5),
+}));
+
+export const QuotaHeader = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  width: "100%",
+});
 

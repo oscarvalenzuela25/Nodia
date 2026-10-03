@@ -27,6 +27,7 @@ import {
   useProviders,
   useInvoices,
 } from "../../../../infrastructure/useServices";
+import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import { Skeleton } from "boneyard-js/react";
 import { KpiCardsGridSkeleton, TableSkeleton } from "../../../../../../components/skeletons";
 import {
@@ -57,7 +58,7 @@ export const OverviewTab: FC<Props> = ({
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
 
-  const { data: productsData, isLoading: isLoadingProducts } = useProducts({
+  const { data: productsData, isLoading: isLoadingProducts, isError: productsError, isFetching: productsFetching, refetch: refetchProducts } = useProducts({
     page: 1,
     limit: 50,
     q: {
@@ -65,7 +66,7 @@ export const OverviewTab: FC<Props> = ({
       s: "created_at desc",
     },
   });
-  const { data: providersData, isLoading: isLoadingProviders } = useProviders({
+  const { data: providersData, isLoading: isLoadingProviders, isError: providersError, isFetching: providersFetching, refetch: refetchProviders } = useProviders({
     page: 1,
     limit: 50,
     q: {
@@ -73,16 +74,20 @@ export const OverviewTab: FC<Props> = ({
       s: "created_at desc",
     },
   });
-  const { data: invoicesData, isLoading: isLoadingInvoices } = useInvoices({
+  const { data: invoicesData, isLoading: isLoadingInvoices, isError: invoicesError, isFetching: invoicesFetching, refetch: refetchInvoices } = useInvoices({
     q: { business_id_eq: businessId },
     limit: 50,
   });
 
   const isLoadingOverview = isLoadingProducts || isLoadingProviders || isLoadingInvoices;
 
-  const products = productsData?.data ?? [];
-  const providers = providersData?.data ?? [];
-  const invoices = invoicesData?.data ?? [];
+  const products = useMemo(() => productsData?.data ?? [], [productsData?.data]);
+  const providers = useMemo(() => providersData?.data ?? [], [providersData?.data]);
+  const invoices = useMemo(() => invoicesData?.data ?? [], [invoicesData?.data]);
+  const productsComplete = !productsError && !!productsData && (productsData.meta?.total_items ?? 0) <= products.length;
+  const providersComplete = !providersError && !!providersData && (providersData.meta?.total_items ?? 0) <= providers.length;
+  const invoicesComplete = !invoicesError && !!invoicesData && (invoicesData.meta?.total_items ?? 0) <= invoices.length;
+  const isFetchingOverview = productsFetching || providersFetching || invoicesFetching;
 
   // Metrics calculation
   const totalProducts = productsData?.meta?.total_items ?? products.length;
@@ -167,6 +172,12 @@ export const OverviewTab: FC<Props> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <QueryErrorAlert isError={productsError || providersError || invoicesError} isFetching={isFetchingOverview}
+        onRetry={() => Promise.all([refetchProducts(), refetchProviders(), refetchInvoices()])} />
+      {isFetchingOverview && !isLoadingOverview && <LinearProgress sx={{ height: 2 }} />}
+      {!isLoadingOverview && (!productsComplete || !providersComplete || !invoicesComplete) && (
+        <Typography color="text.secondary" role="status">{t("business:aggregates_unavailable")}</Typography>
+      )}
       {/* 3 Top KPI Cards */}
       <Skeleton
         loading={isLoadingOverview}
@@ -182,12 +193,12 @@ export const OverviewTab: FC<Props> = ({
                 <Inventory2OutlinedIcon color="primary" fontSize="small" />
               </KpiTop>
               <KpiValue>
-                {totalProducts}
+                {productsError ? "—" : totalProducts}
                 <Typography component="span" variant="subtitle2" color="text.secondary">
                   SKUs
                 </Typography>
               </KpiValue>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
+              {productsComplete && <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
                 <Chip
                   label={t("business:kpi_products_stock_normal", {
                     count: normalStockCount,
@@ -221,12 +232,12 @@ export const OverviewTab: FC<Props> = ({
                   sx={{ height: 22, fontSize: "0.75rem", fontWeight: 600 }}
                   data-testid="kpi-stock-out-chip"
                 />
-              </Box>
+              </Box>}
             </Box>
             <KpiFooter>
               <span>
                 {t("business:kpi_products_inventory_val")}: $
-                {Math.round(totalInventoryVal).toLocaleString()}
+                {productsComplete ? Math.round(totalInventoryVal).toLocaleString() : "—"}
               </span>
             </KpiFooter>
           </KpiCard>
@@ -240,7 +251,7 @@ export const OverviewTab: FC<Props> = ({
                 <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_providers_label")}</KpiTitle>
                 <StorefrontOutlinedIcon color="primary" fontSize="small" />
               </KpiTop>
-              <Box
+              {providersComplete && <Box
                 sx={{
                   display: "flex",
                   gap: 1,
@@ -286,7 +297,7 @@ export const OverviewTab: FC<Props> = ({
                   sx={{ height: 26, fontSize: "0.8rem", fontWeight: 600 }}
                   data-testid="kpi-providers-inactive-chip"
                 />
-              </Box>
+              </Box>}
             </Box>
           </KpiCard>
         </Grid>
@@ -312,6 +323,7 @@ export const OverviewTab: FC<Props> = ({
                 <KpiTitle sx={{ mb: 0 }}>{t("business:kpi_invoices_label")}</KpiTitle>
                 <Select
                   size="small"
+                  disabled={isFetchingOverview}
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
                   data-testid="kpi-invoices-month-select"
@@ -342,7 +354,7 @@ export const OverviewTab: FC<Props> = ({
                 })}
               </Typography>
               <KpiValue sx={{ mt: 1 }} data-testid="kpi-invoiced-current-month">
-                ${Math.round(selectedMonthInvoiced).toLocaleString()}
+                {invoicesComplete ? `$${Math.round(selectedMonthInvoiced).toLocaleString()}` : "—"}
               </KpiValue>
             </Box>
           </KpiCard>
@@ -397,7 +409,7 @@ export const OverviewTab: FC<Props> = ({
                       {invoices.map((inv) => (
                         <TableRow key={inv.id} hover>
                           <TableCell sx={{ fontWeight: 600 }}>{inv.code}</TableCell>
-                          <TableCell>{inv.provider?.name ?? "Proveedor Central"}</TableCell>
+                          <TableCell>{inv.provider?.name ?? t("business:unassigned_provider")}</TableCell>
                           <TableCell align="right" sx={{ fontWeight: 600 }}>
                             ${(inv.total_amount || 0).toLocaleString()}
                           </TableCell>
@@ -406,7 +418,7 @@ export const OverviewTab: FC<Props> = ({
                     </TableBody>
                   </Table>
                 </ScrollablePanelContent>
-              ) : (
+              ) : invoicesError ? null : (
                 <Box sx={{ py: 4, textAlign: "center" }}>
                   <Typography variant="body2" color="text.secondary">
                     {t("business:invoices_empty_desc")}
@@ -414,6 +426,7 @@ export const OverviewTab: FC<Props> = ({
                   <Button
                     variant="outlined"
                     size="small"
+                    disabled={isFetchingOverview}
                     onClick={() => onOpenNewInvoice?.()}
                     sx={{ mt: 1.5, borderRadius: 2 }}
                   >
@@ -434,7 +447,7 @@ export const OverviewTab: FC<Props> = ({
                 {t("business:key_providers_title")}
               </SectionTitle>
               <Chip
-                label={`${activeProviders} activos`}
+                label={providersComplete ? t("business:kpi_providers_active_plural", { count: activeProviders }) : "—"}
                 size="small"
                 color="success"
                 variant="outlined"
@@ -455,7 +468,7 @@ export const OverviewTab: FC<Props> = ({
 
             <ScrollablePanelContent data-testid="key-providers-scroll-panel">
               <Stack spacing={2.5} sx={{ pr: 0.5 }}>
-                {activeProvidersList.length > 0 ? (
+                {!productsComplete || !providersComplete ? <Typography color="text.secondary">{t("business:aggregates_unavailable")}</Typography> : activeProvidersList.length > 0 ? (
                   activeProvidersList.map((prov) => {
                     const provStock = products
                       .filter((p) => String(p.provider_id) === String(prov.id))

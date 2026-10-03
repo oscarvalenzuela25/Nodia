@@ -5,7 +5,8 @@ import { ModuleGroup } from './entities/module-group.entity.js';
 import { CreateModuleGroupDto } from './dto/create-module-group.dto.js';
 import { UpdateModuleGroupDto } from './dto/update-module-group.dto.js';
 import { GetModuleGroupsDto } from './dto/get-module-groups.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetModuleGroupsResponse } from './types/module-group.types.js';
 import { TranslationService } from '../translation/translation.service.js';
 import { RedisService } from '../common/redis/redis.service.js';
@@ -26,8 +27,9 @@ export class ModuleGroupService {
     q,
   }: GetModuleGroupsDto): Promise<GetModuleGroupsResponse> {
     const qb = this.moduleGroupRepository.createQueryBuilder('module_group');
+    validateRansackEnvelope(q);
 
-    applyRansack(qb, q, 'module_group');
+    applyRansack(qb, q, 'module_group', RANSACK_POLICIES.module_group);
 
     if (all) {
       const rawData = await qb.getMany();

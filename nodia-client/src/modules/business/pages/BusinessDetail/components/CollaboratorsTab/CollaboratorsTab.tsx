@@ -40,6 +40,7 @@ interface Props {
   collaborators?: BusinessCollaborator[];
   onOpenAddCollaborator: () => void;
   isBusy?: boolean;
+  canManage?: boolean;
   isLoading?: boolean;
 }
 
@@ -48,6 +49,7 @@ export const CollaboratorsTab: FC<Props> = ({
   collaborators = [],
   onOpenAddCollaborator,
   isBusy = false,
+  canManage = true,
   isLoading = false,
 }) => {
   const { t } = useTranslation(["business", "core"]);
@@ -64,7 +66,7 @@ export const CollaboratorsTab: FC<Props> = ({
 
   const assignMutation = useAssignCollaborators();
   const isMutating = assignMutation.isPending;
-  const isActionDisabled = isBusy || isMutating;
+  const isActionDisabled = isBusy || isMutating || !canManage;
 
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
@@ -342,7 +344,7 @@ export const CollaboratorsTab: FC<Props> = ({
 
       {/* Confirm Remove Collaborator Dialog */}
       <ConfirmDialog
-        open={Boolean(confirmRemoveCollab)}
+        open={Boolean(confirmRemoveCollab) && canManage}
         onClose={() => setConfirmRemoveCollab(null)}
         onCancel={() => setConfirmRemoveCollab(null)}
         onConfirm={handleConfirmRemove}
@@ -359,7 +361,7 @@ export const CollaboratorsTab: FC<Props> = ({
       {/* Dedicated Single Collaborator Edit Modal */}
       {Boolean(editingCollab) && Boolean(businessId) && (
         <EditCollaboratorModal
-          open={Boolean(editingCollab)}
+          open={Boolean(editingCollab) && canManage}
           onClose={() => setEditingCollab(null)}
           businessId={businessId}
           collaborator={editingCollab}

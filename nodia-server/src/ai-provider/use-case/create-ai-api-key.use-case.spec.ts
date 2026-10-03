@@ -37,6 +37,8 @@ describe('CreateAiApiKeyUseCase', () => {
       is_active: true,
       created_at: new Date(),
       updated_at: new Date(),
+      secret_ciphertext: 'encrypted-sensitive-value',
+      secret_fingerprint: 'sensitive-fingerprint',
     } as AiApiKey;
 
     vi.mocked(serviceMock.createApiKey!).mockResolvedValue(mockKey);
@@ -44,6 +46,11 @@ describe('CreateAiApiKeyUseCase', () => {
     const result = await useCase.execute(dto);
 
     expect(serviceMock.createApiKey).toHaveBeenCalledWith(dto);
-    expect(result).toEqual(mockKey);
+    expect(result).not.toHaveProperty('secret_ciphertext');
+    expect(result).not.toHaveProperty('secret_fingerprint');
+    expect(result).toMatchObject({
+      id: mockKey.id,
+      display_hint: mockKey.display_hint,
+    });
   });
 });

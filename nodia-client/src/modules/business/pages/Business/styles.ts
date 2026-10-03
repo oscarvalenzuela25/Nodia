@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Card, Typography, FormControlLabel, Switch } from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
@@ -15,6 +15,13 @@ export const HeaderTopBar = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
   gap: theme.spacing(2),
   marginBottom: theme.spacing(1),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& > button": {
+      width: "100%",
+    },
+  },
 }));
 
 export const PageTitleContainer = styled(Box)(({ theme }) => ({
@@ -25,6 +32,13 @@ export const PageTitleContainer = styled(Box)(({ theme }) => ({
 
 export const PageTitle = styled(Typography)(({ theme }) => ({
   ...theme.typography.h4,
+  fontSize: "1.5rem",
+  [theme.breakpoints.up("sm")]: {
+    fontSize: "1.875rem",
+  },
+  [theme.breakpoints.up("md")]: {
+    fontSize: "2.125rem",
+  },
   color: theme.palette.text.primary,
   fontWeight: 700,
 }));
@@ -43,6 +57,82 @@ export const FilterBar = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
   gap: theme.spacing(2),
   marginBottom: theme.spacing(3),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& > *": {
+      width: "100%",
+    },
+  },
+}));
+
+export const FilterActions = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(2),
+  flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& > *": {
+      width: "100%",
+    },
+    "& .MuiToggleButtonGroup-root": {
+      width: "100%",
+      display: "flex",
+      "& .MuiToggleButton-root": {
+        flex: 1,
+      },
+    },
+  },
+}));
+
+export const SwitchWrapper = styled(Box)(({ theme }) => {
+  const borderColor = theme.palette.divider;
+
+  return {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: theme.spacing(0.5, 1.5),
+    minHeight: 38,
+    boxSizing: "border-box",
+    borderRadius:
+      typeof theme.shape.borderRadius === "number"
+        ? theme.shape.borderRadius * 1.5
+        : 8,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(255, 255, 255, 0.03)"
+        : "rgba(0, 0, 0, 0.02)",
+    border: `1px solid ${borderColor}`,
+  };
+});
+
+export const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+  margin: 0,
+  width: "100%",
+  justifyContent: "space-between",
+  gap: theme.spacing(1.5),
+  "& .MuiFormControlLabel-label": {
+    fontWeight: 600,
+    fontSize: "0.875rem",
+    color: theme.palette.text.primary,
+    whiteSpace: "nowrap",
+  },
+}));
+
+export const StyledSwitch = styled(Switch)(({ theme }) => ({
+  "& .MuiSwitch-switchBase.Mui-checked": {
+    color: theme.palette.success.main,
+    "&:hover": {
+      backgroundColor: "rgba(56, 142, 60, 0.08)",
+    },
+  },
+  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+    backgroundColor: theme.palette.success.main,
+  },
 }));
 
 export const CardsGrid = styled(Box)(({ theme }) => ({

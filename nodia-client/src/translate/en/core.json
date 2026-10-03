@@ -37,9 +37,16 @@
   "server_error_alert": "A problem occurred while loading data from the server.",
   "auth_context_error_title": "Error loading information",
   "auth_context_error_message": "There was an error retrieving your user information.",
+  "loading_route": "Loading page...",
   "pagination": {
     "rows_per_page": "Rows per page:",
     "of": "of",
     "more_than": "more than"
-  }
+  },
+  "rows_per_page": "Rows per page",
+  "displayed_rows": "{{from}}–{{to}} of {{count}}",
+  "load_more": "Load more",
+  "select_loaded": "Select loaded results",
+  "deselect_loaded": "Deselect loaded results",
+  "clear_search": "Clear search"
 }

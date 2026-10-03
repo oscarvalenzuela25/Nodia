@@ -2,6 +2,8 @@ import type { FC, KeyboardEvent, MouseEvent } from "react";
 import { useState, useMemo, useId } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Button,
+  LinearProgress,
   IconButton,
   InputAdornment,
   ListItemText,
@@ -37,6 +39,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   placeholder,
   searchPlaceholder,
   disabled = false,
+  onSearchChange, onLoadMore, hasMore = false, loadingOptions = false,
   required = false,
   error = false,
   helperText,
@@ -53,6 +56,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLabel, setSelectedLabel] = useState<SelectSingleOption | null>(null);
 
   const isOpen = Boolean(anchorEl);
 
@@ -66,31 +70,34 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   }, [options]);
 
   const filteredOptions = useMemo(() => {
-    if (!searchTerm.trim()) return normalizedOptions;
+    if (onSearchChange || !searchTerm.trim()) return normalizedOptions;
     const term = searchTerm.toLowerCase().trim();
     return normalizedOptions.filter(
       (opt) =>
         opt.label.toLowerCase().includes(term) ||
         opt.value.toLowerCase().includes(term)
     );
-  }, [normalizedOptions, searchTerm]);
+  }, [normalizedOptions, searchTerm, onSearchChange]);
 
   const selectedOption = useMemo(() => {
     if (!value) return null;
-    return normalizedOptions.find((opt) => opt.value === value) ?? null;
-  }, [normalizedOptions, value]);
+    return normalizedOptions.find((opt) => opt.value === value) ?? (selectedLabel?.value === value ? selectedLabel : { value, label: value });
+  }, [normalizedOptions, value, selectedLabel]);
 
   const handleOpen = (e: MouseEvent<HTMLDivElement>) => {
-    if (disabled) return;
+    if (disabled || loadingOptions) return;
     setAnchorEl(e.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
     setSearchTerm("");
+    onSearchChange?.("");
   };
 
   const handleSelectOption = (optionValue: string) => {
+    if (disabled || loadingOptions) return;
+    setSelectedLabel(normalizedOptions.find((option) => option.value === optionValue) ?? null);
     onChange(optionValue);
     handleClose();
   };
@@ -103,10 +110,11 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   const handleClearSearch = (e: MouseEvent<unknown>) => {
     e.stopPropagation();
     setSearchTerm("");
+    onSearchChange?.("");
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (disabled) return;
+    if (disabled || loadingOptions) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (!isOpen) {
@@ -130,15 +138,15 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
         id={inputId}
         role="button"
         aria-label={label}
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={disabled || loadingOptions ? -1 : 0}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-disabled={disabled}
+        aria-disabled={disabled || loadingOptions}
         onClick={handleOpen}
         onKeyDown={handleKeyDown}
         isOpen={isOpen}
         isError={error}
-        isDisabled={disabled}
+        isDisabled={disabled || loadingOptions}
       >
         <ValueContainer>
           {selectedOption ? (
@@ -205,7 +213,8 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
             fullWidth
             size="small"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            disabled={loadingOptions}
+            onChange={(e) => { setSearchTerm(e.target.value); onSearchChange?.(e.target.value); }}
             placeholder={searchPlaceholder ?? t("search", "Buscar...")}
             slotProps={{
               input: {
@@ -218,7 +227,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
                   <InputAdornment position="end">
                     <IconButton
                       size="small"
-                      aria-label="clear search"
+                      aria-label={t("clear_search")}
                       onClick={handleClearSearch}
                       edge="end"
                       sx={{ p: 0.5 }}
@@ -232,6 +241,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
           />
         </SearchContainer>
 
+        {loadingOptions && <LinearProgress sx={{ height: 2 }} />}
         <OptionsList role="listbox" aria-multiselectable="false">
           {filteredOptions.length === 0 ? (
             <Box sx={{ py: 2, px: 2, textAlign: "center" }}>
@@ -244,6 +254,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
               const isSelected = value === opt.value;
               return (
                 <StyledMenuItem
+                  disabled={disabled || loadingOptions}
                   key={opt.value}
                   role="option"
                   aria-selected={isSelected}
@@ -270,6 +281,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
             })
           )}
         </OptionsList>
+        {hasMore && <Button fullWidth disabled={loadingOptions || disabled} onClick={onLoadMore}>{t("load_more")}</Button>}
       </StyledPopover>
 
       {helperText && (

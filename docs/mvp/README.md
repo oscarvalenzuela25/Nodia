@@ -36,8 +36,13 @@ Esta carpeta contiene la definición del producto previa al desarrollo. Debe per
 |---|---|
 | `15-ai-providers-interview.md` | Entrevista y decisiones confirmadas sobre gestión global de IA |
 | `16-ai-provider-management-handoff.md` | Especificación de entrega para un agente implementador |
+| `17-security-hardening-plan.md` | Plan por etapas para asegurar Nodia API, Gemini y su despliegue |
+| `18-security-deployment-runbook.md` | Secuencia y pruebas de despliegue seguro, migración y reversión |
+| `19-prelaunch-review.md` | Revisión de Client, Server y Gemini; riesgos y plan de corrección previo al lanzamiento |
 
 Estos documentos no están aprobados. Amplían el alcance previo al lanzamiento y requieren reconciliar los documentos del MVP afectados antes de implementación definitiva.
+
+Para añadir microservicios internos, consultar la [guía de seguridad](../architecture/internal-microservice-security.md) y [ADR-008](../architecture/decisions/ADR-008-internal-microservices-only.md). Todos se consumen únicamente desde Nodia Server.
 
 ## Estados
 

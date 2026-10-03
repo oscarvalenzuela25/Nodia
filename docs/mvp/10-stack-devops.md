@@ -1,7 +1,7 @@
 # Stack DevOps — Nodia Parte 1
 
 > Estado: en revisión — ampliación IA y cambio de despliegue 2026-09-25; aprobación histórica del MVP conservada
-> Última actualización: 2026-09-25
+> Última actualización: 2026-09-28
 > Dependencias: 08-stack-frontend.md y 09-stack-backend.md aprobados
 
 ## Objetivo
@@ -33,11 +33,14 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 - **Redis:** servicio gestionado externo; proveedor y parámetros operativos pendientes.
 - **Archivos de facturas:** Cloudflare R2, sin cambio.
 - **Diseño operativo detallado:** proxy/TLS, red privada entre NestJS y microservicio, backups, despliegue y recuperación pendientes en [la especificación IA](16-ai-provider-management-handoff.md).
+- **Límite de acceso Gemini:** [ADR-007](../architecture/decisions/ADR-007-gemini-internal-access.md) fija que solo NestJS consume directamente FastAPI. El navegador y Postman usan Nodia Server. La topología concreta depende de si NestJS corre en el host o en Docker.
+- **Microservicios futuros:** [ADR-008](../architecture/decisions/ADR-008-internal-microservices-only.md) extiende la misma frontera de acceso a cada servicio nuevo. Seguir la [guía de incorporación y seguridad](../architecture/internal-microservice-security.md), con token distinto por servicio y entorno, pruebas negativas y verificación externa del despliegue.
 
 ## 3. Contenedores (Docker)
 
 - **Decisión actual:** el microservicio Gemini se ejecutará en Docker en el VPS con volumen persistente para perfil de navegador y sesión. La forma de ejecutar NestJS en el VPS se definirá en el plan operativo.
 - **Decisión histórica:** Docker se había excluido en la Parte 1, antes de incorporar el microservicio con sesión web.
+- **Configuración local actual:** Compose publica FastAPI solo en `127.0.0.1:8000` y exige un token de servicio compartido. Si NestJS pasa a Docker, se debe retirar `ports` y conectar ambos servicios a una red dedicada. La verificación de firewall y puertos desde Internet sigue pendiente.
 
 ## 4. Integración y Entrega Continua (CI/CD)
 
@@ -59,6 +62,10 @@ Definir la estructura del repositorio, la infraestructura de despliegue, y las h
 - Docker para microservicio y volumen de sesión; ejecución de NestJS por definir.
 
 ## Preguntas abiertas
+
+### Seguridad del despliegue Gemini — 2026-09-28
+
+Seguir el [runbook de despliegue seguro](18-security-deployment-runbook.md) antes de usar credenciales reales en el VPS. Incluye la migración de API keys, prueba negativa de acceso directo y reversión. El cliente ya no llama `localhost:8000` para iniciar sesión. En desarrollo local, Settings inicia el trabajo a través de NestJS y Chrome aparece en el host Python; en el VPS queda pendiente un visor remoto privado y su prueba con la cuenta real.
 
 ### Requisitos de despliegue del rate limit — 2026-09-12
 

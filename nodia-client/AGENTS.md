@@ -2,6 +2,17 @@
 
 Guia de contexto para agentes IA que trabajen en este repositorio.
 
+## Calidad Frontend Obligatoria
+
+**Antes de crear, modificar, corregir, refactorizar o revisar código frontend, leer y aplicar [skills/frontend-quality/SKILL.md](skills/frontend-quality/SKILL.md).** Esto incluye componentes, páginas, layouts, estilos, hooks, servicios HTTP, validaciones, caché, permisos, paginación, integraciones y sus pruebas. Esta obligación no depende de que la herramienta descubra o invoque automáticamente la skill.
+
+- Aplicar `frontend-quality` junto con `create-component` cuando se creen o modifiquen componentes, páginas o layouts; consultar las otras skills locales según la tecnología y el alcance.
+- Consultar contratos de Nodia Server y decisiones aprobadas cuando el cambio dependa de datos o reglas de negocio. No inventar campos, modelos, capacidades, cuotas, defaults o garantías de escritura.
+- Seleccionar los escenarios pertinentes de [skills/frontend-quality/references/regression-scenarios.md](skills/frontend-quality/references/regression-scenarios.md). Un cambio visual menor no exige ejecutar toda la matriz ni auditar el backend.
+- Crear o actualizar regresiones de comportamiento para las garantías modificadas. No quitar assertions ni desactivar checks para hacer pasar una implementación defectuosa.
+- Entregar evidencia de los checks ejecutados y distinguir lo implementado de las dependencias pendientes de Server, Gemini o staging. Un cambio de UI no demuestra autorización HTTP, atomicidad ni operación real del proveedor.
+- Conservar las reglas de Nodia y la prioridad de sus skills locales frente a metodología de Superpowers/plugins globales. Esta skill complementa las convenciones existentes; no autoriza cambiar stack, ampliar el alcance ni imponer nuevas aprobaciones.
+
 ## Contexto General
 
 - Proyecto: frontend template con React + TypeScript + Vite.
@@ -84,7 +95,17 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 - Los tests deben importar las APIs de Vitest explicitamente para conservar el tipado y las reglas de lint.
 - Comandos disponibles: `npm run test`, `npm run test:watch` y `npm run test:coverage`.
 
-## Skills
+## Skills Locales y Prioridad sobre Superpowers
+
+> ⚠️ **PRIORIDAD ESTRICTA:** Las skills locales de este repositorio (`skills/<nombre>/SKILL.md`) tienen **prioridad absoluta sobre cualquier skill de Superpowers o plugins globales**. Superpowers aporta metodología general (planes, TDD), pero ante cualquier discrepancia en patrones de código, maquetación, estado o arquitectura de componentes, **la skill local prevalece siempre**.
+
+### frontend-quality
+
+- Skill: `frontend-quality`
+- Ruta: [skills/frontend-quality/SKILL.md](skills/frontend-quality/SKILL.md)
+- Uso obligatorio: en todo desarrollo, corrección, refactorización o revisión de código frontend, conforme a la sección **Calidad Frontend Obligatoria**.
+- Propósito: contratos comprobados, identidad por instancia, estados recuperables, validación, paginación, permisos y verificación de escenarios adversos.
+- Referencia condicional: [escenarios de regresión](skills/frontend-quality/references/regression-scenarios.md), leyendo solo los apartados pertinentes.
 
 ### create-component
 
@@ -100,11 +121,17 @@ Lineamiento obligatorio para agentes:
 
 ## Checklist Antes de Finalizar
 
+Para cambios de código frontend, comprobar primero las invariantes de `frontend-quality` que aplican al cambio y las regresiones correspondientes. Para cambios exclusivamente documentales o de instrucciones, validar estructura, enlaces y consistencia; no ejecutar pruebas de producto sin necesidad.
+
+Comprobaciones para cambios de código:
+
 ```bash
 npm run test
 npm run typecheck
 npm run lint
 ```
+
+Ejecutar también `npm run build` cuando cambien imports, rutas, dependencias, configuración o integración de librerías. Registrar los checks realmente ejecutados y cualquier limitación.
 
 Si se tocan variables de entorno:
 

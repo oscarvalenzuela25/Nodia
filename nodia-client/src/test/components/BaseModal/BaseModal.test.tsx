@@ -4,6 +4,12 @@ import { describe, it, expect, vi } from "vitest";
 import BaseModal from "../../../../src/components/BaseModal";
 
 describe("BaseModal", () => {
+  it("closes on Escape when the form permits dismissal", async () => {
+    const close = vi.fn();
+    render(<BaseModal open onClose={close} title="Keyboard"><div>Content</div></BaseModal>);
+    await userEvent.keyboard("{Escape}");
+    expect(close).toHaveBeenCalledOnce();
+  });
   it("renders title, subtitle and content when open", () => {
     render(
       <BaseModal
@@ -42,7 +48,7 @@ describe("BaseModal", () => {
       </BaseModal>
     );
 
-    const closeBtn = screen.getByLabelText("close");
+    const closeBtn = screen.getByLabelText(/cerrar|close/i);
     await user.click(closeBtn);
 
     expect(handleClose).toHaveBeenCalledTimes(1);
@@ -63,12 +69,12 @@ describe("BaseModal", () => {
     expect(screen.getByText("Custom Action")).toBeInTheDocument();
   });
 
-  it("does not call onClose when escape key is pressed or backdrop is clicked", async () => {
+  it("respects explicit Escape blocking and ignores backdrop clicks", async () => {
     const handleClose = vi.fn();
     const user = userEvent.setup();
 
     render(
-      <BaseModal open={true} onClose={handleClose} title="Test Modal">
+      <BaseModal open={true} onClose={handleClose} title="Test Modal" disableEscapeKeyDown>
         <div>Content</div>
       </BaseModal>
     );

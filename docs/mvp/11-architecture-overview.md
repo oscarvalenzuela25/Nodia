@@ -1,7 +1,7 @@
 # Arquitectura Inicial — Nodia Parte 1
 
 > Estado: en revisión — ampliaciones auth e IA y cambio de despliegue; aprobación histórica del MVP conservada
-> Última actualización: 2026-09-25
+> Última actualización: 2026-09-28
 > Dependencias: Documentos 01 al 10 aprobados.
 
 ## Objetivo
@@ -64,6 +64,7 @@ flowchart TD
   - Exponer endpoints RESTful para la gestión administrativa de Usuarios, Roles, Recursos y Módulos.
   - Interceptar peticiones mediante `Guards` para validar que el usuario tenga los permisos exactos (`view`, `create`, `update`, `delete`) sobre el recurso objetivo.
 - **Despliegue actualizado:** VPS para NestJS. El microservicio Gemini también residirá allí, aislado de Internet y con volumen Docker persistente para la sesión web. Ver [ampliación IA](16-ai-provider-management-handoff.md).
+- **Límite de futuros microservicios:** solo Nodia Server los consume mediante red privada y credencial independiente por servicio. Los clientes se autentican y autorizan en NestJS. Ver [ADR-008](../architecture/decisions/ADR-008-internal-microservices-only.md) y la [guía de implementación](../architecture/internal-microservice-security.md). La comprobación operativa del VPS sigue pendiente.
 
 ### 2.3. Persistencia (Base de Datos)
 - **Motor:** PostgreSQL gestionado externamente; Neon o Northflank por decidir. Redis gestionado externamente y Cloudflare R2 para archivos.

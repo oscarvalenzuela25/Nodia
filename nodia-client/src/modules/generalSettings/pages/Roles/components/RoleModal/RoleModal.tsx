@@ -58,7 +58,7 @@ const RoleModalInner: FC<RoleModalProps> = ({
       });
     }
     return availableActions;
-  }, [actionsResponse, availableActions, i18n.language, t, i18n]);
+  }, [actionsResponse, availableActions, t, i18n]);
 
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.isActive ?? true

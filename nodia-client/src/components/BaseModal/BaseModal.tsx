@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useId } from "react";
+import { useTranslation } from "react-i18next";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import type { BaseModalProps } from "./types";
@@ -26,7 +27,7 @@ const BaseModal: FC<BaseModalProps> = ({
   ariaLabelledBy,
   ariaDescribedBy,
 }) => {
-  void disableEscapeKeyDown;
+  const { t } = useTranslation("core");
   const generatedTitleId = useId();
   const generatedDescId = useId();
 
@@ -37,7 +38,7 @@ const BaseModal: FC<BaseModalProps> = ({
     _event: object,
     reason: "backdropClick" | "escapeKeyDown"
   ) => {
-    if (reason === "backdropClick" || reason === "escapeKeyDown") {
+    if (reason === "backdropClick" || (reason === "escapeKeyDown" && disableEscapeKeyDown)) {
       return;
     }
     onClose();
@@ -63,7 +64,7 @@ const BaseModal: FC<BaseModalProps> = ({
         </HeaderContent>
         {showCloseButton && (
           <IconButton
-            aria-label="close"
+            aria-label={t("core:close")}
             onClick={onClose}
             size="small"
             sx={(theme) => ({

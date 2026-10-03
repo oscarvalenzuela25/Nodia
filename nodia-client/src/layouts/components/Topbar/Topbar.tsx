@@ -53,7 +53,7 @@ const Topbar: FC<Props> = ({
         <ArrowCircleLeftOutlinedIcon />
       </IconButton>
 
-      <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+      <Stack direction="row" spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: "center" }}>
         <LanguageSelector />
         <ThemeSelector />
         {isAuthenticated ? (

@@ -10,10 +10,10 @@ import {
   getSupportedAiProviders,
   getAiProviderCatalog,
   syncAiProviderModels,
-  createAiApiKey,
-  getAiApiKeys,
-  updateAiApiKey,
-  deleteAiApiKey,
+  startGeminiLogin,
+  getGeminiLoginStatus,
+  cancelGeminiLogin,
+  getGeminiEngines,
 } from "./services";
 import type {
   GetAiProvidersParams,
@@ -21,9 +21,6 @@ import type {
   UpdateAiProviderPayload,
   GetAiProviderEventsParams,
   GetSelectableModelsParams,
-  CreateAiApiKeyPayload,
-  GetAiApiKeysParams,
-  UpdateAiApiKeyPayload,
 } from "./types";
 
 export const useAiProviderCatalog = () => {
@@ -34,19 +31,42 @@ export const useAiProviderCatalog = () => {
   });
 };
 
+export const useStartGeminiLogin = () => useMutation({ mutationFn: startGeminiLogin });
+
+export const useGeminiLoginStatus = (jobId: string | null, enabled: boolean) =>
+  useQuery({
+    queryKey: ["gemini-login", jobId],
+    queryFn: () => getGeminiLoginStatus(jobId!),
+    enabled: enabled && Boolean(jobId),
+    refetchInterval: (query) =>
+      query.state.data?.state === "running" || !query.state.data ? 2000 : false,
+  });
+
+export const useCancelGeminiLogin = () =>
+  useMutation({ mutationFn: cancelGeminiLogin });
+
 export const useSyncAiProviderModels = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (args: string | { id: string; persist?: boolean }) => {
+    mutationFn: (
+      args:
+        | string
+        | { id: string; persist?: boolean; mode?: string; engine?: string }
+    ) => {
       if (typeof args === "string") {
         return syncAiProviderModels(args);
       }
-      return syncAiProviderModels(args.id, args.persist);
+      return syncAiProviderModels(args.id, args.persist, args.mode, args.engine);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
-      queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
+    onSuccess: (_data, variables) => {
+      const shouldPersist =
+        typeof variables === "string" || variables.persist !== false;
+      if (shouldPersist) {
+        queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
+        queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
+        queryClient.invalidateQueries({ queryKey: ["gemini-engines"] });
+      }
     },
   });
 };
@@ -96,6 +116,7 @@ export const useCreateAiProvider = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
       queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
+      queryClient.invalidateQueries({ queryKey: ["gemini-engines"] });
     },
   });
 };
@@ -116,6 +137,7 @@ export const useUpdateAiProvider = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
       queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
+      queryClient.invalidateQueries({ queryKey: ["gemini-engines"] });
     },
   });
 };
@@ -128,51 +150,11 @@ export const useEnabledWebAiProviders = () => {
   });
 };
 
-export const useAiApiKeys = (params?: GetAiApiKeysParams) => {
+export const useGeminiEngines = (options?: { enabled?: boolean }) => {
   return useQuery({
-    queryKey: ["ai-api-keys", params],
-    queryFn: () => getAiApiKeys(params),
-  });
-};
-
-export const useCreateAiApiKey = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: CreateAiApiKeyPayload) => createAiApiKey(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
-      queryClient.invalidateQueries({ queryKey: ["ai-api-keys"] });
-    },
-  });
-};
-
-export const useUpdateAiApiKey = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdateAiApiKeyPayload;
-    }) => updateAiApiKey(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
-      queryClient.invalidateQueries({ queryKey: ["ai-api-keys"] });
-    },
-  });
-};
-
-export const useDeleteAiApiKey = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: string) => deleteAiApiKey(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
-      queryClient.invalidateQueries({ queryKey: ["ai-api-keys"] });
-    },
+    queryKey: ["gemini-engines"],
+    queryFn: getGeminiEngines,
+    enabled: options?.enabled ?? true,
+    staleTime: 1000 * 30,
   });
 };

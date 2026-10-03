@@ -5,7 +5,8 @@ import { Module } from './entities/module.entity.js';
 import { CreateModuleDto } from './dto/create-module.dto.js';
 import { UpdateModuleDto } from './dto/update-module.dto.js';
 import { GetModulesDto } from './dto/get-modules.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetModulesResponse } from './types/module.types.js';
 import { TranslationService } from '../translation/translation.service.js';
 import { RedisService } from '../common/redis/redis.service.js';
@@ -27,12 +28,13 @@ export class ModuleService {
     q,
   }: GetModulesDto): Promise<GetModulesResponse> {
     const qb = this.moduleRepository.createQueryBuilder('module');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('module.module_group', 'module_group');
     }
 
-    applyRansack(qb, q, 'module');
+    applyRansack(qb, q, 'module', RANSACK_POLICIES.module);
 
     const attachGroupTranslations = async (modulesList: any[]) => {
       if (!includes) return;

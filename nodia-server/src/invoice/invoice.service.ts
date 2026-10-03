@@ -5,7 +5,8 @@ import { Invoice } from './entities/invoice.entity.js';
 import { CreateInvoiceDto } from './dto/create-invoice.dto.js';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto.js';
 import { GetInvoicesDto } from './dto/get-invoices.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetInvoicesResponse } from './types/invoice.types.js';
 
 @Injectable()
@@ -23,6 +24,7 @@ export class InvoiceService {
     q,
   }: GetInvoicesDto): Promise<GetInvoicesResponse> {
     const qb = this.invoiceRepository.createQueryBuilder('invoice');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('invoice.business', 'business')
@@ -48,7 +50,7 @@ export class InvoiceService {
         delete qCopy.issue_date_lteq;
       }
 
-      applyRansack(qb, qCopy, 'invoice');
+      applyRansack(qb, qCopy, 'invoice', RANSACK_POLICIES.invoice);
     }
 
     if (!q?.s) {

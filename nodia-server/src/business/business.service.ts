@@ -11,11 +11,13 @@ import { BusinessCollaborator } from './entities/business-collaborator.entity.js
 import { BusinessAction } from '../business-action/entities/business-action.entity.js';
 import { Product } from '../product/entities/product.entity.js';
 import { Provider } from '../provider/entities/provider.entity.js';
+import { UserRole } from '../user/entities/user-role.entity.js';
 import { CreateBusinessDto } from './dto/create-business.dto.js';
 import { UpdateBusinessDto } from './dto/update-business.dto.js';
 import { GetBusinessesDto } from './dto/get-businesses.dto.js';
 import { AssignCollaboratorsDto } from './dto/assign-collaborators.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetBusinessesResponse } from './types/business.types.js';
 import { TranslationService } from '../translation/translation.service.js';
 
@@ -32,26 +34,48 @@ export class BusinessService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Provider)
     private readonly providerRepository: Repository<Provider>,
+    @InjectRepository(UserRole)
+    private readonly userRoleRepository: Repository<UserRole>,
     private readonly translationService: TranslationService,
   ) {}
 
+  private async isSuperAdmin(userId?: string): Promise<boolean> {
+    if (!userId) return false;
+    const count = await this.userRoleRepository
+      .createQueryBuilder('ur')
+      .innerJoin('ur.role', 'r')
+      .where('ur.user_id = :userId', { userId: String(userId) })
+      .andWhere('ur.is_active = true')
+      .andWhere('r.is_active = true')
+      .andWhere('r.key = :key', { key: 'super_admin' })
+      .getCount();
+    return count > 0;
+  }
+
   async findMyBusinesses(
     userId: string,
-    { page = 1, limit = 10, all = false, includes = true, q }: GetBusinessesDto,
+    { page = 1, limit = 10, all = false, includes = true, all_businesses = false, q }: GetBusinessesDto,
   ): Promise<GetBusinessesResponse> {
+    const isSuper = await this.isSuperAdmin(userId);
     const qb = this.businessRepository.createQueryBuilder('business');
+    validateRansackEnvelope(q);
 
-    // Negocios donde el usuario es owner o colaborador activo
-    qb.where(
-      '(business.owner_id = :userId OR business.id IN (SELECT bc.business_id FROM business_collaborators bc WHERE bc.user_id = :userId AND bc.is_active = true))',
-      { userId: String(userId) },
-    );
+    // Super admin consultando todos los negocios si all_businesses es true
+    if (isSuper && all_businesses) {
+      // Sin restricción de pertenencia para super admin
+    } else {
+      // Negocios donde el usuario es owner o colaborador activo
+      qb.where(
+        '(business.owner_id = :userId OR business.id IN (SELECT bc.business_id FROM business_collaborators bc WHERE bc.user_id = :userId AND bc.is_active = true))',
+        { userId: String(userId) },
+      );
+    }
 
     if (includes) {
       qb.leftJoinAndSelect('business.owner', 'owner');
     }
 
-    applyRansack(qb, q, 'business');
+    applyRansack(qb, q, 'business', RANSACK_POLICIES.business);
 
     const formatBusinesses = async (businesses: Business[]): Promise<Business[]> => {
       if (businesses.length === 0) return [];
@@ -144,9 +168,9 @@ export class BusinessService {
         const collabsCount = collabCountsMap.get(b.id) ?? 0;
         const allProviders = providersByBusinessMap.get(b.id) ?? [];
 
-        b.user_role = isOwner ? 'owner' : 'collaborator';
-        b.user_position = isOwner ? 'Owner' : (myCollab?.position ?? null);
-        b.user_action_ids = isOwner ? [] : (myCollab?.action_ids ?? []);
+        b.user_role = isOwner || isSuper ? 'owner' : 'collaborator';
+        b.user_position = isOwner ? 'Owner' : (isSuper ? 'Super Admin' : (myCollab?.position ?? null));
+        b.user_action_ids = isOwner || isSuper ? [] : (myCollab?.action_ids ?? []);
         b.collaborators_count = collabsCount;
         b.has_collaborators = collabsCount > 0;
         b.products_count = productsCountMap.get(b.id) ?? 0;
@@ -214,14 +238,15 @@ export class BusinessService {
           is_active: true,
         },
       });
+      const isSuper = await this.isSuperAdmin(userId);
 
-      if (!isOwner && !collaborator) {
+      if (!isOwner && !collaborator && !isSuper) {
         throw new ForbiddenException('You do not have access to this business');
       }
 
-      business.user_role = isOwner ? 'owner' : 'collaborator';
-      business.user_position = isOwner ? 'Owner' : (collaborator?.position ?? null);
-      business.user_action_ids = isOwner ? [] : (collaborator?.action_ids ?? []);
+      business.user_role = isOwner || isSuper ? 'owner' : 'collaborator';
+      business.user_position = isOwner ? 'Owner' : (isSuper ? 'Super Admin' : (collaborator?.position ?? null));
+      business.user_action_ids = isOwner || isSuper ? [] : (collaborator?.action_ids ?? []);
     }
 
     const [productsCount, collaborators, allProviders] = await Promise.all([
@@ -286,8 +311,9 @@ export class BusinessService {
     updateBusinessDto: UpdateBusinessDto,
   ): Promise<Business> {
     const business = await this.findOne(id);
+    const isSuper = await this.isSuperAdmin(userId);
 
-    if (String(business.owner_id) !== String(userId)) {
+    if (String(business.owner_id) !== String(userId) && !isSuper) {
       throw new ForbiddenException('Only the business owner can update business details');
     }
 
@@ -309,8 +335,9 @@ export class BusinessService {
     dto: AssignCollaboratorsDto,
   ): Promise<BusinessCollaborator[]> {
     const business = await this.findOne(businessId);
+    const isSuper = await this.isSuperAdmin(userId);
 
-    if (String(business.owner_id) !== String(userId)) {
+    if (String(business.owner_id) !== String(userId) && !isSuper) {
       throw new ForbiddenException('Only the business owner can manage collaborators');
     }
 

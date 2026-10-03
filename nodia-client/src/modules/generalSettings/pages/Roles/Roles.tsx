@@ -162,7 +162,7 @@ const Roles: FC = () => {
       });
     }
     return [];
-  }, [rolesResponse, i18n.language, t, i18n]);
+  }, [rolesResponse, t, i18n]);
 
   const totalItems = useMemo(() => {
     return rolesResponse?.meta?.total_items ?? roles.length;
@@ -231,7 +231,7 @@ const Roles: FC = () => {
     });
 
     return map;
-  }, [filterActionsResponse, rolesResponse, i18n.language, t, i18n]);
+  }, [filterActionsResponse, rolesResponse, t, i18n]);
 
   // Roles fetch for filter options (all=true and includes=false)
   const {
@@ -288,7 +288,7 @@ const Roles: FC = () => {
         label,
       };
     });
-  }, [allRolesResponse?.data, roles, i18n.language, t, i18n]);
+  }, [allRolesResponse?.data, roles, t, i18n]);
 
   const roleLabelsMap = useMemo(() => {
     const map = new Map<string, string>();

@@ -13,7 +13,8 @@ import { BulkCreateProductLogDto } from './dto/bulk-create-product-log.dto.js';
 import { UpdateProductLogDto } from './dto/update-product-log.dto.js';
 import { BulkUpdateProductLogDto } from './dto/bulk-update-product-log.dto.js';
 import { GetProductLogsDto } from './dto/get-product-logs.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetProductsResponse, GetProductLogsResponse } from './types/product.types.js';
 
 @Injectable()
@@ -37,6 +38,7 @@ export class ProductService {
     q,
   }: GetProductsDto): Promise<GetProductsResponse> {
     const qb = this.productRepository.createQueryBuilder('product');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('product.business', 'business');
@@ -118,7 +120,7 @@ export class ProductService {
       }
     }
 
-    applyRansack(qb, cleanQ, 'product');
+    applyRansack(qb, cleanQ, 'product', RANSACK_POLICIES.product);
 
     if (!cleanQ?.s) {
       qb.addOrderBy('product.created_at', 'DESC');
@@ -269,12 +271,13 @@ export class ProductService {
     q,
   }: GetProductLogsDto): Promise<GetProductLogsResponse> {
     const qb = this.productLogRepository.createQueryBuilder('product_log');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('product_log.product', 'product');
     }
 
-    applyRansack(qb, q, 'product_log');
+    applyRansack(qb, q, 'product_log', RANSACK_POLICIES.product_log);
 
     if (all) {
       const data = await qb.getMany();

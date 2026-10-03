@@ -22,6 +22,15 @@ export class AiProviderCatalog {
   @Column({ type: 'varchar', length: 128 })
   name: string;
 
+  @Column({ type: 'boolean', default: true })
+  can_use_api_key: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  can_use_token_plan_web: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  can_use_token_plan_agentic: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 

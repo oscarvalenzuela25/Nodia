@@ -1,8 +1,10 @@
+import { claimHttpErrorNotification } from "../config/httpFeedback";
 import { isAxiosError } from "axios";
 import { sileo } from "sileo";
 import i18n from "../translate";
 
 export function notifyAuthError(error: unknown, fallback = "auth:request_failed") {
+  if (!claimHttpErrorNotification(error)) return;
   const message: unknown = isAxiosError(error) ? error.response?.data?.message : undefined;
   const description = typeof message === "string"
     ? (i18n.exists(message) ? i18n.t(message) : message)

@@ -17,7 +17,9 @@ describe('GetAiProvidersHealthUseCase', () => {
             id: '1',
             key: 'gemini',
             is_active: true,
+            is_default: true,
             mode: AiConnectionMode.WEB_SESSION,
+            use_token_plan_web: true,
             fields: { selected_model: 'gemini-flash' },
             api_keys: [],
           },
@@ -25,7 +27,9 @@ describe('GetAiProvidersHealthUseCase', () => {
             id: '2',
             key: 'mistral',
             is_active: true,
+            is_default: false,
             mode: AiConnectionMode.API_KEY,
+            use_api_key: true,
             auto_rotate_api_keys: true,
             fields: { ocr_model: 'mistral-ocr-v1', selected_model: 'mistral-large-latest' },
             api_keys: [
@@ -68,10 +72,12 @@ describe('GetAiProvidersHealthUseCase', () => {
     const geminiHealth = result.providers.find((p) => p.key === 'gemini');
     expect(geminiHealth?.status).toBe('expired');
     expect(geminiHealth?.statusBadge).toBe('REQUIERE INICIAR SESIÓN');
+    expect(geminiHealth?.is_default).toBe(true);
 
     const incidentAlert = result.alerts.find((a) => a.provider === 'gemini');
     expect(incidentAlert).toBeDefined();
     expect(incidentAlert?.title).toContain('INCIDENTE ACTIVO');
+    expect(incidentAlert?.title).toContain('SESIÓN WEB');
     expect(incidentAlert?.actionType).toBe('renew_session');
   });
 
@@ -98,6 +104,7 @@ describe('GetAiProvidersHealthUseCase', () => {
           id: '1',
           key: 'gemini',
           is_active: true,
+          use_token_plan_web: true,
           mode: AiConnectionMode.WEB_SESSION,
           api_keys: [],
         },
@@ -105,6 +112,7 @@ describe('GetAiProvidersHealthUseCase', () => {
           id: '2',
           key: 'mistral',
           is_active: true,
+          use_api_key: true,
           mode: AiConnectionMode.API_KEY,
           fields: {},
           api_keys: [
@@ -122,5 +130,135 @@ describe('GetAiProvidersHealthUseCase', () => {
     const result = await useCase.execute();
     expect(result.overallStatus).toBe('healthy');
     expect(result.alerts).toHaveLength(0);
+  });
+
+  it('detects unavailable agentic session and generates agentic incident alert', async () => {
+    (geminiServiceMock.getModelsAndQuota as any).mockResolvedValue({
+      authenticated: false,
+      available: false,
+    });
+    (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          key: 'gemini',
+          is_active: true,
+          use_token_plan_agentic: true,
+          use_token_plan_web: false,
+          use_api_key: false,
+          fields: { selected_model: 'gemini-3.1-pro' },
+          api_keys: [],
+        },
+      ],
+    });
+
+    const result = await useCase.execute();
+    expect(result.overallStatus).toBe('incident');
+    const geminiHealth = result.providers.find((p) => p.key === 'gemini');
+    expect(geminiHealth?.status).toBe('expired');
+
+    const agenticAlert = result.alerts.find(
+      (a) => a.provider === 'gemini' && a.id.includes('agentic'),
+    );
+    expect(agenticAlert).toBeDefined();
+    expect(agenticAlert?.title).toContain('MODO AGÉNTICO');
+    expect(agenticAlert?.message).toContain('Antigravity');
+    expect(agenticAlert?.actionType).toBe('configure');
+  });
+
+  it('reports degraded when dual mode has one working and one failing engine', async () => {
+    (geminiServiceMock.getModelsAndQuota as any).mockImplementation((engine: string) => {
+      if (engine === 'agentic') {
+        return Promise.resolve({ authenticated: true, available: true, has_active_session: true });
+      }
+      return Promise.resolve({ authenticated: false });
+    });
+
+    (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          key: 'gemini',
+          is_active: true,
+          use_token_plan_agentic: true,
+          use_token_plan_web: true,
+          use_api_key: false,
+          fields: {},
+          api_keys: [],
+        },
+      ],
+    });
+
+    const result = await useCase.execute();
+    const geminiHealth = result.providers.find((p) => p.key === 'gemini');
+    expect(geminiHealth?.status).toBe('degraded');
+    expect(geminiHealth?.statusBadge).toBe('DEGRADADO');
+    expect(geminiHealth?.serviceState).toContain('Sesión Web inactiva');
+
+    const webAlert = result.alerts.find(
+      (a) => a.provider === 'gemini' && a.id.includes('web'),
+    );
+    expect(webAlert).toBeDefined();
+  });
+
+  it('generates warning alert when provider is active but has no connection modes enabled', async () => {
+    (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          key: 'gemini',
+          is_active: true,
+          use_token_plan_agentic: false,
+          use_token_plan_web: false,
+          use_api_key: false,
+          api_keys: [],
+        },
+      ],
+    });
+
+    const result = await useCase.execute();
+    const geminiHealth = result.providers.find((p) => p.key === 'gemini');
+    expect(geminiHealth?.status).toBe('unconfigured');
+    expect(geminiHealth?.statusBadge).toBe('SIN CONFIGURAR');
+
+    const unconfiguredAlert = result.alerts.find(
+      (a) => a.provider === 'gemini' && a.id.includes('no-modes'),
+    );
+    expect(unconfiguredAlert).toBeDefined();
+    expect(unconfiguredAlert?.severity).toBe('warning');
+  });
+
+  it('detects unauthenticated web session via getDualEngineStatus and generates web incident alert', async () => {
+    geminiServiceMock.getDualEngineStatus = vi.fn().mockResolvedValue({
+      active_engine: 'agentic',
+      agentic: { available: true },
+      web: { authenticated: false },
+    });
+    (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          key: 'gemini',
+          is_active: true,
+          use_token_plan_agentic: true,
+          use_token_plan_web: true,
+          use_api_key: false,
+          fields: {},
+          api_keys: [],
+        },
+      ],
+    });
+
+    const result = await useCase.execute();
+    const geminiHealth = result.providers.find((p) => p.key === 'gemini');
+    expect(geminiHealth?.status).toBe('degraded');
+    expect(geminiHealth?.statusBadge).toBe('DEGRADADO');
+    expect(geminiHealth?.serviceState).toContain('Sesión Web inactiva');
+
+    const webAlert = result.alerts.find(
+      (a) => a.provider === 'gemini' && a.id.includes('web-expired'),
+    );
+    expect(webAlert).toBeDefined();
+    expect(webAlert?.actionType).toBe('renew_session');
   });
 });

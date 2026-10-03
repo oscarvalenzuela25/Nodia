@@ -126,6 +126,16 @@ export const TableTopBar = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2.5),
   gap: theme.spacing(2),
   flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& > *": {
+      width: "100%",
+    },
+    "& button": {
+      width: "100%",
+    },
+  },
 }));
 
 export const StyledTableContainer = styled(Box)(({ theme }) => {

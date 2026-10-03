@@ -1,8 +1,13 @@
 import { AiConnectionMode } from '../types/ai-provider.types.js';
+import {
+  InternalMicroserviceKey,
+  GeminiEnginePlan,
+} from '../../common/constants/internal-microservices.constant.js';
 
 export interface SupportedModelDef {
   id: string;
   name: string;
+  displayName?: string;
   description: string;
   contextWindow?: number;
   capabilities: string[];
@@ -16,428 +21,112 @@ export interface SupportedProviderDef {
   description: string;
   defaultMode: AiConnectionMode;
   supportedModes: AiConnectionMode[];
-  defaultSelectedModel: string;
+  microserviceKey?: InternalMicroserviceKey;
+  supportedEngines?: GeminiEnginePlan[];
+  defaultEngine?: GeminiEnginePlan;
+  defaultSelectedModel?: string;
   defaultOcrModel?: string;
-  availableModels: SupportedModelDef[];
+  availableModels?: SupportedModelDef[];
 }
 
 export const SUPPORTED_AI_PROVIDERS: SupportedProviderDef[] = [
   {
-    key: 'gemini',
+    key: InternalMicroserviceKey.GEMINI,
     name: 'Google Gemini',
-    description: 'Modelos multimodales de Google con soporte para visión, documentos y razonamiento rápido',
+    description:
+      'Modelos multimodales de Google con soporte para visión, documentos y razonamiento rápido',
     defaultMode: AiConnectionMode.WEB_SESSION,
     supportedModes: [AiConnectionMode.WEB_SESSION, AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'gemini-flash',
-    availableModels: [
-      {
-        id: 'gemini-flash',
-        name: 'Gemini 3.8 Flash',
-        description: 'Modelo insignia de Google: ultra rápido, multimodal y alta precisión con razonamiento extendido (Recomendado)',
-        contextWindow: 1000000,
-        capabilities: ['text', 'vision', 'audio', 'documents', 'reasoning'],
-        isRecommended: true,
-        role: 'multimodal',
-      },
-      {
-        id: 'gemini-pro',
-        name: 'Gemini 3.1 Pro',
-        description: 'Razonamiento complejo avanzado, análisis profundo y código',
-        contextWindow: 2000000,
-        capabilities: ['text', 'vision', 'audio', 'documents', 'reasoning'],
-        isRecommended: false,
-        role: 'multimodal',
-      },
-    ],
+    microserviceKey: InternalMicroserviceKey.GEMINI,
+    supportedEngines: [GeminiEnginePlan.AGENTIC, GeminiEnginePlan.WEB],
+    defaultEngine: GeminiEnginePlan.AGENTIC,
   },
   {
     key: 'openai',
     name: 'OpenAI',
-    description: 'Modelos GPT de propósito general para extracción y razonamiento multimodal de frontera',
+    description:
+      'Modelos GPT de propósito general para extracción y razonamiento multimodal de frontera',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'gpt-4o',
-    availableModels: [
-      {
-        id: 'gpt-4o',
-        name: 'GPT-4o',
-        description: 'Modelo insignia omni: multimodal, rápido y alta fidelidad en documentos (Recomendado)',
-        contextWindow: 128000,
-        capabilities: ['text', 'vision', 'json'],
-        isRecommended: true,
-        role: 'multimodal',
-      },
-      {
-        id: 'gpt-4o-mini',
-        name: 'GPT-4o Mini',
-        description: 'Variante rápida, ultra económica y ligera para análisis de alta frecuencia',
-        contextWindow: 128000,
-        capabilities: ['text', 'vision', 'json'],
-        isRecommended: false,
-        role: 'multimodal',
-      },
-      {
-        id: 'o1',
-        name: 'OpenAI o1',
-        description: 'Razonamiento lógico deliberado y matemático de máxima profundidad',
-        contextWindow: 200000,
-        capabilities: ['text', 'vision', 'reasoning'],
-        isRecommended: false,
-        role: 'chat',
-      },
-      {
-        id: 'o3-mini',
-        name: 'OpenAI o3-mini',
-        description: 'Razonamiento veloz y eficiente para código, lógica y ciencia',
-        contextWindow: 200000,
-        capabilities: ['text', 'reasoning', 'code'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'anthropic',
     name: 'Anthropic Claude',
-    description: 'Modelos Claude con capacidades de razonamiento híbrido, visión y alta precisión analítica',
+    description:
+      'Modelos Claude con capacidades de razonamiento híbrido, visión y alta precisión analítica',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'claude-3-7-sonnet-latest',
-    availableModels: [
-      {
-        id: 'claude-3-7-sonnet-latest',
-        name: 'Claude 3.7 Sonnet',
-        description: 'Modelo híbrido de razonamiento estándar y extendido de vanguardia (Recomendado)',
-        contextWindow: 200000,
-        capabilities: ['text', 'vision', 'reasoning', 'code'],
-        isRecommended: true,
-        role: 'multimodal',
-      },
-      {
-        id: 'claude-3-5-sonnet-latest',
-        name: 'Claude 3.5 Sonnet',
-        description: 'Equilibrio perfecto entre inteligencia superior y velocidad de ejecución',
-        contextWindow: 200000,
-        capabilities: ['text', 'vision', 'code'],
-        isRecommended: false,
-        role: 'multimodal',
-      },
-      {
-        id: 'claude-3-5-haiku-latest',
-        name: 'Claude 3.5 Haiku',
-        description: 'Velocidad casi instantánea y excelente rendimiento en tareas cotidianas',
-        contextWindow: 200000,
-        capabilities: ['text', 'vision'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'deepseek',
     name: 'DeepSeek',
-    description: 'Modelos abiertos de razonamiento profundo y arquitectura MoE con excelente relación costo-efectividad',
+    description:
+      'Modelos abiertos de razonamiento profundo y arquitectura MoE con excelente relación costo-efectividad',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'deepseek-chat',
-    availableModels: [
-      {
-        id: 'deepseek-chat',
-        name: 'DeepSeek-V3',
-        description: 'Modelo general conversacional de arquitectura MoE de alta capacidad (Recomendado)',
-        contextWindow: 64000,
-        capabilities: ['text', 'code', 'json'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'deepseek-reasoner',
-        name: 'DeepSeek-R1',
-        description: 'Modelo de razonamiento por cadena de pensamiento (CoT) para problemas complejos',
-        contextWindow: 64000,
-        capabilities: ['text', 'reasoning', 'code'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'mistral',
     name: 'Mistral AI',
-    description: 'Modelos de frontera de Mistral especializados en OCR de documentos y razonamiento estructurado',
+    description:
+      'Modelos de frontera de Mistral especializados en OCR de documentos y razonamiento estructurado',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'mistral-large-latest',
-    defaultOcrModel: 'mistral-ocr-latest',
-    availableModels: [
-      {
-        id: 'mistral-large-latest',
-        name: 'Mistral Large',
-        description: 'Modelo insignia de razonamiento avanzado y estructuración tabular de comprobantes (Recomendado)',
-        contextWindow: 128000,
-        capabilities: ['text', 'json', 'reasoning'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'open-mistral-nemo',
-        name: 'Mistral Nemo',
-        description: 'Rápido, eficiente y de bajo consumo de cuota para extracción veloz',
-        contextWindow: 128000,
-        capabilities: ['text', 'json'],
-        isRecommended: false,
-        role: 'chat',
-      },
-      {
-        id: 'mistral-ocr-latest',
-        name: 'Mistral OCR',
-        description: 'Extracción óptica especializada de PDFs y comprobantes escaneados',
-        contextWindow: 128000,
-        capabilities: ['vision', 'ocr', 'documents'],
-        isRecommended: false,
-        role: 'ocr',
-      },
-      {
-        id: 'codestral-latest',
-        name: 'Codestral',
-        description: 'Especializado en parsing de estructuras y sintaxis compleja',
-        contextWindow: 256000,
-        capabilities: ['code', 'json'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'xai',
     name: 'xAI (Grok)',
-    description: 'Modelos Grok de xAI con comprensión multimodal y razonamiento en tiempo real',
+    description:
+      'Modelos Grok de xAI con comprensión multimodal y razonamiento en tiempo real',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'grok-2-latest',
-    availableModels: [
-      {
-        id: 'grok-2-latest',
-        name: 'Grok 2',
-        description: 'Modelo insignia de xAI con razonamiento avanzado y comprensión general (Recomendado)',
-        contextWindow: 131072,
-        capabilities: ['text', 'reasoning', 'code'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'grok-2-vision-1212',
-        name: 'Grok 2 Vision',
-        description: 'Comprensión visual avanzada de diagramas, imágenes y comprobantes',
-        contextWindow: 32768,
-        capabilities: ['text', 'vision', 'documents'],
-        isRecommended: false,
-        role: 'multimodal',
-      },
-    ],
   },
   {
     key: 'groq',
     name: 'Groq LPU',
-    description: 'Motor de inferencia ultra rápido en hardware LPU para latencias mínimas',
+    description:
+      'Motor de inferencia ultra rápido en hardware LPU para latencias mínimas',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'llama-3.3-70b-versatile',
-    availableModels: [
-      {
-        id: 'llama-3.3-70b-versatile',
-        name: 'Llama 3.3 70B (Groq)',
-        description: 'Modelo de 70B parámetros optimizado para inferencia instantánea (Recomendado)',
-        contextWindow: 128000,
-        capabilities: ['text', 'code', 'json'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'llama-3.1-8b-instant',
-        name: 'Llama 3.1 8B Instant',
-        description: 'Inferencia ultra veloz a más de 500 tokens/s para clasificaciones rápidas',
-        contextWindow: 128000,
-        capabilities: ['text', 'json'],
-        isRecommended: false,
-        role: 'chat',
-      },
-      {
-        id: 'mixtral-8x7b-32768',
-        name: 'Mixtral 8x7B (Groq)',
-        description: 'Arquitectura MoE con ventana amplia de contexto y alta tasa de respuesta',
-        contextWindow: 32768,
-        capabilities: ['text', 'code'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'cohere',
     name: 'Cohere',
-    description: 'Modelos de lenguaje empresarial orientados a RAG, generación y extracción estructurada',
+    description:
+      'Modelos de lenguaje empresarial orientados a RAG, generación y extracción estructurada',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'command-r-plus-latest',
-    availableModels: [
-      {
-        id: 'command-r-plus-latest',
-        name: 'Command R+',
-        description: 'Modelo insignia de Cohere diseñado para flujos de trabajo empresariales y RAG (Recomendado)',
-        contextWindow: 128000,
-        capabilities: ['text', 'rag', 'json'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'command-r-latest',
-        name: 'Command R',
-        description: 'Optimizado para alta eficiencia, tareas operativas y búsqueda semántica',
-        contextWindow: 128000,
-        capabilities: ['text', 'rag'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'perplexity',
     name: 'Perplexity AI',
-    description: 'Modelos con capacidad de búsqueda web y verificación de hechos en tiempo real',
+    description:
+      'Modelos con capacidad de búsqueda web y verificación de hechos en tiempo real',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'sonar-pro',
-    availableModels: [
-      {
-        id: 'sonar-pro',
-        name: 'Sonar Pro',
-        description: 'Modelo insignia de búsqueda con citas web y razonamiento enriquecido (Recomendado)',
-        contextWindow: 200000,
-        capabilities: ['text', 'web_search', 'citations'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'sonar',
-        name: 'Sonar',
-        description: 'Búsqueda veloz en tiempo real y síntesis concisa de información',
-        contextWindow: 128000,
-        capabilities: ['text', 'web_search'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'openrouter',
     name: 'OpenRouter',
-    description: 'Enrutador unificado multi-proveedor con acceso global a cientos de modelos y failover dinámico',
+    description:
+      'Enrutador unificado multi-proveedor con acceso global a cientos de modelos y failover dinámico',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'auto',
-    availableModels: [
-      {
-        id: 'auto',
-        name: 'OpenRouter Auto Router',
-        description: 'Enrutamiento dinámico al proveedor más rápido y disponible automáticamente (Recomendado)',
-        contextWindow: 128000,
-        capabilities: ['text', 'routing', 'failover'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'anthropic/claude-3.7-sonnet',
-        name: 'Claude 3.7 Sonnet (via OpenRouter)',
-        description: 'Acceso a Claude 3.7 Sonnet con balanceo automático',
-        contextWindow: 200000,
-        capabilities: ['text', 'vision', 'reasoning'],
-        isRecommended: false,
-        role: 'multimodal',
-      },
-      {
-        id: 'openai/gpt-4o',
-        name: 'GPT-4o (via OpenRouter)',
-        description: 'Acceso a OpenAI GPT-4o a través de OpenRouter API',
-        contextWindow: 128000,
-        capabilities: ['text', 'vision', 'json'],
-        isRecommended: false,
-        role: 'multimodal',
-      },
-      {
-        id: 'deepseek/deepseek-r1',
-        name: 'DeepSeek R1 (via OpenRouter)',
-        description: 'Razonamiento avanzado por cadena de pensamiento servido globalmente',
-        contextWindow: 64000,
-        capabilities: ['text', 'reasoning'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'together',
     name: 'Together AI',
-    description: 'Inferencia de modelos de código abierto a gran escala en infraestructura en la nube',
+    description:
+      'Inferencia de modelos de código abierto a gran escala en infraestructura en la nube',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
-    availableModels: [
-      {
-        id: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
-        name: 'Llama 3.3 70B Turbo',
-        description: 'Inferencia acelerada de Llama 3.3 para aplicaciones de producción (Recomendado)',
-        contextWindow: 131072,
-        capabilities: ['text', 'code', 'json'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'deepseek-ai/DeepSeek-R1',
-        name: 'DeepSeek R1 (Together)',
-        description: 'Razonamiento profundo abierto alojado en clusters de alta velocidad',
-        contextWindow: 64000,
-        capabilities: ['text', 'reasoning'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
   {
     key: 'ollama',
     name: 'Ollama (Local)',
-    description: 'Ejecución y hosting de modelos LLM locales en servidores on-premise o desarrollo',
+    description:
+      'Ejecución y hosting de modelos LLM locales en servidores on-premise o desarrollo',
     defaultMode: AiConnectionMode.API_KEY,
     supportedModes: [AiConnectionMode.API_KEY],
-    defaultSelectedModel: 'llama3.3',
-    availableModels: [
-      {
-        id: 'llama3.3',
-        name: 'Llama 3.3 (Local)',
-        description: 'Modelo local más reciente de Meta para procesamiento privado (Recomendado)',
-        contextWindow: 128000,
-        capabilities: ['text', 'code', 'json'],
-        isRecommended: true,
-        role: 'chat',
-      },
-      {
-        id: 'deepseek-r1',
-        name: 'DeepSeek R1 (Local)',
-        description: 'Razonamiento profundo ejecutado localmente sin salida a internet',
-        contextWindow: 64000,
-        capabilities: ['text', 'reasoning'],
-        isRecommended: false,
-        role: 'chat',
-      },
-      {
-        id: 'qwen2.5',
-        name: 'Qwen 2.5 (Local)',
-        description: 'Modelo multilingüe de alta precisión para tareas estructuradas',
-        contextWindow: 128000,
-        capabilities: ['text', 'code', 'json'],
-        isRecommended: false,
-        role: 'chat',
-      },
-    ],
   },
 ];

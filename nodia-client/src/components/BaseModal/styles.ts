@@ -60,7 +60,10 @@ export const ModalHeader = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "flex-start",
   justifyContent: "space-between",
-  padding: theme.spacing(2.5, 3, 1.5, 3),
+  padding: theme.spacing(2, 2, 1.5, 2),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(2.5, 3, 1.5, 3),
+  },
   gap: theme.spacing(2),
 }));
 
@@ -98,7 +101,10 @@ export const ModalContent = styled(DialogContent)(({ theme }) => {
     : alpha("#000000", 0.35);
 
   return {
-    padding: theme.spacing(2, 3),
+    padding: theme.spacing(2, 2),
+    [theme.breakpoints.up("sm")]: {
+      padding: theme.spacing(2, 3),
+    },
     display: "flex",
     flexDirection: "column",
     gap: theme.spacing(2.5),
@@ -132,9 +138,13 @@ export const ModalContent = styled(DialogContent)(({ theme }) => {
 });
 
 export const ModalActions = styled(DialogActions)(({ theme }) => ({
-  padding: theme.spacing(2, 3, 2.5, 3),
+  padding: theme.spacing(2, 2, 2, 2),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(2, 3, 2.5, 3),
+  },
   display: "flex",
   justifyContent: "flex-end",
   alignItems: "center",
-  gap: theme.spacing(2), // 16px gap
+  flexWrap: "wrap",
+  gap: theme.spacing(1.5),
 }));

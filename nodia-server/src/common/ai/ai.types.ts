@@ -1,7 +1,7 @@
 export interface ExtractedInvoiceItem {
   code?: string | null;
   name: string;
-  quantity: number;
+  quantity: number | null;
   cost_price?: number | null;
   cost_price_tax?: number | null;
   unit_price?: number | null;
@@ -13,11 +13,19 @@ export interface ExtractedInvoiceItem {
 
 export interface ExtractedInvoiceData {
   code: string;
-  total_amount: number;
+  total_amount: number | null;
   issue_date?: string;
   items: ExtractedInvoiceItem[];
   raw_data?: Record<string, any>;
 }
+
+export {
+  InternalMicroserviceKey,
+  GeminiEnginePlan,
+  type GeminiExecutionEngine,
+  GEMINI_ENGINE_PLANS,
+  INTERNAL_MICROSERVICES,
+} from '../constants/internal-microservices.constant.js';
 
 export type AiProvider = 'gemini' | 'mistral';
 

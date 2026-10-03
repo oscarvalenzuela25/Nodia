@@ -88,6 +88,7 @@ export interface GetBusinessesParams {
   page?: number;
   limit?: number;
   all?: boolean;
+  all_businesses?: boolean;
   includes?: boolean;
   q?: Record<string, string | number | boolean>;
 }
@@ -300,7 +301,7 @@ export interface GetInvoicesParams {
 export interface ExtractedInvoiceItem {
   code?: string | null;
   name: string;
-  quantity: number;
+  quantity?: number | null;
   cost_price?: number | null;
   cost_price_tax?: number | null;
   unit_price?: number | null;
@@ -312,7 +313,7 @@ export interface AnalyzeInvoiceResponse {
   business_id: string;
   provider_id: string | null;
   code: string;
-  total_amount: number;
+  total_amount: number | null;
   data: {
     issue_date?: string;
     items: ExtractedInvoiceItem[];
@@ -324,13 +325,49 @@ export interface AnalyzeInvoiceParams {
   file: File;
   business_id: string;
   provider_id?: string;
-  ai_provider?: 'gemini' | 'mistral';
+  ai_provider?: string;
+  ai_provider_id?: string;
+  model?: string;
+  model_type?: 'default' | 'ocr';
+  extended_thinking?: boolean;
+  engine?: 'agentic' | 'web';
+  mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic';
+  thinking_level?: 'low' | 'medium' | 'high';
 }
 
-export interface VerifyIaProvidersResponse {
-  gemini: boolean;
-  mistral: boolean;
+export interface VerifyIaProviderItem {
+  id: string;
+  key: string;
+  name: string;
+  mode: string;
+  use_api_key?: boolean;
+  use_token_plan_web?: boolean;
+  use_token_plan_agentic?: boolean;
+  default_mode?: string | null;
+  active_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  is_default?: boolean;
+  is_active: boolean;
+  can_use_model: boolean;
+  error?: string | null;
+  fields?: {
+    selected_model?: string | null;
+    ocr_model?: string | null;
+    ocr_focus_model?: string | null;
+    enable_extended_thinking?: boolean;
+    available_models?: unknown[];
+    [key: string]: unknown;
+  };
+  default_model?: string | null;
+  ocr_model?: string | null;
+  supports_thinking?: boolean;
+  extended_thinking_enabled?: boolean;
 }
+
+export type VerifyIaProvidersResponse = VerifyIaProviderItem[] | {
+  gemini?: boolean;
+  mistral?: boolean;
+  [key: string]: boolean | undefined;
+};
 
 export interface CreateInvoiceWithFileParams {
   file?: File;

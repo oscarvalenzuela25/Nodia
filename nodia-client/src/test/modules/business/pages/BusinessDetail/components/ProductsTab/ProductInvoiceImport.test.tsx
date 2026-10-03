@@ -6,6 +6,7 @@ import type { ReactElement } from "react";
 import {
   ProductInvoiceImport,
   validateInvoiceRow,
+  validateInvoiceRows,
   mapExtractedItemsToRows,
   calculatePriceDiff,
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport";
@@ -41,7 +42,7 @@ vi.mock("../../../../../../../hooks/useAuth", () => ({
 vi.mock("../../../../../../../modules/business/infrastructure/services", () => ({
   getProviders: vi.fn().mockResolvedValue({
     data: [
-      { id: "prov-1", name: "Distribuidora Central", business_id: "biz-123" },
+      { id: "prov-1", name: "Distribuidora Central", business_id: "biz-123", tax: 19 },
     ],
     meta: { total_items: 1 },
   }),
@@ -67,10 +68,7 @@ vi.mock("../../../../../../../modules/business/infrastructure/services", () => (
     meta: { total_items: 0 },
   }),
   analyzeInvoice: vi.fn(),
-  verifyIaProviders: vi.fn().mockResolvedValue({
-    gemini: true,
-    mistral: true,
-  }),
+  verifyIaProviders: vi.fn().mockResolvedValue([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "web_session", is_active: true, can_use_model: true, is_default: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "web_session", is_active: true, can_use_model: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-secondary" } }]),
   createInvoiceWithFile: vi.fn(),
   bulkCreateProducts: vi.fn(),
   bulkUpdateProducts: vi.fn(),
@@ -106,7 +104,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain("Código es requerido");
       expect(result.errors).toContain("Nombre es requerido");
-      expect(result.errors).toContain("Costo debe ser >= 0");
+      expect(result.errors).toContain("Costo debe ser un número finito >= 0");
     });
 
     it("returns valid when all fields satisfy business rules", () => {
@@ -223,7 +221,7 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(newMatch?.isUpdate).toBe(false);
     });
 
-    it("handles cost_price_tax without cost_price without inventing cost_price", () => {
+    it("derives missing net cost from gross cost and supplier tax", () => {
       const items: ExtractedInvoiceItem[] = [
         {
           code: "SKU-TAX-ONLY",
@@ -238,12 +236,12 @@ describe("ProductInvoiceImport Helpers", () => {
       const rows = mapExtractedItemsToRows(items, []);
       expect(rows).toHaveLength(1);
       expect(rows[0].code).toBe("SKU-TAX-ONLY");
-      expect(rows[0].cost_price).toBe(0);
+      expect(rows[0].cost_price).toBe(5000);
       expect(rows[0].cost_price_tax).toBe(5950);
       expect(rows[0].sale_price).toBe(Math.round(5950 * 1.3));
     });
 
-    it("handles cost_price without cost_price_tax without inventing cost_price_tax", () => {
+    it("derives missing gross cost from net cost and supplier tax", () => {
       const items: ExtractedInvoiceItem[] = [
         {
           code: "SKU-NET-ONLY",
@@ -259,11 +257,11 @@ describe("ProductInvoiceImport Helpers", () => {
       expect(rows).toHaveLength(1);
       expect(rows[0].code).toBe("SKU-NET-ONLY");
       expect(rows[0].cost_price).toBe(5000);
-      expect(rows[0].cost_price_tax).toBe(0);
+      expect(rows[0].cost_price_tax).toBe(5950);
       expect(rows[0].sale_price).toBe(Math.round(5000 * 1.19 * 1.3));
     });
 
-    it("handles code only with costs left at 0 and sale_price at 0", () => {
+    it("leaves missing extracted costs invalid for manual review", () => {
       const items: ExtractedInvoiceItem[] = [
         {
           code: "SKU-CODE-ONLY",
@@ -278,10 +276,10 @@ describe("ProductInvoiceImport Helpers", () => {
       const rows = mapExtractedItemsToRows(items, []);
       expect(rows).toHaveLength(1);
       expect(rows[0].code).toBe("SKU-CODE-ONLY");
-      expect(rows[0].cost_price).toBe(0);
-      expect(rows[0].cost_price_tax).toBe(0);
-      expect(rows[0].sale_price).toBe(0);
-      expect(rows[0].isValid).toBe(true);
+      expect(rows[0].cost_price).toBeNaN();
+      expect(rows[0].cost_price_tax).toBeNaN();
+      expect(rows[0].sale_price).toBeNaN();
+      expect(rows[0].isValid).toBe(false);
     });
 
     it("synchronizes profit percentage with historical product and calculates price diff", () => {
@@ -362,6 +360,7 @@ describe("ProductInvoiceImport Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(businessServices.getProviders).mockResolvedValue({ data: [{ id: "prov-1", name: "Distribuidora Central", business_id: "biz-123", tax: 19, is_active: true, created_at: "" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
     useGeneralSettingsStore.setState({
       isLoaded: false,
@@ -373,6 +372,7 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(trigger);
     const option = await screen.findByRole("option", { name: "Distribuidora Central" });
     await user.click(option);
+    await waitFor(() => expect(screen.getByTestId("invoice-file-input")).toBeEnabled());
   };
 
   it("allows searching providers in SelectSingleInput and does not render a none option", async () => {
@@ -412,12 +412,14 @@ describe("ProductInvoiceImport Component", () => {
     // Verify "None" / "Ninguno" option is NOT present
     expect(screen.queryByRole("option", { name: /none|ninguno/i })).not.toBeInTheDocument();
 
-    // Verify search input filters options
+    vi.mocked(businessServices.getProviders).mockResolvedValue({ data: [{ id: "prov-2", name: "Importadora Andes", business_id: "biz-123", tax: 19, is_active: true, created_at: "" }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 50 } });
+    // Search is resolved by the server and keeps the selected ID.
     const searchInput = screen.getByPlaceholderText(/buscar proveedor|buscar/i);
     await user.type(searchInput, "Andes");
 
     expect(screen.getByRole("option", { name: "Importadora Andes" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "Distribuidora Central" })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("option", { name: "Distribuidora Central" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("option", { name: "Importadora Andes" })).toBeEnabled());
 
     await user.click(screen.getByRole("option", { name: "Importadora Andes" }));
     expect(screen.getByText("Importadora Andes")).toBeInTheDocument();
@@ -606,7 +608,7 @@ describe("ProductInvoiceImport Component", () => {
     expect(saveBtn).not.toBeDisabled();
   });
 
-  it("guarantees atomic persistence: aborts product sync if invoice creation fails", async () => {
+  it("stops product writes when invoice creation fails", async () => {
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
       business_id: "biz-123",
       provider_id: null,
@@ -1189,7 +1191,7 @@ describe("ProductInvoiceImport Component", () => {
     expect(screen.getByText("Producto Reintentado")).toBeInTheDocument();
   });
 
-  it("analyzes invoice with Mistral OCR when clicking the Mistral button, sending ai_provider='mistral'", async () => {
+  it("analyzes invoice with Mistral OCR when selecting Mistral, sending the selected instance ID", async () => {
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
       business_id: "biz-123",
       provider_id: "prov-1",
@@ -1227,18 +1229,24 @@ describe("ProductInvoiceImport Component", () => {
     const fileInput = screen.getByTestId("invoice-file-input");
     await user.upload(fileInput, file);
 
-    const mistralBtn = screen.getByTestId("analyze-invoice-mistral-btn");
-    expect(mistralBtn).toBeInTheDocument();
-    expect(mistralBtn).not.toBeDisabled();
+    // Select Mistral from AI Provider dropdown
+    const aiProviderTrigger = screen.getByRole("button", { name: /Proveedor de IA/i });
+    await user.click(aiProviderTrigger);
+    const mistralOption = await screen.findByRole("option", { name: /Gemini Secundario/i });
+    await user.click(mistralOption);
 
-    await user.click(mistralBtn);
+    const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
+    expect(analyzeBtn).toBeInTheDocument();
+    expect(analyzeBtn).not.toBeDisabled();
+
+    await user.click(analyzeBtn);
 
     await waitFor(() => {
       expect(businessServices.analyzeInvoice).toHaveBeenCalledWith(
         expect.objectContaining({
           business_id: "biz-123",
           provider_id: "prov-1",
-          ai_provider: "mistral",
+          ai_provider: "gemini",
         })
       );
     });
@@ -1249,11 +1257,8 @@ describe("ProductInvoiceImport Component", () => {
     expect(screen.getByDisplayValue("FAC-MISTRAL-001")).toBeInTheDocument();
   });
 
-  it("disables the Mistral button when mistral is false in verify-ia-providers", async () => {
-    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce({
-      gemini: true,
-      mistral: false,
-    });
+  it("disables the analyze button when selected provider has can_use_model=false", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "web_session", is_active: true, can_use_model: true, is_default: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "web_session", is_active: true, can_use_model: false, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-secondary" } }]);
 
     renderWithClient(
       <ProductInvoiceImport
@@ -1269,20 +1274,22 @@ describe("ProductInvoiceImport Component", () => {
     const fileInput = screen.getByTestId("invoice-file-input");
     await user.upload(fileInput, file);
 
-    const geminiBtn = screen.getByTestId("analyze-invoice-btn");
-    const mistralBtn = screen.getByTestId("analyze-invoice-mistral-btn");
+    const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
+    expect(analyzeBtn).not.toBeDisabled();
+
+    // Select Mistral (which is inactive / can_use_model=false)
+    const aiProviderTrigger = screen.getByRole("button", { name: /Proveedor de IA/i });
+    await user.click(aiProviderTrigger);
+    const mistralOption = await screen.findByRole("option", { name: /Gemini Secundario/i });
+    await user.click(mistralOption);
 
     await waitFor(() => {
-      expect(geminiBtn).not.toBeDisabled();
-      expect(mistralBtn).toBeDisabled();
+      expect(analyzeBtn).toBeDisabled();
     });
   });
 
-  it("disables the Gemini button and displays info icon when gemini is false in verify-ia-providers", async () => {
-    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce({
-      gemini: false,
-      mistral: true,
-    });
+  it("disables the analyze button when default provider has can_use_model=false, and enables when selecting an active provider", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "web_session", is_active: true, can_use_model: false, is_default: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "web_session", is_active: true, can_use_model: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-secondary" } }]);
 
     renderWithClient(
       <ProductInvoiceImport
@@ -1298,14 +1305,397 @@ describe("ProductInvoiceImport Component", () => {
     const fileInput = screen.getByTestId("invoice-file-input");
     await user.upload(fileInput, file);
 
-    const geminiBtn = screen.getByTestId("analyze-invoice-btn");
-    const mistralBtn = screen.getByTestId("analyze-invoice-mistral-btn");
+    const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
+    // Gemini is default, but inactive -> button disabled
+    await waitFor(() => {
+      expect(analyzeBtn).toBeDisabled();
+    });
+
+    // Select Mistral (which is active)
+    const aiProviderTrigger = screen.getByRole("button", { name: /Proveedor de IA/i });
+    await user.click(aiProviderTrigger);
+    const mistralOption = await screen.findByRole("option", { name: /Gemini Secundario/i });
+    await user.click(mistralOption);
 
     await waitFor(() => {
-      expect(geminiBtn).toBeDisabled();
-      expect(mistralBtn).not.toBeDisabled();
-      expect(screen.getByTestId("gemini-disabled-info-icon")).toBeInTheDocument();
+      expect(analyzeBtn).not.toBeDisabled();
     });
   });
+
+  it("renders dynamic provider options from array response and respects can_use_model and thinking support", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
+      {
+        id: "prov-gemini",
+        key: "gemini",
+        name: "Google Gemini",
+        mode: "web_session",
+        is_active: true,
+        can_use_model: true,
+        error: null,
+        is_default: true,
+        use_token_plan_web: true,
+        default_mode: "token_plan_web",
+        fields: {
+          selected_model: "gemini-3.8-flash",
+          enable_extended_thinking: true,
+          available_models: [{ id: "gemini-3.8-flash", capabilities: ["reasoning"] }],
+        },
+        default_model: "gemini-3.8-flash",
+        ocr_model: null,
+        supports_thinking: true,
+        extended_thinking_enabled: true,
+      },
+      {
+        id: "prov-mistral",
+        key: "gemini",
+        name: "Gemini Secundario",
+        mode: "api_key",
+        is_active: true,
+        can_use_model: false,
+        error: "No cuenta con API Keys activas",
+        is_default: false,
+        use_api_key: true,
+        default_mode: "token_plan_web",
+        fields: {
+          selected_model: "mistral-large-latest",
+        },
+        default_model: "mistral-large-latest",
+        ocr_model: null,
+        supports_thinking: false,
+        extended_thinking_enabled: false,
+      },
+    ]);
+
+    renderWithClient(
+      <ProductInvoiceImport
+        businessId="biz-123"
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    await selectProvider();
+
+    expect(screen.queryByTestId("use-thinking-mode-checkbox")).not.toBeInTheDocument();
+
+    const file = new File(["dummy"], "factura.pdf", { type: "application/pdf" });
+    const fileInput = screen.getByTestId("invoice-file-input");
+    await user.upload(fileInput, file);
+
+    const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
+
+    await waitFor(() => {
+      expect(analyzeBtn).not.toBeDisabled();
+      expect(screen.getByTestId("use-thinking-mode-checkbox")).toBeInTheDocument();
+    });
+
+    // Switch to Mistral (disabled and no thinking support)
+    const aiProviderTrigger = screen.getByRole("button", { name: /Proveedor de IA/i });
+    await user.click(aiProviderTrigger);
+    const mistralOption = await screen.findByRole("option", { name: /Gemini Secundario/i });
+    await user.click(mistralOption);
+
+    await waitFor(() => {
+      expect(analyzeBtn).toBeDisabled();
+      expect(screen.queryByTestId("use-thinking-mode-checkbox")).not.toBeInTheDocument();
+    });
+  });
+
+  it("keeps the assigned model when OCR focus is configured and includes permitted extended thinking", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
+      {
+        id: "prov-mistral-ocr",
+        key: "gemini",
+        name: "Gemini Secundario",
+        mode: "web_session",
+        is_active: true,
+        can_use_model: true,
+        error: null,
+        is_default: true,
+        use_token_plan_web: true,
+        default_mode: "token_plan_web",
+        fields: {
+          selected_model: "mistral-large-latest",
+          ocr_model: "mistral-large-latest",
+          enable_extended_thinking: true,
+          available_models: [{ id: "mistral-large-latest", capabilities: ["reasoning"] }],
+        },
+        default_model: "mistral-large-latest",
+        ocr_model: "mistral-large-latest",
+        supports_thinking: true,
+        extended_thinking_enabled: true,
+      },
+    ]);
+
+    renderWithClient(
+      <ProductInvoiceImport
+        businessId="biz-123"
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    await selectProvider();
+
+    const file = new File(["dummy"], "factura.pdf", { type: "application/pdf" });
+    const fileInput = screen.getByTestId("invoice-file-input");
+    await user.upload(fileInput, file);
+
+    // Toggle thinking mode checkbox
+    const thinkingCheckbox = await screen.findByTestId("use-thinking-mode-checkbox");
+    await user.click(thinkingCheckbox);
+
+    const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
+    await user.click(analyzeBtn);
+
+    await waitFor(() => {
+      expect(businessServices.analyzeInvoice).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ai_provider: "gemini",
+          ai_provider_id: "prov-mistral-ocr",
+          model: "mistral-large-latest",
+          model_type: "default",
+          extended_thinking: true,
+        })
+      );
+    });
+  });
+
+  it("auto-selects the default provider with badge and shows mode select only when multiple active modes exist", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
+      {
+        id: "prov-gemini",
+        key: "gemini",
+        name: "Google Gemini",
+        mode: "web_session",
+        is_active: true,
+        can_use_model: true,
+        error: null,
+        is_default: true,
+        use_token_plan_agentic: true,
+        use_token_plan_web: true,
+        default_mode: "token_plan_agentic",
+        fields: {
+          selected_model: "gemini-2.5-pro",
+        },
+        default_model: "gemini-2.5-pro",
+        ocr_model: null,
+        supports_thinking: false,
+        extended_thinking_enabled: false,
+      },
+      {
+        id: "prov-mistral",
+        key: "gemini",
+        name: "Gemini Secundario",
+        mode: "api_key",
+        is_active: true,
+        can_use_model: true,
+        error: null,
+        is_default: false,
+        use_api_key: true,
+        default_mode: "token_plan_web",
+        fields: {
+          selected_model: "mistral-large-latest",
+        },
+        default_model: "mistral-large-latest",
+        ocr_model: null,
+        supports_thinking: false,
+        extended_thinking_enabled: false,
+      },
+    ]);
+
+    renderWithClient(
+      <ProductInvoiceImport
+        businessId="biz-123"
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    await selectProvider();
+
+    const file = new File(["dummy"], "factura.pdf", { type: "application/pdf" });
+    const fileInput = screen.getByTestId("invoice-file-input");
+    await user.upload(fileInput, file);
+
+    // AI Provider selector should have Gemini (Predeterminado) selected
+    await waitFor(() => {
+      expect(screen.getByTestId("ai-provider-select")).toBeInTheDocument();
+      expect(screen.getByText(/Google Gemini \(Predeterminado\)/i)).toBeInTheDocument();
+    });
+
+    // Gemini has 2 modes (agentic and web), so ai-mode-select should be visible!
+    expect(screen.getByTestId("ai-mode-select")).toBeInTheDocument();
+
+    // Now switch provider to Mistral (which has only 1 mode: use_api_key)
+    const aiProviderTrigger = screen.getByRole("button", { name: /Proveedor de IA/i });
+    await user.click(aiProviderTrigger);
+    const mistralOption = await screen.findByRole("option", { name: "Gemini Secundario" });
+    await user.click(mistralOption);
+
+    // Now ai-mode-select should be hidden since Mistral has only 1 active mode
+    await waitFor(() => {
+      expect(screen.queryByTestId("ai-mode-select")).not.toBeInTheDocument();
+    });
+  });
+
+  it("passes the selected mode to analyzeInvoice when user changes connection mode", async () => {
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
+      business_id: "biz-123",
+      provider_id: "prov-1",
+      code: "FAC-MODE-001",
+      total_amount: 10000,
+      data: {
+        issue_date: "2026-03-20",
+        items: [],
+      },
+    });
+
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
+      {
+        id: "prov-gemini",
+        key: "gemini",
+        name: "Google Gemini",
+        mode: "web_session",
+        is_active: true,
+        can_use_model: true,
+        error: null,
+        is_default: true,
+        use_token_plan_agentic: true,
+        use_token_plan_web: true,
+        default_mode: "token_plan_agentic",
+        fields: {
+          selected_model: "gemini-2.5-pro",
+        },
+        default_model: "gemini-2.5-pro",
+        ocr_model: null,
+        supports_thinking: false,
+        extended_thinking_enabled: false,
+      },
+    ]);
+
+    renderWithClient(
+      <ProductInvoiceImport
+        businessId="biz-123"
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    await selectProvider();
+
+    const file = new File(["dummy"], "factura.pdf", { type: "application/pdf" });
+    const fileInput = screen.getByTestId("invoice-file-input");
+    await user.upload(fileInput, file);
+
+    // Gemini has 2 modes, so mode select is visible
+    const modeSelectTrigger = await screen.findByRole("button", { name: /Método de Conexión/i });
+    await user.click(modeSelectTrigger);
+
+    // Select web mode
+    const webOption = await screen.findByRole("option", { name: /Token Plan \(Web\)/i });
+    await user.click(webOption);
+
+    // Click analyze
+    const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
+    await user.click(analyzeBtn);
+
+    await waitFor(() => {
+      expect(businessServices.analyzeInvoice).toHaveBeenCalledWith(
+        expect.objectContaining({
+          business_id: "biz-123",
+          provider_id: "prov-1",
+          ai_provider: "gemini",
+          mode: "token_plan_web",
+        })
+      );
+    });
+  });
+
+  it("does not invent a thinking level when agentic configuration omits it", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
+      {
+        id: "prov-agentic-only",
+        key: "gemini",
+        name: "Google Gemini",
+        mode: "agentic",
+        is_active: true,
+        can_use_model: true,
+        error: null,
+        is_default: true,
+        use_token_plan_agentic: true,
+        default_mode: "token_plan_agentic",
+        fields: {
+          token_plan_agentic: {
+            selected_model: "gemini-2.5-pro",
+          },
+        },
+        default_model: "gemini-2.5-pro",
+        ocr_model: null,
+        supports_thinking: true,
+        extended_thinking_enabled: true,
+      },
+    ]);
+
+    renderWithClient(
+      <ProductInvoiceImport
+        businessId="biz-123"
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    await selectProvider();
+
+    const file = new File(["dummy"], "factura.pdf", { type: "application/pdf" });
+    const fileInput = screen.getByTestId("invoice-file-input");
+    await user.upload(fileInput, file);
+
+    // Thinking checkbox must NOT be rendered in agentic mode
+    expect(screen.queryByTestId("use-thinking-mode-checkbox")).not.toBeInTheDocument();
+
+    const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
+    await user.click(analyzeBtn);
+
+    await waitFor(() => {
+      expect(businessServices.analyzeInvoice).toHaveBeenCalledWith(
+        expect.objectContaining({
+          business_id: "biz-123",
+          provider_id: "prov-1",
+          ai_provider: "gemini",
+          ai_provider_id: "prov-agentic-only",
+          mode: "token_plan_agentic",
+          thinking_level: undefined,
+          extended_thinking: false,
+        })
+      );
+    });
+  });
+  it("preserves zero quantities and flags absent or infinite extraction values", () => {
+    const base = { code: "ZERO", name: "Zero stock", quantity: 0, cost_price: 0, cost_price_tax: 0 };
+    expect(mapExtractedItemsToRows([base], [])[0]).toMatchObject({ stock: 0, cost_price: 0, cost_price_tax: 0, isValid: true });
+    expect(mapExtractedItemsToRows([{ ...base, quantity: null }], [])[0].isValid).toBe(false);
+    expect(mapExtractedItemsToRows([{ ...base, quantity: Infinity }], [])[0].isValid).toBe(false);
+    expect(mapExtractedItemsToRows([{ ...base, cost_price: Infinity, cost_price_tax: null }], [])[0].isValid).toBe(false);
+  });
+  it("calculates extracted unit prices using the selected supplier tax", () => {
+    const [row] = mapExtractedItemsToRows([{ code: "TAX", name: "Taxed", unit_price: 100, quantity: 1 }], [], [], 10);
+    expect(row.cost_price_tax).toBe(110);
+    expect(row.sale_price).toBe(143);
+  });
+  it("requires duplicate SKU rows to be reviewed and clears the error after removal", () => {
+    const rows = mapExtractedItemsToRows([
+      { code: "SKU", name: "First", quantity: 1, unit_price: 100 },
+      { code: " sku ", name: "Repeated", quantity: 2, unit_price: 100 },
+    ], []);
+    expect(rows.every((row) => !row.isValid)).toBe(true);
+    expect(rows[0].errors.join(" ")).toMatch(/repetido/i);
+    expect(validateInvoiceRows(rows.slice(0, 1))[0].isValid).toBe(true);
+  });
+  it("does not calculate price changes from invalid values", () => {
+    expect(calculatePriceDiff(NaN, 100)).toBeNull();
+    expect(calculatePriceDiff(100, Infinity)).toBeNull();
+  });
+
 });
 

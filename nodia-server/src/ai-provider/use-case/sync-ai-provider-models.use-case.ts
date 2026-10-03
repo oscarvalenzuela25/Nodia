@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import { AiConnectionMode } from '../types/ai-provider.types.js';
+import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
 
 export interface DiscoveredModelInfo {
   id: string;
@@ -36,7 +37,11 @@ export class SyncAiProviderModelsUseCase {
 
   async execute(
     providerId: string,
-    options?: { persist?: boolean },
+    options?: {
+      persist?: boolean;
+      mode?: string;
+      engine?: GeminiExecutionEngine;
+    },
   ): Promise<SyncModelsResult> {
     const shouldPersist = options?.persist ?? true;
     const provider = await this.aiProviderService.findProviderById(providerId);
@@ -45,23 +50,56 @@ export class SyncAiProviderModelsUseCase {
     }
 
     const engineKey = (provider.catalog?.key || provider.key || '').toLowerCase();
-    const currentSelectedModel = provider.fields?.selected_model || null;
+    const targetMode =
+      options?.mode ||
+      provider.default_mode ||
+      provider.mode ||
+      'api_key';
+
+    const targetEngine: GeminiExecutionEngine | undefined =
+      options?.engine ||
+      (targetMode === 'token_plan_agentic'
+        ? 'agentic'
+        : targetMode === 'token_plan_web'
+          ? 'web'
+          : (provider.fields?.engine as GeminiExecutionEngine) || undefined);
+
+    const modeFields = (provider.fields?.[targetMode] as Record<string, any>) || {};
+    const hasAnyModeScoped =
+      Boolean(provider.fields?.token_plan_agentic) ||
+      Boolean(provider.fields?.token_plan_web) ||
+      Boolean(provider.fields?.api_key);
+
+    const currentSelectedModel =
+      modeFields.selected_model ||
+      ((targetMode === provider.default_mode || !hasAnyModeScoped)
+        ? provider.fields?.selected_model
+        : null) ||
+      null;
 
     let discoveredModels: DiscoveredModelInfo[] = [];
     let tokenPlan: SyncModelsResult['tokenPlan'] = null;
 
-    if (engineKey === 'gemini' || provider.mode === AiConnectionMode.WEB_SESSION) {
-      const quotaData = await this.geminiService.getModelsAndQuota();
+    if (
+      (engineKey === 'gemini' && targetMode !== 'api_key') ||
+      targetMode === 'token_plan_web' ||
+      targetMode === 'token_plan_agentic'
+    ) {
+      const quotaData = await this.geminiService.getModelsAndQuota(targetEngine);
 
       if (!quotaData || !quotaData.authenticated) {
         throw new BadRequestException(
-          'La sesión web de Gemini no está activa o no ha sido autenticada en el microservicio.',
+          targetEngine === 'agentic'
+            ? 'El entorno de Antigravity (Agentic) no está disponible o no tiene sesión activa.'
+            : 'La sesión web de Gemini no está activa o no ha sido autenticada en el microservicio.',
         );
       }
 
       tokenPlan = {
         tier: quotaData.tier || 'UNKNOWN',
-        planLabel: quotaData.plan_label || 'Plan Web',
+        planLabel:
+          quotaData.plan_label ||
+          (targetEngine === 'agentic' ? 'Token Plan (Agentic)' : 'Token Plan (Web)'),
         authenticated: Boolean(quotaData.authenticated),
       };
 
@@ -70,7 +108,9 @@ export class SyncAiProviderModelsUseCase {
         const id = m.id || m.name;
         const name = m.name || id;
         const displayName = m.display_name || name;
-        const description = m.description || `Modelo ${displayName} en Gemini Web`;
+        const description =
+          m.description ||
+          `Modelo ${displayName} en ${targetEngine === 'agentic' ? 'Antigravity Agentic' : 'Gemini Web'}`;
         const capabilities = Array.isArray(m.capabilities)
           ? m.capabilities
           : ['text', 'vision', 'documents'];
@@ -82,8 +122,8 @@ export class SyncAiProviderModelsUseCase {
           description,
           contextWindow: m.context_window || 1000000,
           capabilities,
-          isRecommended: String(id).toLowerCase().includes('flash'),
-          role: 'multimodal' as const,
+          isRecommended: Boolean(m.isRecommended ?? String(id).toLowerCase().includes('flash')),
+          role: (m.role || (capabilities.includes('ocr') ? 'ocr' : 'multimodal')) as any,
         };
       });
     } else {
@@ -109,10 +149,16 @@ export class SyncAiProviderModelsUseCase {
     }
 
     if (shouldPersist) {
-      // Persist discovered models into provider fields in database
+      // Persist discovered models into provider fields in database scoped to the mode
+      const isDefaultMode =
+        !provider.default_mode || targetMode === provider.default_mode;
       const updatedFields = {
         ...(provider.fields || {}),
-        available_models: discoveredModels,
+        [targetMode]: {
+          ...modeFields,
+          available_models: discoveredModels,
+        },
+        ...(isDefaultMode ? { available_models: discoveredModels } : {}),
       };
       await this.aiProviderService.updateProviderFields(provider.id, updatedFields);
     }
@@ -228,12 +274,118 @@ export class SyncAiProviderModelsUseCase {
       }
     }
 
-    // 4. REST standard models endpoints (OpenAI, Mistral, DeepSeek, Groq, Perplexity, xAI, Together, etc.)
-    let endpoint = 'https://api.openai.com/v1/models';
+    // 4. GEMINI / GOOGLE
+    if (normalizedKey === 'gemini' || normalizedKey === 'google') {
+      try {
+        const url = baseUrl
+          ? (baseUrl.endsWith('/models')
+              ? baseUrl
+              : `${baseUrl.replace(/\/+$/, '')}/models?key=${encodeURIComponent(apiKey)}`)
+          : `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+
+        const res = await fetch(url, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': apiKey,
+          },
+          signal: AbortSignal.timeout(10000),
+        });
+
+        if (!res.ok) {
+          // Fallback to OpenAI-compatible endpoint if native fails
+          const openaiUrl = baseUrl
+            ? (baseUrl.endsWith('/models')
+                ? baseUrl
+                : `${baseUrl.replace(/\/+$/, '')}/v1/models`)
+            : 'https://generativelanguage.googleapis.com/v1beta/openai/models';
+
+          const openaiRes = await fetch(openaiUrl, {
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              'x-goog-api-key': apiKey,
+            },
+            signal: AbortSignal.timeout(10000),
+          }).catch(() => null);
+
+          if (openaiRes && openaiRes.ok) {
+            const openAiData: any = await openaiRes.json();
+            const list = Array.isArray(openAiData.data)
+              ? openAiData.data
+              : Array.isArray(openAiData.models)
+                ? openAiData.models
+                : [];
+            return list.map((m: any) => {
+              const rawId = String(m.id || m.name || '');
+              const id = rawId.replace(/^models\//, '');
+              const lower = id.toLowerCase();
+              return {
+                id,
+                name: id,
+                displayName: id,
+                description: `Modelo Google Gemini ${id}`,
+                contextWindow: 1000000,
+                capabilities: ['text', 'vision', 'documents', 'ocr'],
+                isRecommended: lower.includes('flash'),
+                role: 'multimodal' as const,
+              };
+            });
+          }
+
+          const errText = await res.text();
+          throw new BadRequestException(
+            `Error al consultar API de Gemini (${res.status}): ${errText}`,
+          );
+        }
+
+        const data: any = await res.json();
+        const list = Array.isArray(data.models)
+          ? data.models
+          : Array.isArray(data.data)
+            ? data.data
+            : [];
+
+        return list
+          .filter((m: any) => {
+            const methods = Array.isArray(m.supportedGenerationMethods)
+              ? m.supportedGenerationMethods
+              : [];
+            return methods.length === 0 || methods.includes('generateContent');
+          })
+          .map((m: any) => {
+            const rawId = String(m.name || m.id || '');
+            const id = rawId.replace(/^models\//, '');
+            const displayName = m.displayName || id;
+            const lower = id.toLowerCase();
+            const caps = ['text', 'vision', 'documents', 'ocr'];
+            if (lower.includes('thinking') || lower.includes('2.5') || lower.includes('pro')) {
+              caps.push('reasoning');
+            }
+
+            return {
+              id,
+              name: id,
+              displayName,
+              description: m.description || `Modelo Google Gemini ${displayName}`,
+              contextWindow: m.inputTokenLimit || 1000000,
+              capabilities: caps,
+              isRecommended: lower.includes('flash'),
+              role: 'multimodal' as const,
+            };
+          });
+      } catch (err: any) {
+        if (err instanceof BadRequestException) throw err;
+        throw new BadRequestException(`Error de conexión con Google Gemini: ${err.message}`);
+      }
+    }
+
+    // 5. REST standard models endpoints (OpenAI, Mistral, DeepSeek, Groq, Perplexity, xAI, Together, etc.)
+    let endpoint = '';
     if (baseUrl) {
       endpoint = baseUrl.endsWith('/models')
         ? baseUrl
         : `${baseUrl.replace(/\/+$/, '')}/v1/models`;
+    } else if (normalizedKey === 'openai') {
+      endpoint = 'https://api.openai.com/v1/models';
     } else if (normalizedKey === 'mistral') {
       endpoint = 'https://api.mistral.ai/v1/models';
     } else if (normalizedKey === 'deepseek') {
@@ -246,6 +398,10 @@ export class SyncAiProviderModelsUseCase {
       endpoint = 'https://api.x.ai/v1/models';
     } else if (normalizedKey === 'together') {
       endpoint = 'https://api.together.xyz/v1/models';
+    } else {
+      throw new BadRequestException(
+        `El proveedor "${engineKey}" no tiene un endpoint de modelos configurado por defecto. Por favor especifique una URL base (Base URL) compatible en la configuración del proveedor.`,
+      );
     }
 
     try {
@@ -319,13 +475,12 @@ export class SyncAiProviderModelsUseCase {
             name: id,
             displayName: id,
             description: `Modelo ${id} obtenido en tiempo real`,
-            contextWindow:
-              lower.includes('o1') || lower.includes('o3') ? 200000 : 128000,
+            contextWindow: 128000,
             capabilities: caps,
             isRecommended:
-              lower === 'gpt-4o' ||
-              lower === 'mistral-large-latest' ||
-              lower === 'deepseek-chat',
+              lower.includes('latest') ||
+              lower.includes('default') ||
+              lower.includes('recommended'),
             role: isOcr ? ('ocr' as const) : isMultimodal ? ('multimodal' as const) : ('chat' as const),
           };
         });

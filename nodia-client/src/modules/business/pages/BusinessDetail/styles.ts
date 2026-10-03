@@ -24,7 +24,10 @@ export const HeaderCard = styled(Card)(({ theme }) => {
 });
 
 export const HeaderTopSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3.5, 3.5, 2.5),
+  padding: theme.spacing(2),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(3.5, 3.5, 2.5),
+  },
   display: "flex",
   alignItems: "flex-start",
   justifyContent: "space-between",
@@ -66,6 +69,12 @@ export const HeaderActions = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1.5),
   flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    "& button": {
+      flex: 1,
+    },
+  },
 }));
 
 export const TabsWrapper = styled(Box)(({ theme }) => ({

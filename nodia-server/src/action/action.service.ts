@@ -5,7 +5,8 @@ import { Action } from './entities/action.entity.js';
 import { CreateActionDto } from './dto/create-action.dto.js';
 import { UpdateActionDto } from './dto/update-action.dto.js';
 import { GetActionsDto } from './dto/get-actions.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetActionsResponse } from './types/action.types.js';
 import { TranslationService } from '../translation/translation.service.js';
 import { RedisService } from '../common/redis/redis.service.js';
@@ -26,8 +27,9 @@ export class ActionService {
     q,
   }: GetActionsDto): Promise<GetActionsResponse> {
     const qb = this.actionRepository.createQueryBuilder('action');
+    validateRansackEnvelope(q);
 
-    applyRansack(qb, q, 'action');
+    applyRansack(qb, q, 'action', RANSACK_POLICIES.action);
 
     if (all) {
       const rawData = await qb.getMany();

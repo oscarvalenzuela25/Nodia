@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsIn,
   IsNumber,
   IsObject,
   IsOptional,
@@ -34,12 +35,29 @@ export class CreateAiProviderDto {
   fields?: Record<string, any>;
 
   @IsOptional()
-  @IsNumber()
-  fields_version?: number;
+  @IsBoolean()
+  use_api_key?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  use_token_plan_web?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  use_token_plan_agentic?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['api_key', 'token_plan_web', 'token_plan_agentic'])
+  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
 
   @IsOptional()
   @IsBoolean()
   auto_rotate_api_keys?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  is_default?: boolean;
 
   @IsOptional()
   @IsBoolean()

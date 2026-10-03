@@ -15,10 +15,13 @@ import { CreateAiProviderUseCase } from './use-case/create-ai-provider.use-case.
 import { UpdateAiProviderUseCase } from './use-case/update-ai-provider.use-case.js';
 import { GetSelectableModelsUseCase } from './use-case/get-selectable-models.use-case.js';
 import { GetAiProvidersHealthUseCase } from './use-case/get-ai-providers-health.use-case.js';
-import { GetEnabledWebAiProvidersUseCase } from './use-case/get-enabled-web-ai-providers.use-case.js';
 import { GetSupportedAiProvidersUseCase } from './use-case/get-supported-ai-providers.use-case.js';
 import { GetAiProviderCatalogUseCase } from './use-case/get-ai-provider-catalog.use-case.js';
+import { CreateAiProviderCatalogUseCase } from './use-case/create-ai-provider-catalog.use-case.js';
+import { UpdateAiProviderCatalogUseCase } from './use-case/update-ai-provider-catalog.use-case.js';
 import { SyncAiProviderModelsUseCase } from './use-case/sync-ai-provider-models.use-case.js';
+import { ManageGeminiLoginUseCase } from './use-case/manage-gemini-login.use-case.js';
+import { GetGeminiEnginesUseCase } from './use-case/get-gemini-engines.use-case.js';
 
 // AiApiKey Use Cases
 import { GetAllAiApiKeysUseCase } from './use-case/get-all-ai-api-keys.use-case.js';
@@ -57,10 +60,13 @@ import { TranslationModule } from '../translation/translation.module.js';
     UpdateAiProviderUseCase,
     GetSelectableModelsUseCase,
     GetAiProvidersHealthUseCase,
-    GetEnabledWebAiProvidersUseCase,
     GetSupportedAiProvidersUseCase,
     GetAiProviderCatalogUseCase,
+    CreateAiProviderCatalogUseCase,
+    UpdateAiProviderCatalogUseCase,
     SyncAiProviderModelsUseCase,
+    ManageGeminiLoginUseCase,
+    GetGeminiEnginesUseCase,
     // AiApiKey
     GetAllAiApiKeysUseCase,
     CreateAiApiKeyUseCase,
@@ -77,10 +83,12 @@ import { TranslationModule } from '../translation/translation.module.js';
     UpdateAiProviderUseCase,
     GetSelectableModelsUseCase,
     GetAiProvidersHealthUseCase,
-    GetEnabledWebAiProvidersUseCase,
     GetSupportedAiProvidersUseCase,
     GetAiProviderCatalogUseCase,
+    CreateAiProviderCatalogUseCase,
+    UpdateAiProviderCatalogUseCase,
     SyncAiProviderModelsUseCase,
+    GetGeminiEnginesUseCase,
     GetAllAiApiKeysUseCase,
     CreateAiApiKeyUseCase,
     UpdateAiApiKeyUseCase,

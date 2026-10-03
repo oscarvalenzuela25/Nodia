@@ -16,6 +16,13 @@ export const PageTitleContainer = styled(Box)(({ theme }) => ({
 
 export const PageTitle = styled(Typography)(({ theme }) => ({
   ...theme.typography.h4,
+  fontSize: "1.5rem",
+  [theme.breakpoints.up("sm")]: {
+    fontSize: "1.875rem",
+  },
+  [theme.breakpoints.up("md")]: {
+    fontSize: "2.125rem",
+  },
   color: theme.palette.text.primary,
   fontWeight: theme.typography.fontWeightBold,
 }));
@@ -48,6 +55,16 @@ export const TableTopBar = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2.5),
   gap: theme.spacing(2),
   flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& > *": {
+      width: "100%",
+    },
+    "& button": {
+      width: "100%",
+    },
+  },
 }));
 
 export const UserInfo = styled(Box)(({ theme }) => ({

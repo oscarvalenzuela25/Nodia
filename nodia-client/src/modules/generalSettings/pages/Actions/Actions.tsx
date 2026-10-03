@@ -668,7 +668,9 @@ const Actions: FC = () => {
               aria-label={t("actions:view_mode_split", "Vista Dividida")}
             >
               <ViewAgendaOutlinedIcon fontSize="small" />
-              {t("actions:view_mode_split", "Vista Dividida")}
+              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+                {t("actions:view_mode_split", "Vista Dividida")}
+              </Box>
             </ToggleButton>
             <ToggleButton
               value="system"
@@ -678,7 +680,9 @@ const Actions: FC = () => {
               )}
             >
               <BoltOutlinedIcon fontSize="small" />
-              {t("actions:view_mode_system", "Acciones del Sistema")}
+              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+                {t("actions:view_mode_system", "Acciones del Sistema")}
+              </Box>
             </ToggleButton>
             <ToggleButton
               value="business"
@@ -688,7 +692,9 @@ const Actions: FC = () => {
               )}
             >
               <StorefrontOutlinedIcon fontSize="small" />
-              {t("actions:view_mode_business", "Acciones de Negocio")}
+              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+                {t("actions:view_mode_business", "Acciones de Negocio")}
+              </Box>
             </ToggleButton>
           </ToggleButtonGroup>
         </ViewModeContainer>

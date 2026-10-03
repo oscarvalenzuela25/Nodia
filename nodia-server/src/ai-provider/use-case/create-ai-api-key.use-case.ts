@@ -7,6 +7,12 @@ export class CreateAiApiKeyUseCase {
   constructor(private readonly aiProviderService: AiProviderService) {}
 
   async execute(dto: CreateAiApiKeyDto) {
-    return this.aiProviderService.createApiKey(dto);
+    const key = await this.aiProviderService.createApiKey(dto);
+    const {
+      secret_ciphertext: _ciphertext,
+      secret_fingerprint: _fingerprint,
+      ...safe
+    } = key;
+    return safe;
   }
 }

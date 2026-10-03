@@ -5,6 +5,7 @@ import { BusinessCollaborator } from './entities/business-collaborator.entity.js
 import { BusinessAction } from '../business-action/entities/business-action.entity.js';
 import { Product } from '../product/entities/product.entity.js';
 import { Provider } from '../provider/entities/provider.entity.js';
+import { UserRole } from '../user/entities/user-role.entity.js';
 import { BusinessService } from './business.service.js';
 import { BusinessController } from './business.controller.js';
 import { GetMyBusinessesUseCase } from './use-case/get-my-businesses.use-case.js';
@@ -23,6 +24,7 @@ import { TranslationModule } from '../translation/translation.module.js';
       BusinessAction,
       Product,
       Provider,
+      UserRole,
     ]),
     TranslationModule,
   ],

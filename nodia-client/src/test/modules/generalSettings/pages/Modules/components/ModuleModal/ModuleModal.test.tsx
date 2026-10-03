@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import ModuleModal from "../../../../../../../modules/generalSettings/pages/Modules/components/ModuleModal";
 
-let mockModulesData: any[] = [];
+let mockModulesData: Array<Record<string, unknown>> = [];
 
 vi.mock(
   "../../../../../../../modules/generalSettings/pages/Modules/infrastructure/useServices",

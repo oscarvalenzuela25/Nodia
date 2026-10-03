@@ -242,9 +242,36 @@ export const analyzeInvoice = async (
   if (params.ai_provider) {
     formData.append("ai_provider", params.ai_provider);
   }
+  if (params.ai_provider_id) {
+    formData.append("ai_provider_id", params.ai_provider_id);
+  }
+  if (params.model) {
+    formData.append("model", params.model);
+  }
+  if (params.model_type) {
+    formData.append("model_type", params.model_type);
+  }
+  if (params.extended_thinking !== undefined) {
+    formData.append("extended_thinking", String(params.extended_thinking));
+  }
+  if (params.engine) {
+    formData.append("engine", params.engine);
+  }
+  if (params.mode) {
+    formData.append("mode", params.mode);
+  }
+  if (params.thinking_level) {
+    formData.append("thinking_level", params.thinking_level);
+  }
+
+  const query = new URLSearchParams();
+  if (params.mode) query.set("mode", params.mode);
+  if (params.thinking_level) query.set("thinking_level", params.thinking_level);
+  if (params.engine) query.set("engine", params.engine);
+  const queryString = query.toString() ? `?${query.toString()}` : "";
 
   const { data } = await mainInstance.post<import("./types").AnalyzeInvoiceResponse>(
-    apiPath("/invoices/analyze"),
+    apiPath(`/invoices/analyze${queryString}`),
     formData,
     {
       headers: {

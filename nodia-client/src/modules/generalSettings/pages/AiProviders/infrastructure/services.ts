@@ -11,17 +11,36 @@ import type {
   GetAiProviderEventsParams,
   PaginatedResponse,
   EnabledWebAiProvidersResponse,
-  CreateAiApiKeyPayload,
-  UpdateAiApiKeyPayload,
-  GetAiApiKeysParams,
-  AiApiKeyEntity,
   AiProviderCatalogEntity,
   SyncModelsResult,
+  GeminiLoginJob,
+  GeminiDualEngineStatus,
 } from "./types";
 
 const getEndpoint = (path: string) => {
   const hasV1 = mainInstance.defaults.baseURL?.includes("/api/v1");
   return hasV1 ? path : `/api/v1${path}`;
+};
+
+export const startGeminiLogin = async (): Promise<GeminiLoginJob> => {
+  const { data } = await mainInstance.post<GeminiLoginJob>(
+    getEndpoint("/ai-providers/gemini-login/start")
+  );
+  return data;
+};
+
+export const getGeminiLoginStatus = async (jobId: string): Promise<GeminiLoginJob> => {
+  const { data } = await mainInstance.get<GeminiLoginJob>(
+    getEndpoint(`/ai-providers/gemini-login/${jobId}`)
+  );
+  return data;
+};
+
+export const cancelGeminiLogin = async (jobId: string): Promise<GeminiLoginJob> => {
+  const { data } = await mainInstance.post<GeminiLoginJob>(
+    getEndpoint(`/ai-providers/gemini-login/${jobId}/cancel`)
+  );
+  return data;
 };
 
 export const getAiProviderCatalog = async (): Promise<AiProviderCatalogEntity[]> => {
@@ -35,9 +54,15 @@ export const getSupportedAiProviders = getAiProviderCatalog;
 
 export const syncAiProviderModels = async (
   id: string,
-  persist?: boolean
+  persist?: boolean,
+  mode?: string,
+  engine?: string,
 ): Promise<SyncModelsResult> => {
-  const query = persist !== undefined ? `?persist=${persist}` : "";
+  const params = new URLSearchParams();
+  if (persist !== undefined) params.append("persist", String(persist));
+  if (mode) params.append("mode", mode);
+  if (engine) params.append("engine", engine);
+  const query = params.toString() ? `?${params.toString()}` : "";
   const { data } = await mainInstance.post<SyncModelsResult>(
     getEndpoint(`/ai-providers/${id}/sync-models${query}`)
   );
@@ -109,37 +134,9 @@ export const getEnabledWebAiProviders = async (): Promise<EnabledWebAiProvidersR
   return data;
 };
 
-export const getAiApiKeys = async (
-  params?: GetAiApiKeysParams
-): Promise<PaginatedResponse<AiApiKeyEntity>> => {
-  const { data } = await mainInstance.get<PaginatedResponse<AiApiKeyEntity>>(
-    getEndpoint("/ai-api-keys"),
-    { params }
+export const getGeminiEngines = async (): Promise<GeminiDualEngineStatus | null> => {
+  const { data } = await mainInstance.get<GeminiDualEngineStatus | null>(
+    getEndpoint("/ai-providers/gemini-engines")
   );
   return data;
-};
-
-export const createAiApiKey = async (
-  payload: CreateAiApiKeyPayload
-): Promise<AiApiKeyEntity> => {
-  const { data } = await mainInstance.post<AiApiKeyEntity>(
-    getEndpoint("/ai-api-keys"),
-    payload
-  );
-  return data;
-};
-
-export const updateAiApiKey = async (
-  id: string,
-  payload: UpdateAiApiKeyPayload
-): Promise<AiApiKeyEntity> => {
-  const { data } = await mainInstance.put<AiApiKeyEntity>(
-    getEndpoint(`/ai-api-keys/${id}`),
-    payload
-  );
-  return data;
-};
-
-export const deleteAiApiKey = async (id: string): Promise<void> => {
-  await mainInstance.delete(getEndpoint(`/ai-api-keys/${id}`));
 };

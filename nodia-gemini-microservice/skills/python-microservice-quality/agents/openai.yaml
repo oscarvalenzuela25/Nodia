@@ -1,0 +1,3 @@
+interface:
+  display_name: "Python Microservice Quality"
+  short_description: "Ciclo de vida, concurrencia y contratos en Python"

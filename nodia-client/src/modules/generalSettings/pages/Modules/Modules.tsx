@@ -614,15 +614,21 @@ const Modules: FC = () => {
           >
             <ToggleButton value="split" aria-label={t("modules:views.split")}>
               <ViewAgendaOutlinedIcon fontSize="small" />
-              {t("modules:views.split", "Vista Conjunta")}
+              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+                {t("modules:views.split", "Vista Conjunta")}
+              </Box>
             </ToggleButton>
             <ToggleButton value="modules" aria-label={t("modules:views.modules")}>
               <ViewModuleOutlinedIcon fontSize="small" />
-              {t("modules:views.modules", "Solo Módulos")}
+              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+                {t("modules:views.modules", "Solo Módulos")}
+              </Box>
             </ToggleButton>
             <ToggleButton value="groups" aria-label={t("modules:views.groups")}>
               <CategoryOutlinedIcon fontSize="small" />
-              {t("modules:views.groups", "Solo Grupos")}
+              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+                {t("modules:views.groups", "Solo Grupos")}
+              </Box>
             </ToggleButton>
           </ToggleButtonGroup>
         </ViewModeContainer>

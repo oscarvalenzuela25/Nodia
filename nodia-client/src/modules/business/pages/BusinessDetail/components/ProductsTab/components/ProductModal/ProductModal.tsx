@@ -9,6 +9,7 @@ import { Button, Grid } from "@mui/material";
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
 import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
+import type { SelectSingleInputProps } from "../../../../../../../../components/inputs/SelectSingleInput/types";
 import type { ProductEntity, ProviderEntity } from "../../../../../../infrastructure/types";
 import {
   FormContainer,
@@ -38,6 +39,7 @@ interface Props {
   onSubmit: (data: ProductFormData) => Promise<void>;
   initialData?: ProductEntity | null;
   providers?: ProviderEntity[];
+  providerSearch?: Pick<SelectSingleInputProps, "onSearchChange" | "onLoadMore" | "hasMore" | "loadingOptions">;
   isSubmitting?: boolean;
 }
 
@@ -47,6 +49,7 @@ export const ProductModal: FC<Props> = ({
   onSubmit,
   initialData,
   providers = [],
+  providerSearch,
   isSubmitting = false,
 }) => {
   const { t } = useTranslation(["business", "core"]);
@@ -170,11 +173,13 @@ export const ProductModal: FC<Props> = ({
   };
 
   const providerOptions = useMemo(() => {
-    return providers.map((p) => ({
+    const selected = initialData?.provider;
+    const items = selected && !providers.some((provider) => provider.id === selected.id) ? [selected, ...providers] : providers;
+    return items.map((p) => ({
       value: p.id,
       label: p.name,
     }));
-  }, [providers]);
+  }, [providers, initialData?.provider]);
 
   const modalActions = (
     <ModalActionsContainer>
@@ -427,6 +432,7 @@ export const ProductModal: FC<Props> = ({
                 <SelectSingleInput
                   id="product-provider"
                   label={t("business:product_provider")}
+                  {...providerSearch}
                   options={providerOptions}
                   value={field.value || null}
                   onChange={(val) => field.onChange(val || null)}

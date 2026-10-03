@@ -1,19 +1,19 @@
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, Box } from "@mui/material";
+import { Button, Typography, Box, LinearProgress, Tooltip, Chip } from "@mui/material";
+import { sileo } from "sileo";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import HubOutlinedIcon from "@mui/icons-material/HubOutlined";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import DevicesOutlinedIcon from "@mui/icons-material/DevicesOutlined";
-import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
-import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import type { AiProviderHealthItem } from "../../infrastructure/types";
+import { useGeminiEngines, useUpdateAiProvider } from "../../infrastructure/useServices";
 import {
   CardContainer,
   CardHeader,
@@ -30,19 +30,22 @@ import {
   MetricLabel,
   MetricValue,
   FeatureSection,
-  FeatureRow,
-  FeatureLabel,
-  FeatureValue,
-  DetailInsetBox,
   CodeBadge,
   CardActionsRow,
   SecondaryActionsGroup,
+  ModesPanelsRow,
+  ModePanelCard,
+  ModePanelHeader,
+  ModePanelBody,
+  SwitchWrapper,
+  StyledFormControlLabel,
+  StyledSwitch,
 } from "./styles";
 
 interface ProviderCardProps {
   provider: AiProviderHealthItem;
+  totalProviders?: number;
   onRenewSession?: (provider: AiProviderHealthItem) => void;
-  onManageKeys?: (provider: AiProviderHealthItem) => void;
   onViewModels?: (provider: AiProviderHealthItem) => void;
   onConfigure?: (provider: AiProviderHealthItem) => void;
   onGoToDetail?: (provider: AiProviderHealthItem) => void;
@@ -50,8 +53,8 @@ interface ProviderCardProps {
 
 const ProviderCard: FC<ProviderCardProps> = ({
   provider,
+  totalProviders,
   onRenewSession,
-  onManageKeys,
   onViewModels,
   onConfigure,
   onGoToDetail,
@@ -62,6 +65,15 @@ const ProviderCard: FC<ProviderCardProps> = ({
   const isMistral = provider.key.toLowerCase().includes("mistral");
   const isWebMode = provider.mode === "web_session";
 
+  const { data: geminiEnginesData } = useGeminiEngines({
+    enabled: isGemini,
+  });
+
+  const isAgenticActive = isGemini && geminiEnginesData?.agentic?.available === true
+    && geminiEnginesData.agentic.authenticated === true;
+  const isWebActive = isGemini && geminiEnginesData?.web?.available === true
+    && geminiEnginesData.web.authenticated === true;
+
   // Provider Icon
   const renderProviderIcon = () => {
     if (isGemini) {
@@ -71,6 +83,39 @@ const ProviderCard: FC<ProviderCardProps> = ({
       return <HubOutlinedIcon sx={{ fontSize: 28 }} />;
     }
     return <SmartToyOutlinedIcon sx={{ fontSize: 28 }} />;
+  };
+
+  const updateProviderMutation = useUpdateAiProvider();
+  const isUpdatingDefault = updateProviderMutation.isPending;
+
+  const handleToggleDefaultProvider = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (provider.is_default) {
+      sileo.info({
+        title: t(
+          "ai_providers:already_default_notice",
+          "Este proveedor ya es el predeterminado. Para cambiarlo, active otro proveedor."
+        ),
+      });
+      return;
+    }
+
+    if (e.target.checked && provider.id) {
+      try {
+        await updateProviderMutation.mutateAsync({
+          id: provider.id,
+          data: { is_default: true },
+        });
+        sileo.success({
+          title: t("ai_providers:default_provider_saved", "Proveedor predeterminado actualizado"),
+        });
+      } catch (err: unknown) {
+        const error = err as { response?: { data?: { message?: string } } };
+        sileo.error({
+          title: t("core:server_error_toast"),
+          description: error?.response?.data?.message,
+        });
+      }
+    }
   };
 
   const getStatusDotColor = () => {
@@ -86,7 +131,23 @@ const ProviderCard: FC<ProviderCardProps> = ({
           <ProviderInfo>
             <IconBox>{renderProviderIcon()}</IconBox>
             <TitleBox>
-              <ProviderName>{provider.name}</ProviderName>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <ProviderName>{provider.name}</ProviderName>
+                {provider.is_default && (
+                  <Chip
+                    size="small"
+                    label={t("ai_providers:cards.default_badge", "Predeterminado")}
+                    color="primary"
+                    variant="filled"
+                    sx={{
+                      height: 20,
+                      fontSize: "0.6875rem",
+                      fontWeight: 700,
+                      borderRadius: 1,
+                    }}
+                  />
+                )}
+              </Box>
               <TagRow>
                 <SubtitleTag>ID: {provider.key}</SubtitleTag>
               </TagRow>
@@ -102,9 +163,28 @@ const ProviderCard: FC<ProviderCardProps> = ({
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {t(
               "ai_providers:cards.unconfigured_desc",
-              "Configure una vía de conexión (sesión web o API keys) para habilitar este proveedor."
+              "Configure una sesión Web o Agentic para habilitar esta conexión."
             )}
           </Typography>
+          {Boolean(totalProviders && totalProviders > 1) && (
+            <Box sx={{ mb: 2, maxWidth: 360, mx: "auto" }}>
+              <SwitchWrapper>
+                <StyledFormControlLabel
+                  control={
+                    <StyledSwitch
+                      checked={Boolean(provider.is_default)}
+                      onChange={handleToggleDefaultProvider}
+                      disabled={isUpdatingDefault}
+                      data-testid={`default-provider-switch-${provider.key}`}
+                    />
+                  }
+                  label={t("ai_providers:set_default_provider", "Proveedor Predeterminado")}
+                  labelPlacement="start"
+                />
+              </SwitchWrapper>
+            </Box>
+          )}
+
           <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center", flexWrap: "wrap" }}>
             <Button
               variant="contained"
@@ -137,18 +217,40 @@ const ProviderCard: FC<ProviderCardProps> = ({
         <ProviderInfo>
           <IconBox>{renderProviderIcon()}</IconBox>
           <TitleBox>
-            <ProviderName>{provider.name}</ProviderName>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <ProviderName>{provider.name}</ProviderName>
+              {provider.is_default && (
+                <Chip
+                  size="small"
+                  label={t("ai_providers:cards.default_badge", "Predeterminado")}
+                  color="primary"
+                  variant="filled"
+                  sx={{
+                    height: 20,
+                    fontSize: "0.6875rem",
+                    fontWeight: 700,
+                    borderRadius: 1,
+                  }}
+                />
+              )}
+            </Box>
             <TagRow>
               <SubtitleTag>
-                {isWebMode
-                  ? t("ai_providers:cards.mode_web", "Modo: Sesión Web Headless")
-                  : t("ai_providers:cards.mode_api", "Modo: API Key (Rotativa)")}
+                {(() => {
+                  const modes: string[] = [];
+                  if (provider.use_token_plan_agentic) modes.push("Agentic");
+                  if (provider.use_token_plan_web) modes.push("Plan Web");
+                  if (modes.length > 0) return `Modos: ${modes.join(" • ")}`;
+                  return isWebMode
+                    ? t("ai_providers:cards.mode_web", "Modo: Sesión Web Headless")
+                    : t("ai_providers:connection.no_modes");
+                })()}
               </SubtitleTag>
               <span>•</span>
               <SubtitleTag>
                 {isWebMode
                   ? t("ai_providers:cards.tag_multimodal", "Extracción & Multi-modal")
-                  : t("ai_providers:cards.tag_multi_key", "Multi-Key Pool")}
+                  : t("ai_providers:cards.tag_multimodal")}
               </SubtitleTag>
             </TagRow>
           </TitleBox>
@@ -160,13 +262,13 @@ const ProviderCard: FC<ProviderCardProps> = ({
         </StatusPill>
       </CardHeader>
 
-      {/* 4 STATS METRICS GRID */}
+      {/* STATS METRICS GRID */}
       <MetricsGrid>
         {/* Service State */}
         <MetricBlock>
           <MetricLabel>{t("ai_providers:cards.service_state", "Estado de servicio")}</MetricLabel>
-          <MetricValue sx={{ color: provider.status === "expired" ? "#f59e0b" : "#10b981" }}>
-            {provider.status === "expired" ? (
+          <MetricValue sx={{ color: provider.status === "expired" || provider.status === "degraded" ? "#f59e0b" : "#10b981" }}>
+            {provider.status === "expired" || provider.status === "degraded" ? (
               <ErrorOutlineOutlinedIcon sx={{ fontSize: 16 }} />
             ) : (
               <CheckCircleOutlinedIcon sx={{ fontSize: 16 }} />
@@ -180,80 +282,217 @@ const ProviderCard: FC<ProviderCardProps> = ({
           <MetricLabel>{t("ai_providers:cards.last_check", "Última comprobación")}</MetricLabel>
           <MetricValue>{provider.lastCheck}</MetricValue>
         </MetricBlock>
-
-        {/* Container or Monthly Quota */}
-        <MetricBlock>
-          <MetricLabel>
-            {isWebMode
-              ? t("ai_providers:cards.container_status", "Contenedor Chromium")
-              : t("ai_providers:cards.monthly_quota", "Cuota mensual")}
-          </MetricLabel>
-          <MetricValue>
-            <StorageOutlinedIcon sx={{ fontSize: 16 }} />
-            {isWebMode ? provider.containerStatus || "Cluster-04:IDLE" : provider.monthlyQuotaUsed || "68.4% consumida"}
-          </MetricValue>
-        </MetricBlock>
       </MetricsGrid>
 
-      {/* MIDDLE FEATURE SECTION */}
+      {/* MIDDLE FEATURE SECTION: MODE PANELS */}
       <FeatureSection>
-        {/* Failover status row */}
-        <FeatureRow>
-          <FeatureLabel>
-            <SyncOutlinedIcon sx={{ fontSize: 16 }} />
-            {isWebMode
-              ? t("ai_providers:cards.auto_failover", "Failover automático")
-              : t("ai_providers:cards.failover_switch", "Cambio de contingencia")}
-          </FeatureLabel>
-          <FeatureValue>
-            {isWebMode
-              ? t("ai_providers:cards.failover_inactive_web", "INACTIVO PARA MODO WEB")
-              : provider.failoverSwitch || "Activo (Failover a mistral-prod-sec)"}
-          </FeatureValue>
-        </FeatureRow>
 
-        {/* Details row: Remote Browser or Assigned Models */}
-        {isWebMode ? (
-          <DetailInsetBox>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <DevicesOutlinedIcon sx={{ fontSize: 20, color: "text.secondary" }} />
-              <Box>
-                <Typography variant="caption" sx={{ fontWeight: 600, display: "block" }}>
-                  {t("ai_providers:cards.remote_browser_profile", "Perfil de Navegación Remota")}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {t("ai_providers:cards.cookie_location", "Ubicación de cookies")}:{" "}
-                  <CodeBadge>{provider.remoteBrowserProfile?.location || "/var/vault/gemini-session-v2.enc"}</CodeBadge>
-                </Typography>
-              </Box>
-            </Box>
-            <CodeBadge>{provider.remoteBrowserProfile?.engine || "Puppeteer Node"}</CodeBadge>
-          </DetailInsetBox>
-        ) : (
-          <DetailInsetBox>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flex: 1 }}>
-              <TuneOutlinedIcon sx={{ fontSize: 20, color: "text.secondary" }} />
-              <Box>
-                <Typography variant="caption" sx={{ fontWeight: 600, display: "block" }}>
-                  {t("ai_providers:cards.assigned_models", "Modelos Asignados por Función")}
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
-                  <CodeBadge>OCR: {provider.assignedModels?.ocr || "mistral-ocr-v1"}</CodeBadge>
-                  <CodeBadge>Infer: {provider.assignedModels?.infer || "mistral-large-2411"}</CodeBadge>
-                </Box>
-              </Box>
-            </Box>
-            <Button
-              size="small"
-              variant="text"
-              onClick={() => onViewModels?.(provider)}
-              sx={{ fontWeight: 600, textTransform: "none", fontSize: "0.75rem" }}
-            >
-              {t("ai_providers:cards.change_action", "Cambiar")}
-            </Button>
-          </DetailInsetBox>
-        )}
+
+
+        {/* MODES PANELS ROW */}
+        {(() => {
+          const hasScopedFields = Boolean(provider.fields?.token_plan_agentic || provider.fields?.token_plan_web || provider.fields?.api_key);
+          const agenticFields = (provider.fields?.token_plan_agentic as Record<string, unknown>) || {};
+          const agenticModel =
+            (agenticFields.selected_model as string) ||
+            (!hasScopedFields && provider.default_mode === "token_plan_agentic" ? provider.selectedModel : undefined);
+
+          const webFields = (provider.fields?.token_plan_web as Record<string, unknown>) || {};
+          const webModel =
+            (webFields.selected_model as string) ||
+            (!hasScopedFields && provider.default_mode === "token_plan_web" ? provider.selectedModel : undefined);
+
+          const webQuota = geminiEnginesData?.web?.quota;
+
+          return (
+            <ModesPanelsRow>
+              {/* MODO 1: AGENTIC */}
+              {Boolean(provider.use_token_plan_agentic) && (
+                <ModePanelCard>
+                  <ModePanelHeader>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <PsychologyOutlinedIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
+                        {t("ai_providers:cards.panel_agentic_title", "Sesión Agéntica (Antigravity)")}
+                      </Typography>
+                    </Box>
+                    <CodeBadge
+                      sx={{
+                        backgroundColor:
+                          !isAgenticActive
+                            ? "rgba(239, 68, 68, 0.1)"
+                            : "rgba(16, 185, 129, 0.1)",
+                        color: !isAgenticActive ? "#ef4444" : "#10b981",
+                        borderColor:
+                          !isAgenticActive
+                            ? "rgba(239, 68, 68, 0.2)"
+                            : "rgba(16, 185, 129, 0.2)",
+                      }}
+                    >
+                      {!isAgenticActive
+                        ? t("ai_providers:cards.panel_agentic_inactive", "No detectada")
+                        : t("ai_providers:cards.panel_agentic_active", "Conectada")}
+                    </CodeBadge>
+                  </ModePanelHeader>
+                  <ModePanelBody>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("ai_providers:cards.model_label", "Modelo")}:
+                      </Typography>
+                      <CodeBadge sx={{ fontStyle: agenticModel ? "normal" : "italic", opacity: agenticModel ? 1 : 0.7 }}>
+                        {agenticModel || t("ai_providers:status_not_configured", "Sin asignar")}
+                      </CodeBadge>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {t(
+                        "ai_providers:cards.panel_agentic_desc",
+                        "Entorno agéntico Antigravity"
+                      )}
+                    </Typography>
+                  </ModePanelBody>
+                </ModePanelCard>
+              )}
+
+              {/* MODO 2: WEB */}
+              {Boolean(provider.use_token_plan_web) && (
+                <ModePanelCard>
+                  <ModePanelHeader>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <DevicesOutlinedIcon sx={{ fontSize: 18, color: "info.main" }} />
+                      <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
+                        {t("ai_providers:cards.panel_web_title", "Sesión Web (Google One)")}
+                      </Typography>
+                    </Box>
+                    <CodeBadge
+                      sx={{
+                        backgroundColor:
+                          !isWebActive
+                            ? "rgba(245, 158, 11, 0.1)"
+                            : "rgba(16, 185, 129, 0.1)",
+                        color: !isWebActive ? "#f59e0b" : "#10b981",
+                        borderColor:
+                          !isWebActive
+                            ? "rgba(245, 158, 11, 0.2)"
+                            : "rgba(16, 185, 129, 0.2)",
+                      }}
+                    >
+                      {!isWebActive
+                        ? t("ai_providers:cards.panel_web_inactive", "Requiere Login")
+                        : t("ai_providers:cards.panel_web_active", "Autenticada")}
+                    </CodeBadge>
+                  </ModePanelHeader>
+                  <ModePanelBody>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("ai_providers:cards.model_label", "Modelo")}:
+                      </Typography>
+                      <CodeBadge sx={{ fontStyle: webModel ? "normal" : "italic", opacity: webModel ? 1 : 0.7 }}>
+                        {webModel || t("ai_providers:status_not_configured", "Sin asignar")}
+                      </CodeBadge>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {t(
+                        "ai_providers:cards.panel_web_desc",
+                        "Sesión de navegador para modelos web"
+                      )}
+                    </Typography>
+
+                    {/* QUOTA METRICS: FLASH & PRO */}
+                    {Boolean(webQuota?.flash || webQuota?.pro) && (
+                      <Box sx={{ display: "flex", gap: 1, mt: 0.5, width: "100%" }}>
+                        {webQuota?.flash && Number.isFinite(webQuota.flash.usage_percentage) && (
+                          <Tooltip title={t("ai_providers:cards.quota_flash_tooltip", "Cuota de solicitudes Gemini Flash")}>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.25 }}>
+                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 600, color: "text.secondary" }}>
+                                  {t("ai_providers:cards.quota_flash_label", "Flash")}:
+                                </Typography>
+                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 700 }}>
+                                  {webQuota.flash.usage_percentage ?? 0}%
+                                </Typography>
+                              </Box>
+                              <LinearProgress
+                                variant="determinate"
+                                value={Math.min(webQuota.flash.usage_percentage ?? 0, 100)}
+                                color="info"
+                                sx={{ height: 4, borderRadius: 2 }}
+                              />
+                            </Box>
+                          </Tooltip>
+                        )}
+                        {webQuota?.pro && Number.isFinite(webQuota.pro.usage_percentage) && (
+                          <Tooltip title={t("ai_providers:cards.quota_pro_tooltip", "Cuota de solicitudes Gemini Pro")}>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.25 }}>
+                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 600, color: "text.secondary" }}>
+                                  {t("ai_providers:cards.quota_pro_label", "Pro")}:
+                                </Typography>
+                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 700 }}>
+                                  {webQuota.pro.usage_percentage ?? 0}%
+                                </Typography>
+                              </Box>
+                              <LinearProgress
+                                variant="determinate"
+                                value={Math.min(webQuota.pro.usage_percentage ?? 0, 100)}
+                                color="secondary"
+                                sx={{ height: 4, borderRadius: 2 }}
+                              />
+                            </Box>
+                          </Tooltip>
+                        )}
+                      </Box>
+                    )}
+                  </ModePanelBody>
+                </ModePanelCard>
+              )}
+
+
+
+
+              {/* SIN MODOS ACTIVOS */}
+              {!provider.use_token_plan_agentic &&
+                !provider.use_token_plan_web && (
+                  <ModePanelCard sx={{ gridColumn: "1 / -1" }}>
+                    <ModePanelHeader>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <InfoOutlinedIcon sx={{ fontSize: 18, color: "warning.main" }} />
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
+                          {t("ai_providers:cards.panel_no_modes_title", "Sin modos activos")}
+                        </Typography>
+                      </Box>
+                    </ModePanelHeader>
+                    <ModePanelBody>
+                      <Typography variant="caption" color="text.secondary">
+                        {t(
+                          "ai_providers:cards.panel_no_modes_desc",
+                          "No se tiene información. No hay modos de conexión activos configurados."
+                        )}
+                      </Typography>
+                    </ModePanelBody>
+                  </ModePanelCard>
+                )}
+            </ModesPanelsRow>
+          );
+        })()}
       </FeatureSection>
+
+      {/* DEFAULT PROVIDER SWITCH (IF MORE THAN 1 PROVIDER) */}
+      {Boolean(totalProviders && totalProviders > 1) && (
+        <SwitchWrapper>
+          <StyledFormControlLabel
+            control={
+              <StyledSwitch
+                checked={Boolean(provider.is_default)}
+                onChange={handleToggleDefaultProvider}
+                disabled={isUpdatingDefault}
+                data-testid={`default-provider-switch-${provider.key}`}
+              />
+            }
+            label={t("ai_providers:set_default_provider", "Proveedor Predeterminado")}
+            labelPlacement="start"
+          />
+        </SwitchWrapper>
+      )}
 
       {/* FOOTER ACTIONS */}
       <CardActionsRow>
@@ -279,63 +518,42 @@ const ProviderCard: FC<ProviderCardProps> = ({
             {t("ai_providers:cards.configure_button", "Configurar")}
           </Button>
 
-          {!isWebMode && (
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => onViewModels?.(provider)}
-              sx={{ borderRadius: 1.5, textTransform: "none" }}
-            >
-              {t("ai_providers:cards.models_button", "Modelos")}
-            </Button>
-          )}
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => (onViewModels ? onViewModels(provider) : onGoToDetail?.(provider))}
+            sx={{ borderRadius: 1.5, textTransform: "none" }}
+          >
+            {t("ai_providers:cards.models_button", "Modelos")}
+          </Button>
         </SecondaryActionsGroup>
 
-        {/* Primary CTA button */}
-        {isWebMode ? (
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<DevicesOutlinedIcon />}
-            onClick={() => onRenewSession?.(provider)}
-            sx={{
-              backgroundColor: "#6366f1",
-              color: "#ffffff",
-              fontWeight: 600,
-              textTransform: "none",
-              borderRadius: 1.5,
-              px: 2,
-              "&:hover": {
-                backgroundColor: "#4f46e5",
-              },
-            }}
-          >
-            {t("ai_providers:cards.renew_session_button", "Renovar Sesión (Navegador Remoto)")}
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<KeyOutlinedIcon />}
-            onClick={() => onManageKeys?.(provider)}
-            sx={{
-              backgroundColor: "#0d9488",
-              color: "#ffffff",
-              fontWeight: 600,
-              textTransform: "none",
-              borderRadius: 1.5,
-              px: 2,
-              "&:hover": {
-                backgroundColor: "#0f766e",
-              },
-            }}
-          >
-            {t("ai_providers:cards.admin_api_keys_button", {
-              defaultValue: "Administrar API Keys ({{count}})",
-              count: provider.apiKeysCount || 3,
-            })}
-          </Button>
-        )}
+        {/* Primary CTA buttons */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {Boolean(provider.use_token_plan_web && provider.status === "expired") && (
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<DevicesOutlinedIcon />}
+              onClick={() => onRenewSession?.(provider)}
+              sx={{
+                backgroundColor: "#6366f1",
+                color: "#ffffff",
+                fontWeight: 600,
+                textTransform: "none",
+                borderRadius: 1.5,
+                px: 2,
+                "&:hover": {
+                  backgroundColor: "#4f46e5",
+                },
+              }}
+            >
+              {t("ai_providers:cards.renew_session_button", "Renovar Sesión (Navegador Remoto)")}
+            </Button>
+          )}
+
+
+        </Box>
       </CardActionsRow>
     </CardContainer>
   );

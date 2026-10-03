@@ -36,8 +36,8 @@ export class MistralService {
 
   constructor() {
     this.apiKey = envs.MISTRAL_API_KEY || '';
-    this.chatModelName = envs.MISTRAL_MODEL || 'open-mistral-nemo';
-    this.ocrModelName = envs.MISTRAL_OCR_MODEL || 'mistral-ocr-latest';
+    this.chatModelName = envs.MISTRAL_MODEL || '';
+    this.ocrModelName = envs.MISTRAL_OCR_MODEL || '';
   }
 
   /**
@@ -51,6 +51,8 @@ export class MistralService {
     mimeType: string,
     providerFields?: Record<string, any>,
     providerTax: number = 19,
+    selectedModel?: string,
+    ocrModel?: string,
   ): Promise<ExtractedInvoiceData> {
     if (!this.apiKey) {
       throw new InternalServerErrorException(
@@ -77,7 +79,7 @@ export class MistralService {
         // Step 1: Extract high-fidelity markdown using Mistral OCR
         let markdown = '';
         try {
-          const ocrData = await this.performOcr(documentPayload);
+          const ocrData = await this.performOcr(documentPayload, ocrModel);
           markdown = (ocrData.pages || [])
             .map((p) => p.markdown || '')
             .join('\n\n--- PAGE BREAK ---\n\n')
@@ -109,6 +111,7 @@ export class MistralService {
           markdown,
           providerFields,
           providerTax,
+          selectedModel,
         );
 
         return structured;
@@ -138,7 +141,10 @@ export class MistralService {
     );
   }
 
-  private async performOcr(documentPayload: Record<string, any>): Promise<MistralOcrResponse> {
+  private async performOcr(
+    documentPayload: Record<string, any>,
+    customOcrModel?: string,
+  ): Promise<MistralOcrResponse> {
     const response = await fetch('https://api.mistral.ai/v1/ocr', {
       method: 'POST',
       headers: {
@@ -146,7 +152,7 @@ export class MistralService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: this.ocrModelName,
+        model: customOcrModel || this.ocrModelName,
         document: documentPayload,
       }),
     });
@@ -430,6 +436,7 @@ Para cada ítem en "items":
     markdown: string,
     providerFields?: Record<string, any>,
     providerTax: number = 19,
+    customChatModel?: string,
   ): Promise<ExtractedInvoiceData> {
     const config = extractProviderConfig(providerFields);
 
@@ -460,7 +467,7 @@ Devuelve únicamente el objeto JSON.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: this.chatModelName,
+        model: customChatModel || this.chatModelName,
         response_format: { type: 'json_object' },
         messages: [
           {

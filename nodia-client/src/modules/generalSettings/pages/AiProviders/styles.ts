@@ -91,11 +91,7 @@ export const HeaderButtonsRow = styled(Box)(({ theme }) => ({
 
 export const CardsGrid = styled(Box)(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))",
-  columnGap: theme.spacing(2), // 16px horizontal gap
+  gridTemplateColumns: "1fr",
   rowGap: theme.spacing(3), // 24px vertical gap
   width: "100%",
-  [theme.breakpoints.down("sm")]: {
-    gridTemplateColumns: "1fr",
-  },
 }));

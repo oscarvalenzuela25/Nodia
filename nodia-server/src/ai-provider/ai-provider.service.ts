@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AiProvider } from './entities/ai-provider.entity.js';
@@ -8,20 +13,25 @@ import { AiProviderCatalog } from './entities/ai-provider-catalog.entity.js';
 import { CreateAiProviderDto } from './dto/create-ai-provider.dto.js';
 import { UpdateAiProviderDto } from './dto/update-ai-provider.dto.js';
 import { GetAiProvidersDto } from './dto/get-ai-providers.dto.js';
+import { CreateAiProviderCatalogDto } from './dto/create-ai-provider-catalog.dto.js';
+import { UpdateAiProviderCatalogDto } from './dto/update-ai-provider-catalog.dto.js';
 import { CreateAiApiKeyDto } from './dto/create-ai-api-key.dto.js';
 import { UpdateAiApiKeyDto } from './dto/update-ai-api-key.dto.js';
 import { GetAiApiKeysDto } from './dto/get-ai-api-keys.dto.js';
 import { CreateAiProviderEventDto } from './dto/create-ai-provider-event.dto.js';
 import { GetAiProviderEventsDto } from './dto/get-ai-provider-events.dto.js';
 import {
+  AiConnectionMode,
   GetAiProvidersResponse,
   GetAiApiKeysResponse,
   GetAiProviderEventsResponse,
 } from './types/ai-provider.types.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { TranslationService } from '../translation/translation.service.js';
 import {
   encryptSecret,
+  decryptSecret,
   generateDisplayHint,
   generateFingerprint,
 } from './helpers/ai-key-crypto.helper.js';
@@ -56,13 +66,20 @@ export class AiProviderService {
     q,
   }: GetAiProvidersDto): Promise<GetAiProvidersResponse> {
     const qb = this.aiProviderRepository.createQueryBuilder('ai_provider');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('ai_provider.catalog', 'catalog');
       qb.leftJoinAndSelect('ai_provider.api_keys', 'api_keys');
+    } else {
+      // key belongs to the catalogue, including when relation payloads are omitted.
+      qb.leftJoin('ai_provider.catalog', 'catalog');
     }
 
-    applyRansack(qb, q, 'ai_provider');
+    applyRansack(qb, q, 'ai_provider', RANSACK_POLICIES.ai_provider);
+
+    qb.addOrderBy('ai_provider.is_default', 'DESC');
+    qb.addOrderBy('ai_provider.id', 'ASC');
 
     if (all) {
       const rawData = await qb.getMany();
@@ -148,17 +165,85 @@ export class AiProviderService {
     }
 
     const fields = providerData.fields ? { ...providerData.fields } : {};
-    if (!fields.available_models) {
-      fields.available_models = [];
+    // Providers must always be created without models until explicitly synced & configured
+    fields.available_models = [];
+    delete fields.selected_model;
+    delete fields.ocr_model;
+    delete fields.ocr_focus_model;
+
+    const useApiKey = providerData.use_api_key ?? false;
+    const useWeb = providerData.use_token_plan_web ?? false;
+    const useAgentic = providerData.use_token_plan_agentic ?? false;
+
+    if (catalog) {
+      if (useApiKey && !catalog.can_use_api_key) {
+        throw new BadRequestException(
+          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de API Key.`,
+        );
+      }
+      if (useWeb && !catalog.can_use_token_plan_web) {
+        throw new BadRequestException(
+          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Web.`,
+        );
+      }
+      if (useAgentic && !catalog.can_use_token_plan_agentic) {
+        throw new BadRequestException(
+          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Agentic.`,
+        );
+      }
     }
 
+    let defaultMode = providerData.default_mode;
+    if (!defaultMode) {
+      if (useAgentic) {
+        defaultMode = 'token_plan_agentic';
+      } else if (useWeb) {
+        defaultMode = 'token_plan_web';
+      } else if (useApiKey) {
+        defaultMode = 'api_key';
+      } else {
+        defaultMode = null;
+      }
+    } else {
+      if (defaultMode === 'api_key' && !useApiKey) {
+        throw new BadRequestException(
+          'El modo por defecto "api_key" no puede seleccionarse si dicho canal no está habilitado.',
+        );
+      }
+      if (defaultMode === 'token_plan_web' && !useWeb) {
+        throw new BadRequestException(
+          'El modo por defecto "token_plan_web" no puede seleccionarse si dicho canal no está habilitado.',
+        );
+      }
+      if (defaultMode === 'token_plan_agentic' && !useAgentic) {
+        throw new BadRequestException(
+          'El modo por defecto "token_plan_agentic" no puede seleccionarse si dicho canal no está habilitado.',
+        );
+      }
+    }
+
+    const existingCount = await this.aiProviderRepository.count();
+    const isDefault = providerData.is_default ?? (existingCount === 0);
+    if (isDefault) {
+      await this.aiProviderRepository
+        .createQueryBuilder()
+        .update(AiProvider)
+        .set({ is_default: false })
+        .where('is_default = :isDefault', { isDefault: true })
+        .execute();
+    }
+
+    const { key: _k, mode: _m, ...restData } = providerData;
     const provider = this.aiProviderRepository.create({
-      ...providerData,
+      ...restData,
       catalog_id: catalog?.id ?? providerData.catalog_id,
-      key: effectiveKey,
       name: effectiveName,
-      mode: mode || (supported?.defaultMode ?? undefined),
       fields,
+      use_api_key: useApiKey,
+      use_token_plan_web: useWeb,
+      use_token_plan_agentic: useAgentic,
+      default_mode: defaultMode,
+      is_default: isDefault,
     });
     const saved = await this.aiProviderRepository.save(provider);
 
@@ -180,19 +265,67 @@ export class AiProviderService {
     const existing = await this.findProviderById(id);
     const { translates, ...rest } = updateDto;
 
-    let catalogId = rest.catalog_id ?? existing.catalog_id;
+    const catalogId = rest.catalog_id ?? existing.catalog_id;
     let key = rest.key ?? existing.key;
-    let name = rest.name ?? existing.name;
+    const name = rest.name ?? existing.name;
 
-    if (rest.catalog_id && rest.catalog_id !== existing.catalog_id) {
-      const cat = await this.aiProviderCatalogRepository.findOne({
-        where: { id: rest.catalog_id },
+    let catalog: AiProviderCatalog | null = null;
+    if (catalogId) {
+      catalog = await this.aiProviderCatalogRepository.findOne({
+        where: { id: catalogId },
       });
-      if (cat) {
-        key = cat.key;
-        if (!rest.name) {
-          name = cat.name;
-        }
+      if (catalog) {
+        key = catalog.key;
+      }
+    }
+
+    const effectiveUseApiKey =
+      rest.use_api_key !== undefined ? rest.use_api_key : existing.use_api_key;
+    const effectiveUseWeb =
+      rest.use_token_plan_web !== undefined
+        ? rest.use_token_plan_web
+        : existing.use_token_plan_web;
+    const effectiveUseAgentic =
+      rest.use_token_plan_agentic !== undefined
+        ? rest.use_token_plan_agentic
+        : existing.use_token_plan_agentic;
+
+    if (catalog) {
+      if (effectiveUseApiKey && !catalog.can_use_api_key) {
+        throw new BadRequestException(
+          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de API Key.`,
+        );
+      }
+      if (effectiveUseWeb && !catalog.can_use_token_plan_web) {
+        throw new BadRequestException(
+          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Web.`,
+        );
+      }
+      if (effectiveUseAgentic && !catalog.can_use_token_plan_agentic) {
+        throw new BadRequestException(
+          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Agentic.`,
+        );
+      }
+    }
+
+    const effectiveDefaultMode =
+      rest.default_mode !== undefined ? rest.default_mode : existing.default_mode;
+
+    if (effectiveDefaultMode) {
+      if (effectiveDefaultMode === 'api_key' && !effectiveUseApiKey) {
+        throw new BadRequestException(
+          'El modo por defecto "api_key" no puede seleccionarse si dicho canal no está habilitado.',
+        );
+      }
+      if (effectiveDefaultMode === 'token_plan_web' && !effectiveUseWeb) {
+        throw new BadRequestException(
+          'El modo por defecto "token_plan_web" no puede seleccionarse si dicho canal no está habilitado.',
+        );
+      }
+      if (effectiveDefaultMode === 'token_plan_agentic' && !effectiveUseAgentic) {
+        throw new BadRequestException(
+          'El modo por defecto "token_plan_agentic" no puede seleccionarse si dicho canal no está habilitado.',
+        );
       }
     }
 
@@ -203,10 +336,22 @@ export class AiProviderService {
       rest.fields = dummy.fields;
     }
 
+    if (rest.is_default === true) {
+      await this.aiProviderRepository
+        .createQueryBuilder()
+        .update(AiProvider)
+        .set({ is_default: false })
+        .where('is_default = :isDefault AND id != :id', {
+          isDefault: true,
+          id,
+        })
+        .execute();
+    }
+
+    const { key: _ignoredKey, mode: _ignoredMode, ...cleanRest } = rest;
     await this.aiProviderRepository.update(id, {
-      ...rest,
+      ...cleanRest,
       catalog_id: catalogId,
-      key,
       name,
     });
 
@@ -239,6 +384,39 @@ export class AiProviderService {
     return this.aiProviderCatalogRepository.findOne({ where: { key } });
   }
 
+  async createCatalog(
+    createDto: CreateAiProviderCatalogDto,
+  ): Promise<AiProviderCatalog> {
+    const normalizedKey = createDto.key.trim().toLowerCase();
+    const existing = await this.findCatalogByKey(normalizedKey);
+    if (existing) {
+      throw new ConflictException(
+        `El proveedor de catálogo con clave "${normalizedKey}" ya existe.`,
+      );
+    }
+
+    const catalog = this.aiProviderCatalogRepository.create({
+      ...createDto,
+      key: normalizedKey,
+    });
+    return this.aiProviderCatalogRepository.save(catalog);
+  }
+
+  async updateCatalog(
+    id: string,
+    updateDto: UpdateAiProviderCatalogDto,
+  ): Promise<AiProviderCatalog> {
+    const catalog = await this.findCatalogById(id);
+    if (!catalog) {
+      throw new NotFoundException(
+        `El elemento de catálogo con ID "${id}" no existe.`,
+      );
+    }
+
+    await this.aiProviderCatalogRepository.update(id, updateDto);
+    return (await this.findCatalogById(id))!;
+  }
+
   // ===========================================================================
   // AI API KEYS
   // ===========================================================================
@@ -251,12 +429,13 @@ export class AiProviderService {
     q,
   }: GetAiApiKeysDto): Promise<GetAiApiKeysResponse> {
     const qb = this.aiApiKeyRepository.createQueryBuilder('api_key');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('api_key.provider', 'provider');
     }
 
-    applyRansack(qb, q, 'api_key');
+    applyRansack(qb, q, 'api_key', RANSACK_POLICIES.api_key);
 
     if (all) {
       const rawData = await qb.getMany();
@@ -371,6 +550,7 @@ export class AiProviderService {
     q,
   }: GetAiProviderEventsDto): Promise<GetAiProviderEventsResponse> {
     const qb = this.aiProviderEventRepository.createQueryBuilder('event');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('event.provider', 'provider')
@@ -378,7 +558,7 @@ export class AiProviderService {
         .leftJoinAndSelect('event.actor_user', 'actor_user');
     }
 
-    applyRansack(qb, q, 'event');
+    applyRansack(qb, q, 'event', RANSACK_POLICIES.event);
 
     if (!q?.s) {
       qb.orderBy('event.created_at', 'DESC');

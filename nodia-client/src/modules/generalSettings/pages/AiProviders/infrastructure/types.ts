@@ -17,6 +17,7 @@ export type AiKeyHealthState =
 export interface SupportedModelDef {
   id: string;
   name: string;
+  displayName?: string;
   description: string;
   contextWindow?: number;
   capabilities: string[];
@@ -30,9 +31,9 @@ export interface SupportedProviderItem {
   description: string;
   defaultMode: AiConnectionMode;
   supportedModes: AiConnectionMode[];
-  defaultSelectedModel: string;
+  defaultSelectedModel?: string;
   defaultOcrModel?: string;
-  availableModels: SupportedModelDef[];
+  availableModels?: SupportedModelDef[];
 }
 
 export interface SelectableModelInfo {
@@ -130,7 +131,10 @@ export interface AiProviderCatalogEntity {
   id: string;
   key: string;
   name: string;
-  is_active: boolean;
+  can_use_api_key?: boolean;
+  can_use_token_plan_web?: boolean;
+  can_use_token_plan_agentic?: boolean;
+  is_active?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -139,11 +143,16 @@ export interface AiProviderEntity {
   id: string;
   catalog_id?: string | null;
   name?: string | null;
-  key: string;
-  mode?: AiConnectionMode | null;
-  fields?: Record<string, any>;
+  key?: string;
+  mode?: AiConnectionMode | string | null;
+  use_api_key?: boolean;
+  use_token_plan_web?: boolean;
+  use_token_plan_agentic?: boolean;
+  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  fields?: Record<string, unknown>;
   fields_version?: number;
   auto_rotate_api_keys?: boolean;
+  is_default?: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -214,7 +223,7 @@ export interface GetAiProvidersParams {
   limit?: number;
   all?: boolean;
   includes?: boolean;
-  q?: Record<string, any>;
+  q?: Record<string, unknown>;
 }
 
 export interface GetAiProviderEventsParams {
@@ -222,17 +231,22 @@ export interface GetAiProviderEventsParams {
   limit?: number;
   all?: boolean;
   includes?: boolean;
-  q?: Record<string, any>;
+  q?: Record<string, unknown>;
 }
 
 export interface CreateAiProviderPayload {
   catalog_id?: string;
   name?: string;
-  key: string;
-  mode?: AiConnectionMode;
-  fields?: Record<string, any>;
+  key?: string;
+  mode?: AiConnectionMode | string;
+  use_api_key?: boolean;
+  use_token_plan_web?: boolean;
+  use_token_plan_agentic?: boolean;
+  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  fields?: Record<string, unknown>;
   fields_version?: number;
   auto_rotate_api_keys?: boolean;
+  is_default?: boolean;
   is_active?: boolean;
   translates?: Array<{ key: string; es: string; en: string }>;
 }
@@ -240,41 +254,21 @@ export interface CreateAiProviderPayload {
 export interface UpdateAiProviderPayload {
   catalog_id?: string;
   name?: string;
-  mode?: AiConnectionMode;
-  fields?: Record<string, any>;
+  mode?: AiConnectionMode | string;
+  use_api_key?: boolean;
+  use_token_plan_web?: boolean;
+  use_token_plan_agentic?: boolean;
+  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  fields?: Record<string, unknown>;
   fields_version?: number;
   auto_rotate_api_keys?: boolean;
+  is_default?: boolean;
   is_active?: boolean;
   translates?: Array<{ key: string; es: string; en: string }>;
 }
 
 export interface EnabledWebAiProvidersResponse {
   enabled_providers: string[];
-}
-
-export interface GetAiApiKeysParams {
-  page?: number;
-  limit?: number;
-  all?: boolean;
-  includes?: boolean;
-  q?: Record<string, any>;
-}
-
-export interface CreateAiApiKeyPayload {
-  provider_id: string;
-  label: string;
-  secret: string;
-  sort_order?: number;
-  is_selected?: boolean;
-  is_active?: boolean;
-}
-
-export interface UpdateAiApiKeyPayload {
-  label?: string;
-  secret?: string;
-  sort_order?: number;
-  is_selected?: boolean;
-  is_active?: boolean;
 }
 
 export interface AiProviderAlert {
@@ -294,27 +288,35 @@ export interface AiProviderHealthItem {
   id: string;
   key: string;
   name: string;
+  catalog_id?: string | null;
+  catalog?: AiProviderCatalogEntity;
   isActive: boolean;
+  is_default?: boolean;
+  use_api_key?: boolean;
+  use_token_plan_web?: boolean;
+  use_token_plan_agentic?: boolean;
+  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+  auto_rotate_api_keys?: boolean;
   mode: AiConnectionMode | null;
   status: 'healthy' | 'degraded' | 'expired' | 'unconfigured';
   statusBadge: string;
   serviceState: string;
   lastCheck: string;
   latencyMs: number;
-  containerStatus?: string;
   autoFailover?: string;
   remoteBrowserProfile?: {
     location: string;
     engine: string;
   };
-  monthlyQuotaUsed?: string;
   failoverSwitch?: string;
   assignedModels?: Record<string, string>;
   selectedModel?: string;
   availableModels?: SupportedModelDef[];
+  fields?: Record<string, unknown>;
   apiKeysCount?: number;
   validKeysCount?: number;
   hasConnection: boolean;
+  engine?: 'agentic' | 'web';
 }
 
 export interface AiProvidersHealthResponse {
@@ -333,4 +335,56 @@ export interface AiProvidersHealthResponse {
 export interface GetSelectableModelsParams {
   provider?: string;
   mode?: AiConnectionMode;
+}
+export type GeminiLoginJob = {
+  id: string;
+  state: "running" | "succeeded" | "failed" | "cancelled";
+};
+
+export type GeminiExecutionEngine = 'agentic' | 'web';
+
+export interface QuotaWindowMetric {
+  type?: number;
+  window: string;
+  usage_percentage: number | null;
+  remaining_credits?: number | null;
+  usage_level?: number | null;
+  reset_at?: string | null;
+}
+
+export interface ModelQuotaMetric {
+  usage_percentage: number | null;
+  remaining?: number | null;
+  total?: number | null;
+  reset_time?: number | null;
+  action_id?: number | null;
+  label?: string | null;
+}
+
+export interface GeminiEngineQuota {
+  current_5h?: QuotaWindowMetric | null;
+  weekly?: QuotaWindowMetric | null;
+  flash?: ModelQuotaMetric | null;
+  pro?: ModelQuotaMetric | null;
+}
+
+export interface GeminiEngineInfo {
+  engine: GeminiExecutionEngine;
+  available: boolean;
+  authenticated: boolean;
+  tier?: string | null;
+  plan_label?: string;
+  active_model?: string | null;
+  models?: unknown[];
+  error?: string | null;
+  runtime_found?: boolean;
+  ls_address?: string | null;
+  cookies_valid?: boolean;
+  quota?: GeminiEngineQuota | null;
+}
+
+export interface GeminiDualEngineStatus {
+  active_engine: GeminiExecutionEngine;
+  agentic: GeminiEngineInfo;
+  web: GeminiEngineInfo;
 }

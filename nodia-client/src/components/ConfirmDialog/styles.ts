@@ -60,7 +60,10 @@ export const DialogHeader = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: theme.spacing(2.5, 3, 1.5, 3),
+  padding: theme.spacing(2, 2, 1.5, 2),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(2.5, 3, 1.5, 3),
+  },
   gap: theme.spacing(2),
 }));
 
@@ -74,7 +77,10 @@ export const DialogTitle = styled("h2")(({ theme }) => ({
 }));
 
 export const DialogBody = styled(DialogContent)(({ theme }) => ({
-  padding: theme.spacing(1, 3, 2, 3),
+  padding: theme.spacing(1, 2, 2, 2),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(1, 3, 2, 3),
+  },
   ...theme.typography.body2,
   color: theme.palette.text.secondary,
   lineHeight: 1.6,
@@ -82,11 +88,20 @@ export const DialogBody = styled(DialogContent)(({ theme }) => ({
 }));
 
 export const DialogActionsContainer = styled(DialogActions)(({ theme }) => ({
-  padding: theme.spacing(1.5, 3, 2.5, 3),
+  padding: theme.spacing(1.5, 2, 2, 2),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(1.5, 3, 2.5, 3),
+  },
   display: "flex",
   justifyContent: "flex-end",
   alignItems: "center",
   gap: theme.spacing(1.5),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column-reverse",
+    "& button": {
+      width: "100%",
+    },
+  },
 }));
 
 export const CancelButton = styled(Button)(({ theme }) => ({

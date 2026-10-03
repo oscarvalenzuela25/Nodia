@@ -1,3 +1,5 @@
+import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
+import { usePagedProviderOptions, usePagedProductCodeOptions } from "../../../../infrastructure/usePagedOptions";
 import type { FC, MouseEvent } from "react";
 import { useState, useMemo, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -51,7 +53,6 @@ import {
   useProducts,
   useCreateProduct,
   useUpdateProduct,
-  useProviders,
   useExportProductsCsv,
   useProductLogs,
 } from "../../../../infrastructure/useServices";
@@ -157,34 +158,11 @@ export const ProductsTab: FC<Props> = ({
     }));
   };
 
-  const { data: providersData } = useProviders({
-    q: { business_id_eq: businessId },
-    all: true,
-  });
-  const providers = useMemo(() => providersData?.data ?? [], [providersData?.data]);
-
-  // All products to populate distinct product codes in filter
-  const { data: allProductsData } = useProducts({
-    q: { business_id_eq: businessId },
-    all: true,
-  });
-
-  const codeOptions = useMemo(() => {
-    return Array.from(
-      new Set(
-        (allProductsData?.data ?? [])
-          .map((p) => p.code)
-          .filter(Boolean) as string[]
-      )
-    );
-  }, [allProductsData]);
-
-  const providerOptions = useMemo(() => {
-    return providers.map((p) => ({
-      value: p.id,
-      label: p.name,
-    }));
-  }, [providers]);
+  const providerQuery = usePagedProviderOptions(businessId);
+  const codeQuery = usePagedProductCodeOptions(businessId);
+  const providers = providerQuery.providers;
+  const providerOptions = providerQuery.options;
+  const codeOptions = codeQuery.options;
 
   const stockOptions = useMemo(
     () => [
@@ -234,6 +212,7 @@ export const ProductsTab: FC<Props> = ({
     data: productsData,
     isLoading,
     isFetching,
+    isError,
     refetch,
   } = useProducts({
     page: page + 1,
@@ -317,7 +296,7 @@ export const ProductsTab: FC<Props> = ({
   const createMutation = useCreateProduct();
   const updateMutation = useUpdateProduct();
   const exportMutation = useExportProductsCsv();
-  const isBusy = createMutation.isPending || updateMutation.isPending;
+  const isBusy = isLoading || isFetching || createMutation.isPending || updateMutation.isPending;
   const isExporting = exportMutation.isPending;
 
   const handleOpenMenu = (e: MouseEvent<HTMLButtonElement>) => {
@@ -513,6 +492,7 @@ export const ProductsTab: FC<Props> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <QueryErrorAlert isError={isError} isFetching={isFetching} onRetry={refetch} />
       {/* Filter Row */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Filter
@@ -526,6 +506,8 @@ export const ProductsTab: FC<Props> = ({
             label={t("business:filter_code_label")}
             placeholder={t("business:filter_code_placeholder")}
             options={codeOptions}
+            onSearchChange={codeQuery.setSearch} hasMore={codeQuery.hasNextPage}
+            onLoadMore={() => { void codeQuery.fetchNextPage(); }} loadingOptions={codeQuery.isFetching}
             value={draftFilterCodes}
             onChange={setDraftFilterCodes}
             disabled={isLoading || isFetching}
@@ -544,6 +526,8 @@ export const ProductsTab: FC<Props> = ({
             label={t("business:filter_provider_label")}
             placeholder={t("business:filter_provider_placeholder")}
             options={providerOptions}
+            onSearchChange={providerQuery.setSearch} hasMore={providerQuery.hasNextPage}
+            onLoadMore={() => { void providerQuery.fetchNextPage(); }} loadingOptions={providerQuery.isFetching}
             value={draftFilterProviders}
             onChange={setDraftFilterProviders}
             disabled={isLoading || isFetching}
@@ -1152,6 +1136,7 @@ export const ProductsTab: FC<Props> = ({
           onSubmit={handleFormSubmit}
           initialData={selectedProduct}
           providers={providers}
+          providerSearch={{ onSearchChange: providerQuery.setSearch, onLoadMore: () => { void providerQuery.fetchNextPage(); }, hasMore: providerQuery.hasNextPage, loadingOptions: providerQuery.isFetching }}
           isSubmitting={isBusy}
         />
       )}

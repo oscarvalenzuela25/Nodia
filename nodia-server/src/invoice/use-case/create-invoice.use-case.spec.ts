@@ -22,12 +22,24 @@ describe('CreateInvoiceUseCase', () => {
     path: '',
   };
 
+  it('rejects a file with a false MIME type before uploading', async () => {
+    const spoofed = { ...mockFile, mimetype: 'image/png' };
+    await expect(
+      useCase.execute({ business_id: '1' } as CreateInvoiceDto, spoofed),
+    ).rejects.toThrow();
+    expect(storageServiceMock.uploadFile).not.toHaveBeenCalled();
+  });
+
   beforeEach(() => {
     invoiceServiceMock = {
       createInvoice: vi.fn(),
     };
     storageServiceMock = {
-      uploadFile: vi.fn().mockResolvedValue('invoices/b7b80a11-827c-4712-9c17-9150d0325d7b/final.pdf'),
+      uploadFile: vi
+        .fn()
+        .mockResolvedValue(
+          'invoices/b7b80a11-827c-4712-9c17-9150d0325d7b/final.pdf',
+        ),
     };
     useCase = new CreateInvoiceUseCase(
       invoiceServiceMock as InvoiceService,
@@ -57,7 +69,9 @@ describe('CreateInvoiceUseCase', () => {
       updated_at: new Date(),
     };
 
-    vi.mocked(invoiceServiceMock.createInvoice!).mockResolvedValue(created as any);
+    vi.mocked(invoiceServiceMock.createInvoice!).mockResolvedValue(
+      created as any,
+    );
 
     const result = await useCase.execute(dto);
 
@@ -85,7 +99,9 @@ describe('CreateInvoiceUseCase', () => {
       updated_at: new Date(),
     };
 
-    vi.mocked(invoiceServiceMock.createInvoice!).mockResolvedValue(created as any);
+    vi.mocked(invoiceServiceMock.createInvoice!).mockResolvedValue(
+      created as any,
+    );
 
     const result = await useCase.execute(dto, mockFile);
 
@@ -95,7 +111,9 @@ describe('CreateInvoiceUseCase', () => {
       mockFile.buffer,
       mockFile.mimetype,
     );
-    expect(dto.path_storage).toBe('invoices/b7b80a11-827c-4712-9c17-9150d0325d7b/final.pdf');
+    expect(dto.path_storage).toBe(
+      'invoices/b7b80a11-827c-4712-9c17-9150d0325d7b/final.pdf',
+    );
     expect(invoiceServiceMock.createInvoice).toHaveBeenCalledWith(dto);
     expect(result).toEqual(created);
   });

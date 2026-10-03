@@ -32,10 +32,13 @@
 
 - Crear un ADR cuando una decisión sea costosa de revertir, tenga alternativas relevantes o afecte varias partes del sistema.
 - Usar `docs/architecture/decisions/ADR-template.md` como base.
+- Antes de crear un microservicio, aplicar `docs/architecture/internal-microservice-security.md`: solo Nodia Server lo consume, con red privada y credencial exclusiva del servicio. Ver `ADR-008`.
 
-## Skills Locales (Habilidades)
+## Skills Locales (Habilidades) y Prioridad sobre Superpowers
 
 El proyecto incluye varias skills locales en la carpeta `nodia-client/skills/` que extienden las capacidades de desarrollo. Antes de abordar tareas relacionadas con estas tecnologías, **debes leer el archivo `SKILL.md` correspondiente** (usando la herramienta `view_file` en `nodia-client/skills/<nombre-de-la-skill>/SKILL.md`) para seguir las mejores prácticas y guías del proyecto.
+
+> ⚠️ **PRIORIDAD ABSOLUTA:** Las skills locales de este proyecto tienen **prioridad estricta e indiscutible sobre las skills de Superpowers o plugins globales**. Superpowers provee metodología general de trabajo, pero la arquitectura, convenciones técnicas, patrones de diseño y estándares de código definidos en las skills locales del repositorio prevalecen en todo momento.
 
 Skills disponibles en `nodia-client/skills/`:
 
@@ -131,12 +134,20 @@ Skills disponibles en `nodia-client/skills/`:
 - **Botones e Inputs:**
   - **No** muestran estados ni mensajes custom de error de datos generales; si el endpoint falla, los inputs se quedan en su estado normal o vacío (los errores de validación de campos se gestionan aparte mediante React Hook Form y Zod).
 
-## Lineamientos de Diseño de Paneles y Espaciado (`nodia-client`)
+## Lineamientos de Diseño de Paneles, Espaciado y Responsividad (`nodia-client`)
 
-- **Padding de Paneles y Tarjetas Principales:** Los contenedores principales, paneles de configuración y tarjetas destacadas deben usar un padding estandarizado de **32px** (`p: 4` en MUI o `padding: 32px`).
+- **Padding de Pantalla y Contenedores Principales (Responsive):**
+  - **Móvil (`xs` / `<600px`):** **16px** (`p: 2` en MUI o `theme.spacing(2)`).
+  - **Tablet (`sm` / `600px - 899px`):** **24px** (`p: 3` en MUI o `theme.spacing(3)`).
+  - **Escritorio (`md`+ / `>=900px`):** **32px** (`p: 4` en MUI o `theme.spacing(4)`).
+  - **Cero doble padding:** Queda prohibido añadir padding exterior en componentes de página hijas (`src/modules/*/pages/*`) cuando ya son renderizadas dentro de `PageContent` en `BaseLayout`.
 - **Espaciado (Gap) entre Paneles:**
   - **Vertical:** Separación estándar de **24px** (`rowGap: 3` / `24px`).
   - **Horizontal:** Separación estándar de **16px** (`columnGap: 2` / `16px`).
+- **Comportamiento Móvil de Botones y Acciones:**
+  - En `xs` (`<600px`), los botones de acción principal en cabeceras y barras de herramientas (`TableTopBar`, `FilterBar`, diálogos modales) deben ocupar el **100% de ancho** (`width: "100%"` o `flex: 1`) para garantizar ergonomía táctil con el pulgar.
+- **Tablas de Datos en Móvil:**
+  - Obligatorio mantener `minWidth: 650` (aplicado globalmente en `theme.components.MuiTable`) dentro de `TableContainer` con scroll horizontal (`overflowX: "auto"`) y scrollbars transparentes, prohibiendo que las columnas se aplasten o se vuelvan ilegibles.
 
 ## Arquitectura Backend y Testing (`nodia-server`)
 
@@ -144,3 +155,27 @@ Skills disponibles en `nodia-client/skills/`:
 - **Controladores delgados (Skinny Controllers):** Solo definen rutas HTTP, Swagger y validan DTOs; delegan inmediatamente a Casos de Uso (`use-case/`). Cero lógica de negocio.
 - **Entidades TypeORM:** En relaciones bidireccionales, usar obligatoriamente `Relation<T>` de TypeORM para evitar errores de referencia circular (`ReferenceError`) en Node.js ESM.
 - **Testing exclusivo de Casos de Uso:** Únicamente se crean y mantienen pruebas unitarias para casos de uso (`use-case/*.use-case.spec.ts`). Está terminantemente prohibido crear pruebas de controladores o servicios (`*.controller.spec.ts`, `*.service.spec.ts`), priorizando tests que aporten verdadero valor de negocio.
+
+## Política Estricta de Proveedores de IA y Cuotas (Cero API Keys)
+
+- **Suscripción Única:** El usuario opera con una cuenta **Google One AI Premium / Pro ($20 USD/mes)**.
+- **Prohibición Total de API Keys:** **NUNCA** proponer, requerir ni basar soluciones en API keys:
+  - **No API keys gratuitas (Google AI Studio):** Están prohibidas porque los servidores gratuitos sufren saturación y errores constantes de cuota (`429 Too Many Requests`).
+  - **No API keys de pago:** No hay presupuesto para facturación por token pay-as-you-go.
+- **Únicas Cuotas y Motores Válidos:**
+  1. **Cuota Agéntica (Antigravity):** Utiliza la sesión activa del entorno de Antigravity (cuotas de 5 horas y 1 semana).
+  2. **Cuota Web (Gemini Web):** Utiliza la sesión de usuario en navegador mediante cookies (`__Secure-1PSID` y `__Secure-1PSIDTS`).
+- Toda arquitectura, microservicio, backend (`nodia-server`) y frontend (`nodia-client`) debe operar exclusivamente bajo el soporte dual de estas dos cuotas.
+
+## Prohibición Total de Modelos Estáticos y Fallbacks Hardcodeados (Cero Hardcoding de Modelos de IA)
+
+- **Cero contenido estático o fallbacks de modelos:** Los modelos de Inteligencia Artificial evolucionan aceleradamente (semanalmente surgen versiones nuevas y obsoletas). Queda **terminantemente prohibido** hardcodear nombres o versiones de modelos como fallbacks en código (`|| "gemini-..."`, `|| "mistral-..."`, `|| "gpt-..."`, etc.) tanto en frontend, backend como en microservicios.
+- **Resolución 100% Dinámica:**
+  - Todo modelo a ejecutar debe provenir de la configuración persistida en base de datos (`provider.fields?.selected_model`, `provider.fields?.ocr_model`, `modeFields`), de la sincronización en vivo (`available_models`) o del SDK / endpoint de descubrimiento activo del proveedor.
+  - Si un proveedor no tiene modelo asignado o seleccionado, la interfaz y el backend **nunca deben asumir un modelo fantasma o fallback obsoleto**:
+    - En UI: Mostrar explícitamente _"Sin modelo asignado"_ o _"Sin asignar"_.
+    - En Backend / Facturas: `can_use_model: false` y exigir al usuario configurar un modelo antes de procesar extracciones.
+- **Microservicios y SDKs:**
+  - Si no se especifica un modelo concreto en la petición o en el proveedor, delegar la resolución por defecto al propio SDK subyacente (ej. `model=None` en Antigravity) o requerir explícitamente el modelo configurado.
+  - Queda prohibido mantener listas fijas cerradas que impidan el uso de nuevas versiones de modelos (ej. Gemini 4, Claude 5, etc.) lanzadas por los proveedores.
+

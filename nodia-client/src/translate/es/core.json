@@ -37,9 +37,16 @@
   "server_error_alert": "Ocurrió un problema al cargar los datos desde el servidor.",
   "auth_context_error_title": "Error al cargar información",
   "auth_context_error_message": "Hubo un error al obtener la información de su usuario.",
+  "loading_route": "Cargando página...",
   "pagination": {
     "rows_per_page": "Filas por página:",
     "of": "de",
     "more_than": "más de"
-  }
+  },
+  "rows_per_page": "Filas por página",
+  "displayed_rows": "{{from}}–{{to}} de {{count}}",
+  "load_more": "Cargar más",
+  "select_loaded": "Seleccionar resultados cargados",
+  "deselect_loaded": "Deseleccionar resultados cargados",
+  "clear_search": "Limpiar búsqueda"
 }

@@ -5,7 +5,8 @@ import { BusinessAction } from './entities/business-action.entity.js';
 import { CreateBusinessActionDto } from './dto/create-business-action.dto.js';
 import { UpdateBusinessActionDto } from './dto/update-business-action.dto.js';
 import { GetBusinessActionsDto } from './dto/get-business-actions.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetBusinessActionsResponse } from './types/business-action.types.js';
 import { TranslationService } from '../translation/translation.service.js';
 import { RedisService } from '../common/redis/redis.service.js';
@@ -26,8 +27,9 @@ export class BusinessActionService {
     q,
   }: GetBusinessActionsDto): Promise<GetBusinessActionsResponse> {
     const qb = this.businessActionRepository.createQueryBuilder('business_action');
+    validateRansackEnvelope(q);
 
-    applyRansack(qb, q, 'business_action');
+    applyRansack(qb, q, 'business_action', RANSACK_POLICIES.business_action);
 
     if (all) {
       const rawData = await qb.getMany();

@@ -17,6 +17,7 @@ import {
   Typography,
   ToggleButton,
   ToggleButtonGroup,
+  TablePagination,
 } from "@mui/material";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -40,8 +41,13 @@ import {
   useCreateBusiness,
   useUpdateBusiness,
 } from "../../infrastructure/useServices";
-import type { BusinessEntity, BusinessFormData } from "../../infrastructure/types";
+import type {
+  BusinessEntity,
+  BusinessFormData,
+  GetBusinessesParams,
+} from "../../infrastructure/types";
 import { getTranslatedName } from "../../../../store/generalSettings/helpers";
+import { useHasRole } from "../../../../store/generalSettings";
 import useAuthStore from "../../../../store/authStore";
 import { CardsGridSkeleton } from "../../../../components/skeletons";
 import {
@@ -51,6 +57,10 @@ import {
   PageTitle,
   PageSubtitle,
   FilterBar,
+  FilterActions,
+  SwitchWrapper,
+  StyledFormControlLabel,
+  StyledSwitch,
   CardsGrid,
   BusinessCard,
   CardHeader,
@@ -77,11 +87,52 @@ const Business: FC = () => {
   const lang = i18n.language || "es";
   const currentUserId = useAuthStore((state) => state.user?.id);
 
+  // Super admin switch and pagination state
+  const isSuperAdmin = useHasRole("super_admin");
+  const [showAllBusinesses, setShowAllBusinesses] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(0);
+  const [limit, setLimit] = useState<number>(10);
+
   // Filter and Search state (defaults to active only as requested)
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<"active" | "inactive" | "all">(
     "active"
   );
+
+  // Handlers for reset page to 0 on filter/search/switch/limit changes
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(0);
+  };
+
+  const handleStatusFilterChange = (
+    _: MouseEvent<HTMLElement>,
+    newStatus: "active" | "inactive" | "all" | null
+  ) => {
+    if (newStatus) {
+      setStatusFilter(newStatus);
+      setPage(0);
+    }
+  };
+
+  const handleToggleAllBusinesses = (
+    _: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setShowAllBusinesses(checked);
+    setPage(0);
+  };
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setLimit(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -104,8 +155,8 @@ const Business: FC = () => {
   const updateMutation = useUpdateBusiness();
   const isMutating = useIsMutating() > 0;
 
-  // Query parameters with Ransack
-  const queryParams = useMemo(() => {
+  // Query parameters with Ransack and Pagination
+  const queryParams: GetBusinessesParams = useMemo(() => {
     const q: Record<string, string | boolean> = {};
     if (searchTerm.trim()) {
       q.name_cont = searchTerm.trim();
@@ -115,8 +166,13 @@ const Business: FC = () => {
     } else if (statusFilter === "inactive") {
       q.is_active_eq = false;
     }
-    return { all: true, q };
-  }, [searchTerm, statusFilter]);
+    return {
+      page: page + 1,
+      limit,
+      all_businesses: isSuperAdmin ? showAllBusinesses : false,
+      q,
+    };
+  }, [page, limit, isSuperAdmin, showAllBusinesses, searchTerm, statusFilter]);
 
   const {
     data: businessesResponse,
@@ -127,6 +183,7 @@ const Business: FC = () => {
   } = useBusinesses(queryParams);
 
   const businesses = businessesResponse?.data ?? [];
+  const totalItems = businessesResponse?.meta?.total_items ?? businesses.length;
   const isBusy = isLoading || isFetching || isMutating;
 
   // Menu handlers
@@ -252,25 +309,49 @@ const Business: FC = () => {
         <Box sx={{ width: { xs: "100%", sm: 340 } }}>
           <InputSearch
             value={searchTerm}
-            onChange={setSearchTerm}
+            onChange={handleSearchChange}
             placeholder={t("business:search_placeholder")}
             disabled={isBusy}
             fullWidth
           />
         </Box>
 
-        <ToggleButtonGroup
-          value={statusFilter}
-          exclusive
-          onChange={(_, newStatus) => newStatus && setStatusFilter(newStatus)}
-          size="small"
-          disabled={isBusy}
-          sx={{ borderRadius: 2 }}
-        >
-          <ToggleButton value="active">{t("business:status_active")}</ToggleButton>
-          <ToggleButton value="inactive">{t("business:status_inactive")}</ToggleButton>
-          <ToggleButton value="all">{t("business:all")}</ToggleButton>
-        </ToggleButtonGroup>
+        <FilterActions>
+          {isSuperAdmin && (
+            <SwitchWrapper>
+              <StyledFormControlLabel
+                control={
+                  <StyledSwitch
+                    checked={showAllBusinesses}
+                    onChange={handleToggleAllBusinesses}
+                    disabled={isBusy}
+                    color="success"
+                    slotProps={{
+                      input: {
+                        "aria-label": t("business:all_system_businesses"),
+                      },
+                    }}
+                  />
+                }
+                label={t("business:all_system_businesses")}
+                labelPlacement="start"
+              />
+            </SwitchWrapper>
+          )}
+
+          <ToggleButtonGroup
+            value={statusFilter}
+            exclusive
+            onChange={handleStatusFilterChange}
+            size="small"
+            disabled={isBusy}
+            sx={{ borderRadius: 2 }}
+          >
+            <ToggleButton value="active">{t("business:status_active")}</ToggleButton>
+            <ToggleButton value="inactive">{t("business:status_inactive")}</ToggleButton>
+            <ToggleButton value="all">{t("business:all")}</ToggleButton>
+          </ToggleButtonGroup>
+        </FilterActions>
       </FilterBar>
 
       {/* Error state */}
@@ -316,7 +397,8 @@ const Business: FC = () => {
             </Button>
           </EmptyStateContainer>
         ) : (
-          <CardsGrid>
+          <>
+            <CardsGrid>
             {businesses.map((business) => {
               const descriptionText = getTranslatedName(
                 business.translates,
@@ -462,7 +544,41 @@ const Business: FC = () => {
               );
             })}
           </CardsGrid>
-        )}
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mt: 3,
+              "& .MuiTablePagination-root": {
+                width: "100%",
+              },
+              "& .MuiTablePagination-toolbar": {
+                flexWrap: "wrap",
+                justifyContent: { xs: "center", sm: "flex-end" },
+                px: { xs: 1, sm: 2 },
+              },
+            }}
+          >
+            <TablePagination
+              component="div"
+              count={totalItems}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={limit}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[10, 15, 20, 25]}
+              disabled={isBusy}
+              labelRowsPerPage={t("core:pagination.rows_per_page")}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} ${t("core:pagination.of")} ${
+                  count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
+                }`
+              }
+            />
+          </Box>
+        </>
+      )}
       </Skeleton>
 
       {/* Action Options Menu */}

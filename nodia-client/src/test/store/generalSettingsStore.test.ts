@@ -10,6 +10,7 @@ import {
   useHasRole,
   useGeneralSettingsHandlers,
 } from "../../../src/store/generalSettings/useGeneralSettings";
+import { getModulePath, hasModuleAccess } from "../../../src/store/generalSettings/helpers";
 import type { AuthorizationContextResponse } from "../../../src/store/generalSettings/types";
 
 const mockContextData: AuthorizationContextResponse = {
@@ -148,5 +149,35 @@ describe("generalSettingsStore", () => {
       result.current.clearContext();
     });
     expect(useGeneralSettingsStore.getState().isLoaded).toBe(false);
+  });
+
+  describe("helpers: getModulePath & hasModuleAccess", () => {
+    it("resolves paths correctly for business and ai-providers", () => {
+      expect(getModulePath({ key: "business", translates: [] })).toBe("/business");
+      expect(getModulePath({ key: "businesses", translates: [] })).toBe("/business");
+      expect(getModulePath({ key: "negocios", translates: [] })).toBe("/business");
+      expect(getModulePath({ key: "ai_providers", translates: [] })).toBe("/settings/ai-providers");
+      expect(getModulePath({ key: "ai-providers", translates: [] })).toBe("/settings/ai-providers");
+      expect(getModulePath({ key: "proveedores_ia", translates: [] })).toBe("/settings/ai-providers");
+      expect(getModulePath({ key: "custom", link: "/custom/path", translates: [] })).toBe("/custom/path");
+    });
+
+    it("evaluates module access correctly with groups", () => {
+      const groups = [
+        {
+          module_group_key: "general",
+          translates: [],
+          modules: [
+            { key: "business", link: "/business", translates: [] },
+            { key: "ai_providers", link: "/settings/ai-providers", translates: [] },
+          ],
+        },
+      ];
+
+      expect(hasModuleAccess(groups, "/business")).toBe(true);
+      expect(hasModuleAccess(groups, "/business/")).toBe(true);
+      expect(hasModuleAccess(groups, "/settings/ai-providers")).toBe(true);
+      expect(hasModuleAccess(groups, "/settings/users")).toBe(false);
+    });
   });
 });

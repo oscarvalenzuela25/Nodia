@@ -1,6 +1,6 @@
 import type { FC, ChangeEvent } from "react";
 import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
@@ -90,7 +90,6 @@ export const ProviderModal: FC<Props> = ({
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<ProviderFormValues>({
     resolver: zodResolver(providerSchema),
@@ -107,11 +106,11 @@ export const ProviderModal: FC<Props> = ({
   });
 
   // Watch field values to conditionally display instructions inputs
-  const codeValue = watch("code.value");
-  const costPriceValue = watch("cost_price.value");
-  const costPriceTaxValue = watch("cost_price_tax.value");
-  const packagesValue = watch("packages.value");
-  const unitsPerPackageValue = watch("units_per_package.value");
+  const codeValue = useWatch({ control, name: "code.value" });
+  const costPriceValue = useWatch({ control, name: "cost_price.value" });
+  const costPriceTaxValue = useWatch({ control, name: "cost_price_tax.value" });
+  const packagesValue = useWatch({ control, name: "packages.value" });
+  const unitsPerPackageValue = useWatch({ control, name: "units_per_package.value" });
 
   useEffect(() => {
     if (initialData) {

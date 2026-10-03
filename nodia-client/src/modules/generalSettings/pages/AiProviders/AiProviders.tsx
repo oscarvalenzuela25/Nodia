@@ -1,30 +1,27 @@
+import QueryErrorAlert from "../../../../components/QueryErrorAlert";
 import type { FC } from "react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Box, LinearProgress } from "@mui/material";
+import { Button, Box, LinearProgress, Typography } from "@mui/material";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { Skeleton } from "boneyard-js/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import {
   useAiProviders,
   useAiProvidersHealth,
-  useAiProviderEvents,
+  useGeminiEngines,
 } from "./infrastructure/useServices";
-import type {
-  AiProviderHealthItem,
-  AiProviderEventEntity,
-} from "./infrastructure/types";
+import type { AiProviderHealthItem } from "./infrastructure/types";
 import AlertBanner from "./components/AlertBanner";
 import ProviderCard from "./components/ProviderCard";
 import ProviderDetail from "./components/ProviderDetail";
-import AiEventsTable from "./components/AiEventsTable";
 import AddProviderModal from "./components/AddProviderModal";
 import ConfigureProviderModal from "./components/ConfigureProviderModal";
 import RemoteLoginModal from "./components/RemoteLoginModal";
-import TraceModal from "./components/TraceModal";
 import {
   PageContainer,
   HeaderPanel,
@@ -39,24 +36,19 @@ import {
 
 const AiProviders: FC = () => {
   const { t } = useTranslation(["ai_providers", "core"]);
+  const queryClient = useQueryClient();
 
   const [selectedView, setSelectedView] = useState<string>("overview");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [configureProvider, setConfigureProvider] =
     useState<AiProviderHealthItem | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [selectedTraceEvent, setSelectedTraceEvent] =
-    useState<AiProviderEventEntity | null>(null);
-
-  // Table state
-  const [eventSearch, setEventSearch] = useState("");
-  const [eventPage, setEventPage] = useState(0);
-  const [eventLimit, setEventLimit] = useState(10);
 
   // Queries
   const {
     data: providersResponse,
     isLoading: isLoadingProviders,
+    isError: providersError,
     isFetching: isFetchingProviders,
     refetch: refetchProviders,
   } = useAiProviders({ all: true });
@@ -64,49 +56,19 @@ const AiProviders: FC = () => {
   const {
     data: healthResponse,
     isLoading: isLoadingHealth,
+    isError: healthError,
     isFetching: isFetchingHealth,
     refetch: refetchHealth,
   } = useAiProvidersHealth();
+
+  const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines, refetch: refetchEngines } = useGeminiEngines();
 
   const isInitialLoading =
     isLoadingProviders ||
     isLoadingHealth ||
     (!healthResponse && isFetchingHealth);
   const isSoftLoading = (isFetchingHealth || isFetchingProviders) && !isInitialLoading;
-  const isBusy = isInitialLoading || isFetchingHealth || isFetchingProviders;
-
-  const queryParams = useMemo(() => {
-    const q: Record<string, any> = {};
-    if (eventSearch.trim()) {
-      q.message_or_event_type_cont = eventSearch.trim();
-    }
-    if (selectedView !== "overview") {
-      const foundProv = providersResponse?.data?.find(
-        (p) => p.key === selectedView
-      );
-      if (foundProv) {
-        q.provider_id_eq = foundProv.id;
-      }
-    }
-    return {
-      page: eventPage + 1,
-      limit: eventLimit,
-      includes: true,
-      q,
-    };
-  }, [
-    eventSearch,
-    selectedView,
-    eventPage,
-    eventLimit,
-    providersResponse?.data,
-  ]);
-
-  const {
-    data: eventsResponse,
-    isLoading: isLoadingEvents,
-    isFetching: isFetchingEvents,
-  } = useAiProviderEvents(queryParams);
+  const isBusy = isInitialLoading || isFetchingHealth || isFetchingProviders || isFetchingEngines;
 
   // View options for SelectSingleInput
   const viewOptions = useMemo(() => {
@@ -122,41 +84,106 @@ const AiProviders: FC = () => {
 
     const dbProviders = providersResponse?.data || [];
     for (const p of dbProviders) {
+      const providerKey = p.catalog?.key || p.key || "";
+      if (!providerKey) continue;
+
       const displayName =
-        p.key === "gemini"
+        p.name ||
+        (providerKey === "gemini"
           ? "Google Gemini"
-          : p.key === "mistral"
+          : providerKey === "mistral"
           ? "Mistral AI"
-          : p.key === "openai"
+          : providerKey === "openai"
           ? "OpenAI"
-          : p.key.charAt(0).toUpperCase() + p.key.slice(1);
+          : providerKey.charAt(0).toUpperCase() + providerKey.slice(1));
 
       options.push({
-        value: p.key,
-        label: `${displayName} (${p.key})`,
+        value: p.id,
+        label: `${displayName} (${providerKey})${p.is_default ? ` (${t("ai_providers:default_badge", "Predeterminado")})` : ""}`,
       });
     }
 
     return options;
   }, [providersResponse?.data, t]);
 
-  // Filtered alerts
-  const activeAlerts = useMemo(() => {
-    const allAlerts = healthResponse?.alerts || [];
-    if (selectedView === "overview") return allAlerts;
-    return allAlerts.filter((a) => a.provider === selectedView);
-  }, [healthResponse?.alerts, selectedView]);
-
   // Filtered providers for cards
   const displayProviders = useMemo(() => {
     const list = healthResponse?.providers || [];
-    if (selectedView === "overview") return list;
-    return list.filter((p) => p.key === selectedView);
-  }, [healthResponse?.providers, selectedView]);
+    const dbProviders = providersResponse?.data || [];
+    const merged = list.map((item) => {
+      const dbMatch = dbProviders.find(
+        (db) => db.id === item.id
+      );
+      return {
+        ...item,
+        is_default: Boolean(item.is_default ?? dbMatch?.is_default ?? false),
+      };
+    });
+    if (selectedView === "overview") return merged;
+    return merged.filter((p) => p.id === selectedView);
+  }, [healthResponse?.providers, providersResponse?.data, selectedView]);
+
+  // Filtered alerts
+  const activeAlerts = useMemo(() => {
+    const allAlerts = [...(healthResponse?.alerts || [])];
+
+    const geminiProvider = displayProviders.find(
+      (p) => p.key.toLowerCase() === "gemini"
+    );
+
+    if (geminiProvider?.use_token_plan_web) {
+      if (geminiEnginesData?.web?.authenticated === false) {
+        const hasWebAlert = allAlerts.some(
+          (a) =>
+            a.provider.toLowerCase() === "gemini" &&
+            (a.id.includes("web-expired") || a.actionType === "renew_session")
+        );
+        if (!hasWebAlert) {
+          allAlerts.unshift({
+            id: `alert-${geminiProvider.id}-web-expired`,
+            provider: "gemini",
+            type: "incident",
+            severity: "error",
+            title: t("ai_providers:alerts.web_expired_title", { provider: geminiProvider.name }),
+            message:
+              t("ai_providers:alerts.web_expired_message"),
+            timeAgo: t("ai_providers:alerts.recent"),
+            actionType: "renew_session",
+            actionLabel: t("ai_providers:alerts.renew_session_now", "Renovar Sesión Ahora"),
+          });
+        }
+      }
+    }
+
+    if (selectedView === "overview") return allAlerts;
+    const selected = displayProviders.find((p) => p.id === selectedView);
+    return allAlerts.filter((a) => a.provider.toLowerCase() === selected?.key.toLowerCase());
+  }, [
+    healthResponse?.alerts,
+    displayProviders,
+    geminiEnginesData?.web?.authenticated,
+    selectedView,
+    t,
+  ]);
+
+
+  const handleRefreshAllData = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] }),
+      queryClient.invalidateQueries({ queryKey: ["gemini-engines"] }),
+      queryClient.invalidateQueries({ queryKey: ["ai-providers"] }),
+      queryClient.invalidateQueries({ queryKey: ["ai-enabled-web-providers"] }),
+      queryClient.invalidateQueries({ queryKey: ["ai-selectable-models"] }),
+    ]);
+    await Promise.all([
+      refetchHealth(),
+      refetchProviders(),
+    ]);
+  };
 
   const handleVerifyAll = async () => {
     try {
-      await refetchHealth();
+      await handleRefreshAllData();
       sileo.success({
         title: t(
           "ai_providers:notifications.verify_success",
@@ -176,6 +203,7 @@ const AiProviders: FC = () => {
 
   return (
     <PageContainer>
+      <QueryErrorAlert isError={providersError || healthError || enginesError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth(), refetchEngines()])} />
       {/* HEADER PANEL */}
       <HeaderPanel>
         <HeaderTitleBox>
@@ -186,7 +214,7 @@ const AiProviders: FC = () => {
           <PageSubtitle>
             {t(
               "ai_providers:subtitle",
-              "Configuración global de proveedores de LLM, orquestación de autenticación vía sesión web o API keys rotativas, y políticas de contingencia con failover autónomo."
+              "Configuración de conexiones, modelos y sesiones de los planes Web y Agentic."
             )}
           </PageSubtitle>
         </HeaderTitleBox>
@@ -248,7 +276,8 @@ const AiProviders: FC = () => {
 
       {selectedView !== "overview" ? (
         <ProviderDetail
-          providerKey={selectedView}
+          key={selectedView}
+          providerId={selectedView}
           onBack={() => setSelectedView("overview")}
           onRenewSession={handleRenewSession}
           onConfigure={(p) => setConfigureProvider(p)}
@@ -259,11 +288,19 @@ const AiProviders: FC = () => {
           <AlertBanner
             alerts={activeAlerts}
             onRenewSession={handleRenewSession}
+            onConfigure={(providerKey) => {
+              const prov = displayProviders.find(
+                (p) => p.key.toLowerCase() === providerKey.toLowerCase()
+              );
+              if (prov) {
+                setConfigureProvider(prov);
+              }
+            }}
             onManageQuotas={() => {
               sileo.info({
-                title: "Gestión de cuotas",
+                title: t("ai_providers:connection.quotas_title"),
                 description:
-                  "La rotación de llaves API se encuentra administrando la contingencia activa.",
+                  t("ai_providers:connection.quotas_description"),
               });
             }}
           />
@@ -284,52 +321,21 @@ const AiProviders: FC = () => {
             )}
             <Skeleton loading={isInitialLoading}>
               <CardsGrid>
+                {displayProviders.length === 0 && !providersError && !healthError && <Typography color="text.secondary">{t("ai_providers:connection.empty")}</Typography>}
                 {displayProviders.map((prov) => (
                   <ProviderCard
                     key={prov.id}
                     provider={prov}
-                    onGoToDetail={(p) => setSelectedView(p.key)}
+                    totalProviders={providersResponse?.data?.length || healthResponse?.providers?.length || 0}
+                    onGoToDetail={(p) => setSelectedView(p.id)}
                     onConfigure={(p) => setConfigureProvider(p)}
                     onRenewSession={handleRenewSession}
-                    onManageKeys={() => {
-                      sileo.info({
-                        title: `API Keys de ${prov.name}`,
-                        description: `Pool activo: ${prov.validKeysCount || 1}/${prov.apiKeysCount || 1} llaves disponibles con rotación automática.`,
-                      });
-                    }}
-                    onViewModels={() => {
-                      sileo.info({
-                        title: `Modelos de ${prov.name}`,
-                        description:
-                          "Modelos configurados: OCR (mistral-ocr-latest) e Inferencia (mistral-large-latest).",
-                      });
-                    }}
+                    onViewModels={(p) => setSelectedView(p.id)}
                   />
                 ))}
               </CardsGrid>
             </Skeleton>
           </Box>
-
-          {/* AUDIT LOGS TABLE */}
-          <AiEventsTable
-            events={eventsResponse?.data || []}
-            isLoading={isLoadingEvents}
-            isFetching={isFetchingEvents}
-            totalItems={eventsResponse?.meta?.total_items || 0}
-            page={eventPage}
-            limit={eventLimit}
-            searchValue={eventSearch}
-            onSearchChange={(val) => {
-              setEventSearch(val);
-              setEventPage(0);
-            }}
-            onPageChange={setEventPage}
-            onRowsPerPageChange={(newLimit) => {
-              setEventLimit(newLimit);
-              setEventPage(0);
-            }}
-            onViewTrace={(event) => setSelectedTraceEvent(event)}
-          />
         </>
       )}
 
@@ -337,34 +343,21 @@ const AiProviders: FC = () => {
       <AddProviderModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSuccess={() => {
-          refetchProviders();
-          refetchHealth();
-        }}
+        onSuccess={handleRefreshAllData}
       />
 
       <ConfigureProviderModal
         open={Boolean(configureProvider)}
         provider={configureProvider}
+        totalProviders={providersResponse?.data?.length || healthResponse?.providers?.length || 0}
         onClose={() => setConfigureProvider(null)}
-        onSuccess={() => {
-          refetchProviders();
-          refetchHealth();
-        }}
+        onSuccess={handleRefreshAllData}
       />
 
       <RemoteLoginModal
         open={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
-        onSuccess={() => {
-          refetchHealth();
-        }}
-      />
-
-      <TraceModal
-        open={Boolean(selectedTraceEvent)}
-        event={selectedTraceEvent}
-        onClose={() => setSelectedTraceEvent(null)}
+        onSuccess={handleRefreshAllData}
       />
     </PageContainer>
   );

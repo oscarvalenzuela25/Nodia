@@ -76,6 +76,21 @@ const components: Components = {
       }),
     },
   },
+  MuiTable: {
+    styleOverrides: {
+      root: {
+        minWidth: 650,
+      },
+    },
+  },
+  MuiTableContainer: {
+    styleOverrides: {
+      root: {
+        maxWidth: "100%",
+        overflowX: "auto",
+      },
+    },
+  },
   MuiTableSortLabel: {
     styleOverrides: {
       root: {

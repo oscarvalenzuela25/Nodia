@@ -17,7 +17,9 @@ import { AiProviderEvent } from './ai-provider-event.entity.js';
 @Entity({
   name: 'ai_api_keys',
 })
-@Index('uq_ai_api_key_fingerprint', ['provider_id', 'secret_fingerprint'], { unique: true })
+@Index('uq_ai_api_key_fingerprint', ['provider_id', 'secret_fingerprint'], {
+  unique: true,
+})
 @Index('idx_ai_api_key_rotation', ['provider_id', 'sort_order', 'id'])
 @Index('idx_ai_api_key_selection', ['provider_id', 'is_selected'])
 export class AiApiKey {
@@ -33,7 +35,7 @@ export class AiApiKey {
   @Column({ type: 'text', select: false })
   secret_ciphertext: string;
 
-  @Column({ type: 'varchar', length: 64 })
+  @Column({ type: 'varchar', length: 64, select: false })
   secret_fingerprint: string;
 
   @Column({ type: 'varchar', length: 16 })
@@ -45,7 +47,11 @@ export class AiApiKey {
   @Column({ type: 'boolean', default: false })
   is_selected: boolean;
 
-  @Column({ type: 'enum', enum: AiKeyHealthState, default: AiKeyHealthState.UNTESTED })
+  @Column({
+    type: 'enum',
+    enum: AiKeyHealthState,
+    default: AiKeyHealthState.UNTESTED,
+  })
   health_state: AiKeyHealthState;
 
   @Column({ type: 'varchar', length: 64, nullable: true })
@@ -72,7 +78,9 @@ export class AiApiKey {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @ManyToOne(() => AiProvider, (provider) => provider.api_keys, { onDelete: 'CASCADE' })
+  @ManyToOne(() => AiProvider, (provider) => provider.api_keys, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'provider_id' })
   provider: Relation<AiProvider>;
 

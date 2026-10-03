@@ -7,7 +7,8 @@ import { UserModule as UserModuleEntity } from './entities/user-module.entity.js
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GetUsersDto } from './dto/get-users.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetUsersResponse } from './types/user.types.js';
 
 import { TranslationService } from '../translation/translation.service.js';
@@ -34,6 +35,7 @@ export class UserService {
     q,
   }: GetUsersDto): Promise<GetUsersResponse> {
     const qb = this.userRepository.createQueryBuilder('user');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('user.user_roles', 'user_roles')
@@ -75,7 +77,7 @@ export class UserService {
       modules_id_in: _min,
       ...cleanQ
     } = q ?? {};
-    applyRansack(qb, cleanQ, 'user');
+    applyRansack(qb, cleanQ, 'user', RANSACK_POLICIES.user);
 
     const formatUsers = async (users: User[]): Promise<User[]> => {
       let translatedModulesMap = new Map<string, any>();

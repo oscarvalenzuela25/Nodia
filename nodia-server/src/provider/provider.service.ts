@@ -7,7 +7,8 @@ import { BulkCreateProviderDto } from './dto/bulk-create-provider.dto.js';
 import { UpdateProviderDto } from './dto/update-provider.dto.js';
 import { BulkUpdateProviderDto } from './dto/bulk-update-provider.dto.js';
 import { GetProvidersDto } from './dto/get-providers.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetProvidersResponse } from './types/provider.types.js';
 
 @Injectable()
@@ -25,12 +26,13 @@ export class ProviderService {
     q,
   }: GetProvidersDto): Promise<GetProvidersResponse> {
     const qb = this.providerRepository.createQueryBuilder('provider');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('provider.business', 'business');
     }
 
-    applyRansack(qb, q, 'provider');
+    applyRansack(qb, q, 'provider', RANSACK_POLICIES.provider);
 
     if (!q?.s) {
       qb.addOrderBy('provider.created_at', 'DESC');

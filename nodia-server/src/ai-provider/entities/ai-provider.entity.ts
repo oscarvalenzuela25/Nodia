@@ -27,20 +27,38 @@ export class AiProvider {
   @Column({ type: 'varchar', length: 128, nullable: true })
   name?: string | null;
 
-  @Column({ type: 'varchar', length: 64, nullable: true })
-  key?: string | null;
-
-  @Column({ type: 'enum', enum: AiConnectionMode, default: AiConnectionMode.API_KEY })
-  mode: AiConnectionMode;
-
   @Column({ type: 'jsonb', default: () => "'{}'" })
   fields: Record<string, any>;
 
-  @Column({ type: 'smallint', default: 1 })
-  fields_version: number;
-
   @Column({ type: 'boolean', default: true })
   auto_rotate_api_keys: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  use_api_key: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  use_token_plan_web: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  use_token_plan_agentic: boolean;
+
+  @Column({ type: 'varchar', length: 32, nullable: true, default: null })
+  default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
+
+  get key(): string | undefined {
+    return this.catalog?.key;
+  }
+
+  get mode(): string | null {
+    if (this.default_mode) return this.default_mode;
+    if (this.use_token_plan_agentic) return 'token_plan_agentic';
+    if (this.use_token_plan_web) return 'web_session';
+    if (this.use_api_key) return 'api_key';
+    return null;
+  }
+
+  @Column({ type: 'boolean', default: false })
+  is_default: boolean;
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;

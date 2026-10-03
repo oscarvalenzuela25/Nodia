@@ -9,6 +9,11 @@ import * as aiServices from "../../../../../modules/generalSettings/pages/AiProv
 vi.mock(
   "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services",
   () => ({
+    getAiProviderCatalog: vi.fn(),
+    getGeminiEngines: vi.fn(),
+    startGeminiLogin: vi.fn(),
+    getGeminiLoginStatus: vi.fn(),
+    cancelGeminiLogin: vi.fn(),
     getAiProviders: vi.fn(),
     createAiProvider: vi.fn(),
     updateAiProvider: vi.fn(),
@@ -17,7 +22,6 @@ vi.mock(
     getSelectableModels: vi.fn(),
     getEnabledWebAiProviders: vi.fn(),
     getSupportedAiProviders: vi.fn(),
-    createAiApiKey: vi.fn(),
   })
 );
 
@@ -83,6 +87,7 @@ const mockHealthData = {
       key: "gemini",
       name: "Google Gemini",
       isActive: true,
+      use_token_plan_web: true, use_token_plan_agentic: true,
       mode: "web_session" as const,
       status: "expired" as const,
       statusBadge: "REQUIERE INICIAR SESIÓN",
@@ -151,432 +156,60 @@ const mockEvents = [
 
 describe("AiProviders Page", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
-      data: mockProviders,
-      meta: { total_items: 2, total_pages: 1, page: 1, limit: 100 },
-    });
+    vi.resetAllMocks();
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: mockProviders, meta: { total_items: 2, total_pages: 1, page: 1, limit: 100 } });
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue(mockHealthData);
-    vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({
-      data: mockEvents,
-      meta: { total_items: 2, total_pages: 1, page: 1, limit: 10 },
-    });
-    vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({
-      enabled_providers: ["gemini"],
-    });
-    vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue([
-      {
-        id: "cat-1",
-        key: "gemini",
-        name: "Google Gemini",
-        is_active: true,
-        created_at: "2026-09-20",
-        updated_at: "2026-09-20",
-      },
-      {
-        id: "cat-2",
-        key: "mistral",
-        name: "Mistral AI",
-        is_active: true,
-        created_at: "2026-09-20",
-        updated_at: "2026-09-20",
-      },
-    ]);
-    vi.mocked(aiServices.updateAiProvider).mockResolvedValue({
-      id: "2",
-      key: "mistral",
-      mode: "api_key" as any,
-      is_active: true,
-      created_at: "2026-09-20",
-      updated_at: "2026-09-26",
-    });
-    vi.mocked(aiServices.createAiApiKey).mockResolvedValue({
-      id: "key-123",
-      provider_id: "2",
-      label: "Primary Key",
-      display_hint: "...4567",
-      sort_order: 1,
-      is_selected: true,
-      health_state: "valid" as any,
-      is_active: true,
-      created_at: "2026-09-26",
-      updated_at: "2026-09-26",
-    });
+    vi.mocked(aiServices.getAiProviderCatalog).mockResolvedValue([]);
+    vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue([]);
+    vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({ enabled_providers: ["gemini"] });
+    vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({ data: mockEvents, meta: { total_items: 2, total_pages: 1, page: 1, limit: 10 } });
+    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "web", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: true, authenticated: true } });
+    vi.mocked(aiServices.updateAiProvider).mockResolvedValue(mockProviders[0]);
   });
-
-  it("renders page header with title, subtitle, buttons, and view selector", async () => {
+  it("renders page header, view selector and subscription connection action", async () => {
     renderWithClient(<AiProviders />);
-
-    expect(screen.getByText("Proveedores de IA")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Añadir Proveedor/i })).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Verificar todos/i })).toBeInTheDocument();
-      expect(screen.getByText(/General \(Todos los proveedores\)/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByRole("button", { name: /Añadir Proveedor/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /General \(Todos los proveedores\)/i })).toBeInTheDocument();
   });
-
-  it("renders alert banners when incidents or failovers exist", async () => {
+  it("shows incidents while omitting removed API key controls and the audit table", async () => {
     renderWithClient(<AiProviders />);
-
-    await waitFor(() => {
-      expect(screen.getByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).toBeInTheDocument();
-      expect(screen.getByText("FAILOVER OPERATIVO: MISTRAL AI")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /Renovar Sesión Ahora/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /Gestionar Cuotas/i })).toBeInTheDocument();
-    });
+    expect(await screen.findByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Administrar API Keys/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("Historial de Incidentes, Rotaciones y Auditoría")).not.toBeInTheDocument();
   });
-
-  it("renders provider cards with their specific metrics and action buttons", async () => {
-    renderWithClient(<AiProviders />);
-
-    await waitFor(() => {
-      // Gemini Card
-      expect(screen.getAllByText("Google Gemini").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText("REQUIERE INICIAR SESIÓN")).toBeInTheDocument();
-      expect(screen.getByText("Caducado (401)")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /Renovar Sesión \(Navegador Remoto\)/i })).toBeInTheDocument();
-
-      // Mistral Card
-      expect(screen.getAllByText("Mistral AI").length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText("DISPONIBLE")).toBeInTheDocument();
-      expect(screen.getByText("2/3 Keys Válidas")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /Administrar API Keys \(3\)/i })).toBeInTheDocument();
-    });
+  it("opens the subscription connection form", async () => {
+    const user = userEvent.setup(); renderWithClient(<AiProviders />);
+    await user.click(await screen.findByRole("button", { name: /Añadir Proveedor/i }));
+    expect(await screen.findByRole("heading", { name: "Añadir conexión de IA" })).toBeInTheDocument();
   });
-
-  it("renders the audit log table with events, impact badges, and ver traza button", async () => {
-    renderWithClient(<AiProviders />);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Historial de Incidentes, Rotaciones y Auditoría")
-      ).toBeInTheDocument();
-      expect(screen.getByText(/Cookie SID_AUTH reportada inválida/i)).toBeInTheDocument();
-      expect(screen.getByText(/Rotación automática de API Key/i)).toBeInTheDocument();
-      expect(screen.getAllByRole("button", { name: /Ver Traza/i })).toHaveLength(2);
-    });
+  it("opens configuration for the selected connection", async () => {
+    const user = userEvent.setup(); renderWithClient(<AiProviders />);
+    const configure = await screen.findAllByRole("button", { name: /Configurar/i });
+    await user.click(configure[0]);
+    expect(await screen.findByRole("heading", { name: "Configurar conexión de IA" })).toBeInTheDocument();
   });
-
-  it("opens TraceModal when clicking Ver Traza", async () => {
+  it("uses instance IDs for two connections of the same catalog", async () => {
     const user = userEvent.setup();
+    const connections = [
+      { ...mockProviders[0], id: "primary", key: "gemini", name: "Primary", use_token_plan_web: true, default_mode: "token_plan_web" as const, fields: { selected_model: "primary-model", available_models: [{ id: "primary-model", name: "Primary model" }] } },
+      { ...mockProviders[0], id: "secondary", key: "gemini", name: "Secondary", use_token_plan_web: true, default_mode: "token_plan_web" as const, fields: { selected_model: "secondary-model", available_models: [{ id: "secondary-model", name: "Secondary model" }] } },
+    ];
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: connections, meta: { total_items: 2, total_pages: 1, page: 1, limit: 100 } });
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, alerts: [], providers: connections.map((p) => ({ ...mockHealthData.providers[0], id: p.id, name: p.name, key: p.key, status: "healthy" as const })) });
     renderWithClient(<AiProviders />);
-
-    await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: /Ver Traza/i })).toHaveLength(2);
-    });
-
-    const firstTraceBtn = screen.getAllByRole("button", { name: /Ver Traza/i })[0];
-    await user.click(firstTraceBtn);
-
-    await waitFor(() => {
-      expect(screen.getByText("Detalle de Traza de Auditoría")).toBeInTheDocument();
-      expect(screen.getByText("session_expired")).toBeInTheDocument();
-    });
+    await user.click(await screen.findByRole("button", { name: /General \(Todos los proveedores\)/i }));
+    await user.click(screen.getByText(/Secondary \(gemini\)/i));
+    expect(await screen.findByText("Secondary model")).toBeInTheDocument();
+    expect(screen.queryByText("Primary model")).not.toBeInTheDocument();
   });
-
-  it("opens AddProviderModal when clicking Añadir Proveedor and submits a new provider", async () => {
+  it("offers local login through Server and refreshes data after success", async () => {
     const user = userEvent.setup();
-    vi.mocked(aiServices.createAiProvider).mockResolvedValue({
-      id: "3",
-      key: "openai",
-      is_active: true,
-      created_at: "2026-09-26",
-      updated_at: "2026-09-26",
-    });
-
+    const job = { id: "b".repeat(32), state: "running" as const };
+    vi.mocked(aiServices.startGeminiLogin).mockResolvedValue(job);
+    vi.mocked(aiServices.getGeminiLoginStatus).mockResolvedValue({ ...job, state: "succeeded" });
     renderWithClient(<AiProviders />);
-
-    const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
-    await waitFor(() => expect(addBtn).toBeEnabled());
-    await user.click(addBtn);
-
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Añadir Proveedor de IA" })).toBeInTheDocument();
-    });
-
-    const keyInput = screen.getByPlaceholderText(/gemini, mistral, openai, anthropic/i);
-    await user.type(keyInput, "openai");
-
-    const submitBtn = screen.getByRole("button", { name: "Crear Proveedor" });
-    await user.click(submitBtn);
-
-    await waitFor(() => {
-      expect(aiServices.createAiProvider).toHaveBeenCalledWith(
-        expect.objectContaining({
-          key: "openai",
-          mode: "api_key",
-          auto_rotate_api_keys: true,
-          is_active: true,
-          translates: [
-            {
-              key: "key",
-              es: "openai",
-              en: "openai",
-            },
-          ],
-        })
-      );
-    });
-  });
-
-  it("submits a new provider with custom translations in AddProviderModal", async () => {
-    const user = userEvent.setup();
-    vi.mocked(aiServices.createAiProvider).mockResolvedValue({
-      id: "4",
-      key: "anthropic",
-      is_active: true,
-      created_at: "2026-09-26",
-      updated_at: "2026-09-26",
-    });
-
-    renderWithClient(<AiProviders />);
-
-    const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
-    await waitFor(() => expect(addBtn).toBeEnabled());
-    await user.click(addBtn);
-
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Añadir Proveedor de IA" })).toBeInTheDocument();
-    });
-
-    const keyInput = screen.getByPlaceholderText(/gemini, mistral, openai, anthropic/i);
-    await user.type(keyInput, "anthropic");
-
-    // Translations are expanded once key is typed
-    const esInput = await screen.findByRole("textbox", { name: /Español/i });
-    const enInput = await screen.findByRole("textbox", { name: /English/i });
-
-    await user.type(esInput, "Antrópico");
-    await user.type(enInput, "Anthropic AI");
-
-    const submitBtn = screen.getByRole("button", { name: "Crear Proveedor" });
-    await user.click(submitBtn);
-
-    await waitFor(() => {
-      expect(aiServices.createAiProvider).toHaveBeenCalledWith(
-        expect.objectContaining({
-          key: "anthropic",
-          mode: "api_key",
-          auto_rotate_api_keys: true,
-          is_active: true,
-          translates: [
-            {
-              key: "key",
-              es: "Antrópico",
-              en: "Anthropic AI",
-            },
-          ],
-        })
-      );
-    });
-  });
-
-  it("changes view to specific provider when clicking Ir al detalle on a provider card", async () => {
-    const user = userEvent.setup();
-    renderWithClient(<AiProviders />);
-
-    await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: /Ir al detalle/i }).length).toBeGreaterThanOrEqual(1);
-    });
-
-    const detailButtons = screen.getAllByRole("button", { name: /Ir al detalle/i });
-    await user.click(detailButtons[0]);
-
-    // Selector should now reflect specific provider
-    await waitFor(() => {
-      expect(screen.getByText(/Google Gemini \(gemini\)/i)).toBeInTheDocument();
-    });
-  });
-
-  it("opens ConfigureProviderModal when clicking Configurar and saves connection and api key", async () => {
-    const user = userEvent.setup();
-    renderWithClient(<AiProviders />);
-
-    await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: /Configurar/i }).length).toBeGreaterThanOrEqual(1);
-    });
-
-    const configButtons = screen.getAllByRole("button", { name: /Configurar/i });
-    await user.click(configButtons[1]); // Click config for mistral
-
-    await waitFor(() => {
-      expect(screen.getByText("Configurar Conexión de Proveedor")).toBeInTheDocument();
-    });
-
-    // Enter API key
-    const apiKeyInput = screen.getByPlaceholderText("sk-...");
-    await user.type(apiKeyInput, "sk-mistral-secret-key-1234");
-
-    // Click submit
-    const saveBtn = screen.getByRole("button", { name: /Guardar Configuración/i });
-    await user.click(saveBtn);
-
-    await waitFor(() => {
-      expect(aiServices.updateAiProvider).toHaveBeenCalledWith(
-        "2",
-        expect.objectContaining({
-          mode: "api_key",
-          is_active: true,
-        })
-      );
-      expect(aiServices.createAiApiKey).toHaveBeenCalledWith(
-        expect.objectContaining({
-          provider_id: "2",
-          label: "Primary Key",
-          secret: "sk-mistral-secret-key-1234",
-          is_selected: true,
-          is_active: true,
-        })
-      );
-    });
-  });
-
-  it("disables web session mode in ConfigureProviderModal for providers not in enabled_web_providers", async () => {
-    const user = userEvent.setup();
-    // Only gemini is enabled for web
-    vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({
-      enabled_providers: ["gemini"],
-    });
-
-    renderWithClient(<AiProviders />);
-
-    await waitFor(() => {
-      expect(screen.getAllByRole("button", { name: /Configurar/i }).length).toBeGreaterThanOrEqual(1);
-    });
-
-    // Configure Mistral (which is not in enabled_providers)
-    const configButtons = screen.getAllByRole("button", { name: /Configurar/i });
-    await user.click(configButtons[1]);
-
-    await waitFor(() => {
-      expect(screen.getByText("Configurar Conexión de Proveedor")).toBeInTheDocument();
-      expect(
-        screen.getByText(/No habilitado para este proveedor \(requiere microservicio dedicado\)/i)
-      ).toBeInTheDocument();
-    });
-  });
-
-  it("selects provider from catalog in AddProviderModal and auto-fills key and translations", async () => {
-    const user = userEvent.setup();
-    vi.mocked(aiServices.createAiProvider).mockResolvedValue({
-      id: "5",
-      key: "gemini",
-      is_active: true,
-      created_at: "2026-09-26",
-      updated_at: "2026-09-26",
-    });
-
-    renderWithClient(<AiProviders />);
-
-    const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
-    await waitFor(() => expect(addBtn).toBeEnabled());
-    await user.click(addBtn);
-
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Añadir Proveedor de IA" })).toBeInTheDocument();
-      expect(screen.getByText("Proveedor del Catálogo")).toBeInTheDocument();
-    });
-
-    // Open catalog dropdown
-    const selectTrigger = screen.getByText("Seleccionar proveedor soportado...");
-    await user.click(selectTrigger);
-
-    // Pick Google Gemini option from listbox
-    const geminiOption = await screen.findByRole("option", { name: /Google Gemini/i });
-    await user.click(geminiOption);
-
-    // Verify key input now has gemini
-    const keyInput = screen.getByPlaceholderText(/gemini, mistral, openai, anthropic/i);
-    expect(keyInput).toHaveValue("gemini");
-
-    // Click submit
-    const submitBtn = screen.getByRole("button", { name: "Crear Proveedor" });
-    await user.click(submitBtn);
-
-    await waitFor(() => {
-      expect(aiServices.createAiProvider).toHaveBeenCalledWith(
-        expect.objectContaining({
-          catalog_id: "cat-1",
-          name: "Google Gemini",
-          key: "gemini",
-          mode: "web_session",
-          auto_rotate_api_keys: true,
-          is_active: true,
-          fields: expect.objectContaining({
-            profile: "puppeteer_headless_v2",
-          }),
-          translates: [
-            {
-              key: "key",
-              es: "Google Gemini",
-              en: "Google Gemini",
-            },
-          ],
-        })
-      );
-    });
-  });
-
-  it("creates a provider with an initial API key and model selection in AddProviderModal", async () => {
-    const user = userEvent.setup();
-    vi.mocked(aiServices.createAiProvider).mockResolvedValue({
-      id: "prov-99",
-      key: "mistral",
-      mode: "api_key" as any,
-      is_active: true,
-      created_at: "2026-09-26",
-      updated_at: "2026-09-26",
-    });
-
-    renderWithClient(<AiProviders />);
-
-    const addBtn = screen.getByRole("button", { name: /Añadir Proveedor/i });
-    await waitFor(() => expect(addBtn).toBeEnabled());
-    await user.click(addBtn);
-
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Añadir Proveedor de IA" })).toBeInTheDocument();
-    });
-
-    // Pick Mistral AI from catalog
-    const selectTrigger = screen.getByText("Seleccionar proveedor soportado...");
-    await user.click(selectTrigger);
-
-    const mistralOption = await screen.findByRole("option", { name: /Mistral AI/i });
-    await user.click(mistralOption);
-
-    // Enter initial API key
-    const apiKeyInput = screen.getByPlaceholderText("sk-...");
-    await user.type(apiKeyInput, "sk-mistral-init-secret");
-
-    // Click submit
-    const submitBtn = screen.getByRole("button", { name: "Crear Proveedor" });
-    await user.click(submitBtn);
-
-    await waitFor(() => {
-      expect(aiServices.createAiProvider).toHaveBeenCalledWith(
-        expect.objectContaining({
-          catalog_id: "cat-2",
-          name: "Mistral AI",
-          key: "mistral",
-          mode: "api_key",
-          auto_rotate_api_keys: true,
-          is_active: true,
-        })
-      );
-      expect(aiServices.createAiApiKey).toHaveBeenCalledWith(
-        expect.objectContaining({
-          provider_id: "prov-99",
-          label: "Primary Key",
-          secret: "sk-mistral-init-secret",
-          is_selected: true,
-          is_active: true,
-        })
-      );
-    });
+    await user.click(await screen.findByRole("button", { name: /Renovar Sesión \(Navegador Remoto\)/i }));
+    await user.click(await screen.findByRole("button", { name: /Iniciar navegador local/i }));
+    await waitFor(() => expect(vi.mocked(aiServices.getAiProvidersHealth).mock.calls.length).toBeGreaterThan(1));
   });
 });
-
-
-

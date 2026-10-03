@@ -5,7 +5,8 @@ import { Role } from './entities/role.entity.js';
 import { RoleAction } from './entities/role-action.entity.js';
 import { Action } from '../action/entities/action.entity.js';
 import { GetRolesDto } from './dto/get-roles.dto.js';
-import { applyRansack } from '../common/utils/ransack-query.builder.js';
+import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetRolesResponse } from './types/role.types.js';
 import { CreateRoleDto } from './dto/create-role.dto.js';
 import { UpdateRoleDto } from './dto/update-role.dto.js';
@@ -34,6 +35,7 @@ export class RoleService {
     q,
   }: GetRolesDto): Promise<GetRolesResponse> {
     const qb = this.roleRepository.createQueryBuilder('role');
+    validateRansackEnvelope(q);
 
     if (includes) {
       qb.leftJoinAndSelect('role.role_actions', 'role_actions')
@@ -58,7 +60,7 @@ export class RoleService {
     }
 
     const { actions_id_eq: _aie, actions_id_in: _aii, actions_key_cont: _akc, ...cleanRoleQ } = q ?? {};
-    applyRansack(qb, cleanRoleQ, 'role');
+    applyRansack(qb, cleanRoleQ, 'role', RANSACK_POLICIES.role);
 
     const attachActionTranslations = async (
       rolesList: Role[],

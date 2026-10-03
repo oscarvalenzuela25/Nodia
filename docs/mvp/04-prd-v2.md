@@ -1,8 +1,12 @@
 # PRD V2 — Nodia Parte 1
 
-> Estado: aprobado
-> Última actualización: 2026-08-26
+> Estado: en revisión parcial de autorización; aprobación histórica del 2026-08-26 conservada como antecedente
+> Última actualización: 2026-10-03
 > Dependencias: 02-prd-v1.md aprobado, 03-domain-model-erd.md aprobado
+
+## Aclaración posterior de alcance — 2026-10-03
+
+El usuario confirmó como intencional la administración sin permisos por acción y el acceso global a productos, facturas y archivos de otros negocios para su público específico. Esta instrucción posterior prevalece para ese alcance; las reglas históricas de permisos por endpoint abajo requieren reconciliación antes de usarlas para implementar restricciones. No implica eliminar autenticación, habilitar acceso anónimo ni desproteger invariantes de integridad. Se reabre únicamente la revisión afectada; no se aprueba automáticamente una nueva versión completa.
 
 ## 1. Resumen del producto
 

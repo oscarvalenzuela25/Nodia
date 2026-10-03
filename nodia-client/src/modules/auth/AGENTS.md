@@ -7,13 +7,11 @@ Contexto operativo para agentes IA que trabajen dentro de `src/modules/auth`.
 Este modulo contiene la capa de autenticacion visible para usuario final:
 
 - Pagina de login
-- Pagina de registro
 - Flujos de entrada hacia rutas protegidas
 
 ## Archivos clave
 
 - `src/modules/auth/pages/Login/Login.tsx`
-- `src/modules/auth/pages/Register/Register.tsx`
 - `src/hooks/useAuth.tsx`
 - `src/store/authStore.tsx`
 - `src/routes/Guard.tsx`
@@ -27,7 +25,7 @@ Este modulo contiene la capa de autenticacion visible para usuario final:
 4. Si se agregan nuevas claves de auth, mapear en:
    - `src/translate/es/auth.json`
    - `src/translate/en/auth.json`
-5. Login/Register deben mantener redireccion controlada (actualmente a `/`).
+5. Login debe mantener redireccion controlada (actualmente a `/`).
 6. Si agregas llamadas HTTP de auth, usar `mainInstance` o `createApiInstance` desde `src/config/api.ts`. La coordinación de restauración/renovación vive en `src/config/authSession.ts`.
 
 ## Skill obligatoria para componentes

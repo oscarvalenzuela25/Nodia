@@ -99,6 +99,14 @@ const Sidenav: FC<Props> = ({
 
   const [openModules, setOpenModules] = useState<Record<string, boolean>>({});
 
+  const handleNavigate = (path?: string) => {
+    if (!path) return;
+    navigate(path);
+    if (!isLgUp) {
+      onDrawerToggle();
+    }
+  };
+
   const toggleModule = (moduleId: string) => {
     setOpenModules((prev) => ({
       ...prev,
@@ -244,9 +252,7 @@ const Sidenav: FC<Props> = ({
                             <NavItemButton
                               isSubItem={!isCollapsed}
                               selected={location.pathname === subItem.path}
-                              onClick={() =>
-                                subItem.path && navigate(subItem.path)
-                              }
+                              onClick={() => handleNavigate(subItem.path)}
                               sx={{
                                 justifyContent: isCollapsed
                                   ? "center"
@@ -289,7 +295,7 @@ const Sidenav: FC<Props> = ({
               >
                 <NavItemButton
                   selected={location.pathname === moduleItem.path}
-                  onClick={() => moduleItem.path && navigate(moduleItem.path)}
+                  onClick={() => handleNavigate(moduleItem.path)}
                   sx={{ justifyContent: isCollapsed ? "center" : "initial" }}
                 >
                   {moduleItem.icon && (

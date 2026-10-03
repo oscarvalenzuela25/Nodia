@@ -22,6 +22,7 @@ import GroupAddOutlinedIcon from "@mui/icons-material/GroupAddOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { useIsMutating } from "@tanstack/react-query";
 
+import useAuth from "../../../../hooks/useAuth";
 import Breadcrumb from "../../../../components/Breadcrumb";
 import { HeaderCardSkeleton } from "../../../../components/skeletons";
 import BusinessModal from "../Business/components/BusinessModal";
@@ -58,6 +59,7 @@ import {
 const BusinessDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { t, i18n } = useTranslation(["business", "core"]);
   const lang = i18n.language || "es";
 
@@ -72,6 +74,7 @@ const BusinessDetail: FC = () => {
 
   const { data: business, isLoading, isFetching, isError, refetch } = useBusiness(id);
   const updateMutation = useUpdateBusiness();
+  const canManageBusiness = business?.user_role === "owner" || (!!user && business?.owner_id === user.id);
 
   // Badge counts (products, providers and collaborators are already available in business entity)
   const { data: invoicesData } = useInvoices({ q: { business_id_eq: id }, limit: 1 });
@@ -206,8 +209,8 @@ const BusinessDetail: FC = () => {
                 variant="outlined"
                 size="small"
                 startIcon={<EditOutlinedIcon />}
-                onClick={() => setIsEditModalOpen(true)}
-                disabled={isBusy}
+                onClick={() => { if (canManageBusiness) setIsEditModalOpen(true); }}
+                disabled={isBusy || !canManageBusiness}
                 sx={{ borderRadius: 2, textTransform: "none" }}
               >
                 {t("business:action_update")}
@@ -216,8 +219,8 @@ const BusinessDetail: FC = () => {
                 variant="contained"
                 size="small"
                 startIcon={<GroupAddOutlinedIcon />}
-                onClick={() => setIsCollaboratorModalOpen(true)}
-                disabled={isBusy}
+                onClick={() => { if (canManageBusiness) setIsCollaboratorModalOpen(true); }}
+                disabled={isBusy || !canManageBusiness}
                 sx={{ borderRadius: 2, textTransform: "none" }}
               >
                 {t("business:action_add_collaborator")}
@@ -339,7 +342,8 @@ const BusinessDetail: FC = () => {
               businessId={business.id}
               businessName={business.name}
               collaborators={business.collaborators}
-              onOpenAddCollaborator={() => setIsCollaboratorModalOpen(true)}
+              canManage={canManageBusiness}
+              onOpenAddCollaborator={() => { if (canManageBusiness) setIsCollaboratorModalOpen(true); }}
               isBusy={isBusy}
               isLoading={isLoading}
             />
@@ -351,7 +355,7 @@ const BusinessDetail: FC = () => {
       {business && (
         <>
           <BusinessModal
-            open={isEditModalOpen}
+            open={isEditModalOpen && canManageBusiness}
             onClose={() => setIsEditModalOpen(false)}
             onSubmit={handleUpdateSubmit}
             initialData={business}
@@ -359,7 +363,7 @@ const BusinessDetail: FC = () => {
           />
 
           <BusinessCollaboratorModal
-            open={isCollaboratorModalOpen}
+            open={isCollaboratorModalOpen && canManageBusiness}
             onClose={() => setIsCollaboratorModalOpen(false)}
             businessId={business.id}
             businessName={business.name}

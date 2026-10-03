@@ -1,5 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUUID,
+  IsNumber,
+} from 'class-validator';
 
 export class FilterProductDto {
   @IsOptional()
@@ -60,6 +67,56 @@ export class FilterProductDto {
   @IsArray()
   @IsString({ each: true })
   price_change_in?: string[];
+
+  @IsOptional()
+  @IsString()
+  name_eq?: string;
+
+  @IsOptional()
+  @IsString()
+  name_not_eq?: string;
+
+  @IsOptional()
+  @IsString()
+  name_not_cont?: string;
+
+  @IsOptional()
+  @IsString()
+  code_not_eq?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  code_not_in?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  @IsBoolean()
+  provider_id_null?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  @IsBoolean()
+  provider_id_not_null?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === 'string' && value.trim() !== '' ? Number(value) : value,
+  )
+  @IsNumber()
+  stock_gteq?: number;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === 'string' && value.trim() !== '' ? Number(value) : value,
+  )
+  @IsNumber()
+  stock_lteq?: number;
 
   @IsOptional()
   @IsString()

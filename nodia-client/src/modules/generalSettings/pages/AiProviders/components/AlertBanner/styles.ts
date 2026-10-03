@@ -11,8 +11,14 @@ export const AlertsWrapper = styled(Box)(({ theme }) => ({
 export const BannerCard = styled(Box, {
   shouldForwardProp: (prop) => prop !== "alertType",
 })<{ alertType: "incident" | "failover" | "warning" | "info" }>(({ theme, alertType }) => {
-  const isIncident = alertType === "incident";
-  const mainColor = isIncident ? "#f59e0b" : "#10b981";
+  const mainColor =
+    alertType === "incident"
+      ? "#ef4444"
+      : alertType === "warning"
+      ? "#f59e0b"
+      : alertType === "failover"
+      ? "#10b981"
+      : "#3b82f6";
   const bgAlpha = alpha(mainColor, 0.08);
   const borderAlpha = alpha(mainColor, 0.35);
 
@@ -52,7 +58,14 @@ export const BannerTitle = styled(Typography, {
   fontSize: "0.875rem",
   letterSpacing: "0.05em",
   textTransform: "uppercase",
-  color: alertType === "incident" ? "#f59e0b" : "#10b981",
+  color:
+    alertType === "incident"
+      ? "#ef4444"
+      : alertType === "warning"
+      ? "#f59e0b"
+      : alertType === "failover"
+      ? "#10b981"
+      : "#3b82f6",
 }));
 
 export const TimeBadge = styled(Box)(({ theme }) => ({

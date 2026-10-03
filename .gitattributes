@@ -1,0 +1,2 @@
+# Normalize text files to LF in Git and working-tree checkouts.
+* text=auto eol=lf

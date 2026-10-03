@@ -6,15 +6,24 @@ export const ContainerPage = styled("section")(({ theme }) => ({
   display: "flex",
   flexGrow: 1,
   flexDirection: "column",
-  padding: theme.spacing(4),
   backgroundColor: theme.palette.background.default,
 }));
 
 export const WelcomeMessage = styled("h1")(({ theme }) => ({
   ...theme.typography.h3,
+  fontSize: "1.75rem",
+  [theme.breakpoints.up("sm")]: {
+    fontSize: "2.25rem",
+  },
+  [theme.breakpoints.up("md")]: {
+    fontSize: "3rem",
+  },
   fontWeight: 700,
   color: theme.palette.text.primary,
-  marginBottom: theme.spacing(6),
+  marginBottom: theme.spacing(3),
+  [theme.breakpoints.up("md")]: {
+    marginBottom: theme.spacing(6),
+  },
   textAlign: "center",
   background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.tertiary.main})`,
   WebkitBackgroundClip: "text",
@@ -23,9 +32,16 @@ export const WelcomeMessage = styled("h1")(({ theme }) => ({
 
 export const SectionTitle = styled("h2")(({ theme }) => ({
   ...theme.typography.h5,
+  fontSize: "1.25rem",
+  [theme.breakpoints.up("sm")]: {
+    fontSize: "1.5rem",
+  },
   fontWeight: 600,
   color: theme.palette.text.primary,
-  marginBottom: theme.spacing(3),
+  marginBottom: theme.spacing(2),
+  [theme.breakpoints.up("md")]: {
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 export const SettingsCard = styled(Link)(({ theme }) => {

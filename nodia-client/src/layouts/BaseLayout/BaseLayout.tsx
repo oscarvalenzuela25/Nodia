@@ -1,7 +1,8 @@
-import { useState, type FC, type PropsWithChildren } from "react";
+import { useState, Suspense, type FC, type PropsWithChildren } from "react";
 import { useTheme, useMediaQuery } from "@mui/material";
 import Sidenav from "../components/Sidenav";
 import Topbar from "../components/Topbar";
+import RouteLoader from "../../components/RouteLoader";
 import { LayoutWrapper, MainContainer, PageContent } from "./styles";
 
 type Props = PropsWithChildren;
@@ -37,7 +38,11 @@ const BaseLayout: FC<Props> = ({ children }) => {
           desktopCollapsed={desktopCollapsed}
           onCollapseToggle={handleCollapseToggle}
         />
-        <PageContent>{children}</PageContent>
+        <PageContent>
+          <Suspense fallback={<RouteLoader variant="page" />}>
+            {children}
+          </Suspense>
+        </PageContent>
       </MainContainer>
     </LayoutWrapper>
   );

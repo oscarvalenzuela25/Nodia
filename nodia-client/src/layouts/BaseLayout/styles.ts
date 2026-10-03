@@ -20,6 +20,7 @@ export const MainContainer = styled("main", {
     flexDirection: "column",
     flexGrow: 1,
     width: "100%",
+    minWidth: 0,
     [theme.breakpoints.up("lg")]: {
       width: `calc(100% - ${currentWidth}px)`,
       transition: theme.transitions.create(["width"], {
@@ -32,5 +33,11 @@ export const MainContainer = styled("main", {
 
 export const PageContent = styled("div")(({ theme }) => ({
   flexGrow: 1,
-  padding: theme.spacing(4),
+  padding: theme.spacing(2),
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(3),
+  },
+  [theme.breakpoints.up("md")]: {
+    padding: theme.spacing(4),
+  },
 }));

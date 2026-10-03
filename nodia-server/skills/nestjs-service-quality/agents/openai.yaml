@@ -1,0 +1,3 @@
+interface:
+  display_name: "NestJS Service Quality"
+  short_description: "DTOs, permisos y persistencia segura en NestJS"

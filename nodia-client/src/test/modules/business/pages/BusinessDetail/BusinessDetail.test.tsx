@@ -252,4 +252,11 @@ describe("BusinessDetail Page", () => {
     expect(await screen.findByText("Carlos Sanchez")).toBeInTheDocument();
     expect(screen.getByText("Jefe de Compras")).toBeInTheDocument();
   });
+  it("prevents collaborators from editing the business or assigning collaborators", async () => {
+    vi.mocked(businessServices.getBusinessById).mockResolvedValue({ ...mockBusiness, owner_id: "another-user", user_role: "collaborator" });
+    renderWithClient(<BusinessDetail />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Actualizar" })).toBeDisabled());
+    expect(screen.getByRole("button", { name: "Agregar colaborador" })).toBeDisabled();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
 });

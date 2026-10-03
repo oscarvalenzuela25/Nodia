@@ -1,14 +1,16 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
+import { AiConnectionMode, type AiProviderEntity } from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 import ProviderDetail from "../../../../../../../modules/generalSettings/pages/AiProviders/components/ProviderDetail/ProviderDetail";
 import * as aiServices from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 
 vi.mock(
   "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services",
   () => ({
+    getGeminiEngines: vi.fn(),
     getAiProviders: vi.fn(),
     createAiProvider: vi.fn(),
     updateAiProvider: vi.fn(),
@@ -18,10 +20,6 @@ vi.mock(
     getEnabledWebAiProviders: vi.fn(),
     getSupportedAiProviders: vi.fn(),
     syncAiProviderModels: vi.fn(),
-    getAiApiKeys: vi.fn(),
-    createAiApiKey: vi.fn(),
-    updateAiApiKey: vi.fn(),
-    deleteAiApiKey: vi.fn(),
   })
 );
 
@@ -50,11 +48,12 @@ const renderWithClient = (ui: ReactElement) => {
   );
 };
 
-const mockProviders = [
+const mockProviders: AiProviderEntity[] = [
   {
     id: "prov-1",
     key: "gemini",
-    mode: "web_session" as any,
+    use_token_plan_web: true, use_token_plan_agentic: true, default_mode: "token_plan_web",
+    mode: AiConnectionMode.WEB_SESSION,
     is_active: true,
     fields: {
       selected_model: "gemini-flash",
@@ -141,271 +140,86 @@ const mockSupported = [
   },
 ];
 
-const mockKeys = [
-  {
-    id: "key-1",
-    provider_id: "prov-1",
-    label: "AI-Studio-Prod-1",
-    display_hint: "AIzaSyDxK...7dHQ",
-    sort_order: 1,
-    is_selected: true,
-    health_state: "valid" as any,
-    is_active: true,
-    created_at: "2026-09-26",
-    updated_at: "2026-09-26",
-  },
-];
-
 describe("ProviderDetail Component", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
-      data: mockProviders,
-      meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
-    });
+    vi.resetAllMocks();
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: mockProviders, meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
     vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue(mockHealthData);
     vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue(mockSupported);
-    vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({
-      enabled_providers: ["gemini"],
-    });
-    vi.mocked(aiServices.getAiApiKeys).mockResolvedValue({
-      data: mockKeys,
-      meta: { total_items: 1, total_pages: 1, page: 1, limit: 10 },
-    });
-    vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({
-      data: [],
-      meta: { total_items: 0, total_pages: 1, page: 1, limit: 10 },
-    });
-    vi.mocked(aiServices.updateAiProvider).mockResolvedValue({} as any);
-    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({
-      models: mockHealthData.providers[0].availableModels,
-    } as any);
-    vi.mocked(aiServices.updateAiApiKey).mockResolvedValue({} as any);
-    vi.mocked(aiServices.deleteAiApiKey).mockResolvedValue(undefined);
+    vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({ enabled_providers: ["gemini"] });
+    vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({ data: [], meta: { total_items: 0, total_pages: 1, page: 1, limit: 10 } });
+    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "agentic", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: true, authenticated: true } });
+    vi.mocked(aiServices.updateAiProvider).mockResolvedValue(mockProviders[0]);
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ models: [] });
   });
-
-  it("renders breadcrumb, back button, provider name, and models title", async () => {
-    const handleBack = vi.fn();
-    renderWithClient(
-      <ProviderDetail providerKey="gemini" onBack={handleBack} />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("Volver a Proveedores")).toBeInTheDocument();
-      expect(screen.getByText("Google Gemini")).toBeInTheDocument();
-      expect(screen.getByText("Disponible")).toBeInTheDocument();
-      expect(
-        screen.getByText(/Modelos \(Google Gemini\)/i)
-      ).toBeInTheDocument();
-    });
-
-    const user = userEvent.setup();
-    const backBtn = screen.getByRole("button", { name: /Volver a Proveedores/i });
-    await user.click(backBtn);
-    expect(handleBack).toHaveBeenCalled();
+  it("renders breadcrumb and returns to the provider list", async () => {
+    const back = vi.fn(), user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={back} />);
+    await user.click(await screen.findByRole("button", { name: /Volver a Proveedores/i })); expect(back).toHaveBeenCalledOnce();
   });
-
-  it("renders model cards and switches selected model on toggle", async () => {
-    const user = userEvent.setup();
-    renderWithClient(
-      <ProviderDetail providerKey="gemini" onBack={() => {}} />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("Gemini 3.8 Flash")).toBeInTheDocument();
-      expect(screen.getByText("Gemini 3.1 Pro")).toBeInTheDocument();
-    });
-
-    const cardPro = screen.getByText("Gemini 3.1 Pro").closest(".MuiPaper-root")!;
-    const switchPro = within(cardPro as HTMLElement).getAllByRole("switch")[0];
-    expect(switchPro).toBeInTheDocument();
-
-    // Click switch on gemini-pro
-    await user.click(switchPro);
-
-    await waitFor(() => {
-      expect(aiServices.updateAiProvider).toHaveBeenCalledWith(
-        "prov-1",
-        expect.objectContaining({
-          fields: expect.objectContaining({
-            selected_model: "gemini-pro",
-          }),
-        })
-      );
-    });
+  it("renders models from the selected instance and uses displayName", async () => {
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: [{ ...mockProviders[0], fields: { selected_model: "discovered-id", available_models: [{ id: "discovered-id", name: "Internal", displayName: "Discovered display name", capabilities: ["text"] }] } }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByText("Discovered display name")).toBeInTheDocument();
   });
-
-  it("toggles auto reconnect preference", async () => {
-    const user = userEvent.setup();
-    renderWithClient(
-      <ProviderDetail providerKey="gemini" onBack={() => {}} />
-    );
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Auto-reconexión/i)
-      ).toBeInTheDocument();
-    });
-
-    const switchWrapper = screen.getByText(/Auto-reconexión/i).closest("label")!;
-    const reconnectSwitch = within(switchWrapper).getByRole("switch");
-    expect(reconnectSwitch).toBeInTheDocument();
-    expect(reconnectSwitch).toBeChecked();
-
-    await user.click(reconnectSwitch);
-
-    await waitFor(() => {
-      expect(aiServices.updateAiProvider).toHaveBeenCalledWith(
-        "prov-1",
-        expect.objectContaining({
-          fields: expect.objectContaining({
-            auto_reconnect: false,
-          }),
-        })
-      );
-    });
+  it("renders only subscription tabs and switches to agentic mode", async () => {
+    const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    await user.click(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }));
+    expect(screen.queryByRole("tab", { name: /API Key/i })).not.toBeInTheDocument();
+    expect(await screen.findByText("Entorno Agéntico Antigravity")).toBeInTheDocument();
+    expect(screen.queryByText("Historial de Incidentes, Rotaciones y Auditoría")).not.toBeInTheDocument();
   });
-
-  it("switches operation mode when clicking ModeCard", async () => {
-    const user = userEvent.setup();
-    renderWithClient(
-      <ProviderDetail providerKey="gemini" onBack={() => {}} />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("MODO DE OPERACIÓN EXCLUSIVO")).toBeInTheDocument();
-      expect(screen.getByText("API Key (AI Studio / Endpoint Oficial)")).toBeInTheDocument();
-    });
-
-    const apiKeyCard = screen.getByText("API Key (AI Studio / Endpoint Oficial)");
-    await user.click(apiKeyCard);
-
-    await waitFor(() => {
-      expect(aiServices.updateAiProvider).toHaveBeenCalledWith(
-        "prov-1",
-        expect.objectContaining({
-          mode: "api_key",
-        })
-      );
-    });
+  it("sets the active subscription as default on the correct instance", async () => {
+    const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    await user.click(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }));
+    await user.click(screen.getByRole("checkbox", { name: /Modo Predeterminado/i }));
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ default_mode: "token_plan_agentic" })));
   });
-
-  it("renders cloud authentication bridge and triggers onRenewSession", async () => {
-    const user = userEvent.setup();
-    const handleRenewSession = vi.fn();
-
-    renderWithClient(
-      <ProviderDetail
-        providerKey="gemini"
-        onBack={() => {}}
-        onRenewSession={handleRenewSession}
-      />
-    );
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /Iniciar Sesión en Navegador Remoto/i })
-      ).toBeInTheDocument();
-    });
-
-    const renewBtn = screen.getByRole("button", {
-      name: /Iniciar Sesión en Navegador Remoto/i,
-    });
-    await user.click(renewBtn);
-
-    expect(handleRenewSession).toHaveBeenCalled();
+  it("toggles auto reconnect preference on the selected instance", async () => {
+    const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    await user.click(await screen.findByRole("switch", { name: /Auto-reconexión/i }));
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ fields: expect.objectContaining({ auto_reconnect: false }) })));
   });
-
-  it("renders API keys list with standard table and opens AddApiKeyModal", async () => {
-    const user = userEvent.setup();
-    renderWithClient(
-      <ProviderDetail providerKey="gemini" onBack={() => {}} />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("Administrador de API Keys")).toBeInTheDocument();
-      expect(screen.getByText("AI-Studio-Prod-1")).toBeInTheDocument();
-      expect(screen.getByText("AIzaSyDxK...7dHQ")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /Agregar Nueva API Key/i })).toBeInTheDocument();
-    });
-
-    const addKeyBtn = screen.getByRole("button", { name: /Agregar Nueva API Key/i });
-    await user.click(addKeyBtn);
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("heading", { name: /Agregar Clave de API - Google Gemini/i })
-      ).toBeInTheDocument();
-    });
+  it("renews the selected web connection", async () => {
+    const renew = vi.fn(), user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} onRenewSession={renew} />);
+    await user.click(await screen.findByRole("button", { name: /Iniciar Sesión en Navegador Remoto/i }));
+    expect(renew).toHaveBeenCalledOnce();
   });
-
-  it("deletes an API key after confirming in dialog", async () => {
-    const user = userEvent.setup();
-    renderWithClient(
-      <ProviderDetail providerKey="gemini" onBack={() => {}} />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("AI-Studio-Prod-1")).toBeInTheDocument();
-    });
-
-    const deleteBtn = screen.getByTestId("delete-api-key-btn");
-    await user.click(deleteBtn);
-
-    // Look for ConfirmDialog
-    await waitFor(() => {
-      expect(screen.getByText("Eliminar Clave de API")).toBeInTheDocument();
-    });
-
-    const confirmButtons = screen.getAllByRole("button");
-    const confirmBtn = confirmButtons.find(
-      (btn) =>
-        btn.textContent?.includes("Confirmar") ||
-        btn.textContent?.includes("Aceptar") ||
-        btn.textContent?.includes("Eliminar")
-    );
-    if (confirmBtn) {
-      await user.click(confirmBtn);
-      await waitFor(() => {
-        expect(aiServices.deleteAiApiKey).toHaveBeenCalledWith("key-1");
-      });
-    }
+  it("keeps synchronization disabled when engine status is unknown", async () => {
+    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue(null);
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByRole("button", { name: "Actualizar modelos" })).toBeDisabled();
   });
-
-  it("renders empty state when provider has no available_models and opens SyncModelsModal", async () => {
-    vi.mocked(aiServices.getAiProviders).mockResolvedValue({
-      data: [
-        {
-          id: "prov-empty",
-          key: "gemini",
-          mode: "web_session" as any,
-          is_active: true,
-          fields: {
-            available_models: [],
-          },
-          created_at: "2026-09-20",
-          updated_at: "2026-09-20",
-        },
-      ],
-      meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 },
-    });
-
+  it("shows empty models and permits discovery with an authenticated engine", async () => {
     const user = userEvent.setup();
-    renderWithClient(
-      <ProviderDetail providerKey="gemini" onBack={() => {}} />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("Sin modelos asignados")).toBeInTheDocument();
-    });
-
-    const syncBtn = screen.getAllByRole("button", { name: "Actualizar modelos" })[0];
-    await user.click(syncBtn);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Sincronizar y configurar modelos")
-      ).toBeInTheDocument();
-    });
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: [{ ...mockProviders[0], fields: {} }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, providers: [{ ...mockHealthData.providers[0], availableModels: [], selectedModel: undefined }] });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByText("Sin modelos asignados")).toBeInTheDocument();
+    const buttons = screen.getAllByRole("button", { name: "Actualizar modelos" });
+    await waitFor(() => expect(buttons[0]).toBeEnabled()); await user.click(buttons[0]);
+    expect(await screen.findByText("Sincronizar y configurar modelos")).toBeInTheDocument();
+  });
+  it("disables discovery and shows an alert when the web session expires", async () => {
+    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "web", web: { engine: "web", available: true, authenticated: false }, agentic: { engine: "agentic", available: false, authenticated: false } });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByRole("button", { name: "Actualizar modelos" })).toBeDisabled();
+    expect(await screen.findByText(/Sesión Web de .* no disponible/i)).toBeInTheDocument();
+  });
+  it("shows unknown quotas without fabricating credits and leaves reasoning level unassigned", async () => {
+    const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByText("El proveedor no informa cuotas verificables.")).toBeInTheDocument();
+    expect(screen.queryByText(/2[.,]399|2[.,]400/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: /Token Plan \(Agentic\)/i }));
+    const high = screen.getByTestId("thinking-level-high-gemini-flash");
+    expect(screen.getByTestId("thinking-level-medium-gemini-flash")).toHaveAttribute("aria-pressed", "false");
+    await user.click(high);
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ fields: expect.objectContaining({ token_plan_agentic: expect.objectContaining({ thinking_levels: { "gemini-flash": "high" } }) }) })));
+  });
+  it("keeps the default provider switch interactive without allowing it to turn off", async () => {
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: [{ ...mockProviders[0], is_default: true }, { ...mockProviders[0], id: "prov-2", is_default: false }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
+    const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    const input = (await screen.findByTestId("detail-default-provider-switch")).querySelector("input")!;
+    await waitFor(() => expect(input).toBeChecked()); await user.click(input);
+    expect(input).toBeChecked(); expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
   });
 });

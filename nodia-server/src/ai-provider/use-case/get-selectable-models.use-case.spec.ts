@@ -39,7 +39,20 @@ describe('GetSelectableModelsUseCase', () => {
             key: 'mistral',
             is_active: true,
             mode: AiConnectionMode.API_KEY,
-            fields: { ocr_model: 'mistral-ocr-latest' },
+            fields: {
+              selected_model: 'mistral-large-latest',
+              ocr_model: 'mistral-ocr-latest',
+              available_models: [
+                {
+                  id: 'mistral-large-latest',
+                  name: 'mistral-large-latest',
+                  displayName: 'Mistral Large',
+                  description: 'Modelo de razonamiento',
+                  capabilities: ['text', 'json'],
+                  isRecommended: true,
+                },
+              ],
+            },
             api_keys: [
               {
                 id: 'k2',
@@ -156,7 +169,7 @@ describe('GetSelectableModelsUseCase', () => {
     expect(results[0].planType).toBe('token_plan');
   });
 
-  it('handles fallback when no providers are configured in the database', async () => {
+  it('returns empty array when no providers are configured in the database', async () => {
     (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
       data: [],
       meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
@@ -164,8 +177,6 @@ describe('GetSelectableModelsUseCase', () => {
 
     const results = await useCase.execute({});
 
-    expect(results.length).toBeGreaterThanOrEqual(2);
-    const geminiFallback = results.find((r) => r.provider === 'gemini');
-    expect(geminiFallback).toBeDefined();
+    expect(results).toHaveLength(0);
   });
 });

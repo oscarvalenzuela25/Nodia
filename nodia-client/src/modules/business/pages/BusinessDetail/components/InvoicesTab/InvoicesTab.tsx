@@ -1,3 +1,4 @@
+import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC, MouseEvent } from "react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
+  LinearProgress,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -43,8 +46,8 @@ import {
   useInvoices,
   useCreateInvoiceWithFile,
   useUpdateInvoice,
-  useProviders,
 } from "../../../../infrastructure/useServices";
+import { usePagedProviderOptions, usePagedInvoiceCodeOptions } from "../../../../infrastructure/usePagedOptions";
 import type { InvoiceEntity } from "../../../../infrastructure/types";
 import InvoiceModal, { type InvoiceFormSubmitData } from "./components/InvoiceModal";
 import InvoicePreviewModal from "./components/InvoicePreviewModal/InvoicePreviewModal";
@@ -92,6 +95,8 @@ export const InvoicesTab: FC<Props> = ({
   };
 
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceEntity | null>(null);
   const [previewInvoice, setPreviewInvoice] = useState<InvoiceEntity | null>(null);
@@ -105,7 +110,8 @@ export const InvoicesTab: FC<Props> = ({
         description: path,
       });
     } catch {
-      // ignore
+      sileo.error({ title: t("core:server_error_toast") });
+      // preserve the current view
     }
   };
 
@@ -130,34 +136,11 @@ export const InvoicesTab: FC<Props> = ({
   const [appliedFilterDateTo, setAppliedFilterDateTo] = useState<string>("");
   const [appliedFilterActive, setAppliedFilterActive] = useState<"active" | "inactive" | null>(null);
 
-  const { data: providersData } = useProviders({
-    q: { business_id_eq: businessId },
-    limit: 100,
-  });
-  const providers = providersData?.data ?? [];
-
-  // All invoices to populate distinct codes in filter
-  const { data: allInvoicesData } = useInvoices({
-    q: { business_id_eq: businessId },
-    all: true,
-  });
-
-  const codeOptions = useMemo(() => {
-    return Array.from(
-      new Set(
-        (allInvoicesData?.data ?? [])
-          .map((inv) => inv.code)
-          .filter(Boolean) as string[]
-      )
-    );
-  }, [allInvoicesData]);
-
-  const providerOptions = useMemo(() => {
-    return providers.map((p) => ({
-      value: p.id,
-      label: p.name,
-    }));
-  }, [providers]);
+  const providerQuery = usePagedProviderOptions(businessId);
+  const codeQuery = usePagedInvoiceCodeOptions(businessId);
+  const providers = providerQuery.providers;
+  const providerOptions = providerQuery.options;
+  const codeOptions = codeQuery.options;
 
   const statusOptions = useMemo(
     () => [
@@ -184,6 +167,7 @@ export const InvoicesTab: FC<Props> = ({
   ]);
 
   const handleApplyFilters = () => {
+    setPage(0);
     setAppliedFilterCodes(draftFilterCodes);
     setAppliedFilterProviders(draftFilterProviders);
     setAppliedFilterDateFrom(draftFilterDateFrom);
@@ -192,6 +176,7 @@ export const InvoicesTab: FC<Props> = ({
   };
 
   const handleClearFilters = () => {
+    setPage(0);
     setDraftFilterCodes([]);
     setDraftFilterProviders([]);
     setDraftFilterDateFrom("");
@@ -209,6 +194,8 @@ export const InvoicesTab: FC<Props> = ({
     data: invoicesData,
     isLoading,
     isFetching,
+    isError,
+    refetch,
   } = useInvoices({
     q: {
       business_id_eq: businessId,
@@ -226,9 +213,12 @@ export const InvoicesTab: FC<Props> = ({
           : undefined,
       s: "created_at desc",
     },
-    limit: 100,
+    page: page + 1,
+    limit: rowsPerPage,
   });
-  const invoices = invoicesData?.data ?? [];
+  const lastPage = Math.max(0, Math.ceil((invoicesData?.meta.total_items ?? 0) / rowsPerPage) - 1);
+  if (invoicesData && !isFetching && !isError && page > lastPage) setPage(lastPage);
+  const invoices = useMemo(() => invoicesData?.data ?? [], [invoicesData?.data]);
 
   const visibleInvoicesCount = invoices.length;
   const visibleTotalAmount = useMemo(() => {
@@ -237,7 +227,7 @@ export const InvoicesTab: FC<Props> = ({
 
   const createMutation = useCreateInvoiceWithFile();
   const updateMutation = useUpdateInvoice();
-  const isBusy = createMutation.isPending || updateMutation.isPending;
+  const isBusy = isLoading || isFetching || createMutation.isPending || updateMutation.isPending;
 
   const handleOpenCreate = () => {
     setSelectedInvoice(null);
@@ -317,6 +307,8 @@ export const InvoicesTab: FC<Props> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
+      {isFetching && !isLoading && <LinearProgress sx={{ height: 2 }} />}
+      <QueryErrorAlert isError={isError} isFetching={isFetching} onRetry={refetch} />
       {/* Filter Row */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Filter
@@ -330,6 +322,8 @@ export const InvoicesTab: FC<Props> = ({
             label={t("business:filter_invoice_code_label")}
             placeholder={t("business:filter_invoice_code_placeholder")}
             options={codeOptions}
+            onSearchChange={codeQuery.setSearch} hasMore={codeQuery.hasNextPage}
+            onLoadMore={() => { void codeQuery.fetchNextPage(); }} loadingOptions={codeQuery.isFetching}
             value={draftFilterCodes}
             onChange={setDraftFilterCodes}
             disabled={isLoading || isFetching}
@@ -339,6 +333,8 @@ export const InvoicesTab: FC<Props> = ({
             label={t("business:filter_provider_label")}
             placeholder={t("business:filter_provider_placeholder")}
             options={providerOptions}
+            onSearchChange={providerQuery.setSearch} hasMore={providerQuery.hasNextPage}
+            onLoadMore={() => { void providerQuery.fetchNextPage(); }} loadingOptions={providerQuery.isFetching}
             value={draftFilterProviders}
             onChange={setDraftFilterProviders}
             disabled={isLoading || isFetching}
@@ -475,7 +471,7 @@ export const InvoicesTab: FC<Props> = ({
           <Box sx={{ width: { xs: "100%", sm: 300 } }}>
             <InputSearch
               value={search}
-              onChange={(val: string) => setSearch(val)}
+              onChange={(val: string) => { setSearch(val); setPage(0); }}
               placeholder={t("business:search_invoices_placeholder")}
               fullWidth
             />
@@ -598,7 +594,7 @@ export const InvoicesTab: FC<Props> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {!isLoading && invoices.length === 0 ? (
+              {!isLoading && invoices.length === 0 && !isError ? (
                 <TableRow>
                   <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
@@ -722,6 +718,18 @@ export const InvoicesTab: FC<Props> = ({
           </Table>
         </TableContainer>
       </Skeleton>
+      <TablePagination
+        component="div"
+        count={invoicesData?.meta?.total_items ?? 0}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[25, 50, 100]}
+        onPageChange={(_event, nextPage) => setPage(nextPage)}
+        onRowsPerPageChange={(event) => { setRowsPerPage(Number(event.target.value)); setPage(0); }}
+        disabled={isLoading || isFetching || isBusy}
+        labelRowsPerPage={t("core:rows_per_page")}
+        labelDisplayedRows={({ from, to, count }) => t("core:displayed_rows", { from, to, count })}
+      />
 
       {/* 3-Dots Actions Menu */}
       <Menu
@@ -849,6 +857,7 @@ export const InvoicesTab: FC<Props> = ({
           onSubmit={handleFormSubmit}
           initialData={selectedInvoice}
           providers={providers}
+          providerSearch={{ onSearchChange: providerQuery.setSearch, onLoadMore: () => { void providerQuery.fetchNextPage(); }, hasMore: providerQuery.hasNextPage, loadingOptions: providerQuery.isFetching }}
           isSubmitting={isBusy}
         />
       )}

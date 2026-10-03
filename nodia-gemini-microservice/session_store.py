@@ -6,6 +6,7 @@ so writing that cookie separately avoids restarting from an expired seed.
 
 import json
 import os
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -28,12 +29,19 @@ def save_session(psid: str, psidts: str) -> None:
     if read_session() == (psid, psidts):
         return
     SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
-    temporary = SESSION_FILE.with_suffix(".tmp")
+    temporary = None
     try:
-        with temporary.open("w", encoding="utf-8") as stream:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=SESSION_FILE.parent,
+            prefix="cookies-", suffix=".tmp", delete=False,
+        ) as stream:
+            temporary = Path(stream.name)
             json.dump({"secure_1psid": psid, "secure_1psidts": psidts}, stream)
+            stream.flush()
+            os.fsync(stream.fileno())
         if os.name != "nt":
             temporary.chmod(0o600)
-        temporary.replace(SESSION_FILE)
+        os.replace(temporary, SESSION_FILE)
     finally:
-        temporary.unlink(missing_ok=True)
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)

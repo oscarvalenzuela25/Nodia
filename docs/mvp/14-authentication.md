@@ -129,6 +129,38 @@ Usar Node 24.20.0 o compatible con los `engines` del proyecto. Levantar PostgreS
 
 El correo debe existir en `users` y tener `is_active=true`. Para primera vinculación automática se aceptan Gmail y Google Workspace; otros correos de cuentas Google requieren verificación adicional futura.
 
+## QA remoto temporal con Cloudflare Quick Tunnel — 2026-10-03
+
+Se conserva el flujo Google ID token → Nodia Server y el control de `Origin` de ADR-004. Para QA, Vite puede servir frontend y API bajo un único origen público: navegador → túnel → Vite → Nodia Server local. Gemini sigue siendo interno y solo lo consume Server.
+
+Configuración del cliente (`.env`; también documentada en `.env.example`):
+
+```dotenv
+VITE_API_URL=/api/v1
+NODIA_API_PROXY_TARGET=http://localhost:3000
+```
+
+`NODIA_API_PROXY_TARGET` configura únicamente el proxy de desarrollo de Vite; no se expone al bundle ni se usa como URL de API del navegador. El proxy conserva `/api/v1`, `Origin`, Bearer, cookies y respuestas de error. El puerto 5174 es estricto para impedir que Vite cambie silenciosamente a otro puerto mientras el túnel apunta al anterior. Se conserva COOP `same-origin-allow-popups` para el popup Google.
+
+Secuencia:
+
+1. Arrancar Nodia Server y el cliente con `npm run dev`; iniciar el túnel con `cloudflared tunnel --url http://localhost:5174`.
+2. Copiar el origen HTTPS exacto emitido por cloudflared, sin ruta ni slash final.
+3. Añadir ese origen a **Orígenes JavaScript autorizados** del cliente OAuth web en Google Cloud. El flujo usa callback JavaScript; no requiere añadir `/auth/callback` ni cambiarlo a redirects. Si la configuración de Google exige usuarios de prueba, incluir la cuenta de QA.
+4. En Server, configurar `AUTH_ALLOWED_ORIGINS=http://localhost:5174,https://<host-asignado>.trycloudflare.com`, `AUTH_COOKIE_SAME_SITE=lax` y `AUTH_COOKIE_SECURE=true` para QA sobre HTTPS. El valor de host es un marcador: reemplazarlo por el real. Reiniciar Server y Vite tras modificar sus variables.
+5. Confirmar que el correo de QA ya existe como usuario activo en Nodia y tiene los módulos que se desean probar. Google no crea usuarios de Nodia automáticamente.
+6. Abrir el túnel y comprobar en Network que `POST /api/v1/auth/login` usa ese mismo origen público. Comprobar login, recarga, renovación y logout; no basta que cierre el popup.
+
+Cada nuevo hostname de Quick Tunnel requiere actualizar los dos registros de origen (Google y Server). No permitir `*` ni reescribir `Origin` al de localhost para evitar el guard. Una URL absoluta a localhost falla en equipos remotos; dos túneles con dominios distintos complican las cookies de renovación. No se modifica la configuración de despliegue permanente: cuando frontend y API se desplieguen separados, `VITE_API_URL` debe ser la URL HTTPS de la API y deben revisarse los ajustes de producción existentes.
+
+Diagnóstico: un mensaje de COOP en consola no demuestra por sí solo que falló el login. Si Google entrega `credential`, revisar la siguiente petición a Nodia. `403 auth:invalid_origin` señala la lista de orígenes; `403 auth:access_denied` señala el usuario/vínculo; fallo de red hacia localhost señala la URL de API. Si no llega a enviarse `POST /auth/login`, revisar el origen autorizado en Google y la comunicación del popup.
+
+Hechos confirmados al revisar el entorno: cliente apuntaba a `http://localhost:3000/api/v1`, Server autorizaba solo `http://localhost:5174`, cookie local Lax sin Secure y Vite no tenía proxy de API. El usuario reprodujo `POST /api/v1/auth/login` con `403 auth:invalid_origin` desde `AuthOriginGuard`; Google sí entrega la credencial y el backend rechaza el origen. También reportó un aviso COOP de `window.postMessage`, que no impidió esa petición. Se cambia la URL local del cliente a `/api/v1`; en el `.env` local de Server se añade el origen exacto proporcionado por el usuario y se activa Secure, conservando Lax y localhost. La configuración pasa el lector real `readAuthConfig`; el proceso debe reiniciarse para cargarla. El hostname efímero no se incorpora como default en código ni en `.env.example`. Este apartado no declara el login remoto completo verificado ni aprueba el documento.
+
+Verificación local: cuatro regresiones con un Vite real y un backend HTTP sintético comprueban ruta/body/origen del login, cookie HttpOnly/Secure y `no-store` de respuesta, cookie/Bearer de petición, propagación del rechazo 403 sin bypass de origen y COOP del HTML. La suite cliente completa pasa con 458 pruebas en 71 archivos; tipado, lint y build correctos. No se envían credenciales ni se inicia sesión contra Google en estas pruebas. En el túnel real el HTML devuelve 200 con COOP correcto y la API devuelve el mismo `403 auth:invalid_origin` que Server local para un body vacío, confirmando el transporte y la necesidad de reiniciar el proceso con la nueva lista de orígenes. No se modifica ninguna sesión ni se envía un ID token en esa comprobación.
+
+Referencias: [Cloudflare Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/), [Google: orígenes y COOP](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid), [Vite: proxy de desarrollo](https://vite.dev/config/server-options#server-proxy).
+
 ## Migración
 
 En una base existente de Nodia, ejecutar desde `nodia-server`:

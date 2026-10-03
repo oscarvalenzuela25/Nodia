@@ -1,8 +1,20 @@
+import i18n from "../../../../../../../../translate";
 import type {
   ExtractedInvoiceItem,
   ProductEntity,
   ProductLogEntity,
+  VerifyIaProviderItem,
 } from "../../../../../../infrastructure/types";
+
+export const normalizeVerifyProviders = (data: unknown): VerifyIaProviderItem[] => {
+  if (!Array.isArray(data)) return [];
+  return data.filter((item): item is VerifyIaProviderItem =>
+    item !== null && typeof item === "object" &&
+    typeof item.id === "string" && item.id.length > 0 &&
+    typeof item.key === "string" && typeof item.name === "string" &&
+    typeof item.is_active === "boolean" && typeof item.can_use_model === "boolean",
+  );
+};
 
 export interface HistoricalProductData {
   id?: string;
@@ -47,6 +59,8 @@ export const calculatePriceDiff = (
   if (
     historicalSale === undefined ||
     historicalSale === null ||
+    !Number.isFinite(historicalSale) ||
+    !Number.isFinite(currentSale) ||
     historicalSale <= 0 ||
     currentSale <= 0
   ) {
@@ -68,38 +82,54 @@ export const validateInvoiceRow = (
   const errors: string[] = [];
 
   if (!row.code || !row.code.trim()) {
-    errors.push("Código es requerido");
+    errors.push(i18n.t("business:invoice_validation_code"));
   }
   if (!row.name || !row.name.trim()) {
-    errors.push("Nombre es requerido");
+    errors.push(i18n.t("business:invoice_validation_name"));
   }
-  if (row.cost_price === undefined || isNaN(row.cost_price) || row.cost_price < 0) {
-    errors.push("Costo debe ser >= 0");
+  if (row.cost_price === undefined || !Number.isFinite(row.cost_price) || row.cost_price < 0) {
+    errors.push(i18n.t("business:invoice_validation_cost"));
   }
-  if (row.cost_price_tax === undefined || isNaN(row.cost_price_tax) || row.cost_price_tax < 0) {
-    errors.push("Impuesto debe ser >= 0");
+  if (row.cost_price_tax === undefined || !Number.isFinite(row.cost_price_tax) || row.cost_price_tax < 0) {
+    errors.push(i18n.t("business:invoice_validation_tax"));
   }
   if (
     row.profit_percentage === undefined ||
-    isNaN(row.profit_percentage) ||
+    !Number.isFinite(row.profit_percentage) ||
     row.profit_percentage < 0
   ) {
-    errors.push("Margen debe ser >= 0");
+    errors.push(i18n.t("business:invoice_validation_margin"));
   }
-  if (row.sale_price === undefined || isNaN(row.sale_price) || row.sale_price < 0) {
-    errors.push("Precio venta debe ser >= 0");
+  if (row.sale_price === undefined || !Number.isFinite(row.sale_price) || row.sale_price < 0) {
+    errors.push(i18n.t("business:invoice_validation_sale"));
   }
-  if (row.stock === undefined || isNaN(row.stock) || row.stock < 0) {
-    errors.push("Stock debe ser >= 0");
+  if (row.stock === undefined || !Number.isFinite(row.stock) || row.stock < 0) {
+    errors.push(i18n.t("business:invoice_validation_stock"));
   }
 
   return { errors, isValid: errors.length === 0 };
 };
 
+export const validateInvoiceRows = (rows: InvoiceProvisionalRow[]): InvoiceProvisionalRow[] => {
+  const counts = new Map<string, number>();
+  rows.forEach((row) => {
+    const code = row.code.trim().toLowerCase();
+    if (code) counts.set(code, (counts.get(code) ?? 0) + 1);
+  });
+  return rows.map((row) => {
+    const { errors } = validateInvoiceRow(row);
+    if ((counts.get(row.code.trim().toLowerCase()) ?? 0) > 1) {
+      errors.push(i18n.t("business:invoice_validation_duplicate_code"));
+    }
+    return { ...row, errors, isValid: errors.length === 0 };
+  });
+};
+
 export const mapExtractedItemsToRows = (
   items: ExtractedInvoiceItem[],
   existingProducts: ProductEntity[],
-  historicalLogs?: ProductLogEntity[]
+  historicalLogs?: ProductLogEntity[],
+  providerTax = 19
 ): InvoiceProvisionalRow[] => {
   const existingMap = new Map<string, ProductEntity>();
   existingProducts.forEach((p) => {
@@ -165,41 +195,22 @@ export const mapExtractedItemsToRows = (
       ? existing.profit_percentage
       : 30;
 
-    const hasCostPrice =
-      item.cost_price !== null &&
-      item.cost_price !== undefined &&
-      !isNaN(Number(item.cost_price));
-    const hasCostPriceTax =
-      item.cost_price_tax !== null &&
-      item.cost_price_tax !== undefined &&
-      !isNaN(Number(item.cost_price_tax));
-
-    let cost_price = 0;
-    let cost_price_tax = 0;
-
-    if (hasCostPrice && hasCostPriceTax) {
-      cost_price = Number(item.cost_price);
-      cost_price_tax = Number(item.cost_price_tax);
-    } else if (hasCostPriceTax) {
-      cost_price_tax = Number(item.cost_price_tax);
-      cost_price = 0;
-    } else if (hasCostPrice) {
-      cost_price = Number(item.cost_price);
-      cost_price_tax = 0;
-    } else if (item.unit_price !== null && item.unit_price !== undefined) {
-      cost_price = Number(item.unit_price) || 0;
-      cost_price_tax = Math.round(cost_price * 1.19);
+    const missingNet = item.cost_price === null || item.cost_price === undefined;
+    const missingGross = item.cost_price_tax === null || item.cost_price_tax === undefined;
+    let cost_price = missingNet ? Number.NaN : Number(item.cost_price);
+    let cost_price_tax = missingGross ? Number.NaN : Number(item.cost_price_tax);
+    const taxFactor = 1 + providerTax / 100;
+    if (missingNet && missingGross && item.unit_price !== null && item.unit_price !== undefined) {
+      cost_price = Number(item.unit_price);
+      cost_price_tax = Math.round(cost_price * taxFactor);
+    } else if (missingNet && Number.isFinite(cost_price_tax)) {
+      cost_price = Math.round(cost_price_tax / taxFactor);
+    } else if (missingGross && Number.isFinite(cost_price)) {
+      cost_price_tax = Math.round(cost_price * taxFactor);
     }
-
-    const baseCost =
-      cost_price_tax > 0
-        ? cost_price_tax
-        : cost_price > 0
-        ? Math.round(cost_price * 1.19)
-        : 0;
-    const sale_price =
-      baseCost > 0 ? Math.round(baseCost * (1 + profit_percentage / 100)) : 0;
-    const stock = Number(item.quantity) || 1;
+    const sale_price = Number.isFinite(cost_price_tax)
+      ? Math.round(cost_price_tax * (1 + profit_percentage / 100)) : Number.NaN;
+    const stock = item.quantity === null || item.quantity === undefined ? Number.NaN : Number(item.quantity);
 
     const priceDiff = calculatePriceDiff(sale_price, historicalProduct?.sale_price);
 
@@ -229,7 +240,7 @@ export const mapExtractedItemsToRows = (
       cost_price_tax: rowData.cost_price_tax ?? 0,
       profit_percentage: rowData.profit_percentage ?? 30,
       sale_price: rowData.sale_price ?? 0,
-      stock: rowData.stock ?? 1,
+      stock: rowData.stock ?? Number.NaN,
       is_active: true,
       isUpdate: Boolean(rowData.isUpdate),
       isLocked: false,
@@ -241,6 +252,6 @@ export const mapExtractedItemsToRows = (
   });
 
   // Strict sorting: Red/invalid rows ALWAYS at the top!
-  return rows.sort((a, b) => (a.isValid === b.isValid ? 0 : a.isValid ? 1 : -1));
+  return validateInvoiceRows(rows).sort((a, b) => (a.isValid === b.isValid ? 0 : a.isValid ? 1 : -1));
 };
 

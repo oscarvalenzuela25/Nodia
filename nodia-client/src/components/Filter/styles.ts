@@ -72,10 +72,24 @@ export const FilterActionsContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   width: "100%",
   gap: theme.spacing(2),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column-reverse",
+    gap: theme.spacing(1.5),
+    "& button": {
+      width: "100%",
+    },
+  },
 }));
 
 export const FilterRightActions = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  gap: theme.spacing(2), // 16px
+  gap: theme.spacing(2),
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    gap: theme.spacing(1.5),
+    "& button": {
+      flex: 1,
+    },
+  },
 }));

@@ -36,8 +36,8 @@ function renderRoute(path = "/settings/users") {
   return router;
 }
 
-beforeEach(() => { useAuthStore.getState().logout(); vi.clearAllMocks(); });
-afterEach(() => { useAuthStore.getState().logout(); mainInstance.defaults.adapter = originalAdapter; });
+beforeEach(() => { useAuthStore.getState().logout(); queryClient.clear(); vi.clearAllMocks(); });
+afterEach(() => { useAuthStore.getState().logout(); queryClient.clear(); mainInstance.defaults.adapter = originalAdapter; });
 
 describe("GuardStrict", () => {
   it("redirects a visitor to login without requesting context or page data", async () => {
@@ -117,5 +117,40 @@ describe("GuardStrict", () => {
       queryClient.setQueryData([...authorizationKeys.context(), "42"], { ...context, modules: [] });
     });
     expect(await screen.findByText("No access")).toBeInTheDocument();
+  });
+
+  it("guards /business and /settings/ai-providers using GuardStrict", async () => {
+    signIn();
+    const customContext = {
+      roles: [],
+      actions: [],
+      modules: [
+        {
+          module_group_key: "negocios",
+          translates: [],
+          modules: [{ key: "business", link: "/business", translates: [] }],
+        },
+        {
+          module_group_key: "settings",
+          translates: [],
+          modules: [{ key: "ai_providers", link: "/settings/ai-providers", translates: [] }],
+        },
+      ],
+    };
+
+    const businessRouter = createMemoryRouter([
+      { path: "/business", element: <GuardStrict modulePath="/business"><p>Business View</p></GuardStrict> },
+      { path: "/login", element: <p>Login page</p> },
+      { path: "/404", element: <p>No access</p> },
+    ], { initialEntries: ["/business"] });
+
+    mainInstance.defaults.adapter = async (config) => response(config, customContext);
+    render(
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={businessRouter} />
+      </QueryClientProvider>
+    );
+
+    expect(await screen.findByText("Business View")).toBeInTheDocument();
   });
 });

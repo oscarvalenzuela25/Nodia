@@ -1,5 +1,5 @@
 import { styled, alpha } from "@mui/material/styles";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography, FormControlLabel, Switch } from "@mui/material";
 
 export const CardContainer = styled(Paper)(({ theme }) => ({
   display: "flex",
@@ -207,3 +207,79 @@ export const SecondaryActionsGroup = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1),
 }));
+
+export const ModesPanelsRow = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "1fr",
+  gap: theme.spacing(1.5),
+  [theme.breakpoints.up("sm")]: {
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+  },
+}));
+
+export const ModePanelCard = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
+  padding: theme.spacing(1.5, 2),
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.background.default, 0.7),
+  border: `1px solid ${theme.palette.divider}`,
+}));
+
+export const ModePanelHeader = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 8,
+}));
+
+export const ModePanelBody = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
+}));
+
+export const SwitchWrapper = styled(Box)(({ theme }) => {
+  const borderColor = theme.palette.border?.default ?? theme.palette.divider;
+
+  return {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: theme.spacing(1, 1.5),
+    borderRadius:
+      typeof theme.shape.borderRadius === "number"
+        ? theme.shape.borderRadius * 1.5
+        : 8,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "rgba(255, 255, 255, 0.03)"
+        : "rgba(0, 0, 0, 0.02)",
+    border: `1px solid ${borderColor}`,
+  };
+});
+
+export const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
+  margin: 0,
+  width: "100%",
+  justifyContent: "space-between",
+  "& .MuiFormControlLabel-label": {
+    fontWeight: 600,
+    fontSize: "0.875rem",
+    color: theme.palette.text.primary,
+  },
+}));
+
+export const StyledSwitch = styled(Switch)(({ theme }) => ({
+  "& .MuiSwitch-switchBase.Mui-checked": {
+    color: theme.palette.success.main,
+    "&:hover": {
+      backgroundColor: "rgba(56, 142, 60, 0.08)",
+    },
+  },
+  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+    backgroundColor: theme.palette.success.main,
+  },
+}));
+

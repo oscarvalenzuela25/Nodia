@@ -431,4 +431,13 @@ describe("OverviewTab Component", () => {
     // Amount updates to $100.000 (from FAC-PAST)
     expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent("$100.000");
   });
+  it("does not present a partial page as inventory or monthly totals", async () => {
+    vi.mocked(businessServices.getProducts).mockResolvedValue({ data: mockProducts, meta: { total_items: 100, page: 1, limit: 50, total_pages: 2 } });
+    vi.mocked(businessServices.getInvoices).mockResolvedValue({ data: mockInvoices, meta: { total_items: 101, page: 1, limit: 50, total_pages: 3 } });
+    renderOverviewTab(<OverviewTab businessId="biz-123" />);
+    await waitFor(() => expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent("—"));
+    expect(screen.queryByTestId("kpi-stock-normal-chip")).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Los indicadores completos no están disponibles");
+    expect(vi.mocked(businessServices.getProducts).mock.calls.every(([params]) => params?.all !== true)).toBe(true);
+  });
 });

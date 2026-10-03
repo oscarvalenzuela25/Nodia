@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateInvoiceDto } from '../dto/create-invoice.dto.js';
 import { InvoiceService } from '../invoice.service.js';
 import { StorageService } from '../../common/storage/storage.service.js';
+import { randomUUID } from 'node:crypto';
+import { validateInvoiceFile } from '../invoice-file-validation.js';
 
 @Injectable()
 export class CreateInvoiceUseCase {
@@ -11,12 +13,9 @@ export class CreateInvoiceUseCase {
   ) {}
 
   async execute(dto: CreateInvoiceDto, file?: Express.Multer.File) {
-    if (file && file.buffer && file.buffer.length > 0) {
-      const sanitizedFilename = (file.originalname || 'document').replace(
-        /[^a-zA-Z0-9._-]/g,
-        '_',
-      );
-      const storageKey = `invoices/${dto.business_id}/${Date.now()}-${sanitizedFilename}`;
+    if (file) {
+      const extension = validateInvoiceFile(file);
+      const storageKey = `invoices/${dto.business_id}/${randomUUID()}.${extension}`;
       const pathStorage = await this.storageService.uploadFile(
         storageKey,
         file.buffer,

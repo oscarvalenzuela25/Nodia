@@ -18,10 +18,11 @@ export const configModuleEnvs = () => ({
   // Gemini Web microservice (browser session)
   GEMINI_MICROSERVICE_URL:
     process.env.GEMINI_MICROSERVICE_URL || 'http://127.0.0.1:8000',
+  GEMINI_SERVICE_TOKEN: process.env.GEMINI_SERVICE_TOKEN || '',
   // Mistral AI
   MISTRAL_API_KEY: process.env.MISTRAL_API_KEY || '',
-  MISTRAL_MODEL: process.env.MISTRAL_MODEL || 'open-mistral-nemo',
-  MISTRAL_OCR_MODEL: process.env.MISTRAL_OCR_MODEL || 'mistral-ocr-latest',
+  MISTRAL_MODEL: process.env.MISTRAL_MODEL || '',
+  MISTRAL_OCR_MODEL: process.env.MISTRAL_OCR_MODEL || '',
   // Cloudflare R2
   R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID || '',
   R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID || '',
@@ -42,7 +43,11 @@ export const hasR2Config = (): boolean => {
 };
 
 export const canUseGemini = (): boolean => {
-  return Boolean(envs.GEMINI_MICROSERVICE_URL && hasR2Config());
+  return Boolean(
+    envs.GEMINI_MICROSERVICE_URL &&
+    /^[0-9a-fA-F]{64}$/.test(envs.GEMINI_SERVICE_TOKEN) &&
+    hasR2Config(),
+  );
 };
 
 export const canUseMistral = (): boolean => {

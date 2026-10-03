@@ -17,8 +17,16 @@ export type RansackPredicate =
 
 /** Construye dinámicamente las claves campo_predicado para cualquier entidad T */
 export type RansackFilter<T> = {
-  [K in keyof T as `${string & K}_${RansackPredicate}`]?: any;
+  [K in keyof T as `${string & K}_${RansackPredicate}`]?: unknown;
 } & {
-  /** Ordenamiento: ej. "created_at desc" o ["name asc", "created_at desc"] */
-  s?: string | string[];
+  /** Ordenamiento: ej. "created_at desc" (una columna por solicitud) */
+  s?: string;
 };
+
+/** Public query surface; excludes arbitrary JSON, secrets and unregistered relations. */
+export type RansackFieldKind =
+  'text' | 'number' | 'boolean' | 'date' | 'bigint' | 'uuid';
+export type RansackField =
+  | RansackFieldKind
+  | { readonly kind: RansackFieldKind; readonly column: string };
+export type RansackPolicy = Readonly<Record<string, RansackField>>;

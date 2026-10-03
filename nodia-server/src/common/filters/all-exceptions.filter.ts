@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { GeminiUpstreamException } from '../ai/gemini-upstream.exception.js';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -16,6 +17,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    if (exception instanceof GeminiUpstreamException && exception.retryAfterSeconds !== null) {
+      response.setHeader('Retry-After', String(exception.retryAfterSeconds));
+    }
 
     const status =
       exception instanceof HttpException
@@ -51,19 +55,28 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (rateLimitFailure) {
       response.setHeader('Cache-Control', 'no-store');
     } else {
+      const details =
+        exception instanceof Error ? exception.stack || exception.message : String(exception);
       this.logger.error(
-        `[${request.method}] ${request.url} - Status: ${status} - Message: ${JSON.stringify(message)}`,
-        exception instanceof Error ? exception.stack : undefined,
+        `[${request.method}] ${request.path} - Status: ${status} - Type: ${error} - Details: ${details}`,
       );
+    }
+
+    if (status >= 500 && !(exception instanceof HttpException) && !rateLimitFailure) {
+      message = 'Internal Server Error';
+      error = 'Internal Server Error';
     }
 
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
-      path: request.url,
+      path: request.path,
       method: request.method,
       error,
       message,
+      ...(exception instanceof GeminiUpstreamException && typeof exceptionResponse === 'object'
+        ? { upstreamRequestId: (exceptionResponse as Record<string, unknown>).upstreamRequestId }
+        : {}),
     });
   }
 }

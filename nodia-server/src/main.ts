@@ -11,6 +11,18 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
 
 async function bootstrap() {
+  if (process.env.NODE_ENV === 'production') {
+    if (!/^[0-9a-fA-F]{64}$/.test(process.env.AI_SECRET_MASTER_KEY || '')) {
+      throw new Error(
+        'AI_SECRET_MASTER_KEY must contain 64 hexadecimal characters',
+      );
+    }
+    if (!/^[0-9a-fA-F]{64}$/.test(process.env.GEMINI_SERVICE_TOKEN || '')) {
+      throw new Error(
+        'GEMINI_SERVICE_TOKEN must contain 64 hexadecimal characters',
+      );
+    }
+  }
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableShutdownHooks();
@@ -29,7 +41,11 @@ async function bootstrap() {
 
   const authConfig = readAuthConfig(process.env);
   app.use(cookieParser());
-  app.enableCors({ origin: authConfig.origins, credentials: true, exposedHeaders: ['Retry-After'] });
+  app.enableCors({
+    origin: authConfig.origins,
+    credentials: true,
+    exposedHeaders: ['Retry-After'],
+  });
 
   // Enable global validation pipe
   app.useGlobalPipes(
@@ -46,21 +62,24 @@ async function bootstrap() {
   // Global request logging interceptor
   app.useGlobalInterceptors(new LoggingInterceptor());
 
-  // Swagger configuration
-  const config = new DocumentBuilder()
-    .setTitle('Documentation API')
-    .setDescription('API documentation')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/api/documentation', app, documentFactory);
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Documentation API')
+      .setDescription('API documentation')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('/api/documentation', app, documentFactory);
+  }
 
   await app.listen(envs.PORT);
 
   logger.log(`🚀 Application running on: http://localhost:${envs.PORT}/api/v1`);
-  logger.log(
-    `📚 Swagger documentation: http://localhost:${envs.PORT}/api/documentation`,
-  );
+  if (process.env.NODE_ENV !== 'production') {
+    logger.log(
+      `📚 Swagger documentation: http://localhost:${envs.PORT}/api/documentation`,
+    );
+  }
 }
 await bootstrap();

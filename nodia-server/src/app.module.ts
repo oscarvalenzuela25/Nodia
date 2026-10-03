@@ -23,6 +23,7 @@ import { RateLimitModule } from './rate-limit/rate-limit.module.js';
 import { RateLimitGuard } from './rate-limit/rate-limit.guard.js';
 import { UserRateLimitGuard } from './rate-limit/user-rate-limit.guard.js';
 import { AuthGuard } from './auth/auth.guard.js';
+import { ActionPermissionGuard } from './authorization/action-permission.guard.js';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AuthGuard } from './auth/auth.guard.js';
     { provide: APP_GUARD, useExisting: RateLimitGuard },
     { provide: APP_GUARD, useExisting: AuthGuard },
     { provide: APP_GUARD, useExisting: UserRateLimitGuard },
+    { provide: APP_GUARD, useExisting: ActionPermissionGuard },
   ],
 })
 export class AppModule {}

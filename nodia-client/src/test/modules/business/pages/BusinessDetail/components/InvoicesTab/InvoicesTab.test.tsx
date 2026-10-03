@@ -1,12 +1,13 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import InvoicesTab from "../../../../../../../modules/business/pages/BusinessDetail/components/InvoicesTab/InvoicesTab";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
 import type { InvoiceEntity, ProviderEntity } from "../../../../../../../modules/business/infrastructure/types";
 import { sileo } from "sileo";
+import { notifyHttpError } from "../../../../../../../config/httpFeedback";
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -387,4 +388,31 @@ describe("InvoicesTab Component", () => {
       ).toBeInTheDocument();
     });
   });
+  it("requests subsequent pages when the business has more than 100 invoices", async () => {
+    vi.mocked(businessServices.getInvoices).mockImplementation(async (params) => ({ data: [{ ...mockInvoices[0], id: `page-${params?.page ?? 1}`, code: `INVOICE-PAGE-${params?.page ?? 1}` }], meta: { total_items: 151, page: params?.page ?? 1, limit: params?.limit ?? 25, total_pages: 7 } }));
+    renderWithClient(<InvoicesTab businessId="biz-123" />);
+    expect(await screen.findByText("INVOICE-PAGE-1")).toBeInTheDocument();
+    const next = screen.getByRole("button", { name: /Go to next page/i });
+    await waitFor(() => expect(next).toBeEnabled()); await user.click(next);
+    expect(await screen.findByText("INVOICE-PAGE-2")).toBeInTheDocument();
+    expect(businessServices.getInvoices).toHaveBeenCalledWith(expect.objectContaining({ page: 2, limit: 25 }));
+    expect(vi.mocked(businessServices.getInvoices).mock.calls.every(([params]) => params?.all !== true)).toBe(true);
+  });
+  it("preserves invoices after a failed refetch and recovers with a single error toast", async () => {
+    const queryClient = new QueryClient({
+      queryCache: new QueryCache({ onError: notifyHttpError }),
+      defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    });
+    render(<QueryClientProvider client={queryClient}><InvoicesTab businessId="biz-123" /></QueryClientProvider>);
+    expect(await screen.findByText("FAC-MANUAL-001")).toBeInTheDocument();
+    vi.mocked(businessServices.getInvoices).mockRejectedValueOnce(new Error("unavailable"));
+    await act(async () => { await queryClient.invalidateQueries({ queryKey: ["invoices", "list"] }); });
+    expect(await screen.findByRole("button", { name: /Reintentar/i })).toBeInTheDocument();
+    expect(screen.getByText("FAC-MANUAL-001")).toBeInTheDocument();
+    expect(sileo.error).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole("button", { name: /Reintentar/i }));
+    await waitFor(() => expect(screen.queryByRole("button", { name: /Reintentar/i })).not.toBeInTheDocument());
+    expect(screen.getByText("FAC-MANUAL-001")).toBeInTheDocument();
+  });
+
 });

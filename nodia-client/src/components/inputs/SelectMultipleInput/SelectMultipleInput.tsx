@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import {
   Checkbox,
   Chip,
+  Button,
+  LinearProgress,
   IconButton,
   InputAdornment,
   ListItemText,
@@ -38,6 +40,7 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
   placeholder,
   searchPlaceholder,
   disabled = false,
+  onSearchChange, onLoadMore, hasMore = false, loadingOptions = false,
   required = false,
   error = false,
   helperText,
@@ -50,6 +53,7 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLabelCache, setSelectedLabelCache] = useState<Record<string, string>>({});
 
   const isOpen = Boolean(anchorEl);
 
@@ -63,26 +67,30 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
   }, [options]);
 
   const filteredOptions = useMemo(() => {
-    if (!searchTerm.trim()) return normalizedOptions;
+    if (onSearchChange || !searchTerm.trim()) return normalizedOptions;
     const term = searchTerm.toLowerCase().trim();
     return normalizedOptions.filter(
       (opt) =>
         opt.label.toLowerCase().includes(term) ||
         opt.value.toLowerCase().includes(term)
     );
-  }, [normalizedOptions, searchTerm]);
+  }, [normalizedOptions, searchTerm, onSearchChange]);
 
   const handleOpen = (e: MouseEvent<HTMLDivElement>) => {
-    if (disabled) return;
+    if (disabled || loadingOptions) return;
     setAnchorEl(e.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
     setSearchTerm("");
+    onSearchChange?.("");
   };
 
   const handleToggleOption = (optionValue: string) => {
+    if (disabled || loadingOptions) return;
+    const option = normalizedOptions.find((item) => item.value === optionValue);
+    if (option) setSelectedLabelCache((labels) => ({ ...labels, [option.value]: option.label }));
     const isSelected = value.includes(optionValue);
     if (isSelected) {
       onChange(value.filter((v) => v !== optionValue));
@@ -101,24 +109,11 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
   }, [filteredOptions, value]);
 
   const handleToggleSelectAll = () => {
-    if (disabled || filteredOptions.length === 0) return;
-
-    if (isAllSelected) {
-      if (!searchTerm.trim()) {
-        onChange([]);
-      } else {
-        const filteredValues = new Set(filteredOptions.map((opt) => opt.value));
-        onChange(value.filter((val) => !filteredValues.has(val)));
-      }
-    } else {
-      if (!searchTerm.trim()) {
-        onChange(normalizedOptions.map((opt) => opt.value));
-      } else {
-        const newSelected = new Set(value);
-        filteredOptions.forEach((opt) => newSelected.add(opt.value));
-        onChange(Array.from(newSelected));
-      }
-    }
+    if (disabled || loadingOptions || filteredOptions.length === 0) return;
+    setSelectedLabelCache((labels) => ({ ...labels, ...Object.fromEntries(filteredOptions.map((option) => [option.value, option.label])) }));
+    const visibleValues = new Set(filteredOptions.map((option) => option.value));
+    onChange(isAllSelected ? value.filter((selected) => !visibleValues.has(selected))
+      : Array.from(new Set([...value, ...visibleValues])));
   };
 
   const handleDeleteChip = (
@@ -132,10 +127,11 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
   const handleClearSearch = (e: MouseEvent<unknown>) => {
     e.stopPropagation();
     setSearchTerm("");
+    onSearchChange?.("");
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (disabled) return;
+    if (disabled || loadingOptions) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (!isOpen) {
@@ -147,10 +143,10 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
   };
 
   const selectedLabelsMap = useMemo(() => {
-    const map = new Map<string, string>();
+    const map = new Map<string, string>(Object.entries(selectedLabelCache));
     normalizedOptions.forEach((opt) => map.set(opt.value, opt.label));
     return map;
-  }, [normalizedOptions]);
+  }, [normalizedOptions, selectedLabelCache]);
 
   return (
     <SelectContainer fullWidth={fullWidth}>
@@ -165,15 +161,15 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
         id={inputId}
         role="button"
         aria-label={label}
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={disabled || loadingOptions ? -1 : 0}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-disabled={disabled}
+        aria-disabled={disabled || loadingOptions}
         onClick={handleOpen}
         onKeyDown={handleKeyDown}
         isOpen={isOpen}
         isError={error}
-        isDisabled={disabled}
+        isDisabled={disabled || loadingOptions}
       >
         <SelectedChipsContainer>
           {value.length === 0 ? (
@@ -191,7 +187,7 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
                   color="primary"
                   variant="outlined"
                   onDelete={
-                    disabled ? undefined : (e) => handleDeleteChip(e, val)
+                    disabled || loadingOptions ? undefined : (e) => handleDeleteChip(e, val)
                   }
                   sx={{
                     borderRadius: "6px",
@@ -249,7 +245,8 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
             fullWidth
             size="small"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            disabled={loadingOptions}
+            onChange={(e) => { setSearchTerm(e.target.value); onSearchChange?.(e.target.value); }}
             placeholder={searchPlaceholder ?? t("search", "Buscar...")}
             slotProps={{
               input: {
@@ -262,7 +259,7 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
                   <InputAdornment position="end">
                     <IconButton
                       size="small"
-                      aria-label="clear search"
+                      aria-label={t("clear_search")}
                       onClick={handleClearSearch}
                       edge="end"
                       sx={{ p: 0.5 }}
@@ -278,8 +275,8 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
             <Tooltip
               title={
                 isAllSelected
-                  ? t("deselect_all", "Deseleccionar todo")
-                  : t("select_all", "Seleccionar todo")
+                  ? t(onSearchChange ? "deselect_loaded" : "deselect_all")
+                  : t(onSearchChange ? "select_loaded" : "select_all")
               }
               arrow
               placement="top"
@@ -290,13 +287,13 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
                   checked={isAllSelected}
                   indeterminate={isSomeSelected && !isAllSelected}
                   onChange={handleToggleSelectAll}
-                  disabled={disabled || filteredOptions.length === 0}
+                  disabled={disabled || loadingOptions || filteredOptions.length === 0}
                   color="primary"
                   slotProps={{
                     input: {
                       "aria-label": isAllSelected
-                        ? t("deselect_all", "Deseleccionar todo")
-                        : t("select_all", "Seleccionar todo"),
+                        ? t(onSearchChange ? "deselect_loaded" : "deselect_all")
+                        : t(onSearchChange ? "select_loaded" : "select_all"),
                     },
                   }}
                   sx={{
@@ -309,6 +306,7 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
           )}
         </SearchContainer>
 
+        {loadingOptions && <LinearProgress sx={{ height: 2 }} />}
         <OptionsList role="listbox" aria-multiselectable="true">
           {filteredOptions.length === 0 ? (
             <Box sx={{ py: 2, px: 2, textAlign: "center" }}>
@@ -321,6 +319,7 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
               const isChecked = value.includes(opt.value);
               return (
                 <StyledMenuItem
+                  disabled={disabled || loadingOptions}
                   key={opt.value}
                   selected={isChecked}
                   onClick={() => handleToggleOption(opt.value)}
@@ -345,6 +344,7 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
             })
           )}
         </OptionsList>
+        {hasMore && <Button fullWidth disabled={loadingOptions || disabled} onClick={onLoadMore}>{t("load_more")}</Button>}
       </StyledPopover>
 
       {helperText && (

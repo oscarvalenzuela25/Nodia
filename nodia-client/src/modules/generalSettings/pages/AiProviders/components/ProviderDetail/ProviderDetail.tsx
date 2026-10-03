@@ -1,70 +1,62 @@
+import { getHttpErrorMessage } from "../../../../../../config/httpFeedback";
+import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC } from "react";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Alert,
   Box,
   Typography,
   Button,
-  IconButton,
   Tooltip,
   CircularProgress,
   Chip,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  TablePagination,
+  Checkbox,
+  FormControlLabel,
   LinearProgress,
+  ToggleButton,
+  ToggleButtonGroup,
   alpha,
 } from "@mui/material";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
-import DevicesOutlinedIcon from "@mui/icons-material/DevicesOutlined";
 import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
-import RadioButtonUncheckedOutlinedIcon from "@mui/icons-material/RadioButtonUncheckedOutlined";
-import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import SpeedOutlinedIcon from "@mui/icons-material/SpeedOutlined";
+import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
-import ConfirmDialog from "../../../../../../components/ConfirmDialog";
-import InputSearch from "../../../../../../components/inputs/InputSearch";
-import AiEventsTable from "../AiEventsTable";
-import TraceModal from "../TraceModal";
-import AddApiKeyModal from "./components/AddApiKeyModal";
+import AlertBanner from "../AlertBanner";
 import SyncModelsModal from "./components/SyncModelsModal";
 import {
   useAiProviders,
   useAiProvidersHealth,
   useSupportedAiProviders,
-  useEnabledWebAiProviders,
   useUpdateAiProvider,
   useSyncAiProviderModels,
-  useAiApiKeys,
-  useUpdateAiApiKey,
-  useDeleteAiApiKey,
-  useAiProviderEvents,
+  useGeminiEngines,
 } from "../../infrastructure/useServices";
 import type {
   SupportedModelDef,
-  AiApiKeyEntity,
-  AiProviderEventEntity,
 } from "../../infrastructure/types";
 import type { ProviderDetailProps } from "./types";
 import {
   DetailContainer,
-  TopNavigationBox,
+  TopHeaderPanel,
+  TopNavigationRow,
   BreadcrumbBox,
   BackLinkButton,
   BreadcrumbDivider,
   StatusPill,
   StatusDot,
+  StyledTabs,
+  StyledTab,
+  EmptyModesBox,
+  AgenticStatusCard,
   DetailPanel,
   PanelHeader,
   PanelTitle,
@@ -77,35 +69,30 @@ import {
   MetricColumn,
   MetricTitle,
   MetricVal,
-  ModeSectionGrid,
-  ModeCardPaper,
   WebSessionBanner,
   CloudBridgeBox,
   SwitchWrapper,
   StyledFormControlLabel,
   StyledSwitch,
-  TableTopBar,
-  StyledTableContainer,
-  StyledTableHead,
-  HeadCell,
-  BodyRow,
-  BodyCell,
-  EmptyBox,
+  QuotaGrid,
+  QuotaCard,
+  QuotaHeader,
 } from "./styles";
 
 const ProviderDetail: FC<ProviderDetailProps> = ({
-  providerKey,
+  providerId,
   onBack,
   onRenewSession,
   onConfigure,
 }) => {
   const { t } = useTranslation(["ai_providers", "core"]);
-  const logsRef = useRef<HTMLDivElement | null>(null);
+  const queryClient = useQueryClient();
 
   // Queries
   const {
     data: providersResponse,
     isLoading: isLoadingProviders,
+    isError: providersError,
     isFetching: isFetchingProviders,
     refetch: refetchProviders,
   } = useAiProviders({
@@ -114,24 +101,118 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const {
     data: healthResponse,
     isLoading: isLoadingHealth,
+    isError: healthError,
     isFetching: isFetchingHealth,
     refetch: refetchHealth,
   } = useAiProvidersHealth();
   const { data: supportedProviders = [] } = useSupportedAiProviders();
-  const { data: webProvidersData } = useEnabledWebAiProviders();
+  const currentDbProvider = useMemo(() =>
+    (providersResponse?.data ?? []).find((p) => p.id === providerId), [providersResponse?.data, providerId]);
+  const currentHealthProvider = useMemo(() =>
+    (healthResponse?.providers ?? []).find((p) => p.id === providerId), [healthResponse?.providers, providerId]);
+  const providerKey = currentDbProvider?.catalog?.key ?? currentDbProvider?.key ?? currentHealthProvider?.key ?? "";
+  const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines, refetch: refetchGeminiEngines } = useGeminiEngines({
+    enabled: providerKey.toLowerCase() === "gemini",
+  });
 
-  // Selected Provider data
-  const currentDbProvider = useMemo(() => {
-    return (providersResponse?.data || []).find(
-      (p) => p.key.toLowerCase() === providerKey.toLowerCase()
-    );
-  }, [providersResponse?.data, providerKey]);
+  const useTokenPlanWeb = Boolean(
+    currentDbProvider?.use_token_plan_web !== undefined
+      ? currentDbProvider.use_token_plan_web
+      : currentHealthProvider?.use_token_plan_web !== undefined
+      ? currentHealthProvider.use_token_plan_web
+      : currentDbProvider?.mode === "web_session"
+  );
+  const useTokenPlanAgentic = Boolean(
+    currentDbProvider?.use_token_plan_agentic !== undefined
+      ? currentDbProvider.use_token_plan_agentic
+      : currentHealthProvider?.use_token_plan_agentic !== undefined
+      ? currentHealthProvider.use_token_plan_agentic
+      : currentDbProvider?.default_mode === "token_plan_agentic"
+  );
 
-  const currentHealthProvider = useMemo(() => {
-    return (healthResponse?.providers || []).find(
-      (p) => p.key.toLowerCase() === providerKey.toLowerCase()
+  const currentProviderAlerts = useMemo(() => {
+    const alerts = (healthResponse?.alerts || []).filter(
+      (a) => a.provider.toLowerCase() === providerKey.toLowerCase()
     );
-  }, [healthResponse?.providers, providerKey]);
+
+    if (providerKey.toLowerCase() === "gemini" && useTokenPlanWeb) {
+      if (geminiEnginesData?.web?.available !== true || geminiEnginesData?.web?.authenticated !== true) {
+        const hasWebAlert = alerts.some(
+          (a) => a.id.includes("web-expired") || a.actionType === "renew_session"
+        );
+        if (!hasWebAlert && (currentDbProvider || currentHealthProvider)) {
+          const providerName =
+            currentDbProvider?.name || currentHealthProvider?.name || "Google Gemini";
+          const providerId = currentDbProvider?.id || currentHealthProvider?.id || "gemini";
+          alerts.unshift({
+            id: `alert-${providerId}-web-expired`,
+            provider: "gemini",
+            type: "incident",
+            severity: "error",
+            title: t("ai_providers:alerts.web_expired_title", { provider: providerName }),
+            message:
+              t("ai_providers:alerts.web_expired_message"),
+            timeAgo: t("ai_providers:alerts.recent"),
+            actionType: "renew_session",
+            actionLabel: t("ai_providers:alerts.renew_session_now", "Renovar Sesión Ahora"),
+          });
+        }
+      }
+    }
+
+    return alerts;
+  }, [
+    healthResponse?.alerts,
+    providerKey,
+    useTokenPlanWeb,
+    geminiEnginesData,
+    currentDbProvider,
+    currentHealthProvider,
+    t,
+  ]);
+
+  type ModeTabKey = "token_plan_web" | "token_plan_agentic";
+
+  interface ModeTabItem {
+    key: ModeTabKey;
+    label: string;
+    icon: React.ReactElement;
+  }
+
+  const availableTabs = useMemo(() => {
+    const tabs: ModeTabItem[] = [];
+    if (useTokenPlanWeb) {
+      tabs.push({
+        key: "token_plan_web",
+        label: t("ai_providers:detail.tab_token_plan_web", "Token Plan (Web)"),
+        icon: <LanguageOutlinedIcon fontSize="small" />,
+      });
+    }
+    if (useTokenPlanAgentic) {
+      tabs.push({
+        key: "token_plan_agentic",
+        label: t(
+          "ai_providers:detail.tab_token_plan_agentic",
+          "Token Plan (Agentic)"
+        ),
+        icon: <PsychologyOutlinedIcon fontSize="small" />,
+      });
+    }
+    return tabs;
+  }, [useTokenPlanWeb, useTokenPlanAgentic, t]);
+
+  const [selectedTab, setSelectedTab] = useState<ModeTabKey | null>(null);
+
+  const activeTab = useMemo<ModeTabKey | "">(() => {
+    if (selectedTab && availableTabs.some((tab) => tab.key === selectedTab)) {
+      return selectedTab;
+    }
+    const defaultMode = currentDbProvider?.default_mode as ModeTabKey | undefined;
+    if (defaultMode && availableTabs.some((tab) => tab.key === defaultMode)) {
+      return defaultMode;
+    }
+    return availableTabs[0]?.key || "";
+  }, [selectedTab, availableTabs, currentDbProvider?.default_mode]);
 
   const supportedDef = useMemo(() => {
     return supportedProviders.find(
@@ -139,147 +220,96 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     );
   }, [supportedProviders, providerKey]);
 
-  const enabledWebProviders = useMemo(() => {
-    return (webProvidersData?.enabled_providers || []).map((p: string) =>
-      p.toLowerCase()
-    );
-  }, [webProvidersData?.enabled_providers]);
-
-  const isWebSupported = Boolean(
-    providerKey && enabledWebProviders.includes(providerKey.toLowerCase())
-  );
-
   const providerName =
     currentDbProvider?.name ||
     currentHealthProvider?.name ||
     supportedDef?.name ||
     providerKey.charAt(0).toUpperCase() + providerKey.slice(1);
 
-  const currentMode =
-    currentDbProvider?.mode ||
-    currentHealthProvider?.mode ||
-    (isWebSupported ? "web_session" : "api_key");
+  // Mode-scoped fields (each mode has its own models and configuration)
+  const providerFields = currentDbProvider?.fields;
+  const modeFields = useMemo(() => {
+    if (!activeTab || !providerFields) return {};
+    return (providerFields[activeTab] as Record<string, unknown>) || {};
+  }, [providerFields, activeTab]);
 
-  // Models list (dynamic, strictly from DB fields)
+  // Models list strictly scoped to active mode
   const availableModels: SupportedModelDef[] = useMemo(() => {
-    if (
-      currentDbProvider?.fields?.available_models &&
-      Array.isArray(currentDbProvider.fields.available_models)
-    ) {
-      return currentDbProvider.fields.available_models;
+    if (modeFields?.available_models && Array.isArray(modeFields.available_models)) {
+      return modeFields.available_models as SupportedModelDef[];
+    }
+    // Fallback to root ONLY if provider has no mode-scoped configs at all (legacy migration)
+    const hasAnyModeScoped =
+      Boolean(providerFields?.token_plan_agentic) ||
+      Boolean(providerFields?.token_plan_web) ||
+      Boolean(providerFields?.api_key);
+    if (!hasAnyModeScoped && Array.isArray(providerFields?.available_models)) {
+      return providerFields.available_models as SupportedModelDef[];
     }
     return [];
-  }, [currentDbProvider]);
+  }, [modeFields, providerFields]);
 
-  // Active Model
-  const [selectedModel, setSelectedModel] = useState<string>("");
+  // Active Model strictly scoped to active mode
+  const activeDbModel = useMemo(() => {
+    if (typeof modeFields?.selected_model === "string" && modeFields.selected_model) {
+      return modeFields.selected_model;
+    }
+    const hasAnyModeScoped =
+      Boolean(providerFields?.token_plan_agentic) ||
+      Boolean(providerFields?.token_plan_web) ||
+      Boolean(providerFields?.api_key);
+    if (!hasAnyModeScoped && typeof providerFields?.selected_model === "string") {
+      return providerFields.selected_model;
+    }
+    return "";
+  }, [modeFields, providerFields]);
 
-  useEffect(() => {
-    const activeModel = currentDbProvider?.fields?.selected_model || "";
-    setSelectedModel(activeModel);
-  }, [currentDbProvider]);
+  const [tabModelOverride, setTabModelOverride] = useState<{
+    tab: string;
+    model: string | null;
+  }>({
+    tab: activeTab,
+    model: null,
+  });
+
+  const localSelectedModel =
+    tabModelOverride.tab === activeTab ? tabModelOverride.model : null;
+  const setLocalSelectedModel = (model: string | null) => {
+    setTabModelOverride({ tab: activeTab, model });
+  };
+  const selectedModel = localSelectedModel ?? activeDbModel;
 
   // Extended Thinking capability detection
   const activeModelDef = useMemo(() => {
     return availableModels.find((m) => m.id === selectedModel);
   }, [availableModels, selectedModel]);
 
-  const supportsReasoning = Boolean(
-    activeModelDef?.capabilities?.includes("reasoning") ||
-      activeModelDef?.id?.toLowerCase().includes("thinking") ||
-      (providerKey.toLowerCase() === "gemini" &&
-        !activeModelDef?.id?.toLowerCase().includes("lite"))
-  );
+  const supportsReasoning = activeModelDef?.capabilities?.includes("reasoning") === true;
 
   const extendedThinkingEnabled = Boolean(
-    currentDbProvider?.fields?.enable_extended_thinking
+    modeFields?.enable_extended_thinking ??
+      currentDbProvider?.fields?.enable_extended_thinking
   );
 
-  // Informative OCR focus model
+  // Informative OCR focus model scoped to active mode
   const ocrFocusedModelId =
-    currentDbProvider?.fields?.ocr_focus_model ||
-    currentDbProvider?.fields?.ocr_model ||
+    (modeFields?.ocr_focus_model as string) ||
+    (modeFields?.ocr_model as string) ||
+    (currentDbProvider?.fields?.ocr_focus_model as string) ||
+    (currentDbProvider?.fields?.ocr_model as string) ||
     "";
 
   // Auto-reconnect switch state
-  const [autoReconnect, setAutoReconnect] = useState(true);
-
-  useEffect(() => {
-    if (typeof currentDbProvider?.fields?.auto_reconnect === "boolean") {
-      setAutoReconnect(currentDbProvider.fields.auto_reconnect);
-    }
-  }, [currentDbProvider]);
-
-  // API Keys Query
-  const {
-    data: apiKeysResponse,
-    isLoading: isLoadingApiKeys,
-    isFetching: isFetchingApiKeys,
-    refetch: refetchApiKeys,
-  } = useAiApiKeys(
-    currentDbProvider?.id
-      ? {
-          all: true,
-          q: { provider_id_eq: currentDbProvider.id },
-        }
-      : undefined
-  );
-  const apiKeysList = apiKeysResponse?.data || [];
-
-  // API Keys Table State (Search & Pagination)
-  const [apiKeySearch, setApiKeySearch] = useState("");
-  const [apiKeyPage, setApiKeyPage] = useState(0);
-  const [apiKeyLimit, setApiKeyLimit] = useState(10);
-
-  const filteredApiKeys = useMemo(() => {
-    if (!apiKeySearch.trim()) return apiKeysList;
-    const term = apiKeySearch.toLowerCase().trim();
-    return apiKeysList.filter(
-      (k) =>
-        k.label?.toLowerCase().includes(term) ||
-        k.display_hint?.toLowerCase().includes(term)
-    );
-  }, [apiKeysList, apiKeySearch]);
-
-  const paginatedApiKeys = useMemo(() => {
-    const start = apiKeyPage * apiKeyLimit;
-    return filteredApiKeys.slice(start, start + apiKeyLimit);
-  }, [filteredApiKeys, apiKeyPage, apiKeyLimit]);
-
-  // Events Table Query
-  const [eventPage, setEventPage] = useState(0);
-  const [eventLimit, setEventLimit] = useState(10);
-  const [eventSearch, setEventSearch] = useState("");
-  const [selectedTraceEvent, setSelectedTraceEvent] =
-    useState<AiProviderEventEntity | null>(null);
-
-  const eventQueryParams = useMemo(() => {
-    const q: Record<string, any> = {};
-    if (currentDbProvider?.id) {
-      q.provider_id_eq = currentDbProvider.id;
-    }
-    if (eventSearch.trim()) {
-      q.message_or_event_type_cont = eventSearch.trim();
-    }
-    return {
-      page: eventPage + 1,
-      limit: eventLimit,
-      includes: true,
-      q,
-    };
-  }, [currentDbProvider?.id, eventSearch, eventPage, eventLimit]);
-
-  const {
-    data: eventsResponse,
-    isLoading: isLoadingEvents,
-    isFetching: isFetchingEvents,
-  } = useAiProviderEvents(eventQueryParams);
+  const dbAutoReconnect =
+    typeof currentDbProvider?.fields?.auto_reconnect === "boolean"
+      ? currentDbProvider.fields.auto_reconnect
+      : true;
+  const [localAutoReconnect, setLocalAutoReconnect] = useState<boolean | null>(null);
+  const autoReconnect = localAutoReconnect ?? dbAutoReconnect;
 
   // Mutations
   const updateProviderMutation = useUpdateAiProvider();
   const syncModelsMutation = useSyncAiProviderModels();
-  const updateApiKeyMutation = useUpdateAiApiKey();
-  const deleteApiKeyMutation = useDeleteAiApiKey();
 
   const isInitialLoading = !currentDbProvider && (isLoadingProviders || isLoadingHealth);
   const isSoftLoading = (isFetchingHealth || isFetchingProviders) && !isInitialLoading;
@@ -287,18 +317,22 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     isInitialLoading ||
     isFetchingHealth ||
     isFetchingProviders ||
+    isFetchingEngines ||
     updateProviderMutation.isPending ||
     syncModelsMutation.isPending;
 
   // Modals
-  const [isAddKeyModalOpen, setIsAddKeyModalOpen] = useState(false);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
-  const [keyToDelete, setKeyToDelete] = useState<AiApiKeyEntity | null>(null);
 
   // Actions
   const handleModelSelect = async (modelId: string) => {
     if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
-    setSelectedModel(modelId);
+    setLocalSelectedModel(modelId);
+
+    const modeKey = activeTab || currentDbProvider.default_mode || null;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
+    const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
 
     try {
       await updateProviderMutation.mutateAsync({
@@ -306,7 +340,11 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         data: {
           fields: {
             ...currentDbProvider.fields,
-            selected_model: modelId,
+            [modeKey]: {
+              ...currentModeData,
+              selected_model: modelId,
+            },
+            ...(isDefaultMode ? { selected_model: modelId } : {}),
           },
         },
       });
@@ -318,26 +356,38 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       });
       refetchProviders();
       refetchHealth();
-    } catch {
+    } catch (error) {
+      setLocalSelectedModel(null);
       sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
+        title: t("core:server_error_toast"),
+        description: getHttpErrorMessage(error),
       });
     }
   };
 
   const handleOpenSyncModal = () => {
+    if (!canSyncModels) return;
     setIsSyncModalOpen(true);
   };
 
   const handleToggleExtendedThinking = async (checked: boolean) => {
     if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
+    const modeKey = activeTab || currentDbProvider.default_mode || null;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
+    const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
+
     try {
       await updateProviderMutation.mutateAsync({
         id: currentDbProvider.id,
         data: {
           fields: {
             ...currentDbProvider.fields,
-            enable_extended_thinking: checked,
+            [modeKey]: {
+              ...currentModeData,
+              enable_extended_thinking: checked,
+            },
+            ...(isDefaultMode ? { enable_extended_thinking: checked } : {}),
           },
         },
       });
@@ -348,9 +398,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         ),
       });
       refetchProviders();
-    } catch {
+    } catch (error) {
       sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
+        title: t("core:server_error_toast"),
+        description: getHttpErrorMessage(error),
       });
     }
   };
@@ -358,13 +409,23 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const handleToggleOcrFocus = async (modelId: string) => {
     if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
     const newFocus = ocrFocusedModelId === modelId ? null : modelId;
+    const modeKey = activeTab || currentDbProvider.default_mode || null;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
+    const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
+
     try {
       await updateProviderMutation.mutateAsync({
         id: currentDbProvider.id,
         data: {
           fields: {
             ...currentDbProvider.fields,
-            ocr_focus_model: newFocus,
+            [modeKey]: {
+              ...currentModeData,
+              ocr_focus_model: newFocus,
+              ocr_model: newFocus,
+            },
+            ...(isDefaultMode ? { ocr_focus_model: newFocus, ocr_model: newFocus } : {}),
           },
         },
       });
@@ -375,16 +436,62 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         ),
       });
       refetchProviders();
-    } catch {
+    } catch (error) {
       sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
+        title: t("core:server_error_toast"),
+        description: getHttpErrorMessage(error),
+      });
+    }
+  };
+
+  const handleSetModelThinkingLevel = async (
+    modelId: string,
+    level: "low" | "medium" | "high"
+  ) => {
+    if (!currentDbProvider?.id || updateProviderMutation.isPending || !level) return;
+    const modeKey = activeTab || currentDbProvider.default_mode || null;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
+    const currentLevels = (currentModeData.thinking_levels as Record<string, string>) || {};
+    const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
+
+    try {
+      await updateProviderMutation.mutateAsync({
+        id: currentDbProvider.id,
+        data: {
+          fields: {
+            ...currentDbProvider.fields,
+            [modeKey]: {
+              ...currentModeData,
+              thinking_levels: {
+                ...currentLevels,
+                [modelId]: level,
+              },
+              ...(modelId === selectedModel ? { thinking_level: level } : {}),
+            },
+            ...(isDefaultMode && modelId === selectedModel ? { thinking_level: level } : {}),
+          },
+        },
+      });
+      sileo.success({
+        title: t(
+          "ai_providers:detail.thinking_level_saved",
+          "Nivel de razonamiento actualizado correctamente"
+        ),
+      });
+      refetchProviders();
+    } catch (error) {
+      sileo.error({
+        title: t("core:server_error_toast"),
+        description: getHttpErrorMessage(error),
       });
     }
   };
 
   const handleToggleAutoReconnect = async (checked: boolean) => {
-    setAutoReconnect(checked);
     if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
+    const previous = autoReconnect;
+    setLocalAutoReconnect(checked);
 
     try {
       await updateProviderMutation.mutateAsync({
@@ -403,102 +510,58 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         ),
       });
       refetchProviders();
-    } catch {
+    } catch (error) {
+      setLocalAutoReconnect(previous);
       sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
+        title: t("core:server_error_toast"),
+        description: getHttpErrorMessage(error),
       });
     }
   };
 
-  const handleSwitchMode = async (newMode: "api_key" | "web_session") => {
-    if (
-      !currentDbProvider?.id ||
-      newMode === currentMode ||
-      updateProviderMutation.isPending
-    )
-      return;
-    if (newMode === "web_session" && !isWebSupported) return;
 
-    try {
-      await updateProviderMutation.mutateAsync({
-        id: currentDbProvider.id,
-        data: {
-          mode: newMode,
-        },
-      });
-      sileo.success({
-        title: t("ai_providers:detail.mode_switched", {
-          mode:
-            newMode === "web_session"
-              ? "Sesión Web (Navegador Remoto)"
-              : "API Key (Rotativa)",
-        }),
-      });
-      refetchProviders();
-      refetchHealth();
-    } catch {
-      sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
-      });
-    }
-  };
-
-  const handleMakeKeyPrimary = async (key: AiApiKeyEntity) => {
-    if (updateApiKeyMutation.isPending) return;
-    try {
-      await updateApiKeyMutation.mutateAsync({
-        id: key.id,
-        payload: {
-          is_selected: true,
-        },
-      });
-      sileo.success({
-        title: t(
-          "ai_providers:detail.key_selected_success",
-          "Clave principal actualizada"
-        ),
-      });
-      refetchApiKeys();
-      refetchHealth();
-    } catch {
-      sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
-      });
-    }
-  };
-
-  const handleDeleteKey = async () => {
-    if (!keyToDelete || deleteApiKeyMutation.isPending) return;
-    try {
-      await deleteApiKeyMutation.mutateAsync(keyToDelete.id);
-      sileo.success({
-        title: t(
-          "ai_providers:detail.key_deleted_success",
-          "Clave de API eliminada correctamente"
-        ),
-      });
-      setKeyToDelete(null);
-      refetchApiKeys();
-      refetchHealth();
-    } catch {
-      sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
-      });
+  const handleToggleModeDefault = async (mode: ModeTabKey) => {
+    if (currentDbProvider?.id) {
+      try {
+        await updateProviderMutation.mutateAsync({
+          id: currentDbProvider.id,
+          data: { default_mode: mode },
+        });
+        sileo.success({
+          title: t("ai_providers:default_mode_saved", "Modo predeterminado actualizado"),
+        });
+      } catch (err: unknown) {
+        const error = err as { response?: { data?: { message?: string } } };
+        sileo.error({
+          title: t("core:server_error_toast"),
+          description: error?.response?.data?.message,
+        });
+      }
     }
   };
 
   const handleVerify = async () => {
     try {
-      await refetchHealth();
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] }),
+        queryClient.invalidateQueries({ queryKey: ["gemini-engines"] }),
+        queryClient.invalidateQueries({ queryKey: ["ai-providers"] }),
+      ]);
+      await Promise.all([
+        refetchHealth(),
+        refetchProviders(),
+        ...(providerKey.toLowerCase() === "gemini" ? [refetchGeminiEngines()] : []),
+      ]);
       sileo.success({
         title: t(
           "ai_providers:notifications.verify_success",
           "Estado de proveedores de IA actualizado"
         ),
       });
-    } catch {
+    } catch (error) {
       sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor"),
+        title: t("core:server_error_toast"),
+        description: getHttpErrorMessage(error),
       });
     }
   };
@@ -513,103 +576,419 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       ? t("ai_providers:detail.status_degraded", "Degradado")
       : t("ai_providers:detail.status_unconfigured", "Sin Configurar");
 
+  const isWebSessionActive = useMemo(() => {
+    if (statusType === "expired" || statusType === "unconfigured") {
+      return false;
+    }
+    const hasWebExpiredAlert = currentProviderAlerts.some(
+      (a) =>
+        a.id.includes("web-expired") ||
+        a.title.includes("SESIÓN WEB") ||
+        a.actionType === "renew_session"
+    );
+    if (hasWebExpiredAlert) {
+      return false;
+    }
+    if (providerKey.toLowerCase() === "gemini") {
+      if (geminiEnginesData?.web?.available !== true || geminiEnginesData?.web?.authenticated !== true) {
+        return false;
+      }
+    }
+    return true;
+  }, [statusType, currentProviderAlerts, providerKey, geminiEnginesData?.web?.authenticated, geminiEnginesData?.web?.available]);
+
+  // Operational check:
+  // Each subscription mode must have an explicitly operational session.
+  // Token plan agentic mode requires agentic environment available.
+  const isModeOperational = activeTab === "token_plan_web" ? isWebSessionActive
+    : activeTab === "token_plan_agentic" && geminiEnginesData?.agentic?.available === true
+      && geminiEnginesData?.agentic?.authenticated === true;
+
+  const canSyncModels =
+    Boolean(currentDbProvider?.id) && isModeOperational && !isBusy;
+
+  const syncDisabledReason = useMemo(() => {
+    if (isModeOperational) return "";
+    if (activeTab === "token_plan_web") {
+      if (!isWebSessionActive) {
+        return t(
+          "ai_providers:detail.sync_disabled_unauthenticated",
+          "El token del plan web no está autenticado o la sesión expiró. Debe autenticarse primero en el navegador remoto antes de sincronizar modelos."
+        );
+      }
+      return t(
+        "ai_providers:detail.sync_requires_operational",
+        "Para actualizar modelos, la sesión web debe estar operativa. Inicia sesión en el navegador remoto primero."
+      );
+    }
+    if (activeTab === "token_plan_agentic") {
+      return t(
+        "ai_providers:detail.agentic_desc_inactive",
+        "No se detectó un entorno activo de Antigravity en la máquina local o el servicio no está corriendo."
+      );
+    }
+    return t(
+      "ai_providers:detail.sync_disabled_generic",
+      "El proveedor no se encuentra operativo para sincronizar modelos. Verifique el estado de conexión."
+    );
+  }, [isModeOperational, activeTab, isWebSessionActive, t]);
+
   return (
     <DetailContainer>
-      {/* TOP NAVIGATION BREADCRUMB */}
-      <TopNavigationBox>
-        <BreadcrumbBox>
-          <BackLinkButton
-            startIcon={<ArrowBackOutlinedIcon />}
-            onClick={onBack}
-          >
-            {t("ai_providers:detail.back_to_providers", "Volver a Proveedores")}
-          </BackLinkButton>
-          <BreadcrumbDivider>|</BreadcrumbDivider>
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {t("ai_providers:detail.active_provider", "Proveedor Activo")}:
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <StatusDot
-              color={
-                statusType === "healthy"
-                  ? "#10b981"
-                  : statusType === "expired"
-                  ? "#f59e0b"
-                  : "#64748b"
-              }
-            />
-            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-              {providerName}
+      <QueryErrorAlert isError={providersError || healthError || enginesError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth(), refetchGeminiEngines()])} />
+      {/* UNIFIED TOP HEADER PANEL */}
+      <TopHeaderPanel elevation={0}>
+        <TopNavigationRow>
+          <BreadcrumbBox>
+            <BackLinkButton
+              startIcon={<ArrowBackOutlinedIcon />}
+              onClick={onBack}
+            >
+              {t("ai_providers:detail.back_to_providers", "Volver a Proveedores")}
+            </BackLinkButton>
+            <BreadcrumbDivider>|</BreadcrumbDivider>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              {t("ai_providers:detail.active_provider", "Proveedor Activo")}:
             </Typography>
-          </Box>
-          <StatusPill statusType={statusType}>
-            {statusLabel}
-          </StatusPill>
-        </BreadcrumbBox>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <StatusDot
+                color={
+                  statusType === "healthy"
+                    ? "#10b981"
+                    : statusType === "expired"
+                    ? "#f59e0b"
+                    : "#64748b"
+                }
+              />
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                {providerName}
+              </Typography>
+              {Boolean(currentDbProvider?.is_default) && (
+                <Chip
+                  size="small"
+                  label={t("ai_providers:detail.default_badge", "Predeterminado")}
+                  color="primary"
+                  variant="filled"
+                  sx={{
+                    height: 20,
+                    fontSize: "0.6875rem",
+                    fontWeight: 700,
+                    borderRadius: 1,
+                  }}
+                />
+              )}
+            </Box>
+            <StatusPill statusType={statusType}>
+              {statusLabel}
+            </StatusPill>
+          </BreadcrumbBox>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={
-              isFetchingHealth ? (
-                <CircularProgress size={16} color="inherit" />
-              ) : (
-                <SyncOutlinedIcon fontSize="small" />
-              )
-            }
-            onClick={handleVerify}
-            disabled={isBusy}
-            sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
-          >
-            {t("ai_providers:detail.verify_state", "Verificar estado")}
-          </Button>
-          {currentHealthProvider && onConfigure && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+            {Boolean((providersResponse?.data?.length ?? 0) > 1) && (
+              <SwitchWrapper sx={{ py: 0.5, px: 1.5, minWidth: 240 }}>
+                <StyledFormControlLabel
+                  control={
+                    <StyledSwitch
+                      checked={Boolean(currentDbProvider?.is_default)}
+                      onChange={async (e) => {
+                        if (currentDbProvider?.is_default) {
+                          sileo.info({
+                            title: t(
+                              "ai_providers:already_default_notice",
+                              "Este proveedor ya es el predeterminado. Para cambiarlo, active otro proveedor."
+                            ),
+                          });
+                          return;
+                        }
+                        if (e.target.checked && currentDbProvider?.id) {
+                          try {
+                            await updateProviderMutation.mutateAsync({
+                              id: currentDbProvider.id,
+                              data: { is_default: true },
+                            });
+                            sileo.success({
+                              title: t("ai_providers:default_provider_saved", "Proveedor predeterminado actualizado"),
+                            });
+                          } catch (err: unknown) {
+                            const error = err as { response?: { data?: { message?: string } } };
+                            sileo.error({
+                              title: t("core:server_error_toast"),
+                              description: error?.response?.data?.message,
+                            });
+                          }
+                        }
+                      }}
+                      disabled={isBusy}
+                      data-testid="detail-default-provider-switch"
+                    />
+                  }
+                  label={t("ai_providers:set_default_provider", "Proveedor Predeterminado")}
+                  labelPlacement="start"
+                />
+              </SwitchWrapper>
+            )}
+
             <Button
-              variant="contained"
+              variant="outlined"
               size="small"
-              color="primary"
-              startIcon={<SettingsOutlinedIcon fontSize="small" />}
-              onClick={() => onConfigure(currentHealthProvider)}
+              startIcon={
+                isFetchingHealth ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <SyncOutlinedIcon fontSize="small" />
+                )
+              }
+              onClick={handleVerify}
               disabled={isBusy}
               sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
             >
-              {t("ai_providers:detail.configure_provider", "Configurar")}
+              {t("ai_providers:detail.verify_state", "Verificar estado")}
             </Button>
-          )}
+            {currentHealthProvider && onConfigure && (
+              <Button
+                variant="contained"
+                size="small"
+                color="primary"
+                startIcon={<SettingsOutlinedIcon fontSize="small" />}
+                onClick={() => onConfigure(currentHealthProvider)}
+                disabled={isBusy}
+                sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
+              >
+                {t("ai_providers:detail.configure_provider", "Configurar")}
+              </Button>
+            )}
+          </Box>
+        </TopNavigationRow>
+
+        {availableTabs.length > 0 && (
+          <StyledTabs
+            value={activeTab ? activeTab : false}
+            onChange={(_, newValue: ModeTabKey) => setSelectedTab(newValue)}
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            {availableTabs.map((tab) => {
+              const isModeDefault = tab.key === (currentDbProvider?.default_mode || availableTabs[0]?.key);
+              return (
+                <StyledTab
+                  key={tab.key}
+                  value={tab.key}
+                  label={
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <span>{tab.label}</span>
+                      {isModeDefault && (
+                        <Chip
+                          size="small"
+                          label={t("ai_providers:detail.default_badge", "Predeterminado")}
+                          color="primary"
+                          variant="filled"
+                          sx={{
+                            height: 18,
+                            fontSize: "0.625rem",
+                            fontWeight: 700,
+                            borderRadius: 1,
+                          }}
+                        />
+                      )}
+                    </Box>
+                  }
+                  icon={tab.icon}
+                  iconPosition="start"
+                />
+              );
+            })}
+          </StyledTabs>
+        )}
+      </TopHeaderPanel>
+
+      {currentProviderAlerts.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <AlertBanner
+            alerts={currentProviderAlerts}
+            onRenewSession={onRenewSession}
+            onConfigure={() => {
+              if (onConfigure && currentHealthProvider) {
+                onConfigure(currentHealthProvider);
+              }
+            }}
+            onManageQuotas={() => {
+              sileo.info({
+                title: t("ai_providers:connection.quotas_title"),
+                description: t("ai_providers:connection.quotas_description"),
+              });
+            }}
+          />
         </Box>
-      </TopNavigationBox>
+      )}
 
       {isSoftLoading && (
         <LinearProgress sx={{ height: 2, borderRadius: 1 }} />
       )}
 
-      {/* PANEL 1: PRODUCTION MODELS & AI PIPELINES */}
-      <DetailPanel>
-        <PanelHeader>
-          <Box>
-            <PanelTitle>
-              {t("ai_providers:detail.models_title", "Modelos")} ({providerName})
-            </PanelTitle>
-            <PanelSubtitle>
+      {availableTabs.length === 0 ? (
+        <DetailPanel>
+          <EmptyModesBox>
+            <InfoOutlinedIcon
+              sx={{ fontSize: 48, color: "text.secondary", opacity: 0.7 }}
+            />
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
               {t(
-                "ai_providers:detail.models_subtitle",
-                "Configuración y asignación de arquitecturas de modelos generativos según carga de trabajo, costo operativo y contexto multimodal."
+                "ai_providers:detail.no_active_modes_title",
+                "Sin modos de conexión activados"
               )}
-            </PanelSubtitle>
-          </Box>
-          <Button
-            variant="outlined"
-            color="primary"
-            size="small"
-            startIcon={<SyncOutlinedIcon fontSize="small" />}
-            onClick={handleOpenSyncModal}
-            disabled={!currentDbProvider?.id}
-            sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-          >
-            {t("ai_providers:detail.sync_models_button", "Actualizar modelos")}
-          </Button>
-        </PanelHeader>
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ maxWidth: 520 }}
+            >
+              {t(
+                "ai_providers:detail.no_active_modes_desc",
+                "Active un modo Web o Agentic para gestionar los modelos y la sesión de esta conexión."
+              )}
+            </Typography>
+            {currentHealthProvider && onConfigure && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<SettingsOutlinedIcon fontSize="small" />}
+                onClick={() => onConfigure(currentHealthProvider)}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  mt: 1,
+                }}
+              >
+                {t(
+                  "ai_providers:detail.configure_modes_button",
+                  "Configurar Modos de Conexión"
+                )}
+              </Button>
+            )}
+          </EmptyModesBox>
+        </DetailPanel>
+      ) : (
+        <>
+          {/* PANEL 1: PRODUCTION MODELS & AI PIPELINES */}
+          <DetailPanel>
+            <PanelHeader sx={{ flexDirection: "column", alignItems: "stretch", gap: 1.5 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  gap: 2,
+                  flexWrap: "wrap",
+                }}
+              >
+                <PanelTitle>
+                  {t("ai_providers:detail.models_title", "Modelos")} ({providerName})
+                </PanelTitle>
+                {availableTabs.length > 1 && activeTab && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={currentDbProvider?.default_mode === activeTab}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleToggleModeDefault(activeTab);
+                          }
+                        }}
+                        disabled={
+                          isBusy ||
+                          currentDbProvider?.default_mode === activeTab
+                        }
+                        data-testid="default-mode-checkbox"
+                        size="small"
+                        color="primary"
+                        sx={{
+                          p: 0.5,
+                          "&.Mui-disabled": {
+                            color:
+                              currentDbProvider?.default_mode === activeTab
+                                ? "primary.main"
+                                : undefined,
+                            opacity:
+                              currentDbProvider?.default_mode === activeTab
+                                ? 0.9
+                                : 0.4,
+                          },
+                        }}
+                      />
+                    }
+                    label={t(
+                      "ai_providers:default_mode_title",
+                      "Modo Predeterminado"
+                    )}
+                    sx={{
+                      m: 0,
+                      userSelect: "none",
+                      "& .MuiFormControlLabel-label": {
+                        fontSize: "0.875rem",
+                        fontWeight: 600,
+                        color:
+                          currentDbProvider?.default_mode === activeTab
+                            ? "text.primary"
+                            : "text.secondary",
+                      },
+                    }}
+                  />
+                )}
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  gap: 2,
+                  flexWrap: "wrap",
+                }}
+              >
+                <PanelSubtitle sx={{ maxWidth: 760 }}>
+                  {t(
+                    "ai_providers:detail.models_subtitle",
+                    "Configuración y asignación de arquitecturas de modelos generativos según carga de trabajo, costo operativo y contexto multimodal."
+                  )}
+                </PanelSubtitle>
+                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, flexShrink: 0 }}>
+                  {!isModeOperational && (
+                    <Tooltip title={syncDisabledReason} arrow placement="top">
+                      <Box
+                        component="span"
+                        data-testid="sync-models-disabled-info-icon"
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          color: "warning.main",
+                          cursor: "help",
+                        }}
+                      >
+                        <InfoOutlinedIcon sx={{ fontSize: 20 }} />
+                      </Box>
+                    </Tooltip>
+                  )}
+                  <Tooltip title={!isModeOperational ? syncDisabledReason : ""}>
+                    <span>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        startIcon={<SyncOutlinedIcon fontSize="small" />}
+                        onClick={handleOpenSyncModal}
+                        disabled={!canSyncModels}
+                        sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
+                      >
+                        {t("ai_providers:detail.sync_models_button", "Actualizar modelos")}
+                      </Button>
+                    </span>
+                  </Tooltip>
+                </Box>
+              </Box>
+            </PanelHeader>
 
         {/* MODELS GRID */}
         <Skeleton loading={isInitialLoading}>
@@ -644,33 +1023,61 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                   "Este proveedor aún no tiene modelos cargados. Haz clic en 'Actualizar modelos' para consultar y sincronizar los modelos disponibles directamente desde la API del proveedor."
                 )}
               </Typography>
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={<SyncOutlinedIcon fontSize="small" />}
-                onClick={handleOpenSyncModal}
-                disabled={!currentDbProvider?.id}
-                sx={{ mt: 1, borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-              >
-                {t("ai_providers:detail.sync_models_button", "Actualizar modelos")}
-              </Button>
+              {!isModeOperational && (
+                <Alert
+                  severity="warning"
+                  icon={<InfoOutlinedIcon />}
+                  data-testid="sync-models-unoperational-alert"
+                  sx={{ maxWidth: 520, borderRadius: 2, textAlign: "left", mt: 1 }}
+                >
+                  {syncDisabledReason}
+                </Alert>
+              )}
+              <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mt: 1 }}>
+                {!isModeOperational && (
+                  <Tooltip title={syncDisabledReason} arrow placement="top">
+                    <Box
+                      component="span"
+                      data-testid="sync-models-empty-disabled-info-icon"
+                      sx={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        color: "warning.main",
+                        cursor: "help",
+                      }}
+                    >
+                      <InfoOutlinedIcon sx={{ fontSize: 20 }} />
+                    </Box>
+                  </Tooltip>
+                )}
+                <Tooltip title={!isModeOperational ? syncDisabledReason : ""}>
+                  <span>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      startIcon={<SyncOutlinedIcon fontSize="small" />}
+                      onClick={handleOpenSyncModal}
+                      disabled={!canSyncModels}
+                      sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
+                    >
+                      {t("ai_providers:detail.sync_models_button", "Actualizar modelos")}
+                    </Button>
+                  </span>
+                </Tooltip>
+              </Box>
             </Box>
           ) : (
             <ModelsGrid>
               {availableModels.map((model) => {
                 const isSelected = selectedModel === model.id;
               const isOcrFocused = ocrFocusedModelId === model.id;
-              const badgeAbbr = model.id.toLowerCase().includes("pro")
+              const badgeAbbr = model.id.toLowerCase().includes("ocr")
+                ? "OCR"
+                : model.id.toLowerCase().includes("pro")
                 ? "PRO"
                 : model.id.toLowerCase().includes("flash")
                 ? "FL"
-                : model.id.toLowerCase().includes("ocr")
-                ? "OCR"
-                : model.id.toLowerCase().includes("gpt-4o-mini")
-                ? "4OM"
-                : model.id.toLowerCase().includes("gpt-4o")
-                ? "4O"
-                : model.id.slice(0, 3).toUpperCase();
+                : model.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase();
 
               const roleSubtitle =
                 model.role === "ocr"
@@ -708,7 +1115,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                             variant="subtitle2"
                             sx={{ fontWeight: 700 }}
                           >
-                            {model.name || model.id}
+                            {model.displayName || model.name || model.id}
                           </Typography>
                           <StatusDot
                             color={isSelected ? "#10b981" : "#64748b"}
@@ -726,11 +1133,28 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                       </Box>
                     </Box>
 
-                    <StyledSwitch
-                      checked={isSelected}
-                      onChange={() => handleModelSelect(model.id)}
-                      disabled={isBusy}
-                      size="small"
+                    <FormControlLabel
+                      control={
+                        <StyledSwitch
+                          checked={isSelected}
+                          onChange={() => handleModelSelect(model.id)}
+                          disabled={isBusy}
+                          size="small"
+                        />
+                      }
+                      label={t("ai_providers:detail.default_badge", "Predeterminado")}
+                      labelPlacement="start"
+                      sx={{
+                        m: 0,
+                        gap: 0.75,
+                        userSelect: "none",
+                        flexShrink: 0,
+                        "& .MuiFormControlLabel-label": {
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          color: isSelected ? "text.primary" : "text.secondary",
+                        },
+                      }}
                     />
                   </ModelCardHeader>
 
@@ -795,13 +1219,107 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                       </Tooltip>
                     </Box>
 
-                    <StyledSwitch
-                      checked={isOcrFocused}
-                      onChange={() => handleToggleOcrFocus(model.id)}
-                      disabled={isBusy}
-                      size="small"
+                    <FormControlLabel
+                      control={
+                        <StyledSwitch
+                          checked={isOcrFocused}
+                          onChange={() => handleToggleOcrFocus(model.id)}
+                          disabled={isBusy}
+                          size="small"
+                        />
+                      }
+                      label={t("ai_providers:detail.default_badge", "Predeterminado")}
+                      labelPlacement="start"
+                      sx={{
+                        m: 0,
+                        gap: 0.75,
+                        userSelect: "none",
+                        flexShrink: 0,
+                        "& .MuiFormControlLabel-label": {
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          color: isOcrFocused ? "text.primary" : "text.secondary",
+                        },
+                      }}
                     />
                   </Box>
+
+                  {/* Agentic reasoning level */}
+                  {(activeTab === "token_plan_agentic") && (
+                    <Box
+                      sx={(theme) => ({
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        pt: 1.5,
+                        mt: 1.5,
+                        borderTop: `1px dashed ${theme.palette.divider}`,
+                      })}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                        <PsychologyOutlinedIcon
+                          sx={{
+                            fontSize: 18,
+                            color: "primary.main",
+                          }}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 600,
+                            color: "text.primary",
+                          }}
+                        >
+                          {t("ai_providers:detail.reasoning_level_label", "Razonamiento")}
+                        </Typography>
+                        <Tooltip
+                          title={t(
+                            "ai_providers:detail.reasoning_level_desc",
+                            "Nivel de razonamiento (thinking) enviado para este modelo: Low, Medium o High."
+                          )}
+                        >
+                          <InfoOutlinedIcon
+                            sx={{ fontSize: 15, color: "text.disabled", cursor: "pointer" }}
+                          />
+                        </Tooltip>
+                      </Box>
+
+                      <ToggleButtonGroup
+                        size="small"
+                        exclusive
+                        value={
+                          (modeFields?.thinking_levels as Record<string, string>)?.[model.id] ||
+                          (model.id === selectedModel ? (modeFields?.thinking_level as string) : undefined) ||
+                          null
+                        }
+                        onChange={(_, val) => {
+                          if (val) handleSetModelThinkingLevel(model.id, val as "low" | "medium" | "high");
+                        }}
+                        disabled={isBusy}
+                        sx={{
+                          height: 26,
+                          "& .MuiToggleButton-root": {
+                            px: 1,
+                            py: 0.25,
+                            fontSize: "0.6875rem",
+                            fontWeight: 600,
+                            textTransform: "capitalize",
+                            lineHeight: 1,
+                          },
+                        }}
+                      >
+                        <ToggleButton value="low" data-testid={`thinking-level-low-${model.id}`}>
+                          {t("ai_providers:detail.level_low", "Low")}
+                        </ToggleButton>
+                        <ToggleButton value="medium" data-testid={`thinking-level-medium-${model.id}`}>
+                          {t("ai_providers:detail.level_medium", "Medium")}
+                        </ToggleButton>
+                        <ToggleButton value="high" data-testid={`thinking-level-high-${model.id}`}>
+                          {t("ai_providers:detail.level_high", "High")}
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </Box>
+                  )}
                 </ModelCardPaper>
               );
             })}
@@ -809,209 +1327,87 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         )}
         </Skeleton>
 
-        {/* EXTENDED THINKING SECTION */}
-        <Box sx={{ mt: 1 }}>
-          <SwitchWrapper>
-            <StyledFormControlLabel
-              control={
-                <StyledSwitch
-                  checked={extendedThinkingEnabled && supportsReasoning}
-                  disabled={!supportsReasoning || isBusy}
-                  onChange={(e) => handleToggleExtendedThinking(e.target.checked)}
-                />
-              }
-              label={
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-                    <PsychologyOutlinedIcon
-                      sx={{
-                        fontSize: 20,
-                        color: supportsReasoning ? "primary.main" : "text.disabled",
-                      }}
-                    />
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      {t(
-                        "ai_providers:detail.extended_thinking_title",
-                        "Razonamiento Extendido"
+        {/* EXTENDED THINKING SECTION (WEB MODE ONLY) */}
+        {activeTab === "token_plan_web" && (
+          <Box sx={{ mt: 1 }}>
+            <SwitchWrapper>
+              <StyledFormControlLabel
+                control={
+                  <StyledSwitch
+                    checked={extendedThinkingEnabled && supportsReasoning}
+                    disabled={!supportsReasoning || isBusy}
+                    onChange={(e) => handleToggleExtendedThinking(e.target.checked)}
+                  />
+                }
+                label={
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                      <PsychologyOutlinedIcon
+                        sx={{
+                          fontSize: 20,
+                          color: supportsReasoning ? "primary.main" : "text.disabled",
+                        }}
+                      />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                        {t(
+                          "ai_providers:detail.extended_thinking_title",
+                          "Razonamiento Extendido"
+                        )}
+                      </Typography>
+                      {supportsReasoning ? (
+                        <Chip
+                          size="small"
+                          label={t(
+                            "ai_providers:detail.extended_thinking_supported",
+                            "Razonamiento Soportado"
+                          )}
+                          color="primary"
+                          sx={{ height: 20, fontSize: "0.6875rem", fontWeight: 700 }}
+                        />
+                      ) : (
+                        <Chip
+                          size="small"
+                          label={t(
+                            "ai_providers:detail.extended_thinking_not_supported",
+                            "No disponible para este modelo"
+                          )}
+                          variant="outlined"
+                          sx={{ height: 20, fontSize: "0.6875rem" }}
+                        />
                       )}
+                    </Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {supportsReasoning
+                        ? t(
+                            "ai_providers:detail.extended_thinking_desc",
+                            "Habilita pasos de deliberación y razonamiento profundo previo a la respuesta. Aplica solo a modelos con capacidad de razonamiento detectada."
+                          )
+                        : t(
+                            "ai_providers:detail.extended_thinking_not_supported",
+                            "Este modelo no cuenta con capacidad de razonamiento extendido."
+                          )}
                     </Typography>
-                    {supportsReasoning ? (
-                      <Chip
-                        size="small"
-                        label={t(
-                          "ai_providers:detail.extended_thinking_supported",
-                          "Razonamiento Soportado"
-                        )}
-                        color="primary"
-                        sx={{ height: 20, fontSize: "0.6875rem", fontWeight: 700 }}
-                      />
-                    ) : (
-                      <Chip
-                        size="small"
-                        label={t(
-                          "ai_providers:detail.extended_thinking_not_supported",
-                          "No disponible para este modelo"
-                        )}
-                        variant="outlined"
-                        sx={{ height: 20, fontSize: "0.6875rem" }}
-                      />
-                    )}
                   </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {supportsReasoning
-                      ? t(
-                          "ai_providers:detail.extended_thinking_desc",
-                          "Habilita pasos de deliberación y razonamiento profundo previo a la respuesta. Aplica solo a modelos con capacidad de razonamiento detectada."
-                        )
-                      : t(
-                          "ai_providers:detail.extended_thinking_not_supported",
-                          "Este modelo no cuenta con capacidad de razonamiento extendido."
-                        )}
-                  </Typography>
-                </Box>
-              }
-              labelPlacement="start"
-            />
-          </SwitchWrapper>
-        </Box>
-      </DetailPanel>
-
-      {/* PANEL 2: EXCLUSIVE OPERATION MODE */}
-      <DetailPanel>
-        <PanelHeader>
-          <Box>
-            <PanelTitle>
-              {t(
-                "ai_providers:detail.exclusive_mode_title",
-                "MODO DE OPERACIÓN EXCLUSIVO"
-              )}
-            </PanelTitle>
-            <PanelSubtitle>
-              {t(
-                "ai_providers:detail.exclusive_mode_subtitle",
-                "La alternancia es estrictamente manual. Un fallo operacional nunca cambiará el modo por defecto."
-              )}
-            </PanelSubtitle>
+                }
+                labelPlacement="start"
+              />
+            </SwitchWrapper>
           </Box>
-        </PanelHeader>
-
-        <ModeSectionGrid>
-          {/* WEB SESSION OPTION */}
-          <ModeCardPaper
-            selected={currentMode === "web_session"}
-            disabled={!isWebSupported}
-            onClick={() => handleSwitchMode("web_session")}
-            elevation={0}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                <DevicesOutlinedIcon
-                  color={currentMode === "web_session" ? "primary" : "action"}
-                />
-                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  {t(
-                    "ai_providers:detail.mode_web_title",
-                    "Sesión Web (Navegador Remoto)"
-                  )}
-                </Typography>
-              </Box>
-
-              {currentMode === "web_session" ? (
-                <Chip
-                  size="small"
-                  color="primary"
-                  icon={<CheckCircleOutlinedIcon />}
-                  label={t(
-                    "ai_providers:detail.mode_currently_selected",
-                    "Modo Seleccionado Actualmente"
-                  )}
-                  sx={{ fontWeight: 700, fontSize: "0.75rem" }}
-                />
-              ) : (
-                <Chip
-                  size="small"
-                  variant="outlined"
-                  label={t("ai_providers:detail.mode_alternative", "Modo Alternativo")}
-                  sx={{ fontSize: "0.75rem" }}
-                />
-              )}
-            </Box>
-
-            <Typography variant="body2" color="text.secondary">
-              {isWebSupported
-                ? t(
-                    "ai_providers:detail.mode_web_desc",
-                    "Simula navegación headless interactiva para cuentas corporativas con login unificado. Recomendado para agentes de scraping, razonamiento extendido y cuotas no-API."
-                  )
-                : t(
-                    "ai_providers:detail.mode_web_disabled",
-                    "No habilitado para este proveedor (requiere microservicio dedicado)."
-                  )}
-            </Typography>
-          </ModeCardPaper>
-
-          {/* API KEY OPTION */}
-          <ModeCardPaper
-            selected={currentMode === "api_key"}
-            onClick={() => handleSwitchMode("api_key")}
-            elevation={0}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                <VpnKeyOutlinedIcon
-                  color={currentMode === "api_key" ? "primary" : "action"}
-                />
-                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  {t(
-                    "ai_providers:detail.mode_api_title",
-                    "API Key (AI Studio / Endpoint Oficial)"
-                  )}
-                </Typography>
-              </Box>
-
-              {currentMode === "api_key" ? (
-                <Chip
-                  size="small"
-                  color="primary"
-                  icon={<CheckCircleOutlinedIcon />}
-                  label={t(
-                    "ai_providers:detail.mode_currently_selected",
-                    "Modo Seleccionado Actualmente"
-                  )}
-                  sx={{ fontWeight: 700, fontSize: "0.75rem" }}
-                />
-              ) : (
-                <Chip
-                  size="small"
-                  variant="outlined"
-                  label={t("ai_providers:detail.mode_alternative", "Modo Alternativo")}
-                  sx={{ fontSize: "0.75rem" }}
-                />
-              )}
-            </Box>
-
-            <Typography variant="body2" color="text.secondary">
-              {t(
-                "ai_providers:detail.mode_api_desc",
-                "Conexión directa mediante tokens de API REST estándar. Adecuado para payloads estructurados y baja latencia de respuesta internacional."
-              )}
-            </Typography>
-          </ModeCardPaper>
-        </ModeSectionGrid>
+        )}
       </DetailPanel>
 
-      {/* PANEL 3: REMOTE WEB SESSION SECTION (Shown when web mode supported) */}
-      {isWebSupported && (
+      {/* SUBPANEL: REMOTE WEB SESSION */}
+      {activeTab === "token_plan_web" && (
         <DetailPanel>
           <WebSessionBanner>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
               <StatusDot
-                color={statusType === "healthy" ? "#10b981" : "#f59e0b"}
+                color={isWebSessionActive ? "#10b981" : "#f59e0b"}
               />
               <Box>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                   {t("ai_providers:detail.web_session_status", "Estado de la Sesión Web")}:{" "}
-                  {statusType === "healthy"
+                  {isWebSessionActive
                     ? t("ai_providers:detail.web_session_healthy", "Activa y Saludable")
                     : t("ai_providers:detail.status_expired", "Requiere Iniciar Sesión")}
                 </Typography>
@@ -1026,8 +1422,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
             <Chip
               size="small"
-              label={statusType === "healthy" ? "SESIÓN OPERATIVA" : "AUTENTICACIÓN REQUERIDA"}
-              color={statusType === "healthy" ? "success" : "warning"}
+              label={isWebSessionActive ? "SESIÓN OPERATIVA" : "AUTENTICACIÓN REQUERIDA"}
+              color={isWebSessionActive ? "success" : "warning"}
               sx={{ fontWeight: 700, fontSize: "0.75rem" }}
             />
           </WebSessionBanner>
@@ -1101,6 +1497,39 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             </Box>
           </CloudBridgeBox>
 
+          {/* QUOTA METRICS: WEB REQUEST LIMITS (FLASH & PRO) */}
+          <Box sx={{ mt: 1 }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
+                <SpeedOutlinedIcon fontSize="small" color="primary" />
+                {t("ai_providers:detail.quota_title", "Cuotas de Uso y Créditos Disponibles")}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {t("ai_providers:detail.quota_web_desc", "Cuotas y créditos de solicitudes por modelo para la sesión de navegador.")}
+              </Typography>
+            </Box>
+
+            <QuotaGrid>
+              {Object.entries(geminiEnginesData?.web?.quota ?? {}).filter(([, quota]) =>
+                quota && Number.isFinite(quota.usage_percentage) && Number.isFinite(quota.remaining) && Number.isFinite(quota.total)
+              ).map(([key, quota]) => (
+                <QuotaCard key={key} elevation={0}>
+                  <QuotaHeader>
+                    <Typography variant="subtitle2">{key}</Typography>
+                    <Chip size="small" label={`${quota?.usage_percentage}%`} />
+                  </QuotaHeader>
+                  <Typography variant="caption" color="text.secondary">
+                    {t("ai_providers:detail.quota_remaining_requests", { remaining: quota?.remaining, total: quota?.total })}
+                  </Typography>
+                  <LinearProgress variant="determinate" value={Math.max(0, Math.min(quota?.usage_percentage ?? 0, 100))} sx={{ height: 6, borderRadius: 3 }} />
+                </QuotaCard>
+              ))}
+              {!Object.values(geminiEnginesData?.web?.quota ?? {}).some((quota) =>
+                quota && Number.isFinite(quota.usage_percentage) && Number.isFinite(quota.remaining) && Number.isFinite(quota.total)
+              ) && <Typography color="text.secondary">{t("ai_providers:detail.quota_unavailable")}</Typography>}
+            </QuotaGrid>
+          </Box>
+
           {/* OPERATIONAL PARAMETERS */}
           <Box sx={{ mt: 1 }}>
             <SwitchWrapper>
@@ -1123,270 +1552,124 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         </DetailPanel>
       )}
 
-      {/* PANEL 4: API KEYS MANAGEMENT ("la tabla de siempre") */}
-      <DetailPanel>
-        <TableTopBar sx={{ flexDirection: "column", alignItems: "stretch", gap: 2 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 2,
-              width: "100%",
-            }}
-          >
+
+
+
+      {/* SUBPANEL: ANTIGRAVITY AGENTIC STATUS */}
+      {activeTab === "token_plan_agentic" && (
+        <DetailPanel>
+          <PanelHeader>
             <Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <VpnKeyOutlinedIcon color="primary" />
-                <PanelTitle>
-                  {t("ai_providers:detail.api_keys_title", "Administrador de API Keys")}
-                </PanelTitle>
-                <Chip
-                  size="small"
-                  color={currentMode === "api_key" ? "primary" : "default"}
-                  label={
-                    currentMode === "api_key"
-                      ? t("ai_providers:detail.api_keys_badge_primary", "Modo Primario")
-                      : t("ai_providers:detail.api_keys_badge_secondary", "Modo Secundario")
-                  }
-                  sx={{ fontWeight: 700, fontSize: "0.75rem" }}
-                />
-              </Box>
-              <PanelSubtitle sx={{ mt: 0.5 }}>
+              <PanelTitle>
+                <PsychologyOutlinedIcon color="primary" />
                 {t(
-                  "ai_providers:detail.api_keys_subtitle",
-                  "Pool de llaves API con failover autónomo y rotación automática en caso de cuota excedida (429)."
+                  "ai_providers:detail.agentic_environment_title",
+                  "Entorno Agéntico Antigravity"
+                )}
+              </PanelTitle>
+              <PanelSubtitle>
+                {t(
+                  "ai_providers:detail.agentic_environment_subtitle",
+                  "Gestión del entorno de inferencia con sesión activa de Antigravity (Google One AI Premium)."
                 )}
               </PanelSubtitle>
             </Box>
+          </PanelHeader>
 
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddCircleOutlineOutlinedIcon />}
-              onClick={() => setIsAddKeyModalOpen(true)}
-              sx={(theme) => ({
-                borderRadius: 2,
-                fontWeight: 600,
-                textTransform: "none",
-                color: theme.palette.primary.contrastText,
-              })}
-            >
-              {t("ai_providers:detail.add_key_button", "Agregar Nueva API Key")}
-            </Button>
-          </Box>
-
-          <Box sx={{ width: { xs: "100%", sm: 320 } }}>
-            <InputSearch
-              value={apiKeySearch}
-              onChange={(val) => {
-                setApiKeySearch(val);
-                setApiKeyPage(0);
+          <AgenticStatusCard elevation={0}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 1.5,
               }}
-              placeholder={t(
-                "ai_providers:detail.search_api_keys",
-                "Buscar por alias o prefijo..."
-              )}
-              size="small"
-              fullWidth
-            />
-          </Box>
-        </TableTopBar>
-
-        {isFetchingApiKeys && !isLoadingApiKeys && (
-          <LinearProgress sx={{ borderRadius: 1, height: 2, my: -1 }} />
-        )}
-
-        <Skeleton loading={isLoadingApiKeys}>
-          <StyledTableContainer>
-            <Table size="small">
-              <StyledTableHead>
-                <TableRow>
-                  <HeadCell>
-                    {t("ai_providers:detail.col_alias", "ALIAS / ETIQUETA")}
-                  </HeadCell>
-                  <HeadCell>
-                    {t("ai_providers:detail.col_hint", "PREFIJO DE CLAVE")}
-                  </HeadCell>
-                  <HeadCell>
-                    {t("ai_providers:detail.col_health", "ESTADO")}
-                  </HeadCell>
-                  <HeadCell>
-                    {t("ai_providers:detail.col_primary", "ROTACIÓN / PRINCIPAL")}
-                  </HeadCell>
-                  <HeadCell align="right">
-                    {t("ai_providers:detail.col_actions", "ACCIÓN")}
-                  </HeadCell>
-                </TableRow>
-              </StyledTableHead>
-              <TableBody>
-                {filteredApiKeys.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} sx={{ p: 0, border: 0 }}>
-                      <EmptyBox>
-                        <VpnKeyOutlinedIcon sx={{ fontSize: 40, color: "text.disabled" }} />
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {apiKeysList.length === 0
-                            ? t(
-                                "ai_providers:detail.empty_api_keys",
-                                "No hay claves de API registradas para este proveedor."
-                              )
-                            : t(
-                                "ai_providers:detail.no_matching_api_keys",
-                                "No se encontraron claves que coincidan con la búsqueda."
-                              )}
-                        </Typography>
-                        {apiKeysList.length === 0 && (
-                          <Button
-                            variant="contained"
-                            size="small"
-                            color="primary"
-                            startIcon={<AddCircleOutlineOutlinedIcon />}
-                            onClick={() => setIsAddKeyModalOpen(true)}
-                            sx={(theme) => ({
-                              mt: 0.5,
-                              borderRadius: 2,
-                              color: theme.palette.primary.contrastText,
-                            })}
-                          >
-                            {t("ai_providers:detail.add_key_button", "Agregar Nueva API Key")}
-                          </Button>
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <StatusDot
+                  color={
+                    geminiEnginesData?.agentic?.available
+                      ? "#10b981"
+                      : "#64748b"
+                  }
+                />
+                <Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    {geminiEnginesData?.agentic?.available
+                      ? t(
+                          "ai_providers:detail.agentic_status_active_badge",
+                          "SESIÓN AGÉNTICA CONECTADA"
+                        )
+                      : t(
+                          "ai_providers:detail.agentic_status_inactive_badge",
+                          "ENTORNO NO DETECTADO"
                         )}
-                      </EmptyBox>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedApiKeys.map((apiKey) => {
-                    const isValid =
-                      apiKey.health_state === "valid" ||
-                      apiKey.health_state === "untested";
-                    const isCooldown = apiKey.health_state === "cooldown";
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {t(
+                      "ai_providers:engine_selection.agentic_title",
+                      "Modo Agéntico (Antigravity)"
+                    )}
+                  </Typography>
+                </Box>
+              </Box>
 
-                    return (
-                      <BodyRow key={apiKey.id}>
-                        <BodyCell sx={{ fontWeight: 600 }}>{apiKey.label}</BodyCell>
-                        <BodyCell sx={{ fontFamily: "monospace", fontSize: "0.8125rem" }}>
-                          {apiKey.display_hint || "sk-...****"}
-                        </BodyCell>
-                        <BodyCell>
-                          <Chip
-                            size="small"
-                            label={
-                              isValid
-                                ? t("ai_providers:detail.key_valid", "Válida")
-                                : isCooldown
-                                ? t("ai_providers:detail.key_cooldown", "Cooldown (429)")
-                                : t("ai_providers:detail.key_needs_review", "Revisar")
-                            }
-                            color={isValid ? "success" : isCooldown ? "warning" : "error"}
-                            sx={{ fontWeight: 700, fontSize: "0.75rem", height: 22 }}
-                          />
-                        </BodyCell>
-                        <BodyCell>
-                          <Tooltip
-                            title={
-                              apiKey.is_selected
-                                ? t("ai_providers:detail.key_valid", "Clave Principal")
-                                : t("ai_providers:detail.make_primary", "Establecer como principal")
-                            }
-                          >
-                            <IconButton
-                              size="small"
-                              color={apiKey.is_selected ? "primary" : "default"}
-                              onClick={() => handleMakeKeyPrimary(apiKey)}
-                              disabled={updateApiKeyMutation.isPending}
-                            >
-                              {apiKey.is_selected ? (
-                                <CheckCircleOutlinedIcon fontSize="small" />
-                              ) : (
-                                <RadioButtonUncheckedOutlinedIcon fontSize="small" />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                        </BodyCell>
-                        <BodyCell align="right">
-                          <Tooltip title={t("ai_providers:detail.delete_key", "Eliminar Clave")}>
-                            <IconButton
-                              size="small"
-                              color="error"
-                              aria-label={t("ai_providers:detail.delete_key", "Eliminar Clave")}
-                              data-testid="delete-api-key-btn"
-                              onClick={() => setKeyToDelete(apiKey)}
-                              disabled={deleteApiKeyMutation.isPending}
-                            >
-                              <DeleteOutlineOutlinedIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </BodyCell>
-                      </BodyRow>
-                    );
-                  })
+              <Chip
+                size="small"
+                label={
+                  geminiEnginesData?.agentic?.available
+                    ? "SESIÓN AGÉNTICA ACTIVA"
+                    : "NO DETECTADO"
+                }
+                color={
+                  geminiEnginesData?.agentic?.available ? "success" : "default"
+                }
+                sx={{ fontWeight: 700, fontSize: "0.75rem" }}
+              />
+            </Box>
+
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ lineHeight: 1.6 }}
+            >
+              {geminiEnginesData?.agentic?.available
+                ? t(
+                    "ai_providers:detail.agentic_desc_active",
+                    "Conexión operativa con el entorno local de Antigravity. Permite razonamiento extendido (thinking tokens), lectura multimodal nativa y procesamiento sin consumo de API keys."
+                  )
+                : t(
+                    "ai_providers:detail.agentic_desc_inactive",
+                    "No se detectó un entorno activo de Antigravity en la máquina local o el servicio no está corriendo."
+                  )}
+            </Typography>
+
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}
+            >
+              <ShieldOutlinedIcon sx={{ fontSize: 16, color: "primary.main" }} />
+              <Typography variant="caption" color="text.secondary">
+                {t(
+                  "ai_providers:engine_selection.agentic_desc",
+                  "Utiliza la sesión activa del entorno local de Antigravity (Google One AI Premium). Soporta razonamiento/thinking tokens, OCR multimodal nativo y alta velocidad."
                 )}
-              </TableBody>
-            </Table>
-          </StyledTableContainer>
-        </Skeleton>
+              </Typography>
+            </Box>
+          </AgenticStatusCard>
 
-        {filteredApiKeys.length > 0 && (
-          <TablePagination
-            component="div"
-            count={filteredApiKeys.length}
-            page={apiKeyPage}
-            onPageChange={(_, newPage) => setApiKeyPage(newPage)}
-            rowsPerPage={apiKeyLimit}
-            onRowsPerPageChange={(e) => {
-              setApiKeyLimit(parseInt(e.target.value, 10));
-              setApiKeyPage(0);
-            }}
-            rowsPerPageOptions={[5, 10, 25]}
-            labelRowsPerPage={t("core:pagination.rows_per_page", "Filas por página:")}
-          />
-        )}
-      </DetailPanel>
-
-      {/* PANEL 5: AUDIT LOGS FOR THIS PROVIDER */}
-      <Box ref={logsRef}>
-        <AiEventsTable
-          events={eventsResponse?.data || []}
-          isLoading={isLoadingEvents}
-          isFetching={isFetchingEvents}
-          totalItems={eventsResponse?.meta?.total_items || 0}
-          page={eventPage}
-          limit={eventLimit}
-          searchValue={eventSearch}
-          onSearchChange={(val) => {
-            setEventSearch(val);
-            setEventPage(0);
-          }}
-          onPageChange={setEventPage}
-          onRowsPerPageChange={(newLimit) => {
-            setEventLimit(newLimit);
-            setEventPage(0);
-          }}
-          onViewTrace={(event) => setSelectedTraceEvent(event)}
-        />
-      </Box>
-
-      {/* MODAL: ADD API KEY */}
-      {currentDbProvider && (
-        <AddApiKeyModal
-          open={isAddKeyModalOpen}
-          providerId={currentDbProvider.id}
-          providerName={providerName}
-          onClose={() => setIsAddKeyModalOpen(false)}
-          onSuccess={() => {
-            refetchApiKeys();
-            refetchHealth();
-          }}
-        />
+        </DetailPanel>
       )}
+    </>
+  )}
 
       {/* MODAL: SYNC MODELS */}
       {currentDbProvider && (
         <SyncModelsModal
           open={isSyncModalOpen}
           provider={currentDbProvider}
+          mode={activeTab}
+          isOperational={isModeOperational}
           onClose={() => setIsSyncModalOpen(false)}
           onSuccess={() => {
             refetchProviders();
@@ -1395,24 +1678,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         />
       )}
 
-      {/* DIALOG: CONFIRM DELETE API KEY */}
-      <ConfirmDialog
-        open={Boolean(keyToDelete)}
-        title={t("ai_providers:detail.delete_key_title", "Eliminar Clave de API")}
-        message={t(
-          "ai_providers:detail.delete_key_confirm",
-          "¿Está seguro de eliminar esta clave de API?"
-        )}
-        onClose={() => setKeyToDelete(null)}
-        onConfirm={handleDeleteKey}
-      />
 
-      {/* MODAL: TRACE VIEWER */}
-      <TraceModal
-        open={Boolean(selectedTraceEvent)}
-        event={selectedTraceEvent}
-        onClose={() => setSelectedTraceEvent(null)}
-      />
     </DetailContainer>
   );
 };

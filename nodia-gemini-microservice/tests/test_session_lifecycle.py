@@ -1,3 +1,4 @@
+import test_support
 import asyncio
 import tempfile
 import unittest
@@ -25,7 +26,41 @@ class FakeClient:
         self.closed = True
 
 
+class FailingClient(FakeClient):
+    async def init(self, **kwargs):
+        raise RuntimeError("initialization failed")
+
+
+class SessionStoreTest(unittest.TestCase):
+    def test_failed_atomic_replace_keeps_previous_session(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Path(directory) / "cookies.json"
+            with patch.object(session_store, "SESSION_FILE", store):
+                session_store.save_session("old-psid", "old-ts")
+                with patch.object(session_store.os, "replace", side_effect=OSError("write failed")):
+                    with self.assertRaises(OSError):
+                        session_store.save_session("new-psid", "new-ts")
+                self.assertEqual(session_store.read_session(), ("old-psid", "old-ts"))
+                self.assertEqual(list(Path(directory).iterdir()), [store])
+
+
 class SessionLifecycleTest(unittest.IsolatedAsyncioTestCase):
+    async def test_failed_connection_closes_candidate_and_leaves_no_active_client(self):
+        FakeClient.instances.clear()
+        with tempfile.TemporaryDirectory() as directory:
+            store = Path(directory) / "cookies.json"
+            with patch.object(gemini_service, "GeminiClient", FailingClient), \
+                 patch.object(gemini_service, "SESSION_FILE", store), \
+                 patch.object(session_store, "SESSION_FILE", store):
+                service = gemini_service.GeminiWebService()
+                service._read_env = lambda: ("login-psid", "login-ts", "gemini-flash")
+                service.browser_manager.has_profile = lambda: False
+                with self.assertRaises(RuntimeError):
+                    await service.init_client()
+                self.assertTrue(FakeClient.instances[-1].closed)
+                self.assertIsNone(service.client)
+                self.assertFalse(service.is_initialized)
+
     async def test_rotated_cookie_survives_repeated_calls_and_restart(self):
         FakeClient.instances.clear()
         with tempfile.TemporaryDirectory() as directory:

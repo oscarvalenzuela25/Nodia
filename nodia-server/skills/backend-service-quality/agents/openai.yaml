@@ -1,0 +1,3 @@
+interface:
+  display_name: "Backend Service Quality"
+  short_description: "Contratos, integridad y resiliencia para backend"

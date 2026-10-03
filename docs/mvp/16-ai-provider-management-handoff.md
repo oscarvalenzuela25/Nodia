@@ -64,6 +64,8 @@ Acotar intentos y tiempo total: el flujo Mistral puede hacer OCR y una segunda l
 
 ### 3.4 Recuperación de Gemini Web
 
+**Avance local 2026-09-28:** el botón de Settings inicia/consulta/cancela un trabajo de login a través de NestJS, protegido por `ai:manage`, solo si NestJS está en desarrollo y Gemini en loopback. FastAPI conserva una sola tarea interactiva a la vez y no entrega cookies al cliente. Chrome aparece en el equipo que ejecuta Python. Esto valida el contrato administrativo local; **no** implementa la pestaña de navegador remoto ni demuestra viabilidad en VPS. Los pasos siguientes siguen pendientes.
+
 1. En el detalle de Gemini, «Iniciar sesión» crea una sesión temporal de navegador remoto en el VPS y abre una nueva pestaña de Nodia. La pestaña muestra el navegador que ejecuta Playwright en el servidor, no una pestaña local de `gemini.google.com`.
 2. Propuesta: navegador visible sobre Xvfb y visor web noVNC o equivalente, con sesión de control de una sola persona a la vez, token corto ligado al usuario, límite de tiempo, cierre al terminar y registro de auditoría. El canal gráfico y FastAPI quedan en una red interna; solo NestJS y el proxy autenticado exponen operaciones permitidas.
 3. El operador escribe las credenciales directamente en el navegador remoto. El backend no pide ni guarda usuario/contraseña. Al completarse, el microservicio extrae cookies, actualiza la sesión y persiste `browser_profile/` y `session_state/` en volumen Docker. Después se cierra la vista remota y se actualiza el estado del panel.

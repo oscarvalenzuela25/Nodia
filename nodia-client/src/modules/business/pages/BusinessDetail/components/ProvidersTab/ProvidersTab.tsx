@@ -1,3 +1,4 @@
+import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC, MouseEvent } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -88,6 +89,7 @@ export const ProvidersTab: FC<Props> = ({
     data: providersData,
     isLoading,
     isFetching,
+    isError,
     refetch,
   } = useProviders({
     page: page + 1,
@@ -103,7 +105,7 @@ export const ProvidersTab: FC<Props> = ({
   const createMutation = useCreateProvider();
   const updateMutation = useUpdateProvider();
   const exportMutation = useExportProvidersCsv();
-  const isBusy = createMutation.isPending || updateMutation.isPending;
+  const isBusy = isLoading || isFetching || createMutation.isPending || updateMutation.isPending;
   const isExporting = exportMutation.isPending;
 
   const handleDownloadCurrentView = () => {
@@ -224,6 +226,7 @@ export const ProvidersTab: FC<Props> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <QueryErrorAlert isError={isError} isFetching={isFetching} onRetry={refetch} />
       {/* Toolbar */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
         <Box sx={{ width: { xs: "100%", sm: 320 } }}>

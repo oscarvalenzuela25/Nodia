@@ -1,3 +1,5 @@
+import { notifyHttpError } from "../../../../../../../../config/httpFeedback";
+import { getInvoiceAiModes, isInvoiceAiMode, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider, type InvoiceAiMode } from "./aiSelection";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useState, useMemo, useRef, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,6 +10,7 @@ import {
   Checkbox,
   Chip,
   CircularProgress,
+  FormControlLabel,
   Grid,
   IconButton,
   Paper,
@@ -38,9 +41,10 @@ import { sileo } from "sileo";
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
 import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
+import QueryErrorAlert from "../../../../../../../../components/QueryErrorAlert";
+import { usePagedProviderOptions } from "../../../../../../infrastructure/usePagedOptions";
 import { getProductLogs } from "../../../../../../infrastructure/services";
 import {
-  useProviders,
   useProducts,
   useAnalyzeInvoice,
   useVerifyIaProviders,
@@ -52,6 +56,7 @@ import type {
   CreateProductPayload,
   BulkUpdateProductItemPayload,
   ProductLogEntity,
+  VerifyIaProviderItem,
 } from "../../../../../../infrastructure/types";
 import { DropzoneBox, ValidBadge, ErrorBadge } from "../../../../styles";
 import {
@@ -67,9 +72,14 @@ import {
 import {
   type InvoiceProvisionalRow,
   validateInvoiceRow,
+  validateInvoiceRows,
   mapExtractedItemsToRows,
   calculatePriceDiff,
+  normalizeVerifyProviders,
 } from "./helpers";
+
+const parseNumericInput = (value: string): number => value.trim() ? Number(value) : Number.NaN;
+const numericInputValue = (value: number | undefined): string => typeof value === "number" && Number.isFinite(value) ? String(value) : "";
 
 const formatFileSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;
@@ -94,6 +104,8 @@ export const ProductInvoiceImport: FC<Props> = ({
   const shouldScrollToResults = useRef<boolean>(false);
 
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
+  const [selectedProviderTax, setSelectedProviderTax] = useState<number | null>(null);
+  const [isPreparingDraft, setIsPreparingDraft] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [rows, setRows] = useState<InvoiceProvisionalRow[]>([]);
   const [invoiceCode, setInvoiceCode] = useState<string>("");
@@ -104,11 +116,33 @@ export const ProductInvoiceImport: FC<Props> = ({
   const [editTaxRate, setEditTaxRate] = useState<number>(19);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { data: iaProviders, isLoading: isVerifyingProviders } = useVerifyIaProviders();
-  const isGeminiAvailable = Boolean(iaProviders?.gemini);
-  const isMistralAvailable = Boolean(iaProviders?.mistral);
-  const [analyzingProvider, setAnalyzingProvider] = useState<"gemini" | "mistral" | null>(null);
-  const [lastUsedProvider, setLastUsedProvider] = useState<"gemini" | "mistral">("gemini");
+  const { data: iaProvidersData, isLoading: isVerifyingProviders, isFetching: isFetchingAiProviders, isError: aiProvidersError, refetch: refetchAiProviders } = useVerifyIaProviders();
+  const providersList = useMemo(() => {
+    return normalizeVerifyProviders(iaProvidersData);
+  }, [iaProvidersData]);
+
+  const [lastUsedProvider, setLastUsedProvider] = useState<VerifyIaProviderItem | null>(null);
+  const [useThinkingMode, setUseThinkingMode] = useState<boolean>(false);
+  const [selectedAiProviderId, setSelectedAiProviderId] = useState<string | null>(null);
+  const [modeSelection, setModeSelection] = useState<{ providerId: string; mode: InvoiceAiMode } | null>(null);
+  const currentAiProvider = resolveInvoiceAiProvider(providersList, selectedAiProviderId);
+  const enabledModes = getInvoiceAiModes(currentAiProvider);
+  const requestedMode = modeSelection?.providerId === currentAiProvider?.id ? modeSelection?.mode : null;
+  const defaultMode = isInvoiceAiMode(currentAiProvider?.default_mode) ? currentAiProvider.default_mode : null;
+  const selectedAiMode = requestedMode
+    ? (enabledModes.includes(requestedMode) ? requestedMode : null)
+    : (defaultMode && enabledModes.includes(defaultMode) ? defaultMode : enabledModes[0] ?? null);
+  const aiConfiguration = resolveInvoiceAiConfiguration(currentAiProvider, selectedAiMode);
+  const currentSupportsThinking = aiConfiguration.supportsThinking;
+  const activeModes = enabledModes.map((value) => ({
+    value,
+    label: `${t(`business:mode_${value}`)}${currentAiProvider?.default_mode === value ? ` (${t("business:default_badge")})` : ""}`,
+  }));
+  const aiProviderOptions = providersList.map((p) => ({
+    value: p.id,
+    label: `${p.name}${p.is_default ? ` (${t("business:default_badge")})` : ""}`,
+  }));
+
   const previewUrl = useMemo(() => {
     if (!file) return null;
     const isImg =
@@ -154,20 +188,10 @@ export const ProductInvoiceImport: FC<Props> = ({
   );
 
   // Queries
-  const { data: providersData } = useProviders({
-    q: { business_id_eq: businessId },
-    limit: 100,
-  });
-  const providers = providersData?.data ?? [];
+  const providerQuery = usePagedProviderOptions(businessId);
+  const providerOptions = providerQuery.options;
 
-  const providerOptions = useMemo(() => {
-    return providers.map((p) => ({
-      value: p.id,
-      label: p.name,
-    }));
-  }, [providers]);
-
-  const { data: productsData } = useProducts({
+  const { data: productsData, isFetching: isFetchingProducts, isError: productsError, refetch: refetchProducts } = useProducts({
     q: { business_id_eq: businessId },
     all: true,
   });
@@ -181,13 +205,13 @@ export const ProductInvoiceImport: FC<Props> = ({
 
   const isAnalyzing = analyzeMutation.isPending;
   const isBusy =
-    isAnalyzing ||
+    isAnalyzing || isPreparingDraft || isFetchingAiProviders || isFetchingProducts || providerQuery.isFetching ||
     isSaving ||
     createInvoiceMutation.isPending ||
     bulkCreateMutation.isPending ||
     bulkUpdateMutation.isPending;
 
-  const isUploadDisabled = !selectedProviderId || isBusy;
+  const isUploadDisabled = !selectedProviderId || selectedProviderTax === null || productsError || isBusy;
   const [isDragging, setIsDragging] = useState(false);
 
   // Prevent browser default behavior of opening dropped files in tab
@@ -246,22 +270,36 @@ export const ProductInvoiceImport: FC<Props> = ({
     }
   };
 
-  const handleAnalyze = async (provider: "gemini" | "mistral" = "gemini") => {
-    if (!file || !selectedProviderId || isBusy) return;
-
-    setAnalyzingProvider(provider);
+  const handleAnalyze = async (
+    provider: VerifyIaProviderItem,
+    modeToUse?: InvoiceAiMode | null
+  ) => {
+    const effectiveMode = modeToUse ?? selectedAiMode;
+    const configuration = resolveInvoiceAiConfiguration(provider, effectiveMode);
+    if (!file || !selectedProviderId || selectedProviderTax === null || productsError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
     setLastUsedProvider(provider);
+    const targetModel = configuration.model;
+    const modelType = "default" as const;
+    const shouldSendThinking = effectiveMode === "token_plan_web" && useThinkingMode && configuration.supportsThinking;
+    const effectiveThinkingLevel = effectiveMode === "token_plan_agentic" ? configuration.thinkingLevel : undefined;
 
+    setIsPreparingDraft(true);
     try {
       const response = await analyzeMutation.mutateAsync({
         file,
         business_id: businessId,
         provider_id: selectedProviderId || undefined,
-        ai_provider: provider,
+        ai_provider: provider.key,
+        ai_provider_id: provider.id,
+        model: targetModel,
+        model_type: modelType,
+        mode: effectiveMode,
+        extended_thinking: shouldSendThinking,
+        thinking_level: effectiveThinkingLevel,
       });
 
       setInvoiceCode(response.code || "");
-      setInvoiceTotalAmount(response.total_amount || 0);
+      setInvoiceTotalAmount(response.total_amount ?? Number.NaN);
       setInvoiceIssueDate(response.data?.issue_date || "");
 
       const items = response.data?.items || [];
@@ -284,7 +322,8 @@ export const ProductInvoiceImport: FC<Props> = ({
             },
           });
           historicalLogs = logsResponse.data || [];
-        } catch {
+        } catch (error) {
+          notifyHttpError(error);
           // Graceful fallback: existingProducts already provides catalog snapshot
         }
       }
@@ -292,14 +331,15 @@ export const ProductInvoiceImport: FC<Props> = ({
       const mappedRows = mapExtractedItemsToRows(
         items,
         existingProducts,
-        historicalLogs
+        historicalLogs,
+        selectedProviderTax
       );
       shouldScrollToResults.current = true;
       setRows(mappedRows);
     } catch {
       // Error handled by mutation onError
     } finally {
-      setAnalyzingProvider(null);
+      setIsPreparingDraft(false);
     }
   };
 
@@ -317,20 +357,20 @@ export const ProductInvoiceImport: FC<Props> = ({
   };
 
   const handleRemoveRow = (index: number) => {
-    setRows((prev) => prev.filter((_, idx) => idx !== index));
+    setRows((prev) => validateInvoiceRows(prev.filter((_, idx) => idx !== index)));
   };
 
   const handleOpenEdit = (index: number) => {
     const row = rows[index];
     setEditingIndex(index);
     setEditFormData({ ...row });
-    if (row.cost_price > 0 && row.cost_price_tax > row.cost_price) {
+    if (row.cost_price > 0 && row.cost_price_tax >= row.cost_price) {
       const derivedTax = Math.round(
         ((row.cost_price_tax - row.cost_price) / row.cost_price) * 100
       );
-      setEditTaxRate(derivedTax > 0 ? derivedTax : 19);
+      setEditTaxRate(derivedTax);
     } else {
-      setEditTaxRate(19);
+      setEditTaxRate(selectedProviderTax ?? 19);
     }
   };
 
@@ -436,14 +476,14 @@ export const ProductInvoiceImport: FC<Props> = ({
       const copy = [...prev];
       copy[editingIndex] = updatedRow;
       // Strict sorting: Red/invalid rows ALWAYS at the top!
-      return copy.sort((a, b) => (a.isValid === b.isValid ? 0 : a.isValid ? 1 : -1));
+      return validateInvoiceRows(copy).sort((a, b) => (a.isValid === b.isValid ? 0 : a.isValid ? 1 : -1));
     });
 
     setEditingIndex(null);
   };
 
   const handleSubmitAll = async () => {
-    if (rows.length === 0 || hasErrors || isBusy || !invoiceCode.trim() || !file) {
+    if (rows.length === 0 || hasErrors || isBusy || !invoiceCode.trim() || !file || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0) {
       return;
     }
 
@@ -451,7 +491,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
     try {
       // =========================================================================
-      // ATOMIC PERSISTENCE STEP 1: Create Invoice
+      // The current API persists the invoice and products in separate requests.
       // If invoice creation fails, STOP immediately. Do NOT touch products.
       // =========================================================================
       await createInvoiceMutation.mutateAsync({
@@ -475,7 +515,7 @@ export const ProductInvoiceImport: FC<Props> = ({
       });
 
       // =========================================================================
-      // ATOMIC PERSISTENCE STEP 2: Create & Update Products
+      // A transactional confirmation endpoint is still required in Server.
       // Only runs if invoice was successfully saved in step 1.
       // =========================================================================
       const newItems: CreateProductPayload[] = [];
@@ -543,6 +583,7 @@ export const ProductInvoiceImport: FC<Props> = ({
       </Box>
 
       {/* Instructions & Upload Area */}
+      <QueryErrorAlert isError={aiProvidersError || productsError || providerQuery.isError} isFetching={isBusy} onRetry={() => Promise.all([refetchAiProviders(), refetchProducts(), providerQuery.refetch()])} />
       <InvoiceSectionPaper>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, display: "flex", alignItems: "center", gap: 1 }}>
           <ReceiptLongOutlinedIcon color="primary" />
@@ -553,22 +594,64 @@ export const ProductInvoiceImport: FC<Props> = ({
         </Typography>
 
         <InvoiceDropzoneContainer>
-          {/* Linked Provider Selector */}
-          <Box sx={{ maxWidth: 400 }}>
-            <SelectSingleInput
-              id="invoice-provider-select"
-              label={t("business:select_provider_required")}
-              required
-              options={providerOptions}
-              value={selectedProviderId || null}
-              onChange={(val) => setSelectedProviderId(val ?? "")}
-              placeholder={t("business:select_provider_placeholder", "Seleccionar proveedor...")}
-              searchPlaceholder={t("business:search_provider_placeholder", "Buscar proveedor...")}
-              disabled={isBusy}
-              dataTestId="invoice-provider-select"
-              helperText={t("business:select_provider_helper")}
-              clearable
-            />
+          {/* Linked Provider Selector & Thinking Mode Toggle */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 2,
+            }}
+          >
+            <Box sx={{ flex: 1, minWidth: 280, maxWidth: 400 }}>
+              <SelectSingleInput
+                id="invoice-provider-select"
+                label={t("business:select_provider_required")}
+                required
+                options={providerOptions}
+                onSearchChange={providerQuery.setSearch} hasMore={providerQuery.hasNextPage}
+                onLoadMore={() => { void providerQuery.fetchNextPage(); }} loadingOptions={providerQuery.isFetching}
+                value={selectedProviderId || null}
+                onChange={(val) => { setSelectedProviderId(val ?? ""); setSelectedProviderTax(providerQuery.providers.find((provider) => provider.id === val)?.tax ?? null); }}
+                placeholder={t("business:select_provider_placeholder", "Seleccionar proveedor...")}
+                searchPlaceholder={t("business:search_provider_placeholder", "Buscar proveedor...")}
+                disabled={isBusy}
+                dataTestId="invoice-provider-select"
+                helperText={t("business:select_provider_helper")}
+                clearable
+              />
+            </Box>
+
+            {/* Thinking Mode Checkbox (ONLY for token_plan_web) */}
+            {Boolean(file && currentSupportsThinking && selectedAiMode === "token_plan_web") && (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Tooltip
+                  title={t("business:use_thinking_mode_tooltip")}
+                  arrow
+                  placement="top"
+                >
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={useThinkingMode}
+                        onChange={(e) => setUseThinkingMode(e.target.checked)}
+                        disabled={isBusy}
+                        size="small"
+                        color="primary"
+                        data-testid="use-thinking-mode-checkbox"
+                      />
+                    }
+                    label={
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {t("business:use_thinking_mode")}
+                      </Typography>
+                    }
+                    sx={{ m: 0, userSelect: "none" }}
+                  />
+                </Tooltip>
+              </Box>
+            )}
           </Box>
 
           {/* Hidden File Input */}
@@ -695,84 +778,184 @@ export const ProductInvoiceImport: FC<Props> = ({
             )}
           </DropzoneBox>
 
-          {/* Analyze Buttons */}
+          {/* Analyze Controls */}
           {file && (
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: 1.5,
-                mt: 1,
+                flexDirection: "column",
+                gap: 2,
+                mt: 2,
+                p: 2.5,
+                borderRadius: 2,
+                border: (theme) => `1px solid ${theme.palette.divider}`,
+                backgroundColor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(255, 255, 255, 0.02)"
+                    : "rgba(0, 0, 0, 0.01)",
               }}
             >
-              {/* Gemini Button */}
-              <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={
-                    isAnalyzing && analyzingProvider === "gemini" ? (
-                      <CircularProgress size={18} color="inherit" />
-                    ) : (
-                      <AutoAwesomeOutlinedIcon />
-                    )
-                  }
-                  disabled={isUploadDisabled || !file || !isGeminiAvailable || isVerifyingProviders}
-                  onClick={() => handleAnalyze("gemini")}
-                  data-testid="analyze-invoice-btn"
-                  sx={{ borderRadius: 2 }}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 2,
+                    flex: 1,
+                  }}
                 >
-                  {isAnalyzing && analyzingProvider === "gemini"
-                    ? t("business:analyzing_with_gemini")
-                    : t("business:analyze_with_gemini")}
-                </Button>
+                  {/* AI Provider Selector */}
+                  <Box sx={{ minWidth: 200, flex: 1, maxWidth: 300 }}>
+                    <SelectSingleInput
+                      id="ai-provider-select"
+                      label={t("business:select_ai_provider_label", "Proveedor de IA")}
+                      options={aiProviderOptions}
+                      value={currentAiProvider?.id || null}
+                      onChange={(val) => {
+                        if (val) {
+                          setSelectedAiProviderId(val);
+                          setModeSelection(null);
+                          setUseThinkingMode(false);
+                        }
+                      }}
+                      placeholder={t(
+                        "business:select_ai_provider_placeholder",
+                        "Seleccionar proveedor de IA..."
+                      )}
+                      disabled={isBusy}
+                      dataTestId="ai-provider-select"
+                      clearable={false}
+                    />
+                  </Box>
 
-                {!isGeminiAvailable && !isVerifyingProviders && (
+                  {/* Mode Selector (only shown if selected provider has more than 1 active mode) */}
+                  {activeModes.length > 1 && (
+                    <Box sx={{ minWidth: 200, flex: 1, maxWidth: 300 }}>
+                      <SelectSingleInput
+                        id="ai-mode-select"
+                        label={t("business:select_ai_mode_label", "Método de Conexión")}
+                        options={activeModes}
+                        value={selectedAiMode}
+                        onChange={(val) => {
+                          if (currentAiProvider && isInvoiceAiMode(val)) {
+                            setModeSelection({ providerId: currentAiProvider.id, mode: val });
+                            setUseThinkingMode(false);
+                          }
+                        }}
+                        placeholder={t(
+                          "business:select_ai_mode_placeholder",
+                          "Seleccionar modo..."
+                        )}
+                        disabled={isBusy}
+                        dataTestId="ai-mode-select"
+                        clearable={false}
+                      />
+                    </Box>
+                  )}
+                </Box>
+
+                {/* Analyze Action Button */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    alignSelf: "flex-end",
+                    gap: 1,
+                  }}
+                >
                   <Tooltip
-                    title={t("business:gemini_session_expired_tooltip")}
+                    title={
+                      !aiConfiguration.canAnalyze
+                        ? (!aiConfiguration.model ? t("business:ai_model_unassigned") : currentAiProvider?.error) ||
+                          (currentAiProvider?.key === "gemini"
+                            ? t("business:gemini_session_expired_tooltip")
+                            : t("business:provider_unavailable"))
+                        : ""
+                    }
                     arrow
                     placement="top"
                   >
-                    <Box
-                      component="span"
-                      data-testid="gemini-disabled-info-icon"
-                      sx={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        cursor: "help",
-                        color: "text.secondary",
-                        "&:hover": { color: "warning.main" },
-                        transition: "color 0.15s ease",
-                      }}
-                    >
-                      <InfoOutlinedIcon sx={{ fontSize: 20 }} />
-                    </Box>
+                    <span>
+                      <Button
+                        variant="contained"
+                        color={currentAiProvider?.key === "mistral" ? "secondary" : "primary"}
+                        startIcon={
+                          isAnalyzing ? (
+                            <CircularProgress size={18} color="inherit" />
+                          ) : (
+                            <AutoAwesomeOutlinedIcon />
+                          )
+                        }
+                        disabled={
+                          isUploadDisabled ||
+                          !file ||
+                          !aiConfiguration.canAnalyze ||
+                          isVerifyingProviders
+                        }
+                        onClick={() =>
+                          currentAiProvider && handleAnalyze(currentAiProvider, selectedAiMode)
+                        }
+                        data-testid="analyze-invoice-btn"
+                        sx={{
+                          borderRadius: 2,
+                          px: 3,
+                          py: 1,
+                          minHeight: "44px",
+                          fontWeight: 600,
+                          textTransform: "none",
+                        }}
+                      >
+                        {isAnalyzing
+                          ? t("business:analyzing_with_provider", {
+                              provider: currentAiProvider?.name || "IA",
+                              defaultValue: `Analizando con ${currentAiProvider?.name || "IA"}...`,
+                            })
+                          : t("business:analyze_with_provider", {
+                              provider: currentAiProvider?.name || "IA",
+                              defaultValue: `Analizar con ${currentAiProvider?.name || "IA"}`,
+                            })}
+                      </Button>
+                    </span>
                   </Tooltip>
-                )}
-              </Box>
 
-              {/* Mistral Button */}
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={
-                  isAnalyzing && analyzingProvider === "mistral" ? (
-                    <CircularProgress size={18} color="inherit" />
-                  ) : (
-                    <AutoAwesomeOutlinedIcon />
-                  )
-                }
-                disabled={isUploadDisabled || !file || !isMistralAvailable}
-                onClick={() => handleAnalyze("mistral")}
-                data-testid="analyze-invoice-mistral-btn"
-                sx={{ borderRadius: 2 }}
-              >
-                {isAnalyzing && analyzingProvider === "mistral"
-                  ? t("business:analyzing_with_mistral")
-                  : t("business:analyze_with_mistral")}
-              </Button>
+                  {!aiConfiguration.canAnalyze && !isVerifyingProviders && (
+                    <Tooltip
+                      title={
+                        currentAiProvider?.error ||
+                        (currentAiProvider?.key === "gemini"
+                          ? t("business:gemini_session_expired_tooltip")
+                          : t("business:provider_unavailable"))
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Box
+                        component="span"
+                        data-testid={`${currentAiProvider?.key || "ai"}-disabled-info-icon`}
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          cursor: "help",
+                          color: "text.secondary",
+                          "&:hover": { color: "warning.main" },
+                          transition: "color 0.15s ease",
+                        }}
+                      >
+                        <InfoOutlinedIcon sx={{ fontSize: 20 }} />
+                      </Box>
+                    </Tooltip>
+                  )}
+                </Box>
+              </Box>
             </Box>
           )}
 
@@ -784,7 +967,15 @@ export const ProductInvoiceImport: FC<Props> = ({
                 <Button
                   color="inherit"
                   size="small"
-                  onClick={() => handleAnalyze(lastUsedProvider)}
+                  onClick={() => {
+                    const target =
+                      lastUsedProvider ||
+                      providersList.find((p) => p.can_use_model) ||
+                      providersList[0];
+                    if (target) {
+                      handleAnalyze(target);
+                    }
+                  }}
                   disabled={isUploadDisabled}
                   data-testid="retry-analyze-btn"
                   sx={{ fontWeight: 600 }}
@@ -837,10 +1028,12 @@ export const ProductInvoiceImport: FC<Props> = ({
               id="invoice-total-field"
               name="invoice_total"
               label={t("business:invoice_total_label")}
-              value={String(invoiceTotalAmount)}
-              onChange={(e) => setInvoiceTotalAmount(Number(e.target.value) || 0)}
+              value={numericInputValue(invoiceTotalAmount)}
+              onChange={(e) => setInvoiceTotalAmount(parseNumericInput(e.target.value))}
               type="number"
               disabled={isBusy}
+              error={!Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
+              helperText={!Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0 ? t("business:invoice_validation_total") : undefined}
               data-testid="invoice-total-field"
             />
             <TextInput
@@ -885,7 +1078,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               <Button
                 variant="contained"
                 color="success"
-                disabled={hasErrors || rows.length === 0 || isBusy || !invoiceCode.trim()}
+                disabled={hasErrors || rows.length === 0 || isBusy || !invoiceCode.trim() || !Number.isFinite(invoiceTotalAmount) || invoiceTotalAmount < 0}
                 onClick={handleSubmitAll}
                 startIcon={isSaving ? <CircularProgress size={18} color="inherit" /> : <ReceiptLongOutlinedIcon />}
                 sx={{ borderRadius: 2 }}
@@ -987,15 +1180,15 @@ export const ProductInvoiceImport: FC<Props> = ({
                       <TableCell sx={{ fontWeight: 600 }}>{row.code || "-"}</TableCell>
                       <TableCell>{row.name}</TableCell>
                       <TableCell align="right">
-                        {row.cost_price > 0 ? `$${row.cost_price.toLocaleString()}` : "-"}
+                        {Number.isFinite(row.cost_price) ? `$${row.cost_price.toLocaleString()}` : "-"}
                       </TableCell>
                       <TableCell align="right">
-                        {row.cost_price_tax > 0 ? `$${row.cost_price_tax.toLocaleString()}` : "-"}
+                        {Number.isFinite(row.cost_price_tax) ? `$${row.cost_price_tax.toLocaleString()}` : "-"}
                       </TableCell>
-                      <TableCell align="right">{row.profit_percentage}%</TableCell>
+                      <TableCell align="right">{Number.isFinite(row.profit_percentage) ? `${row.profit_percentage}%` : "—"}</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600 }}>
                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                          <span>{row.sale_price > 0 ? `$${row.sale_price.toLocaleString()}` : "-"}</span>
+                          <span>{Number.isFinite(row.sale_price) ? `$${row.sale_price.toLocaleString()}` : "-"}</span>
                           {row.priceDiff && (
                             <Tooltip
                               title={
@@ -1030,7 +1223,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                           )}
                         </Box>
                       </TableCell>
-                      <TableCell align="right">{row.stock}</TableCell>
+                      <TableCell align="right">{Number.isFinite(row.stock) ? row.stock : "—"}</TableCell>
 
                       {/* Lock Checkbox (Moved to the right) */}
                       <TableCell align="center" width={48}>
@@ -1244,8 +1437,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="cost_price"
                 type="number"
                 label={t("business:product_cost_price")}
-                value={String(editFormData.cost_price ?? 0)}
-                onChange={(e) => handleCostPriceChange(Number(e.target.value))}
+                value={numericInputValue(editFormData.cost_price)}
+                onChange={(e) => handleCostPriceChange(parseNumericInput(e.target.value))}
                 required
                 data-testid="edit-field-cost"
               />
@@ -1257,8 +1450,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="tax_rate"
                 type="number"
                 label={t("business:product_tax_rate")}
-                value={String(editTaxRate)}
-                onChange={(e) => handleTaxRateChange(Number(e.target.value))}
+                value={numericInputValue(editTaxRate)}
+                onChange={(e) => handleTaxRateChange(parseNumericInput(e.target.value))}
                 data-testid="edit-field-tax-rate"
               />
             </Grid>
@@ -1269,8 +1462,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="cost_price_tax"
                 type="number"
                 label={t("business:product_cost_tax")}
-                value={String(editFormData.cost_price_tax ?? 0)}
-                onChange={(e) => handleCostPriceTaxChange(Number(e.target.value))}
+                value={numericInputValue(editFormData.cost_price_tax)}
+                onChange={(e) => handleCostPriceTaxChange(parseNumericInput(e.target.value))}
                 data-testid="edit-field-cost-tax"
               />
             </Grid>
@@ -1282,8 +1475,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="profit_percentage"
                 type="number"
                 label={t("business:product_profit_margin")}
-                value={String(editFormData.profit_percentage ?? 0)}
-                onChange={(e) => handleProfitMarginChange(Number(e.target.value))}
+                value={numericInputValue(editFormData.profit_percentage)}
+                onChange={(e) => handleProfitMarginChange(parseNumericInput(e.target.value))}
                 data-testid="edit-field-margin"
               />
             </Grid>
@@ -1294,8 +1487,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="sale_price"
                 type="number"
                 label={t("business:product_sale_price")}
-                value={String(editFormData.sale_price ?? 0)}
-                onChange={(e) => handleSalePriceChange(Number(e.target.value))}
+                value={numericInputValue(editFormData.sale_price)}
+                onChange={(e) => handleSalePriceChange(parseNumericInput(e.target.value))}
                 required
                 data-testid="edit-field-sale"
               />
@@ -1308,11 +1501,11 @@ export const ProductInvoiceImport: FC<Props> = ({
                 name="stock"
                 type="number"
                 label={t("business:product_stock")}
-                value={String(editFormData.stock ?? 0)}
+                value={numericInputValue(editFormData.stock)}
                 onChange={(e) =>
                   setEditFormData((prev) => ({
                     ...prev,
-                    stock: Number(e.target.value) || 0,
+                    stock: parseNumericInput(e.target.value),
                   }))
                 }
                 required

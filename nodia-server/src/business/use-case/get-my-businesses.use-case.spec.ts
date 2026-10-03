@@ -59,4 +59,27 @@ describe('GetMyBusinessesUseCase', () => {
     expect(businessServiceMock.findMyBusinesses).toHaveBeenCalledWith(userId, queryParams);
     expect(result).toEqual(mockResponse);
   });
+
+  it('should pass all_businesses param when querying all businesses as super admin', async () => {
+    const userId = '1';
+    const queryParams: GetBusinessesDto = {
+      page: 1,
+      limit: 10,
+      all: false,
+      includes: true,
+      all_businesses: true,
+    };
+
+    const mockResponse = {
+      data: [],
+      meta: { page: 1, limit: 10, total_items: 0, total_pages: 0 },
+    };
+
+    vi.mocked(businessServiceMock.findMyBusinesses!).mockResolvedValue(mockResponse as any);
+
+    const result = await useCase.execute(userId, queryParams);
+
+    expect(businessServiceMock.findMyBusinesses).toHaveBeenCalledWith(userId, queryParams);
+    expect(result).toEqual(mockResponse);
+  });
 });

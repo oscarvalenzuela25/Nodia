@@ -3,12 +3,28 @@ services:
     build: .
     container_name: nodia-gemini-microservice
     restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    cpus: 2.0
+    mem_limit: 2g
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=256m,uid=10001,gid=10001,mode=1777
+      - /app/temp_uploads:size=96m,uid=10001,gid=10001,mode=0700
+    shm_size: 256mb
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
       - ./browser_profile:/app/browser_profile
       - ./session_state:/app/session_state
-      - ./.env:/app/.env
+      - ./.env:/app/.env:ro
     environment:
       - PORT=8000
       - HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

@@ -73,7 +73,7 @@ const UserModalInner: FC<UserModalProps> = ({
       }
       return opt;
     });
-  }, [rolesResponse, availableRoles, i18n.language, i18n, t]);
+  }, [rolesResponse, availableRoles, i18n, t]);
 
   const dynamicModuleOptions = useMemo(() => {
     if (modulesResponse?.data && modulesResponse.data.length > 0) {
@@ -99,7 +99,7 @@ const UserModalInner: FC<UserModalProps> = ({
       }
       return opt;
     });
-  }, [modulesResponse, availableModules, i18n.language, i18n, t]);
+  }, [modulesResponse, availableModules, i18n, t]);
 
   const [isActive, setIsActive] = useState<boolean>(
     initialData?.isActive ?? true

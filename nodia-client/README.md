@@ -43,7 +43,11 @@ Archivo de ejemplo:
 
 Variables:
 
-- `VITE_API_URL`: URL base de la API
+- `VITE_API_URL`: URL base de la API; `/api/v1` en desarrollo y QA con el proxy local.
+- `VITE_GOOGLE_CLIENT_ID`: Client ID OAuth web, compartido con Nodia Server.
+- `NODIA_API_PROXY_TARGET`: destino del proxy de Vite (por defecto `http://localhost:3000`); variable de tooling que no se expone al navegador.
+
+Para compartir QA con un único túnel de Cloudflare, seguir la [configuración de autenticación remota](../docs/mvp/14-authentication.md#qa-remoto-temporal-con-cloudflare-quick-tunnel--2026-10-03). Google y Nodia Server deben autorizar el origen HTTPS exacto del túnel. El proxy de desarrollo no sustituye la configuración de API HTTPS del despliegue permanente.
 
 ## Scripts
 

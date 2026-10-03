@@ -21,6 +21,7 @@ import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
+import { RequireAction } from '../authorization/action-permission.guard.js';
 
 @Controller(['invoice', 'invoices'])
 export class InvoiceController {
@@ -40,6 +41,7 @@ export class InvoiceController {
   }
 
   @Get(['verify-ia-providers', 'verify-ia-provider'])
+  @RequireAction('invoice:analyze')
   verifyIaProviders() {
     return this.verifyIaProvidersUseCase.execute();
   }
@@ -55,16 +57,30 @@ export class InvoiceController {
   }
 
   @Post('analyze')
-  @UseInterceptors(FileInterceptor('file'))
+  @RequireAction('invoice:analyze')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 15 },
+    }),
+  )
   analyze(
     @UploadedFile() file: Express.Multer.File,
     @Body() analyzeInvoiceDto: AnalyzeInvoiceDto,
+    @Query() queryParams?: Partial<AnalyzeInvoiceDto>,
   ) {
-    return this.analyzeInvoiceUseCase.execute(file, analyzeInvoiceDto);
+    const mergedDto: AnalyzeInvoiceDto = {
+      ...queryParams,
+      ...analyzeInvoiceDto,
+    };
+    return this.analyzeInvoiceUseCase.execute(file, mergedDto);
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 12 },
+    }),
+  )
   create(
     @UploadedFile() file: Express.Multer.File | undefined,
     @Body() createInvoiceDto: CreateInvoiceDto,
