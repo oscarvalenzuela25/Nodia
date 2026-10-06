@@ -1,6 +1,17 @@
-import axios, { type AxiosError, type AxiosInstance, type CreateAxiosDefaults } from "axios";
+import axios, {
+  type AxiosError,
+  type AxiosInstance,
+  type CreateAxiosDefaults,
+} from "axios";
 import envs from "./.envs";
 import i18n from "../translate";
+
+// Preserve the machine code independently of localized feedback.
+const serverMessages = new WeakMap<object, string>();
+export const getServerErrorCode = (error: unknown): string | undefined =>
+  error !== null && typeof error === "object"
+    ? serverMessages.get(error)
+    : undefined;
 
 const BASE_API_CONFIG: CreateAxiosDefaults = {
   baseURL: envs.API_URL,
@@ -13,7 +24,7 @@ const BASE_API_CONFIG: CreateAxiosDefaults = {
 };
 
 const buildConfig = (
-  overrides: CreateAxiosDefaults = {}
+  overrides: CreateAxiosDefaults = {},
 ): CreateAxiosDefaults => {
   const baseHeaders = (BASE_API_CONFIG.headers ?? {}) as Record<string, string>;
   const overrideHeaders = (overrides.headers ?? {}) as Record<string, string>;
@@ -43,13 +54,22 @@ const applyDefaultInterceptors = (instance: AxiosInstance) => {
     (response) => response,
     (error: AxiosError<{ message?: string; error?: string }>) => {
       const data = error.response?.data;
-      if (error.response?.status === 429 && data?.error === "RATE_LIMIT_EXCEEDED") {
+      if (typeof data?.message === "string")
+        serverMessages.set(error, data.message);
+      if (
+        error.response?.status === 429 &&
+        data?.error === "RATE_LIMIT_EXCEEDED"
+      ) {
         const retryAfter = Number(error.response.headers["retry-after"]);
-        data.message = Number.isFinite(retryAfter) && retryAfter > 0
-          ? i18n.t("core:rate_limit_exceeded_retry", { seconds: Math.ceil(retryAfter) })
-          : i18n.t("core:rate_limit_exceeded");
+        data.message =
+          Number.isFinite(retryAfter) && retryAfter > 0
+            ? i18n.t("core:rate_limit_exceeded_retry", {
+                seconds: Math.ceil(retryAfter),
+              })
+            : i18n.t("core:rate_limit_exceeded");
       } else if (
-        error.response?.status === 503 && data?.error === "RATE_LIMIT_UNAVAILABLE"
+        error.response?.status === 503 &&
+        data?.error === "RATE_LIMIT_UNAVAILABLE"
       ) {
         data.message = i18n.t("core:rate_limit_unavailable");
       }
@@ -68,7 +88,7 @@ const applyDefaultInterceptors = (instance: AxiosInstance) => {
       }
 
       throw error;
-    }
+    },
   );
 };
 

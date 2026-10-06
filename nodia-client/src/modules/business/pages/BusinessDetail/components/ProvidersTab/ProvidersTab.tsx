@@ -1,6 +1,6 @@
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC, MouseEvent } from "react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -9,6 +9,7 @@ import {
   IconButton,
   ListItemIcon,
   ListItemText,
+  LinearProgress,
   Menu,
   MenuItem,
   Paper,
@@ -28,6 +29,7 @@ import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
@@ -56,6 +58,8 @@ import {
 } from "./components/ProviderBulkImport/helpers";
 import { StatusDot } from "../../styles";
 
+const ProviderContacts = lazy(() => import("./components/ProviderContacts"));
+
 interface Props {
   businessId: string;
   isCreateModalOpenDirectly?: boolean;
@@ -70,6 +74,7 @@ export const ProvidersTab: FC<Props> = ({
   const { t, i18n } = useTranslation(["business", "core"]);
 
   const [search, setSearch] = useState("");
+  const [contactsProvider, setContactsProvider] = useState<ProviderEntity | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(50);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -221,6 +226,14 @@ export const ProvidersTab: FC<Props> = ({
           void refetch();
         }}
       />
+    );
+  }
+
+  if (contactsProvider?.business_id === businessId) {
+    return (
+      <Suspense fallback={<LinearProgress aria-label={t("provider_contacts:loading")} />}>
+        <ProviderContacts key={contactsProvider.id} providerId={contactsProvider.id} providerName={contactsProvider.name} onBack={() => setContactsProvider(null)} />
+      </Suspense>
     );
   }
 
@@ -383,7 +396,15 @@ export const ProvidersTab: FC<Props> = ({
                     </TableCell>
 
                     {/* Name */}
-                    <TableCell sx={{ fontWeight: 600 }}>{prov.name}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>
+                      {prov.name}
+                      <Box sx={{ mt: 0.5 }}>
+                        <Button size="small" startIcon={<ContactsOutlinedIcon fontSize="small" />} disabled={isBusy}
+                          onClick={() => setContactsProvider(prov)} data-testid={`provider-contacts-${prov.id}`}>
+                          {t("provider_contacts:contacts")}
+                        </Button>
+                      </Box>
+                    </TableCell>
 
                     {/* Tax */}
                     <TableCell align="center">

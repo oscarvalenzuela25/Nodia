@@ -40,9 +40,38 @@ Esta carpeta contiene la definición del producto previa al desarrollo. Debe per
 | `18-security-deployment-runbook.md` | Secuencia y pruebas de despliegue seguro, migración y reversión |
 | `19-prelaunch-review.md` | Revisión de Client, Server y Gemini; riesgos y plan de corrección previo al lanzamiento |
 
+## Finanzas personales — ampliación y planes
+
+- [Finanzas personales](20-personal-finance-interview.md): decisiones funcionales confirmadas. [ERD propuesto](21-personal-finance-erd.md) y [ADR-011](../architecture/decisions/ADR-011-personal-finance-ledger.md) pendientes de revisión documental del esquema completo; Backend implementado y BD aislada de pruebas verificada, sin modificar la BD configurada.
+
+| Documento | Propósito |
+|---|---|
+| [22-personal-finance-contracts.md](22-personal-finance-contracts.md) | Contratos propuestos, endpoints, payloads, filtros, saldos y navegación compartidos entre Server y Client |
+| [23-personal-finance-backend-plan.md](23-personal-finance-backend-plan.md) | 26 tareas pequeñas asignables a subagentes, con dependencias, archivos, checklists y pruebas |
+| [24-personal-finance-client-plan.md](24-personal-finance-client-plan.md) | 25 tareas: UI implementada y QA local; FC-24 conserva integración completa pendiente |
+
+El [documento 03](03-domain-model-erd.md) contiene las cinco tablas y nueve FKs financieras. Se actualizó también el diagrama de Obsidian solicitado, conservando los objetos anteriores. Backend implementó los contratos22 y cerró localmente las26 tareas de23, con evidencia DB/HTTP aislada. Client24 implementa la UI y sus contratos; pruebas locales correctas, con flujo completo contra la BD objetivo pendiente (FC-24). No se aplicaron migraciones a la BD del usuario ni se aprobaron documentos automáticamente.
+
 Estos documentos no están aprobados. Amplían el alcance previo al lanzamiento y requieren reconciliar los documentos del MVP afectados antes de implementación definitiva.
 
+## Tools — reservas de alojamiento
+
+| Documento | Propósito y estado |
+|---|---|
+| [25-rental-reservations-interview.md](25-rental-reservations-interview.md) | Requisitos confirmados y contexto de una casa completa, canales manuales, CLP, colaboradores y gastos |
+| [26-rental-reservations-spec.md](26-rental-reservations-spec.md) | Especificación funcional en revisión; decisiones aceptadas del ERD diferenciadas de detalles de contrato |
+| [27-rental-reservations-erd.md](27-rental-reservations-erd.md) | **Esquema aceptado explícitamente el 2026-10-04**, once tablas; incorporado a 03 y JSON de Obsidian con respaldo |
+| [28-rental-reservations-contracts.md](28-rental-reservations-contracts.md) | Contratos Backend implementados localmente, en revisión documental: rutas, payloads, dinero, cancelación, preparación y recuperación de escrituras |
+| [29-rental-reservations-backend-plan.md](29-rental-reservations-backend-plan.md) | Plan de desarrollo Backend para múltiples agentes, con tareas, dependencias, archivos y evidencia de cierre; en revisión |
+| [30-rental-reservations-client-plan.md](30-rental-reservations-client-plan.md) | Client implementado con tres carriles e integrador; RC-01..37/39 verificadas localmente, RC-38 aplicación objetivo pendiente |
+
+Obsidian conserva los objetos anteriores y contiene ahora37 tablas/69 relaciones. Se reconciliaron 03/05/06/07/11/12. [ADR-012](../architecture/decisions/ADR-012-rental-property-collaboration.md) y [ADR-013](../architecture/decisions/ADR-013-rental-integrity-and-idempotency.md) conservan estado propuesto. Backend implementado y verificado en PostgreSQL/HTTP aislados, con 44 operaciones y once entidades; migración/seed objetivo pendientes. Client30 implementado y verificado: 822 pruebas/144 archivos, typecheck/lint/build y navegador→HTTP→PostgreSQL temporal. Primer paso operacional pendiente RC-38: baseline, migración/seed/asignación y smoke con sesión real. Solo 27 está aprobado; no se aprueban automáticamente otros documentos.
+
 Para añadir microservicios internos, consultar la [guía de seguridad](../architecture/internal-microservice-security.md) y [ADR-008](../architecture/decisions/ADR-008-internal-microservices-only.md). Todos se consumen únicamente desde Nodia Server.
+
+## Contactos de proveedores
+
+[31-provider-contacts-proposal.md](31-provider-contacts-proposal.md) registra los requisitos, contratos y evidencia de contactos de proveedores, con horario propio por contacto confirmado el 2026-10-05. Server/Client implementados; en detalle de negocio → Proveedores → Contactos. [ADR-014](../architecture/decisions/ADR-014-provider-contacts.md), ERD, rutas y Kanban reconciliados, sin aprobación automática. Tras la incidencia de endpoints, se corrigió Ransack y aplicó únicamente la migración de contactos en BD local configurada con respaldo previo; ambos listados responden 200 en smoke HTTP de solo lectura. Suites: 566 Server / 841 Client; integración aislada y QA responsive correctos. Sesión real, otros entornos y despliegue pendientes.
 
 ## Estados
 

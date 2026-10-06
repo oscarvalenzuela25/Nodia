@@ -15,6 +15,7 @@
   "maintenance_title": "Mantenimiento",
   "maintenance_message": "Estamos realizando mejoras. Vuelve a intentarlo en unos minutos.",
   "filter": "Filtro",
+  "remove_filter": "Quitar filtro: {{label}}",
   "filter_action": "Filtrar",
   "filtering_by": "Filtrando por",
   "clear_filters": "Limpiar filtros",
@@ -48,5 +49,7 @@
   "load_more": "Cargar más",
   "select_loaded": "Seleccionar resultados cargados",
   "deselect_loaded": "Deseleccionar resultados cargados",
-  "clear_search": "Limpiar búsqueda"
+  "clear_search": "Limpiar búsqueda",
+  "clear_selection": "Limpiar selección",
+  "open_filters": "Abrir filtros"
 }

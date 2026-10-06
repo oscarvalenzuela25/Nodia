@@ -150,3 +150,15 @@ En cualquier contenedor con scroll (`overflow: auto`, `overflow-y: auto`, `overf
 ### 4.9 Políticas de Inteligencia Artificial (Cero API Keys y Cero Modelos Hardcodeados)
 - **Cuotas Duales Exclusivas:** Solo se permite operar con la **Cuota Agéntica** (sesión activa Antigravity) y la **Cuota Web** (Gemini Web vía sesión de navegador). Queda terminantemente prohibido el uso o requerimiento de API keys (gratuitas o de pago).
 - **Cero Modelos Hardcodeados:** Prohibido escribir nombres o versiones de modelos fijos en código (`|| "gemini-..."`, etc.). La resolución de modelos es 100% dinámica desde la base de datos (`provider.fields?.selected_model`), sincronización activa o el SDK del proveedor.
+
+### 4.10 Veracidad de Información Operativa y Fuentes Comprobables
+- **Fuente Comprobable Obligatoria:** Toda información operativa debe tener una fuente comprobable. Antes de implementar cada dato de la interfaz, verificar su origen en el backend, SDK o respuesta real del proveedor.
+- **Prohibición de Datos Inventados o Deducidos:** Prohibido inventar cuotas, límites, capacidades, disponibilidad, latencias, fechas de comprobación o funciones no implementadas. No deducir capacidades a partir del nombre del modelo.
+- **Límites de Inferencia de Estado:** La configuración guardada no demuestra disponibilidad actual. Una sesión autenticada no demuestra que una inferencia funcione.
+- **Tratamiento ante Datos No Entregados:**
+  - Si el servicio no entrega un dato: devolver `null` o un estado explícito de desconocido.
+  - Ocultar la cifra o capacidad correspondiente en frontend.
+  - No agregar valores de respaldo ("placeholders" o defaults inventados) para completar la interfaz.
+  - Conservar los ceros reales: cero (`0`) y desconocido (`null`/`undefined`) son conceptualmente distintos.
+- **Aislamiento Estricto de Mocks:** Los datos simulados solo pueden existir en fixtures de pruebas, identificados claramente y completamente separados del código de producción.
+- **Verificación Previa a la Entrega:** Antes de entregar, probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica. Indicar con rigor técnico qué se comprobó realmente y qué sigue pendiente.

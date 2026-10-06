@@ -71,6 +71,8 @@ Requisito confirmado el 2026-09-12: separar la navegación estricta de la navega
 
 El menú lateral y las tarjetas de Home usan únicamente asignaciones de una sesión validada y omiten grupos vacíos. La navegación no concede acceso por un nombre de rol hardcodeado; el contexto de módulos y las reglas de acciones del backend son responsabilidades distintas. La autorización fina de operaciones del Kanban permanece pendiente.
 
+Al confirmar una actualización de usuario (`PUT /user/:id`), el cliente invalida la lista de usuarios y el contexto de autorización; las consultas activas vuelven a solicitar `GET /authorization/context` para la sesión actual, tanto al editar al propio usuario como a otro. El contexto recibido actualiza el menú y los guards. Un guardado rechazado no dispara esta recarga. Si falla la lectura posterior del contexto, se mantiene el éxito de la escritura y se permite reintentar la lectura, sin repetir la actualización.
+
 `useAuth().isDemo` indica que no existe sesión local; `isSessionValid` permite conservar una vista validada durante la renovación y `isSessionActive` indica que se pueden iniciar consultas remotas. Restauración o fallo temporal de validación no se convierten en modo demo. Las páginas demo deben usar datos locales; el guard no habilita llamadas anónimas a la API ni inventa datos de demostración.
 
 Ejemplo al registrar rutas:
@@ -197,4 +199,10 @@ La configuración de desarrollo existente conserva `synchronize`; en producción
 
 Para email/password u otro proveedor se agrega su verificador/caso de uso y se reutiliza `CreateSessionUseCase`. Contraseñas requerirán hashing, verificación, recuperación y sus políticas; no se agrega ese mecanismo por adelantado.
 
-La autorización fina por acción en endpoints y las reglas administrativas del Kanban siguen pendientes. Esta entrega valida identidad/sesión y carga los permisos reales; no implementa el `PermissionsGuard` completo.
+La autorización fina descrita en la entrega original debe interpretarse según la [política confirmada el 2026-10-03](19-prelaunch-review.md#revisión-actualizada-de-nodia-server--2026-10-03): administración sin restricciones por acción y acceso global a productos/facturas/archivos, manteniendo sesión obligatoria.
+
+## Incidencia de análisis desde Negocios — 2026-10-06
+
+`GET /api/v1/invoices/verify-ia-providers` y `POST /api/v1/invoices/analyze` conservaban `RequireAction('invoice:analyze')` y devolvían 403 a usuarios sin esa acción, aunque pudieran entrar al módulo de Negocios. Se retira esa exigencia de ambos handlers, incluidos aliases singular/plural y `verify-ia-provider`, conforme a la política vigente. Se conservan autenticación global, validación de entradas/archivos y comprobaciones de configuración IA.
+
+`npm run test:invoice-access:integration` verifica el pipeline HTTP compilado con AuthGuard, AuthenticateRequestUseCase y ActionPermissionGuard reales: usuario sin acciones obtiene 200 en verificación y alcanza el caso de uso de análisis; archivo ausente y UUID inválido generan 400; solicitudes anónimas/sesiones revocadas generan 401. Una ruta de control con permiso explícito sigue devolviendo 403: el guard global no fue deshabilitado. Solo fronteras de token/sesión/persistencia sintéticas; sin Google, DB configurada ni inferencias. Server: 598 pruebas en 98 archivos, build/lint correctos con siete avisos históricos. Reinicio del proceso sin watch y smoke con sesión real pendientes.

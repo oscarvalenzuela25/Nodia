@@ -1,7 +1,7 @@
 # Arquitectura Inicial — Nodia Parte 1
 
-> Estado: en revisión — ampliaciones auth e IA y cambio de despliegue; aprobación histórica del MVP conservada
-> Última actualización: 2026-09-28
+> Estado: en revisión — ampliaciones auth, IA y Reservas y cambio de despliegue; aprobación histórica del MVP conservada
+> Última actualización: 2026-10-04
 > Dependencias: Documentos 01 al 10 aprobados.
 
 ## Objetivo
@@ -108,3 +108,15 @@ Antes de iniciar consultas de datos, el cliente requiere una sesión validada co
 En el cliente, `config/api.ts` compone el transporte de `axiosInstance.ts` con el gestor de `authSession.ts`, al que inyecta el cliente HTTP. Los servicios consumen esa API configurada. La lógica de sesión queda fuera de la fábrica Axios y todas las instancias derivadas coordinan el refresh mediante el mismo gestor, sin imports circulares.
 
 La navegación distingue `GuardStrict` para `/settings/*` (sesión validada y módulo asignado al destino) de `Guard` para rutas públicas que permiten demo sin consultas remotas. El menú usa las mismas asignaciones; escribir una URL no evita el guard. `NoGuard` queda reservado a login. Este control de interfaz no reemplaza la autorización fina por acciones del backend.
+
+## Reservas de alojamiento — ampliación 2026-10-04
+
+Dominio vertical dentro de Nodia Server, NestJS/TypeORM/PostgreSQL. Casa es el ámbito compartido por propietario y colaboradores; independencia de Business, Finanzas personales y proveedores IA. No requiere otro servicio ni integración de pagos externos. [ERD 27](27-rental-reservations-erd.md) aceptado, [ADR-012](../architecture/decisions/ADR-012-rental-property-collaboration.md) y [ADR-013](../architecture/decisions/ADR-013-rental-integrity-and-idempotency.md) conservan revisión técnica.
+
+Controladores delgados, DTOs estrictos y casos de uso con acceso/autoría derivados de sesión. Escrituras transaccionales con protocolo común de lock casa → reserva cuando corresponda; acceso se revalida tras lock, incluyendo revocación. Efecto, auditoría append-only y respuesta idempotente se confirman con el mismo EntityManager. Consultas acotadas/paginadas y agregados por conjuntos, sin N+1 por reserva. Relaciones compuestas impiden asociar datos de otra casa; no sustituyen control de acceso.
+
+[Contratos28](28-rental-reservations-contracts.md), [plan Backend 29](29-rental-reservations-backend-plan.md) y [plan Client30](30-rental-reservations-client-plan.md) fijan endpoints, responsables, dependencias y pruebas. Migración incremental con synchronize deshabilitado en ensayos aislados; no conectar nuevas entidades a la BD del usuario durante planificación. Client30 implementa caché por sesión/casa, ack/GET, UUIDv4 y recuperación, feedback único y tres carriles tras base común. Contratos runtime y allowlists de listas; sin escrituras optimistas ni reenvío automático de mutaciones. Renovación401 conserva UUID/body con transporte común. Ruta estricta y pertenencia por casa son controles distintos.
+
+### Implementación local de Reservas — 2026-10-04
+
+Server compone recursos verticales rental dentro de AppModule y centraliza transacciones/locks/idempotencia en rental-common. Controladores delgados y casos de uso tipados; dependencias compartidas no importan módulos Nest de recurso. Se desactiva synchronize en runtime para todos los entornos; esquema mediante migraciones explícitas, baseline histórico necesario. PostgreSQL aislado verifica las garantías de [29](29-rental-reservations-backend-plan.md); Client implementado: 822 pruebas/144 archivos, typecheck/lint/build y navegador→API→PostgreSQL temporal. BD configurada y smoke real pendientes RC-38; intenciones en memoria sin persistencia de PII. Solo ERD27 aprobado; desarrollo no aprueba documentos.

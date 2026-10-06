@@ -45,13 +45,16 @@ const BusinessModalInner: FC<BusinessModalProps> = ({
     e.preventDefault();
     if (!isFormValid || isSubmitting) return;
 
-    const translates = [
-      {
-        key: "description",
-        es: descriptionTranslations.es?.trim() ?? "",
-        en: descriptionTranslations.en?.trim() ?? "",
-      },
-    ];
+    const description = {
+      key: "description",
+      es: descriptionTranslations.es?.trim() ?? "",
+      en: descriptionTranslations.en?.trim() ?? "",
+    };
+    // An empty update clears existing descriptions; an empty creation needs
+    // no translation records.
+    const translates = isEditing || description.es || description.en
+      ? [description]
+      : [];
 
     const payload: BusinessFormData = {
       ...(initialData?.id ? { id: initialData.id } : {}),

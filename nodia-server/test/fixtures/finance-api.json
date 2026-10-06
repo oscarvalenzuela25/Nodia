@@ -1,0 +1,664 @@
+{
+  "synthetic": true,
+  "responses": {
+    "categories": {
+      "data": [
+        {
+          "id": "1",
+          "user_id": "1",
+          "name": "Synthetic category",
+          "key": "shared",
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:52.019Z",
+          "updated_at": "2026-10-04T04:21:53.254Z"
+        },
+        {
+          "id": "6",
+          "user_id": "1",
+          "name": "Volume category",
+          "key": "volume",
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.400Z",
+          "updated_at": "2026-10-04T04:21:53.400Z"
+        },
+        {
+          "id": "3",
+          "user_id": "1",
+          "name": "Zero category",
+          "key": "zero",
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:52.061Z",
+          "updated_at": "2026-10-04T04:21:52.061Z"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 3,
+        "total_pages": 1
+      }
+    },
+    "category": {
+      "id": "1",
+      "user_id": "1",
+      "name": "Synthetic category",
+      "key": "shared",
+      "is_active": true,
+      "created_at": "2026-10-04T04:21:52.019Z",
+      "updated_at": "2026-10-04T04:21:53.254Z"
+    },
+    "category_groups": {
+      "data": [
+        {
+          "id": "2",
+          "user_id": "1",
+          "name": "Overlapping group",
+          "key": "group2",
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:52.104Z",
+          "updated_at": "2026-10-04T04:21:52.104Z",
+          "category_count": 1
+        },
+        {
+          "id": "1",
+          "user_id": "1",
+          "name": "Synthetic group",
+          "key": "group",
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:52.077Z",
+          "updated_at": "2026-10-04T04:21:52.077Z",
+          "category_count": 1
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 2,
+        "total_pages": 1
+      }
+    },
+    "category_group": {
+      "id": "1",
+      "user_id": "1",
+      "name": "Synthetic group",
+      "key": "group",
+      "is_active": true,
+      "created_at": "2026-10-04T04:21:52.077Z",
+      "updated_at": "2026-10-04T04:21:52.077Z",
+      "category_count": 1,
+      "categories": [
+        {
+          "id": "1",
+          "name": "Synthetic category",
+          "key": "shared",
+          "is_active": true
+        }
+      ]
+    },
+    "movements": {
+      "data": [
+        {
+          "id": "2020",
+          "user_id": "1",
+          "name": "Synthetic ignored response",
+          "amount": "1",
+          "type": "income",
+          "status": "pending",
+          "category_id": "1",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.564Z",
+          "updated_at": "2026-10-04T04:21:53.564Z",
+          "category": {
+            "id": "1",
+            "name": "Synthetic category",
+            "key": "shared"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2019",
+          "user_id": "1",
+          "name": "Synthetic volume 2000",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2018",
+          "user_id": "1",
+          "name": "Synthetic volume 1999",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2017",
+          "user_id": "1",
+          "name": "Synthetic volume 1998",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2016",
+          "user_id": "1",
+          "name": "Synthetic volume 1997",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2015",
+          "user_id": "1",
+          "name": "Synthetic volume 1996",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2014",
+          "user_id": "1",
+          "name": "Synthetic volume 1995",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2013",
+          "user_id": "1",
+          "name": "Synthetic volume 1994",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2012",
+          "user_id": "1",
+          "name": "Synthetic volume 1993",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        },
+        {
+          "id": "2011",
+          "user_id": "1",
+          "name": "Synthetic volume 1992",
+          "amount": "1",
+          "type": "income",
+          "status": "received",
+          "category_id": "6",
+          "obligation_id": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.404Z",
+          "updated_at": "2026-10-04T04:21:53.404Z",
+          "category": {
+            "id": "6",
+            "name": "Volume category",
+            "key": "volume"
+          },
+          "obligation": null
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 2014,
+        "total_pages": 202
+      }
+    },
+    "movement": {
+      "id": "2",
+      "user_id": "1",
+      "name": "Historical edit",
+      "amount": "20000",
+      "type": "income",
+      "status": "cancelled",
+      "category_id": "1",
+      "obligation_id": "1",
+      "is_active": false,
+      "created_at": "2026-10-04T04:21:52.411Z",
+      "updated_at": "2026-10-04T04:21:53.223Z",
+      "category": {
+        "id": "1",
+        "name": "Synthetic category",
+        "key": "shared"
+      },
+      "obligation": {
+        "id": "1",
+        "name": "Synthetic loan",
+        "type": "loan"
+      }
+    },
+    "obligations": {
+      "data": [
+        {
+          "id": "4",
+          "user_id": "1",
+          "name": "Cancel race",
+          "key": "cancel-race",
+          "type": "loan",
+          "amount": "100",
+          "description": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.071Z",
+          "updated_at": "2026-10-04T04:21:53.071Z",
+          "paid_amount": "60",
+          "remaining_amount": "40",
+          "initial_movement": {
+            "id": "9",
+            "type": "expense",
+            "status": "paid",
+            "amount": "100",
+            "category_id": "1"
+          }
+        },
+        {
+          "id": "6",
+          "user_id": "1",
+          "name": "Cancelled origin",
+          "key": "cancel",
+          "type": "debt",
+          "amount": "1",
+          "description": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:53.269Z",
+          "updated_at": "2026-10-04T04:21:53.269Z",
+          "paid_amount": "0",
+          "remaining_amount": null,
+          "initial_movement": {
+            "id": "16",
+            "type": "income",
+            "status": "cancelled",
+            "amount": "1",
+            "category_id": "1"
+          }
+        },
+        {
+          "id": "2",
+          "user_id": "1",
+          "name": "Concurrent loan",
+          "key": "race",
+          "type": "loan",
+          "amount": "100",
+          "description": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:52.933Z",
+          "updated_at": "2026-10-04T04:21:52.933Z",
+          "paid_amount": "60",
+          "remaining_amount": "40",
+          "initial_movement": {
+            "id": "4",
+            "type": "expense",
+            "status": "paid",
+            "amount": "100",
+            "category_id": "1"
+          }
+        },
+        {
+          "id": "3",
+          "user_id": "1",
+          "name": "Pending race",
+          "key": "pending-race",
+          "type": "loan",
+          "amount": "100",
+          "description": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:52.978Z",
+          "updated_at": "2026-10-04T04:21:52.978Z",
+          "paid_amount": "70",
+          "remaining_amount": "30",
+          "initial_movement": {
+            "id": "6",
+            "type": "expense",
+            "status": "paid",
+            "amount": "100",
+            "category_id": "1"
+          }
+        },
+        {
+          "id": "1",
+          "user_id": "1",
+          "name": "Synthetic loan",
+          "key": "loan",
+          "type": "loan",
+          "amount": "120000",
+          "description": null,
+          "is_active": true,
+          "created_at": "2026-10-04T04:21:52.396Z",
+          "updated_at": "2026-10-04T04:21:52.565Z",
+          "paid_amount": "20000",
+          "remaining_amount": "100000",
+          "initial_movement": {
+            "id": "1",
+            "type": "expense",
+            "status": "paid",
+            "amount": "120000",
+            "category_id": "1"
+          }
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 5,
+        "total_pages": 1
+      }
+    },
+    "obligation": {
+      "id": "1",
+      "user_id": "1",
+      "name": "Synthetic loan",
+      "key": "loan",
+      "type": "loan",
+      "amount": "120000",
+      "description": null,
+      "is_active": true,
+      "created_at": "2026-10-04T04:21:52.396Z",
+      "updated_at": "2026-10-04T04:21:52.565Z",
+      "paid_amount": "20000",
+      "remaining_amount": "100000",
+      "initial_movement": {
+        "id": "1",
+        "type": "expense",
+        "status": "paid",
+        "amount": "120000",
+        "category_id": "1"
+      }
+    },
+    "created_obligation": {
+      "id": "1",
+      "user_id": "1",
+      "name": "Synthetic loan",
+      "key": "loan",
+      "type": "loan",
+      "amount": "100000",
+      "description": null,
+      "is_active": true,
+      "created_at": "2026-10-04T04:21:52.396Z",
+      "updated_at": "2026-10-04T04:21:52.396Z",
+      "paid_amount": "0",
+      "remaining_amount": "100000",
+      "initial_movement": {
+        "id": "1",
+        "type": "expense",
+        "status": "paid",
+        "amount": "100000",
+        "category_id": "1"
+      }
+    },
+    "created_movement": {
+      "id": "2",
+      "user_id": "1",
+      "name": "Synthetic repayment",
+      "amount": "20000",
+      "type": "income",
+      "status": "received",
+      "category_id": "1",
+      "obligation_id": "1",
+      "is_active": true,
+      "created_at": "2026-10-04T04:21:52.411Z",
+      "updated_at": "2026-10-04T04:21:52.411Z",
+      "category": {
+        "id": "1",
+        "name": "Synthetic category",
+        "key": "shared"
+      },
+      "obligation": {
+        "id": "1",
+        "name": "Synthetic loan",
+        "type": "loan"
+      }
+    },
+    "errors": {
+      "invalid_filter": {
+        "statusCode": 400,
+        "timestamp": "2026-10-04T04:21:53.700Z",
+        "path": "/api/v1/finance/movements",
+        "method": "GET",
+        "error": "Bad Request",
+        "message": "finance:invalid_query"
+      },
+      "missing_or_other_owner": {
+        "statusCode": 404,
+        "timestamp": "2026-10-04T04:21:53.704Z",
+        "path": "/api/v1/finance/obligations/1",
+        "method": "GET",
+        "error": "Not Found",
+        "message": "finance:not_found"
+      },
+      "principal_conflict": {
+        "statusCode": 409,
+        "timestamp": "2026-10-04T04:21:53.720Z",
+        "path": "/api/v1/finance/obligations/1",
+        "method": "PUT",
+        "error": "Conflict",
+        "message": "finance:principal_below_payments"
+      }
+    },
+    "overview": {
+      "scope": {
+        "active": "active",
+        "movement_filters": {
+          "q": {},
+          "category_ids": [],
+          "category_group_ids": [],
+          "obligation_id": null
+        },
+        "obligation_balances": {
+          "active": "active",
+          "repayments": "all_confirmed_history",
+          "includes_inactive_repayments": true,
+          "ignores_movement_filters": true
+        }
+      },
+      "totals": {
+        "income_amount": "18455751272964314797",
+        "expense_amount": "120300",
+        "net_amount": "18455751272964194497",
+        "movement_count": 2014,
+        "pending_count": 2,
+        "cancelled_count": 1
+      },
+      "counts": {
+        "categories": 3,
+        "category_groups": 2,
+        "loans": 4,
+        "debts": 1
+      },
+      "obligations": {
+        "loan_remaining_amount": "100110",
+        "debt_remaining_amount": "0"
+      }
+    },
+    "overview_categories": {
+      "data": [
+        {
+          "name": "Synthetic category",
+          "key": "shared",
+          "is_active": true,
+          "id": "1",
+          "movement_count": 14,
+          "income_amount": "18455751272964312797",
+          "expense_amount": "120300",
+          "net_amount": "18455751272964192497"
+        },
+        {
+          "name": "Volume category",
+          "key": "volume",
+          "is_active": true,
+          "id": "6",
+          "movement_count": 2000,
+          "income_amount": "2000",
+          "expense_amount": "0",
+          "net_amount": "2000"
+        },
+        {
+          "name": "Zero category",
+          "key": "zero",
+          "is_active": true,
+          "id": "3",
+          "movement_count": 0,
+          "income_amount": "0",
+          "expense_amount": "0",
+          "net_amount": "0"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 3,
+        "total_pages": 1
+      },
+      "scope": {
+        "active": "active",
+        "movement_filters": {
+          "q": {},
+          "category_ids": [],
+          "category_group_ids": [],
+          "obligation_id": null
+        },
+        "obligation_balances": {
+          "active": "active",
+          "repayments": "all_confirmed_history",
+          "includes_inactive_repayments": true,
+          "ignores_movement_filters": true
+        }
+      }
+    },
+    "overview_category_groups": {
+      "data": [
+        {
+          "name": "Overlapping group",
+          "key": "group2",
+          "is_active": true,
+          "id": "2",
+          "movement_count": 14,
+          "income_amount": "18455751272964312797",
+          "expense_amount": "120300",
+          "net_amount": "18455751272964192497"
+        },
+        {
+          "name": "Synthetic group",
+          "key": "group",
+          "is_active": true,
+          "id": "1",
+          "movement_count": 14,
+          "income_amount": "18455751272964312797",
+          "expense_amount": "120300",
+          "net_amount": "18455751272964192497"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 2,
+        "total_pages": 1
+      },
+      "scope": {
+        "active": "active",
+        "movement_filters": {
+          "q": {},
+          "category_ids": [],
+          "category_group_ids": [],
+          "obligation_id": null
+        },
+        "obligation_balances": {
+          "active": "active",
+          "repayments": "all_confirmed_history",
+          "includes_inactive_repayments": true,
+          "ignores_movement_filters": true
+        }
+      },
+      "overlapping_groups": true
+    }
+  }
+}

@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import i18n from "../../../../../translate";
+import { authorizationKeys } from "../../../../../services/authorizationService";
 import { createUser, getUsers, updateUser } from "./services";
 import type {
   CreateUserPayload,
@@ -78,7 +79,10 @@ export const useUpdateUser = () => {
       payload: UpdateUserPayload;
     }) => updateUser(userId, payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: userKeys.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: userKeys.all }),
+        queryClient.invalidateQueries({ queryKey: authorizationKeys.context() }),
+      ]);
       sileo.success({
         title: i18n.t("users:notifications.success_title"),
         description: i18n.t("users:notifications.updated_success"),
@@ -94,4 +98,3 @@ export const useUpdateUser = () => {
     },
   });
 };
-

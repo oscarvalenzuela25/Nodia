@@ -26,7 +26,10 @@ import {
   GetAiApiKeysResponse,
   GetAiProviderEventsResponse,
 } from './types/ai-provider.types.js';
-import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import {
+  applyRansack,
+  validateRansackEnvelope,
+} from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { TranslationService } from '../translation/translation.service.js';
 import {
@@ -73,7 +76,10 @@ export class AiProviderService {
       qb.leftJoinAndSelect('ai_provider.api_keys', 'api_keys');
     } else {
       // key belongs to the catalogue, including when relation payloads are omitted.
-      qb.leftJoin('ai_provider.catalog', 'catalog');
+      qb.leftJoin('ai_provider.catalog', 'catalog').addSelect([
+        'catalog.id',
+        'catalog.key',
+      ]);
     }
 
     applyRansack(qb, q, 'ai_provider', RANSACK_POLICIES.ai_provider);
@@ -81,13 +87,19 @@ export class AiProviderService {
     qb.addOrderBy('ai_provider.is_default', 'DESC');
     qb.addOrderBy('ai_provider.id', 'ASC');
 
+    const toPublic = (item: AiProvider) => {
+      const result = sanitizeProviderFields(item);
+      if (!includes) delete result.catalog;
+      return result;
+    };
+
     if (all) {
       const rawData = await qb.getMany();
       const data = await this.translationService.attachTranslations(
         'ai_providers',
         rawData,
       );
-      const sanitizedData = data.map((item) => sanitizeProviderFields(item));
+      const sanitizedData = data.map(toPublic);
       return {
         data: sanitizedData as any,
         meta: {
@@ -108,7 +120,7 @@ export class AiProviderService {
       'ai_providers',
       rawData,
     );
-    const sanitizedData = data.map((item) => sanitizeProviderFields(item));
+    const sanitizedData = data.map(toPublic);
     const total_pages = Math.ceil(total_items / limit);
 
     return {
@@ -223,7 +235,7 @@ export class AiProviderService {
     }
 
     const existingCount = await this.aiProviderRepository.count();
-    const isDefault = providerData.is_default ?? (existingCount === 0);
+    const isDefault = providerData.is_default ?? existingCount === 0;
     if (isDefault) {
       await this.aiProviderRepository
         .createQueryBuilder()
@@ -309,7 +321,9 @@ export class AiProviderService {
     }
 
     const effectiveDefaultMode =
-      rest.default_mode !== undefined ? rest.default_mode : existing.default_mode;
+      rest.default_mode !== undefined
+        ? rest.default_mode
+        : existing.default_mode;
 
     if (effectiveDefaultMode) {
       if (effectiveDefaultMode === 'api_key' && !effectiveUseApiKey) {
@@ -322,7 +336,10 @@ export class AiProviderService {
           'El modo por defecto "token_plan_web" no puede seleccionarse si dicho canal no está habilitado.',
         );
       }
-      if (effectiveDefaultMode === 'token_plan_agentic' && !effectiveUseAgentic) {
+      if (
+        effectiveDefaultMode === 'token_plan_agentic' &&
+        !effectiveUseAgentic
+      ) {
         throw new BadRequestException(
           'El modo por defecto "token_plan_agentic" no puede seleccionarse si dicho canal no está habilitado.',
         );
@@ -332,8 +349,7 @@ export class AiProviderService {
     if (rest.fields) {
       const updatedFields = { ...existing.fields, ...rest.fields };
       const dummy = { key: key || existing.key, fields: updatedFields };
-      sanitizeProviderFields(dummy);
-      rest.fields = dummy.fields;
+      rest.fields = sanitizeProviderFields(dummy).fields;
     }
 
     if (rest.is_default === true) {
@@ -623,8 +639,10 @@ export class AiProviderService {
     }
   }
 
-  async updateProviderFields(id: string, fields: Record<string, any>): Promise<void> {
+  async updateProviderFields(
+    id: string,
+    fields: Record<string, any>,
+  ): Promise<void> {
     await this.aiProviderRepository.update(id, { fields });
   }
 }
-

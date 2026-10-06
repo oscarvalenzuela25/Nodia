@@ -19,6 +19,9 @@ type Props = {
   title?: string;
   subtitle?: string;
   triggerLabel?: string;
+  disabled?: boolean;
+  applyDisabled?: boolean;
+  onOpen?: () => void;
 };
 
 const Filter: FC<Props> = ({
@@ -29,19 +32,29 @@ const Filter: FC<Props> = ({
   title,
   subtitle,
   triggerLabel,
+  disabled = false,
+  applyDisabled = false,
+  onOpen,
 }) => {
   const { t } = useTranslation("core");
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const handleOpen = () => setIsOpen(true);
+  const handleOpen = () => {
+    if (!disabled) {
+      onOpen?.();
+      setIsOpen(true);
+    }
+  };
   const handleClose = () => setIsOpen(false);
 
   const handleApply = () => {
+    if (disabled || applyDisabled) return;
     onFilter();
     handleClose();
   };
 
   const handleClear = () => {
+    if (disabled) return;
     onClear();
     handleClose();
   };
@@ -54,6 +67,7 @@ const Filter: FC<Props> = ({
         variant="outlined"
         color="error"
         onClick={handleClear}
+        disabled={disabled}
         sx={{ borderRadius: 2 }}
       >
         {t("clear_filters", "Limpiar filtros")}
@@ -74,6 +88,7 @@ const Filter: FC<Props> = ({
           variant="contained"
           color="primary"
           onClick={handleApply}
+          disabled={disabled || applyDisabled}
           sx={(theme) => ({
             color: theme.palette.primary.contrastText,
             borderRadius: 2,
@@ -89,8 +104,9 @@ const Filter: FC<Props> = ({
     <>
       <FilterTrigger
         onClick={handleOpen}
+        disabled={disabled}
         hasActiveFilters={hasActiveFilters}
-        aria-label="Abrir filtros"
+        aria-label={triggerLabel ?? t("open_filters")}
       >
         <TuneOutlinedIcon fontSize="small" />
         <span>{triggerLabel ?? t("filter", "Filtro")}</span>

@@ -1,0 +1,14 @@
+{
+  "calendarEnter": "2026-11-01 → 2026-12-01",
+  "tabArrowRight": "Preparación",
+  "focusOpen": {
+    "dialog": "_r_31_",
+    "role": "dialog",
+    "tag": "DIV"
+  },
+  "focusClosed": {
+    "dialogOpen": false,
+    "tag": "BUTTON",
+    "text": "Crear"
+  }
+}

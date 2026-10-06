@@ -39,10 +39,12 @@ import {
   useUpdateAiProvider,
   useSyncAiProviderModels,
   useGeminiEngines,
+  useSelectableModels,
 } from "../../infrastructure/useServices";
 import type {
   SupportedModelDef,
 } from "../../infrastructure/types";
+import { getObservedWebQuota } from "../../infrastructure/observations";
 import type { ProviderDetailProps } from "./types";
 import {
   DetailContainer,
@@ -85,7 +87,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   onRenewSession,
   onConfigure,
 }) => {
-  const { t } = useTranslation(["ai_providers", "core"]);
+  const { t, i18n } = useTranslation(["ai_providers", "core"]);
   const queryClient = useQueryClient();
 
   // Queries
@@ -230,24 +232,28 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const providerFields = currentDbProvider?.fields;
   const modeFields = useMemo(() => {
     if (!activeTab || !providerFields) return {};
-    return (providerFields[activeTab] as Record<string, unknown>) || {};
+    const scoped = Boolean(providerFields.token_plan_web || providerFields.token_plan_agentic || providerFields.api_key);
+    return (providerFields[activeTab] as Record<string, unknown>) || (scoped ? {} : providerFields);
   }, [providerFields, activeTab]);
 
-  // Models list strictly scoped to active mode
+  const { data: modelObservations, isError: modelsError, isLoading: modelsLoading, isFetching: modelsFetching, refetch: refetchModels } = useSelectableModels(
+    { provider_id: currentDbProvider?.id, mode: activeTab || undefined },
+    { enabled: Boolean(currentDbProvider?.id && activeTab) },
+  );
+  const webQuotas = getObservedWebQuota(geminiEnginesData?.web);
   const availableModels: SupportedModelDef[] = useMemo(() => {
-    if (modeFields?.available_models && Array.isArray(modeFields.available_models)) {
-      return modeFields.available_models as SupportedModelDef[];
-    }
-    // Fallback to root ONLY if provider has no mode-scoped configs at all (legacy migration)
-    const hasAnyModeScoped =
-      Boolean(providerFields?.token_plan_agentic) ||
-      Boolean(providerFields?.token_plan_web) ||
-      Boolean(providerFields?.api_key);
-    if (!hasAnyModeScoped && Array.isArray(providerFields?.available_models)) {
-      return providerFields.available_models as SupportedModelDef[];
-    }
-    return [];
-  }, [modeFields, providerFields]);
+    const hasScoped = Boolean(providerFields?.token_plan_agentic || providerFields?.token_plan_web || providerFields?.api_key);
+    const saved = Array.isArray(modeFields.available_models) ? modeFields.available_models
+      : !hasScoped && Array.isArray(providerFields?.available_models) ? providerFields.available_models : [];
+    const observation = modelObservations?.find((entry) => entry.providerId === currentDbProvider?.id
+      && entry.mode === activeTab && entry.models_source === "provider");
+    return (saved as SupportedModelDef[]).map((model) => {
+      const live = observation?.models.find((entry) => entry.id === model.id);
+      return { id: model.id, name: model.name, displayName: model.displayName,
+        description: live?.description ?? "", contextWindow: live?.contextWindow ?? undefined,
+        capabilities: live?.capabilities ?? [], isRecommended: live?.isRecommended === true };
+    });
+  }, [modeFields, providerFields, modelObservations, currentDbProvider?.id, activeTab]);
 
   // Active Model strictly scoped to active mode
   const activeDbModel = useMemo(() => {
@@ -286,26 +292,13 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
   const supportsReasoning = activeModelDef?.capabilities?.includes("reasoning") === true;
 
-  const extendedThinkingEnabled = Boolean(
-    modeFields?.enable_extended_thinking ??
-      currentDbProvider?.fields?.enable_extended_thinking
-  );
+  const extendedThinkingEnabled = modeFields.enable_extended_thinking === true;
 
   // Informative OCR focus model scoped to active mode
   const ocrFocusedModelId =
     (modeFields?.ocr_focus_model as string) ||
     (modeFields?.ocr_model as string) ||
-    (currentDbProvider?.fields?.ocr_focus_model as string) ||
-    (currentDbProvider?.fields?.ocr_model as string) ||
     "";
-
-  // Auto-reconnect switch state
-  const dbAutoReconnect =
-    typeof currentDbProvider?.fields?.auto_reconnect === "boolean"
-      ? currentDbProvider.fields.auto_reconnect
-      : true;
-  const [localAutoReconnect, setLocalAutoReconnect] = useState<boolean | null>(null);
-  const autoReconnect = localAutoReconnect ?? dbAutoReconnect;
 
   // Mutations
   const updateProviderMutation = useUpdateAiProvider();
@@ -318,6 +311,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     isFetchingHealth ||
     isFetchingProviders ||
     isFetchingEngines ||
+    modelsLoading ||
+    modelsFetching ||
     updateProviderMutation.isPending ||
     syncModelsMutation.isPending;
 
@@ -488,38 +483,6 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     }
   };
 
-  const handleToggleAutoReconnect = async (checked: boolean) => {
-    if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
-    const previous = autoReconnect;
-    setLocalAutoReconnect(checked);
-
-    try {
-      await updateProviderMutation.mutateAsync({
-        id: currentDbProvider.id,
-        data: {
-          fields: {
-            ...currentDbProvider.fields,
-            auto_reconnect: checked,
-          },
-        },
-      });
-      sileo.success({
-        title: t(
-          "ai_providers:detail.auto_reconnect_saved",
-          "Preferencia de auto-reconexión actualizada"
-        ),
-      });
-      refetchProviders();
-    } catch (error) {
-      setLocalAutoReconnect(previous);
-      sileo.error({
-        title: t("core:server_error_toast"),
-        description: getHttpErrorMessage(error),
-      });
-    }
-  };
-
-
   const handleToggleModeDefault = async (mode: ModeTabKey) => {
     if (currentDbProvider?.id) {
       try {
@@ -600,9 +563,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   // Operational check:
   // Each subscription mode must have an explicitly operational session.
   // Token plan agentic mode requires agentic environment available.
+  const isAgenticSessionActive = geminiEnginesData?.agentic?.available === true
+    && geminiEnginesData?.agentic?.authenticated === true;
   const isModeOperational = activeTab === "token_plan_web" ? isWebSessionActive
-    : activeTab === "token_plan_agentic" && geminiEnginesData?.agentic?.available === true
-      && geminiEnginesData?.agentic?.authenticated === true;
+    : activeTab === "token_plan_agentic" && isAgenticSessionActive;
 
   const canSyncModels =
     Boolean(currentDbProvider?.id) && isModeOperational && !isBusy;
@@ -635,7 +599,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
   return (
     <DetailContainer>
-      <QueryErrorAlert isError={providersError || healthError || enginesError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth(), refetchGeminiEngines()])} />
+      <QueryErrorAlert isError={providersError || healthError || enginesError || modelsError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth(), refetchGeminiEngines(), refetchModels()])} />
       {/* UNIFIED TOP HEADER PANEL */}
       <TopHeaderPanel elevation={0}>
         <TopNavigationRow>
@@ -1079,30 +1043,9 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 ? "FL"
                 : model.id.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase();
 
-              const roleSubtitle =
-                model.role === "ocr"
-                  ? t(
-                      "ai_providers:detail.model_specialized_ocr",
-                      "Extracción Óptica Especializada de Documentos"
-                    )
-                  : model.isRecommended
-                  ? t(
-                      "ai_providers:detail.model_primary_reasoning",
-                      "Modelo Primario de Razonamiento Complejo"
-                    )
-                  : t(
-                      "ai_providers:detail.model_fast_extractor",
-                      "Extractor Ligero & Micro-tareas de Alta Velocidad"
-                    );
-
-              const contextText = model.contextWindow
-                ? `${(model.contextWindow / 1000000).toFixed(1).replace(".0", "")}M Tokens`
-                : "128K Tokens";
-              const capText = model.capabilities?.includes("vision")
-                ? "Texto/Audio/Video"
-                : model.role === "ocr"
-                ? "OCR / Docs"
-                : "Texto / JSON";
+              const contextText = typeof model.contextWindow === "number" && model.contextWindow > 0
+                ? t("ai_providers:detail.context_tokens", { tokens: model.contextWindow.toLocaleString(i18n.language) }) : null;
+              const capabilities = model.capabilities ?? [];
 
               return (
                 <ModelCardPaper key={model.id} selected={isSelected}>
@@ -1128,7 +1071,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                           {model.id}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {roleSubtitle}
+                          {t("ai_providers:detail.saved_model_configuration")}
                         </Typography>
                       </Box>
                     </Box>
@@ -1166,20 +1109,16 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     {model.description}
                   </Typography>
 
-                  <ModelMetricsGrid>
-                    <MetricColumn>
-                      <MetricTitle>
-                        {t("ai_providers:detail.context_window", "Ventana Contexto")}
-                      </MetricTitle>
+                  {(contextText || capabilities.length > 0) && <ModelMetricsGrid>
+                    {contextText && <MetricColumn>
+                      <MetricTitle>{t("ai_providers:detail.context_window")}</MetricTitle>
                       <MetricVal>{contextText}</MetricVal>
-                    </MetricColumn>
-                    <MetricColumn>
-                      <MetricTitle>
-                        {t("ai_providers:detail.capacity_multimodal", "Capacidad")}
-                      </MetricTitle>
-                      <MetricVal>{capText}</MetricVal>
-                    </MetricColumn>
-                  </ModelMetricsGrid>
+                    </MetricColumn>}
+                    {capabilities.length > 0 && <MetricColumn>
+                      <MetricTitle>{t("ai_providers:detail.capacity_multimodal")}</MetricTitle>
+                      <MetricVal>{capabilities.join(", ")}</MetricVal>
+                    </MetricColumn>}
+                  </ModelMetricsGrid>}
 
                   {/* INFORMATIVE OCR FOCUS SWITCH */}
                   <Box
@@ -1245,7 +1184,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                   </Box>
 
                   {/* Agentic reasoning level */}
-                  {(activeTab === "token_plan_agentic") && (
+                  {(activeTab === "token_plan_agentic" && capabilities.includes("reasoning")) && (
                     <Box
                       sx={(theme) => ({
                         display: "flex",
@@ -1408,21 +1347,18 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                   {t("ai_providers:detail.web_session_status", "Estado de la Sesión Web")}:{" "}
                   {isWebSessionActive
-                    ? t("ai_providers:detail.web_session_healthy", "Activa y Saludable")
+                    ? t("ai_providers:detail.web_session_healthy")
                     : t("ai_providers:detail.status_expired", "Requiere Iniciar Sesión")}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {t(
-                    "ai_providers:detail.web_session_desc",
-                    "Token de autenticación persistente renovado por expiración de cookies de sesión corporativa."
-                  )}
+                  {t("ai_providers:detail.web_session_desc")}
                 </Typography>
               </Box>
             </Box>
 
             <Chip
               size="small"
-              label={isWebSessionActive ? "SESIÓN OPERATIVA" : "AUTENTICACIÓN REQUERIDA"}
+              label={t(isWebSessionActive ? "ai_providers:detail.web_authenticated" : "ai_providers:detail.web_authentication_required")}
               color={isWebSessionActive ? "success" : "warning"}
               sx={{ fontWeight: 700, fontSize: "0.75rem" }}
             />
@@ -1451,17 +1387,14 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 )}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                {t(
-                  "ai_providers:detail.cloud_bridge_desc",
-                  "Al hacer clic, se iniciará una pestaña temporal segura de navegador en la nube con streaming remoto para autenticar la cuenta de Google. Las credenciales se procesan en el entorno aislado de Google sin exponer contraseñas a los servidores centrales de Nodia."
-                )}
+                {t("ai_providers:detail.cloud_bridge_desc")}
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
                 <ShieldOutlinedIcon sx={{ fontSize: 16, color: "success.main" }} />
                 <Typography variant="caption" color="text.secondary">
                   {t(
                     "ai_providers:detail.cloud_bridge_security",
-                    "Conexión cifrada TLS 1.3 con soporte de Llaves de Seguridad FIDO2 / 2FA."
+                    "Abre el navegador remoto habilitado por el servicio para autenticar la sesión de Google."
                   )}
                 </Typography>
               </Box>
@@ -1502,53 +1435,31 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             <Box sx={{ mb: 2 }}>
               <Typography variant="subtitle2" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
                 <SpeedOutlinedIcon fontSize="small" color="primary" />
-                {t("ai_providers:detail.quota_title", "Cuotas de Uso y Créditos Disponibles")}
+                {t("ai_providers:detail.quota_title")}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {t("ai_providers:detail.quota_web_desc", "Cuotas y créditos de solicitudes por modelo para la sesión de navegador.")}
+                {t("ai_providers:detail.quota_web_desc")}
               </Typography>
             </Box>
 
             <QuotaGrid>
-              {Object.entries(geminiEnginesData?.web?.quota ?? {}).filter(([, quota]) =>
-                quota && Number.isFinite(quota.usage_percentage) && Number.isFinite(quota.remaining) && Number.isFinite(quota.total)
-              ).map(([key, quota]) => (
-                <QuotaCard key={key} elevation={0}>
+              {webQuotas.map((quota) => (
+                <QuotaCard key={quota.key} elevation={0}>
                   <QuotaHeader>
-                    <Typography variant="subtitle2">{key}</Typography>
-                    <Chip size="small" label={`${quota?.usage_percentage}%`} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{t("ai_providers:detail.reported_quota_bucket", { bucket: quota.key })}</Typography>
+                    <Chip size="small" label={quota.percentage + "%"} />
                   </QuotaHeader>
-                  <Typography variant="caption" color="text.secondary">
-                    {t("ai_providers:detail.quota_remaining_requests", { remaining: quota?.remaining, total: quota?.total })}
-                  </Typography>
-                  <LinearProgress variant="determinate" value={Math.max(0, Math.min(quota?.usage_percentage ?? 0, 100))} sx={{ height: 6, borderRadius: 3 }} />
+                  {quota.remaining !== null && <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+                    {quota.total !== null ? t("ai_providers:detail.quota_remaining_units", { remaining: quota.remaining, total: quota.total })
+                      : t("ai_providers:detail.quota_reported_units", { remaining: quota.remaining })}
+                  </Typography>}
+                  <LinearProgress variant="determinate" value={quota.percentage} sx={{ height: 6, borderRadius: 3 }} />
                 </QuotaCard>
               ))}
-              {!Object.values(geminiEnginesData?.web?.quota ?? {}).some((quota) =>
-                quota && Number.isFinite(quota.usage_percentage) && Number.isFinite(quota.remaining) && Number.isFinite(quota.total)
-              ) && <Typography color="text.secondary">{t("ai_providers:detail.quota_unavailable")}</Typography>}
+              {!webQuotas.length && <Typography color="text.secondary">{t("ai_providers:detail.quota_unavailable")}</Typography>}
             </QuotaGrid>
           </Box>
 
-          {/* OPERATIONAL PARAMETERS */}
-          <Box sx={{ mt: 1 }}>
-            <SwitchWrapper>
-              <StyledFormControlLabel
-                control={
-                  <StyledSwitch
-                    checked={autoReconnect}
-                    onChange={(e) => handleToggleAutoReconnect(e.target.checked)}
-                    disabled={updateProviderMutation.isPending}
-                  />
-                }
-                label={t(
-                  "ai_providers:detail.auto_reconnect",
-                  "Auto-reconexión y persistencia de cookies en segundo plano (Playwright Daemon)"
-                )}
-                labelPlacement="start"
-              />
-            </SwitchWrapper>
-          </Box>
         </DetailPanel>
       )}
 
@@ -1589,14 +1500,14 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                 <StatusDot
                   color={
-                    geminiEnginesData?.agentic?.available
+                    isAgenticSessionActive
                       ? "#10b981"
                       : "#64748b"
                   }
                 />
                 <Box>
                   <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                    {geminiEnginesData?.agentic?.available
+                    {isAgenticSessionActive
                       ? t(
                           "ai_providers:detail.agentic_status_active_badge",
                           "SESIÓN AGÉNTICA CONECTADA"
@@ -1618,12 +1529,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               <Chip
                 size="small"
                 label={
-                  geminiEnginesData?.agentic?.available
-                    ? "SESIÓN AGÉNTICA ACTIVA"
-                    : "NO DETECTADO"
+                  isAgenticSessionActive
+                    ? t("ai_providers:detail.agentic_status_active_badge")
+                    : t("ai_providers:detail.agentic_status_inactive_badge")
                 }
                 color={
-                  geminiEnginesData?.agentic?.available ? "success" : "default"
+                  isAgenticSessionActive ? "success" : "default"
                 }
                 sx={{ fontWeight: 700, fontSize: "0.75rem" }}
               />
@@ -1634,15 +1545,9 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               color="text.secondary"
               sx={{ lineHeight: 1.6 }}
             >
-              {geminiEnginesData?.agentic?.available
-                ? t(
-                    "ai_providers:detail.agentic_desc_active",
-                    "Conexión operativa con el entorno local de Antigravity. Permite razonamiento extendido (thinking tokens), lectura multimodal nativa y procesamiento sin consumo de API keys."
-                  )
-                : t(
-                    "ai_providers:detail.agentic_desc_inactive",
-                    "No se detectó un entorno activo de Antigravity en la máquina local o el servicio no está corriendo."
-                  )}
+              {isAgenticSessionActive
+                ? t("ai_providers:detail.agentic_desc_active")
+                : t("ai_providers:detail.agentic_desc_inactive")}
             </Typography>
 
             <Box
@@ -1650,10 +1555,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             >
               <ShieldOutlinedIcon sx={{ fontSize: 16, color: "primary.main" }} />
               <Typography variant="caption" color="text.secondary">
-                {t(
-                  "ai_providers:engine_selection.agentic_desc",
-                  "Utiliza la sesión activa del entorno local de Antigravity (Google One AI Premium). Soporta razonamiento/thinking tokens, OCR multimodal nativo y alta velocidad."
-                )}
+                {t("ai_providers:engine_selection.agentic_desc")}
               </Typography>
             </Box>
           </AgenticStatusCard>

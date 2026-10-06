@@ -20,7 +20,14 @@
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
-    "migration:run": "npm run build && typeorm migration:run -d dist/config/data-source.js"
+    "migration:run": "npm run build && typeorm migration:run -d dist/config/data-source.js",
+    "seed:finance": "npm run build && node scripts/seed-personal-finance.mjs",
+    "test:finance:integration": "npm run build && node test/finance.integration.mjs",
+    "seed:rental": "npm run build && node scripts/seed-rental-reservations.mjs",
+    "test:rental:integration": "npm run build && node test/rental.integration.mjs",
+    "test:provider-contacts:integration": "npm run build && node test/provider-contacts.integration.mjs",
+    "test:invoice-access:integration": "npm run build && node test/invoice-access.integration.mjs",
+    "migration:provider-contacts": "npm run build && node scripts/migrate-provider-contacts.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1136.0",
@@ -41,6 +48,7 @@
     "google-auth-library": "^11.0.2",
     "ioredis": "^5.11.1",
     "ipaddr.js": "2.2.0",
+    "libphonenumber-js": "1.13.14",
     "pg": "^8.23.0",
     "qs": "^6.16.0",
     "reflect-metadata": "^0.2.2",

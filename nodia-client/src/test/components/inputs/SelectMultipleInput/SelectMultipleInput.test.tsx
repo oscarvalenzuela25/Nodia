@@ -6,6 +6,15 @@ import SelectMultipleInput from "../../../../../src/components/inputs/SelectMult
 describe("SelectMultipleInput", () => {
   const options = ["Admin", "User", "Manager", "SuperAdmin"];
 
+  it("uses selected-only labels without removing selections outside the loaded page", async () => {
+    const change = vi.fn(); const user = userEvent.setup();
+    render(<SelectMultipleInput label="Categories" options={[{ value: "1", label: "Loaded one" }, { value: "2", label: "Loaded two" }]} selectedOptions={[{ value: "99", label: "Outside page" }]} value={["1", "2", "99"]} onChange={change} onSearchChange={vi.fn()} />);
+    expect(screen.getByText("Outside page")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Categories" }));
+    await user.click(screen.getByRole("checkbox", { name: /Deseleccionar.*cargados|Deselect loaded/ }));
+    expect(change).toHaveBeenCalledWith(["99"]);
+  });
+
   it("renders label, placeholder and required indicator", () => {
     render(
       <SelectMultipleInput

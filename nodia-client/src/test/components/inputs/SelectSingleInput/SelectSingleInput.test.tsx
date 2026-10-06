@@ -78,7 +78,7 @@ describe("SelectSingleInput", () => {
     expect(screen.getByText("Módulo de Configuración")).toBeInTheDocument();
 
     const clearButton = screen.getByRole("button", {
-      name: /clear selection/i,
+      name: /Limpiar selección/i,
     });
     await user.click(clearButton);
 

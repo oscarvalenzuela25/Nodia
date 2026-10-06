@@ -25,6 +25,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   confirmText,
   cancelText,
   isLoading = false,
+  confirmDisabled = false,
   size = "sm",
   showCloseButton = true,
   disableEscapeKeyDown = false,
@@ -41,7 +42,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
 
   const handleDialogClose = (
     _event: object,
-    reason: "backdropClick" | "escapeKeyDown"
+    reason: "backdropClick" | "escapeKeyDown",
   ) => {
     if (isLoading) return;
     if (reason === "backdropClick" || reason === "escapeKeyDown") {
@@ -60,7 +61,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
   };
 
   const handleConfirm = () => {
-    if (isLoading) return;
+    if (isLoading || confirmDisabled) return;
     onConfirm();
   };
 
@@ -91,7 +92,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
                 ["color", "background-color"],
                 {
                   duration: theme.transitions.duration.shorter,
-                }
+                },
               ),
               "&:hover": {
                 color: theme.palette.text.primary,
@@ -125,7 +126,7 @@ export const ConfirmDialog: FC<ConfirmDialogProps> = ({
         <ConfirmButton
           variant="contained"
           onClick={handleConfirm}
-          disabled={isLoading}
+          disabled={isLoading || confirmDisabled}
         >
           {confirmText ?? t("core:confirm")}
         </ConfirmButton>

@@ -1,4 +1,4 @@
-import { Suspense, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 import BaseLayout from "../layouts/BaseLayout";
 import PublicLayout from "../layouts/PublicLayout";
@@ -6,17 +6,29 @@ import NoGuard from "./NoGuard";
 import Guard from "./Guard";
 import GuardStrict from "./GuardStrict";
 import RouteError from "../modules/core/pages/RouteError";
-import RouteLoader from "../components/RouteLoader";
+import RouteContent from "./RouteContent";
 import { lazyWithRetry } from "./lazyRoute";
+import { PERSONAL_FINANCE_ROUTE } from "../modules/finances/constants/routes";
+import { RENTAL_RESERVATIONS_ROUTE } from "../modules/rentals/constants/routes";
 
 // Lazy-loaded route pages (Code Splitting per route)
 const Home = lazyWithRetry(() => import("../modules/home/pages/Home"));
-const Business = lazyWithRetry(() => import("../modules/business/pages/Business"));
+const RentalReservations=lazyWithRetry(()=>import("../modules/rentals/pages/RentalReservations"));
+const PersonalFinance = lazyWithRetry(
+  () => import("../modules/finances/pages/PersonalFinance"),
+);
+const Business = lazyWithRetry(
+  () => import("../modules/business/pages/Business"),
+);
 const BusinessDetail = lazyWithRetry(
   () => import("../modules/business/pages/BusinessDetail"),
 );
-const Users = lazyWithRetry(() => import("../modules/generalSettings/pages/Users"));
-const Roles = lazyWithRetry(() => import("../modules/generalSettings/pages/Roles"));
+const Users = lazyWithRetry(
+  () => import("../modules/generalSettings/pages/Users"),
+);
+const Roles = lazyWithRetry(
+  () => import("../modules/generalSettings/pages/Roles"),
+);
 const Actions = lazyWithRetry(
   () => import("../modules/generalSettings/pages/Actions"),
 );
@@ -33,11 +45,13 @@ const Maintenance = lazyWithRetry(
 const NotFound = lazyWithRetry(() => import("../modules/core/pages/NotFound"));
 
 const renderLazyPage = (children: ReactNode) => (
-  <Suspense fallback={<RouteLoader variant="page" />}>{children}</Suspense>
+  <RouteContent>{children}</RouteContent>
 );
 
 const renderLazyPublic = (children: ReactNode) => (
-  <Suspense fallback={<RouteLoader variant="fullscreen" />}>{children}</Suspense>
+  <RouteContent variant="fullscreen">
+    {children}
+  </RouteContent>
 );
 
 const router = createBrowserRouter([
@@ -45,6 +59,18 @@ const router = createBrowserRouter([
     path: "/",
     errorElement: <RouteError />,
     children: [
+      {
+        path: RENTAL_RESERVATIONS_ROUTE,
+        element: <GuardStrict modulePath={RENTAL_RESERVATIONS_ROUTE}><BaseLayout>{renderLazyPage(<RentalReservations/>)}</BaseLayout></GuardStrict>,
+      },
+      {
+        path: PERSONAL_FINANCE_ROUTE,
+        element: (
+          <GuardStrict modulePath={PERSONAL_FINANCE_ROUTE}>
+            <BaseLayout>{renderLazyPage(<PersonalFinance />)}</BaseLayout>
+          </GuardStrict>
+        ),
+      },
       {
         index: true,
         element: (

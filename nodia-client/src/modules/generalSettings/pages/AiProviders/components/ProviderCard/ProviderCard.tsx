@@ -1,6 +1,7 @@
+import { getObservedWebQuota } from "../../infrastructure/observations";
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, Box, LinearProgress, Tooltip, Chip } from "@mui/material";
+import { Button, Typography, Box, LinearProgress, Chip } from "@mui/material";
 import { sileo } from "sileo";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import HubOutlinedIcon from "@mui/icons-material/HubOutlined";
@@ -59,7 +60,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
   onConfigure,
   onGoToDetail,
 }) => {
-  const { t } = useTranslation(["ai_providers", "core"]);
+  const { t, i18n } = useTranslation(["ai_providers", "core"]);
 
   const isGemini = provider.key.toLowerCase().includes("gemini");
   const isMistral = provider.key.toLowerCase().includes("mistral");
@@ -73,6 +74,8 @@ const ProviderCard: FC<ProviderCardProps> = ({
     && geminiEnginesData.agentic.authenticated === true;
   const isWebActive = isGemini && geminiEnginesData?.web?.available === true
     && geminiEnginesData.web.authenticated === true;
+
+  const webQuotas = getObservedWebQuota(geminiEnginesData?.web);
 
   // Provider Icon
   const renderProviderIcon = () => {
@@ -240,17 +243,11 @@ const ProviderCard: FC<ProviderCardProps> = ({
                   const modes: string[] = [];
                   if (provider.use_token_plan_agentic) modes.push("Agentic");
                   if (provider.use_token_plan_web) modes.push("Plan Web");
-                  if (modes.length > 0) return `Modos: ${modes.join(" • ")}`;
+                  if (modes.length > 0) return t("ai_providers:cards.configured_modes", { modes: modes.join(" • ") });
                   return isWebMode
                     ? t("ai_providers:cards.mode_web", "Modo: Sesión Web Headless")
                     : t("ai_providers:connection.no_modes");
                 })()}
-              </SubtitleTag>
-              <span>•</span>
-              <SubtitleTag>
-                {isWebMode
-                  ? t("ai_providers:cards.tag_multimodal", "Extracción & Multi-modal")
-                  : t("ai_providers:cards.tag_multimodal")}
               </SubtitleTag>
             </TagRow>
           </TitleBox>
@@ -280,7 +277,9 @@ const ProviderCard: FC<ProviderCardProps> = ({
         {/* Last Check */}
         <MetricBlock>
           <MetricLabel>{t("ai_providers:cards.last_check", "Última comprobación")}</MetricLabel>
-          <MetricValue>{provider.lastCheck}</MetricValue>
+          <MetricValue>{provider.lastCheck && Number.isFinite(Date.parse(provider.lastCheck))
+            ? new Date(provider.lastCheck).toLocaleString(i18n.language)
+            : t("ai_providers:cards.check_unverified")}</MetricValue>
         </MetricBlock>
       </MetricsGrid>
 
@@ -301,8 +300,6 @@ const ProviderCard: FC<ProviderCardProps> = ({
           const webModel =
             (webFields.selected_model as string) ||
             (!hasScopedFields && provider.default_mode === "token_plan_web" ? provider.selectedModel : undefined);
-
-          const webQuota = geminiEnginesData?.web?.quota;
 
           return (
             <ModesPanelsRow>
@@ -397,51 +394,12 @@ const ProviderCard: FC<ProviderCardProps> = ({
                       )}
                     </Typography>
 
-                    {/* QUOTA METRICS: FLASH & PRO */}
-                    {Boolean(webQuota?.flash || webQuota?.pro) && (
-                      <Box sx={{ display: "flex", gap: 1, mt: 0.5, width: "100%" }}>
-                        {webQuota?.flash && Number.isFinite(webQuota.flash.usage_percentage) && (
-                          <Tooltip title={t("ai_providers:cards.quota_flash_tooltip", "Cuota de solicitudes Gemini Flash")}>
-                            <Box sx={{ flex: 1, minWidth: 0 }}>
-                              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.25 }}>
-                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 600, color: "text.secondary" }}>
-                                  {t("ai_providers:cards.quota_flash_label", "Flash")}:
-                                </Typography>
-                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 700 }}>
-                                  {webQuota.flash.usage_percentage ?? 0}%
-                                </Typography>
-                              </Box>
-                              <LinearProgress
-                                variant="determinate"
-                                value={Math.min(webQuota.flash.usage_percentage ?? 0, 100)}
-                                color="info"
-                                sx={{ height: 4, borderRadius: 2 }}
-                              />
-                            </Box>
-                          </Tooltip>
-                        )}
-                        {webQuota?.pro && Number.isFinite(webQuota.pro.usage_percentage) && (
-                          <Tooltip title={t("ai_providers:cards.quota_pro_tooltip", "Cuota de solicitudes Gemini Pro")}>
-                            <Box sx={{ flex: 1, minWidth: 0 }}>
-                              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.25 }}>
-                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 600, color: "text.secondary" }}>
-                                  {t("ai_providers:cards.quota_pro_label", "Pro")}:
-                                </Typography>
-                                <Typography variant="caption" sx={{ fontSize: "0.6875rem", fontWeight: 700 }}>
-                                  {webQuota.pro.usage_percentage ?? 0}%
-                                </Typography>
-                              </Box>
-                              <LinearProgress
-                                variant="determinate"
-                                value={Math.min(webQuota.pro.usage_percentage ?? 0, 100)}
-                                color="secondary"
-                                sx={{ height: 4, borderRadius: 2 }}
-                              />
-                            </Box>
-                          </Tooltip>
-                        )}
-                      </Box>
-                    )}
+                    {webQuotas.map((quota) => <Box key={quota.key} sx={{ mt: 0.5, width: "100%" }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("ai_providers:detail.reported_quota_bucket", { bucket: quota.key })}: {quota.percentage}%
+                      </Typography>
+                      <LinearProgress variant="determinate" value={quota.percentage} sx={{ height: 4, borderRadius: 2 }} />
+                    </Box>)}
                   </ModePanelBody>
                 </ModePanelCard>
               )}

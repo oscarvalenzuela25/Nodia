@@ -3,6 +3,7 @@ import type { SvgIconProps } from "@mui/material";
 
 // AI & Automation
 import SmartToyIcon from "@mui/icons-material/SmartToy";
+import HolidayVillageOutlinedIcon from "@mui/icons-material/HolidayVillageOutlined";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
@@ -122,6 +123,7 @@ export interface IconDefinition {
 }
 
 export const ICON_REGISTRY: Record<string, ComponentType<SvgIconProps>> = {
+  HolidayVillageOutlined: HolidayVillageOutlinedIcon,
   // AI & Automation
   SmartToy: SmartToyIcon,
   SmartToyOutlined: SmartToyOutlinedIcon,

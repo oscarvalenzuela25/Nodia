@@ -292,7 +292,9 @@ export class BusinessService {
     const { translates, ...businessData } = createBusinessDto;
     const business = this.businessRepository.create({
       ...businessData,
-      has_description: Boolean(translates && translates.length > 0),
+      has_description: translates?.some(({ key, es, en }) =>
+        ['description', 'comment'].includes(key) && Boolean(es?.trim() || en?.trim()),
+      ) ?? false,
       owner_id: String(userId),
     });
 
@@ -321,7 +323,9 @@ export class BusinessService {
     Object.assign(business, rest);
 
     if (translates !== undefined) {
-      business.has_description = translates.length > 0;
+      business.has_description = translates.some(({ key, es, en }) =>
+        ['description', 'comment'].includes(key) && Boolean(es?.trim() || en?.trim()),
+      );
       await this.translationService.updateTranslations('businesses', id, translates);
     }
 

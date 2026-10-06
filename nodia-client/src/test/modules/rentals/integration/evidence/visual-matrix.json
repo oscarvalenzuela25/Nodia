@@ -1,0 +1,110 @@
+[
+  {
+    "theme": "light",
+    "language": "es",
+    "viewport": 1440,
+    "bg": "rgb(247, 249, 243)",
+    "heading": "Reservas de alojamiento",
+    "scroll": 1430,
+    "width": 1430
+  },
+  {
+    "theme": "light",
+    "language": "es",
+    "viewport": 768,
+    "bg": "rgb(247, 249, 243)",
+    "heading": "Reservas de alojamiento",
+    "scroll": 758,
+    "width": 758
+  },
+  {
+    "theme": "light",
+    "language": "es",
+    "viewport": 390,
+    "bg": "rgb(247, 249, 243)",
+    "heading": "Reservas de alojamiento",
+    "scroll": 380,
+    "width": 380
+  },
+  {
+    "theme": "light",
+    "language": "en",
+    "viewport": 390,
+    "bg": "rgb(247, 249, 243)",
+    "heading": "Rental reservations",
+    "scroll": 380,
+    "width": 380
+  },
+  {
+    "theme": "light",
+    "language": "en",
+    "viewport": 768,
+    "bg": "rgb(247, 249, 243)",
+    "heading": "Rental reservations",
+    "scroll": 758,
+    "width": 758
+  },
+  {
+    "theme": "light",
+    "language": "en",
+    "viewport": 1440,
+    "bg": "rgb(247, 249, 243)",
+    "heading": "Rental reservations",
+    "scroll": 1430,
+    "width": 1430
+  },
+  {
+    "theme": "dark",
+    "language": "en",
+    "viewport": 1440,
+    "bg": "rgb(0, 0, 0)",
+    "heading": "Rental reservations",
+    "scroll": 1430,
+    "width": 1430
+  },
+  {
+    "theme": "dark",
+    "language": "en",
+    "viewport": 768,
+    "bg": "rgb(0, 0, 0)",
+    "heading": "Rental reservations",
+    "scroll": 758,
+    "width": 758
+  },
+  {
+    "theme": "dark",
+    "language": "en",
+    "viewport": 390,
+    "bg": "rgb(0, 0, 0)",
+    "heading": "Rental reservations",
+    "scroll": 380,
+    "width": 380
+  },
+  {
+    "theme": "dark",
+    "language": "es",
+    "viewport": 390,
+    "bg": "rgb(0, 0, 0)",
+    "heading": "Reservas de alojamiento",
+    "scroll": 380,
+    "width": 380
+  },
+  {
+    "theme": "dark",
+    "language": "es",
+    "viewport": 768,
+    "bg": "rgb(0, 0, 0)",
+    "heading": "Reservas de alojamiento",
+    "scroll": 758,
+    "width": 758
+  },
+  {
+    "theme": "dark",
+    "language": "es",
+    "viewport": 1440,
+    "bg": "rgb(0, 0, 0)",
+    "heading": "Reservas de alojamiento",
+    "scroll": 1430,
+    "width": 1430
+  }
+]

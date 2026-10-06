@@ -207,3 +207,8 @@ describe("ConfirmDialog", () => {
     expect(handleClose).not.toHaveBeenCalled();
   });
 });
+
+it("an inapplicable command can be cancelled without enabling confirmation", async () => {
+  const close=vi.fn();render(<ConfirmDialog open confirmDisabled onClose={close} onConfirm={vi.fn()} title="Unavailable command"/>);
+  expect(screen.getByRole("button",{name:/confirm/i})).toBeDisabled();await userEvent.click(screen.getByRole("button",{name:/cancel/i}));expect(close).toHaveBeenCalledOnce();
+});

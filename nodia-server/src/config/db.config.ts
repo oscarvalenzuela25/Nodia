@@ -9,5 +9,7 @@ export const postgresConfig: TypeOrmModuleOptions = {
   username: envs.POSTGRES_USER,
   password: envs.POSTGRES_PASSWORD,
   autoLoadEntities: true,
-  synchronize: process.env.NODE_ENV !== 'production',
+  // Entity registration must never implicitly alter an existing database.
+  // Schema changes are applied through reviewed, explicit migrations.
+  synchronize: false,
 };

@@ -1,8 +1,8 @@
 # Modelo de dominio ERD — Nodia
 
-> Estado: en revisión — ampliación auth, recursos de negocio e IA (ADR-006)
-> Última actualización: 2026-09-27
-> Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado, 15-ai-providers-interview.md, 16-ai-provider-management-handoff.md
+> Estado: en revisión — ampliación auth, negocios, IA, Finanzas personales, Reservas y Contactos
+> Última actualización: 2026-10-05
+> Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado, 15-ai-providers-interview.md, 16-ai-provider-management-handoff.md, 20-personal-finance-interview.md, 21-personal-finance-erd.md, 27-rental-reservations-erd.md (esquema aceptado)
 
 ## 1. Resumen del modelo
 
@@ -26,8 +26,20 @@ El modelo cubre la base de identidad, autorización, navegación, internacionali
 - `business_actions`: catálogo de permisos operativos específicos del contexto de negocio (ej. gestionar colaboradores, ver analítica, escanear facturas).
 - `providers`: proveedores de insumos/mercancía de un negocio. Incluye `tax integer` (impuesto aplicable, default 19) y `fields jsonb` con la plantilla de mapeo de columnas e instrucciones para la extracción contable IA (`{ [field]: { value: string, instructions?: string } }` para `code`, `cost_price`, `cost_price_tax`, `packages`, `units_per_package`).
 - `products`: catálogo de productos de un negocio con códigos/SKU, costos, impuestos, márgenes y precio de venta.
+- `personal_info_provider`: contactos de cada proveedor con teléfonos E.164, email, horario semanal propio, comentario y estado; control de versión y creación idempotente. Implementación local según [31](31-provider-contacts-proposal.md); migración objetivo y aprobación documental pendientes.
 - `product_logs`: registro histórico e inmutable de auditoría para cada variación de producto (generado automáticamente tras creación o actualización).
 - `invoices`: comprobantes de facturación asociados a un negocio y proveedor, con su código/número de factura (`code`), monto total (`total_amount`), ubicación física en storage R2/S3 (`path_storage`) y el contenido/items extraídos embebidos directamente en el campo estructurado `data jsonb` (por defecto `{}`).
+
+### Finanzas personales
+- `finance_movements`: movimientos personales; una categoría y una obligación opcional; pesos enteros y estados por tipo.
+- `finance_categories`: categorías de cada usuario.
+- `finance_category_groups`: agrupadores personales para filtros.
+- `finance_category_group_memberships`: pivote grupo/categoría del mismo usuario.
+- `finance_obligations`: préstamos/deudas con `amount` inicial, sin intereses; pendiente calculado desde pagos confirmados.
+
+### Reservas de alojamiento (Tools)
+
+Once tablas nuevas, compartidas por casa: `rental_properties`, `rental_collaborators`, `rental_cancellation_policies`, `rental_cancellation_rules`, `rental_reservations`, `rental_payments`, `rental_expenses`, `rental_blocks`, `rental_turnovers`, `rental_audit_events` y `rental_operations`. Propietario/colaboradores, noches, CLP, preparación, caja, condiciones conservadas, auditoría e idempotencia. El usuario aceptó el [ERD 27](27-rental-reservations-erd.md) el 2026-10-04; esa aceptación no aprueba el resto del modelo global.
 
 ### Proveedores de Inteligencia Artificial (IA)
 - `ai_provider_catalog`: catálogo maestro de proveedores de IA reconocidos (`gemini`, `openai`, `anthropic`, `mistral`, `deepseek`, `groq`, `perplexity`, etc.) con su clave canónica, nombre comercial y estado de activación.
@@ -277,6 +289,27 @@ Table providers [headercolor: #4f46e5] {
 	}
 }
 
+Table personal_info_provider [headercolor: #4f46e5] {
+  id bigint [ pk, increment, not null ]
+  provider_id bigint [ not null ]
+  name varchar(255) [ not null ]
+  phone jsonb [ not null, default: '[]' ]
+  email varchar(254)
+  schedule jsonb [ not null, default: '{}' ]
+  description text
+  is_active boolean [ not null, default: true ]
+  version integer [ not null, default: 1 ]
+  creation_key uuid [ not null ]
+  creation_hash char(64) [ not null ]
+  created_at timestamptz [ not null, default: `now()` ]
+  updated_at timestamptz [ not null, default: `now()` ]
+
+  indexes {
+    (provider_id, id) [ name: 'idx_provider_contact_provider' ]
+    (provider_id, creation_key) [ unique, name: 'uq_provider_contact_creation' ]
+  }
+}
+
 Table invoices [headercolor: #4f46e5] {
 	id bigint [ pk, increment, not null ]
 	business_id uuid [ not null ]
@@ -368,6 +401,93 @@ Table ai_provider_events [headercolor: #49e3e3] {
 }
 
 // ------------------------------------------
+// FINANZAS PERSONALES
+// ------------------------------------------
+
+Table finance_categories [headercolor: #0f766e] {
+  id bigint [ pk, increment, not null ]
+  user_id bigint [ not null ]
+  name varchar(255) [ not null ]
+  key varchar(255) [ not null ]
+  is_active boolean [ not null, default: true ]
+  created_at timestamptz [ not null ]
+  updated_at timestamptz [ not null ]
+
+  indexes {
+    (user_id, id) [ name: 'uq_finance_categories_user_id', unique ]
+    (user_id, key) [ name: 'uq_finance_categories_user_key', unique ]
+  }
+}
+
+Table finance_category_groups [headercolor: #0f766e] {
+  id bigint [ pk, increment, not null ]
+  user_id bigint [ not null ]
+  name varchar(255) [ not null ]
+  key varchar(255) [ not null ]
+  is_active boolean [ not null, default: true ]
+  created_at timestamptz [ not null ]
+  updated_at timestamptz [ not null ]
+
+  indexes {
+    (user_id, id) [ name: 'uq_finance_category_groups_user_id', unique ]
+    (user_id, key) [ name: 'uq_finance_category_groups_user_key', unique ]
+  }
+}
+
+Table finance_category_group_memberships [headercolor: #0f766e] {
+  id bigint [ pk, increment, not null ]
+  user_id bigint [ not null ]
+  category_group_id bigint [ not null ]
+  category_id bigint [ not null ]
+  is_active boolean [ not null, default: true ]
+  created_at timestamptz [ not null ]
+  updated_at timestamptz [ not null ]
+
+  indexes {
+    (user_id, category_group_id, category_id) [ name: 'uq_finance_memberships_user_group_category', unique ]
+    (user_id, category_id, category_group_id) [ name: 'idx_finance_memberships_user_category_group' ]
+  }
+}
+
+Table finance_obligations [headercolor: #0f766e] {
+  id bigint [ pk, increment, not null ]
+  user_id bigint [ not null ]
+  name varchar(255) [ not null ]
+  key varchar(255) [ not null ]
+  type varchar(255) [ not null, check: `type IN ('loan', 'debt')` ]
+  amount bigint [ not null, check: `amount > 0` ]
+  description text
+  is_active boolean [ not null, default: true ]
+  created_at timestamptz [ not null ]
+  updated_at timestamptz [ not null ]
+
+  indexes {
+    (user_id, id) [ name: 'uq_finance_obligations_user_id', unique ]
+    (user_id, key) [ name: 'uq_finance_obligations_user_key', unique ]
+  }
+}
+
+Table finance_movements [headercolor: #0f766e] {
+  id bigint [ pk, increment, not null ]
+  user_id bigint [ not null ]
+  category_id bigint [ not null ]
+  obligation_id bigint
+  name varchar(255) [ not null ]
+  amount bigint [ not null, check: `amount > 0` ]
+  type varchar(255) [ not null, check: `type IN ('income', 'expense')` ]
+  status varchar(255) [ not null, check: `(type = 'income' AND status IN ('pending', 'received', 'cancelled')) OR (type = 'expense' AND status IN ('pending', 'paid', 'cancelled'))` ]
+  is_active boolean [ not null, default: true ]
+  created_at timestamptz [ not null ]
+  updated_at timestamptz [ not null ]
+
+  indexes {
+    (user_id, created_at, id) [ name: 'idx_finance_movements_user_created' ]
+    (user_id, category_id, created_at, id) [ name: 'idx_finance_movements_user_category_created' ]
+    (user_id, obligation_id, type, status) [ name: 'idx_finance_movements_user_obligation_type_status' ]
+  }
+}
+
+// ------------------------------------------
 // RELACIONES (Foreign Keys)
 // ------------------------------------------
 
@@ -427,6 +547,10 @@ Ref fk_providers_id_invoices {
 	providers.id < invoices.provider_id [ delete: set null, update: no action ]
 }
 
+Ref fk_providers_id_personal_info_provider {
+  providers.id < personal_info_provider.provider_id [ delete: restrict, update: no action ]
+}
+
 Ref fk_providers_id_products {
 	providers.id < products.provider_id [ delete: set null, update: no action ]
 }
@@ -458,4 +582,334 @@ Ref fk_ai_events_api_key {
 Ref fk_ai_events_actor_user {
 	ai_provider_events.actor_user_id > users.id [ delete: set null, update: no action ]
 }
+
+// Finanzas: relaciones personales y FKs compuestas por propietario
+Ref fk_finance_categories_user {
+  finance_categories.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_category_groups_user {
+  finance_category_groups.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_memberships_user {
+  finance_category_group_memberships.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_obligations_user {
+  finance_obligations.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_movements_user {
+  finance_movements.user_id > users.id [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_movements_category {
+  finance_movements.(user_id, category_id) > finance_categories.(user_id, id) [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_movements_obligation {
+  finance_movements.(user_id, obligation_id) > finance_obligations.(user_id, id) [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_memberships_group {
+  finance_category_group_memberships.(user_id, category_group_id) > finance_category_groups.(user_id, id) [ delete: no action, update: no action ]
+}
+
+Ref fk_finance_memberships_category {
+  finance_category_group_memberships.(user_id, category_id) > finance_categories.(user_id, id) [ delete: no action, update: no action ]
+}
+
+// Tools: Reservas — esquema aceptado el 2026-10-04; documento 27.
+Table rental_properties {
+  id bigint [pk, increment, not null]
+  owner_id bigint [not null]
+  name varchar(255) [not null]
+  location varchar(500)
+  timezone varchar(64) [not null]
+  max_guests integer [not null]
+  check_in_time time [not null]
+  check_out_time time [not null]
+  default_nightly_rate bigint
+  default_deposit_percent numeric(5,2)
+  minimum_turnover_minutes integer [not null, default: 0]
+  default_cancellation_policy_id bigint
+  notes text
+  is_active boolean [not null, default: true]
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    owner_id [name: 'idx_rental_properties_owner']
+  }
+}
+
+Table rental_collaborators {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  user_id bigint [not null]
+  position varchar(255)
+  is_active boolean [not null, default: true]
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (property_id, user_id) [unique, name: 'uq_rental_collaborator']
+    (user_id, is_active, property_id) [name: 'idx_rental_collaborator_access']
+  }
+}
+
+Table rental_cancellation_policies {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  name varchar(255) [not null]
+  is_active boolean [not null, default: true]
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (property_id, id) [unique, name: 'uq_rental_policy_property_id']
+    (property_id, is_active, id) [name: 'idx_rental_policy_listing']
+  }
+}
+
+Table rental_cancellation_rules {
+  id bigint [pk, increment, not null]
+  policy_id bigint [not null]
+  min_days_before integer [not null]
+  refund_percent numeric(5,2) [not null]
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (policy_id, min_days_before) [unique, name: 'uq_rental_policy_threshold']
+  }
+}
+
+Table rental_reservations {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  guest_name varchar(255) [not null]
+  guest_contact varchar(255) [not null]
+  guests_count integer [not null]
+  channel varchar(32) [not null, note: 'whatsapp | airbnb | facebook | other']
+  external_reference varchar(255)
+  check_in_on date [not null]
+  check_out_on date [not null]
+  check_in_time time [not null]
+  check_out_time time [not null]
+  nightly_rate bigint [not null]
+  cleaning_fee bigint [not null, default: 0]
+  discount_amount bigint [not null, default: 0]
+  total_amount bigint [not null]
+  commission_amount bigint [not null, default: 0]
+  deposit_amount bigint [not null]
+  deposit_due_at timestamptz
+  balance_due_at timestamptz
+  cancellation_policy_id bigint
+  policy_snapshot jsonb
+  status varchar(32) [not null, note: 'draft | confirmed | in_progress | completed | cancelled']
+  cancelled_at timestamptz
+  refund_amount bigint
+  cancellation_snapshot jsonb
+  notes text
+  is_active boolean [not null, default: true]
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (property_id, id) [unique, name: 'uq_rental_reservation_property_id']
+    (property_id, check_in_on, id) [name: 'idx_rental_reservation_calendar']
+    (property_id, status, check_in_on, id) [name: 'idx_rental_reservation_status']
+    (property_id, channel, external_reference) [unique, name: 'uq_rental_reservation_external_reference']
+  }
+}
+
+Table rental_payments {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  reservation_id bigint [not null]
+  type varchar(16) [not null, note: 'payment | refund']
+  amount bigint [not null]
+  occurred_on date [not null]
+  method varchar(100)
+  reference varchar(255)
+  notes text
+  status varchar(16) [not null, note: 'confirmed | voided']
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (property_id, reservation_id, type, status) [name: 'idx_rental_payment_balance']
+    (property_id, occurred_on, id) [name: 'idx_rental_payment_cash']
+  }
+}
+
+Table rental_expenses {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  reservation_id bigint
+  name varchar(255) [not null]
+  category varchar(100)
+  amount bigint [not null]
+  incurred_on date [not null]
+  paid_on date
+  status varchar(16) [not null, note: 'pending | paid | voided']
+  notes text
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (property_id, incurred_on, id) [name: 'idx_rental_expense_listing']
+    (property_id, status, paid_on, id) [name: 'idx_rental_expense_cash']
+    (property_id, reservation_id) [name: 'idx_rental_expense_reservation']
+  }
+}
+
+Table rental_blocks {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  starts_at timestamptz [not null]
+  ends_at timestamptz [not null]
+  reason varchar(255) [not null]
+  notes text
+  is_active boolean [not null, default: true]
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (property_id, is_active, starts_at, id) [name: 'idx_rental_block_calendar']
+  }
+}
+
+Table rental_turnovers {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  incoming_reservation_id bigint [not null]
+  previous_reservation_id bigint
+  linen_ready boolean [note: 'null = por confirmar; true = recambio completo disponible']
+  cleaning_status varchar(16) [not null, note: 'pending | in_progress | completed']
+  planned_ready_at timestamptz
+  ready_at timestamptz
+  same_day_approved_at timestamptz
+  notes text
+  created_by bigint [not null]
+  updated_by bigint [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    incoming_reservation_id [unique, name: 'uq_rental_turnover_incoming']
+    (property_id, planned_ready_at, id) [name: 'idx_rental_turnover_listing']
+    (property_id, previous_reservation_id) [name: 'idx_rental_turnover_previous']
+  }
+}
+
+Table rental_audit_events {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  actor_id bigint [not null]
+  action varchar(100) [not null]
+  resource_type varchar(64) [not null]
+  resource_id bigint [not null]
+  changes jsonb [not null]
+  created_at timestamptz [not null]
+  indexes {
+    (property_id, created_at, id) [name: 'idx_rental_audit_history']
+    (property_id, resource_type, resource_id, id) [name: 'idx_rental_audit_resource']
+  }
+}
+
+Table rental_operations {
+  id bigint [pk, increment, not null]
+  property_id bigint [not null]
+  actor_id bigint [not null]
+  request_key uuid [not null]
+  operation varchar(100) [not null]
+  request_hash char(64) [not null]
+  response jsonb [not null]
+  created_at timestamptz [not null]
+  indexes {
+    (property_id, actor_id, request_key) [unique, name: 'uq_rental_operation_request']
+  }
+}
+
+Ref: rental_properties.owner_id > users.id [delete: restrict]
+Ref: rental_properties.created_by > users.id [delete: restrict]
+Ref: rental_properties.updated_by > users.id [delete: restrict]
+Ref: rental_properties.(id, default_cancellation_policy_id) > rental_cancellation_policies.(property_id, id) [delete: restrict]
+
+Ref: rental_collaborators.property_id > rental_properties.id [delete: restrict]
+Ref: rental_collaborators.user_id > users.id [delete: restrict]
+Ref: rental_collaborators.created_by > users.id [delete: restrict]
+Ref: rental_collaborators.updated_by > users.id [delete: restrict]
+
+Ref: rental_cancellation_policies.property_id > rental_properties.id [delete: restrict]
+Ref: rental_cancellation_policies.created_by > users.id [delete: restrict]
+Ref: rental_cancellation_policies.updated_by > users.id [delete: restrict]
+Ref: rental_cancellation_rules.policy_id > rental_cancellation_policies.id [delete: restrict]
+Ref: rental_cancellation_rules.created_by > users.id [delete: restrict]
+Ref: rental_cancellation_rules.updated_by > users.id [delete: restrict]
+
+Ref: rental_reservations.property_id > rental_properties.id [delete: restrict]
+Ref: rental_reservations.(property_id, cancellation_policy_id) > rental_cancellation_policies.(property_id, id) [delete: restrict]
+Ref: rental_reservations.created_by > users.id [delete: restrict]
+Ref: rental_reservations.updated_by > users.id [delete: restrict]
+
+Ref: rental_payments.property_id > rental_properties.id [delete: restrict]
+Ref: rental_payments.(property_id, reservation_id) > rental_reservations.(property_id, id) [delete: restrict]
+Ref: rental_payments.created_by > users.id [delete: restrict]
+Ref: rental_payments.updated_by > users.id [delete: restrict]
+
+Ref: rental_expenses.property_id > rental_properties.id [delete: restrict]
+Ref: rental_expenses.(property_id, reservation_id) > rental_reservations.(property_id, id) [delete: restrict]
+Ref: rental_expenses.created_by > users.id [delete: restrict]
+Ref: rental_expenses.updated_by > users.id [delete: restrict]
+
+Ref: rental_blocks.property_id > rental_properties.id [delete: restrict]
+Ref: rental_blocks.created_by > users.id [delete: restrict]
+Ref: rental_blocks.updated_by > users.id [delete: restrict]
+
+Ref: rental_turnovers.property_id > rental_properties.id [delete: restrict]
+Ref: rental_turnovers.(property_id, incoming_reservation_id) > rental_reservations.(property_id, id) [delete: restrict]
+Ref: rental_turnovers.(property_id, previous_reservation_id) > rental_reservations.(property_id, id) [delete: restrict]
+Ref: rental_turnovers.created_by > users.id [delete: restrict]
+Ref: rental_turnovers.updated_by > users.id [delete: restrict]
+
+Ref: rental_audit_events.property_id > rental_properties.id [delete: restrict]
+Ref: rental_audit_events.actor_id > users.id [delete: restrict]
+Ref: rental_operations.property_id > rental_properties.id [delete: restrict]
+Ref: rental_operations.actor_id > users.id [delete: restrict]
 ```
+
+## 3. Reglas de Finanzas personales — 2026-10-04
+
+Se incorpora el modelo simplificado solicitado por el usuario, sin aprobar de nuevo todo el documento ni resolver las revisiones históricas de auth/IA.
+
+- Todas las tablas financieras tienen usuario propio. FKs compuestas evitan asociaciones entre usuarios.
+- Una categoría por movimiento; varios grupos por categoría, usados como filtros sin duplicar movimientos.
+- Como máximo una obligación por movimiento, sin pivote de pagos. Loan empieza con expense y se liquida con income received; debt empieza con income y se liquida con expense paid.
+- `finance_obligations.amount` conserva monto inicial; `finance_movements.amount` representa cada entrada/salida. El saldo pendiente se calcula, no se sobrescribe el monto inicial.
+- Sin `purpose`, `cancellation_reason`, `currency` ni `occurred_on`. Amount bigint positivo; solo pesos enteros. Timestamps timestamptz de servidor.
+- `is_active` controla archivado/visibilidad; `status` controla validez financiera. Archivar pagos confirmados no aumenta el saldo pendiente de la obligación.
+- Listados y filtros comienzan con activos; consultar inactivos es una elección explícita. Los totales de una vista filtrada describen ese conjunto, mientras el saldo de una obligación conserva todo su historial confirmado.
+- Recurrencias automáticas, intereses y cuentas/transferencias fuera del alcance actual.
+
+Ver [ERD de Finanzas](21-personal-finance-erd.md), [contratos](22-personal-finance-contracts.md), [plan Server](23-personal-finance-backend-plan.md) y [plan Client](24-personal-finance-client-plan.md). Sintaxis DBML de referencias compuestas: [documentación oficial](https://dbml.dbdiagram.io/docs/#relationships--foreign-key-definitions). Backend implementado; migración incremental ensayada exclusivamente sobre PostgreSQL aislado, con equivalencia de metadata y constraints, rollback, concurrencia y respaldo/restauración. No aplicada a la BD del usuario; evidencia en plan 23. El esquema/documento completo sigue en revisión.
+
+## 4. Reservas de alojamiento — esquema aceptado 2026-10-04
+
+El DBML incorpora las once tablas, 143 campos nuevos, 38 FKs RESTRICT (incluidas relaciones compuestas por casa) y 22 índices de [27](27-rental-reservations-erd.md). El JSON de Obsidian contiene ahora 37 tablas y 69 relaciones; los 26 objetos y 31 relaciones previos se conservaron íntegros y se respaldó el archivo antes de escribir. Es un diagrama, no una migración aplicada.
+
+Las reglas temporales, monetarias, snapshots y checks descritos en 27 acompañan el esquema. Disponibilidad se comprueba después de bloquear la casa dentro de una transacción común a reservas y bloqueos; los pagos y reembolsos requieren también lock de reserva. is_active archiva reservas sin liberar ocupación ni modificar caja. Pagos/devoluciones y gastos pagados usan fechas efectivas. Los días de anticipación son días calendario locales; devolución directa sobre el dinero pagado, con tramos configurables. No se impone una política comercial por defecto.
+
+Contratos y desarrollo se especifican en [28](28-rental-reservations-contracts.md) y [plan Backend 29](29-rental-reservations-backend-plan.md), en revisión. El plan Client se preparará después. La aprobación de 27 no cambia el estado de los otros documentos o ADRs.
+
+Backend de Reservas implementado: once entidades TypeORM y migración incremental, con metadata sin drift en PostgreSQL aislado. Se conservan las 143 columnas/38 FKs/22 índices del diagrama; checks monetarios/estados/fechas/preparación acompañan la migración. [Entrega29](29-rental-reservations-backend-plan.md) separa ensayo aislado de aplicación objetivo pendiente.

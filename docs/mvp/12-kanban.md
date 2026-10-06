@@ -1,12 +1,34 @@
 # Panel Kanban — Nodia Parte 1
 
-> Estado: en revisión — ampliación auth 2026-09-12; aprobación histórica del MVP conservada
-> Última actualización: 2026-08-22
+> Estado: en revisión — ampliaciones auth, Finanzas y Reservas; aprobación histórica del MVP conservada
+> Última actualización: 2026-10-05
 > Dependencias: Documentos 01 al 11 aprobados
 
 ## Objetivo
 
 Derivar la especificación técnica en tickets o tareas funcionales trazables, organizados por épicas, para facilitar la implementación secuencial del MVP.
+
+## Épica nueva: Contactos de proveedores — implementación local 2026-10-05
+
+- [x] Registrar horario propio de cada contacto y autorización de implementación en [31](31-provider-contacts-proposal.md); ADR-014 conserva revisión.
+- [x] Entidad `personal_info_provider`, migración incremental, contratos estrictos y recurso vertical; creación idempotente y actualización con versión.
+- [x] ProvidersTab con sección Contactos por proveedor y formulario de teléfonos/horarios; i18n, estados y recuperación ante errores.
+- [x] Verificar casos de uso y componentes; suites completas 561 Server / 841 Client, checks estáticos/build e integración HTTP/PostgreSQL temporal con migración reversible.
+- [x] QA navegador con alta/edición, horario inválido, respuesta perdida, escritorio/móvil, ES/EN y claro/oscuro.
+- [x] Inventariar baseline/historial y respaldar BD local configurada; aplicar únicamente contactos y verificar ambos listados vía HTTP en modo lectura.
+- [ ] Smoke autenticado con sesión real y aplicación en otros entornos.
+- [ ] Revisión y aprobación explícita de documentos actualizados; despliegue.
+
+El primer pendiente operativo es el smoke con sesión real. La migración de contactos ya se aplicó en la BD local configurada con respaldo; otros entornos y migraciones ajenas no están verificados por esta entrega. La incidencia y evidencia HTTP están en 31.
+
+## Épica nueva: Finanzas personales — Backend local completo; Client pendiente
+
+- Modelo/documentación: cinco tablas y nueve FKs incorporadas a 03 y al diagrama de Obsidian; migración incremental implementada y ensayada en PostgreSQL aislado.
+- Contrato previo: [22-personal-finance-contracts.md](22-personal-finance-contracts.md).
+- Backend: [26 tareas FB-01..FB-26](23-personal-finance-backend-plan.md) cerradas localmente con evidencia; 19 operaciones HTTP, 369 pruebas correctas y ensayo PostgreSQL de constraints, rollback, concurrencia y respaldo/restauración.
+- Frontend: [25 tareas FC-01..FC-25](24-personal-finance-client-plan.md), ruta constante/guard, tabs/General, tablas, modales, Filter/default activos, inputs reutilizables y QA.
+- Orden: fijar contratos/entidades/migración; lecturas y escrituras de Server; agregados; integración. Client puede avanzar estructura/tipos con contrato y fixtures, pero la integración real requiere Server.
+- Las tareas detalladas viven en esos planes. Client continúa pendiente; la BD configurada no recibió migración/seed y no hubo despliegue. La implementación no aprueba automáticamente los documentos.
 
 ## Épica 1: Infraestructura y Setup
 
@@ -60,3 +82,19 @@ Derivar la especificación técnica en tickets o tareas funcionales trazables, o
 
 ## Preguntas abiertas
 - Ninguna. Documento listo para revisión.
+
+## Épica nueva: Tools → Reservas de alojamiento
+
+- [x] Diagrama27 presentado y aceptado explícitamente el 2026-10-04.
+- [x] Incorporar las11 tablas al JSON de Obsidian con respaldo y preservar los objetos anteriores; sincronizar DBML03 y documentación afectada.
+- [ ] Revisión/cierre de [contratos 28](28-rental-reservations-contracts.md) y [plan Backend 29](29-rental-reservations-backend-plan.md), preparados para agentes con archivos/dependencias/pruebas.
+- [x] Implementar Backend y migración incremental según 29; ensayar FK/checks, concurrencia, replay, revocación y caja en PostgreSQL aislado.
+- [x] Preparar [plan Client30](30-rental-reservations-client-plan.md) después del Backend, con revisión de tres subagentes; documento en revisión.
+- [x] Implementar RC-01..37/39 de30 con tres carriles e integrador; verificar contratos, componentes, QA y Client→Server→PostgreSQL temporal.
+- [ ] RC-38: migraciones/seed/asignación individual y smoke real, con baseline/respaldo según29.
+
+La aceptación del ERD no aprueba otros documentos ni aplica migraciones objetivo. Backend tiene evidencia local; planes/contratos mantienen revisión y despliegue pendiente; no se modifica la BD configurada.
+
+### Reservas — entrega Backend local 2026-10-04
+
+RB-01..RB-34 implementadas y verificadas según [29](29-rental-reservations-backend-plan.md), sin aplicación objetivo. [Client30](30-rental-reservations-client-plan.md) implementado: RC-01..37/39 cerradas localmente, 822 pruebas/144 archivos, typecheck/lint/build y doce capturas de QA. Navegador→API→PostgreSQL temporal verifica directo/Airbnb, caja, cancelación/refund/gastos, recambio mismo día, bloqueos, respuesta perdida y revocación. Próximo paso operacional RC-38. Migración/seed/smoke de entorno real quedan como operación separada documentada, con respaldo e inventario de migraciones pendientes.

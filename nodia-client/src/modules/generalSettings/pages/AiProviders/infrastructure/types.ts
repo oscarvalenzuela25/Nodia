@@ -19,7 +19,7 @@ export interface SupportedModelDef {
   name: string;
   displayName?: string;
   description: string;
-  contextWindow?: number;
+  contextWindow?: number | null;
   capabilities: string[];
   isRecommended?: boolean;
   role?: 'chat' | 'multimodal' | 'ocr';
@@ -41,7 +41,7 @@ export interface SelectableModelInfo {
   name: string;
   displayName: string;
   description: string;
-  contextWindow: number;
+  contextWindow: number | null;
   maxOutputTokens?: number;
   capabilities: string[];
   isRecommended?: boolean;
@@ -58,8 +58,11 @@ export interface SelectableModelInfo {
 }
 
 export interface ProviderSelectableModelsResult {
+  providerId?: string;
+  models_source?: 'provider' | 'unavailable' | 'configuration';
+  models_observed_at?: string | null;
   provider: string;
-  mode: AiConnectionMode;
+  mode: AiConnectionMode | 'token_plan_web' | 'token_plan_agentic';
   planType: 'token_plan' | 'api_key';
   isSelected: boolean;
   isActive: boolean;
@@ -166,7 +169,7 @@ export interface DiscoveredModelItem {
   name: string;
   displayName?: string;
   description?: string;
-  contextWindow?: number;
+  contextWindow?: number | null;
   capabilities?: string[];
   isRecommended?: boolean;
   role?: 'chat' | 'multimodal' | 'ocr';
@@ -301,8 +304,8 @@ export interface AiProviderHealthItem {
   status: 'healthy' | 'degraded' | 'expired' | 'unconfigured';
   statusBadge: string;
   serviceState: string;
-  lastCheck: string;
-  latencyMs: number;
+  lastCheck: string | null;
+  latencyMs: number | null;
   autoFailover?: string;
   remoteBrowserProfile?: {
     location: string;
@@ -334,7 +337,8 @@ export interface AiProvidersHealthResponse {
 
 export interface GetSelectableModelsParams {
   provider?: string;
-  mode?: AiConnectionMode;
+  provider_id?: string;
+  mode?: AiConnectionMode | 'token_plan_web' | 'token_plan_agentic';
 }
 export type GeminiLoginJob = {
   id: string;
@@ -362,6 +366,7 @@ export interface ModelQuotaMetric {
 }
 
 export interface GeminiEngineQuota {
+  [key: string]: QuotaWindowMetric | ModelQuotaMetric | null | undefined;
   current_5h?: QuotaWindowMetric | null;
   weekly?: QuotaWindowMetric | null;
   flash?: ModelQuotaMetric | null;
@@ -381,10 +386,13 @@ export interface GeminiEngineInfo {
   ls_address?: string | null;
   cookies_valid?: boolean;
   quota?: GeminiEngineQuota | null;
+  quota_source?: string | null;
+  quota_observed_at?: number | null;
 }
 
 export interface GeminiDualEngineStatus {
-  active_engine: GeminiExecutionEngine;
+  active_engine: GeminiExecutionEngine | null;
+  default_engine?: GeminiExecutionEngine;
   agentic: GeminiEngineInfo;
   web: GeminiEngineInfo;
 }

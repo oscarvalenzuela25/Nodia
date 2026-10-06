@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
-import {
-  AiConnectionMode,
-  AiKeyHealthState,
-} from '../types/ai-provider.types.js';
+import { AiConnectionMode } from '../types/ai-provider.types.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
+import { isAgenticSessionActive } from '../../common/ai/gemini-engine-status.js';
+import { configuredModelFields } from '../helpers/model-observation.helper.js';
 
 export interface AiProviderAlert {
   id: string;
@@ -37,8 +36,8 @@ export interface AiProviderHealthItem {
   status: 'healthy' | 'degraded' | 'expired' | 'unconfigured';
   statusBadge: string;
   serviceState: string;
-  lastCheck: string;
-  latencyMs: number;
+  lastCheck: string | null;
+  latencyMs: number | null;
   failoverSwitch?: string;
   assignedModels?: Record<string, string>;
   selectedModel?: string;
@@ -63,477 +62,98 @@ export interface AiProvidersHealthResponse {
   };
 }
 
-function resolveGeminiHealthModels(
-  provFields: any,
-  defaultMode?: string,
-): { selectedModel: string; availableModels: any[] } {
-  const modeData = defaultMode ? provFields?.[defaultMode] : null;
-  const sourceModels = modeData?.available_models?.length
-    ? modeData.available_models
-    : provFields?.available_models?.length
-      ? provFields.available_models
-      : [];
-
-  const cleanModels = sourceModels.map((m: any) => {
-    const id = m.id || m.name;
-    const name = m.name || id;
-    const displayName = m.display_name || m.displayName || name;
-    return {
-      id,
-      name,
-      displayName,
-      description: m.description || '',
-      contextWindow: m.context_window || m.contextWindow || 1000000,
-      capabilities: m.capabilities || ['text', 'vision', 'documents'],
-      isRecommended: Boolean(
-        m.isRecommended ?? String(id).toLowerCase().includes('flash'),
-      ),
-      role: 'multimodal',
-      remaining_credits: m.remaining_credits,
-      total_credits: m.total_credits,
-      usage_percentage: m.usage_percentage,
-      reset_time: m.reset_time,
-    };
-  });
-
-  const selectedModel =
-    modeData?.selected_model ||
-    provFields?.selected_model ||
-    (cleanModels.length > 0 ? cleanModels[0].id : '');
-
-  return {
-    selectedModel,
-    availableModels: cleanModels,
-  };
-}
-
 @Injectable()
 export class GetAiProvidersHealthUseCase {
-  constructor(
-    private readonly aiProviderService: AiProviderService,
-    private readonly geminiService: GeminiService,
-  ) {}
+  constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService) {}
 
-  private async checkEngineHealth(
-    engine: GeminiExecutionEngine,
-  ): Promise<{ isHealthy: boolean; latencyMs: number }> {
-    const start = performance.now();
-    let isHealthy = false;
+  private async checkEngineHealth(engine: GeminiExecutionEngine) {
+    const started = performance.now();
     try {
       if (typeof this.geminiService.getDualEngineStatus === 'function') {
-        const dualStatus = await this.geminiService.getDualEngineStatus();
-        if (dualStatus) {
-          if (engine === 'web') {
-            isHealthy = Boolean(dualStatus.web?.authenticated);
-          } else if (engine === 'agentic') {
-            isHealthy = Boolean(dualStatus.agentic?.available);
-          }
-          const latencyMs = Math.round(performance.now() - start);
-          return { isHealthy, latencyMs };
-        }
+        const status = await this.geminiService.getDualEngineStatus();
+        if (!status) return { healthy: null, latency: null };
+        return { healthy: engine === 'agentic' ? isAgenticSessionActive(status.agentic)
+          : status.web?.authenticated === true && status.web?.available !== false,
+          latency: Math.round(performance.now() - started) };
       }
-
-      if (typeof this.geminiService.getModelsAndQuota === 'function') {
-        const authData = await this.geminiService.getModelsAndQuota(engine);
-        if (engine === 'web') {
-          isHealthy = Boolean(authData?.authenticated);
-        } else if (engine === 'agentic') {
-          isHealthy = Boolean(
-            authData?.available ||
-            authData?.authenticated ||
-            authData?.has_active_session,
-          );
-        } else {
-          isHealthy = Boolean(authData?.authenticated);
-        }
-      } else if (typeof this.geminiService.verifyProvider === 'function') {
-        isHealthy = await this.geminiService.verifyProvider(engine);
-      }
-    } catch {
-      isHealthy = false;
-    }
-    const latencyMs = Math.round(performance.now() - start);
-    return { isHealthy, latencyMs };
+      const status = await this.geminiService.getModelsAndQuota(engine);
+      if (typeof status?.authenticated !== 'boolean') return { healthy: null, latency: null };
+      return { healthy: engine === 'agentic' ? isAgenticSessionActive(status) : status.authenticated === true,
+        latency: Math.round(performance.now() - started) };
+    } catch { return { healthy: null, latency: null }; }
   }
 
   async execute(): Promise<AiProvidersHealthResponse> {
-    const providersResponse = await this.aiProviderService.findAllProviders({
-      all: true,
-      includes: true,
-    });
-
-    const providers = providersResponse.data || [];
+    const response = await this.aiProviderService.findAllProviders({ all: true, includes: true });
+    const providers = response.data ?? [];
     const alerts: AiProviderAlert[] = [];
-    const providerHealthList: AiProviderHealthItem[] = [];
-
-    let healthyCount = 0;
-
-    for (const prov of providers) {
-      const engineKey = (prov.catalog?.key || prov.key || '').toLowerCase();
-      const displayName =
-        prov.name ||
-        prov.catalog?.name ||
-        (engineKey === 'gemini'
-          ? 'Google Gemini'
-          : engineKey === 'mistral'
-          ? 'Mistral AI'
-          : engineKey === 'openai'
-          ? 'OpenAI'
-          : engineKey.charAt(0).toUpperCase() + engineKey.slice(1));
-
-      const useApiKey = Boolean(
-        prov.use_api_key !== undefined
-          ? prov.use_api_key
-          : prov.mode === AiConnectionMode.API_KEY,
-      );
-      const useTokenPlanWeb = Boolean(
-        prov.use_token_plan_web !== undefined
-          ? prov.use_token_plan_web
-          : prov.mode === AiConnectionMode.WEB_SESSION,
-      );
-      const useTokenPlanAgentic = Boolean(
-        prov.use_token_plan_agentic !== undefined
-          ? prov.use_token_plan_agentic
-          : prov.fields?.engine === 'agentic',
-      );
-      const defaultMode =
-        prov.default_mode ||
-        (useTokenPlanAgentic
-          ? 'token_plan_agentic'
-          : useTokenPlanWeb
-          ? 'token_plan_web'
-          : useApiKey
-          ? 'api_key'
-          : null);
-
-      const hasConnection = useApiKey || useTokenPlanWeb || useTokenPlanAgentic;
-      const keys = prov.api_keys || [];
-
-      const baseInfo = {
-        id: prov.id,
-        key: engineKey,
-        name: displayName,
-        catalog_id: prov.catalog_id,
-        catalog: prov.catalog,
-        use_api_key: useApiKey,
-        use_token_plan_web: useTokenPlanWeb,
-        use_token_plan_agentic: useTokenPlanAgentic,
-        default_mode: prov.default_mode || defaultMode,
-        auto_rotate_api_keys: prov.auto_rotate_api_keys,
-        is_default: Boolean(prov.is_default),
+    const health: AiProviderHealthItem[] = [];
+    for (const provider of providers) {
+      const key = (provider.catalog?.key ?? provider.key ?? '').toLowerCase();
+      const name = provider.name || provider.catalog?.name || key;
+      const web = provider.use_token_plan_web ?? (provider.mode === 'web_session' || provider.mode === 'token_plan_web');
+      const agentic = provider.use_token_plan_agentic ?? provider.mode === 'token_plan_agentic';
+      const defaultMode = provider.default_mode ?? (agentic ? 'token_plan_agentic' : web ? 'token_plan_web' : provider.mode);
+      const fields = configuredModelFields(provider.fields ?? {});
+      const hasScoped = Boolean(fields.token_plan_web || fields.token_plan_agentic || fields.api_key);
+      const modelFields = (fields[defaultMode ?? ''] ?? (hasScoped ? {} : fields)) as Record<string, unknown>;
+      const selected = typeof modelFields.selected_model === 'string' ? modelFields.selected_model : '';
+      const base: AiProviderHealthItem = {
+        id: String(provider.id), key, name, catalog_id: provider.catalog_id, catalog: provider.catalog,
+        isActive: provider.is_active, is_default: provider.is_default,
+        use_api_key: provider.use_api_key, use_token_plan_web: web, use_token_plan_agentic: agentic,
+        default_mode: defaultMode, auto_rotate_api_keys: provider.auto_rotate_api_keys,
+        mode: (defaultMode as AiConnectionMode) ?? null,
+        status: 'unconfigured', statusBadge: 'SIN VERIFICAR', serviceState: 'Sin integración de sesión verificada',
+        lastCheck: null, latencyMs: null, hasConnection: false, fields,
+        selectedModel: selected, availableModels: Array.isArray(modelFields.available_models) ? modelFields.available_models : [],
+        assignedModels: { ...(typeof modelFields.ocr_model === 'string' ? { ocr: modelFields.ocr_model } : {}), ...(selected ? { infer: selected } : {}) },
+        apiKeysCount: provider.api_keys?.length ?? 0,
       };
-
-      // 1. Inactive providers
-      if (!prov.is_active) {
-        providerHealthList.push({
-          ...baseInfo,
-          isActive: false,
-          mode: prov.mode || null,
-          status: 'unconfigured',
-          statusBadge: 'INACTIVO',
-          serviceState: 'Desactivado',
-          lastCheck: 'Hoy',
-          latencyMs: 0,
-          selectedModel: prov.fields?.selected_model || 'none',
-          availableModels: prov.fields?.available_models || [],
-          hasConnection,
-          engine: useTokenPlanAgentic
-            ? 'agentic'
-            : useTokenPlanWeb
-            ? 'web'
-            : prov.fields?.engine || (engineKey === 'gemini' ? 'agentic' : undefined),
-        });
+      if (!provider.is_active) {
+        health.push({ ...base, serviceState: 'Proveedor desactivado', statusBadge: 'DESACTIVADO' });
         continue;
       }
-
-      // 2. Active provider with no active modes
-      if (!hasConnection) {
-        providerHealthList.push({
-          ...baseInfo,
-          isActive: true,
-          mode: prov.mode || null,
-          status: 'unconfigured',
-          statusBadge: 'SIN CONFIGURAR',
-          serviceState: 'Sin canales activos',
-          lastCheck: 'Hoy',
-          latencyMs: 0,
-          selectedModel: 'none',
-          availableModels: [],
-          hasConnection: false,
-        });
-
-        alerts.push({
-          id: `alert-${prov.id}-no-modes`,
-          provider: engineKey,
-          type: 'warning',
-          severity: 'warning',
-          title: `CONFIGURACIÓN INCOMPLETA: ${displayName.toUpperCase()}`,
-          message:
-            'El proveedor está activo pero no tiene ningún canal de conexión (API Key, Plan Web o Plan Agéntico) habilitado.',
-          timestamp: new Date().toISOString(),
-          timeAgo: 'Pendiente',
-          actionType: 'configure',
-          actionLabel: 'Configurar Proveedor',
-        });
+      if (!['gemini', 'google'].includes(key) || (!web && !agentic)) {
+        health.push({ ...base, ...(!web && !agentic ? { statusBadge: 'SIN CONFIGURAR' } : {}) });
+        alerts.push({ id: 'alert-' + provider.id + '-no-modes', provider: key, type: 'warning', severity: 'warning',
+          title: 'INTEGRACIÓN NO VERIFICADA: ' + name.toUpperCase(),
+          message: 'No hay un canal de sesión Gemini Web o Antigravity habilitado y verificable para este proveedor.',
+          actionType: 'configure', actionLabel: 'Configurar Proveedor' });
         continue;
       }
-
-      // 3. Evaluate each enabled mode
-      let agenticHealthy = false;
-      let agenticLatencyMs = 0;
-      if (useTokenPlanAgentic) {
-        const agenticCheck = await this.checkEngineHealth('agentic');
-        agenticHealthy = agenticCheck.isHealthy;
-        agenticLatencyMs = agenticCheck.latencyMs;
-
-        if (!agenticHealthy) {
-          alerts.push({
-            id: `alert-${prov.id}-agentic-unavailable`,
-            provider: engineKey,
-            type: 'incident',
-            severity: 'error',
-            title: `INCIDENTE ACTIVO: ${displayName.toUpperCase()} (MODO AGÉNTICO)`,
-            message:
-              'Entorno Antigravity no detectado o sesión inactiva. Verifique que la aplicación de Antigravity esté en ejecución.',
-            timestamp: new Date().toISOString(),
-            timeAgo: 'Reciente',
-            actionType: 'configure',
-            actionLabel: 'Verificar Entorno',
-          });
-        }
+      const checks = await Promise.all([
+        web ? this.checkEngineHealth('web') : null,
+        agentic ? this.checkEngineHealth('agentic') : null,
+      ]);
+      const observed = checks.filter((check) => check !== null);
+      const healthy = observed.filter((check) => check.healthy === true).length;
+      const unknown = observed.some((check) => check.healthy === null);
+      for (const [index, check] of checks.entries()) {
+        if (!check || check.healthy === true) continue;
+        const engine = index === 0 ? 'web' : 'agentic';
+        alerts.push({ id: 'alert-' + provider.id + '-' + engine + (engine === 'web' ? '-expired' : '-unavailable'), provider: key, type: 'incident', severity: 'error',
+          title: 'INCIDENTE ACTIVO: ' + name.toUpperCase() + (engine === 'web' ? ' (SESIÓN WEB)' : ' (MODO AGÉNTICO)'),
+          message: check.healthy === null ? 'No se pudo comprobar el estado del servicio.'
+            : engine === 'web' ? 'La sesión Web no está autenticada o disponible.' : 'El adaptador Antigravity no está disponible o no tiene una sesión activa.',
+          timestamp: new Date().toISOString(), actionType: engine === 'web' ? 'renew_session' : 'configure',
+          actionLabel: engine === 'web' ? 'Renovar Sesión Ahora' : 'Verificar Entorno' });
       }
-
-      let webHealthy = false;
-      let webLatencyMs = 0;
-      if (useTokenPlanWeb) {
-        const webCheck = await this.checkEngineHealth('web');
-        webHealthy = webCheck.isHealthy;
-        webLatencyMs = webCheck.latencyMs;
-
-        if (!webHealthy) {
-          alerts.push({
-            id: `alert-${prov.id}-web-expired`,
-            provider: engineKey,
-            type: 'incident',
-            severity: 'error',
-            title: `INCIDENTE ACTIVO: ${displayName.toUpperCase()} (SESIÓN WEB)`,
-            message:
-              'Sesión web remota caducada o no autenticada (401 Unauthorized). Requiere renovar sesión de Google.',
-            timestamp: new Date().toISOString(),
-            timeAgo: 'Reciente',
-            actionType: 'renew_session',
-            actionLabel: 'Renovar Sesión Ahora',
-          });
-        }
-      }
-
-      const activeKeys = keys.filter((k: any) => k.is_active);
-      const validKeys = activeKeys.filter(
-        (k: any) =>
-          k.health_state === AiKeyHealthState.VALID ||
-          k.health_state === AiKeyHealthState.UNTESTED,
-      );
-      const cooldownKeys = activeKeys.filter(
-        (k: any) => k.health_state === AiKeyHealthState.COOLDOWN,
-      );
-
-      const hasKeysIncident =
-        activeKeys.length > 0 && validKeys.length === 0 && cooldownKeys.length > 0;
-      const hasFailover = cooldownKeys.length > 0 && validKeys.length > 0;
-
-      if (useApiKey) {
-        if (activeKeys.length === 0) {
-          alerts.push({
-            id: `alert-${prov.id}-no-keys`,
-            provider: engineKey,
-            type: 'warning',
-            severity: 'warning',
-            title: `CONFIGURACIÓN INCOMPLETA: ${displayName.toUpperCase()} (API KEY)`,
-            message:
-              'No hay llaves de API activas registradas para este proveedor.',
-            timestamp: new Date().toISOString(),
-            timeAgo: 'Pendiente',
-            actionType: 'configure',
-            actionLabel: 'Añadir API Key',
-          });
-        } else if (hasKeysIncident) {
-          alerts.push({
-            id: `alert-${prov.id}-keys-exhausted`,
-            provider: engineKey,
-            type: 'incident',
-            severity: 'error',
-            title: `INCIDENTE ACTIVO: ${displayName.toUpperCase()} (API KEYS)`,
-            message:
-              'Todas las llaves de API activas están en periodo de enfriamiento o agotadas.',
-            timestamp: new Date().toISOString(),
-            timeAgo: 'Reciente',
-            actionType: 'manage_quotas',
-            actionLabel: 'Gestionar Cuotas',
-          });
-        } else if (hasFailover) {
-          alerts.push({
-            id: `alert-${prov.id}-failover`,
-            provider: engineKey,
-            type: 'failover',
-            severity: 'info',
-            title: `FAILOVER OPERATIVO: ${displayName.toUpperCase()}`,
-            message:
-              'Una o más llaves están en enfriamiento. Tráfico enrutado a llave activa de respaldo.',
-            timestamp: new Date().toISOString(),
-            timeAgo: 'En curso',
-            actionType: 'manage_quotas',
-            actionLabel: 'Gestionar Cuotas',
-          });
-        }
-      }
-
-      // Count enabled vs healthy vs failed modes
-      const totalEnabled =
-        Number(useTokenPlanAgentic) +
-        Number(useTokenPlanWeb) +
-        Number(useApiKey);
-
-      const totalHealthy =
-        (useTokenPlanAgentic && agenticHealthy ? 1 : 0) +
-        (useTokenPlanWeb && webHealthy ? 1 : 0) +
-        (useApiKey && validKeys.length > 0 ? 1 : 0);
-
-      const totalFailed =
-        (useTokenPlanAgentic && !agenticHealthy ? 1 : 0) +
-        (useTokenPlanWeb && !webHealthy ? 1 : 0) +
-        (useApiKey && (activeKeys.length === 0 || hasKeysIncident) ? 1 : 0);
-
-      let status: 'healthy' | 'degraded' | 'expired' | 'unconfigured' = 'healthy';
-      let statusBadge = 'DISPONIBLE';
-      let serviceState = 'Disponible';
-
-      if (totalHealthy === totalEnabled) {
-        status = 'healthy';
-        statusBadge = 'DISPONIBLE';
-        if (useTokenPlanAgentic && useTokenPlanWeb) {
-          serviceState = 'Dual Engine Operativo (Agentic & Web)';
-        } else if (useTokenPlanAgentic) {
-          serviceState = 'Modo Agéntico Disponible';
-        } else if (useTokenPlanWeb) {
-          serviceState = 'Sesión Web Disponible';
-        } else {
-          serviceState = `${validKeys.length}/${activeKeys.length} Keys Válidas`;
-        }
-        healthyCount++;
-      } else if (totalHealthy > 0 && totalFailed > 0) {
-        status = 'degraded';
-        statusBadge = 'DEGRADADO';
-        if (useTokenPlanWeb && !webHealthy && useTokenPlanAgentic && agenticHealthy) {
-          serviceState = 'Sesión Web inactiva (Agentic operativo)';
-        } else if (useTokenPlanAgentic && !agenticHealthy && useTokenPlanWeb && webHealthy) {
-          serviceState = 'Agentic inactivo (Sesión Web operativa)';
-        } else if (hasFailover) {
-          serviceState = 'Failover activo de llaves';
-        } else {
-          serviceState = 'Parcialmente operativo';
-        }
-      } else {
-        // totalHealthy === 0
-        if (useApiKey && !useTokenPlanWeb && !useTokenPlanAgentic && activeKeys.length === 0) {
-          status = 'unconfigured';
-          statusBadge = 'SIN CONFIGURAR';
-          serviceState = 'Sin llaves API registradas';
-        } else {
-          status = 'expired';
-          statusBadge =
-            useTokenPlanWeb && !useTokenPlanAgentic && !useApiKey
-              ? 'REQUIERE INICIAR SESIÓN'
-              : 'INCIDENTE ACTIVO';
-          serviceState =
-            useTokenPlanWeb && !useTokenPlanAgentic && !useApiKey
-              ? 'Caducado (401)'
-              : 'Sin canales operativos';
-        }
-      }
-
-      const modeData = prov.fields?.[defaultMode] || {};
-      const { selectedModel, availableModels } =
-        engineKey === 'gemini'
-          ? resolveGeminiHealthModels(prov.fields, defaultMode)
-          : {
-              selectedModel:
-                modeData.selected_model ||
-                prov.fields?.selected_model ||
-                prov.fields?.chat_model ||
-                prov.fields?.model ||
-                '',
-              availableModels:
-                modeData.available_models || prov.fields?.available_models || [],
-            };
-
-      const fallbackKeyHint =
-        activeKeys.find((k: any) => k.health_state === AiKeyHealthState.VALID)
-          ?.label || 'key-sec';
-
-      const latencies = [
-        useTokenPlanAgentic ? agenticLatencyMs : 0,
-        useTokenPlanWeb ? webLatencyMs : 0,
-        useApiKey ? 185 : 0,
-      ].filter((l) => l > 0);
-      const latencyMs =
-        latencies.length > 0
-          ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length)
-          : 0;
-
-      providerHealthList.push({
-        ...baseInfo,
-        isActive: prov.is_active,
-        mode: (defaultMode as AiConnectionMode) || prov.mode || null,
-        status,
-        statusBadge,
-        serviceState,
-        lastCheck: 'Hace 1 min',
-        latencyMs,
-        failoverSwitch: useApiKey
-          ? prov.auto_rotate_api_keys
-            ? `Activo (Failover a ${fallbackKeyHint})`
-            : 'Desactivado'
-          : undefined,
-        assignedModels: {
-          ocr: prov.fields?.ocr_model || undefined,
-          infer: selectedModel,
-        },
-        selectedModel,
-        availableModels,
-        fields: prov.fields || {},
-        apiKeysCount: keys.length,
-        validKeysCount: validKeys.length,
-        hasConnection: true,
-        engine: useTokenPlanAgentic
-          ? 'agentic'
-          : useTokenPlanWeb
-          ? 'web'
-          : prov.fields?.engine || (engineKey === 'gemini' ? 'agentic' : undefined),
+      const status = healthy === observed.length ? 'healthy' : healthy > 0 ? 'degraded' : unknown ? 'unconfigured' : 'expired';
+      const latencies = observed.flatMap((check) => check.latency === null ? [] : [check.latency]);
+      health.push({ ...base, hasConnection: true, status,
+        statusBadge: status === 'healthy' ? 'DISPONIBLE' : status === 'degraded' ? 'DEGRADADO' : unknown ? 'SIN VERIFICAR' : web && !agentic ? 'REQUIERE INICIAR SESIÓN' : 'INCIDENTE ACTIVO',
+        serviceState: status === 'healthy' ? web && agentic ? 'Sesiones Web y Agentic disponibles' : web ? 'Sesión Web Disponible' : 'Modo Agéntico Disponible'
+          : status === 'degraded' ? checks[0]?.healthy === false ? 'Sesión Web inactiva (Agentic operativo)' : 'Agentic inactivo (Sesión Web operativa)' : unknown ? 'Estado no comprobado' : 'Sin canales operativos',
+        lastCheck: latencies.length ? new Date().toISOString() : null,
+        latencyMs: latencies.length ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) : null,
+        engine: defaultMode === 'token_plan_agentic' ? 'agentic' : 'web',
       });
     }
-
-    const hasIncidents = alerts.some((a) => a.severity === 'error');
-    const hasWarnings = alerts.some((a) => a.severity === 'warning');
-
-    const overallStatus: 'healthy' | 'degraded' | 'incident' = hasIncidents
-      ? 'incident'
-      : hasWarnings
-      ? 'degraded'
-      : 'healthy';
-
-    const activeCount = providers.filter((p) => p.is_active).length;
-
-    return {
-      timestamp: new Date().toISOString(),
-      overallStatus,
-      alerts,
-      providers: providerHealthList,
-      summary: {
-        totalProviders: providers.length,
-        activeProviders: activeCount,
-        healthyProviders: healthyCount,
-        incidentsCount: alerts.length,
-      },
-    };
+    return { timestamp: new Date().toISOString(),
+      overallStatus: alerts.some((alert) => alert.severity === 'error') ? 'incident' : alerts.length ? 'degraded' : 'healthy',
+      alerts, providers: health, summary: { totalProviders: providers.length,
+        activeProviders: providers.filter((provider) => provider.is_active).length,
+        healthyProviders: health.filter((provider) => provider.status === 'healthy').length, incidentsCount: alerts.length } };
   }
 }

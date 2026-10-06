@@ -200,12 +200,22 @@ export const CardActionsRow = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
   gap: theme.spacing(1.5),
   marginTop: "auto",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& .MuiButton-root": { width: "100%" },
+  },
 }));
 
 export const SecondaryActionsGroup = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    width: "100%",
+  },
 }));
 
 export const ModesPanelsRow = styled(Box)(({ theme }) => ({
@@ -282,4 +292,3 @@ export const StyledSwitch = styled(Switch)(({ theme }) => ({
     backgroundColor: theme.palette.success.main,
   },
 }));
-

@@ -2,6 +2,8 @@ import {
   SUPPORTED_AI_PROVIDERS,
   SupportedProviderDef,
 } from '../constants/supported-providers.constant.js';
+import type { AiProvider } from '../entities/ai-provider.entity.js';
+import { configuredModelFields } from './model-observation.helper.js';
 
 export const getSupportedAiProviders = (): SupportedProviderDef[] => {
   const envVal = process.env.SUPPORTED_AI_PROVIDERS;
@@ -32,7 +34,9 @@ export const getSupportedAiProviders = (): SupportedProviderDef[] => {
     return SUPPORTED_AI_PROVIDERS;
   }
 
-  return SUPPORTED_AI_PROVIDERS.filter((p) => keys.includes(p.key.toLowerCase()));
+  return SUPPORTED_AI_PROVIDERS.filter((p) =>
+    keys.includes(p.key.toLowerCase()),
+  );
 };
 
 export const getSupportedProviderByKey = (
@@ -43,24 +47,51 @@ export const getSupportedProviderByKey = (
   );
 };
 
-export const sanitizeProviderFields = (provider: any): any => {
+export const sanitizeProviderFields = <T extends Partial<AiProvider>>(
+  provider: T,
+) => {
   if (!provider) return provider;
-  if (!provider.fields) {
-    provider.fields = {};
-  }
+  // Translation attachment copies enumerable fields; entity getters are lost.
+  // Materialize the public identity and mode instead of relying on the prototype.
+  const result = {
+    ...provider,
+    key: provider.catalog?.key ?? provider.key,
+    mode:
+      provider.default_mode ??
+      provider.mode ??
+      (provider.use_token_plan_agentic
+        ? 'token_plan_agentic'
+        : provider.use_token_plan_web
+          ? 'web_session'
+          : provider.use_api_key
+            ? 'api_key'
+            : null),
+    fields: configuredModelFields(provider.fields ?? {}),
+  };
 
   // Ensure available_models is an array if present, but never inject default models
-  if (provider.fields.available_models && !Array.isArray(provider.fields.available_models)) {
-    provider.fields.available_models = [];
+  if (
+    result.fields.available_models &&
+    !Array.isArray(result.fields.available_models)
+  ) {
+    result.fields.available_models = [];
   }
 
   // Mask any direct sensitive keys in fields if any exist
-  const sensitiveKeys = ['secret', 'api_key', 'apiKey', 'password', 'token', 'access_token'];
+  const sensitiveKeys = [
+    'secret',
+    'api_key',
+    'apiKey',
+    'password',
+    'token',
+    'access_token',
+  ];
   for (const k of sensitiveKeys) {
-    if (provider.fields[k] && typeof provider.fields[k] === 'string') {
-      const val = provider.fields[k];
-      provider.fields[k] = val.length > 8 ? `${val.slice(0, 4)}...${val.slice(-4)}` : '****';
+    if (result.fields[k] && typeof result.fields[k] === 'string') {
+      const val = result.fields[k];
+      result.fields[k] =
+        val.length > 8 ? `${val.slice(0, 4)}...${val.slice(-4)}` : '****';
     }
   }
-  return provider;
+  return result;
 };

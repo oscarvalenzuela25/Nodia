@@ -21,7 +21,6 @@ import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
-import { RequireAction } from '../authorization/action-permission.guard.js';
 
 @Controller(['invoice', 'invoices'])
 export class InvoiceController {
@@ -41,7 +40,6 @@ export class InvoiceController {
   }
 
   @Get(['verify-ia-providers', 'verify-ia-provider'])
-  @RequireAction('invoice:analyze')
   verifyIaProviders() {
     return this.verifyIaProvidersUseCase.execute();
   }
@@ -57,7 +55,6 @@ export class InvoiceController {
   }
 
   @Post('analyze')
-  @RequireAction('invoice:analyze')
   @UseInterceptors(
     FileInterceptor('file', {
       limits: { fileSize: 10 * 1024 * 1024, files: 1, fields: 15 },

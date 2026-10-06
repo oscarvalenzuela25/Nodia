@@ -1,0 +1,1581 @@
+[
+  {
+    "route": "GET /api/v1/rental/properties",
+    "method": "GET",
+    "url": "/api/v1/rental/properties",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "1",
+          "owner_id": "1",
+          "name": "Synthetic house",
+          "location": null,
+          "timezone": "America/Santiago",
+          "max_guests": 6,
+          "check_in_time": "15:00",
+          "check_out_time": "11:00",
+          "default_nightly_rate": null,
+          "default_deposit_percent": null,
+          "minimum_turnover_minutes": 120,
+          "default_cancellation_policy_id": null,
+          "notes": null,
+          "is_active": true,
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:07.748Z",
+          "updated_at": "2026-10-05T00:46:07.748Z",
+          "membership": {
+            "type": "owner",
+            "can_manage_configuration": true,
+            "can_manage_collaborators": true
+          }
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 1,
+        "total_pages": 1
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1",
+    "status": 200,
+    "response": {
+      "id": "1",
+      "owner_id": "1",
+      "name": "Synthetic house",
+      "location": null,
+      "timezone": "America/Santiago",
+      "max_guests": 6,
+      "check_in_time": "15:00",
+      "check_out_time": "11:00",
+      "default_nightly_rate": null,
+      "default_deposit_percent": null,
+      "minimum_turnover_minutes": 120,
+      "default_cancellation_policy_id": null,
+      "notes": null,
+      "is_active": true,
+      "created_by": "1",
+      "updated_by": "1",
+      "created_at": "2026-10-05T00:46:07.748Z",
+      "updated_at": "2026-10-05T00:46:07.748Z",
+      "membership": {
+        "type": "collaborator",
+        "can_manage_configuration": false,
+        "can_manage_collaborators": false
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/audit-events",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/audit-events?limit=100",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "21",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.confirm",
+          "resource_type": "reservation",
+          "resource_id": "5",
+          "changes": {
+            "status": {
+              "after": "confirmed",
+              "before": "draft"
+            },
+            "approved_turnover_ids": []
+          },
+          "created_at": "2026-10-05T00:46:08.997Z"
+        },
+        {
+          "id": "20",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.create",
+          "resource_type": "reservation",
+          "resource_id": "5",
+          "changes": {
+            "status": {
+              "after": "draft",
+              "before": null
+            },
+            "total_amount": "200000"
+          },
+          "created_at": "2026-10-05T00:46:08.952Z"
+        },
+        {
+          "id": "19",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.confirm",
+          "resource_type": "reservation",
+          "resource_id": "3",
+          "changes": {
+            "status": {
+              "after": "confirmed",
+              "before": "draft"
+            },
+            "approved_turnover_ids": []
+          },
+          "created_at": "2026-10-05T00:46:08.875Z"
+        },
+        {
+          "id": "18",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.create",
+          "resource_type": "reservation",
+          "resource_id": "4",
+          "changes": {
+            "status": {
+              "after": "draft",
+              "before": null
+            },
+            "total_amount": "200000"
+          },
+          "created_at": "2026-10-05T00:46:08.845Z"
+        },
+        {
+          "id": "17",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.create",
+          "resource_type": "reservation",
+          "resource_id": "3",
+          "changes": {
+            "status": {
+              "after": "draft",
+              "before": null
+            },
+            "total_amount": "200000"
+          },
+          "created_at": "2026-10-05T00:46:08.814Z"
+        },
+        {
+          "id": "16",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "payment.create",
+          "resource_type": "payment",
+          "resource_id": "3",
+          "changes": {
+            "type": "payment",
+            "amount": "194000",
+            "status": "confirmed",
+            "occurred_on": "2026-10-03",
+            "reservation_id": "2"
+          },
+          "created_at": "2026-10-05T00:46:08.754Z"
+        },
+        {
+          "id": "15",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.confirm",
+          "resource_type": "reservation",
+          "resource_id": "2",
+          "changes": {
+            "status": {
+              "after": "confirmed",
+              "before": "draft"
+            },
+            "approved_turnover_ids": []
+          },
+          "created_at": "2026-10-05T00:46:08.708Z"
+        },
+        {
+          "id": "14",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.create",
+          "resource_type": "reservation",
+          "resource_id": "2",
+          "changes": {
+            "status": {
+              "after": "draft",
+              "before": null
+            },
+            "total_amount": "200000"
+          },
+          "created_at": "2026-10-05T00:46:08.677Z"
+        },
+        {
+          "id": "13",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "expense.pay",
+          "resource_type": "expense",
+          "resource_id": "1",
+          "changes": {
+            "amount": "5000",
+            "status": {
+              "after": "paid",
+              "before": "pending"
+            },
+            "paid_on": "2026-10-04"
+          },
+          "created_at": "2026-10-05T00:46:08.630Z"
+        },
+        {
+          "id": "12",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "expense.create",
+          "resource_type": "expense",
+          "resource_id": "1",
+          "changes": {
+            "name": {
+              "redacted": true
+            },
+            "amount": "5000",
+            "status": "pending",
+            "paid_on": null,
+            "incurred_on": "2026-10-03",
+            "reservation_id": null
+          },
+          "created_at": "2026-10-05T00:46:08.615Z"
+        },
+        {
+          "id": "11",
+          "property_id": "1",
+          "actor_id": "2",
+          "action": "payment.create",
+          "resource_type": "payment",
+          "resource_id": "2",
+          "changes": {
+            "type": "refund",
+            "amount": "12000",
+            "status": "confirmed",
+            "occurred_on": "2026-10-04",
+            "reservation_id": "1"
+          },
+          "created_at": "2026-10-05T00:46:08.553Z"
+        },
+        {
+          "id": "10",
+          "property_id": "1",
+          "actor_id": "2",
+          "action": "reservation.cancel",
+          "resource_type": "reservation",
+          "resource_id": "1",
+          "changes": {
+            "status": {
+              "after": "cancelled",
+              "before": "confirmed"
+            },
+            "cancelled_at": "2026-10-05T00:45:08.460Z",
+            "refund_amount": "20000"
+          },
+          "created_at": "2026-10-05T00:46:08.508Z"
+        },
+        {
+          "id": "9",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "reservation.update",
+          "resource_type": "reservation",
+          "resource_id": "1",
+          "changes": {
+            "fields": [
+              "is_active"
+            ]
+          },
+          "created_at": "2026-10-05T00:46:08.432Z"
+        },
+        {
+          "id": "8",
+          "property_id": "1",
+          "actor_id": "2",
+          "action": "reservation.confirm",
+          "resource_type": "reservation",
+          "resource_id": "1",
+          "changes": {
+            "status": {
+              "after": "confirmed",
+              "before": "draft"
+            },
+            "approved_turnover_ids": []
+          },
+          "created_at": "2026-10-05T00:46:08.339Z"
+        },
+        {
+          "id": "7",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "policy.update",
+          "resource_type": "policy",
+          "resource_id": "1",
+          "changes": {
+            "name": {
+              "redacted": true
+            },
+            "rules": [
+              {
+                "refund_percent": "0.00",
+                "min_days_before": 0
+              }
+            ]
+          },
+          "created_at": "2026-10-05T00:46:08.279Z"
+        },
+        {
+          "id": "6",
+          "property_id": "1",
+          "actor_id": "2",
+          "action": "payment.create",
+          "resource_type": "payment",
+          "resource_id": "1",
+          "changes": {
+            "type": "payment",
+            "amount": "40000",
+            "status": "confirmed",
+            "occurred_on": "2026-10-03",
+            "reservation_id": "1"
+          },
+          "created_at": "2026-10-05T00:46:08.203Z"
+        },
+        {
+          "id": "5",
+          "property_id": "1",
+          "actor_id": "2",
+          "action": "reservation.create",
+          "resource_type": "reservation",
+          "resource_id": "1",
+          "changes": {
+            "status": {
+              "after": "draft",
+              "before": null
+            },
+            "total_amount": "200000"
+          },
+          "created_at": "2026-10-05T00:46:08.081Z"
+        },
+        {
+          "id": "4",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "property.update",
+          "resource_type": "property",
+          "resource_id": "1",
+          "changes": {
+            "default_cancellation_policy_id": "1"
+          },
+          "created_at": "2026-10-05T00:46:08.021Z"
+        },
+        {
+          "id": "3",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "policy.create",
+          "resource_type": "policy",
+          "resource_id": "1",
+          "changes": {
+            "name": {
+              "redacted": true
+            },
+            "rules": [
+              {
+                "refund_percent": "50.00",
+                "min_days_before": 0
+              },
+              {
+                "refund_percent": "100.00",
+                "min_days_before": 20
+              }
+            ],
+            "is_active": true
+          },
+          "created_at": "2026-10-05T00:46:07.991Z"
+        },
+        {
+          "id": "2",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "collaborator.create",
+          "resource_type": "collaborator",
+          "resource_id": "1",
+          "changes": {
+            "user_id": "2",
+            "position": {
+              "redacted": true
+            },
+            "is_active": true
+          },
+          "created_at": "2026-10-05T00:46:07.898Z"
+        },
+        {
+          "id": "1",
+          "property_id": "1",
+          "actor_id": "1",
+          "action": "property.create",
+          "resource_type": "property",
+          "resource_id": "1",
+          "changes": {
+            "created": true
+          },
+          "created_at": "2026-10-05T00:46:07.738Z"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 100,
+        "total_items": 21,
+        "total_pages": 1
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/availability",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/availability?check_in_on=2026-10-14&check_out_on=2026-10-16&check_in_time=15:00&check_out_time=11:00",
+    "status": 200,
+    "response": {
+      "available": true,
+      "checked_at": "2026-10-05T00:46:08.144Z",
+      "check_in_at": "2026-10-14T18:00:00.000Z",
+      "check_out_at": "2026-10-16T14:00:00.000Z",
+      "conflicts": [],
+      "turnover_requirements": []
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/blocks",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/blocks?limit=2",
+    "status": 200,
+    "response": {
+      "data": [],
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "total_items": 0,
+        "total_pages": 0
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/blocks/{id}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/blocks/1",
+    "status": 200,
+    "response": {
+      "id": "1",
+      "property_id": "1",
+      "starts_at": "2027-01-02T18:00:00.000Z",
+      "ends_at": "2027-01-04T14:00:00.000Z",
+      "reason": "Synthetic repair",
+      "notes": null,
+      "is_active": true,
+      "created_by": "1",
+      "updated_by": "1",
+      "created_at": "2026-10-05T00:46:10.239Z",
+      "updated_at": "2026-10-05T00:46:10.239Z"
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/calendar",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/calendar?from_on=2026-10-04&to_on=2026-12-13",
+    "status": 200,
+    "response": {
+      "scope": {
+        "property_id": "1",
+        "timezone": "America/Santiago",
+        "from_on": "2026-10-04",
+        "to_on": "2026-12-13",
+        "includes_archived_occupancy": true
+      },
+      "reservations": [
+        {
+          "id": "2",
+          "property_id": "1",
+          "guest_name": "Synthetic guest",
+          "check_in_on": "2026-11-03",
+          "check_out_on": "2026-11-05",
+          "check_in_time": "15:00",
+          "check_out_time": "11:00",
+          "check_in_at": "2026-11-03T18:00:00.000Z",
+          "check_out_at": "2026-11-05T14:00:00.000Z",
+          "channel": "airbnb",
+          "status": "confirmed",
+          "is_active": true
+        },
+        {
+          "id": "3",
+          "property_id": "1",
+          "guest_name": "Synthetic guest",
+          "check_in_on": "2026-11-13",
+          "check_out_on": "2026-11-15",
+          "check_in_time": "15:00",
+          "check_out_time": "11:00",
+          "check_in_at": "2026-11-13T18:00:00.000Z",
+          "check_out_at": "2026-11-15T14:00:00.000Z",
+          "channel": "airbnb",
+          "status": "confirmed",
+          "is_active": true
+        },
+        {
+          "id": "5",
+          "property_id": "1",
+          "guest_name": "Synthetic guest",
+          "check_in_on": "2026-11-23",
+          "check_out_on": "2026-11-25",
+          "check_in_time": "15:00",
+          "check_out_time": "11:00",
+          "check_in_at": "2026-11-23T18:00:00.000Z",
+          "check_out_at": "2026-11-25T14:00:00.000Z",
+          "channel": "airbnb",
+          "status": "confirmed",
+          "is_active": true
+        }
+      ],
+      "blocks": [],
+      "turnovers": [
+        {
+          "id": "2",
+          "property_id": "1",
+          "incoming_reservation_id": "2",
+          "previous_reservation_id": null,
+          "linen_ready": null,
+          "cleaning_status": "pending",
+          "planned_ready_at": null,
+          "ready_at": null,
+          "same_day_approved_at": null
+        },
+        {
+          "id": "3",
+          "property_id": "1",
+          "incoming_reservation_id": "3",
+          "previous_reservation_id": "2",
+          "linen_ready": null,
+          "cleaning_status": "pending",
+          "planned_ready_at": null,
+          "ready_at": null,
+          "same_day_approved_at": null
+        },
+        {
+          "id": "5",
+          "property_id": "1",
+          "incoming_reservation_id": "5",
+          "previous_reservation_id": "3",
+          "linen_ready": null,
+          "cleaning_status": "pending",
+          "planned_ready_at": null,
+          "ready_at": null,
+          "same_day_approved_at": null
+        }
+      ]
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/cancellation-policies",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/cancellation-policies?limit=2",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "1",
+          "property_id": "1",
+          "name": "Synthetic policy",
+          "is_active": true,
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:07.994Z",
+          "updated_at": "2026-10-05T00:46:08.281Z",
+          "rules": [
+            {
+              "id": "1",
+              "policy_id": "1",
+              "min_days_before": 0,
+              "refund_percent": "0.00",
+              "created_by": "1",
+              "updated_by": "1",
+              "created_at": "2026-10-05T00:46:07.994Z",
+              "updated_at": "2026-10-05T00:46:08.281Z"
+            }
+          ]
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "total_items": 1,
+        "total_pages": 1
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/cancellation-policies/{id}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/cancellation-policies/1",
+    "status": 200,
+    "response": {
+      "id": "1",
+      "property_id": "1",
+      "name": "Synthetic policy",
+      "is_active": true,
+      "created_by": "1",
+      "updated_by": "1",
+      "created_at": "2026-10-05T00:46:07.994Z",
+      "updated_at": "2026-10-05T00:46:08.281Z",
+      "rules": [
+        {
+          "id": "1",
+          "policy_id": "1",
+          "min_days_before": 0,
+          "refund_percent": "0.00",
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:07.994Z",
+          "updated_at": "2026-10-05T00:46:08.281Z"
+        }
+      ]
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/collaborator-candidates",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/collaborator-candidates?search=Syn",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "3",
+          "name": "Synthetic Stranger",
+          "image_url": null
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 10,
+        "total_items": 1,
+        "total_pages": 1
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/collaborators",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/collaborators?limit=2",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "1",
+          "property_id": "1",
+          "user_id": "2",
+          "position": "Operations",
+          "is_active": true,
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:07.902Z",
+          "updated_at": "2026-10-05T00:46:09.168Z",
+          "user": {
+            "id": "2",
+            "name": "Synthetic Member",
+            "image_url": null
+          }
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "total_items": 1,
+        "total_pages": 1
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/expenses",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/expenses?limit=2",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "1",
+          "property_id": "1",
+          "reservation_id": null,
+          "name": "Synthetic cleaning",
+          "category": null,
+          "amount": "5000",
+          "incurred_on": "2026-10-03",
+          "paid_on": "2026-10-04",
+          "status": "paid",
+          "notes": null,
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:08.618Z",
+          "updated_at": "2026-10-05T00:46:08.633Z"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "total_items": 1,
+        "total_pages": 1
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/expenses/{id}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/expenses/1",
+    "status": 200,
+    "response": {
+      "id": "1",
+      "property_id": "1",
+      "reservation_id": null,
+      "name": "Synthetic cleaning",
+      "category": null,
+      "amount": "5000",
+      "incurred_on": "2026-10-03",
+      "paid_on": "2026-10-04",
+      "status": "paid",
+      "notes": null,
+      "created_by": "1",
+      "updated_by": "1",
+      "created_at": "2026-10-05T00:46:08.618Z",
+      "updated_at": "2026-10-05T00:46:08.633Z"
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/operations/{requestKey}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/operations/83fc4fb4-2371-4db0-8ab5-ae62fc4c647a",
+    "status": 200,
+    "response": {
+      "body": {
+        "status": "confirmed",
+        "operation": "payment.create",
+        "updated_at": "2026-10-05T00:46:08.207Z",
+        "property_id": "1",
+        "resource_id": "1",
+        "resource_type": "payment"
+      },
+      "http_status": 201,
+      "schema_version": 1
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/overview",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/overview?from_on=2026-09-29&to_on=2026-10-09",
+    "status": 200,
+    "response": {
+      "scope": {
+        "property_id": "1",
+        "timezone": "America/Santiago",
+        "from_on": "2026-09-29",
+        "to_on": "2026-10-09",
+        "cash_dates": "occurred_on_and_paid_on",
+        "includes_archived_history": true,
+        "pending_scope": "all_current_property_records"
+      },
+      "as_of": "2026-10-05T00:46:08.648Z",
+      "cash": {
+        "received_amount": "40000",
+        "refunded_amount": "12000",
+        "paid_expenses_amount": "5000",
+        "net_amount": "23000"
+      },
+      "pending": {
+        "reservation_balance_amount": "0",
+        "refund_amount": "8000",
+        "expense_amount": "0",
+        "draft_received_amount": "0"
+      },
+      "counts": {
+        "confirmed_reservations": 0,
+        "in_progress_reservations": 0,
+        "pending_turnovers": 0,
+        "draft_count": 0
+      },
+      "upcoming_check_ins": [],
+      "upcoming_check_outs": [],
+      "pending_turnovers": []
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/payments",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/payments?limit=2",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "2",
+          "property_id": "1",
+          "reservation_id": "1",
+          "type": "refund",
+          "amount": "12000",
+          "occurred_on": "2026-10-04",
+          "method": null,
+          "reference": null,
+          "notes": null,
+          "status": "confirmed",
+          "created_by": "2",
+          "updated_by": "2",
+          "created_at": "2026-10-05T00:46:08.557Z",
+          "updated_at": "2026-10-05T00:46:08.557Z"
+        },
+        {
+          "id": "3",
+          "property_id": "1",
+          "reservation_id": "2",
+          "type": "payment",
+          "amount": "194000",
+          "occurred_on": "2026-10-03",
+          "method": null,
+          "reference": null,
+          "notes": null,
+          "status": "confirmed",
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:08.756Z",
+          "updated_at": "2026-10-05T00:46:08.756Z"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "total_items": 3,
+        "total_pages": 2
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/payments/{id}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/payments/1",
+    "status": 200,
+    "response": {
+      "id": "1",
+      "property_id": "1",
+      "reservation_id": "1",
+      "type": "payment",
+      "amount": "40000",
+      "occurred_on": "2026-10-03",
+      "method": null,
+      "reference": null,
+      "notes": null,
+      "status": "confirmed",
+      "created_by": "2",
+      "updated_by": "2",
+      "created_at": "2026-10-05T00:46:08.207Z",
+      "updated_at": "2026-10-05T00:46:08.207Z"
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/reservations",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/reservations?limit=2",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "5",
+          "property_id": "1",
+          "guest_name": "Synthetic guest",
+          "guest_contact": "CONTACT-MARKER-private",
+          "guests_count": 2,
+          "channel": "airbnb",
+          "external_reference": "EXTERNAL-BLOCK-RACE",
+          "check_in_on": "2026-11-23",
+          "check_out_on": "2026-11-25",
+          "check_in_time": "15:00",
+          "check_out_time": "11:00",
+          "nightly_rate": "100000",
+          "cleaning_fee": "0",
+          "discount_amount": "0",
+          "total_amount": "200000",
+          "commission_amount": "6000",
+          "deposit_amount": "0",
+          "deposit_due_at": null,
+          "balance_due_at": null,
+          "cancellation_policy_id": null,
+          "policy_snapshot": {
+            "kind": "platform",
+            "channel": "airbnb",
+            "timezone": "America/Santiago",
+            "resolution": "manual_external",
+            "captured_at": "2026-10-05T00:46:09.000Z",
+            "schema_version": 1,
+            "platform_reference": "POLICY-SYNTHETIC",
+            "platform_description": "Synthetic external terms"
+          },
+          "cancellation_snapshot": null,
+          "cancelled_at": null,
+          "refund_amount": null,
+          "status": "confirmed",
+          "notes": null,
+          "is_active": true,
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:08.952Z",
+          "updated_at": "2026-10-05T00:46:08.997Z",
+          "nights": 2,
+          "check_in_at": "2026-11-23T18:00:00.000Z",
+          "check_out_at": "2026-11-25T14:00:00.000Z",
+          "expected_amount": "194000",
+          "received_amount": "0",
+          "refunded_amount": "0",
+          "net_received_amount": "0",
+          "balance_due_amount": "194000",
+          "refund_due_amount": "0",
+          "retained_amount": null,
+          "turnover_id": "5"
+        },
+        {
+          "id": "4",
+          "property_id": "1",
+          "guest_name": "Synthetic guest",
+          "guest_contact": "CONTACT-MARKER-private",
+          "guests_count": 2,
+          "channel": "airbnb",
+          "external_reference": "EXTERNAL-RACE-2",
+          "check_in_on": "2026-11-13",
+          "check_out_on": "2026-11-15",
+          "check_in_time": "15:00",
+          "check_out_time": "11:00",
+          "nightly_rate": "100000",
+          "cleaning_fee": "0",
+          "discount_amount": "0",
+          "total_amount": "200000",
+          "commission_amount": "6000",
+          "deposit_amount": "0",
+          "deposit_due_at": null,
+          "balance_due_at": null,
+          "cancellation_policy_id": null,
+          "policy_snapshot": null,
+          "cancellation_snapshot": null,
+          "cancelled_at": null,
+          "refund_amount": null,
+          "status": "draft",
+          "notes": null,
+          "is_active": true,
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:08.845Z",
+          "updated_at": "2026-10-05T00:46:08.845Z",
+          "nights": 2,
+          "check_in_at": "2026-11-13T18:00:00.000Z",
+          "check_out_at": "2026-11-15T14:00:00.000Z",
+          "expected_amount": "194000",
+          "received_amount": "0",
+          "refunded_amount": "0",
+          "net_received_amount": "0",
+          "balance_due_amount": "194000",
+          "refund_due_amount": "0",
+          "retained_amount": null,
+          "turnover_id": "4"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "total_items": 4,
+        "total_pages": 2
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/reservations/{id}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/reservations/1",
+    "status": 200,
+    "response": {
+      "id": "1",
+      "property_id": "1",
+      "guest_name": "Synthetic guest",
+      "guest_contact": "CONTACT-MARKER-private",
+      "guests_count": 2,
+      "channel": "whatsapp",
+      "external_reference": null,
+      "check_in_on": "2026-10-14",
+      "check_out_on": "2026-10-16",
+      "check_in_time": "15:00",
+      "check_out_time": "11:00",
+      "nightly_rate": "100000",
+      "cleaning_fee": "0",
+      "discount_amount": "0",
+      "total_amount": "200000",
+      "commission_amount": "0",
+      "deposit_amount": "40000",
+      "deposit_due_at": null,
+      "balance_due_at": null,
+      "cancellation_policy_id": "1",
+      "policy_snapshot": {
+        "kind": "direct",
+        "rules": [
+          {
+            "refund_percent": "50.00",
+            "min_days_before": 0
+          },
+          {
+            "refund_percent": "100.00",
+            "min_days_before": 20
+          }
+        ],
+        "rounding": "floor_clp",
+        "timezone": "America/Santiago",
+        "policy_id": "1",
+        "days_basis": "local_calendar_days",
+        "captured_at": "2026-10-05T00:46:08.207Z",
+        "policy_name": "Synthetic policy",
+        "refund_basis": "confirmed_received_amount",
+        "schema_version": 1
+      },
+      "cancellation_snapshot": null,
+      "cancelled_at": null,
+      "refund_amount": null,
+      "status": "draft",
+      "notes": null,
+      "is_active": true,
+      "created_by": "2",
+      "updated_by": "2",
+      "created_at": "2026-10-05T00:46:08.081Z",
+      "updated_at": "2026-10-05T00:46:08.207Z",
+      "nights": 2,
+      "check_in_at": "2026-10-14T18:00:00.000Z",
+      "check_out_at": "2026-10-16T14:00:00.000Z",
+      "expected_amount": "200000",
+      "received_amount": "40000",
+      "refunded_amount": "0",
+      "net_received_amount": "40000",
+      "balance_due_amount": "160000",
+      "refund_due_amount": "0",
+      "retained_amount": null,
+      "turnover_id": "1"
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/turnovers",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/turnovers?limit=2",
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "1",
+          "property_id": "1",
+          "incoming_reservation_id": "1",
+          "previous_reservation_id": null,
+          "linen_ready": null,
+          "cleaning_status": "pending",
+          "planned_ready_at": null,
+          "ready_at": null,
+          "same_day_approved_at": null,
+          "notes": null,
+          "created_by": "2",
+          "updated_by": "2",
+          "created_at": "2026-10-05T00:46:08.081Z",
+          "updated_at": "2026-10-05T00:46:08.081Z"
+        },
+        {
+          "id": "2",
+          "property_id": "1",
+          "incoming_reservation_id": "2",
+          "previous_reservation_id": null,
+          "linen_ready": null,
+          "cleaning_status": "pending",
+          "planned_ready_at": null,
+          "ready_at": null,
+          "same_day_approved_at": null,
+          "notes": null,
+          "created_by": "1",
+          "updated_by": "1",
+          "created_at": "2026-10-05T00:46:08.677Z",
+          "updated_at": "2026-10-05T00:46:08.677Z"
+        }
+      ],
+      "meta": {
+        "page": 1,
+        "limit": 2,
+        "total_items": 5,
+        "total_pages": 3
+      }
+    }
+  },
+  {
+    "route": "GET /api/v1/rental/properties/{propertyId}/turnovers/{id}",
+    "method": "GET",
+    "url": "/api/v1/rental/properties/1/turnovers/7",
+    "status": 200,
+    "response": {
+      "id": "7",
+      "property_id": "1",
+      "incoming_reservation_id": "7",
+      "previous_reservation_id": "6",
+      "linen_ready": true,
+      "cleaning_status": "pending",
+      "planned_ready_at": "2026-12-05T17:00:00.000Z",
+      "ready_at": null,
+      "same_day_approved_at": "2026-10-05T00:46:09.550Z",
+      "notes": null,
+      "created_by": "1",
+      "updated_by": "1",
+      "created_at": "2026-10-05T00:46:09.423Z",
+      "updated_at": "2026-10-05T00:46:09.546Z",
+      "current_previous_reservation_id": "6",
+      "same_day_required": true,
+      "plan_valid": true,
+      "needs_approval": false
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties",
+    "method": "POST",
+    "url": "/api/v1/rental/properties",
+    "request": {
+      "name": "Synthetic house",
+      "timezone": "America/Santiago",
+      "max_guests": 6,
+      "check_in_time": "15:00",
+      "check_out_time": "11:00",
+      "minimum_turnover_minutes": 120
+    },
+    "status": 201,
+    "response": {
+      "operation": "property.create",
+      "property_id": "1",
+      "resource_type": "property",
+      "resource_id": "1",
+      "status": "active",
+      "updated_at": "2026-10-05T00:46:07.748Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/blocks",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/blocks",
+    "request": {
+      "starts_at": "2027-01-02T18:00:00.000Z",
+      "ends_at": "2027-01-04T14:00:00.000Z",
+      "reason": "Synthetic repair"
+    },
+    "status": 201,
+    "response": {
+      "operation": "block.create",
+      "property_id": "1",
+      "resource_type": "block",
+      "resource_id": "1",
+      "status": "active",
+      "updated_at": "2026-10-05T00:46:10.239Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/cancellation-policies",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/cancellation-policies",
+    "request": {
+      "name": "Synthetic policy",
+      "rules": [
+        {
+          "min_days_before": 0,
+          "refund_percent": "50"
+        },
+        {
+          "min_days_before": 20,
+          "refund_percent": "100"
+        }
+      ]
+    },
+    "status": 201,
+    "response": {
+      "operation": "policy.create",
+      "property_id": "1",
+      "resource_type": "policy",
+      "resource_id": "1",
+      "status": "active",
+      "updated_at": "2026-10-05T00:46:07.994Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/collaborators",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/collaborators",
+    "request": {
+      "user_id": "2",
+      "position": "Operations"
+    },
+    "status": 201,
+    "response": {
+      "operation": "collaborator.create",
+      "property_id": "1",
+      "resource_type": "collaborator",
+      "resource_id": "1",
+      "status": "active",
+      "updated_at": "2026-10-05T00:46:07.902Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/expenses",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/expenses",
+    "request": {
+      "name": "Synthetic cleaning",
+      "amount": "5000",
+      "incurred_on": "2026-10-03",
+      "status": "pending"
+    },
+    "status": 201,
+    "response": {
+      "operation": "expense.create",
+      "property_id": "1",
+      "resource_type": "expense",
+      "resource_id": "1",
+      "status": "pending",
+      "updated_at": "2026-10-05T00:46:08.618Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/expenses/{id}/pay",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/expenses/1/pay",
+    "request": {
+      "paid_on": "2026-10-04"
+    },
+    "status": 200,
+    "response": {
+      "operation": "expense.pay",
+      "property_id": "1",
+      "resource_type": "expense",
+      "resource_id": "1",
+      "status": "paid",
+      "updated_at": "2026-10-05T00:46:08.633Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/expenses/{id}/void",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/expenses/2/void",
+    "request": {
+      "reason": "Synthetic correction"
+    },
+    "status": 200,
+    "response": {
+      "operation": "expense.void",
+      "property_id": "1",
+      "resource_type": "expense",
+      "resource_id": "2",
+      "status": "voided",
+      "updated_at": "2026-10-05T00:46:10.207Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/payments",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/payments",
+    "request": {
+      "reservation_id": "1",
+      "type": "payment",
+      "amount": "40000",
+      "occurred_on": "2026-10-03"
+    },
+    "status": 201,
+    "response": {
+      "operation": "payment.create",
+      "property_id": "1",
+      "resource_type": "payment",
+      "resource_id": "1",
+      "status": "confirmed",
+      "updated_at": "2026-10-05T00:46:08.207Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/payments/{id}/void",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/payments/2/void",
+    "request": {
+      "reason": "Synthetic correction"
+    },
+    "status": 200,
+    "response": {
+      "operation": "payment.void",
+      "property_id": "1",
+      "resource_type": "payment",
+      "resource_id": "2",
+      "status": "voided",
+      "updated_at": "2026-10-05T00:46:10.131Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/reservations",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/reservations",
+    "request": {
+      "guest_name": "Synthetic guest",
+      "guest_contact": "CONTACT-MARKER-private",
+      "guests_count": 2,
+      "channel": "whatsapp",
+      "check_in_on": "2026-10-14",
+      "check_out_on": "2026-10-16",
+      "check_in_time": "15:00",
+      "check_out_time": "11:00",
+      "nightly_rate": "100000",
+      "deposit_amount": "40000",
+      "cancellation_policy_id": "1"
+    },
+    "status": 201,
+    "response": {
+      "operation": "reservation.create",
+      "property_id": "1",
+      "resource_type": "reservation",
+      "resource_id": "1",
+      "status": "draft",
+      "updated_at": "2026-10-05T00:46:08.081Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/reservations/{id}/cancel",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/reservations/1/cancel",
+    "request": {
+      "cancelled_at": "2026-10-05T00:45:08.460Z",
+      "expected_refund_amount": "20000"
+    },
+    "status": 200,
+    "response": {
+      "operation": "reservation.cancel",
+      "property_id": "1",
+      "resource_type": "reservation",
+      "resource_id": "1",
+      "status": "cancelled",
+      "updated_at": "2026-10-05T00:46:08.508Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/reservations/{id}/cancellation-preview",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/reservations/1/cancellation-preview",
+    "request": {
+      "cancelled_at": "2026-10-05T00:45:08.460Z"
+    },
+    "status": 200,
+    "response": {
+      "reservation_id": "1",
+      "as_of": "2026-10-05T00:46:08.481Z",
+      "check_in_at": "2026-10-14T18:00:00.000Z",
+      "cancellation_snapshot": {
+        "schema_version": 1,
+        "cancelled_at": "2026-10-05T00:45:08.460Z",
+        "computed_at": "2026-10-05T00:46:08.481Z",
+        "timezone": "America/Santiago",
+        "check_in_on": "2026-10-14",
+        "cancellation_local_on": "2026-10-04",
+        "days_before": 10,
+        "received_amount": "40000",
+        "kind": "direct",
+        "days_basis": "local_calendar_days",
+        "refund_basis": "confirmed_received_amount",
+        "rounding": "floor_clp",
+        "selected_rule": {
+          "refund_percent": "50.00",
+          "min_days_before": 0
+        },
+        "payment_count": 1,
+        "payment_ledger_sha256": "aa4cd05688567f0a3a0c5c96eace4e8c17029b285e27ad4f980b5bbe4b1b9226",
+        "refund_amount": "20000",
+        "retained_amount": "20000"
+      },
+      "refund_amount": "20000",
+      "balance_due_after_cancellation": "0",
+      "refund_due_after_cancellation": "20000"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/reservations/{id}/complete",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/reservations/8/complete",
+    "request": {},
+    "status": 200,
+    "response": {
+      "operation": "reservation.complete",
+      "property_id": "1",
+      "resource_type": "reservation",
+      "resource_id": "8",
+      "status": "completed",
+      "updated_at": "2026-10-05T00:46:10.078Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/reservations/{id}/confirm",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/reservations/1/confirm",
+    "request": {},
+    "status": 200,
+    "response": {
+      "operation": "reservation.confirm",
+      "property_id": "1",
+      "resource_type": "reservation",
+      "resource_id": "1",
+      "status": "confirmed",
+      "updated_at": "2026-10-05T00:46:08.339Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/reservations/{id}/start",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/reservations/8/start",
+    "request": {},
+    "status": 200,
+    "response": {
+      "operation": "reservation.start",
+      "property_id": "1",
+      "resource_type": "reservation",
+      "resource_id": "8",
+      "status": "in_progress",
+      "updated_at": "2026-10-05T00:46:10.035Z"
+    }
+  },
+  {
+    "route": "POST /api/v1/rental/properties/{propertyId}/turnovers/{id}/approve-same-day",
+    "method": "POST",
+    "url": "/api/v1/rental/properties/1/turnovers/7/approve-same-day",
+    "request": {},
+    "status": 200,
+    "response": {
+      "operation": "turnover.approve_same_day",
+      "property_id": "1",
+      "resource_type": "turnover",
+      "resource_id": "7",
+      "status": "pending",
+      "updated_at": "2026-10-05T00:46:09.546Z"
+    }
+  },
+  {
+    "route": "PUT /api/v1/rental/properties/{propertyId}",
+    "method": "PUT",
+    "url": "/api/v1/rental/properties/1",
+    "request": {
+      "default_cancellation_policy_id": "1"
+    },
+    "status": 200,
+    "response": {
+      "operation": "property.update",
+      "property_id": "1",
+      "resource_type": "property",
+      "resource_id": "1",
+      "status": "active",
+      "updated_at": "2026-10-05T00:46:08.025Z"
+    }
+  },
+  {
+    "route": "PUT /api/v1/rental/properties/{propertyId}/blocks/{id}",
+    "method": "PUT",
+    "url": "/api/v1/rental/properties/1/blocks/1",
+    "request": {
+      "is_active": false
+    },
+    "status": 200,
+    "response": {
+      "operation": "block.update",
+      "property_id": "1",
+      "resource_type": "block",
+      "resource_id": "1",
+      "status": "inactive",
+      "updated_at": "2026-10-05T00:46:10.269Z"
+    }
+  },
+  {
+    "route": "PUT /api/v1/rental/properties/{propertyId}/cancellation-policies/{id}",
+    "method": "PUT",
+    "url": "/api/v1/rental/properties/1/cancellation-policies/1",
+    "request": {
+      "rules": [
+        {
+          "min_days_before": 0,
+          "refund_percent": "0"
+        }
+      ]
+    },
+    "status": 200,
+    "response": {
+      "operation": "policy.update",
+      "property_id": "1",
+      "resource_type": "policy",
+      "resource_id": "1",
+      "status": "active",
+      "updated_at": "2026-10-05T00:46:08.281Z"
+    }
+  },
+  {
+    "route": "PUT /api/v1/rental/properties/{propertyId}/collaborators/{id}",
+    "method": "PUT",
+    "url": "/api/v1/rental/properties/1/collaborators/1",
+    "request": {
+      "is_active": false
+    },
+    "status": 200,
+    "response": {
+      "operation": "collaborator.update",
+      "property_id": "1",
+      "resource_type": "collaborator",
+      "resource_id": "1",
+      "status": "inactive",
+      "updated_at": "2026-10-05T00:46:09.107Z"
+    }
+  },
+  {
+    "route": "PUT /api/v1/rental/properties/{propertyId}/expenses/{id}",
+    "method": "PUT",
+    "url": "/api/v1/rental/properties/1/expenses/2",
+    "request": {
+      "amount": "200",
+      "notes": null
+    },
+    "status": 200,
+    "response": {
+      "operation": "expense.update",
+      "property_id": "1",
+      "resource_type": "expense",
+      "resource_id": "2",
+      "status": "pending",
+      "updated_at": "2026-10-05T00:46:10.161Z"
+    }
+  },
+  {
+    "route": "PUT /api/v1/rental/properties/{propertyId}/reservations/{id}",
+    "method": "PUT",
+    "url": "/api/v1/rental/properties/1/reservations/1",
+    "request": {
+      "is_active": false
+    },
+    "status": 200,
+    "response": {
+      "operation": "reservation.update",
+      "property_id": "1",
+      "resource_type": "reservation",
+      "resource_id": "1",
+      "status": "confirmed",
+      "updated_at": "2026-10-05T00:46:08.432Z"
+    }
+  },
+  {
+    "route": "PUT /api/v1/rental/properties/{propertyId}/turnovers/{id}",
+    "method": "PUT",
+    "url": "/api/v1/rental/properties/1/turnovers/7",
+    "request": {
+      "linen_ready": true,
+      "planned_ready_at": "2026-12-05T17:00:00.000Z"
+    },
+    "status": 200,
+    "response": {
+      "operation": "turnover.update",
+      "property_id": "1",
+      "resource_type": "turnover",
+      "resource_id": "7",
+      "status": "pending",
+      "updated_at": "2026-10-05T00:46:09.468Z"
+    }
+  }
+]

@@ -9,6 +9,10 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { GeminiUpstreamException } from './gemini-upstream.exception.js';
+import {
+  normalizeGeminiEngineStatus,
+  type GeminiDualEngineStatus,
+} from './gemini-engine-status.js';
 import { envs } from '../../config/envs.config.js';
 import {
   type ExtractedInvoiceData,
@@ -16,7 +20,11 @@ import {
   type GeminiExecutionEngine,
 } from './ai.types.js';
 
-export type { ExtractedInvoiceData, ExtractedInvoiceItem, GeminiExecutionEngine };
+export type {
+  ExtractedInvoiceData,
+  ExtractedInvoiceItem,
+  GeminiExecutionEngine,
+};
 
 export type GeminiLoginJob = {
   id: string;
@@ -42,7 +50,9 @@ export class GeminiService {
   ): Promise<GeminiLoginJob> {
     const baseUrl = envs.GEMINI_MICROSERVICE_URL;
     if (!baseUrl) {
-      throw new ServiceUnavailableException('El microservicio de Gemini no está configurado.');
+      throw new ServiceUnavailableException(
+        'El microservicio de Gemini no está configurado.',
+      );
     }
 
     let response: Response;
@@ -56,23 +66,31 @@ export class GeminiService {
       this.logger.warn(
         `Gemini login request failed: ${error instanceof Error ? error.name : 'UnknownError'}`,
       );
-      throw new ServiceUnavailableException('El microservicio de Gemini no está disponible.');
+      throw new ServiceUnavailableException(
+        'El microservicio de Gemini no está disponible.',
+      );
     }
 
     if (response.status === 409) {
-      throw new ConflictException('Ya hay un inicio de sesión Gemini en curso.');
+      throw new ConflictException(
+        'Ya hay un inicio de sesión Gemini en curso.',
+      );
     }
     if (response.status === 404) {
       throw new NotFoundException('La sesión de login Gemini no existe.');
     }
     if (!response.ok) {
-      throw new BadGatewayException('Gemini no pudo gestionar el inicio de sesión.');
+      throw new BadGatewayException(
+        'Gemini no pudo gestionar el inicio de sesión.',
+      );
     }
     let job: unknown;
     try {
       job = await response.json();
     } catch {
-      throw new BadGatewayException('Gemini devolvió un estado de login inválido.');
+      throw new BadGatewayException(
+        'Gemini devolvió un estado de login inválido.',
+      );
     }
     if (
       !job ||
@@ -81,9 +99,13 @@ export class GeminiService {
       typeof job.id !== 'string' ||
       !/^[0-9a-f]{32}$/.test(job.id) ||
       !('state' in job) ||
-      !['running', 'succeeded', 'failed', 'cancelled'].includes(String(job.state))
+      !['running', 'succeeded', 'failed', 'cancelled'].includes(
+        String(job.state),
+      )
     ) {
-      throw new BadGatewayException('Gemini devolvió un estado de login inválido.');
+      throw new BadGatewayException(
+        'Gemini devolvió un estado de login inválido.',
+      );
     }
     return job as GeminiLoginJob;
   }
@@ -119,7 +141,9 @@ export class GeminiService {
       }
 
       const data = await response.json();
-      return Boolean(data?.authenticated || (data?.available && data?.has_active_session));
+      return Boolean(
+        data?.authenticated || (data?.available && data?.has_active_session),
+      );
     } catch (error) {
       this.logger.warn(
         `Gemini microservice verification failed: ${error instanceof Error ? error.name : 'UnknownError'}`,
@@ -128,11 +152,7 @@ export class GeminiService {
     }
   }
 
-  async getDualEngineStatus(): Promise<{
-    active_engine: GeminiExecutionEngine;
-    agentic: any;
-    web: any;
-  } | null> {
+  async getDualEngineStatus(): Promise<GeminiDualEngineStatus | null> {
     const baseUrl = envs.GEMINI_MICROSERVICE_URL;
     if (!baseUrl) return null;
 
@@ -144,7 +164,7 @@ export class GeminiService {
       });
 
       if (response.ok) {
-        return await response.json();
+        return normalizeGeminiEngineStatus(await response.json());
       }
     } catch (error) {
       this.logger.warn(
@@ -179,8 +199,14 @@ export class GeminiService {
 
       if (response.ok) {
         const body = await response.json();
-        if (engine === 'agentic' && body && typeof body.authenticated === 'undefined') {
-          body.authenticated = Boolean(body.available && body.has_active_session);
+        if (
+          engine === 'agentic' &&
+          body &&
+          typeof body.authenticated === 'undefined'
+        ) {
+          body.authenticated = Boolean(
+            body.available && body.has_active_session,
+          );
         }
         return body;
       }
@@ -195,11 +221,16 @@ export class GeminiService {
       if (fallbackResponse.ok) {
         const statusData = await fallbackResponse.json();
         return {
-          authenticated: Boolean(statusData?.authenticated ?? (statusData?.available && statusData?.has_active_session)),
+          authenticated: Boolean(
+            statusData?.authenticated ??
+            (statusData?.available && statusData?.has_active_session),
+          ),
           tier: statusData?.tier || 'UNKNOWN',
           plan_label:
             statusData?.plan_label ||
-            (statusData?.tier ? `Plan ${statusData.tier}` : 'Google AI Premium'),
+            (statusData?.tier
+              ? `Plan ${statusData.tier}`
+              : 'Plan no identificado'),
           active_model: statusData?.active_model || statusData?.model || null,
           models: statusData?.models || [],
           usage_info: null,
@@ -242,7 +273,9 @@ export class GeminiService {
 
     const targetEngine = engine || providerFields?.engine || 'web';
     if (!selectedModel?.trim()) {
-      throw new UnprocessableEntityException('Configure un modelo antes de analizar.');
+      throw new UnprocessableEntityException(
+        'Configure un modelo antes de analizar.',
+      );
     }
 
     const formData = new FormData();
@@ -280,10 +313,17 @@ export class GeminiService {
       this.logger.warn(
         `Gemini microservice request failed: ${error instanceof Error ? error.name : 'UnknownError'}`,
       );
-      if (error instanceof Error && ['TimeoutError', 'AbortError'].includes(error.name)) {
-        throw new GatewayTimeoutException('Tiempo de respuesta de Gemini agotado.');
+      if (
+        error instanceof Error &&
+        ['TimeoutError', 'AbortError'].includes(error.name)
+      ) {
+        throw new GatewayTimeoutException(
+          'Tiempo de respuesta de Gemini agotado.',
+        );
       }
-      throw new ServiceUnavailableException('No se pudo conectar con el microservicio de Gemini.');
+      throw new ServiceUnavailableException(
+        'No se pudo conectar con el microservicio de Gemini.',
+      );
     }
 
     if (!response.ok) {
@@ -301,13 +341,19 @@ export class GeminiService {
       throw new BadGatewayException('Gemini devolvió una respuesta inválida.');
     }
     const body = parsed as Record<string, unknown>;
-    if (!body.data || typeof body.data !== 'object' || Array.isArray(body.data)) {
+    if (
+      !body.data ||
+      typeof body.data !== 'object' ||
+      Array.isArray(body.data)
+    ) {
       throw new BadGatewayException('Gemini devolvió una respuesta inválida.');
     }
     const data = body.data as Record<string, unknown>;
     const rawItems = data.items;
     if (!Array.isArray(rawItems) || rawItems.length === 0) {
-      throw new BadGatewayException('Gemini no pudo extraer productos de la imagen.');
+      throw new BadGatewayException(
+        'Gemini no pudo extraer productos de la imagen.',
+      );
     }
 
     const items = this.normalizeItems(rawItems);
@@ -330,7 +376,9 @@ export class GeminiService {
   private numericValue(value: unknown): number | null {
     if (value === null || value === undefined) return null;
     if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
-      throw new BadGatewayException('Gemini devolvió valores numéricos inválidos.');
+      throw new BadGatewayException(
+        'Gemini devolvió valores numéricos inválidos.',
+      );
     }
     return value;
   }
@@ -341,8 +389,11 @@ export class GeminiService {
         throw new BadGatewayException('Gemini devolvió un producto inválido.');
       }
       const item = raw as Record<string, unknown>;
-      if (typeof item.name !== 'string' || !item.name.trim() ||
-          (item.code != null && typeof item.code !== 'string')) {
+      if (
+        typeof item.name !== 'string' ||
+        !item.name.trim() ||
+        (item.code != null && typeof item.code !== 'string')
+      ) {
         throw new BadGatewayException('Gemini devolvió un producto inválido.');
       }
       // Python validates the extraction. Preserve missing/zero values here;

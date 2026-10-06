@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-04",
+  "tests": 822,
+  "test_files": 144,
+  "test_duration_seconds": 108.04,
+  "typecheck": "passed",
+  "lint": "passed",
+  "build": "passed",
+  "visual_matrix_cases": 12,
+  "full_flow_exchanges": 170,
+  "pending": [
+    "RC-38 target environment smoke",
+    "document approval"
+  ],
+  "backend_integration_requests": 282,
+  "translation_nested_keys": 392,
+  "translation_static_references": "passed",
+  "rental_regression_after_fixture_regeneration": {
+    "tests": 198,
+    "files": 52
+  }
+}

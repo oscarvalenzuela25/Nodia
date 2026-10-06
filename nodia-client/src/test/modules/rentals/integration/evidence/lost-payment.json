@@ -1,0 +1,474 @@
+{
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rental/properties",
+      "actor": "1",
+      "key": "f9b5e144-ce90-4fd0-8a9c-ed8f3178c011",
+      "status": 201,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?active=active&limit=20&page=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/audit-events?page=1&limit=10",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/overview?from_on=2026-10-01&to_on=2026-10-05",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/audit-events?page=1&limit=10",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?active=active&limit=20&page=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rental/properties/1/cancellation-policies",
+      "actor": "1",
+      "key": "a8dd4101-2cdc-4108-8593-5e070e6ca1a3",
+      "status": 201,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?active=active&limit=20&page=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/audit-events?page=1&limit=10",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/overview?from_on=2026-10-01&to_on=2026-10-05",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/audit-events?page=1&limit=10",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?active=active&limit=20&page=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": "7ac1d9d5-1f43-4565-9c6e-232cc7953b2a",
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/audit-events?page=1&limit=10",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?active=active&limit=20&page=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?active=active&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rental/properties/1/reservations",
+      "actor": "1",
+      "key": "ac37ee68-102f-41ad-a713-61a0ab0f521b",
+      "status": 201,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/payments?page=1&limit=10&reservation_id=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rental/properties/1/payments",
+      "actor": "1",
+      "key": "b37c8cc7-d6b1-4db3-b308-b348eb123926",
+      "status": 201,
+      "lost": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/operations/b37c8cc7-d6b1-4db3-b308-b348eb123926",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/payments?page=1&limit=10&reservation_id=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    }
+  ],
+  "counts": {
+    "payments": 1,
+    "operations": 5,
+    "reservations": 1
+  },
+  "payments": [
+    {
+      "id": "1",
+      "reservation_id": "1",
+      "amount": "40000",
+      "type": "payment",
+      "status": "confirmed"
+    }
+  ]
+}

@@ -1,0 +1,5397 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/finance/categories": {
+      "get": {
+        "operationId": "FinanceCategoryController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Bounded Ransack filters; no user_id or is_active.",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "category_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "category_group_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "obligation_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "user_id",
+                          "name",
+                          "key",
+                          "is_active",
+                          "created_at",
+                          "updated_at"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9]\\d{0,18}$",
+                            "example": "42"
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1"
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "key": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          }
+                        }
+                      },
+                      "maxItems": 100
+                    },
+                    "meta": {
+                      "type": "object",
+                      "required": [
+                        "page",
+                        "limit",
+                        "total_items",
+                        "total_pages"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 1000000
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "total_items": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "total_pages": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, or positive bigint ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate key in this user scope or a conflicting association.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List personal categories with bounded pagination",
+        "tags": [
+          "Finance categories"
+        ]
+      },
+      "post": {
+        "operationId": "FinanceCategoryController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFinanceCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "user_id",
+                    "name",
+                    "key",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9]\\d{0,18}$",
+                      "example": "42"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, or positive bigint ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate key in this user scope or a conflicting association.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a personal category",
+        "tags": [
+          "Finance categories"
+        ]
+      }
+    },
+    "/api/v1/finance/categories/{id}": {
+      "get": {
+        "operationId": "FinanceCategoryController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "user_id",
+                    "name",
+                    "key",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9]\\d{0,18}$",
+                      "example": "42"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, or positive bigint ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate key in this user scope or a conflicting association.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Get an owned category, including archived selections",
+        "tags": [
+          "Finance categories"
+        ]
+      },
+      "put": {
+        "operationId": "FinanceCategoryController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFinanceCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "user_id",
+                    "name",
+                    "key",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9]\\d{0,18}$",
+                      "example": "42"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, or positive bigint ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate key in this user scope or a conflicting association.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update or archive a personal category",
+        "tags": [
+          "Finance categories"
+        ]
+      }
+    },
+    "/api/v1/finance/category-groups": {
+      "get": {
+        "operationId": "FinanceCategoryGroupController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Bounded Ransack filters; no user_id or is_active.",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "category_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "category_group_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "obligation_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "user_id",
+                          "name",
+                          "key",
+                          "is_active",
+                          "created_at",
+                          "updated_at",
+                          "category_count"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9]\\d{0,18}$",
+                            "example": "42"
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1"
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "key": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "category_count": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 100
+                          }
+                        }
+                      },
+                      "maxItems": 100
+                    },
+                    "meta": {
+                      "type": "object",
+                      "required": [
+                        "page",
+                        "limit",
+                        "total_items",
+                        "total_pages"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 1000000
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "total_items": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "total_pages": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, bigint ID, or category selection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group or associated category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate user-scoped key, new inactive category selection, or association conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "List personal category groups with bounded pagination",
+        "tags": [
+          "Finance category groups"
+        ]
+      },
+      "post": {
+        "operationId": "FinanceCategoryGroupController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFinanceCategoryGroupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "user_id",
+                    "name",
+                    "key",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "category_count",
+                    "categories"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9]\\d{0,18}$",
+                      "example": "42"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "category_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "categories": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "name",
+                          "key",
+                          "is_active"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9]\\d{0,18}$",
+                            "example": "42"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "key": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, bigint ID, or category selection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group or associated category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate user-scoped key, new inactive category selection, or association conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Create a personal category group and its memberships atomically",
+        "tags": [
+          "Finance category groups"
+        ]
+      }
+    },
+    "/api/v1/finance/category-groups/{id}": {
+      "get": {
+        "operationId": "FinanceCategoryGroupController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "user_id",
+                    "name",
+                    "key",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "category_count",
+                    "categories"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9]\\d{0,18}$",
+                      "example": "42"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "category_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "categories": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "name",
+                          "key",
+                          "is_active"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9]\\d{0,18}$",
+                            "example": "42"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "key": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, bigint ID, or category selection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group or associated category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate user-scoped key, new inactive category selection, or association conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Hydrate a personal category group and historical selections",
+        "tags": [
+          "Finance category groups"
+        ]
+      },
+      "put": {
+        "operationId": "FinanceCategoryGroupController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFinanceCategoryGroupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "user_id",
+                    "name",
+                    "key",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "category_count",
+                    "categories"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9]\\d{0,18}$",
+                      "example": "42"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "category_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "categories": {
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "name",
+                          "key",
+                          "is_active"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9]\\d{0,18}$",
+                            "example": "42"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "key": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, query, bigint ID, or category selection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "A validated session is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group or associated category does not exist in the authenticated user scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Duplicate user-scoped key, new inactive category selection, or association conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "statusCode",
+                    "timestamp",
+                    "path",
+                    "method",
+                    "error",
+                    "message"
+                  ],
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Update or archive a group; optional category_ids replaces selections",
+        "tags": [
+          "Finance category groups"
+        ]
+      }
+    },
+    "/api/v1/finance/obligations": {
+      "get": {
+        "operationId": "FinanceObligationController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Bounded Ransack filters; no user_id or is_active.",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "category_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "category_group_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "obligation_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "user_id",
+                          "is_active",
+                          "created_at",
+                          "updated_at",
+                          "name",
+                          "key",
+                          "type",
+                          "amount",
+                          "description",
+                          "paid_amount",
+                          "remaining_amount",
+                          "initial_movement"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1"
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1"
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "key": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "loan",
+                              "debt"
+                            ]
+                          },
+                          "amount": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "100000",
+                            "description": "Initial principal, never decremented by repayments."
+                          },
+                          "description": {
+                            "type": "string",
+                            "nullable": true,
+                            "maxLength": 5000
+                          },
+                          "paid_amount": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$",
+                            "example": "100000",
+                            "description": "Sum of all confirmed repayments, including archived repayments and outside visible movement filters."
+                          },
+                          "remaining_amount": {
+                            "type": "string",
+                            "pattern": "^[0-9]+$",
+                            "example": "100000",
+                            "nullable": true,
+                            "description": "Initial principal minus confirmed repayments; null when the initial movement has been cancelled."
+                          },
+                          "initial_movement": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "type",
+                              "status",
+                              "amount",
+                              "category_id"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]*$",
+                                "example": "1"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "income",
+                                  "expense"
+                                ],
+                                "description": "Loan origin is expense; debt origin is income."
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "received",
+                                  "paid",
+                                  "cancelled"
+                                ]
+                              },
+                              "amount": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]*$",
+                                "example": "100000"
+                              },
+                              "category_id": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]*$",
+                                "example": "1"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "required": [
+                        "page",
+                        "limit",
+                        "total_items",
+                        "total_pages"
+                      ],
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "total_items": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "total_pages": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Duplicate key, principal below repayments, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List personal loans and debts with exact remaining balances",
+        "tags": [
+          "Personal finance - obligations"
+        ]
+      },
+      "post": {
+        "operationId": "FinanceObligationController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFinanceObligationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "user_id",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "key",
+                    "type",
+                    "amount",
+                    "description",
+                    "paid_amount",
+                    "remaining_amount",
+                    "initial_movement"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "loan",
+                        "debt"
+                      ]
+                    },
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "100000",
+                      "description": "Initial principal, never decremented by repayments."
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true,
+                      "maxLength": 5000
+                    },
+                    "paid_amount": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$",
+                      "example": "100000",
+                      "description": "Sum of all confirmed repayments, including archived repayments and outside visible movement filters."
+                    },
+                    "remaining_amount": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$",
+                      "example": "100000",
+                      "nullable": true,
+                      "description": "Initial principal minus confirmed repayments; null when the initial movement has been cancelled."
+                    },
+                    "initial_movement": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "type",
+                        "status",
+                        "amount",
+                        "category_id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "income",
+                            "expense"
+                          ],
+                          "description": "Loan origin is expense; debt origin is income."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "received",
+                            "paid",
+                            "cancelled"
+                          ]
+                        },
+                        "amount": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "100000"
+                        },
+                        "category_id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Duplicate key, principal below repayments, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Atomically create a loan or debt and its initial movement",
+        "tags": [
+          "Personal finance - obligations"
+        ]
+      }
+    },
+    "/api/v1/finance/obligations/{id}": {
+      "get": {
+        "operationId": "FinanceObligationController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "user_id",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "key",
+                    "type",
+                    "amount",
+                    "description",
+                    "paid_amount",
+                    "remaining_amount",
+                    "initial_movement"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "loan",
+                        "debt"
+                      ]
+                    },
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "100000",
+                      "description": "Initial principal, never decremented by repayments."
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true,
+                      "maxLength": 5000
+                    },
+                    "paid_amount": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$",
+                      "example": "100000",
+                      "description": "Sum of all confirmed repayments, including archived repayments and outside visible movement filters."
+                    },
+                    "remaining_amount": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$",
+                      "example": "100000",
+                      "nullable": true,
+                      "description": "Initial principal minus confirmed repayments; null when the initial movement has been cancelled."
+                    },
+                    "initial_movement": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "type",
+                        "status",
+                        "amount",
+                        "category_id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "income",
+                            "expense"
+                          ],
+                          "description": "Loan origin is expense; debt origin is income."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "received",
+                            "paid",
+                            "cancelled"
+                          ]
+                        },
+                        "amount": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "100000"
+                        },
+                        "category_id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Duplicate key, principal below repayments, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get an owned obligation and its initial movement",
+        "tags": [
+          "Personal finance - obligations"
+        ]
+      },
+      "put": {
+        "operationId": "FinanceObligationController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFinanceObligationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "user_id",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "key",
+                    "type",
+                    "amount",
+                    "description",
+                    "paid_amount",
+                    "remaining_amount",
+                    "initial_movement"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "loan",
+                        "debt"
+                      ]
+                    },
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "100000",
+                      "description": "Initial principal, never decremented by repayments."
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true,
+                      "maxLength": 5000
+                    },
+                    "paid_amount": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$",
+                      "example": "100000",
+                      "description": "Sum of all confirmed repayments, including archived repayments and outside visible movement filters."
+                    },
+                    "remaining_amount": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$",
+                      "example": "100000",
+                      "nullable": true,
+                      "description": "Initial principal minus confirmed repayments; null when the initial movement has been cancelled."
+                    },
+                    "initial_movement": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "type",
+                        "status",
+                        "amount",
+                        "category_id"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "income",
+                            "expense"
+                          ],
+                          "description": "Loan origin is expense; debt origin is income."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "received",
+                            "paid",
+                            "cancelled"
+                          ]
+                        },
+                        "amount": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "100000"
+                        },
+                        "category_id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Duplicate key, principal below repayments, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update or archive an obligation; principal updates its initial movement",
+        "tags": [
+          "Personal finance - obligations"
+        ]
+      }
+    },
+    "/api/v1/finance/movements": {
+      "get": {
+        "operationId": "FinanceMovementController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Bounded Ransack filters; no user_id or is_active.",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "category_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "category_group_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "obligation_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "user_id",
+                          "is_active",
+                          "created_at",
+                          "updated_at",
+                          "name",
+                          "amount",
+                          "type",
+                          "status",
+                          "category_id",
+                          "obligation_id",
+                          "category",
+                          "obligation"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1"
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1"
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255
+                          },
+                          "amount": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "100000"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "income",
+                              "expense"
+                            ]
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "pending",
+                              "received",
+                              "paid",
+                              "cancelled"
+                            ],
+                            "description": "Income admits pending/received/cancelled; expense admits pending/paid/cancelled."
+                          },
+                          "category_id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1"
+                          },
+                          "obligation_id": {
+                            "type": "string",
+                            "pattern": "^[1-9][0-9]*$",
+                            "example": "1",
+                            "nullable": true
+                          },
+                          "category": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "name",
+                              "key"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]*$",
+                                "example": "1"
+                              },
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "key": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              }
+                            }
+                          },
+                          "obligation": {
+                            "type": "object",
+                            "nullable": true,
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "name",
+                              "type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]*$",
+                                "example": "1"
+                              },
+                              "name": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 255
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "loan",
+                                  "debt"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "required": [
+                        "page",
+                        "limit",
+                        "total_items",
+                        "total_pages"
+                      ],
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "total_items": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "total_pages": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Overpayment, invalid state transition, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List movements owned by the authenticated user",
+        "tags": [
+          "Personal finance - movements"
+        ]
+      },
+      "post": {
+        "operationId": "FinanceMovementController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFinanceMovementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "user_id",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "amount",
+                    "type",
+                    "status",
+                    "category_id",
+                    "obligation_id",
+                    "category",
+                    "obligation"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "100000"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "income",
+                        "expense"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "received",
+                        "paid",
+                        "cancelled"
+                      ],
+                      "description": "Income admits pending/received/cancelled; expense admits pending/paid/cancelled."
+                    },
+                    "category_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "obligation_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1",
+                      "nullable": true
+                    },
+                    "category": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "name",
+                        "key"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "key": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        }
+                      }
+                    },
+                    "obligation": {
+                      "type": "object",
+                      "nullable": true,
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "name",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "loan",
+                            "debt"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Overpayment, invalid state transition, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a movement or a partial obligation repayment",
+        "tags": [
+          "Personal finance - movements"
+        ]
+      }
+    },
+    "/api/v1/finance/movements/{id}": {
+      "get": {
+        "operationId": "FinanceMovementController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "user_id",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "amount",
+                    "type",
+                    "status",
+                    "category_id",
+                    "obligation_id",
+                    "category",
+                    "obligation"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "100000"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "income",
+                        "expense"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "received",
+                        "paid",
+                        "cancelled"
+                      ],
+                      "description": "Income admits pending/received/cancelled; expense admits pending/paid/cancelled."
+                    },
+                    "category_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "obligation_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1",
+                      "nullable": true
+                    },
+                    "category": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "name",
+                        "key"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "key": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        }
+                      }
+                    },
+                    "obligation": {
+                      "type": "object",
+                      "nullable": true,
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "name",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "loan",
+                            "debt"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Overpayment, invalid state transition, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a personal movement, including archived records",
+        "tags": [
+          "Personal finance - movements"
+        ]
+      },
+      "put": {
+        "operationId": "FinanceMovementController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "1",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFinanceMovementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "user_id",
+                    "is_active",
+                    "created_at",
+                    "updated_at",
+                    "name",
+                    "amount",
+                    "type",
+                    "status",
+                    "category_id",
+                    "obligation_id",
+                    "category",
+                    "obligation"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "is_active": {
+                      "type": "boolean"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "100000"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "income",
+                        "expense"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "received",
+                        "paid",
+                        "cancelled"
+                      ],
+                      "description": "Income admits pending/received/cancelled; expense admits pending/paid/cancelled."
+                    },
+                    "category_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1"
+                    },
+                    "obligation_id": {
+                      "type": "string",
+                      "pattern": "^[1-9][0-9]*$",
+                      "example": "1",
+                      "nullable": true
+                    },
+                    "category": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "name",
+                        "key"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "key": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        }
+                      }
+                    },
+                    "obligation": {
+                      "type": "object",
+                      "nullable": true,
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "name",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[1-9][0-9]*$",
+                          "example": "1"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 255
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "loan",
+                            "debt"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid personal finance input or query."
+          },
+          "401": {
+            "description": "A validated session is required."
+          },
+          "404": {
+            "description": "The record or association does not exist for the authenticated user."
+          },
+          "409": {
+            "description": "Overpayment, invalid state transition, inactive association or concurrent conflict."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update, archive, confirm or cancel a movement",
+        "tags": [
+          "Personal finance - movements"
+        ]
+      }
+    },
+    "/api/v1/finance/overview": {
+      "get": {
+        "operationId": "FinanceOverviewController_overview",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Bounded Ransack filters; no user_id or is_active.",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "category_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "category_group_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "obligation_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exact movement totals, catalogue counts and historical obligation balances with explicit scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "scope",
+                    "totals",
+                    "counts",
+                    "obligations"
+                  ],
+                  "properties": {
+                    "scope": {
+                      "type": "object",
+                      "required": [
+                        "active",
+                        "movement_filters",
+                        "obligation_balances"
+                      ],
+                      "properties": {
+                        "active": {
+                          "type": "string",
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "all"
+                          ]
+                        },
+                        "movement_filters": {
+                          "type": "object",
+                          "required": [
+                            "q",
+                            "category_ids",
+                            "category_group_ids",
+                            "obligation_id"
+                          ],
+                          "properties": {
+                            "q": {
+                              "type": "object",
+                              "additionalProperties": true
+                            },
+                            "category_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[1-9]\\d*$"
+                              },
+                              "maxItems": 100
+                            },
+                            "category_group_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[1-9]\\d*$"
+                              },
+                              "maxItems": 100
+                            },
+                            "obligation_id": {
+                              "type": "string",
+                              "pattern": "^[1-9]\\d*$",
+                              "nullable": true
+                            }
+                          }
+                        },
+                        "obligation_balances": {
+                          "type": "object",
+                          "required": [
+                            "active",
+                            "repayments",
+                            "includes_inactive_repayments",
+                            "ignores_movement_filters"
+                          ],
+                          "properties": {
+                            "active": {
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive",
+                                "all"
+                              ]
+                            },
+                            "repayments": {
+                              "type": "string",
+                              "enum": [
+                                "all_confirmed_history"
+                              ]
+                            },
+                            "includes_inactive_repayments": {
+                              "type": "boolean",
+                              "enum": [
+                                true
+                              ]
+                            },
+                            "ignores_movement_filters": {
+                              "type": "boolean",
+                              "enum": [
+                                true
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "required": [
+                        "income_amount",
+                        "expense_amount",
+                        "net_amount",
+                        "movement_count",
+                        "pending_count",
+                        "cancelled_count"
+                      ],
+                      "properties": {
+                        "income_amount": {
+                          "type": "string",
+                          "pattern": "^\\d+$",
+                          "example": "60000"
+                        },
+                        "expense_amount": {
+                          "type": "string",
+                          "pattern": "^\\d+$",
+                          "example": "60000"
+                        },
+                        "net_amount": {
+                          "type": "string",
+                          "pattern": "^-?\\d+$",
+                          "example": "-40000"
+                        },
+                        "movement_count": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "pending_count": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "cancelled_count": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    },
+                    "counts": {
+                      "type": "object",
+                      "required": [
+                        "categories",
+                        "category_groups",
+                        "loans",
+                        "debts"
+                      ],
+                      "properties": {
+                        "categories": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "category_groups": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "loans": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "debts": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    },
+                    "obligations": {
+                      "type": "object",
+                      "required": [
+                        "loan_remaining_amount",
+                        "debt_remaining_amount"
+                      ],
+                      "properties": {
+                        "loan_remaining_amount": {
+                          "type": "string",
+                          "pattern": "^\\d+$",
+                          "example": "60000"
+                        },
+                        "debt_remaining_amount": {
+                          "type": "string",
+                          "pattern": "^\\d+$",
+                          "example": "60000"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "finance:invalid_query"
+          },
+          "401": {
+            "description": "A validated session is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Personal finance overview"
+        ]
+      }
+    },
+    "/api/v1/finance/overview/categories": {
+      "get": {
+        "operationId": "FinanceOverviewController_categories",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Bounded Ransack filters; no user_id or is_active.",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "category_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "category_group_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "obligation_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged category totals including zero activity; catalogue name/key search.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "scope",
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "scope": {
+                      "type": "object",
+                      "required": [
+                        "active",
+                        "movement_filters",
+                        "obligation_balances"
+                      ],
+                      "properties": {
+                        "active": {
+                          "type": "string",
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "all"
+                          ]
+                        },
+                        "movement_filters": {
+                          "type": "object",
+                          "required": [
+                            "q",
+                            "category_ids",
+                            "category_group_ids",
+                            "obligation_id"
+                          ],
+                          "properties": {
+                            "q": {
+                              "type": "object",
+                              "additionalProperties": true
+                            },
+                            "category_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[1-9]\\d*$"
+                              },
+                              "maxItems": 100
+                            },
+                            "category_group_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[1-9]\\d*$"
+                              },
+                              "maxItems": 100
+                            },
+                            "obligation_id": {
+                              "type": "string",
+                              "pattern": "^[1-9]\\d*$",
+                              "nullable": true
+                            }
+                          }
+                        },
+                        "obligation_balances": {
+                          "type": "object",
+                          "required": [
+                            "active",
+                            "repayments",
+                            "includes_inactive_repayments",
+                            "ignores_movement_filters"
+                          ],
+                          "properties": {
+                            "active": {
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive",
+                                "all"
+                              ]
+                            },
+                            "repayments": {
+                              "type": "string",
+                              "enum": [
+                                "all_confirmed_history"
+                              ]
+                            },
+                            "includes_inactive_repayments": {
+                              "type": "boolean",
+                              "enum": [
+                                true
+                              ]
+                            },
+                            "ignores_movement_filters": {
+                              "type": "boolean",
+                              "enum": [
+                                true
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "key",
+                          "is_active",
+                          "movement_count",
+                          "income_amount",
+                          "expense_amount",
+                          "net_amount"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9]\\d*$"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          },
+                          "movement_count": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "income_amount": {
+                            "type": "string",
+                            "pattern": "^\\d+$",
+                            "example": "60000"
+                          },
+                          "expense_amount": {
+                            "type": "string",
+                            "pattern": "^\\d+$",
+                            "example": "60000"
+                          },
+                          "net_amount": {
+                            "type": "string",
+                            "pattern": "^-?\\d+$",
+                            "example": "-40000"
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "required": [
+                        "page",
+                        "limit",
+                        "total_items",
+                        "total_pages"
+                      ],
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 1000000
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "total_items": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "total_pages": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "finance:invalid_query"
+          },
+          "401": {
+            "description": "A validated session is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Personal finance overview"
+        ]
+      }
+    },
+    "/api/v1/finance/overview/category-groups": {
+      "get": {
+        "operationId": "FinanceOverviewController_groups",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Bounded Ransack filters; no user_id or is_active.",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "category_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "category_group_ids",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxItems": 100,
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "obligation_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged group totals including zero activity; overlapping groups are not additive.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "scope",
+                    "data",
+                    "meta",
+                    "overlapping_groups"
+                  ],
+                  "properties": {
+                    "scope": {
+                      "type": "object",
+                      "required": [
+                        "active",
+                        "movement_filters",
+                        "obligation_balances"
+                      ],
+                      "properties": {
+                        "active": {
+                          "type": "string",
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "all"
+                          ]
+                        },
+                        "movement_filters": {
+                          "type": "object",
+                          "required": [
+                            "q",
+                            "category_ids",
+                            "category_group_ids",
+                            "obligation_id"
+                          ],
+                          "properties": {
+                            "q": {
+                              "type": "object",
+                              "additionalProperties": true
+                            },
+                            "category_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[1-9]\\d*$"
+                              },
+                              "maxItems": 100
+                            },
+                            "category_group_ids": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[1-9]\\d*$"
+                              },
+                              "maxItems": 100
+                            },
+                            "obligation_id": {
+                              "type": "string",
+                              "pattern": "^[1-9]\\d*$",
+                              "nullable": true
+                            }
+                          }
+                        },
+                        "obligation_balances": {
+                          "type": "object",
+                          "required": [
+                            "active",
+                            "repayments",
+                            "includes_inactive_repayments",
+                            "ignores_movement_filters"
+                          ],
+                          "properties": {
+                            "active": {
+                              "type": "string",
+                              "enum": [
+                                "active",
+                                "inactive",
+                                "all"
+                              ]
+                            },
+                            "repayments": {
+                              "type": "string",
+                              "enum": [
+                                "all_confirmed_history"
+                              ]
+                            },
+                            "includes_inactive_repayments": {
+                              "type": "boolean",
+                              "enum": [
+                                true
+                              ]
+                            },
+                            "ignores_movement_filters": {
+                              "type": "boolean",
+                              "enum": [
+                                true
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "key",
+                          "is_active",
+                          "movement_count",
+                          "income_amount",
+                          "expense_amount",
+                          "net_amount"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[1-9]\\d*$"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "key": {
+                            "type": "string"
+                          },
+                          "is_active": {
+                            "type": "boolean"
+                          },
+                          "movement_count": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "income_amount": {
+                            "type": "string",
+                            "pattern": "^\\d+$",
+                            "example": "60000"
+                          },
+                          "expense_amount": {
+                            "type": "string",
+                            "pattern": "^\\d+$",
+                            "example": "60000"
+                          },
+                          "net_amount": {
+                            "type": "string",
+                            "pattern": "^-?\\d+$",
+                            "example": "-40000"
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "required": [
+                        "page",
+                        "limit",
+                        "total_items",
+                        "total_pages"
+                      ],
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 1000000
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        "total_items": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "total_pages": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    },
+                    "overlapping_groups": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "finance:invalid_query"
+          },
+          "401": {
+            "description": "A validated session is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Personal finance overview"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Personal Finance isolated contract",
+    "description": "",
+    "version": "1",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateFinanceCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "key"
+        ]
+      },
+      "UpdateFinanceCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateFinanceCategoryGroupDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "category_ids": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "key",
+          "category_ids"
+        ]
+      },
+      "UpdateFinanceCategoryGroupDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "category_ids": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateFinanceObligationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "loan",
+              "debt"
+            ]
+          },
+          "amount": {
+            "type": "string"
+          },
+          "category_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "object",
+            "nullable": true,
+            "maxLength": 5000
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "key",
+          "type",
+          "amount",
+          "category_id"
+        ]
+      },
+      "UpdateFinanceObligationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "description": {
+            "type": "object",
+            "nullable": true,
+            "maxLength": 5000
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateFinanceMovementDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "example": "20000"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "income",
+              "expense"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "received",
+              "paid",
+              "cancelled"
+            ]
+          },
+          "category_id": {
+            "type": "string"
+          },
+          "obligation_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "amount",
+          "type",
+          "status",
+          "category_id"
+        ]
+      },
+      "UpdateFinanceMovementDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "income",
+              "expense"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "received",
+              "paid",
+              "cancelled"
+            ]
+          },
+          "category_id": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

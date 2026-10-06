@@ -1,182 +1,90 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { GetSelectableModelsUseCase } from './get-selectable-models.use-case.js';
 import type { AiProviderService } from '../ai-provider.service.js';
 import type { GeminiService } from '../../common/ai/gemini.service.js';
-import { AiConnectionMode, AiKeyHealthState } from '../types/ai-provider.types.js';
 
-describe('GetSelectableModelsUseCase', () => {
+const provider = { id: '1', key: 'gemini', is_active: true, is_default: true,
+  mode: 'token_plan_web', default_mode: 'token_plan_web', use_token_plan_web: true, use_token_plan_agentic: true,
+  fields: { token_plan_web: { selected_model: 'live-model', available_models: [{ id: 'invented-model', contextWindow: 128000, capabilities: ['vision'] }] },
+    token_plan_agentic: { selected_model: 'agent-model' } } };
+
+describe('GetSelectableModelsUseCase observed data', () => {
+  let list: ReturnType<typeof vi.fn>;
+  let discovery: ReturnType<typeof vi.fn>;
   let useCase: GetSelectableModelsUseCase;
-  let aiProviderServiceMock: Partial<AiProviderService>;
-  let geminiServiceMock: Partial<GeminiService>;
-
   beforeEach(() => {
-    aiProviderServiceMock = {
-      findAllProviders: vi.fn().mockResolvedValue({
-        data: [
-          {
-            id: '1',
-            key: 'gemini',
-            is_active: true,
-            mode: AiConnectionMode.WEB_SESSION,
-            fields: { model: 'gemini-flash' },
-            api_keys: [
-              {
-                id: 'k1',
-                label: 'Primary Gemini Key',
-                display_hint: '...a1b2',
-                health_state: AiKeyHealthState.VALID,
-                is_selected: true,
-                is_active: true,
-                cooldown_until: null,
-                last_success_at: new Date('2026-09-25T10:00:00Z'),
-                last_error_at: null,
-                last_error_code: null,
-              },
-            ],
-          },
-          {
-            id: '2',
-            key: 'mistral',
-            is_active: true,
-            mode: AiConnectionMode.API_KEY,
-            fields: {
-              selected_model: 'mistral-large-latest',
-              ocr_model: 'mistral-ocr-latest',
-              available_models: [
-                {
-                  id: 'mistral-large-latest',
-                  name: 'mistral-large-latest',
-                  displayName: 'Mistral Large',
-                  description: 'Modelo de razonamiento',
-                  capabilities: ['text', 'json'],
-                  isRecommended: true,
-                },
-              ],
-            },
-            api_keys: [
-              {
-                id: 'k2',
-                label: 'Mistral Prod Key',
-                display_hint: '...c3d4',
-                health_state: AiKeyHealthState.COOLDOWN,
-                is_selected: true,
-                is_active: true,
-                cooldown_until: new Date('2026-09-26T05:00:00Z'),
-                last_success_at: null,
-                last_error_at: new Date('2026-09-26T02:00:00Z'),
-                last_error_code: '429',
-              },
-            ],
-          },
-        ],
-        meta: { total: 2, page: 1, limit: 10, totalPages: 1 },
-      }),
-    };
-
-    geminiServiceMock = {
-      getModelsAndQuota: vi.fn().mockResolvedValue({
-        authenticated: true,
-        tier: 'PRO',
-        plan_label: 'Google One AI Premium (Gemini Advanced)',
-        active_model: 'gemini-flash',
-        models: [
-          {
-            id: 'gemini-flash',
-            name: 'gemini-flash',
-            display_name: '3.8 Flash',
-            description: 'Asistencia general rápida',
-            capabilities: ['text', 'vision', 'documents'],
-            context_window: 1000000,
-            remaining_credits: 48263,
-            total_credits: 48384,
-            usage_percentage: 0,
-            reset_time: 1790408828,
-          },
-          {
-            id: 'gemini-pro',
-            name: 'gemini-pro',
-            display_name: '3.1 Pro',
-            description: 'Razonamiento avanzado',
-            capabilities: ['text', 'vision', 'documents', 'deep_research'],
-            context_window: 2000000,
-            remaining_credits: 48262,
-            total_credits: 48384,
-            usage_percentage: 0,
-            reset_time: 1790408828,
-          },
-        ],
-        usage_info: {
-          current_5h: {
-            window: '5h',
-            remaining_credits: 2400,
-            usage_percentage: 0,
-            reset_at: '2026-09-26T04:47:08-03:00',
-          },
-          weekly: {
-            window: 'weekly',
-            remaining_credits: 48263,
-            usage_percentage: 0,
-            reset_at: '2026-09-28T19:47:08-03:00',
-          },
-        },
-      }),
-    };
-
-    useCase = new GetSelectableModelsUseCase(
-      aiProviderServiceMock as AiProviderService,
-      geminiServiceMock as GeminiService,
-    );
+    list = vi.fn().mockResolvedValue({ data: [provider] });
+    discovery = vi.fn().mockResolvedValue({ authenticated: true, models: [{ id: 'live-model' }] });
+    useCase = new GetSelectableModelsUseCase({ findAllProviders: list } as unknown as AiProviderService,
+      { getModelsAndQuota: discovery } as unknown as GeminiService);
   });
-
-  it('returns all providers and their selectable models with remaining tokens and plan info', async () => {
-    const results = await useCase.execute({});
-
-    expect(results).toHaveLength(2);
-
-    // Check Gemini Web Session (token plan)
-    const geminiWeb = results.find(
-      (r) => r.provider === 'gemini' && r.mode === AiConnectionMode.WEB_SESSION,
-    );
-    expect(geminiWeb).toBeDefined();
-    expect(geminiWeb?.planType).toBe('token_plan');
-    expect(geminiWeb?.tokenPlan?.tier).toBe('PRO');
-    expect(geminiWeb?.tokenPlan?.authenticated).toBe(true);
-    expect(geminiWeb?.tokenPlan?.remainingCredits).toBe(48263);
-    expect(geminiWeb?.models).toHaveLength(2);
-    expect(geminiWeb?.models[0].id).toBe('gemini-flash');
-    expect(geminiWeb?.models[0].remainingTokens).toBe('48263 créditos');
-
-    // Check Mistral API Key (cooldown test)
-    const mistralApi = results.find((r) => r.provider === 'mistral');
-    expect(mistralApi).toBeDefined();
-    expect(mistralApi?.planType).toBe('api_key');
-    expect(mistralApi?.apiKeyPlan?.selectedKey?.healthState).toBe(AiKeyHealthState.COOLDOWN);
-    expect(mistralApi?.models[0].remainingTokens).toContain('En enfriamiento');
+  it('uses live discovery and never saved model metrics', async () => {
+    const [result] = await useCase.execute({ provider_id: '1' });
+    expect(result.providerId).toBe('1');
+    expect(result.selectedModel).toBe('live-model');
+    expect(result.models_source).toBe('provider');
+    expect(result.models).toEqual([expect.objectContaining({ id: 'live-model', contextWindow: null, capabilities: [], isRecommended: false,
+      remainingTokens: null, usagePercentage: null, isCurrent: true })]);
   });
-
-  it('filters by provider correctly', async () => {
-    const results = await useCase.execute({ provider: 'mistral' });
-
-    expect(results).toHaveLength(1);
-    expect(results[0].provider).toBe('mistral');
+  it('preserves explicit provider metadata without adding audio/video/reasoning', async () => {
+    discovery.mockResolvedValue({ authenticated: true, models: [{ id: 'live-model', context_window: 32000, capabilities: ['vision'] }] });
+    expect((await useCase.execute({}))[0].models[0]).toMatchObject({ contextWindow: 32000, capabilities: ['vision'] });
   });
-
-  it('filters by mode correctly', async () => {
-    const results = await useCase.execute({ mode: AiConnectionMode.WEB_SESSION });
-
-    expect(results).toHaveLength(1);
-    expect(results[0].mode).toBe(AiConnectionMode.WEB_SESSION);
-    expect(results[0].planType).toBe('token_plan');
+  it('keeps quota windows separate and does not call credits tokens', async () => {
+    discovery.mockResolvedValue({ authenticated: true, models: [{ id: 'live-model', remaining_credits: 999 }], quota_source: 'web', quota_observed_at: Date.now() / 1000,
+      usage_info: { current_5h: { usage_percentage: 0, remaining_credits: 0 }, weekly: { usage_percentage: 70, remaining_credits: 100 } } });
+    const [result] = await useCase.execute({});
+    expect(result.models[0].remainingTokens).toBeNull();
+    expect(result.tokenPlan).toMatchObject({ remainingCredits: null, usagePercentage: null, current5h: { usagePercentage: 0, remainingCredits: 0 }, weekly: { usagePercentage: 70, remainingCredits: 100 } });
   });
-
-  it('returns empty array when no providers are configured in the database', async () => {
-    (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
-      data: [],
-      meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
-    });
-
-    const results = await useCase.execute({});
-
-    expect(results).toHaveLength(0);
+  it('does not expose unproven, old or invalid quota data', async () => {
+    discovery.mockResolvedValue({ authenticated: true, models: [], usage_info: { weekly: { usage_percentage: 80, remaining_credits: 999 } } });
+    expect((await useCase.execute({}))[0].tokenPlan?.weekly).toBeNull();
+  });
+  it('uses the requested instance and subscription mode without root fallback', async () => {
+    list.mockResolvedValue({ data: [provider, { ...provider, id: '2' }] });
+    discovery.mockResolvedValue({ available: true, authenticated: true, models: [{ id: 'agent-model' }] });
+    const [result] = await useCase.execute({ provider_id: '2', mode: 'token_plan_agentic' });
+    expect(result.providerId).toBe('2');
+    expect(result.selectedModel).toBe('agent-model');
+    expect(discovery).toHaveBeenCalledWith('agentic');
+    expect(result.models[0].isCurrent).toBe(true);
+  });
+  it('does not authenticate an agentic adapter from authentication alone', async () => {
+    discovery.mockResolvedValue({ available: false, authenticated: true, models: [{ id: 'agent-model' }] });
+    const [result] = await useCase.execute({ mode: 'token_plan_agentic' });
+    expect(result.models).toEqual([]);
+    expect(result.tokenPlan?.authenticated).toBe(false);
+  });
+  it('retains an unassigned model even when the provider reports a recommendation', async () => {
+    list.mockResolvedValue({ data: [{ ...provider, fields: {} }] });
+    discovery.mockResolvedValue({ authenticated: true, models: [{ id: 'recommended', isRecommended: true }] });
+    expect((await useCase.execute({}))[0].selectedModel).toBeNull();
+  });
+  it('returns unavailable data for a disconnected engine', async () => {
+    discovery.mockResolvedValue({ authenticated: false, models: [{ id: 'ghost' }] });
+    const [result] = await useCase.execute({});
+    expect(result.models_source).toBe('unavailable');
+    expect(result.models).toEqual([]);
+    expect(result.models_observed_at).toBeNull();
+  });
+  it('keeps historical API configuration from claiming real models, quotas or availability', async () => {
+    list.mockResolvedValue({ data: [{ ...provider, key: 'mistral', mode: 'api_key', default_mode: 'api_key', fields: { selected_model: 'configured' } }] });
+    const [result] = await useCase.execute({ provider: 'mistral' });
+    expect(result.selectedModel).toBe('configured');
+    expect(result.models).toEqual([]);
+    expect(result).not.toHaveProperty('apiKeyPlan');
+    expect(discovery).not.toHaveBeenCalled();
+  });
+  it('returns empty results for missing provider and disabled mode', async () => {
+    expect(await useCase.execute({ provider: 'missing' })).toEqual([]);
+    list.mockResolvedValue({ data: [{ ...provider, use_token_plan_agentic: false }] });
+    expect(await useCase.execute({ mode: 'token_plan_agentic' })).toEqual([]);
+    list.mockResolvedValue({ data: [] });
+    expect(await useCase.execute({})).toEqual([]);
+  });
+  it('rejects malformed live model data with a controlled upstream error', async () => {
+    discovery.mockResolvedValue({ authenticated: true, models: [{ id: '' }] });
+    await expect(useCase.execute({})).rejects.toMatchObject({ status: 502 });
   });
 });

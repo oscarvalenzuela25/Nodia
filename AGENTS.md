@@ -179,3 +179,17 @@ Skills disponibles en `nodia-client/skills/`:
   - Si no se especifica un modelo concreto en la petición o en el proveedor, delegar la resolución por defecto al propio SDK subyacente (ej. `model=None` en Antigravity) o requerir explícitamente el modelo configurado.
   - Queda prohibido mantener listas fijas cerradas que impidan el uso de nuevas versiones de modelos (ej. Gemini 4, Claude 5, etc.) lanzadas por los proveedores.
 
+## Veracidad de Información Operativa y Fuentes Comprobables
+
+- **Fuente Comprobable Obligatoria:** Toda información operativa debe tener una fuente comprobable. Antes de implementar cada dato de la interfaz, verificar su origen en el backend, SDK o respuesta real del proveedor.
+- **Prohibición de Datos Inventados:** Prohibido inventar cuotas, límites, capacidades, disponibilidad, latencias, fechas de comprobación o funciones no implementadas. No deducir capacidades a partir del nombre del modelo.
+- **Límites de Inferencia de Estado:** La configuración guardada no demuestra disponibilidad actual. Una sesión autenticada no demuestra que una inferencia funcione.
+- **Tratamiento ante Datos No Entregados:**
+  - Si el servicio no entrega un dato: devolver `null` o un estado explícito de desconocido.
+  - Ocultar la cifra o capacidad correspondiente en frontend.
+  - No agregar valores de respaldo ("placeholders" o defaults inventados) para completar la interfaz.
+  - Conservar los ceros reales: cero (`0`) y desconocido (`null`/`undefined`) son conceptualmente distintos.
+- **Aislamiento de Mocks:** Los datos simulados solo pueden existir en fixtures de pruebas, identificados claramente y separados del código de producción.
+- **Verificación Previa a la Entrega:** Antes de entregar, probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica. Indicar con precisión técnica qué se comprobó realmente y qué sigue pendiente.
+
+

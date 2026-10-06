@@ -162,7 +162,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
           {clearable && selectedOption && !disabled && (
             <IconButton
               size="small"
-              aria-label="clear selection"
+              aria-label={t("clear_selection")}
               onClick={handleClear}
               sx={{ p: 0.25 }}
             >

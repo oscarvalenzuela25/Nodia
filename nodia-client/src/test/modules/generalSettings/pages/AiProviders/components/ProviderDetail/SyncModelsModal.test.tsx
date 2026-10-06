@@ -53,7 +53,7 @@ const mockProvider: AiProviderEntity = {
   mode: "web_session",
   fields: {
     available_models: [],
-    selected_model: "",
+    selected_model: "gemini-flash",
   },
   created_at: "2026-09-20",
   updated_at: "2026-09-20",
@@ -126,6 +126,20 @@ describe("SyncModelsModal Component", () => {
       expect(screen.getAllByText("3.8 Flash")[0]).toBeInTheDocument();
       expect(screen.getAllByText("3.1 Pro")[0]).toBeInTheDocument();
     });
+  });
+
+  it("hides missing context and requires an explicit default model instead of choosing a recommendation", async () => {
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ ...mockDiscovered,
+      models: [{ ...mockDiscovered.models[0], contextWindow: undefined, capabilities: [] }] });
+    const user = userEvent.setup();
+    renderWithClient(<SyncModelsModal open provider={{ ...mockProvider, fields: { selected_model: "" } }} isOperational onClose={() => {}} />);
+    await screen.findByTestId("model-card-gemini-flash-lite");
+    expect(screen.queryByText(/128K|Tokens|tokens/)).not.toBeInTheDocument();
+    expect(screen.getByText("Seleccionar modelo por defecto...")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Seleccionar modelo por defecto..." }));
+    await user.click(screen.getAllByText("3.5 Flash-Lite").at(-1)!);
+    expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeEnabled();
   });
 
   it("submits curated models with primary and ocr selections", async () => {
@@ -282,6 +296,7 @@ describe("SyncModelsModal Component", () => {
           ...mockProvider,
           default_mode: "token_plan_agentic",
           fields: {
+            token_plan_agentic: { selected_model: "gemini-flash" },
             token_plan_web: {
               available_models: [{ id: "web-model-only" }],
               selected_model: "web-model-only",

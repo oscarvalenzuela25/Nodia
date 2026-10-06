@@ -7,6 +7,11 @@ import ProvidersTab from "../../../../../../../modules/business/pages/BusinessDe
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
 import type { ProviderEntity } from "../../../../../../../modules/business/infrastructure/types";
 import { sileo } from "sileo";
+import * as contactServices from "../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/components/ProviderContacts/infrastructure/services";
+
+vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/components/ProviderContacts/infrastructure/services", () => ({
+  getContacts: vi.fn(), createContact: vi.fn(), updateContact: vi.fn(), toggleContact: vi.fn(),
+}));
 
 vi.mock("sileo", () => ({
   sileo: {
@@ -82,6 +87,7 @@ describe("ProvidersTab Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(contactServices.getContacts).mockResolvedValue({ data: [], meta: { page: 1, limit: 25, total_items: 0, total_pages: 0 } });
     window.URL.createObjectURL = vi.fn(() => "blob:mock-url");
     window.URL.revokeObjectURL = vi.fn();
     vi.mocked(businessServices.exportProvidersCsv).mockResolvedValue("Name (name),Tax % (tax)\nLácteos,19");
@@ -89,6 +95,17 @@ describe("ProvidersTab Component", () => {
       data: mockProviders,
       meta: { total_items: 2, page: 1, limit: 50, total_pages: 1 },
     });
+  });
+
+  it("opens only the selected provider's contacts on demand and returns to the provider list", async () => {
+    renderWithClient(<ProvidersTab businessId="biz-123" />);
+    await screen.findByText("Lácteos del Sur");
+    expect(contactServices.getContacts).not.toHaveBeenCalled();
+    await user.click(screen.getByTestId("provider-contacts-prov-102"));
+    await screen.findByText("Contactos de Envases Modernos");
+    expect(contactServices.getContacts).toHaveBeenCalledWith("prov-102", expect.objectContaining({ page: 1, limit: 25 }), expect.any(AbortSignal));
+    await user.click(screen.getByRole("button", { name: "Volver a proveedores" }));
+    expect(screen.getByText("Lácteos del Sur")).toBeInTheDocument();
   });
 
   it("renders table with ID, Name, Tax, Fields, Status, and Actions columns", async () => {

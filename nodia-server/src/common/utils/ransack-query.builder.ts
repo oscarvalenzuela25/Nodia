@@ -159,6 +159,9 @@ export function applyRansack<T extends object>(
   };
 
   for (const [key, value] of entries) {
+    // DTO class fields exist even when the HTTP request omitted them.
+    // Undefined is absence; keep validating all explicitly provided keys.
+    if (value === undefined) continue;
     if (key === 's') {
       if (value === undefined || value === null || value === '') continue;
       if (typeof value !== 'string' || value.length > 128) return invalid();

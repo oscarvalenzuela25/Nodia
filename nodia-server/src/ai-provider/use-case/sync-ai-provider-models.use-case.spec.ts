@@ -25,7 +25,9 @@ describe('SyncAiProviderModelsUseCase', () => {
   });
 
   it('should throw NotFoundException if provider does not exist', async () => {
-    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue(null as any);
+    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue(
+      null as any,
+    );
 
     await expect(useCase.execute('999')).rejects.toThrow('not found');
   });
@@ -74,9 +76,12 @@ describe('SyncAiProviderModelsUseCase', () => {
     expect(result.models[0].displayName).toBe('Gemini 3.8 Flash');
     expect(result.models[1].capabilities).toContain('reasoning');
     expect(result.tokenPlan?.authenticated).toBe(true);
-    expect(aiProviderServiceMock.updateProviderFields).toHaveBeenCalledWith('1', expect.objectContaining({
-      available_models: expect.any(Array),
-    }));
+    expect(aiProviderServiceMock.updateProviderFields).toHaveBeenCalledWith(
+      '1',
+      expect.objectContaining({
+        available_models: expect.any(Array),
+      }),
+    );
   });
 
   it('should throw BadRequestException if Gemini web session is not authenticated', async () => {
@@ -90,7 +95,9 @@ describe('SyncAiProviderModelsUseCase', () => {
       authenticated: false,
     });
 
-    await expect(useCase.execute('1')).rejects.toThrow('no está activa o no ha sido autenticada');
+    await expect(useCase.execute('1')).rejects.toThrow(
+      'no está activa o no ha sido autenticada',
+    );
   });
 
   it('should throw BadRequestException if API_KEY provider has no active key', async () => {
@@ -101,9 +108,13 @@ describe('SyncAiProviderModelsUseCase', () => {
       mode: AiConnectionMode.API_KEY,
     } as any);
 
-    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue(null);
+    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue(
+      null,
+    );
 
-    await expect(useCase.execute('2')).rejects.toThrow('no tiene ninguna API Key activa');
+    await expect(useCase.execute('2')).rejects.toThrow(
+      'modo API Key no está habilitado',
+    );
   });
 
   it('should flag isSelectedModelAvailable as false if current model was deprecated', async () => {
@@ -134,63 +145,14 @@ describe('SyncAiProviderModelsUseCase', () => {
     expect(result.isSelectedModelAvailable).toBe(false);
   });
 
-  it('should discover models for Gemini when mode is api_key via Google Gemini API', async () => {
-    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
-      id: '1',
-      key: 'gemini',
-      name: 'Google Gemini',
-      default_mode: 'api_key',
-      fields: {
-        api_key: {
-          selected_model: 'gemini-2.5-flash',
-        },
-      },
-    } as any);
-
-    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue('AQ.valid_test_key');
-
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        models: [
-          {
-            name: 'models/gemini-2.5-flash',
-            displayName: 'Gemini 2.5 Flash',
-            description: 'Fast and versatile model',
-            inputTokenLimit: 1048576,
-            supportedGenerationMethods: ['generateContent'],
-          },
-          {
-            name: 'models/text-embedding-004',
-            displayName: 'Text Embedding',
-            supportedGenerationMethods: ['embedContent'],
-          },
-        ],
-      }),
-    });
+  it('rejects API mode without reading a key, network calls or persisting a catalogue', async () => {
+    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({ id: '1', key: 'gemini', mode: AiConnectionMode.WEB_SESSION } as never);
+    const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-
-    const result = await useCase.execute('1', { mode: 'api_key' });
-
-    expect(result.providerId).toBe('1');
-    expect(result.currentSelectedModel).toBe('gemini-2.5-flash');
-    expect(result.isSelectedModelAvailable).toBe(true);
-    // Should filter out embedContent-only models
-    expect(result.models).toHaveLength(1);
-    expect(result.models[0].id).toBe('gemini-2.5-flash');
-    expect(result.models[0].displayName).toBe('Gemini 2.5 Flash');
-    expect(result.models[0].capabilities).toContain('ocr');
-
-    // Verify it called Google Gemini endpoint with x-goog-api-key, NOT api.openai.com
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('generativelanguage.googleapis.com'),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          'x-goog-api-key': 'AQ.valid_test_key',
-        }),
-      }),
-    );
-
+    await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow('modo API Key no está habilitado');
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(aiProviderServiceMock.getActiveApiKeySecret).not.toHaveBeenCalled();
+    expect(aiProviderServiceMock.updateProviderFields).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
 
@@ -202,17 +164,20 @@ describe('SyncAiProviderModelsUseCase', () => {
       default_mode: 'api_key',
     } as any);
 
-    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue('AQ.invalid_key');
+    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue(
+      'AQ.invalid_key',
+    );
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
       status: 401,
-      text: async () => JSON.stringify({ error: { message: 'API key not valid' } }),
+      text: async () =>
+        JSON.stringify({ error: { message: 'API key not valid' } }),
     });
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow(
-      'Error al consultar API de Gemini (401)',
+      'modo API Key no está habilitado',
     );
 
     vi.unstubAllGlobals();
@@ -226,10 +191,54 @@ describe('SyncAiProviderModelsUseCase', () => {
       default_mode: 'api_key',
     } as any);
 
-    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue('some_secret_key');
+    vi.mocked(aiProviderServiceMock.getActiveApiKeySecret!).mockResolvedValue(
+      'some_secret_key',
+    );
 
     await expect(useCase.execute('99', { mode: 'api_key' })).rejects.toThrow(
-      'no tiene un endpoint de modelos configurado por defecto',
+      'modo API Key no está habilitado',
     );
   });
+
+  it('does not infer model capabilities or context from its name', async () => {
+    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
+      id: '1',
+      key: 'gemini',
+      mode: AiConnectionMode.WEB_SESSION,
+      fields: {},
+    } as never);
+    vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({
+      authenticated: true,
+      models: [{ id: 'discovered-flash' }],
+    });
+    const result = await useCase.execute('1', { persist: false });
+    expect(result.models[0]).toMatchObject({
+      contextWindow: null,
+      capabilities: [],
+      isRecommended: false,
+    });
+    expect(result.models[0]).not.toHaveProperty('role');
+    expect(aiProviderServiceMock.updateProviderFields).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { models: { invalid: true } },
+    { models: [null] },
+    { models: [{ name: 123 }] },
+  ])(
+    'rejects invalid discovery output with a controlled upstream error',
+    async ({ models }) => {
+      vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
+        id: '1',
+        key: 'gemini',
+        mode: AiConnectionMode.WEB_SESSION,
+      } as never);
+      vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({
+        authenticated: true,
+        models,
+      });
+      await expect(useCase.execute('1')).rejects.toMatchObject({ status: 502 });
+      expect(aiProviderServiceMock.updateProviderFields).not.toHaveBeenCalled();
+    },
+  );
 });

@@ -1,0 +1,122 @@
+{
+  "rental:invalid_input": {
+    "es": "Revisa los datos ingresados.",
+    "en": "Check the submitted information."
+  },
+  "rental:invalid_query": {
+    "es": "Revisa los filtros de búsqueda.",
+    "en": "Check the search filters."
+  },
+  "rental:invalid_local_time": {
+    "es": "La hora no existe o es ambigua en esta zona horaria.",
+    "en": "This time does not exist or is ambiguous in this timezone."
+  },
+  "rental:invalid_interval": {
+    "es": "Revisa las fechas y horas de la estadía.",
+    "en": "Check the stay dates and times."
+  },
+  "rental:invalid_amount": {
+    "es": "Revisa el precio, descuento, comisión y abono.",
+    "en": "Check the price, discount, commission and deposit."
+  },
+  "rental:invalid_due_date": {
+    "es": "Revisa los vencimientos del abono y saldo.",
+    "en": "Check the deposit and balance due dates."
+  },
+  "rental:invalid_platform_agreement": {
+    "es": "Revisa la referencia y las condiciones de Airbnb.",
+    "en": "Check the Airbnb reference and agreement terms."
+  },
+  "rental:invalid_approval": {
+    "es": "La aprobación no corresponde a la preparación actual.",
+    "en": "The approval does not match the current turnover."
+  },
+  "rental:invalid_cancellation_time": {
+    "es": "La cancelación debe ser efectiva antes de la entrada y no puede ser futura.",
+    "en": "Cancellation must be effective before check-in and cannot be in the future."
+  },
+  "rental:invalid_refund": {
+    "es": "Revisa el importe y la resolución de la devolución.",
+    "en": "Check the refund amount and resolution."
+  },
+  "rental:invalid_transition": {
+    "es": "El estado actual no permite esta operación.",
+    "en": "The current status does not allow this operation."
+  },
+  "rental:invalid_turnover_plan": {
+    "es": "El plan de preparación no es compatible con las estadías.",
+    "en": "The turnover plan is not compatible with the stays."
+  },
+  "rental:invalid_turnover_ready": {
+    "es": "Revisa la limpieza, ropa de cama y hora de preparación realizada.",
+    "en": "Check the cleaning, linen and actual readiness time."
+  },
+  "rental:not_found": {
+    "es": "El registro no está disponible.",
+    "en": "The record is not available."
+  },
+  "rental:owner_required": {
+    "es": "Esta operación requiere ser propietario de la casa.",
+    "en": "This operation requires ownership of the property."
+  },
+  "rental:property_inactive": {
+    "es": "La casa o reserva debe estar activa para esta operación.",
+    "en": "The property or reservation must be active for this operation."
+  },
+  "rental:capacity_exceeded": {
+    "es": "La cantidad de huéspedes supera la capacidad de la casa.",
+    "en": "The guest count exceeds the property capacity."
+  },
+  "rental:availability_conflict": {
+    "es": "Las fechas coinciden con otra estadía o bloqueo.",
+    "en": "The dates overlap another stay or block."
+  },
+  "rental:turnover_required": {
+    "es": "Revisa y aprueba la preparación entre huéspedes.",
+    "en": "Review and approve the turnover between guests."
+  },
+  "rental:deposit_required": {
+    "es": "Configura y registra el abono requerido.",
+    "en": "Configure and record the required deposit."
+  },
+  "rental:policy_required": {
+    "es": "Se requieren las condiciones de cancelación acordadas.",
+    "en": "The agreed cancellation terms are required."
+  },
+  "rental:overpayment": {
+    "es": "El cobro supera el importe pendiente de la reserva.",
+    "en": "The payment exceeds the reservation outstanding amount."
+  },
+  "rental:refund_exceeds_approved": {
+    "es": "La devolución supera el importe aprobado pendiente.",
+    "en": "The refund exceeds the outstanding approved amount."
+  },
+  "rental:agreement_immutable": {
+    "es": "El acuerdo ya registrado no admite este cambio.",
+    "en": "The recorded agreement does not allow this change."
+  },
+  "rental:cancellation_changed": {
+    "es": "El cálculo cambió. Revisa la cancelación antes de confirmarla.",
+    "en": "The calculation changed. Review the cancellation before confirming it."
+  },
+  "rental:idempotency_conflict": {
+    "es": "Esta clave ya corresponde a otra operación. Recupera su resultado.",
+    "en": "This key already belongs to another operation. Recover its result."
+  },
+  "rental:conflict": {
+    "es": "La operación entra en conflicto con los datos registrados.",
+    "en": "The operation conflicts with the recorded information."
+  },
+  "rental:window_too_large": {
+    "es": "Reduce el período o los filtros de la consulta.",
+    "en": "Reduce the query period or filters."
+  },
+  "rental:temporarily_busy": {
+    "es": "La operación está temporalmente ocupada. Recupera o reintenta con la misma clave.",
+    "en": "The operation is temporarily busy. Recover or retry with the same key."
+  },
+  "rental:server_error": {
+    "es": "No se pudo completar la operación.",
+    "en": "The operation could not be completed."
+  }
+}

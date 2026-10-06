@@ -64,14 +64,19 @@ Un tipo TypeScript no valida una respuesta remota. Validar en el límite apropia
 
 - Usar las capacidades del actor y ámbito reales del contrato. Aplicarlas en acciones, formularios y navegación directa, y reaccionar a revocación/403 sin conservar autorización obsoleta.
 - Ocultar botones no garantiza autorización del endpoint. No declarar cerrado un problema del servidor por un cambio de UI.
-- Si el flujo usa recursos descubiertos dinámicamente, ejecutar el recurso configurado o informar que falta/no está disponible. No inventar nombres/versiones, capacidades por el nombre, cuotas ni disponibilidad. Cumplir las políticas de proveedores del proyecto; esta skill no define presupuesto ni autenticación de IA.
+- Toda información operativa debe tener una fuente comprobable. Antes de implementar cada dato de la interfaz, verificar su origen en el backend, SDK o respuesta real del proveedor.
+- Prohibido inventar cuotas, límites, capacidades, disponibilidad, latencias, fechas de comprobación o funciones no implementadas. No deducir capacidades a partir del nombre del modelo.
+- La configuración guardada no demuestra disponibilidad actual. Una sesión autenticada no demuestra que una inferencia funcione.
+- Si el servicio no entrega un dato: devolver `null` o un estado explícito de desconocido; ocultar la cifra o capacidad correspondiente en frontend; no agregar valores de respaldo para completar la interfaz; conservar los ceros reales: cero y desconocido son distintos.
+- Si el flujo usa recursos descubiertos dinámicamente, ejecutar el recurso configurado o informar que falta/no está disponible. Cumplir las políticas de proveedores del proyecto; esta skill no define presupuesto ni autenticación de IA.
 
 ## Verificar y entregar
 
 - Crear o actualizar pruebas de comportamiento donde cambió una garantía. Derivar expectativas del contrato; una regresión debe fallar ante el defecto anterior, no limitarse a replicar la implementación.
-- Simular transporte, servicios externos y sesiones en pruebas unitarias. Usar datos sintéticos; no consumir cuotas ni modificar cuentas reales. Las integraciones reales requieren el entorno y autorización correspondientes.
+- Los datos simulados solo pueden existir en fixtures de pruebas, identificados claramente y separados del código de producción. Simular transporte, servicios externos y sesiones en pruebas unitarias con datos sintéticos; no consumir cuotas ni modificar cuentas reales. Las integraciones reales requieren el entorno y autorización correspondientes.
 - Ejecutar los checks que exige el proyecto y los adecuados al cambio usando sus scripts reales. Para código, comprobar lint/tipado/pruebas; ejecutar build cuando cambien imports, rutas, dependencias, configuración o integración. Si solo cambió documentación, validar estructura, referencias y consistencia sin ejecutar la aplicación innecesariamente.
 - Si cambian dependencias, revisar lockfile y auditoría; realizar actualizaciones acotadas. Si cambia UI/interacción, verificar los tamaños, temas, traducciones y teclado afectados con las herramientas disponibles.
 - No instalar un runner ni reconfigurar CI fuera del alcance. Si falta un check esencial, registrarlo; no presentar su ausencia como una comprobación aprobada.
 - No quitar assertions, saltar pruebas ni silenciar reglas para legitimar un defecto. Si cambió el contrato autorizado, actualizar las pruebas explicando el nuevo comportamiento; preservar las garantías vigentes.
-- Entregar: comportamiento corregido, evidencia ejecutada, limitaciones y dependencias pendientes. Distinguir simulación, navegador local e integración real. No afirmar seguridad, atomicidad, disponibilidad, performance ni preparación para producción sin evidencia correspondiente.
+- Antes de entregar, probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica.
+- Entregar: comportamiento corregido, evidencia ejecutada, limitaciones y qué sigue pendiente. Indicar qué se comprobó realmente y qué continúa pendiente. Distinguir simulación, navegador local e integración real. No afirmar seguridad, atomicidad, disponibilidad, performance ni preparación para producción sin evidencia correspondiente.

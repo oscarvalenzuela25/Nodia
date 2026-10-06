@@ -8,6 +8,8 @@ export type SelectMultipleOption = {
 export type SelectMultipleInputProps = {
   label?: string;
   options: Array<string | SelectMultipleOption>;
+  /** Labels for selected records outside the loaded page; excluded from select-loaded actions. */
+  selectedOptions?: SelectMultipleOption[];
   value: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;

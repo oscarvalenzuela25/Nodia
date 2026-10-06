@@ -1,14 +1,13 @@
-import { Injectable, Optional } from '@nestjs/common';
+import { BadGatewayException, HttpException, Injectable, Optional } from '@nestjs/common';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import {
-  VerifyIaProviderItem,
   VerifyIaProvidersResponse,
 } from '../types/invoice.types.js';
 import { AiProviderService } from '../../ai-provider/ai-provider.service.js';
 import {
   AiConnectionMode,
-  AiKeyHealthState,
 } from '../../ai-provider/types/ai-provider.types.js';
+import { observedModels } from '../../ai-provider/helpers/model-observation.helper.js';
 
 type ConnectionChannel = 'api_key' | 'token_plan_web' | 'token_plan_agentic';
 
@@ -130,20 +129,33 @@ export class VerifyIaProvidersUseCase {
         let selectedActiveMode: ConnectionChannel | null = null;
         let selectedModeData: ResolvedModeData | null = null;
         let firstModeWithModels: { mode: ConnectionChannel; data: ResolvedModeData; error: string } | null = null;
-        let hasAnyModeWithModels = false;
 
         for (const candidateMode of candidateModes) {
-          const modeData = this.resolveModeData(prov, candidateMode, provKey);
+          const modeData = this.resolveModeData(prov, candidateMode);
           if (!modeData) {
             // Este modo no tiene modelos configurados, continúa con el siguiente modo
             continue;
           }
 
-          hasAnyModeWithModels = true;
 
           // Verificar credenciales / conectividad para este modo
-          const credCheck = await this.verifyModeCredentials(prov, candidateMode, provKey);
+          const credCheck = await this.verifyModeCredentials(candidateMode, provKey);
           if (credCheck.valid) {
+            const match = (selection: string) => {
+              const matches = credCheck.models?.filter((model) => model.id === selection || model.name === selection) ?? [];
+              return matches.length === 1 ? matches[0] : null;
+            };
+            const liveModel = match(modeData.defaultModel);
+            const liveOcr = match(modeData.ocrModel);
+            if (!liveModel || !liveOcr) {
+              firstModeWithModels ??= { mode: candidateMode, data: modeData, error: 'El modelo configurado no está en el catálogo descubierto de esta sesión.' };
+              continue;
+            }
+            modeData.supportsThinking = liveModel.capabilities.includes('reasoning');
+            modeData.defaultModel = liveModel.id;
+            modeData.ocrModel = liveOcr.id;
+            const fields = prov.fields?.[candidateMode] ?? prov.fields ?? {};
+            modeData.extendedThinkingEnabled = modeData.supportsThinking && fields.enable_extended_thinking === true;
             selectedActiveMode = candidateMode;
             selectedModeData = modeData;
             break;
@@ -226,41 +238,33 @@ export class VerifyIaProvidersUseCase {
 
       result.sort((a, b) => (b.is_default ? 1 : 0) - (a.is_default ? 1 : 0));
       return result;
-    } catch {
-      return result;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new BadGatewayException('No se pudo comprobar el estado de los proveedores IA.');
     }
   }
 
   private resolveModeData(
     prov: any,
     mode: ConnectionChannel,
-    provKey: string,
   ): ResolvedModeData | null {
     const fields = prov.fields || {};
-    const modeFields = fields[mode];
+    const hasScoped = Boolean(fields.token_plan_web || fields.token_plan_agentic || fields.api_key);
+    const modeFields = fields[mode] ?? (hasScoped ? {} : fields);
 
     // Buscar modelo default del modo
     const rawSelectedModel =
       modeFields?.selected_model ||
       modeFields?.default_model ||
-      (mode === prov.default_mode || (!fields.token_plan_web && !fields.token_plan_agentic && !fields.api_key)
-        ? fields.selected_model || fields.model
-        : null) ||
-      fields.selected_model ||
+      modeFields?.model ||
       null;
 
     const availableModels: any[] =
-      Array.isArray(modeFields?.available_models) && modeFields.available_models.length > 0
+      Array.isArray(modeFields?.available_models)
         ? modeFields.available_models
-        : Array.isArray(fields.available_models)
-          ? fields.available_models
-          : [];
+        : [];
 
-    const defaultModel =
-      rawSelectedModel ||
-      (availableModels.length > 0
-        ? (availableModels.find((m: any) => m.isRecommended)?.id || availableModels[0]?.id)
-        : null);
+    const defaultModel = rawSelectedModel;
 
     if (!defaultModel || typeof defaultModel !== 'string' || defaultModel.trim() === '') {
       return null;
@@ -270,8 +274,6 @@ export class VerifyIaProvidersUseCase {
     const rawOcrModel =
       modeFields?.ocr_focus_model ||
       modeFields?.ocr_model ||
-      fields.ocr_focus_model ||
-      fields.ocr_model ||
       null;
 
     const ocrModel =
@@ -280,17 +282,8 @@ export class VerifyIaProvidersUseCase {
         : defaultModel;
 
     // Thinking
-    const activeModelDef = availableModels.find((m: any) => m.id === defaultModel);
-    const supportsThinking = Boolean(
-      activeModelDef?.capabilities?.includes('reasoning') ||
-      activeModelDef?.id?.toLowerCase().includes('thinking') ||
-      defaultModel.toLowerCase().includes('thinking') ||
-      (provKey === 'gemini' && !defaultModel.toLowerCase().includes('lite')),
-    );
-    const extendedThinkingEnabled = Boolean(
-      (modeFields?.enable_extended_thinking ?? fields.enable_extended_thinking) &&
-      supportsThinking,
-    );
+    const supportsThinking = false;
+    const extendedThinkingEnabled = false;
 
     return {
       mode,
@@ -303,51 +296,41 @@ export class VerifyIaProvidersUseCase {
   }
 
   private async verifyModeCredentials(
-    prov: any,
     mode: ConnectionChannel,
     provKey: string,
-  ): Promise<{ valid: boolean; error?: string }> {
+  ): Promise<{ valid: boolean; error?: string; models?: ReturnType<typeof observedModels> }> {
     if (mode === 'token_plan_agentic') {
       if (provKey === 'gemini') {
-        const isAgenticActive = await this.geminiService.verifyProvider('agentic');
+        const discovery = await this.geminiService.getModelsAndQuota('agentic');
+        const isAgenticActive = discovery?.available === true && discovery?.authenticated === true;
         if (!isAgenticActive) {
           return {
             valid: false,
             error: 'La sesión de Gemini Agentic no está activa o requiere inicio de sesión.',
           };
         }
-        return { valid: true };
+        return { valid: true, models: observedModels(discovery.models ?? []) };
       }
       return { valid: false, error: 'Proveedor no soportado en modo agentic.' };
     }
 
     if (mode === 'token_plan_web') {
       if (provKey === 'gemini') {
-        const isWebActive = await this.geminiService.verifyProvider('web');
+        const discovery = await this.geminiService.getModelsAndQuota('web');
+        const isWebActive = discovery?.authenticated === true;
         if (!isWebActive) {
           return {
             valid: false,
             error: 'La sesión de Gemini requiere renovación o inicio de sesión.',
           };
         }
-        return { valid: true };
+        return { valid: true, models: observedModels(discovery.models ?? []) };
       }
       return { valid: false, error: 'Proveedor no soportado en modo web.' };
     }
 
     if (mode === 'api_key') {
-      const apiKeys = prov.api_keys || [];
-      const validKeys = apiKeys.filter(
-        (k: any) =>
-          k.is_active && k.health_state !== AiKeyHealthState.COOLDOWN,
-      );
-      if (validKeys.length === 0) {
-        return {
-          valid: false,
-          error: 'No cuenta con API Keys activas o disponibles.',
-        };
-      }
-      return { valid: true };
+      return { valid: false, error: 'El modo API Key no tiene una integración de sesión admitida.' };
     }
 
     return { valid: false, error: 'Modo de conexión no compatible.' };

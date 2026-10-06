@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import FilterChips from "../../../../../components/Filter/components/FilterChips";
@@ -20,5 +20,14 @@ describe("FilterChips", () => {
     
     await user.click(actionBtn);
     expect(handleAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("labels the removal action and disables it while busy", async () => {
+    const onAction = vi.fn();
+    render(<FilterChips label="Solo activos" onAction={onAction} disabled />);
+    const button = screen.getByRole("button", { name: "Quitar filtro: Solo activos" });
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(onAction).not.toHaveBeenCalled();
   });
 });

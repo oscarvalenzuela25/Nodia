@@ -2,7 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GetAiProvidersHealthUseCase } from './get-ai-providers-health.use-case.js';
 import type { AiProviderService } from '../ai-provider.service.js';
 import type { GeminiService } from '../../common/ai/gemini.service.js';
-import { AiConnectionMode, AiKeyHealthState } from '../types/ai-provider.types.js';
+import {
+  AiConnectionMode,
+  AiKeyHealthState,
+} from '../types/ai-provider.types.js';
 
 describe('GetAiProvidersHealthUseCase', () => {
   let useCase: GetAiProvidersHealthUseCase;
@@ -31,7 +34,10 @@ describe('GetAiProvidersHealthUseCase', () => {
             mode: AiConnectionMode.API_KEY,
             use_api_key: true,
             auto_rotate_api_keys: true,
-            fields: { ocr_model: 'mistral-ocr-v1', selected_model: 'mistral-large-latest' },
+            fields: {
+              ocr_model: 'mistral-ocr-v1',
+              selected_model: 'mistral-large-latest',
+            },
             api_keys: [
               {
                 id: 'k1',
@@ -81,20 +87,20 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(incidentAlert?.actionType).toBe('renew_session');
   });
 
-  it('detects API key cooldown failover and generates failover alert', async () => {
+  it('does not claim API key availability, failover or latency from saved key health', async () => {
     const result = await useCase.execute();
 
     const mistralHealth = result.providers.find((p) => p.key === 'mistral');
-    expect(mistralHealth?.status).toBe('healthy');
-    expect(mistralHealth?.serviceState).toBe('1/2 Keys Válidas');
+    expect(mistralHealth?.status).toBe('unconfigured');
+    expect(mistralHealth?.latencyMs).toBeNull();
+    expect(mistralHealth?.lastCheck).toBeNull();
+    expect(mistralHealth?.serviceState).toBe('Sin integración de sesión verificada');
 
-    const failoverAlert = result.alerts.find((a) => a.provider === 'mistral');
-    expect(failoverAlert).toBeDefined();
-    expect(failoverAlert?.title).toContain('FAILOVER OPERATIVO');
-    expect(failoverAlert?.actionType).toBe('manage_quotas');
+    const failoverAlert = result.alerts.find((a) => a.provider === 'mistral' && a.type === 'failover');
+    expect(failoverAlert).toBeUndefined();
   });
 
-  it('reports healthy when web session is authenticated and api keys are valid', async () => {
+  it('reports a real healthy Web session while legacy API integration stays unverified', async () => {
     (geminiServiceMock.getModelsAndQuota as any).mockResolvedValue({
       authenticated: true,
     });
@@ -128,8 +134,9 @@ describe('GetAiProvidersHealthUseCase', () => {
     });
 
     const result = await useCase.execute();
-    expect(result.overallStatus).toBe('healthy');
-    expect(result.alerts).toHaveLength(0);
+    expect(result.overallStatus).toBe('degraded');
+    expect(result.summary.healthyProviders).toBe(1);
+    expect(result.alerts).toHaveLength(1);
   });
 
   it('detects unavailable agentic session and generates agentic incident alert', async () => {
@@ -167,12 +174,18 @@ describe('GetAiProvidersHealthUseCase', () => {
   });
 
   it('reports degraded when dual mode has one working and one failing engine', async () => {
-    (geminiServiceMock.getModelsAndQuota as any).mockImplementation((engine: string) => {
-      if (engine === 'agentic') {
-        return Promise.resolve({ authenticated: true, available: true, has_active_session: true });
-      }
-      return Promise.resolve({ authenticated: false });
-    });
+    (geminiServiceMock.getModelsAndQuota as any).mockImplementation(
+      (engine: string) => {
+        if (engine === 'agentic') {
+          return Promise.resolve({
+            authenticated: true,
+            available: true,
+            has_active_session: true,
+          });
+        }
+        return Promise.resolve({ authenticated: false });
+      },
+    );
 
     (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
       data: [
@@ -231,7 +244,7 @@ describe('GetAiProvidersHealthUseCase', () => {
   it('detects unauthenticated web session via getDualEngineStatus and generates web incident alert', async () => {
     geminiServiceMock.getDualEngineStatus = vi.fn().mockResolvedValue({
       active_engine: 'agentic',
-      agentic: { available: true },
+      agentic: { available: true, authenticated: true },
       web: { authenticated: false },
     });
     (aiProviderServiceMock.findAllProviders as any).mockResolvedValue({
@@ -260,5 +273,71 @@ describe('GetAiProvidersHealthUseCase', () => {
     );
     expect(webAlert).toBeDefined();
     expect(webAlert?.actionType).toBe('renew_session');
+  });
+
+  it.each([true, false])(
+    'does not mark an agentic adapter without a session healthy (dual status=%s)',
+    async (dual) => {
+      vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
+        data: [
+          {
+            id: '1',
+            key: 'gemini',
+            is_active: true,
+            use_token_plan_agentic: true,
+            fields: {},
+          },
+        ],
+        meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
+      });
+      const agentic = {
+        available: true,
+        authenticated: false,
+        has_active_session: false,
+      };
+      if (dual) {
+        geminiServiceMock.getDualEngineStatus = vi
+          .fn()
+          .mockResolvedValue({ active_engine: 'agentic', agentic, web: {} });
+      } else {
+        vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue(
+          agentic,
+        );
+      }
+      const result = await useCase.execute();
+      expect(result.providers[0].status).not.toBe('healthy');
+      expect(
+        result.alerts.some((alert) => alert.id.includes('agentic-unavailable')),
+      ).toBe(true);
+    },
+  );
+
+  it('preserves scoped unknown models without assigning the first model or invented capabilities', async () => {
+    vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          key: 'gemini',
+          is_active: true,
+          use_token_plan_web: true,
+          default_mode: 'token_plan_web',
+          fields: {
+            selected_model: 'other-mode-model',
+            available_models: [{ id: 'other-mode-model' }],
+            token_plan_web: { available_models: [{ id: 'discovered-flash' }] },
+          },
+        },
+      ],
+      meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
+    });
+    const result = await useCase.execute();
+    expect(result.providers[0].selectedModel).toBe('');
+    expect(result.providers[0].availableModels?.[0]).toMatchObject({
+      id: 'discovered-flash',
+      contextWindow: null,
+      capabilities: [],
+      isRecommended: false,
+    });
+    expect(result.providers[0].availableModels?.[0]).not.toHaveProperty('role');
   });
 });

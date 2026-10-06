@@ -4,6 +4,36 @@ import { describe, it, expect, vi } from "vitest";
 import Filter from "../../../../src/components/Filter";
 
 describe("Filter", () => {
+  it("blocks opening and applying while busy, and refreshes the draft on each open", async () => {
+    const onOpen = vi.fn(),
+      onFilter = vi.fn(),
+      onClear = vi.fn();
+    const view = render(
+      <Filter disabled onOpen={onOpen} onFilter={onFilter} onClear={onClear}>
+        <span>Draft</span>
+      </Filter>,
+    );
+    const trigger = screen.getByRole("button", { name: /Abrir filtros/i });
+    expect(trigger).toBeDisabled();
+    expect(onOpen).not.toHaveBeenCalled();
+    view.rerender(
+      <Filter
+        applyDisabled
+        onOpen={onOpen}
+        onFilter={onFilter}
+        onClear={onClear}
+      >
+        <span>Draft</span>
+      </Filter>,
+    );
+    await userEvent.click(trigger);
+    expect(onOpen).toHaveBeenCalledOnce();
+    expect(screen.getByRole("button", { name: "Filtrar" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    await userEvent.click(trigger);
+    expect(onOpen).toHaveBeenCalledTimes(2);
+    expect(onFilter).not.toHaveBeenCalled();
+  });
   it("renders trigger and opens modal on click", async () => {
     const handleFilter = vi.fn();
     const handleClear = vi.fn();
@@ -17,7 +47,7 @@ describe("Filter", () => {
         title="Custom Filter Title"
       >
         <div>Filter Content Inside</div>
-      </Filter>
+      </Filter>,
     );
 
     const trigger = screen.getByRole("button", { name: /Abrir filtros/i });
@@ -48,13 +78,15 @@ describe("Filter", () => {
         title="Filter Title"
       >
         <div>Filter Content</div>
-      </Filter>
+      </Filter>,
     );
 
     const trigger = screen.getByRole("button", { name: /Abrir filtros/i });
     await user.click(trigger);
 
-    const clearBtn = screen.getByRole("button", { name: /Limpiar filtros|Clear filters/i });
+    const clearBtn = screen.getByRole("button", {
+      name: /Limpiar filtros|Clear filters/i,
+    });
     await user.click(clearBtn);
 
     expect(handleClear).toHaveBeenCalledTimes(1);

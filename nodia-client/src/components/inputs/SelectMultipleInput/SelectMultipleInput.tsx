@@ -35,6 +35,7 @@ import {
 const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
   label,
   options,
+  selectedOptions,
   value = [],
   onChange,
   placeholder,
@@ -144,9 +145,10 @@ const SelectMultipleInput: FC<SelectMultipleInputProps> = ({
 
   const selectedLabelsMap = useMemo(() => {
     const map = new Map<string, string>(Object.entries(selectedLabelCache));
+    selectedOptions?.forEach((opt) => map.set(opt.value, opt.label));
     normalizedOptions.forEach((opt) => map.set(opt.value, opt.label));
     return map;
-  }, [normalizedOptions, selectedLabelCache]);
+  }, [normalizedOptions, selectedLabelCache, selectedOptions]);
 
   return (
     <SelectContainer fullWidth={fullWidth}>

@@ -1,7 +1,9 @@
 import cookieParser from 'cookie-parser';
+import { rentalBodyParser } from './rental-common/rental-body-parser.js';
 import { readAuthConfig } from './auth/auth.config.js';
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
+import { RentalValidationPipe } from './rental-common/rental-validation.pipe.js';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import qs from 'qs';
@@ -38,6 +40,8 @@ async function bootstrap() {
 
   // Set global prefix for all routes
   app.setGlobalPrefix('/api/v1');
+  // Installed before Nest's default parser; rental payloads are bounded before parsing.
+  app.use('/api/v1/rental', rentalBodyParser);
 
   const authConfig = readAuthConfig(process.env);
   app.use(cookieParser());
@@ -49,7 +53,7 @@ async function bootstrap() {
 
   // Enable global validation pipe
   app.useGlobalPipes(
-    new ValidationPipe({
+    new RentalValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,

@@ -1,0 +1,122 @@
+{
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rental/properties",
+      "actor": "1",
+      "key": "b9996b25-6df4-4b54-bafa-c43987527024",
+      "status": 201,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?page=1&limit=10&active=active",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/cancellation-policies?active=active&limit=20&page=1",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/overview?from_on=2026-10-01&to_on=2026-10-05",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/calendar?from_on=2026-10-01&to_on=2026-11-01&include_non_occupying=false",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/calendar?from_on=2026-11-01&to_on=2026-12-01&include_non_occupying=false",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/expenses?page=1&limit=10",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rental/properties/1/reservations?active=all&page=1&limit=20",
+      "actor": "1",
+      "key": null,
+      "status": 200,
+      "lost": false
+    }
+  ],
+  "postgres": "16.15",
+  "counts": {
+    "payments": 0,
+    "operations": 1,
+    "reservations": 0
+  }
+}

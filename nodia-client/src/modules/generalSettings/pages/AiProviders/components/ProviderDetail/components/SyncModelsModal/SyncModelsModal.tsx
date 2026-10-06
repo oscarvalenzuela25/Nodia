@@ -53,7 +53,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { t } = useTranslation(["ai_providers", "core"]);
+  const { t, i18n } = useTranslation(["ai_providers", "core"]);
 
   const [discoveredModels, setDiscoveredModels] = useState<DiscoveredModelItem[]>([]);
   const [selectedModelIds, setSelectedModelIds] = useState<Set<string>>(new Set());
@@ -138,10 +138,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
       if (typeof existingMain === "string" && initialSelected.has(existingMain)) {
         setMainModelId(existingMain);
       } else {
-        const recommended = fetchedList.find(
-          (m) => m.isRecommended && initialSelected.has(m.id)
-        );
-        setMainModelId(recommended ? recommended.id : (fetchedList[0]?.id || ""));
+        setMainModelId("");
       }
 
       // 2. OCR model: starts in null
@@ -199,17 +196,13 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
       if (next.has(modelId)) {
         next.delete(modelId);
         if (mainModelId === modelId) {
-          const remaining = Array.from(next);
-          setMainModelId(remaining.length > 0 ? remaining[0] : "");
+          setMainModelId("");
         }
         if (ocrModelId === modelId) {
           setOcrModelId("");
         }
       } else {
         next.add(modelId);
-        if (!mainModelId) {
-          setMainModelId(modelId);
-        }
       }
       return next;
     });
@@ -238,10 +231,6 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
       const allIds = new Set(discoveredModels.map((m) => m.id));
       setSelectedModelIds(allIds);
     }
-    if (!mainModelId && filteredModels.length > 0) {
-      const rec = filteredModels.find((m) => m.isRecommended);
-      setMainModelId(rec ? rec.id : filteredModels[0].id);
-    }
   };
 
   const handleDeselectAll = () => {
@@ -250,8 +239,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
         const next = new Set(prev);
         filteredModels.forEach((m) => next.delete(m.id));
         if (mainModelId && !next.has(mainModelId)) {
-          const remaining = Array.from(next);
-          setMainModelId(remaining.length > 0 ? remaining[0] : "");
+          setMainModelId("");
         }
         if (ocrModelId && !next.has(ocrModelId)) {
           setOcrModelId("");
@@ -725,11 +713,9 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                   const isMain = mainModelId === model.id;
                   const isOcr = ocrModelId === model.id;
 
-                  const contextText = model.contextWindow
-                    ? `${(model.contextWindow / 1000000)
-                        .toFixed(1)
-                        .replace(".0", "")}M Tokens`
-                    : "128K Tokens";
+                  const contextText = typeof model.contextWindow === "number" && Number.isFinite(model.contextWindow) && model.contextWindow > 0
+                    ? t("ai_providers:detail.context_tokens", { tokens: model.contextWindow.toLocaleString(i18n.language) })
+                    : null;
 
                   return (
                     <DiscoveredModelCard
@@ -807,12 +793,12 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                           )}
 
                           <BadgesRow>
-                            <Chip
+                            {contextText && <Chip
                               size="small"
                               label={contextText}
                               variant="outlined"
                               sx={{ height: 20, fontSize: "0.68rem" }}
-                            />
+                            />}
                             {model.capabilities?.map((cap) => (
                               <Chip
                                 key={cap}

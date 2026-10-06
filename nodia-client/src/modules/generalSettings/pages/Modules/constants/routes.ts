@@ -1,3 +1,6 @@
+import { PERSONAL_FINANCE_ROUTE } from "../../../../finances/constants/routes";
+import { RENTAL_RESERVATIONS_ROUTE } from "../../../../rentals/constants/routes";
+
 export interface AppRouteOption {
   value: string;
   labelKey: string;
@@ -5,6 +8,12 @@ export interface AppRouteOption {
 }
 
 export const APP_AVAILABLE_ROUTES: AppRouteOption[] = [
+  {value:RENTAL_RESERVATIONS_ROUTE,labelKey:"modules:routes.rental_reservations",defaultLabel:"Reservas (/tools/reservations)"},
+  {
+    value: PERSONAL_FINANCE_ROUTE,
+    labelKey: "modules:routes.personal_finance",
+    defaultLabel: "Finanzas personales (/finances/personal)",
+  },
   { value: "/", labelKey: "modules:routes.home", defaultLabel: "Inicio (/)" },
   {
     value: "/business",

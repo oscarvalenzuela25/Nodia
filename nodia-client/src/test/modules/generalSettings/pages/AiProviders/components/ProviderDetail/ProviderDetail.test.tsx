@@ -148,6 +148,7 @@ describe("ProviderDetail Component", () => {
     vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue(mockSupported);
     vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({ enabled_providers: ["gemini"] });
     vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({ data: [], meta: { total_items: 0, total_pages: 1, page: 1, limit: 10 } });
+    vi.mocked(aiServices.getSelectableModels).mockResolvedValue([]);
     vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "agentic", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: true, authenticated: true } });
     vi.mocked(aiServices.updateAiProvider).mockResolvedValue(mockProviders[0]);
     vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ models: [] });
@@ -174,10 +175,10 @@ describe("ProviderDetail Component", () => {
     await user.click(screen.getByRole("checkbox", { name: /Modo Predeterminado/i }));
     await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ default_mode: "token_plan_agentic" })));
   });
-  it("toggles auto reconnect preference on the selected instance", async () => {
-    const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
-    await user.click(await screen.findByRole("switch", { name: /Auto-reconexión/i }));
-    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ fields: expect.objectContaining({ auto_reconnect: false }) })));
+  it("does not advertise a stored auto reconnect preference without an implemented consumer", async () => {
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    await screen.findByText("Gemini 3.8 Flash");
+    expect(screen.queryByRole("switch", { name: /Auto-reconexión/i })).not.toBeInTheDocument();
   });
   it("renews the selected web connection", async () => {
     const renew = vi.fn(), user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} onRenewSession={renew} />);
@@ -188,6 +189,18 @@ describe("ProviderDetail Component", () => {
     vi.mocked(aiServices.getGeminiEngines).mockResolvedValue(null);
     renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     expect(await screen.findByRole("button", { name: "Actualizar modelos" })).toBeDisabled();
+  });
+  it("does not show an available adapter without authentication as a connected session", async () => {
+    const user = userEvent.setup();
+    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "web", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: true, authenticated: false } });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    await user.click(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }));
+    expect(screen.queryByText("SESIÓN AGÉNTICA CONECTADA")).not.toBeInTheDocument();
+    expect(screen.getAllByText("SESIÓN AGÉNTICA NO DISPONIBLE").length).toBeGreaterThan(0);
+    for (const button of screen.getAllByRole("button", { name: "Actualizar modelos" })) {
+      expect(button).toBeDisabled();
+    }
+    expect(aiServices.syncAiProviderModels).not.toHaveBeenCalled();
   });
   it("shows empty models and permits discovery with an authenticated engine", async () => {
     const user = userEvent.setup();
@@ -205,12 +218,26 @@ describe("ProviderDetail Component", () => {
     expect(await screen.findByRole("button", { name: "Actualizar modelos" })).toBeDisabled();
     expect(await screen.findByText(/Sesión Web de .* no disponible/i)).toBeInTheDocument();
   });
-  it("shows unknown quotas without fabricating credits and leaves reasoning level unassigned", async () => {
+  it("shows unknown quotas and hides reasoning controls without observed capability", async () => {
     const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     expect(await screen.findByText("El proveedor no informa cuotas verificables.")).toBeInTheDocument();
     expect(screen.queryByText(/2[.,]399|2[.,]400/)).not.toBeInTheDocument();
     await user.click(screen.getByRole("tab", { name: /Token Plan \(Agentic\)/i }));
-    const high = screen.getByTestId("thinking-level-high-gemini-flash");
+    expect(screen.queryByTestId("thinking-level-high-gemini-flash")).not.toBeInTheDocument();
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
+  });
+
+  it("permits reasoning configuration only when the selected engine reports the capability", async () => {
+    vi.mocked(aiServices.getSelectableModels).mockImplementation(async (params) => [{
+      providerId: "prov-1", provider: "gemini", mode: params?.mode ?? "token_plan_web", models_source: "provider", models_observed_at: new Date().toISOString(),
+      planType: "token_plan", isSelected: true, isActive: true, selectedModel: "gemini-flash",
+      models: [{ id: "gemini-flash", name: "Observed", displayName: "Observed", description: "", contextWindow: null, capabilities: ["reasoning"] }],
+    }]);
+    const user = userEvent.setup();
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    await user.click(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }));
+    const high = await screen.findByTestId("thinking-level-high-gemini-flash");
+    await waitFor(() => expect(high).toBeEnabled());
     expect(screen.getByTestId("thinking-level-medium-gemini-flash")).toHaveAttribute("aria-pressed", "false");
     await user.click(high);
     await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ fields: expect.objectContaining({ token_plan_agentic: expect.objectContaining({ thinking_levels: { "gemini-flash": "high" } }) }) })));
@@ -222,4 +249,57 @@ describe("ProviderDetail Component", () => {
     await waitFor(() => expect(input).toBeChecked()); await user.click(input);
     expect(input).toBeChecked(); expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
   });
+  it("hides context and capability claims saved by previous versions", async () => {
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByText("Gemini 3.8 Flash")).toBeInTheDocument();
+    expect(screen.queryByText("128K Tokens")).not.toBeInTheDocument();
+    expect(screen.queryByText("1M Tokens")).not.toBeInTheDocument();
+    expect(screen.queryByText("Texto/Audio/Video")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ultra rápido y multimodal")).not.toBeInTheDocument();
+    expect(screen.queryByText("Modelo Primario de Razonamiento Complejo")).not.toBeInTheDocument();
+  });
+  it("uses observed metadata from the selected instance and mode without inferring extra modalities", async () => {
+    vi.mocked(aiServices.getSelectableModels).mockResolvedValue([{
+      providerId: "prov-1", provider: "gemini", mode: "token_plan_web", models_source: "provider", models_observed_at: new Date().toISOString(),
+      planType: "token_plan", isSelected: true, isActive: true, selectedModel: "gemini-flash",
+      models: [{ id: "gemini-flash", name: "Gemini 3.8 Flash", displayName: "Gemini 3.8 Flash", description: "Reported metadata", contextWindow: 32000, capabilities: ["vision"] }],
+    }]);
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByText("Reported metadata")).toBeInTheDocument();
+    expect(screen.getByText(/32[.,]000 tokens/)).toBeInTheDocument();
+    expect(screen.getByText("vision")).toBeInTheDocument();
+    expect(screen.queryByText("Texto/Audio/Video")).not.toBeInTheDocument();
+    expect(aiServices.getSelectableModels).toHaveBeenCalledWith({ provider_id: "prov-1", mode: "token_plan_web" });
+  });
+  it("never renders numeric quotas without observation provenance", async () => {
+    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "web", web: { engine: "web", available: true, authenticated: true,
+      quota: { flash: { usage_percentage: 20, remaining: 2400, total: 3000 } } }, agentic: { engine: "agentic", available: false, authenticated: false } });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByText("El proveedor no informa cuotas verificables.")).toBeInTheDocument();
+    expect(screen.queryByText("20%")).not.toBeInTheDocument();
+  });
+  it("does not present root reasoning preferences as the configuration of a scoped mode", async () => {
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: [{ ...mockProviders[0], fields: {
+      enable_extended_thinking: true,
+      token_plan_web: { selected_model: "gemini-flash", available_models: [{ id: "gemini-flash", name: "Observed" }] },
+    } }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
+    vi.mocked(aiServices.getSelectableModels).mockResolvedValue([{
+      providerId: "prov-1", provider: "gemini", mode: "token_plan_web", models_source: "provider", planType: "token_plan", isSelected: true, isActive: true, selectedModel: "gemini-flash",
+      models: [{ id: "gemini-flash", name: "Observed", displayName: "Observed", description: "", contextWindow: null, capabilities: ["reasoning"] }],
+    }]);
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    const control = await screen.findByRole("switch", { name: /Razonamiento Extendido/i });
+    await waitFor(() => expect(control).toBeEnabled());
+    expect(control).not.toBeChecked();
+  });
+  it("shows recently observed Web credits using the real bucket without claiming requests", async () => {
+    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "web", web: { engine: "web", available: true, authenticated: true,
+      quota_source: "web", quota_observed_at: Date.now() / 1000,
+      quota: { "reported-bucket": { usage_percentage: 20, remaining: 8, total: 10 } } }, agentic: { engine: "agentic", available: false, authenticated: false } });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByText("Uso Web reportado (reported-bucket)")).toBeInTheDocument();
+    expect(screen.getByText("8 de 10 unidades reportadas disponibles")).toBeInTheDocument();
+    expect(screen.queryByText(/8.*solicitudes/i)).not.toBeInTheDocument();
+  });
+
 });

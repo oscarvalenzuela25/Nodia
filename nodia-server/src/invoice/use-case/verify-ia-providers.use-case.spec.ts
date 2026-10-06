@@ -9,6 +9,9 @@ describe('VerifyIaProvidersUseCase', () => {
   beforeEach(() => {
     geminiServiceMock = {
       verifyProvider: vi.fn(),
+      getModelsAndQuota: vi.fn().mockResolvedValue({ authenticated: true, available: true, models: [
+        { id: 'gemini-flash', capabilities: ['reasoning'] }, { id: 'gemini-3.8-flash', capabilities: ['vision'] },
+      ] }),
     };
     useCase = new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService);
   });
@@ -80,8 +83,8 @@ describe('VerifyIaProvidersUseCase', () => {
 
     const mistral = result.find((p) => p.key === 'mistral');
     expect(mistral).toBeDefined();
-    expect(mistral?.can_use_model).toBe(true);
-    expect(mistral?.error).toBeNull();
+    expect(mistral?.can_use_model).toBe(false);
+    expect(mistral?.error).toContain('no tiene una integración de sesión admitida');
     expect(mistral?.default_model).toBe('mistral-large-latest');
     expect(mistral?.ocr_model).toBe('mistral-ocr-latest');
   });
@@ -151,7 +154,7 @@ describe('VerifyIaProvidersUseCase', () => {
     expect(result).toHaveLength(1);
     const mistral = result[0];
     expect(mistral.can_use_model).toBe(false);
-    expect(mistral.error).toBe('No cuenta con API Keys activas o disponibles.');
+    expect(mistral.error).toBe('El modo API Key no tiene una integración de sesión admitida.');
   });
 
   it('should fallback to another enabled mode when default_mode has no configured models', async () => {
@@ -227,8 +230,42 @@ describe('VerifyIaProvidersUseCase', () => {
 
     expect(result).toHaveLength(1);
     const mistral = result[0];
-    expect(mistral.can_use_model).toBe(true);
+    expect(mistral.can_use_model).toBe(false);
     expect(mistral.default_model).toBe('mistral-medium');
     expect(mistral.ocr_model).toBe('mistral-medium');
   });
+  it('does not infer reasoning or an assigned model from cached recommendations', async () => {
+    const provider = { id: '1', key: 'gemini', is_active: true, mode: 'web_session',
+      fields: { selected_model: 'gemini-thinking-model', enable_extended_thinking: true,
+        available_models: [{ id: 'gemini-thinking-model', isRecommended: true, capabilities: ['reasoning'] }] } };
+    const list = { findAllProviders: vi.fn().mockResolvedValue({ data: [provider] }) };
+    vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({ authenticated: true, models: [{ id: 'gemini-thinking-model' }] });
+    const verifier = new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService, list as never);
+    const [result] = await verifier.execute();
+    expect(result.can_use_model).toBe(true);
+    expect(result.supports_thinking).toBe(false);
+    expect(result.extended_thinking_enabled).toBe(false);
+    provider.fields.selected_model = '';
+    expect((await verifier.execute())[0].can_use_model).toBe(false);
+  });
+  it('does not allow a configured model missing from discovery', async () => {
+    const list = { findAllProviders: vi.fn().mockResolvedValue({ data: [{ id: '1', key: 'gemini', is_active: true, mode: 'web_session', fields: { selected_model: 'obsolete' } }] }) };
+    const [result] = await new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService, list as never).execute();
+    expect(result.can_use_model).toBe(false);
+    expect(result.error).toContain('no está en el catálogo descubierto');
+  });
+  it.each([false, true])('resolves only a unique exact discovered name (ambiguous=%s)', async (ambiguous) => {
+    const list = { findAllProviders: vi.fn().mockResolvedValue({ data: [{ id: '1', key: 'gemini', is_active: true, mode: 'web_session', fields: { selected_model: 'reported-name' } }] }) };
+    vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({ authenticated: true, models: [
+      { id: 'live-id', name: 'reported-name' }, ...(ambiguous ? [{ id: 'other-id', name: 'reported-name' }] : []),
+    ] });
+    const [result] = await new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService, list as never).execute();
+    expect(result.can_use_model).toBe(!ambiguous);
+    if (!ambiguous) expect(result.default_model).toBe('live-id');
+  });
+  it('propagates discovery failure instead of presenting an empty successful verification', async () => {
+    const list = { findAllProviders: vi.fn().mockRejectedValue(new Error('DB unavailable')) };
+    await expect(new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService, list as never).execute()).rejects.toMatchObject({ status: 502 });
+  });
+
 });

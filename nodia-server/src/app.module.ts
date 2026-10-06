@@ -16,6 +16,7 @@ import { AiProviderModule } from './ai-provider/ai-provider.module.js';
 import { BusinessModule } from './business/business.module.js';
 import { BusinessActionModule } from './business-action/business-action.module.js';
 import { ProviderModule } from './provider/provider.module.js';
+import { ProviderContactModule } from './provider-contact/provider-contact.module.js';
 import { InvoiceModule } from './invoice/invoice.module.js';
 import { ProductModule } from './product/product.module.js';
 import { RedisModule } from './common/redis/redis.module.js';
@@ -24,6 +25,12 @@ import { RateLimitGuard } from './rate-limit/rate-limit.guard.js';
 import { UserRateLimitGuard } from './rate-limit/user-rate-limit.guard.js';
 import { AuthGuard } from './auth/auth.guard.js';
 import { ActionPermissionGuard } from './authorization/action-permission.guard.js';
+import { FinanceCategoryModule } from './finance-category/finance-category.module.js';
+import { FinanceCategoryGroupModule } from './finance-category-group/finance-category-group.module.js';
+import { FinanceObligationModule } from './finance-obligation/finance-obligation.module.js';
+import { FinanceMovementModule } from './finance-movement/finance-movement.module.js';
+import { FinanceOverviewModule } from './finance-overview/finance-overview.module.js';
+import { RentalModule } from './rental-common/rental.module.js';
 
 @Module({
   imports: [
@@ -37,6 +44,7 @@ import { ActionPermissionGuard } from './authorization/action-permission.guard.j
     BusinessActionModule,
     BusinessModule,
     ProviderModule,
+    ProviderContactModule,
     InvoiceModule,
     ProductModule,
     ModuleGroupModule,
@@ -44,6 +52,12 @@ import { ActionPermissionGuard } from './authorization/action-permission.guard.j
     TranslationModule,
     AuthorizationModule,
     AiProviderModule,
+    FinanceCategoryModule,
+    FinanceCategoryGroupModule,
+    FinanceObligationModule,
+    FinanceMovementModule,
+    FinanceOverviewModule,
+    RentalModule,
   ],
   controllers: [AppController],
   providers: [

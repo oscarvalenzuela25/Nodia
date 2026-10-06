@@ -35,11 +35,11 @@ export const StyledDialog = styled(Dialog, {
         theme.palette.mode === "dark"
           ? `0 24px 48px -12px ${alpha(
               theme.palette.common.black,
-              0.7
+              0.7,
             )}, 0 0 0 1px ${borderColor}`
           : `0 20px 40px -12px ${alpha(
               theme.palette.primary.main,
-              0.15
+              0.15,
             )}, 0 0 0 1px ${borderColor}`,
       overflow: "hidden",
       transition: theme.transitions.create(["box-shadow", "transform"], {
@@ -49,7 +49,7 @@ export const StyledDialog = styled(Dialog, {
     "& .MuiBackdrop-root": {
       backgroundColor: alpha(
         theme.palette.common.black,
-        theme.palette.mode === "dark" ? 0.7 : 0.4
+        theme.palette.mode === "dark" ? 0.7 : 0.4,
       ),
       backdropFilter: "blur(4px)",
     },

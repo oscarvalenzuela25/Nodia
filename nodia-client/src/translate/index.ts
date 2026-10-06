@@ -13,6 +13,9 @@ import actionsEs from "./es/actions.json";
 import modulesEs from "./es/modules.json";
 import businessEs from "./es/business.json";
 import aiProvidersEs from "./es/ai_providers.json";
+import financeEs from "./es/finance.json";
+import rentalEs from "./es/rental.json";
+import providerContactsEs from "./es/provider_contacts.json";
 
 // en
 import authEn from "./en/auth.json";
@@ -26,6 +29,9 @@ import actionsEn from "./en/actions.json";
 import modulesEn from "./en/modules.json";
 import businessEn from "./en/business.json";
 import aiProvidersEn from "./en/ai_providers.json";
+import financeEn from "./en/finance.json";
+import rentalEn from "./en/rental.json";
+import providerContactsEn from "./en/provider_contacts.json";
 
 export const SUPPORTED_LANGUAGES = ["es", "en"] as const;
 export const DEFAULT_LANGUAGE = "es";
@@ -73,6 +79,9 @@ const resources = {
     modules: modulesEs,
     business: businessEs,
     ai_providers: aiProvidersEs,
+    finance: financeEs,
+    rental: rentalEs,
+    provider_contacts: providerContactsEs,
   },
   en: {
     auth: authEn,
@@ -86,6 +95,9 @@ const resources = {
     modules: modulesEn,
     business: businessEn,
     ai_providers: aiProvidersEn,
+    finance: financeEn,
+    rental: rentalEn,
+    provider_contacts: providerContactsEn,
   },
 };
 
@@ -108,6 +120,9 @@ i18n
       "modules",
       "business",
       "ai_providers",
+      "finance",
+      "rental",
+      "provider_contacts",
     ],
     defaultNS: "home",
     interpolation: {

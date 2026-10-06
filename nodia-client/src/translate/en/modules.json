@@ -120,7 +120,9 @@
     "modules": "Modules",
     "ai_providers": "AI Providers",
     "current": "Current",
-    "no_routes_available": "No routes available"
+    "no_routes_available": "No routes available",
+    "personal_finance": "Personal finances",
+    "rental_reservations": "Reservations"
   },
   "no_parent": "No parent module",
   "yes": "Yes",

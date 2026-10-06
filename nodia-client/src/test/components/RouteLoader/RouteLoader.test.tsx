@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import RouteLoader from "../../../components/RouteLoader";
 
 describe("RouteLoader", () => {
-  it("renders page variant with progress bar and role status", () => {
+  it("renders page variant with circular progress and a visible status message", () => {
     render(<RouteLoader variant="page" />);
 
     const statusContainer = screen.getByRole("status");
@@ -12,6 +12,8 @@ describe("RouteLoader", () => {
 
     const progress = screen.getByRole("progressbar");
     expect(progress).toBeInTheDocument();
+    expect(progress).toHaveAttribute("aria-label", "Cargando página...");
+    expect(screen.getByText("Cargando página...")).toBeVisible();
   });
 
   it("renders fullscreen variant with circular progress and message", () => {

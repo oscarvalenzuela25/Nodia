@@ -101,10 +101,11 @@ export const useAiProviderEvents = (params?: GetAiProviderEventsParams) => {
   });
 };
 
-export const useSelectableModels = (params?: GetSelectableModelsParams) => {
+export const useSelectableModels = (params?: GetSelectableModelsParams, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["ai-selectable-models", params],
     queryFn: () => getSelectableModels(params),
+    enabled: options?.enabled ?? true,
   });
 };
 
@@ -156,5 +157,6 @@ export const useGeminiEngines = (options?: { enabled?: boolean }) => {
     queryFn: getGeminiEngines,
     enabled: options?.enabled ?? true,
     staleTime: 1000 * 30,
+    refetchInterval: 30_000,
   });
 };

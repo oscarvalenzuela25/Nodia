@@ -1,6 +1,6 @@
 import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TranslateItemDto } from '../../translation/dto/translate-item.dto.js';
+import { BusinessTranslateItemDto } from './business-translate-item.dto.js';
 
 export class CreateBusinessDto {
   @IsNotEmpty()
@@ -19,6 +19,6 @@ export class CreateBusinessDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TranslateItemDto)
-  translates?: TranslateItemDto[];
+  @Type(() => BusinessTranslateItemDto)
+  translates?: BusinessTranslateItemDto[];
 }

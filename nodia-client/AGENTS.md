@@ -7,10 +7,11 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 **Antes de crear, modificar, corregir, refactorizar o revisar código frontend, leer y aplicar [skills/frontend-quality/SKILL.md](skills/frontend-quality/SKILL.md).** Esto incluye componentes, páginas, layouts, estilos, hooks, servicios HTTP, validaciones, caché, permisos, paginación, integraciones y sus pruebas. Esta obligación no depende de que la herramienta descubra o invoque automáticamente la skill.
 
 - Aplicar `frontend-quality` junto con `create-component` cuando se creen o modifiquen componentes, páginas o layouts; consultar las otras skills locales según la tecnología y el alcance.
-- Consultar contratos de Nodia Server y decisiones aprobadas cuando el cambio dependa de datos o reglas de negocio. No inventar campos, modelos, capacidades, cuotas, defaults o garantías de escritura.
+- Consultar contratos de Nodia Server y decisiones aprobadas cuando el cambio dependa de datos o reglas de negocio. **Toda información operativa debe tener una fuente comprobable en el backend, SDK o respuesta real del proveedor.** Prohibido inventar cuotas, límites, capacidades, disponibilidad, latencias, fechas de comprobación, funciones no implementadas o deducir capacidades por el nombre del modelo. La configuración guardada no demuestra disponibilidad actual y una sesión autenticada no demuestra que una inferencia funcione.
+- Si el servicio no entrega un dato: devolver `null` o estado explícito de desconocido, ocultar la cifra o capacidad correspondiente en la interfaz, sin agregar valores de respaldo para completar la interfaz, y conservando los ceros reales (cero y desconocido son distintos). Los datos simulados solo pueden existir en fixtures de pruebas, claramente identificados y separados del código de producción.
 - Seleccionar los escenarios pertinentes de [skills/frontend-quality/references/regression-scenarios.md](skills/frontend-quality/references/regression-scenarios.md). Un cambio visual menor no exige ejecutar toda la matriz ni auditar el backend.
 - Crear o actualizar regresiones de comportamiento para las garantías modificadas. No quitar assertions ni desactivar checks para hacer pasar una implementación defectuosa.
-- Entregar evidencia de los checks ejecutados y distinguir lo implementado de las dependencias pendientes de Server, Gemini o staging. Un cambio de UI no demuestra autorización HTTP, atomicidad ni operación real del proveedor.
+- Antes de entregar, probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica. Entregar evidencia de los checks ejecutados, indicando con precisión qué se comprobó realmente y qué sigue pendiente (distinguiendo lo implementado de dependencias de Server, Gemini o staging). Un cambio de UI no demuestra autorización HTTP, atomicidad ni operación real del proveedor.
 - Conservar las reglas de Nodia y la prioridad de sus skills locales frente a metodología de Superpowers/plugins globales. Esta skill complementa las convenciones existentes; no autoriza cambiar stack, ampliar el alcance ni imponer nuevas aprobaciones.
 
 ## Contexto General
@@ -57,6 +58,7 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 5. Usar `Guard` para rutas que admiten demo y `GuardStrict` para `/settings/*`, con el `modulePath` correspondiente. Mantener `NoGuard` en login. Detalle en `docs/mvp/14-authentication.md` desde la raíz del repositorio.
 6. Mantener tipado estricto en TypeScript; evitar `any` innecesario.
 7. No crear themes MUI en componentes de modulo; la composicion del theme debe quedarse en `MUIProvider`.
+   - Para tablas con paginado, seguir el [patrón de diseño de Modules](../docs/mvp/07-design-constraints.md#patrón-de-tablas-paginadas--confirmado-el-2026-10-04): barra superior, contenedor con cabecera/fila/paginado y adaptación móvil.
 8. Todo componente que contenga logica debe tener un archivo de test correspondiente en `src/test`.
 9. `src/test` debe replicar la estructura de directorios de `src`: por ejemplo, el test de `src/modules/auth/pages/Login/Login.tsx` debe ubicarse en `src/test/modules/auth/pages/Login/Login.test.tsx`.
 10. Si `src/test` o la ruta espejo necesaria no existen al crear o modificar un componente con logica, se deben crear junto con su archivo `*.test.tsx`.
@@ -65,6 +67,7 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 13. Estados vacíos: prohibido dejar vistas o contenedores en blanco o nulos (`null`). Si un endpoint responde vacío, mostrar un Empty State con mensaje informativo (genérico o custom) y llamado a la acción (CTA) si corresponde, usando traducción i18n.
 14. Estados de error y feedback: toda petición HTTP debe emitir un toast con `sileo` (`sileo.error(...)`), extrayendo el mensaje del backend o fallback genérico i18n. En tablas y paneles, además del toast, se debe renderizar un estado visual de error (ej. `Alert` de MUI con opción de reintento) en lugar de dejar el componente roto.
 15. Scrollbars: en cualquier contenedor con scroll (`overflow: auto`, `overflow-y: auto`, etc.), el track debe ser completamente transparente (`background: transparent !important`), sin botones de flecha (`display: none`), y el thumb sutil, redondeado (`border-radius: 9999px`) y adaptado al tema claro/oscuro.
+16. Veracidad de información operativa: toda información operativa debe tener una fuente comprobable (backend, SDK o respuesta real del proveedor). Antes de implementar cada dato de la interfaz, verificar su origen. Prohibido inventar cuotas, límites, capacidades, disponibilidad, latencias, fechas de comprobación o funciones no implementadas. No deducir capacidades a partir del nombre del modelo. La configuración guardada no demuestra disponibilidad actual y una sesión autenticada no demuestra que una inferencia funcione. Si el servicio no entrega un dato: devolver `null` o estado explícito de desconocido, ocultar la cifra o capacidad en la interfaz, no agregar valores de respaldo de relleno, y conservar los ceros reales (cero y desconocido son distintos). Los datos simulados solo pueden existir en fixtures de pruebas claramente identificados y separados de producción. Antes de entregar, probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica, indicando qué se comprobó realmente y qué sigue pendiente.
 
 ## Manejo de Estados: Carga (Loading), Vacío (Empty) y Error
 
@@ -131,7 +134,7 @@ npm run typecheck
 npm run lint
 ```
 
-Ejecutar también `npm run build` cuando cambien imports, rutas, dependencias, configuración o integración de librerías. Registrar los checks realmente ejecutados y cualquier limitación.
+Ejecutar también `npm run build` cuando cambien imports, rutas, dependencias, configuración o integración de librerías. Probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica. Registrar los checks realmente ejecutados, qué se comprobó realmente y qué dependencias o aspectos siguen pendientes.
 
 Si se tocan variables de entorno:
 
