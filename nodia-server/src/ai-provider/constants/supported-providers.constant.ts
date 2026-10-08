@@ -42,7 +42,7 @@ export const SUPPORTED_AI_PROVIDERS: SupportedProviderDef[] = [
     defaultEngine: GeminiEnginePlan.WEB,
   },
   {
-    key: 'openai', name: 'OpenAI', description: 'Conexión mediante API key y modelos descubiertos de la cuenta.',
-    defaultMode: AiConnectionMode.API_KEY, supportedModes: [AiConnectionMode.API_KEY],
+    key: 'openai', name: 'OpenAI', description: 'API key y Codex Agentic por conexión. Configuración, sesión y ejecución se comprueban por separado.',
+    defaultMode: AiConnectionMode.API_KEY, supportedModes: [AiConnectionMode.API_KEY, AiConnectionMode.TOKEN_PLAN_AGENTIC],
   },
 ];

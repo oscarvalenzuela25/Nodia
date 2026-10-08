@@ -5,6 +5,7 @@ import { GeminiService } from '../../common/ai/gemini.service.js';
 import { GetSelectableModelsDto } from '../dto/get-selectable-models.dto.js';
 import { observedModels } from '../helpers/model-observation.helper.js';
 import { observedWebQuota } from '../../common/ai/gemini-quota-observation.js';
+import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
 
 export interface SelectableModelInfo {
   id: string;
@@ -57,7 +58,7 @@ export interface ProviderSelectableModelsResult {
       usagePercentage?: number | null;
       resetAt?: string | null;
     } | null;
-  };
+  } | null;
   apiKeyPlan?: {
     activeKeysCount: number;
     selectedKey: {
@@ -84,7 +85,8 @@ export interface ProviderSelectableModelsResult {
 
 @Injectable()
 export class GetSelectableModelsUseCase {
-  constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService, @Optional() private readonly apiService?: ApiProviderService) {}
+  constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService, @Optional() private readonly apiService?: ApiProviderService,
+    @Optional() private readonly codex?: CodexRuntimeService) {}
 
   async execute(dto: GetSelectableModelsDto = {}): Promise<ProviderSelectableModelsResult[]> {
     const response = await this.aiProviderService.findAllProviders({ all: true, includes: true });
@@ -113,6 +115,14 @@ export class GetSelectableModelsUseCase {
         const secret = await this.aiProviderService.getActiveApiKeySecret(String(provider.id));
         const models = secret ? await this.apiService.listModels(key, secret) : [];
         results.push({ ...base, models, models_source: secret ? 'provider' : 'unavailable', models_observed_at: secret ? new Date().toISOString() : null });
+        continue;
+      }
+      if (key.toLowerCase() === 'openai' && actualMode === 'token_plan_agentic' && this.codex && enabled
+        && provider.is_active && provider.catalog?.is_active !== false && provider.catalog?.can_use_token_plan_agentic === true) {
+        const session = await this.codex.observe(String(provider.id));
+        const models = session.authenticated ? await this.codex.listModels(String(provider.id)) : [];
+        results.push({ ...base, models, models_source: session.authenticated ? 'provider' : 'unavailable', models_observed_at: session.authenticated ? new Date().toISOString() : null,
+          tokenPlan: session.planType ? { tier: session.planType, planLabel: session.planType, authenticated: session.authenticated === true } : null });
         continue;
       }
       if (!tokenMode || !['gemini', 'google'].includes(key.toLowerCase())) {

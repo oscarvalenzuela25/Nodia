@@ -1,6 +1,7 @@
 export enum AiConnectionMode {
   WEB_SESSION = 'web_session',
   API_KEY = 'api_key',
+  TOKEN_PLAN_AGENTIC = 'token_plan_agentic',
 }
 
 export enum AiKeyHealthState {

@@ -37,6 +37,9 @@ import { CreateAiProviderEventUseCase } from './use-case/create-ai-provider-even
 
 import { GeminiModule } from '../common/ai/gemini.module.js';
 import { TranslationModule } from '../translation/translation.module.js';
+import { CodexRuntimeService } from '../common/ai/codex/codex-runtime.service.js';
+import { ManageCodexSessionUseCase } from './use-case/manage-codex-session.use-case.js';
+import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use-case.js';
 
 @Module({
   imports: [
@@ -55,6 +58,9 @@ import { TranslationModule } from '../translation/translation.module.js';
     AiProviderEventController,
   ],
   providers: [
+    CodexRuntimeService,
+    ManageCodexSessionUseCase,
+    ExecuteCodexInvoiceUseCase,
     ExecuteApiInvoiceUseCase,
     AiProviderService,
     // AiProvider
@@ -81,6 +87,8 @@ import { TranslationModule } from '../translation/translation.module.js';
     CreateAiProviderEventUseCase,
   ],
   exports: [
+    CodexRuntimeService,
+    ExecuteCodexInvoiceUseCase,
     ExecuteApiInvoiceUseCase,
     AiProviderService,
     GetAllAiProvidersUseCase,

@@ -286,7 +286,10 @@ const AiProviders: FC = () => {
           <AlertBanner
             alerts={activeAlerts}
             disabled={isBusy}
-            onAuthenticateAgentic={() => setIsAgenticLoginModalOpen(true)}
+            onAuthenticateAgentic={(alert) => {
+              if (alert.provider === "openai" && alert.providerId) setSelectedView(alert.providerId);
+              else if (alert.provider === "gemini") setIsAgenticLoginModalOpen(true);
+            }}
             onCheckStatus={handleVerifyAll}
             onRenewSession={handleRenewSession}
             onConfigure={(providerKey) => {

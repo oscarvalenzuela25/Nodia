@@ -22,6 +22,8 @@ import { GetGeminiEnginesUseCase } from './use-case/get-gemini-engines.use-case.
 import { RequireAction } from '../authorization/action-permission.guard.js';
 import type { AuthRequest } from '../auth/types/auth.types.js';
 import type { GeminiExecutionEngine } from '../common/ai/ai.types.js';
+import { ManageCodexSessionUseCase } from './use-case/manage-codex-session.use-case.js';
+import { CodexSessionDto } from './dto/codex-session.dto.js';
 
 @RequireAction('ai:manage')
 @Controller(['ai-provider', 'ai-providers'])
@@ -40,7 +42,44 @@ export class AiProviderController {
     private readonly manageGeminiLoginUseCase: ManageGeminiLoginUseCase,
     private readonly getGeminiEnginesUseCase: GetGeminiEnginesUseCase,
     private readonly manageGeminiAgenticLoginUseCase: ManageGeminiAgenticLoginUseCase,
+    private readonly manageCodexSessionUseCase: ManageCodexSessionUseCase,
   ) {}
+
+  @Get(':id/session')
+  @Header('Cache-Control', 'no-store')
+  getCodexSession(@Param('id') id: string, @Query() _query: CodexSessionDto) {
+    return this.manageCodexSessionUseCase.session(id);
+  }
+
+  @Post(':id/session/login')
+  @Header('Cache-Control', 'no-store')
+  startCodexLogin(@Param('id') id: string, @Body() _dto: CodexSessionDto, @Req() request: AuthRequest) {
+    return this.manageCodexSessionUseCase.start(id, request.auth.user.id);
+  }
+
+  @Get(':id/session/login/current')
+  @Header('Cache-Control', 'no-store')
+  currentCodexLogin(@Param('id') id: string, @Req() request: AuthRequest) {
+    return this.manageCodexSessionUseCase.current(id, request.auth.user.id);
+  }
+
+  @Get(':id/session/login/:jobId')
+  @Header('Cache-Control', 'no-store')
+  codexLoginStatus(@Param('id') id: string, @Param('jobId') jobId: string, @Req() request: AuthRequest) {
+    return this.manageCodexSessionUseCase.status(id, jobId, request.auth.user.id);
+  }
+
+  @Post(':id/session/login/:jobId/cancel')
+  @Header('Cache-Control', 'no-store')
+  cancelCodexLogin(@Param('id') id: string, @Param('jobId') jobId: string, @Req() request: AuthRequest) {
+    return this.manageCodexSessionUseCase.cancel(id, jobId, request.auth.user.id);
+  }
+
+  @Post(':id/session/logout')
+  @Header('Cache-Control', 'no-store')
+  logoutCodex(@Param('id') id: string, @Body() _dto: CodexSessionDto) {
+    return this.manageCodexSessionUseCase.logout(id);
+  }
 
   @Get(['gemini-engines', 'gemini/engines'])
   getGeminiEngines() {

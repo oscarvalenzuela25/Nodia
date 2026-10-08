@@ -15,6 +15,13 @@ const alert: AiProviderAlert = {
 afterEach(async () => { await i18n.changeLanguage('es'); });
 
 describe('AlertBanner recovery actions', () => {
+  it('routes Codex authentication to the exact connection instead of a Gemini session', async () => {
+    const authenticate = vi.fn();
+    const codex = { ...alert, provider: 'openai', providerName: 'OpenAI QA', providerId: '42' };
+    render(<AlertBanner alerts={[codex]} onAuthenticateAgentic={authenticate} />);
+    await userEvent.click(screen.getByRole('button', { name: i18n.t('ai_providers:codex.manage') }));
+    expect(authenticate).toHaveBeenCalledWith(codex);
+  });
   it('routes missing Agentic sessions to authentication only', async () => {
     const authenticate = vi.fn(), configure = vi.fn(), web = vi.fn();
     render(<AlertBanner alerts={[alert]} onAuthenticateAgentic={authenticate} onConfigure={configure} onRenewSession={web} />);

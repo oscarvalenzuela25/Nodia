@@ -26,10 +26,11 @@ if (!provider.fields.some((field) => field.name === 'default_mode')) provider.fi
 const definitions = {
   can_use_api_key: 'Permite configurar API; no certifica disponibilidad. Gemini y OpenAI: true.',
   can_use_token_plan_web: 'Permite configurar sesión Web. Gemini: true; OpenAI: false.',
-  can_use_token_plan_agentic: 'Permite configurar Agentic. Gemini: true; OpenAI: false. Requiere adaptador verificado.',
+  can_use_token_plan_agentic: 'Permite configurar Agentic. Gemini y OpenAI: true en catálogo objetivo (migración Codex). No demuestra sesión ni inferencia.',
 };
 for (const [name, comment] of Object.entries(definitions)) {
-  if (catalog.fields.some((field) => field.name === name)) continue;
+  const existing = catalog.fields.find((field) => field.name === name);
+  if (existing) { if (name === 'can_use_token_plan_agentic') existing.comment = comment; continue; }
   catalog.fields.push({ id: `AiCat_${name}`, name, type: 'BOOLEAN', default: 'false',
     check: '', primary: false, unique: false, notNull: true, increment: false, comment });
 }

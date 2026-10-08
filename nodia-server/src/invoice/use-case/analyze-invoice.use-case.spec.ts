@@ -7,12 +7,14 @@ import type { MistralService } from '../../common/ai/mistral.service.js';
 import type { ProviderService } from '../../provider/provider.service.js';
 import type { AnalyzeInvoiceDto } from '../dto/analyze-invoice.dto.js';
 import type { AiProviderService } from '../../ai-provider/ai-provider.service.js';
+import type { ExecuteCodexInvoiceUseCase } from '../../ai-provider/use-case/execute-codex-invoice.use-case.js';
 import type { ExecuteApiInvoiceUseCase } from '../../ai-provider/use-case/execute-api-invoice.use-case.js';
 
 vi.mock('../../config/envs.config.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../config/envs.config.js')>();
   return {
     ...actual,
+    envs: { ...actual.envs, GEMINI_SERVICE_TOKEN: '1'.repeat(64), GEMINI_MICROSERVICE_URL: 'http://127.0.0.1:8000' },
     canUseGemini: () => true,
     canUseMistral: () => true,
   };
@@ -167,7 +169,7 @@ describe('AnalyzeInvoiceUseCase API routing', () => {
   });
   it('rejects OpenAI session modes and unknown provider selections before execution', async () => {
     const { api, gemini, useCase } = setup();
-    await expect(useCase.execute(file, { ...dto, mode: 'token_plan_web' })).rejects.toThrow('únicamente el canal API');
+    await expect(useCase.execute(file, { ...dto, mode: 'token_plan_web' })).rejects.toThrow('no admite el canal Web');
     await expect(useCase.execute(file, { business_id: dto.business_id, ai_provider: 'missing' })).rejects.toThrow('conexión activa');
     expect(api.execute).not.toHaveBeenCalled();
     expect(gemini.extractInvoiceData).not.toHaveBeenCalled();
@@ -781,5 +783,36 @@ describe('AnalyzeInvoiceUseCase saved thinking options', () => {
     const { useCase, gemini } = setup('token_plan_agentic', {});
     await useCase.execute(file, dto);
     expect(gemini.extractInvoiceData).toHaveBeenCalledWith(file.buffer, file.mimetype, undefined, 19, 'opaque-live-id', undefined, 'agentic');
+  });
+});
+
+
+describe('Analyze invoice Codex routing', () => {
+  const setup = () => {
+    const gemini = { extractInvoiceData: vi.fn() };
+    const api = { execute: vi.fn() };
+    const codex = { execute: vi.fn(async () => ({ code: 'SYNTHETIC', issue_date: null, total_amount: 0, items: [] })) };
+    const providers = { findProviderById: vi.fn(async () => ({ id: '42', is_active: true, catalog: { key: 'openai' },
+      use_token_plan_agentic: true, default_mode: 'token_plan_agentic', fields: { token_plan_agentic: { selected_model: 'synthetic-codex' } } })) };
+    const useCase = new AnalyzeInvoiceUseCase(gemini as unknown as GeminiService, {} as MistralService, {} as ProviderService,
+      providers as unknown as AiProviderService, api as unknown as ExecuteApiInvoiceUseCase, codex as unknown as ExecuteCodexInvoiceUseCase);
+    const file = { buffer: Buffer.from('89504e470d0a1a0a', 'hex'), mimetype: 'image/png' } as Express.Multer.File;
+    const dto: AnalyzeInvoiceDto = { business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b', ai_provider_id: '42', ai_provider: 'openai', mode: 'token_plan_agentic', thinking_level: 'new_effort' };
+    return { useCase, gemini, api, codex, file, dto };
+  };
+  it('preserves the multipart output contract, exact connection, effort and cancellation', async () => {
+    const x = setup(); const signal = new AbortController().signal;
+    const result = await x.useCase.execute(x.file, x.dto, signal);
+    expect(result).toMatchObject({ total_amount: 0, data: { items: [] } });
+    expect(x.codex.execute).toHaveBeenCalledWith('42', 'synthetic-codex', x.file, undefined, 19, 'new_effort', signal);
+    expect(x.gemini.extractInvoiceData).not.toHaveBeenCalled(); expect(x.api.execute).not.toHaveBeenCalled();
+  });
+  it('rejects a contradictory provider instead of changing the selected connection', async () => {
+    const x = setup(); await expect(x.useCase.execute(x.file, { ...x.dto, ai_provider: 'gemini' })).rejects.toMatchObject({ status: 400 });
+    expect(x.codex.execute).not.toHaveBeenCalled();
+  });
+  it('does not route OpenAI Web to Codex or Gemini', async () => {
+    const x = setup(); await expect(x.useCase.execute(x.file, { ...x.dto, mode: 'token_plan_web' })).rejects.toMatchObject({ status: 400 });
+    expect(x.codex.execute).not.toHaveBeenCalled(); expect(x.gemini.extractInvoiceData).not.toHaveBeenCalled();
   });
 });

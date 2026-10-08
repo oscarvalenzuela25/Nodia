@@ -5,6 +5,8 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Matches,
+  MaxLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -51,8 +53,9 @@ export class AnalyzeInvoiceDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(['low', 'medium', 'high'])
-  thinking_level?: 'low' | 'medium' | 'high';
+  @Matches(/^[a-z][a-z0-9_-]{0,31}$/)
+  @MaxLength(32)
+  thinking_level?: string;
 
   @IsOptional()
   file?: any;

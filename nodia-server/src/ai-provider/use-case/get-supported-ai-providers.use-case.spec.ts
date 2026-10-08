@@ -18,6 +18,6 @@ describe('GetSupportedAiProvidersUseCase', () => {
     expect(gemini?.defaultEngine).toBe('web');
     expect(gemini?.availableModels).toBeUndefined();
     expect(providers.find((p) => p.key === 'mistral')).toBeUndefined();
-    expect(providers.find((p) => p.key === 'openai')).toMatchObject({ supportedModes: ['api_key'], defaultMode: 'api_key' });
+    expect(providers.find((p) => p.key === 'openai')).toMatchObject({ supportedModes: ['api_key', 'token_plan_agentic'], defaultMode: 'api_key' });
   });
 });

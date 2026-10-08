@@ -6,6 +6,14 @@
 
 ---
 
+## Actualización del alcance — 2026-10-08
+
+La gestión actual usa conexión/modo/modelo explícitos de `fields[modo]` y conserva API keys cifradas. El nuevo adaptador OpenAI Codex `token_plan_agentic` está implementado en código, con migración preparada y validación real aplazada por el usuario; OpenAI Web no se habilita. Ver [contrato IA](../../mvp/ai-provider-feature-contract.md), [ADR-018](../../architecture/decisions/ADR-018-openai-codex-agentic.md) y [runbook](../ai-providers/openai-codex-agentic.md).
+
+Codex recibe texto e imágenes; PDF se rasteriza en worker acotado (hasta ocho páginas). Usa un contexto efímero y salida validada con `api-invoice-contract.ts`, manteniendo el formato público de factura y los ceros/datos desconocidos. No necesita guardar el documento en R2 para analizar; almacenamiento/persistencia de comprobantes conservan su propio flujo. No hay fallback ni cambios automáticos de proveedor/modo/modelo. Cuenta, PNG/PDF desde pantalla y QA por túnel siguen pendientes.
+
+Las secciones originales siguientes son antecedentes de diseño; las referencias a modelos por entorno y a API keys como trabajo futuro no sustituyen el contrato actual citado arriba. Se conserva el estado de borrador.
+
 ## 1. Justificación de Tecnologías: Gemini vs Tesseract
 
 ### ¿Por qué Tesseract no es adecuado para facturas heterogéneas?

@@ -432,4 +432,17 @@ describe("ProviderDetail Component", () => {
     expect(screen.getByText("SESIÓN AUTENTICADA")).toBeInTheDocument();
   });
 
+  it("renders discovered Codex efforts and keeps incompatible historical preferences visible and removable", async () => {
+    const fields = { api_key: { selected_model: "api-unchanged" }, token_plan_agentic: { selected_model: "synthetic-codex", thinking_level: "obsolete", available_models: [{ id: "synthetic-codex", name: "Synthetic" }] } };
+    vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: [{ ...mockProviders[0], key: "openai", use_api_key: true, use_token_plan_web: false, use_token_plan_agentic: true, default_mode: "token_plan_agentic", fields }], meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
+    vi.mocked(aiServices.getSelectableModels).mockResolvedValue([{ providerId: "prov-1", provider: "openai", mode: "token_plan_agentic", planType: "token_plan", isActive: true, isSelected: false, selectedModel: "synthetic-codex", models_source: "provider", models_observed_at: "2026-10-08T12:00:00Z", models: [{ id: "synthetic-codex", name: "Synthetic", displayName: "Synthetic", description: "", contextWindow: null, capabilities: ["vision", "reasoning"], inputModalities: ["text", "image"], supportedReasoningEfforts: ["new_effort"] }] }]);
+    vi.mocked(aiServices.getAiApiKeys).mockResolvedValue({ data: [], meta: { total_items: 0, total_pages: 0, page: 1, limit: 10 } });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
+    expect(await screen.findByTestId("thinking-level-new_effort-synthetic-codex")).toBeVisible();
+    expect(screen.queryByTestId("thinking-level-low-synthetic-codex")).not.toBeInTheDocument();
+    expect(await screen.findByText(/obsolete.*no está disponible/)).toBeVisible();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Quitar preferencia" }));
+    await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", expect.objectContaining({ fields: expect.objectContaining({ api_key: fields.api_key, token_plan_agentic: expect.objectContaining({ thinking_level: null, thinking_levels: { "synthetic-codex": null } }) }) })));
+  });
+
 });

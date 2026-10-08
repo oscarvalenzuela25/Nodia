@@ -9,6 +9,7 @@ import {
 } from '../../ai-provider/types/ai-provider.types.js';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { observedModels } from '../../ai-provider/helpers/model-observation.helper.js';
+import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
 
 type ConnectionChannel = 'api_key' | 'token_plan_web' | 'token_plan_agentic';
 
@@ -28,6 +29,7 @@ export class VerifyIaProvidersUseCase {
     @Optional()
     private readonly aiProviderService?: AiProviderService,
     @Optional() private readonly apiService?: ApiProviderService,
+    @Optional() private readonly codex?: CodexRuntimeService,
   ) {}
 
   async execute(): Promise<VerifyIaProvidersResponse> {
@@ -56,9 +58,6 @@ export class VerifyIaProvidersUseCase {
               ? 'Mistral AI'
               : prov.key || 'Proveedor AI');
 
-        const catalogCanApiKey = prov.catalog ? prov.catalog.can_use_api_key !== false : true;
-        const catalogCanWeb = prov.catalog ? Boolean(prov.catalog.can_use_token_plan_web) : provKey === 'gemini';
-        const catalogCanAgentic = prov.catalog ? Boolean(prov.catalog.can_use_token_plan_agentic) : provKey === 'gemini';
 
         const useApiKey = Boolean(prov.use_api_key ?? (prov.mode !== AiConnectionMode.WEB_SESSION));
         const useTokenPlanWeb = Boolean(
@@ -125,9 +124,14 @@ export class VerifyIaProvidersUseCase {
         }
 
         // 3. Orden de evaluación: primero el default (si está habilitado), luego los demás
-        const candidateModes: ConnectionChannel[] =
-          configuredDefaultMode && registeredModes.includes(configuredDefaultMode)
-            ? (this.resolveModeData(prov, configuredDefaultMode) ? [configuredDefaultMode, ...registeredModes.filter((m) => m !== configuredDefaultMode)] : [configuredDefaultMode])
+        const candidateModes: ConnectionChannel[] = provKey === 'openai'
+          ? configuredDefaultMode
+            ? registeredModes.includes(configuredDefaultMode) ? [configuredDefaultMode] : []
+            : registeredModes.length === 1 ? registeredModes : []
+          : configuredDefaultMode && registeredModes.includes(configuredDefaultMode)
+            ? this.resolveModeData(prov, configuredDefaultMode)
+              ? [configuredDefaultMode, ...registeredModes.filter((m) => m !== configuredDefaultMode)]
+              : [configuredDefaultMode]
             : registeredModes;
 
         let selectedActiveMode: ConnectionChannel | null = null;
@@ -145,19 +149,29 @@ export class VerifyIaProvidersUseCase {
           // Verificar credenciales / conectividad para este modo
           const catalogRejectsApi = candidateMode === 'api_key' && ['gemini', 'openai'].includes(provKey)
             && (prov.catalog && (prov.catalog?.can_use_api_key === false || prov.catalog?.is_active === false));
-          const credCheck = catalogRejectsApi
-            ? { valid: false, error: 'El catálogo no permite ejecutar el canal API de esta conexión.', models: undefined }
+          const catalogRejectsCodex = provKey === 'openai' && candidateMode === 'token_plan_agentic'
+            && (prov.catalog?.can_use_token_plan_agentic !== true || prov.catalog?.is_active === false || !useTokenPlanAgentic);
+          const credCheck = catalogRejectsApi || catalogRejectsCodex
+            ? { valid: false, error: 'El catálogo no permite ejecutar el canal elegido de esta conexión.', models: undefined }
             : await this.verifyModeCredentials(candidateMode, provKey, String(prov.id));
           if (credCheck.valid) {
             const match = (selection: string) => {
-              const matches = credCheck.models?.filter((model) => model.id === selection || model.name === selection) ?? [];
+              const matches = credCheck.models?.filter((model) => model.id === selection || (!(provKey === 'openai' && candidateMode === 'token_plan_agentic') && model.name === selection)) ?? [];
               return matches.length === 1 ? matches[0] : null;
             };
             const liveModel = match(modeData.defaultModel);
             const liveOcr = match(modeData.ocrModel);
-            if (!liveModel || !liveOcr) {
+            if (!liveModel || !liveOcr || (provKey === 'openai' && candidateMode === 'token_plan_agentic' && !liveOcr.capabilities.includes('vision'))) {
               firstModeWithModels ??= { mode: candidateMode, data: modeData, error: 'El modelo configurado no está en el catálogo descubierto de esta sesión.' };
               continue;
+            }
+            if (provKey === 'openai' && candidateMode === 'token_plan_agentic') {
+              const scoped = prov.fields?.token_plan_agentic ?? {};
+              const levels = scoped.thinking_levels ?? {};
+              const effort = Object.hasOwn(levels, liveOcr.id) ? levels[liveOcr.id] : scoped.thinking_level;
+              if (effort != null && !liveOcr.supportedReasoningEfforts?.includes(effort)) {
+                firstModeWithModels ??= { mode: candidateMode, data: modeData, error: 'El esfuerzo configurado no está disponible para el modelo Codex elegido.' }; continue;
+              }
             }
             modeData.supportsThinking = candidateMode === 'token_plan_web'
               ? credCheck.extendedThinking === true : liveModel.capabilities.includes('reasoning');
@@ -308,8 +322,14 @@ export class VerifyIaProvidersUseCase {
     mode: ConnectionChannel,
     provKey: string,
     providerId: string,
-  ): Promise<{ valid: boolean; error?: string; models?: ReturnType<typeof observedModels>; extendedThinking?: boolean }> {
+  ): Promise<{ valid: boolean; error?: string; models?: (ReturnType<typeof observedModels>[number] & { supportedReasoningEfforts?: string[] })[]; extendedThinking?: boolean }> {
     if (mode === 'token_plan_agentic') {
+      if (provKey === 'openai' && this.codex) {
+        const session = await this.codex.observe(providerId);
+        if (!session.available || !session.authenticated) return { valid: false, error: 'Conecte la cuenta Codex de esta instancia.' };
+        if (session.usageAllowed === false) return { valid: false, error: 'Codex no permite uso ordinario actualmente.' };
+        return { valid: true, models: await this.codex.listModels(providerId) };
+      }
       if (provKey === 'gemini') {
         const discovery = await this.geminiService.getModelsAndQuota('agentic');
         const isAgenticActive = discovery?.available === true && discovery?.authenticated === true;

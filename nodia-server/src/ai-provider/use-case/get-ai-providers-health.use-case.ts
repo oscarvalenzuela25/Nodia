@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import { AiConnectionMode } from '../types/ai-provider.types.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
 import { isAgenticSessionActive, type GeminiDualEngineStatus } from '../../common/ai/gemini-engine-status.js';
 import { configuredModelFields } from '../helpers/model-observation.helper.js';
+import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
+import type { CodexSession } from '../../common/ai/codex/codex-contract.js';
 
 export interface AiProviderAlert {
   id: string;
@@ -17,6 +19,7 @@ export interface AiProviderAlert {
   message: string;
   timestamp?: string;
   timeAgo?: string;
+  providerId?: string;
   actionType: 'renew_session' | 'manage_quotas' | 'configure' | 'authenticate_agentic' | 'check_status';
   actionLabel: string;
 }
@@ -55,6 +58,7 @@ export interface AiProviderHealthItem {
   } | null;
   hasConnection: boolean;
   engine?: 'agentic' | 'web';
+  codexSession?: CodexSession;
 }
 
 export interface AiProvidersHealthResponse {
@@ -73,7 +77,8 @@ export interface AiProvidersHealthResponse {
 
 @Injectable()
 export class GetAiProvidersHealthUseCase {
-  constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService) {}
+  constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService,
+    @Optional() private readonly codex?: CodexRuntimeService) {}
 
   private async checkEngineHealth(engine: GeminiExecutionEngine, sharedStatus?: ReturnType<GeminiService['getDualEngineStatus']>) {
     const started = performance.now();
@@ -146,6 +151,23 @@ export class GetAiProvidersHealthUseCase {
         validKeysCount: activeKeys.length,
         selectedApiKey,
       };
+      if (key === 'openai' && provider.is_active && this.codex) {
+        // Also expose a safe session panel while the catalogue remains API-only.
+        base.codexSession = await this.codex.snapshot(String(provider.id));
+        if (agentic && defaultMode === 'token_plan_agentic') {
+          const session = base.codexSession;
+          health.push({ ...base, hasConnection: true, engine: 'agentic',
+            status: session.authenticated === true ? selected ? 'unverified' : 'degraded' : session.available ? 'expired' : 'unconfigured',
+            statusBadge: session.authenticated ? 'SIN VERIFICAR' : 'REQUIERE INICIAR SESIÓN',
+            serviceState: session.authenticated ? session.lastInferenceAt ? 'Codex conectado; extracción observada en este proceso' : 'Codex conectado; inferencia sin verificar' : session.available ? 'Codex requiere inicio de sesión' : 'Runtime Codex no disponible',
+            lastCheck: session.checkedAt });
+          if (!session.authenticated) alerts.push({ id: `alert-${provider.id}-codex`, provider: key, providerId: String(provider.id), providerName: name,
+            reason: session.reason === 'codex_runtime_unverified' ? 'service_status_unknown' : session.available ? 'agentic_session_required' : 'agentic_adapter_unavailable', type: 'warning', severity: 'warning',
+            title: 'Codex requiere atención', message: session.available ? 'Conecte la cuenta Codex de esta instancia.' : 'Compruebe el runtime Codex local.',
+            actionType: session.available ? 'authenticate_agentic' : 'check_status', actionLabel: session.available ? 'Conectar Codex' : 'Volver a comprobar' });
+          continue;
+        }
+      }
       if (!provider.is_active) {
         health.push({
           ...base,

@@ -3,7 +3,7 @@ import ApiKeyManager from "../ApiKeyManager";
 import { getHttpErrorMessage, notifyHttpError } from "../../../../../../config/httpFeedback";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC } from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -34,6 +34,7 @@ import { sileo } from "sileo";
 import AlertBanner from "../AlertBanner";
 import SyncModelsModal from "./components/SyncModelsModal";
 import AgenticLoginModal from "../AgenticLoginModal";
+import CodexSessionPanel from "../CodexSessionPanel";
 import {
   useAiProviders,
   useAiProvidersHealth,
@@ -90,6 +91,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   onConfigure,
 }) => {
   const { t, i18n } = useTranslation(["ai_providers", "core"]);
+  const codexLoginRef = useRef<{ manage: () => void } | null>(null);
   const [agenticLoginOpen, setAgenticLoginOpen] = useState(false);
 
   // Queries
@@ -255,7 +257,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       const live = observation?.models.find((entry) => entry.id === model.id);
       return { id: model.id, name: model.name, displayName: model.displayName,
         description: live?.description ?? "", contextWindow: live?.contextWindow ?? undefined,
-        capabilities: live?.capabilities ?? [], isRecommended: live?.isRecommended === true };
+        capabilities: live?.capabilities ?? [], isRecommended: live?.isRecommended === true,
+        inputModalities: live?.inputModalities, supportedReasoningEfforts: live?.supportedReasoningEfforts };
     });
   }, [modeFields, providerFields, modelObservations, currentDbProvider?.id, activeTab]);
 
@@ -441,9 +444,9 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
   const handleSetModelThinkingLevel = async (
     modelId: string,
-    level: "low" | "medium" | "high"
+    level: string | null
   ) => {
-    if (!currentDbProvider?.id || updateProviderMutation.isPending || !level) return;
+    if (!currentDbProvider?.id || updateProviderMutation.isPending || level === "") return;
     const modeKey = activeTab || currentDbProvider.default_mode || null;
     if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic" && modeKey !== "api_key") return;
     const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
@@ -535,10 +538,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   // Operational check:
   // Each subscription mode must have an explicitly operational session.
   // Token plan agentic mode requires agentic environment available.
-  const isAgenticSessionActive = geminiEnginesData?.agentic?.available === true
-    && geminiEnginesData?.agentic?.authenticated === true;
-  const isAgenticStatusKnown = typeof geminiEnginesData?.agentic?.available === "boolean"
-    && typeof geminiEnginesData.agentic.authenticated === "boolean";
+  const isAgenticSessionActive = providerKey === "openai" ? currentHealthProvider?.codexSession?.authenticated === true
+    : geminiEnginesData?.agentic?.available === true && geminiEnginesData.agentic.authenticated === true;
+  const isAgenticStatusKnown = providerKey === "openai" ? typeof currentHealthProvider?.codexSession?.authenticated === "boolean"
+    : typeof geminiEnginesData?.agentic?.available === "boolean" && typeof geminiEnginesData.agentic.authenticated === "boolean";
   const agenticStatusLabel = t(!isAgenticStatusKnown ? "ai_providers:detail.agentic_status_unknown_badge"
     : isAgenticSessionActive ? "ai_providers:detail.agentic_status_active_badge" : "ai_providers:detail.agentic_status_inactive_badge");
   const isModeOperational = activeTab === "token_plan_web" ? isWebSessionActive
@@ -745,7 +748,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
           <AlertBanner
             alerts={currentProviderAlerts}
             disabled={isBusy}
-            onAuthenticateAgentic={providerKey === "gemini" ? () => setAgenticLoginOpen(true) : undefined}
+            onAuthenticateAgentic={providerKey === "openai" ? () => codexLoginRef.current?.manage() : providerKey === "gemini" ? () => setAgenticLoginOpen(true) : undefined}
             onCheckStatus={handleVerify}
             onRenewSession={onRenewSession}
             onConfigure={() => {
@@ -1013,6 +1016,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             <ModelsGrid>
               {availableModels.map((model) => {
                 const isSelected = selectedModel === model.id;
+                const codexModel = providerKey === "openai" && activeTab === "token_plan_agentic";
+                const levels = (modeFields.thinking_levels as Record<string, unknown>) ?? {};
+                const savedThinkingLevel = codexModel && Object.hasOwn(levels, model.id) ? levels[model.id]
+                  : levels[model.id] ?? (isSelected ? modeFields.thinking_level : undefined);
               const isOcrFocused = ocrFocusedModelId === model.id;
               const badgeAbbr = model.id.toLowerCase().includes("ocr")
                 ? "OCR"
@@ -1192,8 +1199,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                         </Typography>
                         <Tooltip
                           title={t(
-                            "ai_providers:detail.reasoning_level_desc",
-                            "Nivel de razonamiento (thinking) enviado para este modelo: Low, Medium o High."
+                            providerKey === "openai" && activeTab === "token_plan_agentic" ? "ai_providers:codex.reasoning_desc" : "ai_providers:detail.reasoning_level_desc"
                           )}
                         >
                           <InfoOutlinedIcon
@@ -1206,12 +1212,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                         size="small"
                         exclusive
                         value={
-                          (modeFields?.thinking_levels as Record<string, string>)?.[model.id] ||
-                          (model.id === selectedModel ? (modeFields?.thinking_level as string) : undefined) ||
-                          null
+                          savedThinkingLevel ?? null
                         }
                         onChange={(_, val) => {
-                          if (val) handleSetModelThinkingLevel(model.id, val as "low" | "medium" | "high");
+                          if (typeof val === "string") void handleSetModelThinkingLevel(model.id, val);
                         }}
                         disabled={isBusy}
                         sx={{
@@ -1226,18 +1230,20 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                           },
                         }}
                       >
-                        <ToggleButton value="low" data-testid={`thinking-level-low-${model.id}`}>
-                          {t("ai_providers:detail.level_low", "Low")}
-                        </ToggleButton>
-                        <ToggleButton value="medium" data-testid={`thinking-level-medium-${model.id}`}>
-                          {t("ai_providers:detail.level_medium", "Medium")}
-                        </ToggleButton>
-                        <ToggleButton value="high" data-testid={`thinking-level-high-${model.id}`}>
-                          {t("ai_providers:detail.level_high", "High")}
-                        </ToggleButton>
+                        {(providerKey === "openai" && activeTab === "token_plan_agentic"
+                          ? model.supportedReasoningEfforts ?? [] : ["low", "medium", "high"]).map((level) => (
+                          <ToggleButton key={level} value={level} data-testid={`thinking-level-${level}-${model.id}`}>
+                            {t(`ai_providers:detail.level_${level}`, { defaultValue: level })}
+                          </ToggleButton>
+                        ))}
                       </ToggleButtonGroup>
                     </Box>
                   )}
+                  {codexModel && typeof savedThinkingLevel === "string" && !model.supportedReasoningEfforts?.includes(savedThinkingLevel) &&
+                    <Alert severity={model.supportedReasoningEfforts ? "warning" : "info"}
+                      action={<Button disabled={isBusy} onClick={() => handleSetModelThinkingLevel(model.id, null)}>{t("ai_providers:codex.clear_effort")}</Button>}>
+                      {t(model.supportedReasoningEfforts ? "ai_providers:codex.effort_unavailable" : "ai_providers:codex.effort_unverified", { effort: savedThinkingLevel })}
+                    </Alert>}
                 </ModelCardPaper>
               );
             })}
@@ -1246,7 +1252,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         </Skeleton>
 
         {/* EXTENDED THINKING SECTION (WEB MODE ONLY) */}
-        {(activeTab === "token_plan_agentic" || activeTab === "api_key") && (
+        {(activeTab === "api_key" || (activeTab === "token_plan_agentic" && providerKey !== "openai")) && (
           <Box sx={{ mt: 1 }}>
             <Typography variant="body2" color="text.secondary">{t(activeTab === "api_key"
               ? "ai_providers:detail.api_reasoning_preference"
@@ -1464,7 +1470,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
 
       {/* SUBPANEL: ANTIGRAVITY AGENTIC STATUS */}
-      {activeTab === "token_plan_agentic" && (
+      {activeTab === "token_plan_agentic" && providerKey !== "openai" && (
         <DetailPanel>
           <PanelHeader>
             <Box>
@@ -1553,6 +1559,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     </>
   )}
 
+      {providerKey === "openai" && currentDbProvider && <CodexSessionPanel ref={codexLoginRef} key={providerId} providerId={providerId}
+        session={currentHealthProvider?.codexSession} disabled={isBusy} />}
       {/* MODAL: SYNC MODELS */}
       {agenticLoginOpen && providerKey === "gemini" && <AgenticLoginModal key={providerId} onClose={() => setAgenticLoginOpen(false)} />}
       {currentDbProvider && (

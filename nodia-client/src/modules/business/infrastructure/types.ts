@@ -332,7 +332,7 @@ export interface AnalyzeInvoiceParams {
   extended_thinking?: boolean;
   engine?: 'agentic' | 'web';
   mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic';
-  thinking_level?: 'low' | 'medium' | 'high';
+  thinking_level?: string;
 }
 
 export interface VerifyIaProviderItem {
@@ -438,4 +438,3 @@ export interface QueryProductLogsPayload {
   includes?: boolean;
   s?: string;
 }
-

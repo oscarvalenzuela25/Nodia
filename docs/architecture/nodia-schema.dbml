@@ -5,6 +5,7 @@
 Enum ai_connection_mode {
   web_session
   api_key
+  token_plan_agentic
 }
 
 Enum ai_key_health_state {

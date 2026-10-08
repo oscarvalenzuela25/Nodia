@@ -19,6 +19,17 @@ describe("invoice AI selection", () => {
     expect(getInvoiceAiModes(first)).toEqual(["token_plan_web", "api_key"]);
     expect(resolveInvoiceAiConfiguration(first, "token_plan_web")).toMatchObject({ model: "model-a", canAnalyze: true });
   });
+  it("allows Codex Agentic with a newly discovered effort and never exposes OpenAI Web", () => {
+    const provider: VerifyIaProviderItem = { ...first, key: "openai", mode: "token_plan_agentic", active_mode: "token_plan_agentic", use_token_plan_agentic: true,
+      use_token_plan_web: true, fields: { token_plan_agentic: { selected_model: "synthetic-codex", thinking_levels: { "synthetic-codex": "new_effort" } }, api_key: { selected_model: "api-only" } } };
+    expect(getInvoiceAiModes(provider)).not.toContain("token_plan_web");
+    expect(resolveInvoiceAiConfiguration(provider, "token_plan_agentic")).toMatchObject({ model: "synthetic-codex", thinkingLevel: "new_effort", canAnalyze: true });
+  });
+  it("does not use API verification as evidence for a selected Codex mode", () => {
+    const provider: VerifyIaProviderItem = { ...first, key: "openai", active_mode: "api_key", use_token_plan_agentic: true,
+      fields: { token_plan_agentic: { selected_model: "synthetic-codex" } } };
+    expect(resolveInvoiceAiConfiguration(provider, "token_plan_agentic").canAnalyze).toBe(false);
+  });
   it("supports dedicated api_key mode provider", () => {
     const apiKeyProvider: VerifyIaProviderItem = {
       id: "instance-openai", key: "openai", name: "OpenAI", mode: "api_key", is_active: true,

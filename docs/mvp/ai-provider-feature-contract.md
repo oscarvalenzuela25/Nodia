@@ -6,7 +6,7 @@ Fecha: 2026-10-06. Estado documental: en revisión; requisitos pedidos explícit
 
 | Recurso | Contrato vigente |
 |---|---|
-| `ai_provider_catalog` | `key`, nombre, activo y booleanos `can_use_api_key`, `can_use_token_plan_web`, `can_use_token_plan_agentic`. Gemini permite los tres; OpenAI permite API. Son permisos de configuración, no pruebas de disponibilidad. |
+| `ai_provider_catalog` | `key`, nombre, activo y booleanos `can_use_api_key`, `can_use_token_plan_web`, `can_use_token_plan_agentic`. Gemini permite los tres; OpenAI API/Agentic tras la migración Codex pendiente, Web deshabilitado. Son permisos de configuración, no pruebas de disponibilidad. |
 | `ai_providers` | `catalog_id`, nombre, `use_api_key`, `use_token_plan_web`, `use_token_plan_agentic`, `default_mode`, `is_default`, `is_active`, `auto_rotate_api_keys`, `fields`, timestamps. Los tres `use_*` son booleanos independientes. |
 | Columnas retiradas | `key`, `mode` y `fields_version` no son columnas de `ai_providers`. Los getters/proyecciones de compatibilidad pueden conservar `key`/`mode`; nunca recrear las columnas por copiar DTOs antiguos. |
 | `ai_api_keys` | Claves cifradas por ID de conexión; solo máscara pública. Exclusividad de selección bajo bloqueo transaccional de la instancia. |
@@ -17,7 +17,7 @@ Entidades TypeORM y migraciones son el contrato del almacenamiento. Los DBML del
 ## Formularios y paneles
 
 - Añadir/editar conexión incluye el switch **Predeterminado antes de Activo** y envía `is_default`. Para la primera conexión conocida se propone activado; el usuario puede cambiarlo. Elegir otra conexión predeterminada desmarca la anterior en Server.
-- El selector permite Gemini/OpenAI según el catálogo activo y su adaptador. OpenAI ofrece API únicamente; Gemini ofrece API/Web/Agentic. La autorización de API keys está vigente; excluir Gemini gratuito no significa desactivar todas las API keys.
+- El selector permite Gemini/OpenAI según el catálogo activo y su adaptador. OpenAI ofrece API y, tras la migración Codex pendiente, Agentic; Web queda deshabilitado. Gemini ofrece API/Web/Agentic. La autorización de API keys está vigente; excluir Gemini gratuito no significa desactivar todas las API keys.
 - **Modelos precede a API keys**. Las tablas siguen el tema MUI y el contenedor/paginación del resto de Ajustes; mínimo 650 px y scroll horizontal transparente en móvil.
 - Seleccionar clave usa un switch con nombre accesible. Encender una desmarca las restantes de esa conexión, incluso entre páginas y peticiones simultáneas. Con varias claves se permite apagar la seleccionada; esto deja el canal sin selección hasta elegir otra y no habilita un fallback.
 - Una única clave activa queda seleccionada y su switch deshabilitado. Crear la primera, editarla o eliminar hasta dejar una normaliza esa selección en Server. Una clave inactiva no se presenta como utilizable. La migración `1791330000000` repara pools históricos con una sola clave activa sin tocar secretos ni pools múltiples.
@@ -50,7 +50,7 @@ No deducir razonamiento de “Pro”, “Flash”, “Thinking” o “Gemini”
 
 | Caso | Garantía que debe conservarse |
 |---|---|
-| Crear OpenAI y marcar predeterminado | API habilitada, suscripciones no ofrecidas, `is_default:true` enviado y switch antes de Activo. |
+| Crear OpenAI y marcar predeterminado | API y Agentic según catálogo migrado (Web deshabilitado); sin migrar conserva flags previos; `is_default:true` enviado y switch antes de Activo. |
 | Editar conexión histórica | ID estable; no apagar API/rotación ni reemplazar modelos de otro modo. |
 | Dos claves, selección concurrente | Una sola seleccionada; duplicado revierte sin perder selección anterior. |
 | Primera clave / borrar hasta quedar una | Única activa seleccionada; UI activada y disabled. |
@@ -84,11 +84,11 @@ Rutas/opciones del frontend conservadas; Server utiliza CLI para health/modelos/
 
 ## Evaluación de plan ChatGPT — 2026-10-07
 
-**Solicitud retomada — plan de Codex Agentic:** el usuario solicita `openai` + `token_plan_agentic`, conservando API key y sin habilitar OpenAI Web. El [plan 33](33-chatgpt-integration-pending.md) contiene CG-01..12; sustituye la prioridad exploratoria anterior de comenzar por inferencia directa. Propone descubrimiento dinámico de modelos/esfuerzos, sesión independiente por conexión, enrutamiento health/sync/verify/analyze en NestJS y migración incremental. Al implementarse y verificarse, reconciliar las garantías API-only de este contrato/AGENTS y documentar en `docs/features/ai-providers/` antes de retirar el plan. Estado actual sin cambios: catálogo OpenAI API únicamente; ninguna sesión/inferencia Codex comprobada en Nodia.
+**Solicitud retomada — plan de Codex Agentic:** el usuario solicita `openai` + `token_plan_agentic`, conservando API key y sin habilitar OpenAI Web. El [plan 33](33-chatgpt-integration-pending.md) contiene CG-01..12; sustituye la prioridad exploratoria anterior de comenzar por inferencia directa. Propone descubrimiento dinámico de modelos/esfuerzos, sesión independiente por conexión, enrutamiento health/sync/verify/analyze en NestJS y migración incremental. Al implementarse y verificarse, reconciliar las garantías API-only de este contrato/AGENTS y documentar en `docs/features/ai-providers/` antes de retirar el plan. Actualización 2026-10-08: adaptador y UI Codex implementados; migración preparada, no aplicada. El usuario aplaza BD/cuenta/QA. No hay sesión/inferencia Codex real comprobada; ver el [runbook](../features/ai-providers/openai-codex-agentic.md) y ADR-018.
 
-Continuidad: el usuario pidió conservar la integración para retomarla posteriormente en [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md). Implementación pendiente; comenzar por CG-01. Los hallazgos siguientes no habilitan capacidades operativas.
+Continuidad: el usuario pidió conservar la integración para retomarla posteriormente en [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md). La implementación de código comenzó el 2026-10-08; CG-01/cuenta y aceptación operativa quedan aplazados por el usuario. Los hallazgos siguientes no habilitan capacidades operativas.
 
-Consulta de viabilidad del usuario; **sin implementación, cambio de catálogo ni aprobación de una nueva arquitectura**. OpenAI sigue habilitado únicamente por API key en el contrato vigente. La documentación oficial actual permite estudiar estas alternativas:
+Antecedente documental del 2026-10-07, anterior a la implementación actual; **sin aprobación automática de documentos**. OpenAI sigue habilitado únicamente por API key en el contrato vigente. La documentación oficial actual permite estudiar estas alternativas:
 
 - **Agéntico:** Codex admite autenticación por cuenta ChatGPT y ofrece SDK/app-server para integraciones. Para una app con autorización propia de uso del plan, la guía de Sign in with ChatGPT describe app-server con un proveedor Responses y el access token OAuth de esa app; no requiere un segundo login de Codex. No copiar las credenciales de este chat ni reutilizar la identidad de registro de otra aplicación.
 - **Inferencia directa con el plan:** la capacidad opcional ChatGPT plan usage permite solicitudes elegibles a `https://api.openai.com/v1/responses` usando OAuth, no la sesión/cookies de ChatGPT web ni sus endpoints privados. `store:false`, `stream:true`, catálogo activo de la cuenta y esperar `response.completed` son requisitos. El SDK debe configurarse sin reintentos automáticos de inferencia incierta. No confundir este transporte con API key de pago.
@@ -100,3 +100,20 @@ Consulta de viabilidad del usuario; **sin implementación, cambio de catálogo n
 **Ubicación propuesta, sin aprobación ni implementación:** iniciar la integración como módulo/adaptadores de Nodia Server. La inferencia directa es HTTP/SSE asíncrono; el transporte agéntico necesita el runtime Codex como proceso aparte, supervisado desde Node/NestJS y conectado por stdio. El ejemplo oficial de [app-server](https://learn.chatgpt.com/docs/app-server) usa `node:child_process`; por tanto no exige un nuevo microservicio HTTP. Preservar los contratos de negocio y separar OAuth, ejecución directa y supervisor agéntico. Aislar perfiles/temporales por conexión, no heredar el entorno completo con secretos de NestJS, limitar concurrencia/tiempo/salida y limpiar procesos al cancelar o apagar. Un proceso hijo por sí solo no constituye aislamiento de seguridad: para herramientas con ejecución de comandos o acceso amplio a archivos, evaluar un worker/contenedor con privilegios mínimos antes de habilitarlas. También separar ejecución si requiere escalado o despliegue independiente, siguiendo ADR-008 cuando exista microservicio. Para una factura→JSON sin herramientas, preferir el adaptador directo; la cuota documentada no obliga a ejecutar un agente. Acceso OAuth, binario, aislamiento y funcionamiento en el despliegue real siguen pendientes de prueba.
 
 Propuesta técnica por evaluar: dos adaptadores detrás de los contratos de Nodia (directo y agéntico), con registro/consentimiento OAuth propio, tokens protegidos y selección explícita del canal. La implementación necesitará reconciliar el catálogo, las reglas del proyecto y un ADR; no habilitar flags solo por la existencia de documentación. Fuentes oficiales consultadas: [autenticación](https://learn.chatgpt.com/docs/auth), [Codex SDK](https://learn.chatgpt.com/docs/codex-sdk), [ChatGPT plan usage](https://developers.openai.com/siwc/token-sharing-open-source), [modelos e inferencia](https://developers.openai.com/siwc/token-sharing-open-source/models-and-inference), [Codex app-server](https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server) y [limitaciones preview](https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations).
+
+## Codex Agentic preparado — 2026-10-08
+
+La petición del usuario fija local primero y QA temporal con TryCloudflare después; posteriormente pide implementación sin levantar BD y verificación real futura. Código de Server/Client y migración preparados; no se aplicó la migración ni usó una cuenta de esta conversación.
+
+| Regresión añadida | Garantía del código |
+|---|---|
+| Sesión Codex por conexión | `ai:manage`, actor derivado de autenticación, jobs privados por BIGINT/string y no-store; API no valida el canal Agentic. |
+| Login remoto | Código de dispositivo oficial, polling y cancelación; código borrado en estado terminal. Modal permanece ante fallo; recuperar job evita reenviar login incierto. |
+| Modelo/esfuerzo | ID exacto, esfuerzos/modos/modalidades observados; sin primer modelo automático ni herencia API. Preferencia incompatible visible/corregible; null por modelo elimina el esfuerzo. |
+| Cuota | Buckets y ventanas separados, null/0 distintos; denegación solo por `ordinaryUsageAllowed:false` o error real del proveedor. |
+| Analyze | Adapter Codex independiente, mismo multipart/JSON de factura; nuevo contexto, terminal validado, presupuesto global, cancelación y sin replay/fallback. |
+| Aislamiento | Perfil privado/keyring fuera del repo; entorno restringido, features/sandbox verificados, solicitudes de herramientas rechazadas, procesos/salida/documentos acotados. No equivale a VM. |
+| Catálogo/reversión | Migración objetivo API true/Agentic true/Web false; flags de instancias, claves/modelos y predeterminados intactos; backup de flags para down. No aplicada ni comprobada en PostgreSQL aún. |
+| Alertas | OpenAI conserva ID de conexión para gestionar Codex; no abre el login Gemini ni elige la primera instancia del mismo catálogo. |
+
+[ADR-018](../architecture/decisions/ADR-018-openai-codex-agentic.md) y [funcionalidad/runbook](../features/ai-providers/openai-codex-agentic.md). CG-01..12 conservan las aceptaciones reales pendientes en el plan 33; no borrarlo ni marcar disponible por pruebas sintéticas.

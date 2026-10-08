@@ -22,7 +22,7 @@ import {
 interface AlertBannerProps {
   alerts: AiProviderAlert[];
   disabled?: boolean;
-  onAuthenticateAgentic?: () => void;
+  onAuthenticateAgentic?: (alert: AiProviderAlert) => void;
   onCheckStatus?: () => void;
   onRenewSession?: (provider: string) => void;
   onManageQuotas?: (provider: string) => void;
@@ -48,12 +48,12 @@ const AlertBanner: FC<AlertBannerProps> = ({
         const title = alert.reason && alert.providerName
           ? t(`ai_providers:alerts.${alert.reason}_title`, { provider: alert.providerName }) : alert.title;
         const message = alert.reason ? t(`ai_providers:alerts.${alert.reason}_message`) : alert.message;
-        const action = alert.actionType === "authenticate_agentic" ? onAuthenticateAgentic
+        const action = alert.actionType === "authenticate_agentic" && onAuthenticateAgentic ? () => onAuthenticateAgentic(alert)
           : alert.actionType === "check_status" ? onCheckStatus
             : alert.actionType === "renew_session" && onRenewSession ? () => onRenewSession(alert.provider)
               : alert.actionType === "configure" && onConfigure ? () => onConfigure(alert.provider)
                 : alert.actionType === "manage_quotas" && onManageQuotas ? () => onManageQuotas(alert.provider) : undefined;
-        const actionLabel = alert.actionType === "authenticate_agentic" ? t("ai_providers:agentic_login.manage")
+        const actionLabel = alert.actionType === "authenticate_agentic" ? t(alert.provider === "openai" ? "ai_providers:codex.manage" : "ai_providers:agentic_login.manage")
           : alert.actionType === "check_status" ? t("ai_providers:alerts.check_status") : alert.actionLabel;
         const actionIcon = alert.actionType === "check_status" ? <SyncOutlinedIcon />
           : alert.actionType === "renew_session" || alert.actionType === "authenticate_agentic"

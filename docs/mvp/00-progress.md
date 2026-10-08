@@ -1,5 +1,7 @@
 # Progreso del MVP — Nodia
 
+- 2026-10-08: implementación de código OpenAI Codex `token_plan_agentic` autorizada para local y QA por TryCloudflare después. El usuario pidió continuar sin levantar PostgreSQL y aplazar verificación real. Supervisor/versionado/perfiles keyring, jobs privados por conexión/actor, modelos/esfuerzos dinámicos, health/sync/selectable/verify/analyze, PNG/PDF acotados, cancelación sin replay, panel ES/EN y alertas por ID implementados. API/Gemini independientes; OpenAI Web deshabilitado. Migración objetivo/reversión **preparadas, no aplicadas**; sin cambiar `.env`, autorizar cuentas ni generar facturas reales. [ADR-018](../architecture/decisions/ADR-018-openai-codex-agentic.md) propuesto y [runbook/feature](../features/ai-providers/openai-codex-agentic.md). [Plan 33](33-chatgpt-integration-pending.md) conservado para aceptación operativa; no se aprueban documentos. Server build/lint (dos avisos previos), 755/104 e integración compilada HTTP con guards/JSONL/PDF/runtime macOS sin autenticación correctos. Client build/tipado/lint y suite completa: 930 correctas/2 fallos monetarios previos en OverviewTab (reproducidos en HEAD); 124 pruebas IA focalizadas/12 archivos correctos al cierre, incluida la regresión de salud del modal. Auditoría productiva conserva los mismos tres hallazgos que HEAD. Pendientes: BD/up-down, login/persistencia/renovación/revocación, cuenta/modelo efectivo, extracción desde UI, Linux y túnel; VPS/SIWC no acreditados.
+
 > Estado general: en desarrollo
 > Última revisión: 2026-10-08
 

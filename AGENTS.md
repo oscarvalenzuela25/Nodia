@@ -160,7 +160,7 @@ Skills disponibles en `nodia-client/skills/`:
 ## Proveedores de IA y credenciales
 
 - API keys permitidas por proveedor por aclaración explícita del usuario el 2026-10-06. Se excluyen las keys gratuitas de Gemini/Google AI Studio como vía operativa del proyecto; no se prohíben APIs de pago ni OpenAI.
-- Catálogo inicial: `gemini` permite API, Web y Agentic; `openai` permite solo API. Los flags `can_use_*` definen modos configurables, no disponibilidad de ejecución.
+- Catálogo objetivo: `gemini` permite API, Web y Agentic; `openai` permite API y Codex Agentic, con Web deshabilitado. La migración Codex está preparada y no aplicada; validar BD/cuenta después, según solicitud del 2026-10-08. Los flags `can_use_*` definen modos configurables, no disponibilidad de ejecución. Ver `docs/features/ai-providers/openai-codex-agentic.md` y ADR-018.
 - Gemini Web y Antigravity conservan sus sesiones independientes. Agentic sigue indisponible hasta comprobar un adaptador real; nunca sustituirlo silenciosamente por Web/API.
 - Guardar claves cifradas en `ai_api_keys`, vinculadas a la instancia. Nunca en frontend, campos JSON, logs, fixtures reales o repositorio. El cliente recibe únicamente etiquetas y máscaras.
 - No cambiar automáticamente de proveedor ni modo. Rotación de claves solo dentro de la misma instancia API, si está habilitada y ante errores de credencial/cuota; no reintentar inferencias con resultado incierto.

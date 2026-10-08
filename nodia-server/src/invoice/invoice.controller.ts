@@ -8,6 +8,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateInvoiceDto } from './dto/create-invoice.dto.js';
@@ -21,6 +22,7 @@ import { CreateInvoiceUseCase } from './use-case/create-invoice.use-case.js';
 import { UpdateInvoiceUseCase } from './use-case/update-invoice.use-case.js';
 import { AnalyzeInvoiceUseCase } from './use-case/analyze-invoice.use-case.js';
 import { VerifyIaProvidersUseCase } from './use-case/verify-ia-providers.use-case.js';
+import type { Response } from 'express';
 
 @Controller(['invoice', 'invoices'])
 export class InvoiceController {
@@ -63,13 +65,18 @@ export class InvoiceController {
   analyze(
     @UploadedFile() file: Express.Multer.File,
     @Body() analyzeInvoiceDto: AnalyzeInvoiceDto,
+    @Res({ passthrough: true }) response: Response,
     @Query() queryParams?: Partial<AnalyzeInvoiceDto>,
   ) {
     const mergedDto: AnalyzeInvoiceDto = {
       ...queryParams,
       ...analyzeInvoiceDto,
     };
-    return this.analyzeInvoiceUseCase.execute(file, mergedDto);
+    const cancellation = new AbortController();
+    const onClose = () => { if (!response.writableFinished) cancellation.abort(); };
+    response.once('close', onClose);
+    return this.analyzeInvoiceUseCase.execute(file, mergedDto, cancellation.signal)
+      .finally(() => response.off('close', onClose));
   }
 
   @Post()

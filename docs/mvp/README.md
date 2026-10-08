@@ -48,7 +48,7 @@ Funcionalidad añadida por solicitud del usuario: [Autenticación Gemini Agentic
 
 | Documento | Estado y primer paso |
 |---|---|
-| [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md) | Plan solicitado de OpenAI Codex `token_plan_agentic`: doce pasos propuestos, modelos dinámicos y API key conservada. Primer pendiente CG-01: acceso/autenticación compatible con despliegue. NestJS + app-server supervisado; catálogo actual aún API únicamente. Al completar, trasladar a `docs/features/ai-providers/` y retirar el plan. |
+| [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md) | Plan solicitado de OpenAI Codex `token_plan_agentic`: código implementado para local; migración y validación real de BD/cuenta/PNG/PDF/QA aplazadas por el usuario el 2026-10-08. Modelos dinámicos y API conservada; [runbook en features](../features/ai-providers/openai-codex-agentic.md), ADR-018. Conservar el plan hasta aceptar la operación real. |
 
 ## Finanzas personales — ampliación y planes
 

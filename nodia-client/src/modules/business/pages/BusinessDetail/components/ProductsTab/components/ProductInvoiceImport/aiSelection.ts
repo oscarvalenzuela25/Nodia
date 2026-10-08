@@ -13,7 +13,7 @@ const asRecord = (value: unknown): Record<string, unknown> =>
 export const getInvoiceAiModes = (provider: VerifyIaProviderItem | null): InvoiceAiMode[] => {
   if (!provider?.is_active) return [];
   const modes: InvoiceAiMode[] = [];
-  if (provider.key !== "openai" && provider.use_token_plan_agentic) modes.push("token_plan_agentic");
+  if (provider.use_token_plan_agentic) modes.push("token_plan_agentic");
   if (provider.key !== "openai" && provider.use_token_plan_web) modes.push("token_plan_web");
   if (provider.use_api_key || provider.mode === "api_key" || provider.active_mode === "api_key") modes.push("api_key");
   return modes;
@@ -79,13 +79,17 @@ export const resolveInvoiceAiConfiguration = (
     thinkingEnabled && (discoveredThinking || (!hasScopedConfiguration && provider?.supports_thinking === true)),
   );
   const levels = asRecord(modeFields.thinking_levels);
-  const level = levels[model] ?? modeFields.thinking_level;
-  const thinkingLevel: "low" | "medium" | "high" | undefined = level === "low" || level === "medium" || level === "high" ? level : undefined;
+  const level = provider?.key === "openai" && mode === "token_plan_agentic" && Object.hasOwn(levels, model)
+    ? levels[model] : levels[model] ?? modeFields.thinking_level;
+  const thinkingLevel = provider?.key === "openai" && mode === "token_plan_agentic"
+    ? typeof level === "string" && /^[a-z][a-z0-9_-]{0,31}$/.test(level) ? level : undefined
+    : level === "low" || level === "medium" || level === "high" ? level : undefined;
   return {
     model,
     supportsThinking,
     thinkingLevel,
     canAnalyze: Boolean(provider?.is_active && provider.can_use_model && !provider.error && mode
-      && getInvoiceAiModes(provider).includes(mode) && model),
+      && getInvoiceAiModes(provider).includes(mode) && model
+      && (provider.key !== "openai" || !provider.active_mode || provider.active_mode === mode)),
   };
 };

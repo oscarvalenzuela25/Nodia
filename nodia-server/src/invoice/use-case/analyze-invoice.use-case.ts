@@ -13,6 +13,7 @@ import { AnalyzeInvoiceResponse } from '../types/invoice.types.js';
 import { canUseGemini, canUseMistral } from '../../config/envs.config.js';
 import { validateInvoiceFile } from '../invoice-file-validation.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
+import { ExecuteCodexInvoiceUseCase } from '../../ai-provider/use-case/execute-codex-invoice.use-case.js';
 
 @Injectable()
 export class AnalyzeInvoiceUseCase {
@@ -22,24 +23,26 @@ export class AnalyzeInvoiceUseCase {
     private readonly providerService: ProviderService,
     @Optional() private readonly aiProviderService?: AiProviderService,
     @Optional() private readonly executeApiInvoice?: ExecuteApiInvoiceUseCase,
+    @Optional() private readonly executeCodexInvoice?: ExecuteCodexInvoiceUseCase,
   ) {}
 
   async execute(
     file: Express.Multer.File | undefined,
     dto: AnalyzeInvoiceDto,
+    signal?: AbortSignal,
   ): Promise<AnalyzeInvoiceResponse> {
     // Also validate legacy query options after the controller merges query/body.
     // They must never silently override a validated mode or be ignored.
     for (const [key, allowed] of Object.entries({
       mode: ['api_key', 'token_plan_web', 'token_plan_agentic'],
       engine: ['web', 'agentic'], model_type: ['default', 'ocr'],
-      thinking_level: ['low', 'medium', 'high'],
     })) {
       const value = dto[key as keyof AnalyzeInvoiceDto];
       if (value !== undefined && (typeof value !== 'string' || !allowed.includes(value))) {
         throw new BadRequestException('Opciones de análisis inválidas.');
       }
     }
+    if (dto.thinking_level !== undefined && (typeof dto.thinking_level !== 'string' || !/^[a-z][a-z0-9_-]{0,31}$/.test(dto.thinking_level))) throw new BadRequestException('Esfuerzo de análisis inválido.');
     if (dto.model !== undefined && (typeof dto.model !== 'string' || !dto.model.trim() || dto.model.length > 128)) {
       throw new BadRequestException('Modelo de análisis inválido.');
     }
@@ -114,6 +117,7 @@ export class AnalyzeInvoiceUseCase {
       dto.ai_provider ||
       (canUseGemini() ? 'gemini' : 'mistral')
     ).toLowerCase();
+    if (dto.ai_provider && dto.ai_provider.toLowerCase() !== engineKey) throw new BadRequestException('El proveedor solicitado no corresponde a la conexión elegida.');
     if (!['gemini', 'mistral', 'openai'].includes(engineKey)) throw new BadRequestException('Este proveedor no tiene un adaptador de facturas implementado.');
 
     if (engineKey === 'mistral') {
@@ -213,12 +217,16 @@ export class AnalyzeInvoiceUseCase {
       }
     }
 
-    if (engineKey === 'openai' && effectiveMode !== 'api_key') throw new BadRequestException('OpenAI admite únicamente el canal API.');
+    const codex = engineKey === 'openai' && effectiveMode === 'token_plan_agentic';
+    if (engineKey === 'openai' && !codex && effectiveMode !== 'api_key') throw new BadRequestException('OpenAI no admite el canal Web.');
+    if (!codex && dto.thinking_level !== undefined && !['low', 'medium', 'high'].includes(dto.thinking_level)) throw new BadRequestException('Opciones de análisis inválidas.');
+    if (codex && (!configuredAiProvider?.id || !this.executeCodexInvoice)) throw new BadRequestException('Debe seleccionar una conexión Codex configurada.');
     if (effectiveMode === 'api_key' && dto.engine) throw new BadRequestException('Un canal API no admite un motor de sesión.');
     if (effectiveMode === 'api_key' && (!configuredAiProvider?.id || !this.executeApiInvoice)) throw new BadRequestException('Debe seleccionar una conexión API configurada.');
     const extractedData =
-      effectiveMode === 'api_key'
-        ? await this.executeApiInvoice!.execute(configuredAiProvider.id, dto.model, file, providerFields, providerTax, dto.thinking_level)
+      codex ? await this.executeCodexInvoice!.execute(configuredAiProvider.id, effectiveModel, file, providerFields, providerTax, dto.thinking_level, signal)
+      : effectiveMode === 'api_key'
+        ? await this.executeApiInvoice!.execute(configuredAiProvider.id, dto.model, file, providerFields, providerTax, dto.thinking_level as 'low' | 'medium' | 'high' | undefined)
         : engineKey === 'mistral'
         ? effectiveModel !== undefined || ocrModel !== undefined
           ? await this.mistralService.extractInvoiceData(

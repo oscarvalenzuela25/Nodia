@@ -9,6 +9,7 @@ import { observedModels } from '../helpers/model-observation.helper.js';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
+import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
 
 export interface DiscoveredModelInfo {
   id: string;
@@ -40,6 +41,7 @@ export class SyncAiProviderModelsUseCase {
     private readonly aiProviderService: AiProviderService,
     private readonly geminiService: GeminiService,
     @Optional() private readonly apiService?: ApiProviderService,
+    @Optional() private readonly codex?: CodexRuntimeService,
   ) {}
 
   async execute(
@@ -105,6 +107,19 @@ export class SyncAiProviderModelsUseCase {
         currentSelectedModel, isSelectedModelAvailable: models.some((model) => model.id === currentSelectedModel), models, tokenPlan: null };
     }
     if (!['token_plan_web', 'token_plan_agentic'].includes(targetMode)) throw new BadRequestException('Modo de sesión inválido.');
+    if (engineKey === 'openai' && targetMode === 'token_plan_agentic') {
+      if (!this.codex || provider.is_active === false || provider.catalog?.is_active === false
+        || provider.use_token_plan_agentic !== true || provider.catalog?.can_use_token_plan_agentic !== true) throw new BadRequestException('El canal Codex no está habilitado.');
+      const models = await this.codex.listModels(provider.id);
+      if (!models.length) throw new BadRequestException('Codex no entregó modelos disponibles.');
+      if (shouldPersist) await this.aiProviderService.updateProviderFields(provider.id, {
+        ...provider.fields, token_plan_agentic: { ...modeFields, available_models: models },
+      });
+      const session = await this.codex.observe(provider.id);
+      return { providerId: provider.id, providerName: provider.name || provider.catalog.name,
+        currentSelectedModel, isSelectedModelAvailable: models.some((m) => m.id === currentSelectedModel), models,
+        tokenPlan: session.planType ? { tier: session.planType, planLabel: session.planType, authenticated: session.authenticated === true } : null };
+    }
     if (!['gemini', 'google'].includes(engineKey)) {
       throw new BadRequestException('Este proveedor no tiene una integración de sesión verificada.');
     }

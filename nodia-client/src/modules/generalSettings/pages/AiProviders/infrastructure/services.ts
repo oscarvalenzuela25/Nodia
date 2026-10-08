@@ -1,6 +1,7 @@
 import type { AiApiKeyEntity, CreateAiApiKeyPayload, UpdateAiApiKeyPayload, GetAiApiKeysParams } from "./types";
 import { mainInstance } from "../../../../../config/api";
 import { currentGeminiAgenticLoginSchema, geminiAgenticLoginSchema } from "./agenticLogin";
+import { codexSessionSchema } from "./codexSession";
 import type {
   GetSelectableModelsParams,
   ProviderSelectableModelsResult,
@@ -127,7 +128,7 @@ export const getAiProvidersHealth = async (): Promise<AiProvidersHealthResponse>
   const { data } = await mainInstance.get<AiProvidersHealthResponse>(
     getEndpoint("/ai-providers/health")
   );
-  return data;
+  return { ...data, providers: data.providers.map((p) => p.codexSession === undefined ? p : { ...p, codexSession: codexSessionSchema.parse(p.codexSession) }) };
 };
 
 export const getAiProviderEvents = async (

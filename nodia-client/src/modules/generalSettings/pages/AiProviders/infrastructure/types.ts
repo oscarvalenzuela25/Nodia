@@ -1,6 +1,7 @@
 export const AiConnectionMode = {
   WEB_SESSION: 'web_session',
   API_KEY: 'api_key',
+  TOKEN_PLAN_AGENTIC: 'token_plan_agentic',
 } as const;
 export type AiConnectionMode =
   (typeof AiConnectionMode)[keyof typeof AiConnectionMode];
@@ -15,6 +16,8 @@ export type AiKeyHealthState =
   (typeof AiKeyHealthState)[keyof typeof AiKeyHealthState];
 
 export interface SupportedModelDef {
+  inputModalities?: string[] | null;
+  supportedReasoningEfforts?: string[];
   id: string;
   name: string;
   displayName?: string;
@@ -37,6 +40,8 @@ export interface SupportedProviderItem {
 }
 
 export interface SelectableModelInfo {
+  inputModalities?: string[] | null;
+  supportedReasoningEfforts?: string[];
   id: string;
   name: string;
   displayName: string;
@@ -300,11 +305,13 @@ export interface AiProviderAlert {
   message: string;
   timestamp?: string;
   timeAgo?: string;
+  providerId?: string;
   actionType: 'renew_session' | 'manage_quotas' | 'configure' | 'authenticate_agentic' | 'check_status';
   actionLabel: string;
 }
 
 export interface AiProviderHealthItem {
+  codexSession?: import('./codexSession').CodexSession;
   id: string;
   key: string;
   name: string;

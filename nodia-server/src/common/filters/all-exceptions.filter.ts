@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { CodexOperationException } from '../ai/codex/codex-contract.js';
 import { GeminiUpstreamException } from '../ai/gemini-upstream.exception.js';
 
 @Catch()
@@ -74,6 +75,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       method: request.method,
       error,
       message,
+      ...(exception instanceof CodexOperationException ? { code: exception.code, ...(exception.requestId ? { requestId: exception.requestId } : {}) } : {}),
       ...(exception instanceof GeminiUpstreamException && typeof exceptionResponse === 'object'
         ? { upstreamRequestId: (exceptionResponse as Record<string, unknown>).upstreamRequestId,
           ...(exception.upstreamErrorCode ? { upstreamErrorCode: exception.upstreamErrorCode } : {}) }
