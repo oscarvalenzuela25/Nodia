@@ -1,23 +1,33 @@
 import {
   IsBoolean,
   IsEnum,
-  IsNumber,
+  IsInt,
+  IsNotEmpty,
+  Min,
+  Max,
   IsOptional,
   IsString,
+  MaxLength,
 } from 'class-validator';
 import { AiKeyHealthState } from '../types/ai-provider.types.js';
 
 export class UpdateAiApiKeyDto {
   @IsOptional()
   @IsString()
+  @MaxLength(100)
+  @IsNotEmpty()
   label?: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(8192)
+  @IsNotEmpty()
   secret?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Min(0)
+  @Max(1000000)
   sort_order?: number;
 
   @IsOptional()

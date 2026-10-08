@@ -9,8 +9,10 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { GeminiUpstreamException } from './gemini-upstream.exception.js';
+import { parseGeminiAgenticLoginJob, type GeminiAgenticLoginJob } from './gemini-agentic-login.js';
 import {
   normalizeGeminiEngineStatus,
+  isAgenticSessionActive,
   type GeminiDualEngineStatus,
 } from './gemini-engine-status.js';
 import { envs } from '../../config/envs.config.js';
@@ -122,6 +124,56 @@ export class GeminiService {
     return this.loginRequest('POST', `/auth/login/${jobId}/cancel`);
   }
 
+  async agenticLoginRequest(method: 'GET' | 'POST', path: string, actorUserId: string,
+    payload?: { code: string }): Promise<GeminiAgenticLoginJob | null> {
+    let response: Response;
+    try {
+      response = await fetch(`${envs.GEMINI_MICROSERVICE_URL}/agentic/auth/login${path}`, {
+        method, headers: { ...this.serviceHeaders(), 'X-Nodia-Actor-Id': actorUserId,
+          ...(payload ? { 'Content-Type': 'application/json' } : {}) },
+        ...(payload ? { body: JSON.stringify(payload) } : {}),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {
+      throw new ServiceUnavailableException('El microservicio Gemini no está disponible para autenticar Agentic.');
+    }
+    if (!response.ok) await response.body?.cancel().catch(() => undefined);
+    if (response.status === 404) throw new NotFoundException('Intento de login Agentic no encontrado.');
+    if (response.status === 409) throw new ConflictException('Agentic está ocupado o el intento no espera un código.');
+    if (response.status === 422) {
+      if (method === 'POST' && /^\/[0-9a-f]{32}\/code$/.test(path)
+        && response.headers.get('X-Nodia-Error-Code') === 'login_invalid_code') {
+        throw new UnprocessableEntityException('Código de autorización Agentic inválido.');
+      }
+      throw new BadGatewayException('El microservicio Gemini rechazó los parámetros internos del login Agentic.');
+    }
+    if (response.status === 503) throw new ServiceUnavailableException('Configure el CLI Agentic en el servidor antes de iniciar sesión.');
+    if (!response.ok) throw new BadGatewayException('No se pudo gestionar el login Agentic de Gemini.');
+    let value: unknown;
+    try {
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('Empty login response');
+      const chunks: Uint8Array[] = [];
+      let bytes = 0;
+      try {
+        while (true) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          bytes += chunk.value.byteLength;
+          if (bytes > 16_384) throw new Error('Login response limit');
+          chunks.push(chunk.value);
+        }
+        value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)));
+      } finally {
+        await reader.cancel().catch(() => undefined);
+        reader.releaseLock();
+      }
+    }
+    catch { throw new BadGatewayException('Respuesta de login Agentic inválida.'); }
+    if (value === null && method === 'GET' && path === '/current') return null;
+    return parseGeminiAgenticLoginJob(value);
+  }
+
   async verifyProvider(engine?: GeminiExecutionEngine): Promise<boolean> {
     const baseUrl = envs.GEMINI_MICROSERVICE_URL;
     if (!baseUrl) {
@@ -133,7 +185,7 @@ export class GeminiService {
       const response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'GET',
         headers: this.serviceHeaders(),
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(engine === 'agentic' ? 15000 : 5000),
       });
 
       if (!response.ok) {
@@ -141,9 +193,7 @@ export class GeminiService {
       }
 
       const data = await response.json();
-      return Boolean(
-        data?.authenticated || (data?.available && data?.has_active_session),
-      );
+      return engine === 'agentic' ? isAgenticSessionActive(data) : data?.authenticated === true;
     } catch (error) {
       this.logger.warn(
         `Gemini microservice verification failed: ${error instanceof Error ? error.name : 'UnknownError'}`,
@@ -160,7 +210,7 @@ export class GeminiService {
       const response = await fetch(`${baseUrl}/engines/status`, {
         method: 'GET',
         headers: this.serviceHeaders(),
-        signal: AbortSignal.timeout(6000),
+        signal: AbortSignal.timeout(15000),
       });
 
       if (response.ok) {
@@ -194,22 +244,29 @@ export class GeminiService {
       const response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'GET',
         headers: this.serviceHeaders(),
-        signal: AbortSignal.timeout(6000),
+        signal: AbortSignal.timeout(engine === 'agentic' ? 15000 : 6000),
       });
 
       if (response.ok) {
         const body = await response.json();
-        if (
-          engine === 'agentic' &&
-          body &&
-          typeof body.authenticated === 'undefined'
-        ) {
-          body.authenticated = Boolean(
-            body.available && body.has_active_session,
-          );
+        if (engine === 'agentic') {
+          if (body?.engine !== 'agentic' || typeof body.available !== 'boolean' ||
+            typeof body.authenticated !== 'boolean' || !Array.isArray(body.models) || body.models.length > 512 ||
+            body.models.some((model: unknown) => !model || typeof model !== 'object' ||
+              !('id' in model) || typeof model.id !== 'string' || !model.id || model.id.length > 128 ||
+              !('name' in model) || typeof model.name !== 'string' || !model.name || model.name.length > 256) ||
+            new Set(body.models.map((model: { id: string }) => model.id)).size !== body.models.length) {
+            throw new BadGatewayException('Catálogo agéntico inválido.');
+          }
+          const authenticated = body.available && body.authenticated;
+          return { engine: 'agentic', available: body.available, authenticated,
+            models: authenticated ? body.models.map((model: { id: string; name: string }) => ({ id: model.id, name: model.name })) : [],
+            tier: 'UNKNOWN', plan_label: 'Plan no identificado', active_model: null, usage_info: null, quotas: null };
         }
         return body;
       }
+
+      if (engine === 'agentic') throw new BadGatewayException('Descubrimiento agéntico no disponible.');
 
       // Fallback to status endpoint
       const fallbackEndpoint = engine ? `/${engine}/status` : '/auth/status';
@@ -303,11 +360,13 @@ export class GeminiService {
 
     let response: Response;
     try {
-      response = await fetch(`${baseUrl}/analyze-invoice`, {
+      const endpoint = targetEngine === 'agentic' ? '/agentic/analyze-invoice' : '/analyze-invoice';
+      response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'POST',
         headers: this.serviceHeaders(),
         body: formData,
-        signal: AbortSignal.timeout(140000),
+        // Includes microservice upload (30s), analysis (300s) and cleanup margin.
+        signal: AbortSignal.timeout(340000),
       });
     } catch (error) {
       this.logger.warn(

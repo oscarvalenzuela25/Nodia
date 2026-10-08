@@ -277,7 +277,7 @@ export const analyzeInvoice = async (
       headers: {
         "Content-Type": undefined,
       },
-      timeout: 150000,
+      timeout: 360000,
     }
   );
   return data;
@@ -361,4 +361,3 @@ export const getProductLogs = async (
   );
   return data;
 };
-

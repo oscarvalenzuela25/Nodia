@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from dotenv import dotenv_values
 from loguru import logger
 from gemini_webapi import GeminiClient
-from gemini_webapi.exceptions import (AuthError, ModelInvalidError, UsageLimitExceededError,
+from gemini_webapi.exceptions import (APIError, AuthError, ModelInvalidError, UsageLimitExceededError,
     TemporarilyBlockedError, TimeoutError as ProviderTimeout)
 from invoice_parser import build_invoice_prompt, clean_and_parse_invoice_json, is_refusal_response
 from service_errors import ServiceError
@@ -19,7 +19,7 @@ from session_store import SESSION_FILE, read_session, save_session
 ENV_FILE = Path(__file__).resolve().parent / ".env"
 
 class GeminiWebService:
-    def __init__(self):
+    def __init__(self, generation_timeout: float = 300):
         self.browser_manager = BrowserCookieManager()
         self.secure_1psid = ""
         self.secure_1psidts = ""
@@ -34,6 +34,8 @@ class GeminiWebService:
         self._quota_cache: Optional[Dict[str, Any]] = None
         self._quota_cache_time: float = 0.0
         self._quota_lock = asyncio.Lock()
+        self._analysis_lock = asyncio.Lock()
+        self._generation_timeout = generation_timeout
 
     def _read_env(self) -> tuple[str, str, str]:
         env_path = ENV_FILE
@@ -75,7 +77,11 @@ class GeminiWebService:
         os.environ.setdefault("GEMINI_COOKIE_PATH", str(SESSION_FILE.parent))
         candidate = GeminiClient(psid, psidts)
         try:
-            await candidate.init(timeout=60, auto_refresh=True, refresh_interval=180)
+            # SDK timeout also applies to inference streams, not only startup.
+            # Bound startup separately without shortening every generation.
+            async with asyncio.timeout(60):
+                await candidate.init(timeout=self._generation_timeout, watchdog_timeout=120,
+                                     auto_refresh=True, refresh_interval=180)
             if candidate.account_status.name == "UNAUTHENTICATED":
                 raise AuthError("Gemini Web session is not authenticated")
         except BaseException:
@@ -177,10 +183,24 @@ class GeminiWebService:
             "tier": str(getattr(self.client, "tier", "UNKNOWN")),
             "model": self.model_name or None,
             "model_display": self.model_name or None,
+            "supported_options": self.supported_options(),
         }
 
+    def supported_options(self) -> Dict[str, bool]:
+        # Transport support comes from the installed SDK, never a model's name.
+        import inspect
+        return {"extended_thinking": "extended_thinking" in inspect.signature(GeminiClient.generate_content).parameters}
+
     async def get_quota_summary(self, max_cache_age_seconds: float = 30.0) -> Dict[str, Any]:
+        if self._analysis_lock.locked():
+            # Quota RPC recovery also uses the shared SDK transport. During
+            # inference expose only a still-valid observation or unknown data.
+            if self._quota_cache is not None and time.monotonic() - self._quota_cache_time < max_cache_age_seconds:
+                return deepcopy(self._quota_cache)
+            return {"source": "web", "observed_at": None, "usage_info": None, "quotas": None}
         async with self._quota_lock:
+            if self._analysis_lock.locked():
+                return {"source": "web", "observed_at": None, "usage_info": None, "quotas": None}
             now = time.monotonic()
             if self.is_initialized and self._quota_cache is not None and now - self._quota_cache_time < max_cache_age_seconds:
                 return deepcopy(self._quota_cache)
@@ -229,6 +249,7 @@ class GeminiWebService:
             "authenticated": status["initialized"], "tier": status["tier"],
             "plan_label": "Plan no identificado", "active_model": status["model"],
             "models": [], "usage_info": None, "quotas": None,
+            "supported_options": self.supported_options(),
         }
         if not status["initialized"]:
             return result
@@ -258,10 +279,40 @@ class GeminiWebService:
             raise ServiceError("model_unavailable", "El modelo configurado no está disponible en esta sesión.", 422)
         return matches[0]
 
+    async def _generate_content(self, prompt: str, **options: Any) -> Any:
+        active_client = self.client
+        operation = asyncio.create_task(active_client.generate_content(prompt, current_retry=0, **options))
+        try:
+            return await asyncio.shield(operation)
+        except asyncio.CancelledError:
+            # curl_cffi's stream context waits for its transfer in aclose().
+            # Close the transport BEFORE cancelling the generation; otherwise
+            # wait_for can exceed its deadline while waiting for that transfer.
+            async with self._client_lock:
+                self.is_initialized = False
+                try:
+                    await active_client.close()
+                finally:
+                    operation.cancel()
+                    await asyncio.gather(operation, return_exceptions=True)
+            raise
+
     async def analyze_invoice(self, file_path: Path, provider_fields: Optional[Dict[str, Any]] = None,
                               provider_tax: Optional[int] = None, model: Optional[str] = None,
                               extended_thinking: Optional[bool] = False,
                               thinking_level: Optional[str] = None) -> Dict[str, Any]:
+        # SDK recovery can close its shared HTTP session. Never overlap analyses.
+        if self._analysis_lock.locked():
+            raise ServiceError("web_busy", "El motor Web está ocupado.", 503)
+        async with self._analysis_lock:
+            # Let an already-running bounded quota read finish before generation.
+            async with self._quota_lock:
+                return await self._analyze_invoice(file_path, provider_fields, provider_tax, model,
+                                                   extended_thinking, thinking_level)
+
+    async def _analyze_invoice(self, file_path: Path, provider_fields: Optional[Dict[str, Any]],
+                               provider_tax: Optional[int], model: Optional[str],
+                               extended_thinking: Optional[bool], thinking_level: Optional[str]) -> Dict[str, Any]:
         if not model or not model.strip():
             raise ServiceError("model_required", "Configure un modelo antes de analizar.", 422)
         requested = model.strip()
@@ -279,14 +330,16 @@ class GeminiWebService:
                 if selected_id is not None and selected_id != identity:
                     raise ServiceError("model_changed", "El modelo cambió durante la recuperación de sesión.", 422)
                 selected_id = identity
-                capabilities = getattr(selected, "capabilities", None) or []
-                if extended_thinking and not (getattr(selected, "supports_thinking", False) or "reasoning" in capabilities):
-                    raise ServiceError("reasoning_unverified", "El proveedor no confirma razonamiento para este modelo.", 422)
+                if extended_thinking and not self.supported_options()["extended_thinking"]:
+                    raise ServiceError("thinking_unsupported", "El SDK Web instalado no admite extended_thinking.", 422)
                 # Web has no reported per-model low/medium/high control in the current SDK.
                 if thinking_level is not None:
                     raise ServiceError("thinking_level_unsupported", "El motor Web no admite niveles de razonamiento.", 422)
-                response = await self.client.generate_content(prompt, files=[file_path], model=selected,
-                                                               extended_thinking=bool(extended_thinking))
+                options = {"extended_thinking": bool(extended_thinking)} if self.supported_options()["extended_thinking"] else {}
+                # gemini-webapi 2.1.1 forwards this option to its @running(retry=5)
+                # generator. A lost response must not resend an uncertain inference.
+                response = await self._generate_content(
+                    prompt, files=[file_path], model=selected, **options)
                 return response.text or ""
 
             active_client = self.client
@@ -309,6 +362,8 @@ class GeminiWebService:
             raise ServiceError("provider_timeout", "Tiempo de respuesta del proveedor agotado.", 504) from None
         except ModelInvalidError:
             raise ServiceError("model_unavailable", "El proveedor rechazó el modelo configurado.", 422) from None
+        except APIError:
+            raise ServiceError("provider_response_error", "No se pudo obtener una respuesta válida de Gemini.", 502) from None
         except ServiceError:
             raise
         except Exception as error:

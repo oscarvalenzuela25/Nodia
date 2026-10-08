@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
+import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import { GetSelectableModelsDto } from '../dto/get-selectable-models.dto.js';
@@ -83,7 +84,7 @@ export interface ProviderSelectableModelsResult {
 
 @Injectable()
 export class GetSelectableModelsUseCase {
-  constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService) {}
+  constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService, @Optional() private readonly apiService?: ApiProviderService) {}
 
   async execute(dto: GetSelectableModelsDto = {}): Promise<ProviderSelectableModelsResult[]> {
     const response = await this.aiProviderService.findAllProviders({ all: true, includes: true });
@@ -108,6 +109,12 @@ export class GetSelectableModelsUseCase {
       const base = { providerId: String(provider.id), provider: key, mode: mode ?? 'api_key',
         planType: tokenMode ? 'token_plan' as const : 'api_key' as const,
         isSelected: provider.is_default === true, isActive: provider.is_active === true, selectedModel };
+      if (actualMode === 'api_key' && enabled && provider.is_active && provider.catalog?.is_active !== false && provider.catalog?.can_use_api_key === true && this.apiService) {
+        const secret = await this.aiProviderService.getActiveApiKeySecret(String(provider.id));
+        const models = secret ? await this.apiService.listModels(key, secret) : [];
+        results.push({ ...base, models, models_source: secret ? 'provider' : 'unavailable', models_observed_at: secret ? new Date().toISOString() : null });
+        continue;
+      }
       if (!tokenMode || !['gemini', 'google'].includes(key.toLowerCase())) {
         results.push({ ...base, models: [], models_source: 'configuration', models_observed_at: null });
         continue;

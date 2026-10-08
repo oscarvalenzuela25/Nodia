@@ -1,5 +1,5 @@
 import type { GeminiExecutionEngine } from './ai.types.js';
-import { observedWebQuota } from './gemini-quota-observation.js';
+import { observedAgenticQuota, observedWebQuota } from './gemini-quota-observation.js';
 
 type EngineStatus = Record<string, unknown>;
 
@@ -32,6 +32,7 @@ export const normalizeGeminiEngineStatus = (
   const web = asRecord(status.web);
   const agentic = asRecord(status.agentic);
   const quota = observedWebQuota(web);
+  const agenticQuota = observedAgenticQuota({ ...agentic, authenticated: isAgenticSessionActive(agentic) });
   const reportedEngine = status.active_engine ?? status.default_engine;
   return {
     ...status,
@@ -46,6 +47,10 @@ export const normalizeGeminiEngineStatus = (
           ? web.available
           : web.authenticated === true,
       authenticated: web.authenticated === true,
+      supported_options: {
+        extended_thinking: typeof asRecord(web.supported_options).extended_thinking === 'boolean'
+          ? asRecord(web.supported_options).extended_thinking : null,
+      },
       quota: quota?.quota ?? null,
       quotas: undefined,
       usage_info: quota?.usage ?? null,
@@ -56,11 +61,11 @@ export const normalizeGeminiEngineStatus = (
       ...agentic,
       available: agentic.available === true,
       authenticated: isAgenticSessionActive(agentic),
-      quota: null,
+      quota: agenticQuota?.quota ?? null,
       quotas: undefined,
       usage_info: null,
-      quota_source: null,
-      quota_observed_at: null,
+      quota_source: agenticQuota ? 'agentic_cli' : null,
+      quota_observed_at: agenticQuota?.observed_at ?? null,
     },
   };
 };

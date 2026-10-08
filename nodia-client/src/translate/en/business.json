@@ -418,5 +418,7 @@
   "invoice_validation_sale": "Sale price must be a finite number >= 0",
   "invoice_validation_stock": "Stock must be a finite number >= 0",
   "aggregates_unavailable": "Complete metrics are unavailable from this page of data. A business summary is required.",
-  "unassigned_provider": "No supplier assigned"
+  "unassigned_provider": "No supplier assigned",
+  "no_ai_providers_available": "No AI providers available or authorized",
+  "kpi_products_unit": "products"
 }

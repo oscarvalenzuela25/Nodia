@@ -1,5 +1,12 @@
 # Entrevista — Operación de proveedores de IA
 
+
+## Aclaración vigente del usuario — 2026-10-06
+
+Las API keys están permitidas, excepto las gratuitas de Gemini. La recuperación actual ofrece **Gemini: API/Web/Agentic** y **OpenAI: API**. Los tres `can_use_*` del catálogo definen modos configurables; los `use_*` de cada instancia habilitan sus canales y `default_mode` expresa la elección. Modelos y claves se mantienen por instancia/modo, sin fallback automático. Las referencias anteriores a «Cero API Keys», primera entrega Gemini/Mistral o un único modo habilitable quedan como antecedente histórico y son sustituidas por esta aclaración en el alcance recuperado.
+
+Se conserva el requisito de datos operativos comprobables: una clave guardada o un catálogo consultado no prueban inferencia, capacidades ni cuotas. Antigravity continúa sin disponibilidad certificada. La recuperación no incluye restaurar la auditoría visual retirada ni cerrar todos los pendientes de la especificación histórica. Implementación, alternativas y límites en [ADR-015](../architecture/decisions/ADR-015-ai-api-provider-recovery.md). Los documentos mantienen su estado de revisión.
+
 > Estado: en revisión (entrevista cerrada como borrador; no aprobada)
 > Inicio: 2026-09-25
 > Alcance: ampliación requerida por el usuario antes de producción; pendiente de reconciliar con documentos aprobados de la Parte 1

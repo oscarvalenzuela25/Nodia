@@ -4,6 +4,8 @@
 venv/
 browser_profile/
 session_state/
+agentic_profile/
+agentic_cli/
 temp_uploads/
 __pycache__/
 *.pyc

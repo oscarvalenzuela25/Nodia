@@ -7,6 +7,8 @@ import babel from '@rolldown/plugin-babel'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'NODIA_')
   return {
+    // Tests and QA servers must not replace a running dev server's optimized deps.
+    cacheDir: `node_modules/.vite/${mode}`,
     plugins: [
       react(),
       babel({ presets: [reactCompilerPreset()] })

@@ -36,7 +36,7 @@ export class AnalyzeInvoiceDto {
 
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
+  @Transform(({ value }) => value === 'true' ? true : value === 'false' ? false : value)
   extended_thinking?: boolean;
 
   @IsOptional()

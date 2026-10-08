@@ -1,4 +1,5 @@
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
+import { notifyHttpError } from "../../../../config/httpFeedback";
 import type { FC } from "react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,7 @@ import ProviderDetail from "./components/ProviderDetail";
 import AddProviderModal from "./components/AddProviderModal";
 import ConfigureProviderModal from "./components/ConfigureProviderModal";
 import RemoteLoginModal from "./components/RemoteLoginModal";
+import AgenticLoginModal from "./components/AgenticLoginModal";
 import {
   PageContainer,
   HeaderPanel,
@@ -43,6 +45,7 @@ const AiProviders: FC = () => {
   const [configureProvider, setConfigureProvider] =
     useState<AiProviderHealthItem | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isAgenticLoginModalOpen, setIsAgenticLoginModalOpen] = useState(false);
 
   // Queries
   const {
@@ -61,7 +64,7 @@ const AiProviders: FC = () => {
     refetch: refetchHealth,
   } = useAiProvidersHealth();
 
-  const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines, refetch: refetchEngines } = useGeminiEngines();
+  const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines } = useGeminiEngines();
 
   const isInitialLoading =
     isLoadingProviders ||
@@ -169,31 +172,26 @@ const AiProviders: FC = () => {
 
   const handleRefreshAllData = async () => {
     await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] }),
-      queryClient.invalidateQueries({ queryKey: ["gemini-engines"] }),
-      queryClient.invalidateQueries({ queryKey: ["ai-providers"] }),
       queryClient.invalidateQueries({ queryKey: ["ai-enabled-web-providers"] }),
       queryClient.invalidateQueries({ queryKey: ["ai-selectable-models"] }),
     ]);
     await Promise.all([
-      refetchHealth(),
-      refetchProviders(),
+      refetchHealth({ throwOnError: true }),
+      refetchProviders({ throwOnError: true }),
     ]);
   };
 
   const handleVerifyAll = async () => {
     try {
-      await handleRefreshAllData();
+      await refetchHealth({ throwOnError: true });
       sileo.success({
         title: t(
           "ai_providers:notifications.verify_success",
           "Estado de proveedores de IA actualizado"
         ),
       });
-    } catch {
-      sileo.error({
-        title: t("core:server_error_toast", "Error en el servidor. Por favor, inténtelo más tarde"),
-      });
+    } catch (error) {
+      notifyHttpError(error);
     }
   };
 
@@ -203,7 +201,7 @@ const AiProviders: FC = () => {
 
   return (
     <PageContainer>
-      <QueryErrorAlert isError={providersError || healthError || enginesError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth(), refetchEngines()])} />
+      <QueryErrorAlert isError={providersError || healthError || enginesError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth()])} />
       {/* HEADER PANEL */}
       <HeaderPanel>
         <HeaderTitleBox>
@@ -287,6 +285,9 @@ const AiProviders: FC = () => {
           {/* ALERT BANNERS */}
           <AlertBanner
             alerts={activeAlerts}
+            disabled={isBusy}
+            onAuthenticateAgentic={() => setIsAgenticLoginModalOpen(true)}
+            onCheckStatus={handleVerifyAll}
             onRenewSession={handleRenewSession}
             onConfigure={(providerKey) => {
               const prov = displayProviders.find(
@@ -341,6 +342,7 @@ const AiProviders: FC = () => {
 
       {/* MODALS */}
       <AddProviderModal
+        totalProviders={providersResponse?.data?.length ?? healthResponse?.providers?.length}
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={handleRefreshAllData}
@@ -359,6 +361,7 @@ const AiProviders: FC = () => {
         onClose={() => setIsLoginModalOpen(false)}
         onSuccess={handleRefreshAllData}
       />
+      {isAgenticLoginModalOpen && <AgenticLoginModal onClose={() => setIsAgenticLoginModalOpen(false)} />}
     </PageContainer>
   );
 };

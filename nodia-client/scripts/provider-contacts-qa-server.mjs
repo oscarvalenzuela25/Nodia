@@ -11,6 +11,7 @@ export async function runProviderContactsHarness({ base, db }) {
     '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nodia · Contactos QA</title></head><body><div id="root"></div><script type="module" src="/src/test/modules/business/integration/provider-contacts-harness.tsx"></script></body></html>';
   const vite = await createServer({
     root: fileURLToPath(new URL("../", import.meta.url)),
+    cacheDir: "node_modules/.vite/qa-provider-contacts",
     configFile: false,
     envDir: false,
     define: { "import.meta.env.VITE_API_BASE_URL": '""' },

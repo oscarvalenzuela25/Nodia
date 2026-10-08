@@ -36,6 +36,8 @@ class PrivateRequestGuard:
                 response_started = True
                 response_status = message["status"]
                 message.setdefault("headers", []).append((b"x-request-id", request_id.encode()))
+                if scope["path"].startswith("/agentic/auth/login"):
+                    message["headers"].append((b"cache-control", b"no-store"))
             await send(message)
 
         async def reject(code: str, message: str, status: int, retry_after: str | None = None) -> None:
@@ -51,6 +53,32 @@ class PrivateRequestGuard:
             rejection = authenticate_service_request(request)
             if rejection is not None:
                 await rejection(scope, receive, traced_send)
+                return
+            if scope["path"].startswith("/agentic/auth/login/") and scope["method"] == "POST":
+                # OAuth codes are tiny private commands, never unbounded JSON.
+                payload = bytearray()
+                try:
+                    async with asyncio.timeout(5):
+                        while True:
+                            message = await receive()
+                            if message["type"] == "http.disconnect":
+                                response_status = 499
+                                return
+                            chunk = message.get("body", b"")
+                            if len(payload) + len(chunk) > 8192:
+                                await reject("body_too_large", "La solicitud de login supera el tamaño permitido.", 413)
+                                return
+                            payload.extend(chunk)
+                            if not message.get("more_body", False):
+                                break
+                except TimeoutError:
+                    await reject("upload_timeout", "Tiempo de carga del login agotado.", 408)
+                    return
+
+                async def login_receive() -> dict:
+                    return {"type": "http.request", "body": bytes(payload), "more_body": False}
+
+                await self.app(scope, login_receive, traced_send)
                 return
             if scope["path"] not in ANALYSIS_PATHS or scope["method"] != "POST":
                 await self.app(scope, receive, traced_send)

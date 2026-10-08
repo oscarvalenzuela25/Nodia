@@ -71,9 +71,23 @@ class ServiceAuthenticationTest(AppTestCase):
             await asyncio.sleep(1)
         self.web.analyze_invoice.side_effect = slow
         self.app.state.limits = RuntimeLimits(analysis_timeout=0.01)
-        self.assertEqual(self.analyze().status_code, 504)
+        response = self.analyze()
+        self.assertEqual(response.status_code, 504)
+        self.assertEqual(response.headers["X-Nodia-Error-Code"], "analysis_timeout")
+        self.assertEqual(response.json()["code"], "analysis_timeout")
         self.assertEqual(self.app.state.analysis_slots._value, 2)
         self.assertEqual(list(Path(self.directory).iterdir()), [])
+
+    def test_only_known_operational_categories_receive_diagnostic_header(self):
+        for code, status, expected in (("provider_timeout", 504, "provider_timeout"),
+                                       ("agentic_timeout", 504, "agentic_timeout"),
+                                       ("provider_response_error", 502, "provider_response_error"),
+                                       ("private-output", 504, None), ("analysis_timeout", 503, None)):
+            self.web.analyze_invoice.side_effect = ServiceError(code, "Safe message", status)
+            response = self.analyze()
+            self.assertEqual(response.status_code, status)
+            self.assertEqual(response.headers.get("X-Nodia-Error-Code"), expected)
+            self.assertEqual(list(Path(self.directory).iterdir()), [])
 
     def test_login_job_is_observable_without_browser(self):
         response = self.client.post("/auth/login/start", headers=HEADERS)

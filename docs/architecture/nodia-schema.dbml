@@ -268,20 +268,25 @@ Table ai_provider_catalog [headercolor: #49e3e3] {
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
+	can_use_api_key boolean [ not null, default: false, note: 'Permite configurar API; no demuestra disponibilidad' ]
+	can_use_token_plan_web boolean [ not null, default: false, note: 'Permite configurar sesión Web' ]
+	can_use_token_plan_agentic boolean [ not null, default: false, note: 'Permite configurar sesión Agentic' ]
 }
 
 Table ai_providers [headercolor: #49e3e3] {
 	id bigint [ pk, increment, not null ]
 	catalog_id bigint [ note: 'Referencia al catálogo de proveedor de IA' ]
 	name varchar(128) [ note: 'Nombre descriptivo de la instancia o conexión' ]
-	key varchar(64) [ note: 'Clave técnica del adaptador (ej: gemini, mistral, openai)' ]
-	mode ai_connection_mode [ note: 'Método de conexión activo: web_session o api_key' ]
 	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_focus_model, enable_extended_thinking' ]
-	fields_version smallint [ not null, default: 1 ]
 	auto_rotate_api_keys boolean [ not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)' ]
 	is_active boolean [ not null, default: true, note: 'Habilitación administrativa general' ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
+	use_api_key boolean [ not null, default: false ]
+	use_token_plan_web boolean [ not null, default: false ]
+	use_token_plan_agentic boolean [ not null, default: false ]
+	default_mode varchar(32) [ note: 'Canal elegido: api_key, token_plan_web o token_plan_agentic; nullable' ]
+	is_default boolean [ not null, default: false ]
 }
 
 Table ai_api_keys [headercolor: #49e3e3] {

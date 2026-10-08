@@ -75,7 +75,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       error,
       message,
       ...(exception instanceof GeminiUpstreamException && typeof exceptionResponse === 'object'
-        ? { upstreamRequestId: (exceptionResponse as Record<string, unknown>).upstreamRequestId }
+        ? { upstreamRequestId: (exceptionResponse as Record<string, unknown>).upstreamRequestId,
+          ...(exception.upstreamErrorCode ? { upstreamErrorCode: exception.upstreamErrorCode } : {}) }
         : {}),
     });
   }

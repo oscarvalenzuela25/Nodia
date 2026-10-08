@@ -46,6 +46,7 @@ def parse_field_config(field: Any) -> Optional[Dict[str, str]]:
 def build_invoice_prompt(
     provider_fields: Optional[dict] = None,
     provider_tax: Optional[int] = None,
+    *, structured_output: bool = False,
 ) -> Tuple[str, bool, bool, bool, bool, int]:
     """
     Construye el prompt de extracción y retorna:
@@ -181,6 +182,11 @@ Reglas estrictas:
 3. Si falta un valor numérico, devuelve null. Conserva explícitamente cero.
 4. Asegúrate de que todos los valores numéricos sean válidos (sin símbolos '$', puntos de miles o comas).
 """
+    if structured_output:
+        prompt = prompt.replace(
+            "Responde ÚNICAMENTE con el objeto JSON entre bloques de código ```json y ```.",
+            "Responde ÚNICAMENTE con un objeto JSON válido, sin bloques Markdown.",
+        )
     return prompt, has_any_config, has_code_config, has_cost_price_config, has_cost_price_tax_config, tax_val
 
 

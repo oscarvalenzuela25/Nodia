@@ -1,4 +1,6 @@
 import type { FC } from "react";
+import { useTranslation } from "react-i18next";
+import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import { Button } from "@mui/material";
 import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import AltRouteOutlinedIcon from "@mui/icons-material/AltRouteOutlined";
@@ -19,6 +21,9 @@ import {
 
 interface AlertBannerProps {
   alerts: AiProviderAlert[];
+  disabled?: boolean;
+  onAuthenticateAgentic?: () => void;
+  onCheckStatus?: () => void;
   onRenewSession?: (provider: string) => void;
   onManageQuotas?: (provider: string) => void;
   onConfigure?: (provider: string) => void;
@@ -26,16 +31,33 @@ interface AlertBannerProps {
 
 const AlertBanner: FC<AlertBannerProps> = ({
   alerts,
+  disabled = false,
+  onAuthenticateAgentic,
+  onCheckStatus,
   onRenewSession,
   onManageQuotas,
   onConfigure,
 }) => {
+  const { t } = useTranslation("ai_providers");
   if (!alerts || alerts.length === 0) return null;
 
   return (
     <AlertsWrapper>
       {alerts.map((alert) => {
         const isIncident = alert.type === "incident";
+        const title = alert.reason && alert.providerName
+          ? t(`ai_providers:alerts.${alert.reason}_title`, { provider: alert.providerName }) : alert.title;
+        const message = alert.reason ? t(`ai_providers:alerts.${alert.reason}_message`) : alert.message;
+        const action = alert.actionType === "authenticate_agentic" ? onAuthenticateAgentic
+          : alert.actionType === "check_status" ? onCheckStatus
+            : alert.actionType === "renew_session" && onRenewSession ? () => onRenewSession(alert.provider)
+              : alert.actionType === "configure" && onConfigure ? () => onConfigure(alert.provider)
+                : alert.actionType === "manage_quotas" && onManageQuotas ? () => onManageQuotas(alert.provider) : undefined;
+        const actionLabel = alert.actionType === "authenticate_agentic" ? t("ai_providers:agentic_login.manage")
+          : alert.actionType === "check_status" ? t("ai_providers:alerts.check_status") : alert.actionLabel;
+        const actionIcon = alert.actionType === "check_status" ? <SyncOutlinedIcon />
+          : alert.actionType === "renew_session" || alert.actionType === "authenticate_agentic"
+            ? <OpenInNewOutlinedIcon /> : <SettingsOutlinedIcon />;
         const accentColor =
           alert.severity === "error"
             ? "#ef4444"
@@ -54,7 +76,7 @@ const AlertBanner: FC<AlertBannerProps> = ({
                 ) : (
                   <AltRouteOutlinedIcon sx={{ color: accentColor, fontSize: 18 }} />
                 )}
-                <BannerTitle alertType={alert.type}>{alert.title}</BannerTitle>
+                <BannerTitle alertType={alert.type}>{title}</BannerTitle>
               </TitleContainer>
               {alert.timeAgo && <TimeBadge>{alert.timeAgo}</TimeBadge>}
             </BannerHeader>
@@ -66,16 +88,18 @@ const AlertBanner: FC<AlertBannerProps> = ({
                 ) : (
                   <AltRouteOutlinedIcon sx={{ color: accentColor, fontSize: 24, mt: 0.2 }} />
                 )}
-                <BannerMessage>{alert.message}</BannerMessage>
+                <BannerMessage>{message}</BannerMessage>
               </MessageContainer>
 
-              {alert.actionType === "renew_session" ? (
+              {action && (
                 <Button
                   variant="outlined"
                   size="small"
-                  endIcon={<OpenInNewOutlinedIcon />}
-                  onClick={() => onRenewSession?.(alert.provider)}
+                  endIcon={actionIcon}
+                  onClick={action}
+                  disabled={disabled}
                   sx={{
+                    width: { xs: "100%", sm: "auto" },
                     borderColor: accentColor,
                     color: accentColor,
                     fontWeight: 600,
@@ -88,55 +112,7 @@ const AlertBanner: FC<AlertBannerProps> = ({
                     },
                   }}
                 >
-                  {alert.actionLabel}
-                </Button>
-              ) : alert.actionType === "configure" ? (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  endIcon={<SettingsOutlinedIcon />}
-                  onClick={() => {
-                    if (onConfigure) {
-                      onConfigure(alert.provider);
-                    } else if (onManageQuotas) {
-                      onManageQuotas(alert.provider);
-                    }
-                  }}
-                  sx={{
-                    borderColor: accentColor,
-                    color: accentColor,
-                    fontWeight: 600,
-                    textTransform: "none",
-                    borderRadius: 1.5,
-                    px: 2,
-                    "&:hover": {
-                      borderColor: accentColor,
-                      backgroundColor: `${accentColor}1A`,
-                    },
-                  }}
-                >
-                  {alert.actionLabel}
-                </Button>
-              ) : (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  endIcon={<SettingsOutlinedIcon />}
-                  onClick={() => onManageQuotas?.(alert.provider)}
-                  sx={{
-                    borderColor: accentColor,
-                    color: accentColor,
-                    fontWeight: 600,
-                    textTransform: "none",
-                    borderRadius: 1.5,
-                    px: 2,
-                    "&:hover": {
-                      borderColor: accentColor,
-                      backgroundColor: `${accentColor}1A`,
-                    },
-                  }}
-                >
-                  {alert.actionLabel}
+                  {actionLabel}
                 </Button>
               )}
             </BannerContent>

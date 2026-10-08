@@ -418,5 +418,7 @@
   "invoice_validation_sale": "Precio venta debe ser un número finito >= 0",
   "invoice_validation_stock": "Stock debe ser un número finito >= 0",
   "aggregates_unavailable": "Los indicadores completos no están disponibles con esta página de datos. Se requiere el resumen del negocio.",
-  "unassigned_provider": "Sin proveedor asignado"
+  "unassigned_provider": "Sin proveedor asignado",
+  "no_ai_providers_available": "No hay proveedores de IA disponibles o autorizados",
+  "kpi_products_unit": "productos"
 }

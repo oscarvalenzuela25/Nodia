@@ -38,6 +38,8 @@ temp_uploads/
 # Browser Profile & Session Cache
 browser_profile/
 session_state/
+agentic_profile/
+agentic_cli/
 .cached_cookies_*.json
 
 # IDEs

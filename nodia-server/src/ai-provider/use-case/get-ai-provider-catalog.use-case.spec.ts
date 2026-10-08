@@ -26,4 +26,14 @@ describe('GetAiProviderCatalogUseCase', () => {
     expect(result[0].key).toBe('gemini');
     expect(result[1].key).toBe('openai');
   });
+
+  it('keeps historical unsupported and inactive catalogues out of the connection selector', async () => {
+    vi.mocked(aiProviderServiceMock.findAllCatalogs!).mockResolvedValue([
+      { id: '1', key: 'gemini', is_active: true },
+      { id: '2', key: 'openai', is_active: true },
+      { id: '3', key: 'anthropic', is_active: true },
+      { id: '4', key: 'openai', is_active: false },
+    ] as never);
+    expect((await useCase.execute()).map((item) => item.key)).toEqual(['gemini', 'openai']);
+  });
 });

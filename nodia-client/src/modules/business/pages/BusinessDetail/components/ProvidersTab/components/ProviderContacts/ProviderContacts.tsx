@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import type { MouseEvent } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -16,6 +17,10 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -25,6 +30,7 @@ import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 import InputSearch from "../../../../../../../../components/inputs/InputSearch";
@@ -52,6 +58,19 @@ export default function ProviderContacts({
     undefined,
   );
   const [toggling, setToggling] = useState<ProviderContact | null>(null);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuContact, setMenuContact] = useState<ProviderContact | null>(null);
+
+  const handleOpenActionMenu = (e: MouseEvent<HTMLElement>, contact: ProviderContact) => {
+    e.stopPropagation();
+    setActionMenuAnchorEl(e.currentTarget);
+    setMenuContact(contact);
+  };
+
+  const handleCloseActionMenu = () => {
+    setActionMenuAnchorEl(null);
+    setMenuContact(null);
+  };
   const saving = useRef(false);
   const query = useContacts(providerId, { page: page + 1, limit, search });
   const mutations = useContactMutations(providerId);
@@ -256,8 +275,8 @@ export default function ProviderContacts({
                                 t("provider_contacts:whatsapp", {
                                   number: phone.number,
                                 }),
-                                `https://web.whatsapp.com/send?phone=${phone.number.slice(1)}`,
-                                <WhatsAppIcon fontSize="small" />,
+                                `https://wa.me/${phone.number.replace(/\D/g, "")}`,
+                                <WhatsAppIcon fontSize="small" sx={{ color: "success.main" }} />,
                               )}
                             </Box>
                           ))
@@ -354,28 +373,13 @@ export default function ProviderContacts({
                       </TableCell>
                       <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                         <IconButton
-                          aria-label={t("provider_contacts:edit_named", {
-                            name: contact.name,
-                          })}
+                          size="small"
                           disabled={busy}
-                          onClick={() => setEditing(contact)}
+                          onClick={(e) => handleOpenActionMenu(e, contact)}
+                          data-testid={`contact-actions-btn-${contact.id}`}
+                          aria-label={t("core:actions", "Acciones")}
                         >
-                          <EditOutlinedIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          aria-label={t(
-                            contact.is_active
-                              ? "provider_contacts:deactivate"
-                              : "provider_contacts:activate",
-                          )}
-                          disabled={busy}
-                          onClick={() => setToggling(contact)}
-                        >
-                          {contact.is_active ? (
-                            <BlockOutlinedIcon fontSize="small" />
-                          ) : (
-                            <CheckCircleOutlinedIcon fontSize="small" />
-                          )}
+                          <MoreVertIcon fontSize="small" />
                         </IconButton>
                       </TableCell>
                     </TableRow>
@@ -459,6 +463,73 @@ export default function ProviderContacts({
         })}
         isLoading={mutations.toggle.isPending}
       />
+
+      {/* 3-Dots Action Menu */}
+      <Menu
+        anchorEl={actionMenuAnchorEl}
+        open={Boolean(actionMenuAnchorEl)}
+        onClose={handleCloseActionMenu}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        slotProps={{
+          paper: {
+            sx: (theme) => ({
+              borderRadius: 2,
+              minWidth: 160,
+              boxShadow: theme.shadows[3],
+              border: `1px solid ${theme.palette.divider}`,
+            }),
+          },
+          list: {
+            sx: {
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px",
+              p: 1,
+            },
+          },
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            if (menuContact) setEditing(menuContact);
+            handleCloseActionMenu();
+          }}
+          sx={{ borderRadius: 1 }}
+          data-testid="menu-item-edit-contact"
+        >
+          <ListItemIcon>
+            <EditOutlinedIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          <ListItemText primary={t("provider_contacts:edit")} />
+        </MenuItem>
+
+        {menuContact && (
+          <MenuItem
+            onClick={() => {
+              setToggling(menuContact);
+              handleCloseActionMenu();
+            }}
+            sx={{ borderRadius: 1 }}
+            data-testid="menu-item-toggle-contact"
+          >
+            <ListItemIcon>
+              {menuContact.is_active ? (
+                <BlockOutlinedIcon fontSize="small" color="error" />
+              ) : (
+                <CheckCircleOutlinedIcon fontSize="small" color="success" />
+              )}
+            </ListItemIcon>
+            <ListItemText
+              primary={t(
+                menuContact.is_active
+                  ? "provider_contacts:deactivate"
+                  : "provider_contacts:activate"
+              )}
+            />
+          </MenuItem>
+        )}
+      </Menu>
     </Box>
   );
 }

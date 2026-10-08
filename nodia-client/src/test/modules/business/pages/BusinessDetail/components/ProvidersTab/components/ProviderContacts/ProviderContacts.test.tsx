@@ -69,7 +69,7 @@ describe("ProviderContacts", () => {
       screen.getByRole("link", { name: /Abrir WhatsApp/ }),
     ).toHaveAttribute(
       "href",
-      "https://web.whatsapp.com/send?phone=56987654321",
+      "https://wa.me/56987654321",
     );
     expect(
       screen.getByRole("link", { name: "Redactar correo" }),
@@ -107,7 +107,10 @@ describe("ProviderContacts", () => {
     await screen.findByText("María");
     vi.mocked(services.toggleContact).mockRejectedValue(new Error("Failed"));
     await user.click(
-      screen.getByRole("button", { name: "Desactivar contacto" }),
+      screen.getByTestId("contact-actions-btn-1"),
+    );
+    await user.click(
+      screen.getByTestId("menu-item-toggle-contact"),
     );
     await user.click(screen.getByRole("button", { name: "Confirmar" }));
     await waitFor(() =>

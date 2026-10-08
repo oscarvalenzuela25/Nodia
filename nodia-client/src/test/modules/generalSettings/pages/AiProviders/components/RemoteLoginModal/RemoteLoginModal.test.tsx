@@ -82,7 +82,6 @@ describe("RemoteLoginModal", () => {
     await user.click(screen.getByRole("button", { name: /Iniciar navegador local/i }));
     await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce());
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["ai-providers-health"] });
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["gemini-engines"] });
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["ai-providers"] });
     expect(onClose).toHaveBeenCalledOnce();
   });

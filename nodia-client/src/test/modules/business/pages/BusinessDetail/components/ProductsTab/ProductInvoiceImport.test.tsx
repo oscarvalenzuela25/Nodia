@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -1258,7 +1258,7 @@ describe("ProductInvoiceImport Component", () => {
   });
 
   it("disables the analyze button when selected provider has can_use_model=false", async () => {
-    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "web_session", is_active: true, can_use_model: true, is_default: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "web_session", is_active: true, can_use_model: false, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-secondary" } }]);
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "api_key", is_active: true, can_use_model: true, is_default: true, use_api_key: true, default_mode: "api_key", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "api_key", is_active: true, can_use_model: false, use_api_key: true, default_mode: "api_key", fields: { selected_model: "model-secondary" } }]);
 
     renderWithClient(
       <ProductInvoiceImport
@@ -1289,7 +1289,7 @@ describe("ProductInvoiceImport Component", () => {
   });
 
   it("disables the analyze button when default provider has can_use_model=false, and enables when selecting an active provider", async () => {
-    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "web_session", is_active: true, can_use_model: false, is_default: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "web_session", is_active: true, can_use_model: true, use_token_plan_web: true, default_mode: "token_plan_web", fields: { selected_model: "model-secondary" } }]);
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{ id: "ai-primary", key: "gemini", name: "Google Gemini", mode: "api_key", is_active: true, can_use_model: false, is_default: true, use_api_key: true, default_mode: "api_key", fields: { selected_model: "model-current" } }, { id: "ai-secondary", key: "gemini", name: "Gemini Secundario", mode: "api_key", is_active: true, can_use_model: true, use_api_key: true, default_mode: "api_key", fields: { selected_model: "model-secondary" } }]);
 
     renderWithClient(
       <ProductInvoiceImport
@@ -1461,7 +1461,31 @@ describe("ProductInvoiceImport Component", () => {
     });
   });
 
-  it("auto-selects the default provider with badge and shows mode select only when multiple active modes exist", async () => {
+  it("sends the selected API model's reasoning preference without inheriting Agentic or Web options", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([{
+      id: 'api-instance', key: 'openai', name: 'API connection', mode: 'api_key', is_active: true,
+      can_use_model: true, is_default: true, use_api_key: true, default_mode: 'api_key',
+      fields: { api_key: { selected_model: 'account-model', thinking_levels: { 'account-model': 'high' }, thinking_level: 'low' },
+        token_plan_agentic: { thinking_level: 'medium' }, token_plan_web: { enable_extended_thinking: true } },
+    }]);
+    vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
+      business_id: 'biz-123', provider_id: 'prov-1', code: 'SYNTHETIC-API', total_amount: null,
+      data: { issue_date: undefined, items: [] },
+    });
+    renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
+    await selectProvider();
+    await user.upload(screen.getByTestId('invoice-file-input'), new File(['synthetic'], 'invoice.pdf', { type: 'application/pdf' }));
+    const analyze = screen.getByTestId('analyze-invoice-btn');
+    await waitFor(() => expect(analyze).toBeEnabled());
+    await user.click(analyze);
+    await waitFor(() => expect(businessServices.analyzeInvoice).toHaveBeenCalledWith(expect.objectContaining({
+      ai_provider_id: 'api-instance', mode: 'api_key', model: 'account-model', thinking_level: 'high',
+      extended_thinking: undefined,
+    })));
+    expect(vi.mocked(businessServices.analyzeInvoice).mock.calls[0][0]).not.toHaveProperty('engine');
+  });
+
+  it("auto-selects the default provider with badge and shows mode select with active mode when single or multiple active modes exist", async () => {
     vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
       {
         id: "prov-gemini",
@@ -1533,10 +1557,69 @@ describe("ProductInvoiceImport Component", () => {
     const mistralOption = await screen.findByRole("option", { name: "Gemini Secundario" });
     await user.click(mistralOption);
 
-    // Now ai-mode-select should be hidden since Mistral has only 1 active mode
+    // Now ai-mode-select should remain visible, displaying only the active Api Key mode
     await waitFor(() => {
-      expect(screen.queryByTestId("ai-mode-select")).not.toBeInTheDocument();
+      expect(screen.getByTestId("ai-mode-select")).toBeInTheDocument();
+      expect(screen.getByText(/API Key \(Rotativa\)/i)).toBeInTheDocument();
     });
+  });
+
+  it("renders mode selector with only Api Key option when OpenAI provider (Chatgpt pega) is configured with api_key", async () => {
+    vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
+      {
+        id: "prov-chatgpt",
+        key: "openai",
+        name: "Chatgpt pega",
+        mode: "api_key",
+        is_active: true,
+        can_use_model: true,
+        error: null,
+        is_default: true,
+        use_api_key: true,
+        use_token_plan_web: false,
+        use_token_plan_agentic: false,
+        default_mode: "api_key",
+        fields: {
+          selected_model: "gpt-4o",
+        },
+        default_model: "gpt-4o",
+        ocr_model: null,
+        supports_thinking: false,
+        extended_thinking_enabled: false,
+      },
+    ]);
+
+    renderWithClient(
+      <ProductInvoiceImport
+        businessId="biz-123"
+        onCancel={mockOnCancel}
+        onSuccess={mockOnSuccess}
+      />
+    );
+
+    await selectProvider();
+
+    const file = new File(["dummy"], "factura.pdf", { type: "application/pdf" });
+    const fileInput = screen.getByTestId("invoice-file-input");
+    await user.upload(fileInput, file);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("ai-provider-select")).toBeInTheDocument();
+      expect(within(screen.getByTestId("ai-provider-select")).getByText(/Chatgpt pega/i)).toBeInTheDocument();
+    });
+
+    // The mode selector should be visible right next to the provider selector
+    const modeSelect = screen.getByTestId("ai-mode-select");
+    expect(modeSelect).toBeInTheDocument();
+    expect(screen.getByText(/API Key \(Rotativa\)/i)).toBeInTheDocument();
+
+    // Opening the mode selector should only show the Api Key option
+    const modeTrigger = screen.getByRole("button", { name: /Método de Conexión/i });
+    await user.click(modeTrigger);
+
+    const options = await screen.findAllByRole("option");
+    expect(options).toHaveLength(1);
+    expect(options[0]).toHaveTextContent(/API Key \(Rotativa\)/i);
   });
 
   it("passes the selected mode to analyzeInvoice when user changes connection mode", async () => {
@@ -1698,4 +1781,3 @@ describe("ProductInvoiceImport Component", () => {
   });
 
 });
-

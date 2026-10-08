@@ -5,11 +5,11 @@ import json
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 from uuid import uuid4
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from loguru import logger
@@ -21,10 +21,12 @@ from gemini_webapi.exceptions import AuthError
 from agentic_service import AntigravityAgentService
 from gemini_service import GeminiWebService
 from interactive_login import InteractiveLoginManager
+from agentic_login import AgenticLoginManager
 from request_guard import PrivateRequestGuard
-from schemas import (AgenticStatusResponse, AnalysisOptions, DualEngineStatusResponse,
+from schemas import (AgenticLoginJobResponse, AgenticLoginCode, AgenticStatusResponse,
+                     AgenticModelsResponse, AnalysisOptions, DualEngineStatusResponse,
                      HealthResponse, InvoiceAnalysisResponse, LoginJobResponse,
-                     RuntimeLimits, WebStatusResponse)
+                     NodiaActorId, RuntimeLimits, WebStatusResponse)
 from service_auth import assert_service_auth_configured
 from service_errors import InvalidExtraction, ServiceError
 
@@ -103,13 +105,16 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
             load_dotenv(BASE_DIR / ".env")
         assert_service_auth_configured()
         state = application.state
-        state.web = web_service if web_service is not None else GeminiWebService()
+        state.limits = limits if limits is not None else configured_limits()
+        state.web = web_service if web_service is not None else GeminiWebService(generation_timeout=state.limits.analysis_timeout)
         state.agentic = agentic_service if agentic_service is not None else AntigravityAgentService()
         state.login = login_manager if login_manager is not None else InteractiveLoginManager()
+        state.agentic_login = AgenticLoginManager(state.agentic)
         state.temp_dir = temp_dir if temp_dir is not None else BASE_DIR / "temp_uploads"
-        state.limits = limits if limits is not None else configured_limits()
         state.analysis_slots = asyncio.Semaphore(state.limits.analysis_slots)
         try:
+            if isinstance(state.agentic, AntigravityAgentService):
+                await state.agentic.initialize()
             try:
                 await state.web.init_client()
             except Exception as error:
@@ -117,15 +122,24 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
             yield
         finally:
             try:
+                await state.agentic_login.close()
                 await state.login.close()
             finally:
-                await state.web.close()
+                try:
+                    await state.web.close()
+                finally:
+                    if hasattr(state.agentic, "close"):
+                        await state.agentic.close()
 
     application = FastAPI(title="Nodia Gemini Microservice", version="1.0.0", lifespan=lifespan)
     application.add_middleware(PrivateRequestGuard)
 
     def error_response(request: Request, code: str, detail: str, status: int, headers=None):
         request.state.error_code = code
+        # Stable operational categories only; Server never needs the provider body.
+        headers = dict(headers or {})
+        if (code, status) in {("analysis_timeout", 504), ("provider_timeout", 504), ("agentic_timeout", 504), ("provider_response_error", 502), ("login_invalid_code", 422)}:
+            headers["X-Nodia-Error-Code"] = code
         return JSONResponse({"code": code, "detail": detail,
                              "request_id": getattr(request.state, "request_id", None)},
                             status_code=status, headers=headers)
@@ -143,6 +157,12 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
 
     @application.exception_handler(RequestValidationError)
     async def validation_error(request: Request, error: RequestValidationError):
+        # Only body.code validation is a user OAuth-code error. Missing/invalid
+        # service-supplied identity remains an internal request-contract error.
+        if (request.method == "POST" and request.url.path.startswith("/agentic/auth/login/")
+                and request.url.path.endswith("/code")
+                and all(item["loc"] == ("body", "code") for item in error.errors())):
+            return error_response(request, "login_invalid_code", "Código de autorización inválido.", 422)
         return error_response(request, "invalid_request", "Parámetros inválidos.", 422)
 
     @application.exception_handler(Exception)
@@ -182,6 +202,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
             tier=info.get("tier", "UNKNOWN"), model=info.get("model"), model_display=info.get("model_display"),
             quota=metrics or None,
             quota_observed_at=quota.get("observed_at") if quota else None,
+            supported_options=info.get("supported_options"),
         )
 
     @application.get("/auth/status", response_model=WebStatusResponse)
@@ -193,11 +214,50 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
     async def agentic_status():
         return AgenticStatusResponse.model_validate(await application.state.agentic.get_status())
 
+    @application.get("/agentic/ready", response_model=HealthResponse)
+    async def agentic_ready():
+        status = await agentic_status()
+        if not status.available or not status.has_active_session:
+            raise ServiceError("agentic_session_required", "La sesión agéntica no está disponible.")
+        return HealthResponse(status="ok")
+
+    @application.post("/agentic/auth/login/start", response_model=AgenticLoginJobResponse)
+    async def start_agentic_login(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+        return await application.state.agentic_login.start(actor)
+
+    @application.get("/agentic/auth/login/current", response_model=AgenticLoginJobResponse | None)
+    async def current_agentic_login(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+        job = application.state.agentic_login.status(None, actor)
+        return job if job and job["state"] in ("running", "waiting_code", "verifying") else None
+
+    @application.get("/agentic/auth/login/{job_id}", response_model=AgenticLoginJobResponse)
+    async def agentic_login_status(job_id: str, actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+        job = application.state.agentic_login.status(job_id, actor)
+        if job is None:
+            raise ServiceError("login_not_found", "Intento de login no encontrado.", 404)
+        return job
+
+    @application.post("/agentic/auth/login/{job_id}/code", response_model=AgenticLoginJobResponse)
+    async def submit_agentic_code(job_id: str, payload: AgenticLoginCode,
+                                 actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+        return application.state.agentic_login.submit(job_id, actor, payload.code)
+
+    @application.post("/agentic/auth/login/{job_id}/cancel", response_model=AgenticLoginJobResponse)
+    async def cancel_agentic_login(job_id: str, actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+        return await application.state.agentic_login.cancel(job_id, actor)
+
     @application.get("/engines/status", response_model=DualEngineStatusResponse)
     async def engines_status():
-        return DualEngineStatusResponse(default_engine="web", agentic=await agentic_status(), web=await web_status())
+        async def independent_web_status():
+            try:
+                return await asyncio.wait_for(web_status(), 4)
+            except Exception:
+                return WebStatusResponse(authenticated=False, has_cookies=False,
+                                         has_browser_profile=False, tier="UNKNOWN")
+        agentic, web = await asyncio.gather(agentic_status(), independent_web_status())
+        return DualEngineStatusResponse(default_engine="web", agentic=agentic, web=web)
 
-    @application.get("/agentic/models")
+    @application.get("/agentic/models", response_model=AgenticModelsResponse)
     async def agentic_models():
         info = await application.state.agentic.get_status()
         return {"engine": "agentic", "available": info["available"],

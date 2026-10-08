@@ -18,3 +18,12 @@ export function getObservedWebQuota(info: GeminiEngineInfo | undefined, now = Da
       remaining: validRemaining ? remaining : null, total: validTotal ? total : null }];
   });
 }
+// Display aliases requested by the user; never executable model IDs or quota values.
+const webQuotaLabels: Readonly<Record<string, string>> = {
+  "None-11": "ai_providers:detail.quota_flash_label",
+  "None-4": "ai_providers:detail.quota_pro_label",
+  current_5h: "ai_providers:detail.quota_5h_label",
+  weekly: "ai_providers:detail.quota_weekly_label",
+};
+export const getWebQuotaLabelKey = (key: string): string | null =>
+  Object.hasOwn(webQuotaLabels, key) ? webQuotaLabels[key] : null;

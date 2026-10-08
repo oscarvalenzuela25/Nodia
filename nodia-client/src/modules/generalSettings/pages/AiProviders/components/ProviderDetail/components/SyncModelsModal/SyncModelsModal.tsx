@@ -62,7 +62,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const requestedMode = mode ?? provider?.default_mode ?? (provider?.mode === "web_session" ? "token_plan_web" : null);
-  const activeMode = requestedMode === "token_plan_web" || requestedMode === "token_plan_agentic" ? requestedMode : null;
+  const activeMode = requestedMode === "token_plan_web" || requestedMode === "token_plan_agentic" || requestedMode === "api_key" ? requestedMode : null;
   const targetEngine: "agentic" | "web" | undefined =
     activeMode === "token_plan_agentic"
       ? "agentic"
@@ -478,7 +478,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
                           "ai_providers:modal_sync_models.provider_badge_web",
                           "Sesión Web (Token Plan)"
                         )
-                      : t("ai_providers:connection.no_modes")
+                      : t("ai_providers:connection.api")
                   }
                   color={
                     activeMode === "token_plan_agentic"

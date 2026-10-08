@@ -16,6 +16,7 @@ _root = Path(_directory)
 _isolation.enter_context(patch.dict(os.environ, {
     "GEMINI_SECURE_1PSID": "", "GEMINI_SECURE_1PSIDTS": "", "GEMINI_MODEL": "",
     "GEMINI_COOKIE_PATH": str(_root / "sdk-cache"),
+    "ANTIGRAVITY_CLI_PATH": "",
 }))
 _original_connect = socket.socket.connect
 

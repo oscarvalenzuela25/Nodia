@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Header, Param, Post, Put, Query, Req } from '@nestjs/common';
+import { SubmitGeminiAgenticCodeDto } from './dto/submit-gemini-agentic-code.dto.js';
+import { ManageGeminiAgenticLoginUseCase } from './use-case/manage-gemini-agentic-login.use-case.js';
 import { CreateAiProviderDto } from './dto/create-ai-provider.dto.js';
 import { UpdateAiProviderDto } from './dto/update-ai-provider.dto.js';
 import { GetAiProvidersDto } from './dto/get-ai-providers.dto.js';
@@ -37,6 +39,7 @@ export class AiProviderController {
     private readonly syncAiProviderModelsUseCase: SyncAiProviderModelsUseCase,
     private readonly manageGeminiLoginUseCase: ManageGeminiLoginUseCase,
     private readonly getGeminiEnginesUseCase: GetGeminiEnginesUseCase,
+    private readonly manageGeminiAgenticLoginUseCase: ManageGeminiAgenticLoginUseCase,
   ) {}
 
   @Get(['gemini-engines', 'gemini/engines'])
@@ -47,6 +50,37 @@ export class AiProviderController {
   @Post('gemini-login/start')
   startGeminiLogin(@Req() request: AuthRequest) {
     return this.manageGeminiLoginUseCase.start(request.auth.user.id);
+  }
+
+  @Post('gemini-agentic-login/start')
+  @Header('Cache-Control', 'no-store')
+  startGeminiAgenticLogin(@Req() request: AuthRequest) {
+    return this.manageGeminiAgenticLoginUseCase.start(request.auth.user.id);
+  }
+
+  @Get('gemini-agentic-login/current')
+  @Header('Cache-Control', 'no-store')
+  currentGeminiAgenticLogin(@Req() request: AuthRequest) {
+    return this.manageGeminiAgenticLoginUseCase.current(request.auth.user.id);
+  }
+
+  @Get('gemini-agentic-login/:jobId')
+  @Header('Cache-Control', 'no-store')
+  getGeminiAgenticLogin(@Param('jobId') jobId: string, @Req() request: AuthRequest) {
+    return this.manageGeminiAgenticLoginUseCase.status(jobId, request.auth.user.id);
+  }
+
+  @Post('gemini-agentic-login/:jobId/code')
+  @Header('Cache-Control', 'no-store')
+  submitGeminiAgenticCode(@Param('jobId') jobId: string, @Body() dto: SubmitGeminiAgenticCodeDto,
+    @Req() request: AuthRequest) {
+    return this.manageGeminiAgenticLoginUseCase.submit(jobId, request.auth.user.id, dto);
+  }
+
+  @Post('gemini-agentic-login/:jobId/cancel')
+  @Header('Cache-Control', 'no-store')
+  cancelGeminiAgenticLogin(@Param('jobId') jobId: string, @Req() request: AuthRequest) {
+    return this.manageGeminiAgenticLoginUseCase.cancel(jobId, request.auth.user.id);
   }
 
   @Get('gemini-login/:jobId')

@@ -1,7 +1,7 @@
-import { getObservedWebQuota } from "../../infrastructure/observations";
+import { getObservedWebQuota, getWebQuotaLabelKey } from "../../infrastructure/observations";
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Typography, Box, LinearProgress, Chip } from "@mui/material";
+import { Button, Typography, Box, LinearProgress, Chip, Tooltip } from "@mui/material";
 import { sileo } from "sileo";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import HubOutlinedIcon from "@mui/icons-material/HubOutlined";
@@ -12,6 +12,7 @@ import DevicesOutlinedIcon from "@mui/icons-material/DevicesOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
+import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import type { AiProviderHealthItem } from "../../infrastructure/types";
 import { useGeminiEngines, useUpdateAiProvider } from "../../infrastructure/useServices";
@@ -127,7 +128,13 @@ const ProviderCard: FC<ProviderCardProps> = ({
     return "#64748b";
   };
 
-  if (!provider.hasConnection || provider.status === "unconfigured") {
+  const hasAnyConfiguredChannel = Boolean(
+    provider.use_api_key ||
+    provider.use_token_plan_web ||
+    provider.use_token_plan_agentic
+  );
+
+  if (!provider.hasConnection || !hasAnyConfiguredChannel) {
     return (
       <CardContainer>
         <CardHeader>
@@ -241,9 +248,16 @@ const ProviderCard: FC<ProviderCardProps> = ({
               <SubtitleTag>
                 {(() => {
                   const modes: string[] = [];
-                  if (provider.use_token_plan_agentic) modes.push("Agentic");
-                  if (provider.use_token_plan_web) modes.push("Plan Web");
-                  if (modes.length > 0) return t("ai_providers:cards.configured_modes", { modes: modes.join(" • ") });
+                  if (provider.use_token_plan_agentic) modes.push(t("ai_providers:cards.channel_agentic", "Agentic"));
+                  if (provider.use_token_plan_web) modes.push(t("ai_providers:cards.channel_web", "Plan Web"));
+                  if (provider.use_api_key) modes.push(t("ai_providers:cards.channel_api_key", "API Key"));
+
+                  if (modes.length === 1) {
+                    return t("ai_providers:cards.configured_mode_single", { mode: modes[0] });
+                  }
+                  if (modes.length > 1) {
+                    return t("ai_providers:cards.configured_modes", { modes: modes.join(" • ") });
+                  }
                   return isWebMode
                     ? t("ai_providers:cards.mode_web", "Modo: Sesión Web Headless")
                     : t("ai_providers:connection.no_modes");
@@ -264,11 +278,22 @@ const ProviderCard: FC<ProviderCardProps> = ({
         {/* Service State */}
         <MetricBlock>
           <MetricLabel>{t("ai_providers:cards.service_state", "Estado de servicio")}</MetricLabel>
-          <MetricValue sx={{ color: provider.status === "expired" || provider.status === "degraded" ? "#f59e0b" : "#10b981" }}>
-            {provider.status === "expired" || provider.status === "degraded" ? (
+          <MetricValue
+            sx={{
+              color:
+                provider.status === "healthy"
+                  ? "#10b981"
+                  : provider.status === "expired" || provider.status === "degraded"
+                  ? "#f59e0b"
+                  : "#64748b",
+            }}
+          >
+            {provider.status === "healthy" ? (
+              <CheckCircleOutlinedIcon sx={{ fontSize: 16 }} />
+            ) : provider.status === "expired" || provider.status === "degraded" ? (
               <ErrorOutlineOutlinedIcon sx={{ fontSize: 16 }} />
             ) : (
-              <CheckCircleOutlinedIcon sx={{ fontSize: 16 }} />
+              <InfoOutlinedIcon sx={{ fontSize: 16 }} />
             )}
             {provider.serviceState}
           </MetricValue>
@@ -394,22 +419,200 @@ const ProviderCard: FC<ProviderCardProps> = ({
                       )}
                     </Typography>
 
-                    {webQuotas.map((quota) => <Box key={quota.key} sx={{ mt: 0.5, width: "100%" }}>
-                      <Typography variant="caption" color="text.secondary">
-                        {t("ai_providers:detail.reported_quota_bucket", { bucket: quota.key })}: {quota.percentage}%
-                      </Typography>
+                    {webQuotas.map((quota) => {
+                      const labelKey = getWebQuotaLabelKey(quota.key);
+                      return <Box key={quota.key} sx={{ mt: 0.5, width: "100%" }}>
+                      <Tooltip title={quota.key}>
+                        <Typography variant="caption" color="text.secondary">
+                          {t("ai_providers:detail.reported_quota_bucket", {
+                            bucket: labelKey ? t(labelKey) : quota.key,
+                          })}: {quota.percentage}%
+                        </Typography>
+                      </Tooltip>
                       <LinearProgress variant="determinate" value={quota.percentage} sx={{ height: 4, borderRadius: 2 }} />
-                    </Box>)}
+                    </Box>;
+                    })}
                   </ModePanelBody>
                 </ModePanelCard>
               )}
 
+              {/* MODO 3: API KEY */}
+              {Boolean(provider.use_api_key) && (() => {
+                const apiFields = (provider.fields?.api_key as Record<string, unknown>) || {};
+                const apiModel =
+                  (apiFields.selected_model as string) ||
+                  (!hasScopedFields && provider.default_mode === "api_key" ? provider.selectedModel : undefined) ||
+                  (provider.selectedModel && provider.use_api_key && !provider.use_token_plan_web && !provider.use_token_plan_agentic
+                    ? provider.selectedModel
+                    : undefined);
 
+                const apiOcrModel =
+                  (apiFields.ocr_focus_model as string) ||
+                  (apiFields.ocr_model as string) ||
+                  provider.assignedModels?.ocr ||
+                  "";
 
+                const thinkingLevels = (apiFields.thinking_levels as Record<string, string>) || {};
+                const apiThinkingLevel =
+                  (apiModel && thinkingLevels[apiModel]) ||
+                  (apiFields.thinking_level as string) ||
+                  "";
+
+                const isRotationEnabled = provider.auto_rotate_api_keys !== false;
+                const registeredKeysCount = provider.apiKeysCount ?? 0;
+                const selectedKey = provider.selectedApiKey;
+                const isConfigured = Boolean(apiModel && selectedKey);
+
+                return (
+                  <ModePanelCard>
+                    <ModePanelHeader>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <KeyOutlinedIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                        <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
+                          {t("ai_providers:cards.panel_api_key_title", "Conexión API (API Key)")}
+                        </Typography>
+                      </Box>
+                      <CodeBadge
+                        sx={{
+                          backgroundColor: isConfigured
+                            ? "rgba(100, 116, 139, 0.1)"
+                            : "rgba(245, 158, 11, 0.1)",
+                          color: isConfigured ? "#64748b" : "#f59e0b",
+                          borderColor: isConfigured
+                            ? "rgba(100, 116, 139, 0.2)"
+                            : "rgba(245, 158, 11, 0.2)",
+                        }}
+                      >
+                        {isConfigured
+                          ? t("ai_providers:cards.panel_api_configured", "Configurada")
+                          : t("ai_providers:cards.panel_api_incomplete", "Incompleta")}
+                      </CodeBadge>
+                    </ModePanelHeader>
+                    <ModePanelBody>
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: { xs: "1fr", sm: "repeat(auto-fit, minmax(200px, 1fr))" },
+                          gap: 1.5,
+                        }}
+                      >
+                        {/* Column 1: Models and Reasoning */}
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                            <Typography variant="caption" color="text.secondary">
+                              {t("ai_providers:cards.model_label", "Modelo")}:
+                            </Typography>
+                            {apiModel ? (
+                              <CodeBadge>{apiModel}</CodeBadge>
+                            ) : (
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, flexWrap: "wrap" }}>
+                                <CodeBadge sx={{ fontStyle: "italic", opacity: 0.7 }}>
+                                  {t("ai_providers:status_not_configured", "Sin asignar")}
+                                </CodeBadge>
+                                <Button
+                                  size="small"
+                                  variant="text"
+                                  onClick={() => (onViewModels ? onViewModels(provider) : onGoToDetail?.(provider))}
+                                  sx={{ p: 0, minWidth: "auto", fontSize: "0.75rem", textTransform: "none", fontWeight: 600 }}
+                                >
+                                  {t("ai_providers:cards.configure_model", "Configurar modelo")}
+                                </Button>
+                              </Box>
+                            )}
+                          </Box>
+
+                          {Boolean(apiOcrModel) && (
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                              <Typography variant="caption" color="text.secondary">
+                                {t("ai_providers:cards.ocr_model_label", "Modelo OCR")}:
+                              </Typography>
+                              <CodeBadge>{apiOcrModel}</CodeBadge>
+                            </Box>
+                          )}
+
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                            <Typography variant="caption" color="text.secondary">
+                              {t("ai_providers:cards.reasoning_level_label", "Razonamiento")}:
+                            </Typography>
+                            {apiThinkingLevel ? (
+                              <CodeBadge sx={{ textTransform: "capitalize" }}>{apiThinkingLevel}</CodeBadge>
+                            ) : (
+                              <Typography variant="caption" color="text.secondary">
+                                {t("ai_providers:cards.reasoning_not_set", "Por defecto del modelo")}
+                              </Typography>
+                            )}
+                          </Box>
+                        </Box>
+
+                        {/* Column 2: Keys and Rotation */}
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                            <Typography variant="caption" color="text.secondary">
+                              {t("ai_providers:cards.selected_key_label", "Clave")}:
+                            </Typography>
+                            {selectedKey ? (
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, flexWrap: "wrap" }}>
+                                <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                                  {selectedKey.label}
+                                </Typography>
+                                <CodeBadge>{selectedKey.display_hint}</CodeBadge>
+                              </Box>
+                            ) : (
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, flexWrap: "wrap" }}>
+                                <Typography variant="caption" sx={{ color: "warning.main", fontStyle: "italic" }}>
+                                  {t("ai_providers:cards.no_key_selected", "Sin clave seleccionada")}
+                                </Typography>
+                                <Button
+                                  size="small"
+                                  variant="text"
+                                  onClick={() => onGoToDetail?.(provider)}
+                                  sx={{ p: 0, minWidth: "auto", fontSize: "0.75rem", textTransform: "none", fontWeight: 600 }}
+                                >
+                                  {t("ai_providers:cards.configure_key", "Configurar clave")}
+                                </Button>
+                              </Box>
+                            )}
+                          </Box>
+
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                            <Typography variant="caption" color="text.secondary">
+                              {t("ai_providers:cards.registered_keys_label", "Claves registradas")}:
+                            </Typography>
+                            <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                              {registeredKeysCount}{" "}
+                              {registeredKeysCount === 1
+                                ? t("ai_providers:cards.key_singular", "clave")
+                                : t("ai_providers:cards.key_plural", "claves")}
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                            <Typography variant="caption" color="text.secondary">
+                              {t("ai_providers:cards.rotation_label", "Rotación automática")}:
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontWeight: 600,
+                                color: isRotationEnabled ? "success.main" : "text.secondary",
+                              }}
+                            >
+                              {isRotationEnabled
+                                ? t("ai_providers:cards.rotation_enabled", "Habilitada")
+                                : t("ai_providers:cards.rotation_disabled", "Deshabilitada")}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    </ModePanelBody>
+                  </ModePanelCard>
+                );
+              })()}
 
               {/* SIN MODOS ACTIVOS */}
               {!provider.use_token_plan_agentic &&
-                !provider.use_token_plan_web && (
+                !provider.use_token_plan_web &&
+                !provider.use_api_key && (
                   <ModePanelCard sx={{ gridColumn: "1 / -1" }}>
                     <ModePanelHeader>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

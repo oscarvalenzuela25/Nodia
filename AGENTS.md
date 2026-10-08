@@ -10,6 +10,7 @@
 
 - Leer primero `docs/mvp/README.md` y `docs/mvp/00-progress.md`.
 - Tratar los documentos aprobados de `docs/mvp/` como fuente de verdad del producto.
+- Antes de modificar proveedores IA, consultar `docs/mvp/ai-provider-feature-contract.md`: requisitos recuperados y pruebas de regresión, distinguiendo configuración de disponibilidad real.
 - Tratar `docs/architecture/decisions/` como fuente de decisiones técnicas versionadas.
 - Si una conversación, memoria o suposición contradice un documento aprobado, detenerse y señalar la contradicción.
 
@@ -156,16 +157,14 @@ Skills disponibles en `nodia-client/skills/`:
 - **Entidades TypeORM:** En relaciones bidireccionales, usar obligatoriamente `Relation<T>` de TypeORM para evitar errores de referencia circular (`ReferenceError`) en Node.js ESM.
 - **Testing exclusivo de Casos de Uso:** Únicamente se crean y mantienen pruebas unitarias para casos de uso (`use-case/*.use-case.spec.ts`). Está terminantemente prohibido crear pruebas de controladores o servicios (`*.controller.spec.ts`, `*.service.spec.ts`), priorizando tests que aporten verdadero valor de negocio.
 
-## Política Estricta de Proveedores de IA y Cuotas (Cero API Keys)
+## Proveedores de IA y credenciales
 
-- **Suscripción Única:** El usuario opera con una cuenta **Google One AI Premium / Pro ($20 USD/mes)**.
-- **Prohibición Total de API Keys:** **NUNCA** proponer, requerir ni basar soluciones en API keys:
-  - **No API keys gratuitas (Google AI Studio):** Están prohibidas porque los servidores gratuitos sufren saturación y errores constantes de cuota (`429 Too Many Requests`).
-  - **No API keys de pago:** No hay presupuesto para facturación por token pay-as-you-go.
-- **Únicas Cuotas y Motores Válidos:**
-  1. **Cuota Agéntica (Antigravity):** Utiliza la sesión activa del entorno de Antigravity (cuotas de 5 horas y 1 semana).
-  2. **Cuota Web (Gemini Web):** Utiliza la sesión de usuario en navegador mediante cookies (`__Secure-1PSID` y `__Secure-1PSIDTS`).
-- Toda arquitectura, microservicio, backend (`nodia-server`) y frontend (`nodia-client`) debe operar exclusivamente bajo el soporte dual de estas dos cuotas.
+- API keys permitidas por proveedor por aclaración explícita del usuario el 2026-10-06. Se excluyen las keys gratuitas de Gemini/Google AI Studio como vía operativa del proyecto; no se prohíben APIs de pago ni OpenAI.
+- Catálogo inicial: `gemini` permite API, Web y Agentic; `openai` permite solo API. Los flags `can_use_*` definen modos configurables, no disponibilidad de ejecución.
+- Gemini Web y Antigravity conservan sus sesiones independientes. Agentic sigue indisponible hasta comprobar un adaptador real; nunca sustituirlo silenciosamente por Web/API.
+- Guardar claves cifradas en `ai_api_keys`, vinculadas a la instancia. Nunca en frontend, campos JSON, logs, fixtures reales o repositorio. El cliente recibe únicamente etiquetas y máscaras.
+- No cambiar automáticamente de proveedor ni modo. Rotación de claves solo dentro de la misma instancia API, si está habilitada y ante errores de credencial/cuota; no reintentar inferencias con resultado incierto.
+- Modelos por descubrimiento/configuración, sin listas cerradas o versiones por defecto. No inventar cuotas, modalidades ni capacidad por el nombre. Una clave guardada o catálogo accesible no prueba inferencia exitosa.
 
 ## Prohibición Total de Modelos Estáticos y Fallbacks Hardcodeados (Cero Hardcoding de Modelos de IA)
 

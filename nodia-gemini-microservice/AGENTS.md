@@ -41,7 +41,8 @@ Los ejemplos genéricos de las skills no son configuración obligatoria. En part
 
 - Nodia opera exclusivamente con sesiones Gemini Web y Antigravity; no introducir API keys, rutas de inferencia por key ni consumo pay-as-you-go. Un ejemplo genérico de una skill/SDK no autoriza cambiar esta política.
 - Mantener identidad, autenticación, catálogo, configuración y cuotas separados por motor/sesión. La existencia de un perfil/directorio, variable o cliente Web no demuestra sesión Antigravity.
-- Antigravity sigue no disponible hasta verificar un adaptador de la sesión real de escritorio conforme a ADR-009. Nunca delegar una solicitud agéntica a Web ni atribuirle sus cuotas. Cuota/capacidad no observada es desconocida.
+- Agentic utiliza el CLI oficial autorizado en ADR-016/plan 32. Sin configuración/sesión comprobadas permanece indisponible. Seguir `../docs/mvp/agentic-cli-runbook.md`; evidencia Windows no autentica ni certifica Linux-VPS. Nunca delegar Agentic a Web ni atribuir cuotas/capacidades no observadas.
+- El login Agentic de Ajustes utiliza el flujo remoto oficial con enlace/código, separado de Web. Consultar `../docs/features/ai-providers/gemini-agentic-authentication.md` y ADR-017; conservar sesión compartida explícita, ownership del actor, verificación no generativa y limpieza al cancelar. No exponer terminal ni tokens, purgar credenciales globales o sustituir el adaptador por OAuth no comprobado.
 - El análisis requiere modelo explícito con resolución exacta contra descubrimiento activo, sin nombres/versiones de respaldo ni catálogos artificiales. Recuperar autenticación conserva el mismo ID; no inferir capacidades de razonamiento por el nombre ni sustituir motor/modelo tras un error.
 - Conservar cero, faltante e inválido diferenciados en el contrato de extracción y sus consumidores Server/Client. No fabricar precios, cantidades, totales o estado de éxito; la extracción es un borrador y no confirma factura/stock.
 - Mantener un solo worker mientras perfil, sesión, caché, locks y admisión sean locales al proceso. La verificación Linux local no sustituye login/renovación/restauración y aislamiento comprobados en VPS.
@@ -57,6 +58,6 @@ Los ejemplos genéricos de las skills no son configuración obligatoria. En part
 ## Verificación
 
 - Ejecutar `./.venv/Scripts/python.exe run_tests.py` en Windows o `./.venv/bin/python run_tests.py` en Linux. El runner instala el aislamiento antes del descubrimiento; no ejecutar integración real dentro de la suite unitaria.
-- Seguir [ADR-009](../docs/architecture/decisions/ADR-009-truthful-gemini-engines.md): Antigravity permanece no disponible hasta verificar su adaptador de sesión; nunca sustituirlo por Web ni habilitarlo mediante marcadores, directorios o keys.
+- Seguir ADR-009 y ADR-016/plan 32: CLI con hash/version/perfil verificados, hooks de documento exacto/finalización y cierre de procesos. Integración real separada (`test/agentic-cli.integration.mjs --live-cli`); nunca sustituir Agentic por Web ni habilitarlo con marcadores/keys.
 - Para cambios de autenticación, probar acceso sin token, token incorrecto y token correcto. Para navegador/sesión, probar cancelación, timeout, persistencia y recuperación sin abrir Chrome real ni usar cookies reales.
 - No dejar procesos de prueba en segundo plano ni ocupar el puerto `8000` al terminar.

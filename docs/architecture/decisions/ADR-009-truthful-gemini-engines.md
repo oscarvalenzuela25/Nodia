@@ -1,5 +1,12 @@
 # ADR-009 — Identidad verificable de motores Gemini y extracción estricta
 
+
+## Aclaración vigente del usuario — 2026-10-06
+
+Las API keys están permitidas, excepto las gratuitas de Gemini. La recuperación actual ofrece **Gemini: API/Web/Agentic** y **OpenAI: API**. Los tres `can_use_*` del catálogo definen modos configurables; los `use_*` de cada instancia habilitan sus canales y `default_mode` expresa la elección. Modelos y claves se mantienen por instancia/modo, sin fallback automático. Las referencias anteriores a «Cero API Keys», primera entrega Gemini/Mistral o un único modo habilitable quedan como antecedente histórico y son sustituidas por esta aclaración en el alcance recuperado.
+
+Se conserva el requisito de datos operativos comprobables: una clave guardada o un catálogo consultado no prueban inferencia, capacidades ni cuotas. Antigravity continúa sin disponibilidad certificada. La recuperación no incluye restaurar la auditoría visual retirada ni cerrar todos los pendientes de la especificación histórica. Implementación, alternativas y límites en [ADR-015](ADR-015-ai-api-provider-recovery.md). Los documentos mantienen su estado de revisión.
+
 > Estado: propuesto; mitigaciones locales implementadas por autorización del usuario
 > Fecha: 2026-10-03
 
@@ -26,6 +33,8 @@ La [documentación oficial de Antigravity CLI](https://antigravity.google/docs/c
 El usuario confirmó el 2026-10-03 que utiliza **la aplicación de escritorio**; se observó su instalación local sin inspeccionar credenciales ni ejecutar inferencia. La [documentación de autenticación de CLI](https://antigravity.google/docs/cli/install/) describe su propio login Google; importar conversaciones de escritorio no prueba reutilización de credenciales ni disponibilidad de OCR. Pendiente verificar un puente compatible con esa sesión, el protocolo/headless y el aislamiento de herramientas/archivos, además del entorno VPS. No ejecutar un agente con acceso al workspace/secretos de Nodia para analizar documentos.
 
 ## Decisión
+
+Evolución planificada el 2026-10-07: [ADR-016](ADR-016-antigravity-cli-adapter.md) y [plan 32](../../mvp/32-agentic-cli-implementation-plan.md) proponen reemplazar la mitigación mediante CLI oficial, conservando contratos del frontend. Su puerta de viabilidad y aceptación con cuenta/documentos reales está pendiente; el motor sigue indisponible hasta verificarla. La propuesta no atribuye autenticación Web al CLI ni declara cuotas agénticas observadas.
 
 Aplicar B como mitigación autorizada: Antigravity devuelve indisponibilidad explícita, catálogo vacío y cuota desconocida. Retirar SDK/ramas de key/catálogo estático sin borrar credenciales o perfiles operativos. La futura integración exige prueba independiente de sesión, inferencia y descubrimiento local/VPS sin key. Si no puede observarse cuota, indicar desconocida; no inventarla ni copiar Web. No declarar completado el soporte dual.
 
@@ -80,3 +89,49 @@ Smoke HTTP compilado sobre listener temporal/guard sintético, BD configurada y 
 - [ADR-005](ADR-005-gemini-web-session.md), [ADR-007](ADR-007-gemini-internal-access.md), [ADR-008](ADR-008-internal-microservices-only.md)
 - [Configuración oficial del SDK](https://github.com/google-antigravity/antigravity-sdk-python/blob/main/skills/google-antigravity-sdk/references/agent_configuration.md): sus caminos de nube documentados usan API key o proyecto/ADC; no confundirlos con una sesión de suscripción Antigravity.
 - `nodia-gemini-microservice/agentic_service.py`, `invoice_parser.py`, `schemas.py`, `request_guard.py`, `run_tests.py`
+
+## Opciones de razonamiento y presentación — 2026-10-06
+
+El usuario solicitó restaurar Low/Medium/High como preferencias agénticas y thinking Web. La firma y transporte del SDK instalado demuestran soporte de `extended_thinking`; se publica como `supported_options` del motor, sin atribuir capacidad de razonamiento al modelo. La configuración agéntica no declara operativo su adaptador. Se autoriza el diccionario de etiquetas de cuota solicitado por el usuario, preservando IDs y valores, con fallback de presentación para IDs desconocidos. Esta actualización sustituye el bloqueo anterior de controles por ausencia de metadatos de modelo, sin alterar las garantías de identidad/procedencia. Ver [contrato y regresiones](../../mvp/ai-provider-feature-contract.md).
+
+## Investigación de sesión agéntica y alternativas — 2026-10-07
+
+Investigación solicitada por el usuario; no cambia disponibilidad, política ni estado de aprobación. Se revisaron documentación oficial, repositorios de sus autores y reportes de usuarios en esos repositorios. No se instalaron herramientas, accedió a tokens/cookies ni ejecutaron inferencias.
+
+### Hechos locales
+
+`nodia-gemini-microservice/agentic_service.py` devuelve indisponibilidad deliberadamente con `session_adapter_unverified` y rechaza análisis. No contiene un cliente que intente autenticar la cuenta. `agy` no está en PATH ni en la ruta Windows documentada `LOCALAPPDATA/agy/bin/agy.exe`. Esto no descarta instalaciones en otras rutas. El bloqueo del SDK anterior descrito arriba no demuestra que la suscripción sea inaccesible mediante otro transporte.
+
+### Alternativas y fuentes comprobadas
+
+| Alternativa | Evidencia y encaje en Nodia |
+|---|---|
+| [Antigravity CLI oficial](https://www.antigravity.google/docs/cli/headless/) | `-p`, salida JSON/NDJSON, esquema JSON, ejemplo Python con subprocess y sesión persistente por stdin. Descubrimiento mediante `agy models`; `--model` explícito y `--effort low/medium/high`. Modelo inválido en headless produce error. El protocolo de entrada documentado solo admite bloques de texto: PDF/imágenes requieren una prueba independiente. Candidato prioritario, sin disponibilidad certificada. |
+| [SDK Python oficial](https://github.com/google-antigravity/antigravity-sdk-python) | El quickstart usa `GEMINI_API_KEY`; las rutas Enterprise documentan key o proyecto/ADC. No se encontró en esas instrucciones un camino verificado para consumir la suscripción personal. Instalar nuevamente el mismo SDK no resuelve por sí solo el objetivo. |
+| [dvcrn/antigravity-oauth-proxy](https://github.com/dvcrn/antigravity-oauth-proxy) | Proxy Go comunitario con OAuth y renovación, HTTP Gemini/OpenAI, MCP y modelos de la cuenta. Traduce a Cloud Code interno. Su clave administrativa protege el proxy; es distinta de una key de facturación Gemini. El README admite sustitución de variante/modelo tras ciertos 404: incompatible con la identidad estricta de Nodia sin adaptar y verificar ese comportamiento. |
+| [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) | Proxy comunitario para varias familias de proveedores y canales, incluido Antigravity. Candidato HTTP; requiere asegurar en la configuración y en pruebas que cada solicitud conserve cuenta/canal/modelo y no cambie a Gemini CLI, Web u otro proveedor. |
+| [usamashehab/antigravity-proxy](https://github.com/usamashehab/antigravity-proxy) | Implementación Python comunitaria que declara reutilizar el token del CLI, renovarlo y exponer HTTP Gemini/OpenAI; documenta imágenes por passthrough y esquema JSON. Mantiene `MODEL_MAP` fijo y no incluye autenticación del proxy. No es un reemplazo directo apto para Nodia: requiere descubrimiento dinámico, acceso privado autenticado y pruebas independientes. |
+| [rhkdguskim/antigravity-gemini-mcp](https://github.com/rhkdguskim/antigravity-gemini-mcp) | Servidor MCP con OAuth y herramientas de generación, chat, modelos y consulta de cuota. Demuestra un diseño comunitario comparable; no se comprobó ejecución ni OCR. MCP añade un protocolo que no necesitamos actualmente para el contrato HTTP privado de FastAPI. |
+
+El [login oficial](https://www.antigravity.google/docs/cli/install/) utiliza keyring y navegador o autorización manual en SSH. Headless reutiliza credenciales ya autenticadas; no elimina el paso de login inicial. No asumir que la sesión de escritorio se importa automáticamente ni copiar tokens de perfil como contrato oficial.
+
+Los [planes oficiales](https://www.antigravity.google/docs/plans/) incluyen CLI y describen para Pro una ventana de cinco horas limitada también por cuota semanal. Los límites dependen del trabajo y pueden cambiar; no trasladar cifras Web a Agentic. El ajuste de excedentes permite `Never` para evitar consumo automático de créditos adicionales. La cuenta concreta y su cuota deben comprobarse antes de habilitar disponibilidad.
+
+### Casos similares y límites
+
+- [CLI #223, 2026-05-29](https://github.com/google-antigravity/antigravity-cli/issues/223): reporte de dificultades para el login inicial en contenedores/CI. Es un caso histórico, no prueba de que toda autenticación actual falle.
+- [CLI #234, 2026-05-29](https://github.com/google-antigravity/antigravity-cli/issues/234): un usuario de suscripción de pago reporta agotamiento semanal tras pruebas cortas y llamadas adicionales del agente. No tratar una petición headless como equivalente a una sola inferencia ni consultar cuota pidiéndosela al modelo.
+- [CLIProxyAPI #1015, 2026-01-14](https://github.com/router-for-me/CLIProxyAPI/issues/1015): reporte histórico, cerrado, de generación 429 aun con autenticación/catálogo/cuota consultables. Confirma la necesidad de verificar inferencia por separado; no afirma que sea el fallo actual del usuario.
+- [Aviso del mantenedor de opencode-antigravity](https://github.com/luckdevx/opencode-antigravity#terms-of-service-warning--read-before-installing): atribuye a estas integraciones restricciones de términos y reportes de suspensiones. Es una advertencia del proyecto, no un dictamen jurídico propio ni prueba independiente de cada suspensión. La existencia de un repositorio público no demuestra respaldo de Google.
+
+### Recomendación propuesta y siguiente comprobación
+
+Priorizar una prueba aislada del CLI oficial como transporte de `AntigravityAgentService`, dentro del microservicio existente. Conservar endpoints privados y token de servicio, identidad por instancia y ausencia de fallback Web/API. Mantener el estado indisponible hasta obtener evidencia real.
+
+La prueba debe cubrir login/persistencia/renovación en el host objetivo, modelo descubierto elegido explícitamente, una respuesta de texto válida, esfuerzo de razonamiento y extracción de un documento sintético. Ejecutar desde un directorio aislado, con permisos y herramientas limitados y sin acceso al repositorio, `.env` o documentos ajenos; el agente puede leer/escribir archivos de su workspace por defecto. Acotar tiempo/salida/concurrencia y terminar procesos propios ante cancelación. Ver [permisos oficiales](https://www.antigravity.google/docs/permissions?tab=cli).
+
+La [consulta oficial de cuota](https://www.antigravity.google/docs/cli/commands/usage) es un panel TUI; no se ha verificado un contrato JSON estable para las ventanas en Nodia. Mantener `quota:null` si no existe una observación interpretable y comprobada. Los tokens de una respuesta JSON no equivalen a cuota restante. Esta investigación valida candidatos y contratos documentados; no certifica integración, soporte multimodal, renovación ni consumo con la cuenta del usuario.
+
+## Sustitución posterior del stub Agentic — 2026-10-07
+
+CLI oficial de sesión implementado por autorización del usuario conforme a [ADR-016](ADR-016-antigravity-cli-adapter.md). `session_adapter_unverified` sigue describiendo entornos no configurados; Windows local tiene sesión/cuota/modelos observados y PDF/PNG comprobados. No reasignar datos Web ni reintroducir SDK con API keys. Evidencia/límites en [plan 32](../../mvp/32-agentic-cli-implementation-plan.md) y [runbook](../../mvp/agentic-cli-runbook.md). No se aprueba automáticamente el ADR ni se acredita operación VPS.

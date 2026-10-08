@@ -1,9 +1,12 @@
 import {
   IsBoolean,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
+  IsInt,
+  Min,
+  Max,
 } from 'class-validator';
 
 export class CreateAiApiKeyDto {
@@ -13,14 +16,18 @@ export class CreateAiApiKeyDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   label: string;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(8192)
   secret: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @Min(0)
+  @Max(1000000)
   sort_order?: number;
 
   @IsOptional()

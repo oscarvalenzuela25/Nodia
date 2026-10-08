@@ -1,4 +1,6 @@
-import { getHttpErrorMessage } from "../../../../../../config/httpFeedback";
+import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
+import ApiKeyManager from "../ApiKeyManager";
+import { getHttpErrorMessage, notifyHttpError } from "../../../../../../config/httpFeedback";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC } from "react";
 import { useState, useMemo } from "react";
@@ -27,11 +29,11 @@ import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import DocumentScannerOutlinedIcon from "@mui/icons-material/DocumentScannerOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SpeedOutlinedIcon from "@mui/icons-material/SpeedOutlined";
-import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 import AlertBanner from "../AlertBanner";
 import SyncModelsModal from "./components/SyncModelsModal";
+import AgenticLoginModal from "../AgenticLoginModal";
 import {
   useAiProviders,
   useAiProvidersHealth,
@@ -44,7 +46,7 @@ import {
 import type {
   SupportedModelDef,
 } from "../../infrastructure/types";
-import { getObservedWebQuota } from "../../infrastructure/observations";
+import { getObservedWebQuota, getWebQuotaLabelKey } from "../../infrastructure/observations";
 import type { ProviderDetailProps } from "./types";
 import {
   DetailContainer,
@@ -88,7 +90,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   onConfigure,
 }) => {
   const { t, i18n } = useTranslation(["ai_providers", "core"]);
-  const queryClient = useQueryClient();
+  const [agenticLoginOpen, setAgenticLoginOpen] = useState(false);
 
   // Queries
   const {
@@ -113,7 +115,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const currentHealthProvider = useMemo(() =>
     (healthResponse?.providers ?? []).find((p) => p.id === providerId), [healthResponse?.providers, providerId]);
   const providerKey = currentDbProvider?.catalog?.key ?? currentDbProvider?.key ?? currentHealthProvider?.key ?? "";
-  const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines, refetch: refetchGeminiEngines } = useGeminiEngines({
+  const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines } = useGeminiEngines({
     enabled: providerKey.toLowerCase() === "gemini",
   });
 
@@ -138,7 +140,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     );
 
     if (providerKey.toLowerCase() === "gemini" && useTokenPlanWeb) {
-      if (geminiEnginesData?.web?.available !== true || geminiEnginesData?.web?.authenticated !== true) {
+      if (geminiEnginesData?.web?.available === false || geminiEnginesData?.web?.authenticated === false) {
         const hasWebAlert = alerts.some(
           (a) => a.id.includes("web-expired") || a.actionType === "renew_session"
         );
@@ -173,7 +175,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     t,
   ]);
 
-  type ModeTabKey = "token_plan_web" | "token_plan_agentic";
+  const useApiKey = currentDbProvider?.use_api_key === true;
+  type ModeTabKey = "api_key" | "token_plan_web" | "token_plan_agentic";
 
   interface ModeTabItem {
     key: ModeTabKey;
@@ -183,6 +186,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
   const availableTabs = useMemo(() => {
     const tabs: ModeTabItem[] = [];
+    if (useApiKey) tabs.push({ key: "api_key", label: t("ai_providers:connection.api"), icon: <VpnKeyOutlinedIcon fontSize="small" /> });
     if (useTokenPlanWeb) {
       tabs.push({
         key: "token_plan_web",
@@ -201,7 +205,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       });
     }
     return tabs;
-  }, [useTokenPlanWeb, useTokenPlanAgentic, t]);
+  }, [useApiKey, useTokenPlanWeb, useTokenPlanAgentic, t]);
 
   const [selectedTab, setSelectedTab] = useState<ModeTabKey | null>(null);
 
@@ -285,12 +289,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   };
   const selectedModel = localSelectedModel ?? activeDbModel;
 
-  // Extended Thinking capability detection
-  const activeModelDef = useMemo(() => {
-    return availableModels.find((m) => m.id === selectedModel);
-  }, [availableModels, selectedModel]);
-
-  const supportsReasoning = activeModelDef?.capabilities?.includes("reasoning") === true;
+  // SDK transport option; this does not certify a model's reasoning capability.
+  const supportsReasoning = geminiEnginesData?.web?.supported_options?.extended_thinking === true;
 
   const extendedThinkingEnabled = modeFields.enable_extended_thinking === true;
 
@@ -325,7 +325,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     setLocalSelectedModel(modelId);
 
     const modeKey = activeTab || currentDbProvider.default_mode || null;
-    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic" && modeKey !== "api_key") return;
     const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
     const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
 
@@ -368,7 +368,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const handleToggleExtendedThinking = async (checked: boolean) => {
     if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
     const modeKey = activeTab || currentDbProvider.default_mode || null;
-    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic" && modeKey !== "api_key") return;
     const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
     const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
 
@@ -405,7 +405,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
     const newFocus = ocrFocusedModelId === modelId ? null : modelId;
     const modeKey = activeTab || currentDbProvider.default_mode || null;
-    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic" && modeKey !== "api_key") return;
     const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
     const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
 
@@ -445,7 +445,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   ) => {
     if (!currentDbProvider?.id || updateProviderMutation.isPending || !level) return;
     const modeKey = activeTab || currentDbProvider.default_mode || null;
-    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic") return;
+    if (modeKey !== "token_plan_web" && modeKey !== "token_plan_agentic" && modeKey !== "api_key") return;
     const currentModeData = (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
     const currentLevels = (currentModeData.thinking_levels as Record<string, string>) || {};
     const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
@@ -458,11 +458,11 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             ...currentDbProvider.fields,
             [modeKey]: {
               ...currentModeData,
-              thinking_levels: {
+              ...(modelId ? { thinking_levels: {
                 ...currentLevels,
                 [modelId]: level,
-              },
-              ...(modelId === selectedModel ? { thinking_level: level } : {}),
+              } } : {}),
+              ...(!modelId || modelId === selectedModel ? { thinking_level: level } : {}),
             },
             ...(isDefaultMode && modelId === selectedModel ? { thinking_level: level } : {}),
           },
@@ -505,16 +505,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
   const handleVerify = async () => {
     try {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] }),
-        queryClient.invalidateQueries({ queryKey: ["gemini-engines"] }),
-        queryClient.invalidateQueries({ queryKey: ["ai-providers"] }),
-      ]);
-      await Promise.all([
-        refetchHealth(),
-        refetchProviders(),
-        ...(providerKey.toLowerCase() === "gemini" ? [refetchGeminiEngines()] : []),
-      ]);
+      await refetchHealth({ throwOnError: true });
       sileo.success({
         title: t(
           "ai_providers:notifications.verify_success",
@@ -522,10 +513,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         ),
       });
     } catch (error) {
-      sileo.error({
-        title: t("core:server_error_toast"),
-        description: getHttpErrorMessage(error),
-      });
+      notifyHttpError(error);
     }
   };
 
@@ -539,40 +527,30 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       ? t("ai_providers:detail.status_degraded", "Degradado")
       : t("ai_providers:detail.status_unconfigured", "Sin Configurar");
 
-  const isWebSessionActive = useMemo(() => {
-    if (statusType === "expired" || statusType === "unconfigured") {
-      return false;
-    }
-    const hasWebExpiredAlert = currentProviderAlerts.some(
-      (a) =>
-        a.id.includes("web-expired") ||
-        a.title.includes("SESIÓN WEB") ||
-        a.actionType === "renew_session"
-    );
-    if (hasWebExpiredAlert) {
-      return false;
-    }
-    if (providerKey.toLowerCase() === "gemini") {
-      if (geminiEnginesData?.web?.available !== true || geminiEnginesData?.web?.authenticated !== true) {
-        return false;
-      }
-    }
-    return true;
-  }, [statusType, currentProviderAlerts, providerKey, geminiEnginesData?.web?.authenticated, geminiEnginesData?.web?.available]);
+  // The default channel's health (e.g. API without a key) does not authenticate Web.
+  const isWebSessionActive = providerKey.toLowerCase() === "gemini"
+    && geminiEnginesData?.web?.available === true
+    && geminiEnginesData?.web?.authenticated === true;
 
   // Operational check:
   // Each subscription mode must have an explicitly operational session.
   // Token plan agentic mode requires agentic environment available.
   const isAgenticSessionActive = geminiEnginesData?.agentic?.available === true
     && geminiEnginesData?.agentic?.authenticated === true;
+  const isAgenticStatusKnown = typeof geminiEnginesData?.agentic?.available === "boolean"
+    && typeof geminiEnginesData.agentic.authenticated === "boolean";
+  const agenticStatusLabel = t(!isAgenticStatusKnown ? "ai_providers:detail.agentic_status_unknown_badge"
+    : isAgenticSessionActive ? "ai_providers:detail.agentic_status_active_badge" : "ai_providers:detail.agentic_status_inactive_badge");
   const isModeOperational = activeTab === "token_plan_web" ? isWebSessionActive
-    : activeTab === "token_plan_agentic" && isAgenticSessionActive;
+    : activeTab === "token_plan_agentic" ? isAgenticSessionActive
+    : activeTab === "api_key" && (currentDbProvider?.api_keys?.some((key) => key.is_active && key.is_selected) ?? false);
 
   const canSyncModels =
     Boolean(currentDbProvider?.id) && isModeOperational && !isBusy;
 
   const syncDisabledReason = useMemo(() => {
     if (isModeOperational) return "";
+    if (activeTab === "api_key") return t("ai_providers:api_keys.required");
     if (activeTab === "token_plan_web") {
       if (!isWebSessionActive) {
         return t(
@@ -586,20 +564,17 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       );
     }
     if (activeTab === "token_plan_agentic") {
-      return t(
-        "ai_providers:detail.agentic_desc_inactive",
-        "No se detectó un entorno activo de Antigravity en la máquina local o el servicio no está corriendo."
-      );
+      return t(!isAgenticStatusKnown ? "ai_providers:detail.agentic_desc_unknown" : "ai_providers:detail.agentic_desc_inactive");
     }
     return t(
       "ai_providers:detail.sync_disabled_generic",
       "El proveedor no se encuentra operativo para sincronizar modelos. Verifique el estado de conexión."
     );
-  }, [isModeOperational, activeTab, isWebSessionActive, t]);
+  }, [isModeOperational, activeTab, isWebSessionActive, isAgenticStatusKnown, t]);
 
   return (
     <DetailContainer>
-      <QueryErrorAlert isError={providersError || healthError || enginesError || modelsError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth(), refetchGeminiEngines(), refetchModels()])} />
+      <QueryErrorAlert isError={providersError || healthError || enginesError || modelsError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth(), refetchModels()])} />
       {/* UNIFIED TOP HEADER PANEL */}
       <TopHeaderPanel elevation={0}>
         <TopNavigationRow>
@@ -769,6 +744,9 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         <Box sx={{ mb: 2 }}>
           <AlertBanner
             alerts={currentProviderAlerts}
+            disabled={isBusy}
+            onAuthenticateAgentic={providerKey === "gemini" ? () => setAgenticLoginOpen(true) : undefined}
+            onCheckStatus={handleVerify}
             onRenewSession={onRenewSession}
             onConfigure={() => {
               if (onConfigure && currentHealthProvider) {
@@ -788,6 +766,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       {isSoftLoading && (
         <LinearProgress sx={{ height: 2, borderRadius: 1 }} />
       )}
+
 
       {availableTabs.length === 0 ? (
         <DetailPanel>
@@ -883,7 +862,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                       />
                     }
                     label={t(
-                      "ai_providers:default_mode_title",
+                      "ai_providers:detail.default_mode_title",
                       "Modo Predeterminado"
                     )}
                     sx={{
@@ -1183,8 +1162,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     />
                   </Box>
 
-                  {/* Agentic reasoning level */}
-                  {(activeTab === "token_plan_agentic" && capabilities.includes("reasoning")) && (
+                  {/* API and Agentic reasoning preference per model */}
+                  {(activeTab === "token_plan_agentic" || activeTab === "api_key") && (
                     <Box
                       sx={(theme) => ({
                         display: "flex",
@@ -1267,13 +1246,26 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         </Skeleton>
 
         {/* EXTENDED THINKING SECTION (WEB MODE ONLY) */}
+        {(activeTab === "token_plan_agentic" || activeTab === "api_key") && (
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary">{t(activeTab === "api_key"
+              ? "ai_providers:detail.api_reasoning_preference"
+              : "ai_providers:detail.agentic_reasoning_preference")}</Typography>
+            {!availableModels.length && <ToggleButtonGroup exclusive size="small"
+              aria-label={t("ai_providers:detail.reasoning_level_label")}
+              value={modeFields.thinking_level ?? null} disabled={isBusy}
+              onChange={(_event, level: "low" | "medium" | "high" | null) => { if (level) void handleSetModelThinkingLevel("", level); }}>
+              {(["low", "medium", "high"] as const).map((level) => <ToggleButton key={level} value={level}>{t(`ai_providers:detail.level_${level}`)}</ToggleButton>)}
+            </ToggleButtonGroup>}
+          </Box>
+        )}
         {activeTab === "token_plan_web" && (
           <Box sx={{ mt: 1 }}>
             <SwitchWrapper>
               <StyledFormControlLabel
                 control={
                   <StyledSwitch
-                    checked={extendedThinkingEnabled && supportsReasoning}
+                    checked={extendedThinkingEnabled}
                     disabled={!supportsReasoning || isBusy}
                     onChange={(e) => handleToggleExtendedThinking(e.target.checked)}
                   />
@@ -1336,6 +1328,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
       </DetailPanel>
 
       {/* SUBPANEL: REMOTE WEB SESSION */}
+      {activeTab === "api_key" && currentDbProvider && <DetailPanel><ApiKeyManager key={currentDbProvider.id} providerId={currentDbProvider.id} disabled={isBusy} /></DetailPanel>}
       {activeTab === "token_plan_web" && (
         <DetailPanel>
           <WebSessionBanner>
@@ -1446,7 +1439,11 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               {webQuotas.map((quota) => (
                 <QuotaCard key={quota.key} elevation={0}>
                   <QuotaHeader>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{t("ai_providers:detail.reported_quota_bucket", { bucket: quota.key })}</Typography>
+                    <Tooltip title={quota.key} describeChild>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                        {t(getWebQuotaLabelKey(quota.key) ?? "ai_providers:detail.reported_quota_bucket", { bucket: quota.key })}
+                      </Typography>
+                    </Tooltip>
                     <Chip size="small" label={quota.percentage + "%"} />
                   </QuotaHeader>
                   {quota.remaining !== null && <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
@@ -1485,6 +1482,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 )}
               </PanelSubtitle>
             </Box>
+            {providerKey === "gemini" && <Button variant="outlined" disabled={isBusy}
+              onClick={() => setAgenticLoginOpen(true)} sx={{ width: { xs: "100%", sm: "auto" } }}>
+              {t("ai_providers:agentic_login.manage")}
+            </Button>}
           </PanelHeader>
 
           <AgenticStatusCard elevation={0}>
@@ -1507,15 +1508,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 />
                 <Box>
                   <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                    {isAgenticSessionActive
-                      ? t(
-                          "ai_providers:detail.agentic_status_active_badge",
-                          "SESIÓN AGÉNTICA CONECTADA"
-                        )
-                      : t(
-                          "ai_providers:detail.agentic_status_inactive_badge",
-                          "ENTORNO NO DETECTADO"
-                        )}
+                    {agenticStatusLabel}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     {t(
@@ -1528,11 +1521,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
               <Chip
                 size="small"
-                label={
-                  isAgenticSessionActive
-                    ? t("ai_providers:detail.agentic_status_active_badge")
-                    : t("ai_providers:detail.agentic_status_inactive_badge")
-                }
+                label={agenticStatusLabel}
                 color={
                   isAgenticSessionActive ? "success" : "default"
                 }
@@ -1545,9 +1534,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               color="text.secondary"
               sx={{ lineHeight: 1.6 }}
             >
-              {isAgenticSessionActive
-                ? t("ai_providers:detail.agentic_desc_active")
-                : t("ai_providers:detail.agentic_desc_inactive")}
+              {t(!isAgenticStatusKnown ? "ai_providers:detail.agentic_desc_unknown"
+                : isAgenticSessionActive ? "ai_providers:detail.agentic_desc_active" : "ai_providers:detail.agentic_desc_inactive")}
             </Typography>
 
             <Box
@@ -1566,6 +1554,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   )}
 
       {/* MODAL: SYNC MODELS */}
+      {agenticLoginOpen && providerKey === "gemini" && <AgenticLoginModal key={providerId} onClose={() => setAgenticLoginOpen(false)} />}
       {currentDbProvider && (
         <SyncModelsModal
           open={isSyncModalOpen}

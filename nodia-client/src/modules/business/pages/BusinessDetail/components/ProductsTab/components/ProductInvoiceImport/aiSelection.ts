@@ -1,9 +1,9 @@
 import type { VerifyIaProviderItem } from "../../../../../../infrastructure/types";
 
-export type InvoiceAiMode = "token_plan_web" | "token_plan_agentic";
+export type InvoiceAiMode = "token_plan_web" | "token_plan_agentic" | "api_key";
 
 export const isInvoiceAiMode = (mode: unknown): mode is InvoiceAiMode =>
-  mode === "token_plan_web" || mode === "token_plan_agentic";
+  mode === "token_plan_web" || mode === "token_plan_agentic" || mode === "api_key";
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === "object" && !Array.isArray(value)
@@ -13,9 +13,37 @@ const asRecord = (value: unknown): Record<string, unknown> =>
 export const getInvoiceAiModes = (provider: VerifyIaProviderItem | null): InvoiceAiMode[] => {
   if (!provider?.is_active) return [];
   const modes: InvoiceAiMode[] = [];
-  if (provider.use_token_plan_agentic) modes.push("token_plan_agentic");
-  if (provider.use_token_plan_web) modes.push("token_plan_web");
+  if (provider.key !== "openai" && provider.use_token_plan_agentic) modes.push("token_plan_agentic");
+  if (provider.key !== "openai" && provider.use_token_plan_web) modes.push("token_plan_web");
+  if (provider.use_api_key || provider.mode === "api_key" || provider.active_mode === "api_key") modes.push("api_key");
   return modes;
+};
+
+export const isTokenPlanWithIssues = (provider: VerifyIaProviderItem | null): boolean => {
+  if (!provider) return false;
+  // If the provider has an API key mode, it is an API key provider, not a token plan
+  if (provider.use_api_key || provider.mode === "api_key" || provider.active_mode === "api_key") {
+    return false;
+  }
+  const operatesTokenPlan =
+    provider.mode === "token_plan_web" ||
+    provider.mode === "token_plan_agentic" ||
+    provider.mode === "web_session" ||
+    provider.mode === "agentic" ||
+    provider.default_mode === "token_plan_web" ||
+    provider.default_mode === "token_plan_agentic" ||
+    provider.use_token_plan_web === true ||
+    provider.use_token_plan_agentic === true;
+
+  if (!operatesTokenPlan) return false;
+  return !provider.can_use_model || Boolean(provider.error);
+};
+
+export const isProviderVisibleInInvoiceImport = (provider: VerifyIaProviderItem): boolean => {
+  if (!provider.is_active) return false;
+  if (getInvoiceAiModes(provider).length === 0) return false;
+  if (isTokenPlanWithIssues(provider)) return false;
+  return true;
 };
 
 export const resolveInvoiceAiProvider = (
@@ -57,7 +85,7 @@ export const resolveInvoiceAiConfiguration = (
     model,
     supportsThinking,
     thinkingLevel,
-    canAnalyze: Boolean(provider?.is_active && provider.can_use_model && mode
+    canAnalyze: Boolean(provider?.is_active && provider.can_use_model && !provider.error && mode
       && getInvoiceAiModes(provider).includes(mode) && model),
   };
 };

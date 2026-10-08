@@ -21,7 +21,9 @@ import { CreateAiProviderCatalogUseCase } from './use-case/create-ai-provider-ca
 import { UpdateAiProviderCatalogUseCase } from './use-case/update-ai-provider-catalog.use-case.js';
 import { SyncAiProviderModelsUseCase } from './use-case/sync-ai-provider-models.use-case.js';
 import { ManageGeminiLoginUseCase } from './use-case/manage-gemini-login.use-case.js';
+import { ManageGeminiAgenticLoginUseCase } from './use-case/manage-gemini-agentic-login.use-case.js';
 import { GetGeminiEnginesUseCase } from './use-case/get-gemini-engines.use-case.js';
+import { ExecuteApiInvoiceUseCase } from './use-case/execute-api-invoice.use-case.js';
 
 // AiApiKey Use Cases
 import { GetAllAiApiKeysUseCase } from './use-case/get-all-ai-api-keys.use-case.js';
@@ -53,6 +55,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     AiProviderEventController,
   ],
   providers: [
+    ExecuteApiInvoiceUseCase,
     AiProviderService,
     // AiProvider
     GetAllAiProvidersUseCase,
@@ -66,6 +69,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     UpdateAiProviderCatalogUseCase,
     SyncAiProviderModelsUseCase,
     ManageGeminiLoginUseCase,
+    ManageGeminiAgenticLoginUseCase,
     GetGeminiEnginesUseCase,
     // AiApiKey
     GetAllAiApiKeysUseCase,
@@ -77,6 +81,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     CreateAiProviderEventUseCase,
   ],
   exports: [
+    ExecuteApiInvoiceUseCase,
     AiProviderService,
     GetAllAiProvidersUseCase,
     CreateAiProviderUseCase,

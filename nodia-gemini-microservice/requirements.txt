@@ -21,6 +21,7 @@ pycparser==3.0
 pydantic==2.12.5
 pydantic_core==2.41.5
 pyee==13.0.1
+pywinpty==3.0.5; sys_platform == "win32"
 python-dotenv==1.2.3
 python-multipart==0.0.32
 PyYAML==6.0.3

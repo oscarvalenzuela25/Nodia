@@ -7,6 +7,7 @@ import { AiProviderService } from '../../ai-provider/ai-provider.service.js';
 import {
   AiConnectionMode,
 } from '../../ai-provider/types/ai-provider.types.js';
+import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { observedModels } from '../../ai-provider/helpers/model-observation.helper.js';
 
 type ConnectionChannel = 'api_key' | 'token_plan_web' | 'token_plan_agentic';
@@ -26,6 +27,7 @@ export class VerifyIaProvidersUseCase {
     private readonly geminiService: GeminiService,
     @Optional()
     private readonly aiProviderService?: AiProviderService,
+    @Optional() private readonly apiService?: ApiProviderService,
   ) {}
 
   async execute(): Promise<VerifyIaProvidersResponse> {
@@ -54,14 +56,16 @@ export class VerifyIaProvidersUseCase {
               ? 'Mistral AI'
               : prov.key || 'Proveedor AI');
 
+        const catalogCanApiKey = prov.catalog ? prov.catalog.can_use_api_key !== false : true;
+        const catalogCanWeb = prov.catalog ? Boolean(prov.catalog.can_use_token_plan_web) : provKey === 'gemini';
+        const catalogCanAgentic = prov.catalog ? Boolean(prov.catalog.can_use_token_plan_agentic) : provKey === 'gemini';
+
         const useApiKey = Boolean(prov.use_api_key ?? (prov.mode !== AiConnectionMode.WEB_SESSION));
         const useTokenPlanWeb = Boolean(
           prov.use_token_plan_web ??
-            (prov.mode === AiConnectionMode.WEB_SESSION || prov.catalog?.can_use_token_plan_web),
+            (prov.mode === AiConnectionMode.WEB_SESSION),
         );
-        const useTokenPlanAgentic = Boolean(
-          prov.use_token_plan_agentic ?? prov.catalog?.can_use_token_plan_agentic,
-        );
+        const useTokenPlanAgentic = Boolean(prov.use_token_plan_agentic);
         const configuredDefaultMode = (prov.default_mode as ConnectionChannel) || null;
         const isDefault = Boolean(prov.is_default);
 
@@ -123,7 +127,7 @@ export class VerifyIaProvidersUseCase {
         // 3. Orden de evaluación: primero el default (si está habilitado), luego los demás
         const candidateModes: ConnectionChannel[] =
           configuredDefaultMode && registeredModes.includes(configuredDefaultMode)
-            ? [configuredDefaultMode, ...registeredModes.filter((m) => m !== configuredDefaultMode)]
+            ? (this.resolveModeData(prov, configuredDefaultMode) ? [configuredDefaultMode, ...registeredModes.filter((m) => m !== configuredDefaultMode)] : [configuredDefaultMode])
             : registeredModes;
 
         let selectedActiveMode: ConnectionChannel | null = null;
@@ -139,7 +143,11 @@ export class VerifyIaProvidersUseCase {
 
 
           // Verificar credenciales / conectividad para este modo
-          const credCheck = await this.verifyModeCredentials(candidateMode, provKey);
+          const catalogRejectsApi = candidateMode === 'api_key' && ['gemini', 'openai'].includes(provKey)
+            && (prov.catalog && (prov.catalog?.can_use_api_key === false || prov.catalog?.is_active === false));
+          const credCheck = catalogRejectsApi
+            ? { valid: false, error: 'El catálogo no permite ejecutar el canal API de esta conexión.', models: undefined }
+            : await this.verifyModeCredentials(candidateMode, provKey, String(prov.id));
           if (credCheck.valid) {
             const match = (selection: string) => {
               const matches = credCheck.models?.filter((model) => model.id === selection || model.name === selection) ?? [];
@@ -151,7 +159,8 @@ export class VerifyIaProvidersUseCase {
               firstModeWithModels ??= { mode: candidateMode, data: modeData, error: 'El modelo configurado no está en el catálogo descubierto de esta sesión.' };
               continue;
             }
-            modeData.supportsThinking = liveModel.capabilities.includes('reasoning');
+            modeData.supportsThinking = candidateMode === 'token_plan_web'
+              ? credCheck.extendedThinking === true : liveModel.capabilities.includes('reasoning');
             modeData.defaultModel = liveModel.id;
             modeData.ocrModel = liveOcr.id;
             const fields = prov.fields?.[candidateMode] ?? prov.fields ?? {};
@@ -298,7 +307,8 @@ export class VerifyIaProvidersUseCase {
   private async verifyModeCredentials(
     mode: ConnectionChannel,
     provKey: string,
-  ): Promise<{ valid: boolean; error?: string; models?: ReturnType<typeof observedModels> }> {
+    providerId: string,
+  ): Promise<{ valid: boolean; error?: string; models?: ReturnType<typeof observedModels>; extendedThinking?: boolean }> {
     if (mode === 'token_plan_agentic') {
       if (provKey === 'gemini') {
         const discovery = await this.geminiService.getModelsAndQuota('agentic');
@@ -309,7 +319,7 @@ export class VerifyIaProvidersUseCase {
             error: 'La sesión de Gemini Agentic no está activa o requiere inicio de sesión.',
           };
         }
-        return { valid: true, models: observedModels(discovery.models ?? []) };
+        return { valid: true, models: observedModels(discovery.models ?? []), extendedThinking: discovery.supported_options?.extended_thinking === true };
       }
       return { valid: false, error: 'Proveedor no soportado en modo agentic.' };
     }
@@ -324,13 +334,18 @@ export class VerifyIaProvidersUseCase {
             error: 'La sesión de Gemini requiere renovación o inicio de sesión.',
           };
         }
-        return { valid: true, models: observedModels(discovery.models ?? []) };
+        return { valid: true, models: observedModels(discovery.models ?? []), extendedThinking: discovery.supported_options?.extended_thinking === true };
       }
       return { valid: false, error: 'Proveedor no soportado en modo web.' };
     }
 
     if (mode === 'api_key') {
-      return { valid: false, error: 'El modo API Key no tiene una integración de sesión admitida.' };
+      if (!['gemini', 'openai'].includes(provKey)) return { valid: false, error: 'El modo API Key no tiene una integración de sesión admitida.' };
+      if (!this.apiService || !this.aiProviderService) return { valid: false, error: 'Adaptador API no disponible.' };
+      const secret = await this.aiProviderService.getActiveApiKeySecret(providerId);
+      if (!secret) return { valid: false, error: 'Debe agregar y seleccionar una API key activa.' };
+      try { return { valid: true, models: await this.apiService.listModels(provKey, secret) }; }
+      catch (error) { return { valid: false, error: error instanceof HttpException ? error.message : 'No se pudo verificar el catálogo API.' }; }
     }
 
     return { valid: false, error: 'Modo de conexión no compatible.' };

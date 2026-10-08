@@ -3,14 +3,18 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
+import type { GeminiDualEngineStatus } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 import AiProviders from "../../../../../modules/generalSettings/pages/AiProviders/AiProviders";
 import * as aiServices from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
+import { sileo } from "sileo";
 
 vi.mock(
   "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services",
   () => ({
     getAiProviderCatalog: vi.fn(),
     getGeminiEngines: vi.fn(),
+    getCurrentGeminiAgenticLogin: vi.fn(), startGeminiAgenticLogin: vi.fn(),
+    getGeminiAgenticLoginStatus: vi.fn(), submitGeminiAgenticCode: vi.fn(), cancelGeminiAgenticLogin: vi.fn(),
     startGeminiLogin: vi.fn(),
     getGeminiLoginStatus: vi.fn(),
     cancelGeminiLogin: vi.fn(),
@@ -56,6 +60,8 @@ const mockProviders = [
 ];
 
 const mockHealthData = {
+  engines: { active_engine: 'web', web: { engine: 'web', available: true, authenticated: true },
+    agentic: { engine: 'agentic', available: true, authenticated: true } } as GeminiDualEngineStatus,
   timestamp: "2026-09-26T12:00:00Z",
   overallStatus: "incident" as const,
   alerts: [
@@ -163,13 +169,16 @@ describe("AiProviders Page", () => {
     vi.mocked(aiServices.getSupportedAiProviders).mockResolvedValue([]);
     vi.mocked(aiServices.getEnabledWebAiProviders).mockResolvedValue({ enabled_providers: ["gemini"] });
     vi.mocked(aiServices.getAiProviderEvents).mockResolvedValue({ data: mockEvents, meta: { total_items: 2, total_pages: 1, page: 1, limit: 10 } });
-    vi.mocked(aiServices.getGeminiEngines).mockResolvedValue({ active_engine: "web", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: true, authenticated: true } });
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, engines: { active_engine: "web", web: { engine: "web", available: true, authenticated: true }, agentic: { engine: "agentic", available: true, authenticated: true } } });
     vi.mocked(aiServices.updateAiProvider).mockResolvedValue(mockProviders[0]);
+    vi.mocked(aiServices.getCurrentGeminiAgenticLogin).mockResolvedValue(null);
   });
   it("renders page header, view selector and subscription connection action", async () => {
     renderWithClient(<AiProviders />);
     expect(await screen.findByRole("button", { name: /Añadir Proveedor/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /General \(Todos los proveedores\)/i })).toBeInTheDocument();
+    expect(aiServices.getAiProvidersHealth).toHaveBeenCalledOnce();
+    expect(aiServices.getGeminiEngines).not.toHaveBeenCalled();
   });
   it("shows incidents while omitting removed API key controls and the audit table", async () => {
     renderWithClient(<AiProviders />);
@@ -187,6 +196,46 @@ describe("AiProviders Page", () => {
     const configure = await screen.findAllByRole("button", { name: /Configurar/i });
     await user.click(configure[0]);
     expect(await screen.findByRole("heading", { name: "Configurar conexión de IA" })).toBeInTheDocument();
+  });
+  it("opens Agentic authentication from a session alert without editing the provider or starting OAuth automatically", async () => {
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, alerts: [{
+      id: 'agentic-session', provider: 'gemini', providerName: 'Mi Gemini', reason: 'agentic_session_required',
+      type: 'warning', severity: 'warning', title: 'synthetic', message: 'synthetic',
+      actionType: 'authenticate_agentic', actionLabel: 'synthetic',
+    }] });
+    const user = userEvent.setup(); renderWithClient(<AiProviders />);
+    await user.click(await screen.findByRole('button', { name: 'Autenticar sesión Agentic' }));
+    expect(await screen.findByRole('heading', { name: 'Iniciar sesión Gemini Agentic' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Configurar conexión de IA' })).not.toBeInTheDocument();
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
+    expect(aiServices.startGeminiAgenticLogin).not.toHaveBeenCalled();
+  });
+  it("rechecks an unavailable adapter from the alert without opening provider configuration", async () => {
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({ ...mockHealthData, alerts: [{
+      id: 'agentic-down', provider: 'gemini', type: 'incident', severity: 'error',
+      title: 'Synthetic adapter unavailable', message: 'Synthetic outage', actionType: 'check_status', actionLabel: 'synthetic',
+    }] });
+    const user = userEvent.setup(); renderWithClient(<AiProviders />);
+    const button = await screen.findByRole('button', { name: 'Volver a comprobar' });
+    await waitFor(() => expect(button).toBeEnabled());
+    const previous = vi.mocked(aiServices.getAiProvidersHealth).mock.calls.length;
+    await user.click(button);
+    await waitFor(() => expect(vi.mocked(aiServices.getAiProvidersHealth).mock.calls.length).toBeGreaterThan(previous));
+    expect(screen.queryByRole('heading', { name: 'Configurar conexión de IA' })).not.toBeInTheDocument();
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
+  });
+  it("reports a failed recheck without announcing successful verification", async () => {
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValueOnce({ ...mockHealthData, alerts: [{
+      id: 'agentic-down', provider: 'gemini', type: 'incident', severity: 'error',
+      title: 'Synthetic adapter unavailable', message: 'Synthetic outage', actionType: 'check_status', actionLabel: 'synthetic',
+    }] }).mockRejectedValue({ isAxiosError: true, response: { data: { message: 'Servicio temporalmente no disponible' } } });
+    const user = userEvent.setup(); renderWithClient(<AiProviders />);
+    const button = await screen.findByRole('button', { name: 'Volver a comprobar' });
+    await waitFor(() => expect(button).toBeEnabled());
+    await user.click(button);
+    await waitFor(() => expect(sileo.error).toHaveBeenCalledWith(expect.objectContaining({ description: 'Servicio temporalmente no disponible' })));
+    expect(sileo.success).not.toHaveBeenCalled();
+    expect(aiServices.updateAiProvider).not.toHaveBeenCalled();
   });
   it("uses instance IDs for two connections of the same catalog", async () => {
     const user = userEvent.setup();

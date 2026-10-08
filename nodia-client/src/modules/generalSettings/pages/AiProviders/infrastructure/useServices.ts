@@ -1,3 +1,5 @@
+import { getAiApiKeys, createAiApiKey, updateAiApiKey, deleteAiApiKey } from "./services";
+import type { GetAiApiKeysParams } from "./types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getAiProviders,
@@ -13,7 +15,11 @@ import {
   startGeminiLogin,
   getGeminiLoginStatus,
   cancelGeminiLogin,
-  getGeminiEngines,
+  startGeminiAgenticLogin,
+  getCurrentGeminiAgenticLogin,
+  getGeminiAgenticLoginStatus,
+  submitGeminiAgenticCode,
+  cancelGeminiAgenticLogin,
 } from "./services";
 import type {
   GetAiProvidersParams,
@@ -21,7 +27,23 @@ import type {
   UpdateAiProviderPayload,
   GetAiProviderEventsParams,
   GetSelectableModelsParams,
+  AiProvidersHealthResponse,
 } from "./types";
+import { agenticLoginIsActive } from "./agenticLogin";
+
+export const useStartGeminiAgenticLogin = () => useMutation({ mutationFn: startGeminiAgenticLogin, retry: false, gcTime: 0 });
+export const useSubmitGeminiAgenticCode = () => useMutation({ mutationFn: submitGeminiAgenticCode, retry: false, gcTime: 0 });
+export const useCancelGeminiAgenticLogin = () => useMutation({ mutationFn: cancelGeminiAgenticLogin, retry: false, gcTime: 0 });
+export const useCurrentGeminiAgenticLogin = (enabled: boolean) => useQuery({
+  queryKey: ["gemini-agentic-login", "current"], queryFn: getCurrentGeminiAgenticLogin,
+  enabled, retry: false, gcTime: 0, refetchOnWindowFocus: false,
+});
+export const useGeminiAgenticLoginStatus = (id: string | null) => useQuery({
+  queryKey: ["gemini-agentic-login", id], queryFn: () => getGeminiAgenticLoginStatus(id!),
+  enabled: Boolean(id), retry: false, gcTime: 0, refetchOnWindowFocus: false,
+  refetchInterval: (query) => query.state.error ? false
+    : agenticLoginIsActive(query.state.data) || !query.state.data ? 2000 : false,
+});
 
 export const useAiProviderCatalog = () => {
   return useQuery({
@@ -65,7 +87,6 @@ export const useSyncAiProviderModels = () => {
       if (shouldPersist) {
         queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
         queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
-        queryClient.invalidateQueries({ queryKey: ["gemini-engines"] });
       }
     },
   });
@@ -86,13 +107,15 @@ export const useAiProviders = (params?: GetAiProvidersParams) => {
   });
 };
 
-export const useAiProvidersHealth = () => {
-  return useQuery({
-    queryKey: ["ai-providers-health"],
-    queryFn: () => getAiProvidersHealth(),
-    staleTime: 1000 * 30, // 30 seconds
-  });
+// One HTTP response and one cache entry for badges, alerts and session panels.
+const providerHealthOptions = {
+  queryKey: ["ai-providers-health"],
+  queryFn: () => getAiProvidersHealth(),
+  staleTime: 30_000,
+  refetchInterval: 30_000,
 };
+
+export const useAiProvidersHealth = () => useQuery(providerHealthOptions);
 
 export const useAiProviderEvents = (params?: GetAiProviderEventsParams) => {
   return useQuery({
@@ -117,7 +140,6 @@ export const useCreateAiProvider = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
       queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
-      queryClient.invalidateQueries({ queryKey: ["gemini-engines"] });
     },
   });
 };
@@ -138,7 +160,6 @@ export const useUpdateAiProvider = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ai-providers"] });
       queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] });
-      queryClient.invalidateQueries({ queryKey: ["gemini-engines"] });
     },
   });
 };
@@ -153,10 +174,17 @@ export const useEnabledWebAiProviders = () => {
 
 export const useGeminiEngines = (options?: { enabled?: boolean }) => {
   return useQuery({
-    queryKey: ["gemini-engines"],
-    queryFn: getGeminiEngines,
+    ...providerHealthOptions,
     enabled: options?.enabled ?? true,
-    staleTime: 1000 * 30,
-    refetchInterval: 30_000,
+    select: (health: AiProvidersHealthResponse) => health.engines ?? null,
   });
 };
+
+export const useAiApiKeys = (params: GetAiApiKeysParams) => useQuery({ queryKey: ["ai-api-keys", params], queryFn: () => getAiApiKeys(params) });
+const useRefreshApiConnections = () => {
+  const client = useQueryClient();
+  return async () => { await Promise.all(["ai-api-keys", "ai-providers", "ai-providers-health", "ai-selectable-models"].map((key) => client.invalidateQueries({ queryKey: [key] }))); };
+};
+export const useCreateAiApiKey = () => useMutation({ mutationFn: (payload: import("./types").CreateAiApiKeyPayload) => createAiApiKey(payload), gcTime: 0, onSuccess: useRefreshApiConnections() });
+export const useUpdateAiApiKey = () => useMutation({ mutationFn: ({ id, payload }: { id: string; payload: import("./types").UpdateAiApiKeyPayload }) => updateAiApiKey(id, payload), onSuccess: useRefreshApiConnections() });
+export const useDeleteAiApiKey = () => useMutation({ mutationFn: (id: string) => deleteAiApiKey(id), onSuccess: useRefreshApiConnections() });

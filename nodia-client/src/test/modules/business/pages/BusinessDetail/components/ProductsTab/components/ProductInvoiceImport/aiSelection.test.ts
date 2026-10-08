@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getInvoiceAiModes, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider } from "../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/aiSelection";
+import { getInvoiceAiModes, isProviderVisibleInInvoiceImport, isTokenPlanWithIssues, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider } from "../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/aiSelection";
 import type { VerifyIaProviderItem } from "../../../../../../../../../modules/business/infrastructure/types";
 
 const first: VerifyIaProviderItem = {
@@ -15,14 +15,24 @@ describe("invoice AI selection", () => {
     expect(resolveInvoiceAiProvider([first], "instance-2")).toBeNull();
     expect(resolveInvoiceAiProvider([first, second], null)).toBe(first);
   });
-  it("uses the assigned model without promoting OCR focus or allowing API keys", () => {
-    expect(getInvoiceAiModes(first)).toEqual(["token_plan_web"]);
+  it("uses the assigned model and supports both token plan and API keys", () => {
+    expect(getInvoiceAiModes(first)).toEqual(["token_plan_web", "api_key"]);
     expect(resolveInvoiceAiConfiguration(first, "token_plan_web")).toMatchObject({ model: "model-a", canAnalyze: true });
+  });
+  it("supports dedicated api_key mode provider", () => {
+    const apiKeyProvider: VerifyIaProviderItem = {
+      id: "instance-openai", key: "openai", name: "OpenAI", mode: "api_key", is_active: true,
+      can_use_model: true, is_default: false, use_api_key: true,
+      fields: { api_key: { selected_model: "gpt-6.1-sol" } },
+    };
+    expect(getInvoiceAiModes(apiKeyProvider)).toEqual(["api_key"]);
+    expect(resolveInvoiceAiConfiguration(apiKeyProvider, "api_key")).toMatchObject({ model: "gpt-6.1-sol", canAnalyze: true });
   });
   it("rejects missing models, inactive providers and disabled modes", () => {
     expect(resolveInvoiceAiConfiguration({ ...first, fields: {} }, "token_plan_web").canAnalyze).toBe(false);
     expect(resolveInvoiceAiConfiguration({ ...first, is_active: false }, "token_plan_web").canAnalyze).toBe(false);
     expect(resolveInvoiceAiConfiguration(first, "token_plan_agentic").canAnalyze).toBe(false);
+    expect(resolveInvoiceAiConfiguration({ ...first, can_use_model: false, error: "Token plan unauthorized" }, "token_plan_web").canAnalyze).toBe(false);
   });
   it("requires both reasoning capability and configuration permission", () => {
     const provider = { ...first, fields: { token_plan_web: { selected_model: "model-a", available_models: [{ id: "model-a", capabilities: ["reasoning"] }] } } };
@@ -39,5 +49,31 @@ describe("invoice AI selection", () => {
     const updated = { ...second, fields: { token_plan_web: { selected_model: "updated-model" } } };
     const selected = resolveInvoiceAiProvider([updated, first], "instance-2");
     expect(resolveInvoiceAiConfiguration(selected, "token_plan_web").model).toBe("updated-model");
+  });
+  it("filters out token plan providers with errors or unauthorized, but keeps working token plans and API key providers", () => {
+    const brokenTokenPlan: VerifyIaProviderItem = {
+      id: "broken-gemini", key: "gemini", name: "Mi gemini", mode: "token_plan_web",
+      is_active: true, can_use_model: false, error: "No hay sesión activa para token_plan_web",
+      is_default: true, use_token_plan_web: true, default_mode: "token_plan_web",
+    };
+    const healthyTokenPlan: VerifyIaProviderItem = {
+      id: "healthy-gemini", key: "gemini", name: "Gemini Ok", mode: "token_plan_web",
+      is_active: true, can_use_model: true, error: null,
+      is_default: false, use_token_plan_web: true, default_mode: "token_plan_web",
+    };
+    const apiKeyProvider: VerifyIaProviderItem = {
+      id: "api-chatgpt", key: "openai", name: "Chatgpt pega", mode: "api_key",
+      is_active: true, can_use_model: true, error: null,
+      is_default: false, use_api_key: true, default_mode: "api_key",
+    };
+
+    expect(isTokenPlanWithIssues(brokenTokenPlan)).toBe(true);
+    expect(isProviderVisibleInInvoiceImport(brokenTokenPlan)).toBe(false);
+
+    expect(isTokenPlanWithIssues(healthyTokenPlan)).toBe(false);
+    expect(isProviderVisibleInInvoiceImport(healthyTokenPlan)).toBe(true);
+
+    expect(isTokenPlanWithIssues(apiKeyProvider)).toBe(false);
+    expect(isProviderVisibleInInvoiceImport(apiKeyProvider)).toBe(true);
   });
 });

@@ -130,6 +130,24 @@ export interface AiApiKeyEntity {
   updated_at: string;
 }
 
+export interface CreateAiApiKeyPayload {
+  provider_id: string;
+  label: string;
+  secret: string;
+  is_selected?: boolean;
+  is_active?: boolean;
+}
+export interface UpdateAiApiKeyPayload {
+  is_selected?: boolean;
+  is_active?: boolean;
+}
+export interface GetAiApiKeysParams {
+  page: number;
+  limit: number;
+  includes?: boolean;
+  q: { provider_id_eq: string };
+}
+
 export interface AiProviderCatalogEntity {
   id: string;
   key: string;
@@ -153,7 +171,6 @@ export interface AiProviderEntity {
   use_token_plan_agentic?: boolean;
   default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
   fields?: Record<string, unknown>;
-  fields_version?: number;
   auto_rotate_api_keys?: boolean;
   is_default?: boolean;
   is_active: boolean;
@@ -247,7 +264,6 @@ export interface CreateAiProviderPayload {
   use_token_plan_agentic?: boolean;
   default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
   fields?: Record<string, unknown>;
-  fields_version?: number;
   auto_rotate_api_keys?: boolean;
   is_default?: boolean;
   is_active?: boolean;
@@ -263,7 +279,6 @@ export interface UpdateAiProviderPayload {
   use_token_plan_agentic?: boolean;
   default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
   fields?: Record<string, unknown>;
-  fields_version?: number;
   auto_rotate_api_keys?: boolean;
   is_default?: boolean;
   is_active?: boolean;
@@ -277,13 +292,15 @@ export interface EnabledWebAiProvidersResponse {
 export interface AiProviderAlert {
   id: string;
   provider: string;
+  providerName?: string;
+  reason?: 'agentic_session_required' | 'agentic_adapter_unavailable' | 'service_status_unknown';
   type: 'incident' | 'failover' | 'warning' | 'info';
   severity: 'error' | 'warning' | 'info';
   title: string;
   message: string;
   timestamp?: string;
   timeAgo?: string;
-  actionType: 'renew_session' | 'manage_quotas' | 'configure';
+  actionType: 'renew_session' | 'manage_quotas' | 'configure' | 'authenticate_agentic' | 'check_status';
   actionLabel: string;
 }
 
@@ -301,7 +318,7 @@ export interface AiProviderHealthItem {
   default_mode?: 'api_key' | 'token_plan_web' | 'token_plan_agentic' | null;
   auto_rotate_api_keys?: boolean;
   mode: AiConnectionMode | null;
-  status: 'healthy' | 'degraded' | 'expired' | 'unconfigured';
+  status: 'healthy' | 'degraded' | 'expired' | 'unconfigured' | 'unverified';
   statusBadge: string;
   serviceState: string;
   lastCheck: string | null;
@@ -318,12 +335,19 @@ export interface AiProviderHealthItem {
   fields?: Record<string, unknown>;
   apiKeysCount?: number;
   validKeysCount?: number;
+  selectedApiKey?: {
+    id: string;
+    label: string;
+    display_hint: string;
+    is_active: boolean;
+  } | null;
   hasConnection: boolean;
   engine?: 'agentic' | 'web';
 }
 
 export interface AiProvidersHealthResponse {
   timestamp: string;
+  engines: GeminiDualEngineStatus | null;
   overallStatus: 'healthy' | 'degraded' | 'incident';
   alerts: AiProviderAlert[];
   providers: AiProviderHealthItem[];
@@ -388,6 +412,7 @@ export interface GeminiEngineInfo {
   quota?: GeminiEngineQuota | null;
   quota_source?: string | null;
   quota_observed_at?: number | null;
+  supported_options?: { extended_thinking: boolean | null } | null;
 }
 
 export interface GeminiDualEngineStatus {

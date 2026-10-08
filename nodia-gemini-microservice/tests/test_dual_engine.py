@@ -10,6 +10,13 @@ from test_support import AppTestCase, HEADERS
 
 
 class DualEngineTest(AppTestCase):
+    def test_web_sdk_options_are_exposed_without_inventing_model_capabilities(self):
+        self.web.get_status.return_value["supported_options"] = {"extended_thinking": True}
+        response = self.client.get("/engines/status", headers=HEADERS)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["web"]["supported_options"]["extended_thinking"])
+        self.assertFalse(response.json()["web"]["authenticated"])
+
     def test_engine_status_reports_independent_unknown_agentic_quota(self):
         response = self.client.get("/engines/status", headers=HEADERS)
         self.assertEqual(response.status_code, 200)

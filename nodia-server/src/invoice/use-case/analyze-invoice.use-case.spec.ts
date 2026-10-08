@@ -6,6 +6,8 @@ import { GeminiUpstreamException } from '../../common/ai/gemini-upstream.excepti
 import type { MistralService } from '../../common/ai/mistral.service.js';
 import type { ProviderService } from '../../provider/provider.service.js';
 import type { AnalyzeInvoiceDto } from '../dto/analyze-invoice.dto.js';
+import type { AiProviderService } from '../../ai-provider/ai-provider.service.js';
+import type { ExecuteApiInvoiceUseCase } from '../../ai-provider/use-case/execute-api-invoice.use-case.js';
 
 vi.mock('../../config/envs.config.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../config/envs.config.js')>();
@@ -72,6 +74,103 @@ describe('AnalyzeInvoiceUseCase with the private Gemini adapter', () => {
       data: { items: [{ name: 'Producto', quantity }] },
     }), { status: 200 })));
     await expect(create().execute(file, dto)).rejects.toThrow('valores numéricos inválidos');
+  });
+
+  it.each([
+    [504, 'analysis_timeout', 'tiempo máximo permitido'],
+    [504, 'agentic_timeout', 'Antigravity CLI'],
+    [504, 'provider_timeout', 'tiempo de espera'],
+    [502, 'provider_response_error', 'respuesta válida'],
+  ])('preserves safe upstream cause %s/%s without exposing the body', async (status, code, message) => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response('{"detail":"private document and cookie"}', {
+      status, headers: { 'X-Nodia-Error-Code': code, 'X-Request-ID': 'ab'.repeat(16) },
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const error = await create().execute(file, dto).catch((error: unknown) => error);
+    expect(error).toBeInstanceOf(GeminiUpstreamException);
+    const upstream = error as GeminiUpstreamException;
+    expect(upstream.getStatus()).toBe(status);
+    expect(upstream.getResponse()).toMatchObject({ upstreamErrorCode: code, upstreamRequestId: 'ab'.repeat(16) });
+    expect(JSON.stringify(upstream.getResponse())).toContain(message);
+    expect(JSON.stringify(upstream.getResponse())).not.toContain('private');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['private provider output', '__proto__', 'constructor', 'provider_response_error'])('ignores untrusted or mismatched upstream cause %s', async (code) => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('{"code":"secret"}', {
+      status: 504, headers: { 'X-Nodia-Error-Code': code },
+    })));
+    const error = await create().execute(file, dto).catch((error: unknown) => error) as GeminiUpstreamException;
+    expect(error.getStatus()).toBe(504);
+    expect(error.getResponse()).not.toHaveProperty('upstreamErrorCode');
+    expect(JSON.stringify(error.getResponse())).not.toContain('secret');
+  });
+
+  it('forwards exact agentic model and effort to the private explicit route', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      code: 'SYNTHETIC', total_amount: 0, data: { items: [{ name: 'Synthetic product', quantity: 0 }] },
+    }), { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    await create().execute(file, { ...dto, engine: 'agentic', mode: 'token_plan_agentic', thinking_level: 'high' });
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(url).toMatch(/\/agentic\/analyze-invoice$/);
+    expect(options.body.get('engine')).toBe('agentic');
+    expect(options.body.get('model')).toBe('discovered-model');
+    expect(options.body.get('thinking_level')).toBe('high');
+    expect(options.body.has('extended_thinking')).toBe(false);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    { mode: 'token_plan_agentic', engine: 'web' },
+    { mode: 'token_plan_web', engine: 'agentic' },
+    { engine: 'agentic', thinking_level: 'max' },
+    { mode: 'unknown' }, { extended_thinking: 'invalid' },
+    { mode: 'token_plan_agentic', extended_thinking: true },
+  ])('rejects contradictory or malformed legacy options before transport (%j)', async (options) => {
+    const fetchMock = vi.fn(); vi.stubGlobal('fetch', fetchMock);
+    await expect(create().execute(file, { ...dto, ...options } as AnalyzeInvoiceDto)).rejects.toBeInstanceOf(BadRequestException);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('AnalyzeInvoiceUseCase API routing', () => {
+  const file = { buffer: Buffer.from('%PDF-1.4'), size: 8, mimetype: 'application/pdf' } as Express.Multer.File;
+  const dto = { business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b', ai_provider_id: '42', mode: 'api_key' } as AnalyzeInvoiceDto;
+  function setup() {
+    const gemini = { extractInvoiceData: vi.fn() };
+    const mistral = { extractInvoiceData: vi.fn() };
+    const providers = { findProviderById: vi.fn().mockResolvedValue({ id: '42', catalog: { key: 'openai' }, default_mode: 'api_key', use_api_key: true }), findAllProviders: vi.fn().mockResolvedValue({ data: [] }) };
+    const api = { execute: vi.fn().mockResolvedValue({ code: 'SYNTHETIC', total_amount: null, items: [] }) };
+    const useCase = new AnalyzeInvoiceUseCase(gemini as unknown as GeminiService, mistral as unknown as MistralService, {} as ProviderService, providers as unknown as AiProviderService, api as unknown as ExecuteApiInvoiceUseCase);
+    return { gemini, mistral, providers, api, useCase };
+  }
+  it('routes the exact OpenAI instance to API without calling a session adapter', async () => {
+    const { api, gemini, mistral, useCase } = setup();
+    expect((await useCase.execute(file, dto)).total_amount).toBeNull();
+    expect(api.execute).toHaveBeenCalledWith('42', undefined, file, undefined, 19, undefined);
+    expect(gemini.extractInvoiceData).not.toHaveBeenCalled();
+    expect(mistral.extractInvoiceData).not.toHaveBeenCalled();
+  });
+  it('preserves an explicit instance failure instead of choosing another connection', async () => {
+    const { providers, api, useCase } = setup();
+    providers.findProviderById.mockRejectedValue(new BadRequestException('Instance unavailable'));
+    await expect(useCase.execute(file, dto)).rejects.toThrow('Instance unavailable');
+    expect(providers.findAllProviders).not.toHaveBeenCalled();
+    expect(api.execute).not.toHaveBeenCalled();
+  });
+  it('passes the explicit API thinking level to the API use case without a session engine', async () => {
+    const { api, gemini, useCase } = setup();
+    await useCase.execute(file, { ...dto, thinking_level: 'low' });
+    expect(api.execute).toHaveBeenCalledWith('42', undefined, file, undefined, 19, 'low');
+    expect(gemini.extractInvoiceData).not.toHaveBeenCalled();
+  });
+  it('rejects OpenAI session modes and unknown provider selections before execution', async () => {
+    const { api, gemini, useCase } = setup();
+    await expect(useCase.execute(file, { ...dto, mode: 'token_plan_web' })).rejects.toThrow('únicamente el canal API');
+    await expect(useCase.execute(file, { business_id: dto.business_id, ai_provider: 'missing' })).rejects.toThrow('conexión activa');
+    expect(api.execute).not.toHaveBeenCalled();
+    expect(gemini.extractInvoiceData).not.toHaveBeenCalled();
   });
 });
 
@@ -653,5 +752,34 @@ describe('AnalyzeInvoiceUseCase', () => {
       'agentic',
       'low',
     );
+  });
+});
+
+// Synthetic options fixtures; never an inference against Google.
+describe('AnalyzeInvoiceUseCase saved thinking options', () => {
+  const file = { buffer: Buffer.from('%PDF-1.4'), size: 8, mimetype: 'application/pdf' } as Express.Multer.File;
+  const dto = { business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b', ai_provider_id: '42' } as AnalyzeInvoiceDto;
+  const setup = (mode: 'token_plan_web' | 'token_plan_agentic', options: Record<string, unknown>) => {
+    const gemini = { extractInvoiceData: vi.fn().mockResolvedValue({ code: null, total_amount: null, items: [] }) };
+    const providers = { findProviderById: vi.fn().mockResolvedValue({ id: '42', catalog: { key: 'gemini' }, default_mode: mode, fields: { [mode]: { selected_model: 'opaque-live-id', ...options } } }) };
+    const useCase = new AnalyzeInvoiceUseCase(gemini as unknown as GeminiService, {} as MistralService, {} as ProviderService, providers as unknown as AiProviderService);
+    return { useCase, gemini };
+  };
+  it('forwards saved Web thinking and respects an explicit false override', async () => {
+    const { useCase, gemini } = setup('token_plan_web', { enable_extended_thinking: true });
+    await useCase.execute(file, dto);
+    expect(gemini.extractInvoiceData).toHaveBeenLastCalledWith(file.buffer, file.mimetype, undefined, 19, 'opaque-live-id', true, 'web');
+    await useCase.execute(file, { ...dto, extended_thinking: false });
+    expect(gemini.extractInvoiceData).toHaveBeenLastCalledWith(file.buffer, file.mimetype, undefined, 19, 'opaque-live-id', false, 'web');
+  });
+  it('forwards configured Agentic level without a DTO override or a default model', async () => {
+    const { useCase, gemini } = setup('token_plan_agentic', { thinking_levels: { 'opaque-live-id': 'high' } });
+    await useCase.execute(file, dto);
+    expect(gemini.extractInvoiceData).toHaveBeenCalledWith(file.buffer, file.mimetype, undefined, 19, 'opaque-live-id', undefined, 'agentic', 'high');
+  });
+  it('does not invent Medium when the Agentic preference is absent', async () => {
+    const { useCase, gemini } = setup('token_plan_agentic', {});
+    await useCase.execute(file, dto);
+    expect(gemini.extractInvoiceData).toHaveBeenCalledWith(file.buffer, file.mimetype, undefined, 19, 'opaque-live-id', undefined, 'agentic');
   });
 });

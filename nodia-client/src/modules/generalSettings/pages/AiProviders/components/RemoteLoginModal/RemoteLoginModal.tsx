@@ -51,7 +51,6 @@ const RemoteLoginModal: FC<RemoteLoginModalProps> = ({ open, onClose, onSuccess 
         try {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: ["ai-providers-health"] }),
-            queryClient.invalidateQueries({ queryKey: ["gemini-engines"] }),
             queryClient.invalidateQueries({ queryKey: ["ai-providers"] }),
             queryClient.invalidateQueries({ queryKey: ["ai-enabled-web-providers"] }),
             queryClient.invalidateQueries({ queryKey: ["ai-selectable-models"] }),

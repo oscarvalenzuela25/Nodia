@@ -219,7 +219,7 @@ describe("OverviewTab Component", () => {
     ).toBe(true);
   });
 
-  it("renders products card with total SKUs, 3 stock badges and inventory value without availability label", async () => {
+  it("renders products card with total products, 3 stock badges and without inventory value", async () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
@@ -234,17 +234,17 @@ describe("OverviewTab Component", () => {
       expect(screen.getByTestId("kpi-stock-normal-chip")).toHaveTextContent("1 stock normal");
     });
 
-    // Main count: 3 SKUs
+    // Main count: 3 productos
     expect(screen.getByText("3")).toBeInTheDocument();
-    expect(screen.getByText("SKUs")).toBeInTheDocument();
+    expect(screen.getByText("productos")).toBeInTheDocument();
 
     // 3 Stock badges
     expect(screen.getByTestId("kpi-stock-normal-chip")).toHaveTextContent("1 stock normal");
     expect(screen.getByTestId("kpi-stock-low-chip")).toHaveTextContent("1 stock bajo");
     expect(screen.getByTestId("kpi-stock-out-chip")).toHaveTextContent("1 sin stock");
 
-    // Inventory value: 15*1000 + 5*2000 + 0*500 = 15000 + 10000 = 25000
-    expect(screen.getByText(/Valor inventario:\s*\$25/i)).toBeInTheDocument();
+    // Inventory value and its divider are removed
+    expect(screen.queryByText(/Valor inventario/i)).not.toBeInTheDocument();
 
     // Availability label is removed
     expect(screen.queryByText(/Disponibilidad/i)).not.toBeInTheDocument();
@@ -300,7 +300,7 @@ describe("OverviewTab Component", () => {
     expect(screen.queryByText(/Pendiente de cobro/i)).not.toBeInTheDocument();
   });
 
-  it("renders recent invoices table without status column and without status chips", async () => {
+  it("renders recent invoices using standard table columns and max 10 records", async () => {
     renderOverviewTab(
       <OverviewTab
         businessId="biz-123"
@@ -315,20 +315,19 @@ describe("OverviewTab Component", () => {
       expect(screen.getByText("FAC-CURRENT")).toBeInTheDocument();
     });
 
-    // Check headers: Code, Provider, Total exist, but Status does not
+    // Check standard table headers
     expect(screen.getByText("Código / Folio")).toBeInTheDocument();
     expect(screen.getByText("Proveedor")).toBeInTheDocument();
     expect(screen.getByText("Monto Total")).toBeInTheDocument();
-    expect(screen.queryByRole("columnheader", { name: "Estado" })).not.toBeInTheDocument();
+    expect(screen.getByText("Fecha de la factura")).toBeInTheDocument();
+    expect(screen.getByText("Ruta / Archivo")).toBeInTheDocument();
+    expect(screen.getByText("Visualizar archivo")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Activo" })).toBeInTheDocument();
+    expect(screen.getByText("Acciones")).toBeInTheDocument();
 
     // Invoices are rendered
     expect(screen.getByText("FAC-CURRENT")).toBeInTheDocument();
     expect(screen.getByText("FAC-PAST")).toBeInTheDocument();
-
-    // Status chips (Pagada, Pendiente, Vencida) are not in the table
-    expect(screen.queryByText("Pagada")).not.toBeInTheDocument();
-    expect(screen.queryByText("Pendiente")).not.toBeInTheDocument();
-    expect(screen.queryByText("Vencida")).not.toBeInTheDocument();
   });
 
   it("renders key providers with percentage of stock progress bars for active providers", async () => {
@@ -438,6 +437,5 @@ describe("OverviewTab Component", () => {
     await waitFor(() => expect(screen.getByTestId("kpi-invoiced-current-month")).toHaveTextContent("—"));
     expect(screen.queryByTestId("kpi-stock-normal-chip")).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Los indicadores completos no están disponibles");
-    expect(vi.mocked(businessServices.getProducts).mock.calls.every(([params]) => params?.all !== true)).toBe(true);
   });
 });

@@ -20,6 +20,7 @@ export async function runRentalClientHarness({ base, db }) {
     '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reservas · prueba aislada</title></head><body><div id="root"></div><script type="module" src="/src/test/modules/rentals/integration/harness.tsx"></script></body></html>';
   const vite = await createServer({
     root,
+    cacheDir: "node_modules/.vite/qa-rentals",
     configFile: false,
     envDir: false,
     define: {

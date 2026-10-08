@@ -1,5 +1,5 @@
 import { notifyHttpError } from "../../../../../../../../config/httpFeedback";
-import { getInvoiceAiModes, isInvoiceAiMode, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider, type InvoiceAiMode } from "./aiSelection";
+import { getInvoiceAiModes, isInvoiceAiMode, isProviderVisibleInInvoiceImport, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider, type InvoiceAiMode } from "./aiSelection";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useState, useMemo, useRef, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -125,7 +125,11 @@ export const ProductInvoiceImport: FC<Props> = ({
   const [useThinkingMode, setUseThinkingMode] = useState<boolean>(false);
   const [selectedAiProviderId, setSelectedAiProviderId] = useState<string | null>(null);
   const [modeSelection, setModeSelection] = useState<{ providerId: string; mode: InvoiceAiMode } | null>(null);
-  const currentAiProvider = resolveInvoiceAiProvider(providersList, selectedAiProviderId);
+  const usableProviders = useMemo(() => {
+    return providersList.filter(isProviderVisibleInInvoiceImport);
+  }, [providersList]);
+
+  const currentAiProvider = resolveInvoiceAiProvider(usableProviders, selectedAiProviderId);
   const enabledModes = getInvoiceAiModes(currentAiProvider);
   const requestedMode = modeSelection?.providerId === currentAiProvider?.id ? modeSelection?.mode : null;
   const defaultMode = isInvoiceAiMode(currentAiProvider?.default_mode) ? currentAiProvider.default_mode : null;
@@ -138,7 +142,7 @@ export const ProductInvoiceImport: FC<Props> = ({
     value,
     label: `${t(`business:mode_${value}`)}${currentAiProvider?.default_mode === value ? ` (${t("business:default_badge")})` : ""}`,
   }));
-  const aiProviderOptions = providersList.map((p) => ({
+  const aiProviderOptions = usableProviders.map((p) => ({
     value: p.id,
     label: `${p.name}${p.is_default ? ` (${t("business:default_badge")})` : ""}`,
   }));
@@ -281,7 +285,8 @@ export const ProductInvoiceImport: FC<Props> = ({
     const targetModel = configuration.model;
     const modelType = "default" as const;
     const shouldSendThinking = effectiveMode === "token_plan_web" && useThinkingMode && configuration.supportsThinking;
-    const effectiveThinkingLevel = effectiveMode === "token_plan_agentic" ? configuration.thinkingLevel : undefined;
+    const effectiveThinkingLevel = effectiveMode === "token_plan_agentic" || effectiveMode === "api_key"
+      ? configuration.thinkingLevel : undefined;
 
     setIsPreparingDraft(true);
     try {
@@ -294,7 +299,7 @@ export const ProductInvoiceImport: FC<Props> = ({
         model: targetModel,
         model_type: modelType,
         mode: effectiveMode,
-        extended_thinking: shouldSendThinking,
+        extended_thinking: effectiveMode === "api_key" ? undefined : shouldSendThinking,
         thinking_level: effectiveThinkingLevel,
       });
 
@@ -837,8 +842,8 @@ export const ProductInvoiceImport: FC<Props> = ({
                     />
                   </Box>
 
-                  {/* Mode Selector (only shown if selected provider has more than 1 active mode) */}
-                  {activeModes.length > 1 && (
+                  {/* Mode Selector (shown whenever selected provider has active modes) */}
+                  {activeModes.length > 0 && (
                     <Box sx={{ minWidth: 200, flex: 1, maxWidth: 300 }}>
                       <SelectSingleInput
                         id="ai-mode-select"
@@ -874,7 +879,9 @@ export const ProductInvoiceImport: FC<Props> = ({
                 >
                   <Tooltip
                     title={
-                      !aiConfiguration.canAnalyze
+                      !currentAiProvider
+                        ? t("business:no_ai_providers_available", "No hay proveedores de IA disponibles o autorizados.")
+                        : !aiConfiguration.canAnalyze
                         ? (!aiConfiguration.model ? t("business:ai_model_unassigned") : currentAiProvider?.error) ||
                           (currentAiProvider?.key === "gemini"
                             ? t("business:gemini_session_expired_tooltip")

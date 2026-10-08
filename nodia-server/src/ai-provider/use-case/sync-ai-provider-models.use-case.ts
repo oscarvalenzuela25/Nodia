@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
+import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { observedModels } from '../helpers/model-observation.helper.js';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
@@ -37,6 +39,7 @@ export class SyncAiProviderModelsUseCase {
   constructor(
     private readonly aiProviderService: AiProviderService,
     private readonly geminiService: GeminiService,
+    @Optional() private readonly apiService?: ApiProviderService,
   ) {}
 
   async execute(
@@ -84,12 +87,23 @@ export class SyncAiProviderModelsUseCase {
 
     const currentSelectedModel =
       modeFields.selected_model ||
-      (targetMode === provider.default_mode || !hasAnyModeScoped
+      (!hasAnyModeScoped
         ? provider.fields?.selected_model
         : null) ||
       null;
 
-    if (targetMode === 'api_key') throw new BadRequestException('Solo se admiten sesiones Gemini Web o Antigravity; el modo API Key no está habilitado.');
+    if (targetMode === 'api_key') {
+      if (options?.engine || provider.is_active === false || provider.catalog?.is_active === false || !provider.use_api_key || provider.catalog?.can_use_api_key !== true) throw new BadRequestException('El canal API no está habilitado para esta conexión.');
+      const secret = await this.aiProviderService.getActiveApiKeySecret(provider.id);
+      if (!secret || !this.apiService) throw new BadRequestException('Debe agregar y seleccionar una API key activa.');
+      const models = await this.apiService.listModels(engineKey, secret);
+      if (!models.length) throw new BadRequestException('La API no entregó modelos disponibles para esta cuenta.');
+      if (shouldPersist) await this.aiProviderService.updateProviderFields(provider.id, {
+        ...provider.fields, api_key: { ...modeFields, available_models: models },
+      });
+      return { providerId: provider.id, providerName: provider.name || provider.catalog.name,
+        currentSelectedModel, isSelectedModelAvailable: models.some((model) => model.id === currentSelectedModel), models, tokenPlan: null };
+    }
     if (!['token_plan_web', 'token_plan_agentic'].includes(targetMode)) throw new BadRequestException('Modo de sesión inválido.');
     if (!['gemini', 'google'].includes(engineKey)) {
       throw new BadRequestException('Este proveedor no tiene una integración de sesión verificada.');
@@ -137,15 +151,12 @@ export class SyncAiProviderModelsUseCase {
 
     if (shouldPersist) {
       // Persist discovered models into provider fields in database scoped to the mode
-      const isDefaultMode =
-        !provider.default_mode || targetMode === provider.default_mode;
       const updatedFields = {
         ...provider.fields,
         [targetMode]: {
           ...modeFields,
           available_models: discoveredModels,
         },
-        ...(isDefaultMode ? { available_models: discoveredModels } : {}),
       };
       await this.aiProviderService.updateProviderFields(
         provider.id,

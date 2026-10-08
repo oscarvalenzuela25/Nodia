@@ -27,7 +27,11 @@
     "test:rental:integration": "npm run build && node test/rental.integration.mjs",
     "test:provider-contacts:integration": "npm run build && node test/provider-contacts.integration.mjs",
     "test:invoice-access:integration": "npm run build && node test/invoice-access.integration.mjs",
-    "migration:provider-contacts": "npm run build && node scripts/migrate-provider-contacts.mjs"
+    "migration:provider-contacts": "npm run build && node scripts/migrate-provider-contacts.mjs",
+    "migration:ai-catalog": "npm run build && node scripts/restore-ai-catalog.mjs",
+    "test:ai-api:integration": "npm run build && node test/ai-api.integration.mjs",
+    "test:agentic-cli:integration": "npm run build && node test/agentic-cli.integration.mjs",
+    "migration:ai-key-selection": "npm run build && node scripts/repair-ai-key-selection.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1136.0",

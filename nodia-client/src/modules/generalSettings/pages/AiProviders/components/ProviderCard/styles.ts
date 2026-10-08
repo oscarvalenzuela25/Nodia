@@ -73,12 +73,12 @@ export const SubtitleTag = styled(Typography)(({ theme }) => ({
 
 export const StatusPill = styled(Box, {
   shouldForwardProp: (prop) => prop !== "statusType",
-})<{ statusType: "healthy" | "expired" | "degraded" | "unconfigured" }>(({ theme, statusType }) => {
+})<{ statusType: "healthy" | "expired" | "degraded" | "unconfigured" | "unverified" }>(({ theme, statusType }) => {
   let mainColor = theme.palette.success.main;
   if (statusType === "expired" || statusType === "degraded") {
     mainColor = "#f59e0b";
-  } else if (statusType === "unconfigured") {
-    mainColor = theme.palette.text.disabled;
+  } else if (statusType === "unconfigured" || statusType === "unverified") {
+    mainColor = theme.palette.mode === "dark" ? "#94a3b8" : "#64748b";
   }
 
   return {

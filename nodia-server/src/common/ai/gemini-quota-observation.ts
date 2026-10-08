@@ -2,10 +2,10 @@ type RecordValue = Record<string, unknown>;
 const asRecord = (value: unknown): RecordValue => value && typeof value === 'object' && !Array.isArray(value) ? value as RecordValue : {};
 const finite = (value: unknown, max = Infinity): number | null => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= max ? value : null;
 
-export function observedWebQuota(value: unknown, now = Date.now()) {
+function observedQuota(value: unknown, source: 'web' | 'agentic_cli', now = Date.now()) {
   const data = asRecord(value);
   const observed = finite(data.quota_observed_at);
-  if (data.authenticated !== true || data.quota_source !== 'web' || observed === null || observed <= 0 || observed * 1000 > now + 5000 || now - observed * 1000 > 60000) return null;
+  if (data.authenticated !== true || data.quota_source !== source || observed === null || observed <= 0 || observed * 1000 > now + 5000 || now - observed * 1000 > 60000) return null;
   const quota: RecordValue = {};
   for (const [key, raw] of Object.entries(asRecord(data.quota ?? data.quotas))) {
     const metric = asRecord(raw);
@@ -28,3 +28,6 @@ export function observedWebQuota(value: unknown, now = Date.now()) {
   }
   return { quota, usage, observed_at: observed };
 }
+
+export const observedWebQuota = (value: unknown, now = Date.now()) => observedQuota(value, 'web', now);
+export const observedAgenticQuota = (value: unknown, now = Date.now()) => observedQuota(value, 'agentic_cli', now);

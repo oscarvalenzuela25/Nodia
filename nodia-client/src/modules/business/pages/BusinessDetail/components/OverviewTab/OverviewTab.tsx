@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import type { FC, MouseEvent } from "react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -6,41 +6,55 @@ import {
   Button,
   Chip,
   Grid,
+  IconButton,
   LinearProgress,
+  ListItemIcon,
+  ListItemText,
+  Menu,
   MenuItem,
+  Paper,
   Select,
   Stack,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { sileo } from "sileo";
 
 import {
   useProducts,
   useProviders,
   useInvoices,
 } from "../../../../infrastructure/useServices";
+import type { InvoiceEntity } from "../../../../infrastructure/types";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import { Skeleton } from "boneyard-js/react";
 import { KpiCardsGridSkeleton, TableSkeleton } from "../../../../../../components/skeletons";
+import InvoicePreviewModal from "../InvoicesTab/components/InvoicePreviewModal/InvoicePreviewModal";
 import {
   KpiCard,
   KpiTop,
   KpiLabel,
   KpiTitle,
   KpiValue,
-  KpiFooter,
   SectionCard,
   SectionHeader,
   SectionTitle,
   ScrollablePanelContent,
+  StatusDot,
 } from "../../styles";
 
 interface Props {
@@ -59,24 +73,25 @@ export const OverviewTab: FC<Props> = ({
   const { t, i18n } = useTranslation(["business", "core"]);
 
   const { data: productsData, isLoading: isLoadingProducts, isError: productsError, isFetching: productsFetching, refetch: refetchProducts } = useProducts({
-    page: 1,
-    limit: 50,
+    all: true,
     q: {
       business_id_eq: businessId,
       s: "created_at desc",
     },
   });
   const { data: providersData, isLoading: isLoadingProviders, isError: providersError, isFetching: providersFetching, refetch: refetchProviders } = useProviders({
-    page: 1,
-    limit: 50,
+    all: true,
     q: {
       business_id_eq: businessId,
       s: "created_at desc",
     },
   });
   const { data: invoicesData, isLoading: isLoadingInvoices, isError: invoicesError, isFetching: invoicesFetching, refetch: refetchInvoices } = useInvoices({
-    q: { business_id_eq: businessId },
-    limit: 50,
+    all: true,
+    q: {
+      business_id_eq: businessId,
+      s: "created_at desc",
+    },
   });
 
   const isLoadingOverview = isLoadingProducts || isLoadingProviders || isLoadingInvoices;
@@ -84,10 +99,61 @@ export const OverviewTab: FC<Props> = ({
   const products = useMemo(() => productsData?.data ?? [], [productsData?.data]);
   const providers = useMemo(() => providersData?.data ?? [], [providersData?.data]);
   const invoices = useMemo(() => invoicesData?.data ?? [], [invoicesData?.data]);
+  const recentInvoices = useMemo(() => invoices.slice(0, 10), [invoices]);
   const productsComplete = !productsError && !!productsData && (productsData.meta?.total_items ?? 0) <= products.length;
   const providersComplete = !providersError && !!providersData && (providersData.meta?.total_items ?? 0) <= providers.length;
   const invoicesComplete = !invoicesError && !!invoicesData && (invoicesData.meta?.total_items ?? 0) <= invoices.length;
   const isFetchingOverview = productsFetching || providersFetching || invoicesFetching;
+
+  // Actions and preview modal state for invoices
+  const [previewInvoice, setPreviewInvoice] = useState<InvoiceEntity | null>(null);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuInvoice, setMenuInvoice] = useState<InvoiceEntity | null>(null);
+
+  const handleOpenActionMenu = (e: MouseEvent<HTMLElement>, inv: InvoiceEntity) => {
+    e.stopPropagation();
+    setActionMenuAnchorEl(e.currentTarget);
+    setMenuInvoice(inv);
+  };
+
+  const handleCloseActionMenu = () => {
+    setActionMenuAnchorEl(null);
+    setMenuInvoice(null);
+  };
+
+  const handleCopyPath = async (path?: string) => {
+    if (!path) return;
+    try {
+      await navigator.clipboard.writeText(path);
+      sileo.success({
+        title: t("business:invoice_path_copied_toast"),
+        description: path,
+      });
+    } catch {
+      sileo.error({ title: t("core:server_error_toast") });
+    }
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "-";
+    try {
+      const match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (match) {
+        const [, y, m, d] = match;
+        return i18n.language.startsWith("en") ? `${m}/${d}/${y}` : `${d}/${m}/${y}`;
+      }
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return "-";
+      const locale = i18n.language.startsWith("en") ? "en-US" : "es-CL";
+      return d.toLocaleDateString(locale, {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    } catch {
+      return "-";
+    }
+  };
 
   // Metrics calculation
   const totalProducts = productsData?.meta?.total_items ?? products.length;
@@ -100,11 +166,6 @@ export const OverviewTab: FC<Props> = ({
   const outOfStockCount = products.filter(
     (p) => Number(p.stock || 0) <= 0
   ).length;
-
-  const totalInventoryVal = products.reduce(
-    (acc, p) => acc + Number(p.stock || 0) * Number(p.sale_price || 0),
-    0
-  );
 
   const activeProvidersList = providers.filter((p) => p.is_active);
   const activeProviders = activeProvidersList.length;
@@ -195,7 +256,7 @@ export const OverviewTab: FC<Props> = ({
               <KpiValue>
                 {productsError ? "—" : totalProducts}
                 <Typography component="span" variant="subtitle2" color="text.secondary">
-                  SKUs
+                  {t("business:kpi_products_unit", "productos")}
                 </Typography>
               </KpiValue>
               {productsComplete && <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
@@ -234,12 +295,6 @@ export const OverviewTab: FC<Props> = ({
                 />
               </Box>}
             </Box>
-            <KpiFooter>
-              <span>
-                {t("business:kpi_products_inventory_val")}: $
-                {productsComplete ? Math.round(totalInventoryVal).toLocaleString() : "—"}
-              </span>
-            </KpiFooter>
           </KpiCard>
         </Grid>
 
@@ -389,35 +444,169 @@ export const OverviewTab: FC<Props> = ({
                     { header: t("business:invoice_code") },
                     { header: t("business:invoice_provider") },
                     { align: "right", header: t("business:invoice_total") },
+                    { header: t("business:invoice_issue_date_col") },
+                    { header: t("business:invoice_path") },
+                    { align: "center", header: t("business:invoice_view_file_column") },
+                    { align: "center", header: t("business:active_label") },
+                    { align: "right", header: t("core:actions") },
                   ]}
                   rows={4}
                   paperSx={{ borderRadius: 2 }}
                 />
               }
             >
-              {invoices.length > 0 ? (
-                <ScrollablePanelContent data-testid="recent-invoices-scroll-panel">
-                  <Table size="small" stickyHeader>
+              {recentInvoices.length > 0 ? (
+                <TableContainer
+                  component={Paper}
+                  sx={{
+                    borderRadius: 3,
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
+                    boxShadow: "none",
+                    overflowX: "auto",
+                    scrollbarWidth: "thin",
+                    "&::-webkit-scrollbar": {
+                      height: 6,
+                      background: "transparent",
+                    },
+                    "&::-webkit-scrollbar-track": {
+                      background: "transparent",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      borderRadius: 9999,
+                      backgroundColor: (theme) =>
+                        alpha(theme.palette.text.primary, 0.2),
+                      "&:hover": {
+                        backgroundColor: (theme) =>
+                          alpha(theme.palette.text.primary, 0.35),
+                      },
+                    },
+                  }}
+                  data-testid="recent-invoices-scroll-panel"
+                >
+                  <Table size="small" stickyHeader sx={{ minWidth: 650 }}>
                     <TableHead>
                       <TableRow>
                         <TableCell>{t("business:invoice_code")}</TableCell>
                         <TableCell>{t("business:invoice_provider")}</TableCell>
                         <TableCell align="right">{t("business:invoice_total")}</TableCell>
+                        <TableCell>{t("business:invoice_issue_date_col")}</TableCell>
+                        <TableCell>{t("business:invoice_path")}</TableCell>
+                        <TableCell align="center">{t("business:invoice_view_file_column")}</TableCell>
+                        <TableCell align="center">{t("business:active_label")}</TableCell>
+                        <TableCell align="right">{t("core:actions")}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {invoices.map((inv) => (
+                      {recentInvoices.map((inv) => (
                         <TableRow key={inv.id} hover>
-                          <TableCell sx={{ fontWeight: 600 }}>{inv.code}</TableCell>
-                          <TableCell>{inv.provider?.name ?? t("business:unassigned_provider")}</TableCell>
-                          <TableCell align="right" sx={{ fontWeight: 600 }}>
+                          <TableCell>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {inv.code}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>{inv.provider?.name ?? "-"}</TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 700 }}>
                             ${(inv.total_amount || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2">
+                              {formatDate(inv.data?.issue_date || inv.created_at)}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            {inv.path_storage ? (
+                              <Tooltip title={t("business:invoice_copy_path_tooltip")}>
+                                <Box
+                                  component="button"
+                                  type="button"
+                                  onClick={() => handleCopyPath(inv.path_storage)}
+                                  sx={{
+                                    cursor: "pointer",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 0.75,
+                                    maxWidth: 180,
+                                    background: "none",
+                                    border: (theme) => `1px dashed ${theme.palette.divider}`,
+                                    borderRadius: 1.5,
+                                    px: 1,
+                                    py: 0.5,
+                                    textAlign: "left",
+                                    transition: "all 0.15s ease",
+                                    "&:hover": {
+                                      borderColor: "primary.main",
+                                      backgroundColor: (theme) =>
+                                        alpha(theme.palette.primary.main, 0.08),
+                                    },
+                                  }}
+                                  data-testid={`invoice-path-btn-${inv.id}`}
+                                >
+                                  <ContentCopyIcon
+                                    sx={{ fontSize: 13, color: "text.secondary", flexShrink: 0 }}
+                                  />
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "nowrap",
+                                      color: "text.primary",
+                                      fontWeight: 500,
+                                    }}
+                                  >
+                                    {inv.path_storage.split("/").pop() || inv.path_storage}
+                                  </Typography>
+                                </Box>
+                              </Tooltip>
+                            ) : (
+                              <Typography variant="caption" color="text.secondary">
+                                -
+                              </Typography>
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            {inv.path_storage ? (
+                              <Tooltip title={t("business:invoice_view_file_tooltip")}>
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  onClick={() => setPreviewInvoice(inv)}
+                                  data-testid={`invoice-view-file-btn-${inv.id}`}
+                                  aria-label={t("business:invoice_view_file_tooltip")}
+                                >
+                                  <VisibilityOutlinedIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            ) : (
+                              <Typography variant="caption" color="text.secondary">
+                                -
+                              </Typography>
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+                              <StatusDot active={inv.is_active} />
+                              <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                                {inv.is_active ? t("business:status_active") : t("business:status_inactive")}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell align="right">
+                            <IconButton
+                              size="small"
+                              onClick={(e) => handleOpenActionMenu(e, inv)}
+                              disabled={isFetchingOverview}
+                              data-testid={`invoice-actions-btn-${inv.id}`}
+                              aria-label={t("core:actions")}
+                            >
+                              <MoreVertIcon fontSize="small" />
+                            </IconButton>
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
-                </ScrollablePanelContent>
+                </TableContainer>
               ) : invoicesError ? null : (
                 <Box sx={{ py: 4, textAlign: "center" }}>
                   <Typography variant="body2" color="text.secondary">
@@ -468,7 +657,7 @@ export const OverviewTab: FC<Props> = ({
 
             <ScrollablePanelContent data-testid="key-providers-scroll-panel">
               <Stack spacing={2.5} sx={{ pr: 0.5 }}>
-                {!productsComplete || !providersComplete ? <Typography color="text.secondary">{t("business:aggregates_unavailable")}</Typography> : activeProvidersList.length > 0 ? (
+                {activeProvidersList.length > 0 ? (
                   activeProvidersList.map((prov) => {
                     const provStock = products
                       .filter((p) => String(p.provider_id) === String(prov.id))
@@ -511,6 +700,88 @@ export const OverviewTab: FC<Props> = ({
           </SectionCard>
         </Grid>
       </Grid>
+
+      {/* 3-Dots Action Menu for Invoices */}
+      <Menu
+        anchorEl={actionMenuAnchorEl}
+        open={Boolean(actionMenuAnchorEl)}
+        onClose={handleCloseActionMenu}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        slotProps={{
+          paper: {
+            sx: (theme) => ({
+              borderRadius: 2,
+              minWidth: 160,
+              boxShadow: theme.shadows[3],
+              border: `1px solid ${theme.palette.divider}`,
+            }),
+          },
+          list: {
+            sx: {
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px",
+              p: 1,
+            },
+          },
+        }}
+      >
+        {menuInvoice?.path_storage && (
+          <MenuItem
+            onClick={() => {
+              if (menuInvoice) setPreviewInvoice(menuInvoice);
+              handleCloseActionMenu();
+            }}
+            sx={{ borderRadius: 1 }}
+            data-testid="menu-item-preview-invoice"
+          >
+            <ListItemIcon>
+              <VisibilityOutlinedIcon fontSize="small" color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={t("business:invoice_view_file_tooltip")} />
+          </MenuItem>
+        )}
+
+        {menuInvoice?.path_storage && (
+          <MenuItem
+            onClick={() => {
+              if (menuInvoice?.path_storage) handleCopyPath(menuInvoice.path_storage);
+              handleCloseActionMenu();
+            }}
+            sx={{ borderRadius: 1 }}
+            data-testid="menu-item-copy-path"
+          >
+            <ListItemIcon>
+              <ContentCopyIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={t("business:invoice_copy_path_tooltip")} />
+          </MenuItem>
+        )}
+
+        <MenuItem
+          onClick={() => {
+            onSwitchTab?.(3);
+            handleCloseActionMenu();
+          }}
+          sx={{ borderRadius: 1 }}
+          data-testid="menu-item-view-all-invoices"
+        >
+          <ListItemIcon>
+            <ArrowForwardIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary={t("business:view_all_invoices")} />
+        </MenuItem>
+      </Menu>
+
+      {/* Preview Invoice File Modal */}
+      {previewInvoice && (
+        <InvoicePreviewModal
+          open={Boolean(previewInvoice)}
+          onClose={() => setPreviewInvoice(null)}
+          invoice={previewInvoice}
+        />
+      )}
     </Box>
   );
 };

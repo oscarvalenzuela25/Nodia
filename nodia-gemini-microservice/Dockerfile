@@ -10,12 +10,18 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Reviewed official x86-64 CLI. Installation does not activate or authenticate it.
+COPY antigravity-cli.lock.json .
+COPY scripts/install_agentic_cli.py scripts/install_agentic_cli.py
+RUN python scripts/install_agentic_cli.py --platform linux_amd64 --destination /opt/nodia/antigravity-cli/1.3.1
+
 # Copiar código fuente
 COPY . .
 
 # Crear directorios necesarios
 RUN useradd --uid 10001 --create-home nodia && \
-    mkdir -p browser_profile session_state temp_uploads && \
+    mkdir -p browser_profile session_state temp_uploads /home/nodia/agentic_profile && \
+    chown nodia:nodia /home/nodia/agentic_profile && \
     chown -R nodia:nodia /app
 
 USER nodia

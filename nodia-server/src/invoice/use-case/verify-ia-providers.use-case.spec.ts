@@ -9,7 +9,7 @@ describe('VerifyIaProvidersUseCase', () => {
   beforeEach(() => {
     geminiServiceMock = {
       verifyProvider: vi.fn(),
-      getModelsAndQuota: vi.fn().mockResolvedValue({ authenticated: true, available: true, models: [
+      getModelsAndQuota: vi.fn().mockResolvedValue({ authenticated: true, available: true, supported_options: { extended_thinking: true }, models: [
         { id: 'gemini-flash', capabilities: ['reasoning'] }, { id: 'gemini-3.8-flash', capabilities: ['vision'] },
       ] }),
     };
@@ -123,6 +123,9 @@ describe('VerifyIaProvidersUseCase', () => {
     const openai = result[0];
     expect(openai.can_use_model).toBe(false);
     expect(openai.error).toBe('No tiene un modelo por defecto asignado.');
+    expect(openai.use_api_key).toBe(true);
+    expect(openai.use_token_plan_web).toBe(false);
+    expect(openai.use_token_plan_agentic).toBe(false);
   });
 
   it('should mark provider as false with error if connection has no active api keys', async () => {
@@ -157,7 +160,7 @@ describe('VerifyIaProvidersUseCase', () => {
     expect(mistral.error).toBe('El modo API Key no tiene una integración de sesión admitida.');
   });
 
-  it('should fallback to another enabled mode when default_mode has no configured models', async () => {
+  it('does not switch modes when the configured default has no model', async () => {
     vi.mocked(geminiServiceMock.verifyProvider!).mockResolvedValue(true);
 
     const aiProviderServiceMock = {
@@ -194,10 +197,10 @@ describe('VerifyIaProvidersUseCase', () => {
 
     expect(result).toHaveLength(1);
     const gemini = result[0];
-    expect(gemini.can_use_model).toBe(true);
-    expect(gemini.active_mode).toBe('token_plan_web');
-    expect(gemini.default_model).toBe('gemini-3.8-flash');
-    expect(gemini.ocr_model).toBe('gemini-3.8-flash'); // fallback to default_model because no specific OCR
+    expect(gemini.can_use_model).toBe(false);
+    expect(gemini.active_mode).toBeNull();
+    expect(gemini.default_model).toBeNull();
+    expect(gemini.ocr_model).toBeNull();
   });
 
   it('should fallback to default_model when no specific OCR model exists', async () => {
@@ -247,6 +250,18 @@ describe('VerifyIaProvidersUseCase', () => {
     expect(result.extended_thinking_enabled).toBe(false);
     provider.fields.selected_model = '';
     expect((await verifier.execute())[0].can_use_model).toBe(false);
+  });
+  it('uses confirmed Web SDK options with a model that reports no reasoning capability', async () => {
+    const provider = { id: '1', key: 'gemini', is_active: true, mode: 'web_session', fields: { selected_model: 'opaque-live-id', enable_extended_thinking: true } };
+    const list = { findAllProviders: vi.fn().mockResolvedValue({ data: [provider] }) };
+    const verifier = new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService, list as never);
+    for (const option of [true, false, undefined, 'true']) {
+      vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({ authenticated: true, supported_options: { extended_thinking: option }, models: [{ id: 'opaque-live-id' }] });
+      const [result] = await verifier.execute();
+      expect(result.supports_thinking).toBe(option === true);
+      expect(result.extended_thinking_enabled).toBe(option === true);
+      expect(result.can_use_model).toBe(true);
+    }
   });
   it('does not allow a configured model missing from discovery', async () => {
     const list = { findAllProviders: vi.fn().mockResolvedValue({ data: [{ id: '1', key: 'gemini', is_active: true, mode: 'web_session', fields: { selected_model: 'obsolete' } }] }) };

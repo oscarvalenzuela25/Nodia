@@ -1,4 +1,6 @@
+import type { AiApiKeyEntity, CreateAiApiKeyPayload, UpdateAiApiKeyPayload, GetAiApiKeysParams } from "./types";
 import { mainInstance } from "../../../../../config/api";
+import { currentGeminiAgenticLoginSchema, geminiAgenticLoginSchema } from "./agenticLogin";
 import type {
   GetSelectableModelsParams,
   ProviderSelectableModelsResult,
@@ -20,6 +22,27 @@ import type {
 const getEndpoint = (path: string) => {
   const hasV1 = mainInstance.defaults.baseURL?.includes("/api/v1");
   return hasV1 ? path : `/api/v1${path}`;
+};
+
+export const startGeminiAgenticLogin = async () => {
+  const { data } = await mainInstance.post<unknown>(getEndpoint("/ai-providers/gemini-agentic-login/start"));
+  return geminiAgenticLoginSchema.parse(data);
+};
+export const getCurrentGeminiAgenticLogin = async () => {
+  const { data } = await mainInstance.get<unknown>(getEndpoint("/ai-providers/gemini-agentic-login/current"));
+  return currentGeminiAgenticLoginSchema.parse(data).job;
+};
+export const getGeminiAgenticLoginStatus = async (id: string) => {
+  const { data } = await mainInstance.get<unknown>(getEndpoint(`/ai-providers/gemini-agentic-login/${id}`));
+  return geminiAgenticLoginSchema.parse(data);
+};
+export const submitGeminiAgenticCode = async ({ id, code }: { id: string; code: string }) => {
+  const { data } = await mainInstance.post<unknown>(getEndpoint(`/ai-providers/gemini-agentic-login/${id}/code`), { code });
+  return geminiAgenticLoginSchema.parse(data);
+};
+export const cancelGeminiAgenticLogin = async (id: string) => {
+  const { data } = await mainInstance.post<unknown>(getEndpoint(`/ai-providers/gemini-agentic-login/${id}/cancel`));
+  return geminiAgenticLoginSchema.parse(data);
 };
 
 export const startGeminiLogin = async (): Promise<GeminiLoginJob> => {
@@ -139,4 +162,20 @@ export const getGeminiEngines = async (): Promise<GeminiDualEngineStatus | null>
     getEndpoint("/ai-providers/gemini-engines")
   );
   return data;
+};
+
+export const getAiApiKeys = async (params: GetAiApiKeysParams): Promise<PaginatedResponse<AiApiKeyEntity>> => {
+  const { data } = await mainInstance.get<PaginatedResponse<AiApiKeyEntity>>(getEndpoint("/ai-api-keys"), { params });
+  return data;
+};
+export const createAiApiKey = async (payload: CreateAiApiKeyPayload): Promise<AiApiKeyEntity> => {
+  const { data } = await mainInstance.post<AiApiKeyEntity>(getEndpoint("/ai-api-keys"), payload);
+  return data;
+};
+export const updateAiApiKey = async (id: string, payload: UpdateAiApiKeyPayload): Promise<AiApiKeyEntity> => {
+  const { data } = await mainInstance.put<AiApiKeyEntity>(getEndpoint(`/ai-api-keys/${id}`), payload);
+  return data;
+};
+export const deleteAiApiKey = async (id: string): Promise<void> => {
+  await mainInstance.delete(getEndpoint(`/ai-api-keys/${id}`));
 };

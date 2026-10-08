@@ -21,7 +21,6 @@ import { GetAiApiKeysDto } from './dto/get-ai-api-keys.dto.js';
 import { CreateAiProviderEventDto } from './dto/create-ai-provider-event.dto.js';
 import { GetAiProviderEventsDto } from './dto/get-ai-provider-events.dto.js';
 import {
-  AiConnectionMode,
   GetAiProvidersResponse,
   GetAiApiKeysResponse,
   GetAiProviderEventsResponse,
@@ -168,9 +167,11 @@ export class AiProviderService {
       });
     }
 
-    const effectiveKey = providerData.key || catalog?.key || 'unknown';
+    if (!catalog || catalog.is_active === false) throw new BadRequestException('Seleccione un proveedor activo del catálogo.');
+    const effectiveKey = catalog.key;
     const effectiveName = providerData.name || catalog?.name || effectiveKey;
     const supported = getSupportedProviderByKey(effectiveKey);
+    if (!supported) throw new BadRequestException('Este proveedor no tiene una integración implementada.');
     let mode = providerData.mode;
     if (!mode && supported) {
       mode = supported.defaultMode;
@@ -277,6 +278,7 @@ export class AiProviderService {
     const existing = await this.findProviderById(id);
     const { translates, ...rest } = updateDto;
 
+    if (rest.catalog_id && rest.catalog_id !== existing.catalog_id) throw new BadRequestException('El proveedor de catálogo de una conexión no se puede cambiar.');
     const catalogId = rest.catalog_id ?? existing.catalog_id;
     let key = rest.key ?? existing.key;
     const name = rest.name ?? existing.name;
@@ -500,58 +502,56 @@ export class AiProviderService {
   }
 
   async createApiKey(createDto: CreateAiApiKeyDto): Promise<AiApiKey> {
-    await this.findProviderById(createDto.provider_id);
-
-    if (createDto.is_selected) {
-      await this.aiApiKeyRepository.update(
-        { provider_id: createDto.provider_id, is_selected: true },
-        { is_selected: false },
-      );
-    }
-
+    const provider = await this.findProviderById(createDto.provider_id);
+    if (provider.catalog?.can_use_api_key !== true) throw new BadRequestException('El catálogo no permite API keys.');
     const { secret, ...rest } = createDto;
-    const secret_ciphertext = encryptSecret(secret);
-    const secret_fingerprint = generateFingerprint(secret);
-    const display_hint = generateDisplayHint(secret);
-
-    const apiKey = this.aiApiKeyRepository.create({
-      ...rest,
-      secret_ciphertext,
-      secret_fingerprint,
-      display_hint,
-    });
-
-    return this.aiApiKeyRepository.save(apiKey);
+    if (rest.is_active === false) rest.is_selected = false;
+    const encrypted = { secret_ciphertext: encryptSecret(secret), secret_fingerprint: generateFingerprint(secret), display_hint: generateDisplayHint(secret) };
+    try {
+      return await this.aiApiKeyRepository.manager.transaction(async (manager) => {
+        await manager.getRepository(AiProvider).findOneOrFail({ where: { id: createDto.provider_id }, lock: { mode: 'pessimistic_write' } });
+        const repo = manager.getRepository(AiApiKey);
+        if (rest.is_active !== false && await repo.countBy({ provider_id: createDto.provider_id }) === 0) rest.is_selected = true;
+        if (rest.is_selected) await repo.update({ provider_id: createDto.provider_id, is_selected: true }, { is_selected: false });
+        return repo.save(repo.create({ ...rest, ...encrypted }));
+      });
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === '23505') throw new ConflictException('Esta API key ya está registrada en la conexión.');
+      throw error;
+    }
   }
 
-  async updateApiKey(
-    id: string,
-    updateDto: UpdateAiApiKeyDto,
-  ): Promise<AiApiKey> {
-    const apiKey = await this.findApiKeyById(id);
-
-    if (updateDto.is_selected) {
-      await this.aiApiKeyRepository.update(
-        { provider_id: apiKey.provider_id, is_selected: true },
-        { is_selected: false },
-      );
-    }
-
+  async updateApiKey(id: string, updateDto: UpdateAiApiKeyDto): Promise<AiApiKey> {
+    const existing = await this.findApiKeyById(id);
     const { secret, ...rest } = updateDto;
-    Object.assign(apiKey, rest);
-
-    if (secret) {
-      apiKey.secret_ciphertext = encryptSecret(secret);
-      apiKey.secret_fingerprint = generateFingerprint(secret);
-      apiKey.display_hint = generateDisplayHint(secret);
+    const encrypted = secret ? { secret_ciphertext: encryptSecret(secret), secret_fingerprint: generateFingerprint(secret), display_hint: generateDisplayHint(secret) } : {};
+    try {
+      return await this.aiApiKeyRepository.manager.transaction(async (manager) => {
+        await manager.getRepository(AiProvider).findOneOrFail({ where: { id: existing.provider_id }, lock: { mode: 'pessimistic_write' } });
+        const repo = manager.getRepository(AiApiKey);
+        const current = await repo.findOneOrFail({ where: { id } });
+        if ((rest.is_active ?? current.is_active) && await repo.countBy({ provider_id: existing.provider_id }) === 1) rest.is_selected = true;
+        if (rest.is_selected && !(rest.is_active ?? current.is_active)) throw new BadRequestException('No se puede seleccionar una API key inactiva.');
+        if (rest.is_selected) await repo.update({ provider_id: existing.provider_id, is_selected: true }, { is_selected: false });
+        Object.assign(current, rest, encrypted);
+        if (!current.is_active) current.is_selected = false;
+        return repo.save(current);
+      });
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === '23505') throw new ConflictException('Esta API key ya está registrada en la conexión.');
+      throw error;
     }
-
-    return this.aiApiKeyRepository.save(apiKey);
   }
 
   async deleteApiKey(id: string): Promise<void> {
     const apiKey = await this.findApiKeyById(id);
-    await this.aiApiKeyRepository.remove(apiKey);
+    await this.aiApiKeyRepository.manager.transaction(async (manager) => {
+      await manager.getRepository(AiProvider).findOneOrFail({ where: { id: apiKey.provider_id }, lock: { mode: 'pessimistic_write' } });
+      const repo = manager.getRepository(AiApiKey);
+      await repo.delete({ id });
+      const remaining = await repo.find({ where: { provider_id: apiKey.provider_id }, take: 2 });
+      if (remaining.length === 1 && remaining[0].is_active) await repo.update({ id: remaining[0].id }, { is_selected: true });
+    });
   }
 
   // ===========================================================================
@@ -618,25 +618,20 @@ export class AiProviderService {
     return this.aiProviderEventRepository.save(event);
   }
 
-  async getActiveApiKeySecret(providerId: string): Promise<string | null> {
-    const keyEntity = await this.aiApiKeyRepository
-      .createQueryBuilder('key')
-      .addSelect('key.secret_ciphertext')
-      .where('key.provider_id = :providerId', { providerId })
+  async getEligibleApiKeySecrets(providerId: string, rotate = false): Promise<string[]> {
+    const qb = this.aiApiKeyRepository.createQueryBuilder('key')
+      .addSelect('key.secret_ciphertext').where('key.provider_id = :providerId', { providerId })
       .andWhere('key.is_active = true')
-      .orderBy('key.is_selected', 'DESC')
-      .addOrderBy('key.sort_order', 'ASC')
-      .getOne();
+      .andWhere('(key.cooldown_until IS NULL OR key.cooldown_until <= :now)', { now: new Date() })
+      .orderBy('key.is_selected', 'DESC').addOrderBy('key.sort_order', 'ASC').addOrderBy('key.id', 'ASC');
+    if (!rotate) qb.andWhere('key.is_selected = true');
+    const entities = await qb.take(rotate ? 20 : 1).getMany();
+    try { return entities.map((key) => decryptSecret(key.secret_ciphertext)); }
+    catch { throw new BadRequestException('No se pudo descifrar la API key configurada. Revise la configuración de cifrado.'); }
+  }
 
-    if (!keyEntity || !keyEntity.secret_ciphertext) {
-      return null;
-    }
-
-    try {
-      return decryptSecret(keyEntity.secret_ciphertext);
-    } catch {
-      return null;
-    }
+  async getActiveApiKeySecret(providerId: string): Promise<string | null> {
+    return (await this.getEligibleApiKeySecrets(providerId))[0] ?? null;
   }
 
   async updateProviderFields(

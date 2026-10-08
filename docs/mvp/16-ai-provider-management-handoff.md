@@ -1,5 +1,12 @@
 # Entrega para agente — Gestión global de proveedores de IA
 
+
+## Aclaración vigente del usuario — 2026-10-06
+
+Las API keys están permitidas, excepto las gratuitas de Gemini. La recuperación actual ofrece **Gemini: API/Web/Agentic** y **OpenAI: API**. Los tres `can_use_*` del catálogo definen modos configurables; los `use_*` de cada instancia habilitan sus canales y `default_mode` expresa la elección. Modelos y claves se mantienen por instancia/modo, sin fallback automático. Las referencias anteriores a «Cero API Keys», primera entrega Gemini/Mistral o un único modo habilitable quedan como antecedente histórico y son sustituidas por esta aclaración en el alcance recuperado.
+
+Se conserva el requisito de datos operativos comprobables: una clave guardada o un catálogo consultado no prueban inferencia, capacidades ni cuotas. Antigravity continúa sin disponibilidad certificada. La recuperación no incluye restaurar la auditoría visual retirada ni cerrar todos los pendientes de la especificación histórica. Implementación, alternativas y límites en [ADR-015](../architecture/decisions/ADR-015-ai-api-provider-recovery.md). Los documentos mantienen su estado de revisión.
+
 > Estado: en revisión; **no aprobado**
 > Fecha: 2026-09-25
 > Origen: [entrevista](15-ai-providers-interview.md)
@@ -158,3 +165,4 @@ Referencias externas para comprobar viabilidad y condiciones: [Playwright en Doc
 ## 11. Encargo listo para entregar a un agente
 
 > Implementa la gestión global de proveedores de IA descrita en `docs/mvp/16-ai-provider-management-handoff.md`. Lee primero `AGENTS.md`, `docs/mvp/README.md`, `docs/mvp/00-progress.md`, la entrevista `docs/mvp/15-ai-providers-interview.md` y `docs/architecture/decisions/ADR-005-gemini-web-session.md` y `ADR-006-ai-provider-configuration.md`. Conserva los cambios ajenos ya presentes en el workspace y respeta las skills locales antes de modificar código. Empieza por una prueba de login remoto de Gemini Web en un VPS de ensayo; documenta su resultado y ajusta la propuesta si falla. Luego implementa persistencia/seguridad, adaptadores, rotación de API keys en la misma factura, autorización por roles, panel de IA y despliegue operativo. Mantén Gemini y Mistral seleccionables por factura, no hagas fallback automático entre proveedores ni entre Gemini Web y Gemini API. Completa pruebas de casos de uso, componentes y ciclo de sesión, build/lint y verificación integrada. Revisa los documentos dependientes y no los marques aprobados sin confirmación explícita del usuario.
+> Contrato recuperado vigente (2026-10-06): consultar [funcionalidades IA y regresiones](ai-provider-feature-contract.md) antes de modificar esquema, formularios, modelos, cuotas o claves. Sus requisitos explícitos del usuario actualizan los antecedentes históricos de este documento; no retirar controles por aplicar la antigua prohibición general de API keys.

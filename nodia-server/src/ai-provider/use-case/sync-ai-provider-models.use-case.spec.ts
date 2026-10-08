@@ -79,7 +79,7 @@ describe('SyncAiProviderModelsUseCase', () => {
     expect(aiProviderServiceMock.updateProviderFields).toHaveBeenCalledWith(
       '1',
       expect.objectContaining({
-        available_models: expect.any(Array),
+        token_plan_web: expect.objectContaining({ available_models: expect.any(Array) }),
       }),
     );
   });
@@ -100,7 +100,7 @@ describe('SyncAiProviderModelsUseCase', () => {
     );
   });
 
-  it('should throw BadRequestException if API_KEY provider has no active key', async () => {
+  it('rejects a historical API provider that has no enabled API channel', async () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '2',
       key: 'openai',
@@ -113,7 +113,7 @@ describe('SyncAiProviderModelsUseCase', () => {
     );
 
     await expect(useCase.execute('2')).rejects.toThrow(
-      'modo API Key no está habilitado',
+      'El canal API no está habilitado',
     );
   });
 
@@ -149,14 +149,14 @@ describe('SyncAiProviderModelsUseCase', () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({ id: '1', key: 'gemini', mode: AiConnectionMode.WEB_SESSION } as never);
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-    await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow('modo API Key no está habilitado');
+    await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow('El canal API no está habilitado');
     expect(fetchMock).not.toHaveBeenCalled();
     expect(aiProviderServiceMock.getActiveApiKeySecret).not.toHaveBeenCalled();
     expect(aiProviderServiceMock.updateProviderFields).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
 
-  it('should throw BadRequestException when Gemini API key fails, reporting Gemini error', async () => {
+  it('rejects historical Gemini API configuration before reading its key', async () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '1',
       key: 'gemini',
@@ -177,13 +177,13 @@ describe('SyncAiProviderModelsUseCase', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow(
-      'modo API Key no está habilitado',
+      'El canal API no está habilitado',
     );
 
     vi.unstubAllGlobals();
   });
 
-  it('should throw BadRequestException when unrecognized provider has no baseUrl', async () => {
+  it('rejects an unconfigured API channel for an unknown provider', async () => {
     vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
       id: '99',
       key: 'unknown-custom-llm',
@@ -196,7 +196,7 @@ describe('SyncAiProviderModelsUseCase', () => {
     );
 
     await expect(useCase.execute('99', { mode: 'api_key' })).rejects.toThrow(
-      'modo API Key no está habilitado',
+      'El canal API no está habilitado',
     );
   });
 

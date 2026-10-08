@@ -39,6 +39,16 @@ Esta carpeta contiene la definición del producto previa al desarrollo. Debe per
 | `17-security-hardening-plan.md` | Plan por etapas para asegurar Nodia API, Gemini y su despliegue |
 | `18-security-deployment-runbook.md` | Secuencia y pruebas de despliegue seguro, migración y reversión |
 | `19-prelaunch-review.md` | Revisión de Client, Server y Gemini; riesgos y plan de corrección previo al lanzamiento |
+| [Contrato de funcionalidades IA](ai-provider-feature-contract.md) | Esquema vigente, switches, claves, cuotas, thinking y matriz de regresiones que debe conservarse |
+| [32-agentic-cli-implementation-plan.md](32-agentic-cli-implementation-plan.md) | Reemplazo agéntico mediante CLI oficial: doce pasos, rutas, contratos estables, autenticación operativa y aceptación con documentos reales; plan en revisión, AG-01 pendiente |
+
+## Integraciones pendientes de retomar
+
+Funcionalidad añadida por solicitud del usuario: [Autenticación Gemini Agentic desde Ajustes IA](../features/ai-providers/gemini-agentic-authentication.md). Login remoto con enlace/código del CLI del servidor, independiente de Web; contratos, límites, pruebas y pendientes del VPS en esa sección. Decisión [ADR-017](../architecture/decisions/ADR-017-gemini-agentic-remote-login.md).
+
+| Documento | Estado y primer paso |
+|---|---|
+| [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md) | Plan solicitado de OpenAI Codex `token_plan_agentic`: doce pasos propuestos, modelos dinámicos y API key conservada. Primer pendiente CG-01: acceso/autenticación compatible con despliegue. NestJS + app-server supervisado; catálogo actual aún API únicamente. Al completar, trasladar a `docs/features/ai-providers/` y retirar el plan. |
 
 ## Finanzas personales — ampliación y planes
 
@@ -90,3 +100,5 @@ Para añadir microservicios internos, consultar la [guía de seguridad](../archi
 4. Conversación o memoria externa.
 
 Creado el 2026-08-15.
+
+Operación del transporte agéntico implementado: [runbook Antigravity CLI](agentic-cli-runbook.md). Retomar pendientes de entorno/pantalla del plan 32 conservando los contratos IA recuperados.

@@ -42,7 +42,7 @@ El modelo cubre la base de identidad, autorización, navegación, internacionali
 Once tablas nuevas, compartidas por casa: `rental_properties`, `rental_collaborators`, `rental_cancellation_policies`, `rental_cancellation_rules`, `rental_reservations`, `rental_payments`, `rental_expenses`, `rental_blocks`, `rental_turnovers`, `rental_audit_events` y `rental_operations`. Propietario/colaboradores, noches, CLP, preparación, caja, condiciones conservadas, auditoría e idempotencia. El usuario aceptó el [ERD 27](27-rental-reservations-erd.md) el 2026-10-04; esa aceptación no aprueba el resto del modelo global.
 
 ### Proveedores de Inteligencia Artificial (IA)
-- `ai_provider_catalog`: catálogo maestro de proveedores de IA reconocidos (`gemini`, `openai`, `anthropic`, `mistral`, `deepseek`, `groq`, `perplexity`, etc.) con su clave canónica, nombre comercial y estado de activación.
+- `ai_provider_catalog`: catálogo maestro con clave, nombre, activación y los tres `can_use_*`. Gemini admite configurar API/Web/Agentic y OpenAI API. Se conservan catálogos históricos; el selector ofrece integraciones implementadas. Los flags no prueban disponibilidad. Aclaración funcional del usuario del 2026-10-06; ver ADR-015.
 - `ai_providers`: instancias o conexiones configuradas asociadas opcionalmente a un proveedor del catálogo (`catalog_id`), con nombre descriptivo (`name`), clave técnica (`key`), método de conexión activo (`mode`: `web_session`, `api_key`), campos no secretos tipados (`fields jsonb`: `available_models`, `selected_model`, `ocr_focus_model`, `enable_extended_thinking`) y rotación automática de claves (`auto_rotate_api_keys`). Permite múltiples instancias por proveedor (ej. cuenta principal headless + API Key secundaria de respaldo).
 - `ai_api_keys`: claves API cifradas en reposo (`secret_ciphertext`), asociadas directamente a `provider_id`, con huella HMAC para deduplicación (`secret_fingerprint`), máscara no sensible (`display_hint`), orden de rotación (`sort_order`), clave activa (`is_selected`) y monitoreo de salud (`health_state`: `untested`, `valid`, `needs_review`, `cooldown`).
 - `ai_provider_events`: registro inmutable de auditoría para eventos operativos, cambios de modo, rotación de claves, inicios de sesión web y fallos del sistema sin exponer credenciales ni facturas.
@@ -339,20 +339,25 @@ Table ai_provider_catalog [headercolor: #49e3e3] {
 	is_active boolean [ not null, default: true ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
+	can_use_api_key boolean [ not null, default: false, note: 'Permite configurar API; no demuestra disponibilidad' ]
+	can_use_token_plan_web boolean [ not null, default: false, note: 'Permite configurar sesión Web' ]
+	can_use_token_plan_agentic boolean [ not null, default: false, note: 'Permite configurar sesión Agentic' ]
 }
 
 Table ai_providers [headercolor: #49e3e3] {
 	id bigint [ pk, increment, not null ]
 	catalog_id bigint [ note: 'Referencia al catálogo de proveedor de IA' ]
 	name varchar(128) [ note: 'Nombre descriptivo de la instancia o conexión' ]
-	key varchar(64) [ note: 'Clave técnica del adaptador (ej: gemini, mistral, openai)' ]
-	mode ai_connection_mode [ note: 'Método de conexión activo: web_session o api_key' ]
 	fields jsonb [ not null, default: '{}', note: 'Configuración no secreta: available_models, selected_model, ocr_focus_model, enable_extended_thinking' ]
-	fields_version smallint [ not null, default: 1 ]
 	auto_rotate_api_keys boolean [ not null, default: true, note: 'Auto-rotar API Keys en caso de cuota excedida (429)' ]
 	is_active boolean [ not null, default: true, note: 'Habilitación administrativa general' ]
 	created_at timestamp [ not null ]
 	updated_at timestamp [ not null ]
+	use_api_key boolean [ not null, default: false ]
+	use_token_plan_web boolean [ not null, default: false ]
+	use_token_plan_agentic boolean [ not null, default: false ]
+	default_mode varchar(32) [ note: 'Canal elegido: api_key, token_plan_web o token_plan_agentic; nullable' ]
+	is_default boolean [ not null, default: false ]
 }
 
 Table ai_api_keys [headercolor: #49e3e3] {

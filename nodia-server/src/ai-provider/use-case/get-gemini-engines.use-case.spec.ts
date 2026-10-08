@@ -150,4 +150,26 @@ describe('GetGeminiEnginesUseCase quota provenance', () => {
     expect(result?.web.quota).toMatchObject({ '4-123': { usage_percentage: 0, remaining: 0, total: 0 } });
     expect((result?.web.quota as Record<string, unknown> | undefined)?.['4-123']).not.toHaveProperty('label');
   });
+
+  it.each([
+    { quota_source: 'web' }, { quota_observed_at: null },
+    { quota_observed_at: (Date.now() - 61000) / 1000 }, { has_active_session: false },
+  ])('does not attribute wrong-source, stale or unauthenticated quota to Agentic (%j)', async (override) => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ agentic: {
+      available: true, has_active_session: true, quota_source: 'agentic_cli', quota_observed_at: Date.now() / 1000,
+      quota: { 'observed-window': { usage_percentage: 0 } }, ...override,
+    } }) }));
+    const result = await new GetGeminiEnginesUseCase(new GeminiService()).execute();
+    expect(result?.agentic.quota).toBeNull();
+  });
+
+  it('preserves Agentic zero from the verified CLI report with its own source', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ agentic: {
+      available: true, has_active_session: true, quota_source: 'agentic_cli', quota_observed_at: Date.now() / 1000,
+      quota: { 'observed-window': { usage_percentage: 0, remaining: null, total: null } },
+    } }) }));
+    const result = await new GetGeminiEnginesUseCase(new GeminiService()).execute();
+    expect(result?.agentic.quota_source).toBe('agentic_cli');
+    expect(result?.agentic.quota).toMatchObject({ 'observed-window': { usage_percentage: 0, remaining: null, total: null } });
+  });
 });

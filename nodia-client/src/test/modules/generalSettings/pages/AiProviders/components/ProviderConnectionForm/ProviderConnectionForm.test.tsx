@@ -38,12 +38,12 @@ describe("ProviderConnectionForm", () => {
     vi.mocked(services.updateAiProvider).mockResolvedValue({ id: provider.id, key: "gemini", is_active: true, created_at: "", updated_at: "" });
   });
 
-  it("creates only subscription connections permitted by the catalog", async () => {
+  it("shows API and subscription connections permitted by the catalog", async () => {
     const user = userEvent.setup(), close = vi.fn();
     renderForm(close);
     await waitFor(() => expect(screen.getByRole("button", { name: "Proveedor" })).toHaveAttribute("aria-disabled", "false"));
     await user.click(screen.getByRole("button", { name: "Proveedor" }));
-    expect(screen.queryByText("API only")).not.toBeInTheDocument();
+    expect(screen.getByText("API only")).toBeInTheDocument();
     await user.click(screen.getByText("Google Gemini"));
     expect(screen.getByRole("switch", { name: /Antigravity/i })).toBeDisabled();
     await user.click(screen.getByRole("switch", { name: /Web/i }));
@@ -54,6 +54,32 @@ describe("ProviderConnectionForm", () => {
     })));
     expect(close).toHaveBeenCalledOnce();
     expect(sileo.success).toHaveBeenCalledOnce();
+  });
+
+  it("creates an OpenAI API connection without offering unsupported subscription modes", async () => {
+    const user = userEvent.setup(), close = vi.fn();
+    vi.mocked(services.getAiProviderCatalog).mockResolvedValue([{ ...catalog, id: "openai-catalog", key: "openai", name: "OpenAI", can_use_token_plan_web: false, can_use_token_plan_agentic: false }]);
+    renderForm(close);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Proveedor" })).toHaveAttribute("aria-disabled", "false"));
+    await user.click(screen.getByRole("button", { name: "Proveedor" })); await user.click(screen.getByText("OpenAI"));
+    expect(screen.getByRole("switch", { name: "API key" })).toBeChecked();
+    expect(screen.getByRole("switch", { name: /Web/i })).toBeDisabled();
+    expect(screen.getByRole("switch", { name: /Antigravity/i })).toBeDisabled();
+    const defaultSwitch = screen.getByRole("switch", { name: "Predeterminado" });
+    expect(defaultSwitch.compareDocumentPosition(screen.getByRole("switch", { name: "Activo" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await user.click(defaultSwitch);
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+    await waitFor(() => expect(services.createAiProvider).toHaveBeenCalledWith(expect.objectContaining({ catalog_id: "openai-catalog", use_api_key: true, default_mode: "api_key", use_token_plan_web: false, use_token_plan_agentic: false, is_default: true })));
+  });
+
+  it("keeps API enabled and rotation intact when editing a historical connection", async () => {
+    const user = userEvent.setup(), close = vi.fn();
+    const historical = { ...provider, use_api_key: true, auto_rotate_api_keys: true, default_mode: "api_key" as const };
+    render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><ProviderConnectionForm provider={historical} onClose={close} /></QueryClientProvider>);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Guardar" })).toBeEnabled());
+    await user.type(screen.getByRole("textbox"), " edited");
+    await user.click(screen.getByRole("button", { name: "Guardar" }));
+    await waitFor(() => expect(services.updateAiProvider).toHaveBeenCalledWith(provider.id, expect.objectContaining({ use_api_key: true, auto_rotate_api_keys: true, default_mode: "api_key" })));
   });
 
   it("updates the selected instance and preserves form data when saving fails", async () => {
