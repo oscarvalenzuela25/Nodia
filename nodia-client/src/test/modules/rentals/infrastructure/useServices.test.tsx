@@ -364,6 +364,35 @@ describe("rental write intents", () => {
   });
 });
 describe("rental scope cache", () => {
+  it("ignores a late access rejection from an earlier session of the same actor", async () => {
+    let finishCancellation: () => void = () => {};
+    let checking = false;
+    vi.spyOn(client, "cancelQueries").mockImplementationOnce(async () => {
+      checking = true;
+      await new Promise<void>((resolve) => {
+        finishCancellation = resolve;
+      });
+    });
+    mainInstance.defaults.adapter = async (config) => {
+      throw reject(config, 404, "rental:not_found");
+    };
+    renderHook(() => useRentalRecord("payments", "1", "7"), { wrapper });
+    await waitFor(() => expect(checking).toBe(true));
+    act(() => {
+      useAuthStore.getState().logout();
+      login("1");
+    });
+    const key = rentalKeys.list("1", "1", "expenses", {});
+    client.setQueryData(key, {
+      data: [],
+      meta: { page: 1, limit: 10, total_items: 0, total_pages: 0 },
+    });
+    await act(async () => {
+      finishCancellation();
+    });
+    expect(client.getQueryData(key)).toBeDefined();
+    expect(client.getQueryState(key)?.isInvalidated).toBe(false);
+  });
   it("does not retain a previous house's rows as placeholder data", async () => {
     mainInstance.defaults.adapter = async (config) =>
       response(config, {

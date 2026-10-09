@@ -11,6 +11,7 @@ const InputSearch: FC<InputSearchProps> = ({
   value,
   onChange,
   placeholder,
+  ariaLabel,
   onClear,
   disabled = false,
   fullWidth = true,
@@ -126,6 +127,7 @@ const InputSearch: FC<InputSearchProps> = ({
       className={className}
       variant={variant}
       slotProps={{
+        htmlInput: { "aria-label": ariaLabel ?? placeholder ?? t("search") },
         input: {
           startAdornment: (
             <InputAdornment position="start">
@@ -136,7 +138,8 @@ const InputSearch: FC<InputSearchProps> = ({
             <InputAdornment position="end">
               <IconButton
                 size="small"
-                aria-label="clear search"
+                aria-label={t("clear_search")}
+                disabled={disabled}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={handleClear}
                 edge="end"

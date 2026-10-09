@@ -276,8 +276,11 @@ export const analyzeInvoice = async (
     {
       headers: {
         "Content-Type": undefined,
+        ...(params.analysisId ? { "X-Nodia-Analysis-Id": params.analysisId } : {}),
       },
       timeout: 360000,
+      signal: params.signal,
+      onUploadProgress: params.onUploadProgress,
     }
   );
   return data;

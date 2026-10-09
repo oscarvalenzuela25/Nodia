@@ -322,6 +322,9 @@ export interface AnalyzeInvoiceResponse {
 }
 
 export interface AnalyzeInvoiceParams {
+  analysisId?: string;
+  signal?: AbortSignal;
+  onUploadProgress?: (event: import('axios').AxiosProgressEvent) => void;
   file: File;
   business_id: string;
   provider_id?: string;

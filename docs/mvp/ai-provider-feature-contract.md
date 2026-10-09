@@ -2,11 +2,15 @@
 
 Fecha: 2026-10-06. Estado documental: en revisión; requisitos pedidos explícitamente por el usuario e implementados, sin aprobación automática del documento. Complementa los documentos 15/16 y ADR-015. Una modificación que retire un requisito exige una nueva decisión explícita y actualizar sus pruebas; no eliminar funcionalidades por interpretar una política histórica.
 
+## Indicadores del topbar — 2026-10-08
+
+El predeterminado muestra hasta tres indicadores por sus modos habilitados, consumiendo la misma caché de salud. Verde exige observación de sesión disponible/autenticada; API configurada sin comprobación conserva estado sin verificar en rojo. El clic abre el ID y pestaña exactos en Ajustes IA. Sin predeterminado o permisos, se omite el grupo. Revalidación no desmonta los iconos; un fallo invalida el verde anterior. Contrato, pruebas y límites: [funcionalidad del topbar](../features/ai-providers/topbar-mode-health.md).
+
 ## Esquema y separación de responsabilidades
 
 | Recurso | Contrato vigente |
 |---|---|
-| `ai_provider_catalog` | `key`, nombre, activo y booleanos `can_use_api_key`, `can_use_token_plan_web`, `can_use_token_plan_agentic`. Gemini permite los tres; OpenAI API/Agentic tras la migración Codex pendiente, Web deshabilitado. Son permisos de configuración, no pruebas de disponibilidad. |
+| `ai_provider_catalog` | `key`, nombre, activo y booleanos `can_use_api_key`, `can_use_token_plan_web`, `can_use_token_plan_agentic`. Gemini permite los tres; OpenAI API/Agentic con migración Codex aplicada en BD local el 2026-10-08, Web deshabilitado. Son permisos de configuración, no pruebas de disponibilidad. |
 | `ai_providers` | `catalog_id`, nombre, `use_api_key`, `use_token_plan_web`, `use_token_plan_agentic`, `default_mode`, `is_default`, `is_active`, `auto_rotate_api_keys`, `fields`, timestamps. Los tres `use_*` son booleanos independientes. |
 | Columnas retiradas | `key`, `mode` y `fields_version` no son columnas de `ai_providers`. Los getters/proyecciones de compatibilidad pueden conservar `key`/`mode`; nunca recrear las columnas por copiar DTOs antiguos. |
 | `ai_api_keys` | Claves cifradas por ID de conexión; solo máscara pública. Exclusividad de selección bajo bloqueo transaccional de la instancia. |
@@ -16,8 +20,12 @@ Entidades TypeORM y migraciones son el contrato del almacenamiento. Los DBML del
 
 ## Formularios y paneles
 
+- Carga inicial de Ajustes IA: mientras falte la primera respuesta de conexiones o health, mostrar un panel Boneyard visible con estado de carga ES/EN, también en enlaces directos al detalle; no mostrar un vacío ni estados operativos prematuros. Con datos en caché, la revalidación conserva el contenido con progreso sutil y el fallo muestra recuperación. El selector y las acciones de cabecera se bloquean durante la petición.
+- Login Codex: `available:false` bloquea Conectar y muestra aviso dentro/fuera del modal, con reconsulta explícita. Un POST rechazado conserva modal y mensaje del servidor; `codex_runtime_unavailable` exige una observación posterior disponible antes de habilitar otro intento. Una consulta de sesión fallida también bloquea login aunque el health anterior fuera disponible. El frontend no deduce el SO del servidor ni cambia proveedor/modo.
+- Etiquetas neutrales por solicitud del 2026-10-08: **Sesión Agéntica**, **Sesión Web** y **Entorno Agéntico**, sin nombres de proveedor/adaptador o plan entre paréntesis; equivalentes ES/EN. Tarjetas, formularios, detalle y avisos de sincronización usan descripciones del proveedor, sin atribuir Antigravity/Google One a otros adaptadores ni cuotas/costos fijos. Estas etiquetas no cambian el estado operativo recibido ni los contratos de autenticación.
+
 - Añadir/editar conexión incluye el switch **Predeterminado antes de Activo** y envía `is_default`. Para la primera conexión conocida se propone activado; el usuario puede cambiarlo. Elegir otra conexión predeterminada desmarca la anterior en Server.
-- El selector permite Gemini/OpenAI según el catálogo activo y su adaptador. OpenAI ofrece API y, tras la migración Codex pendiente, Agentic; Web queda deshabilitado. Gemini ofrece API/Web/Agentic. La autorización de API keys está vigente; excluir Gemini gratuito no significa desactivar todas las API keys.
+- El selector permite Gemini/OpenAI según el catálogo activo y su adaptador. OpenAI ofrece API y Agentic tras aplicar la migración Codex (ya aplicada en BD local); Web queda deshabilitado. La conexión OpenAI ID 4 tiene Agentic habilitado por solicitud explícita, con API como predeterminado; cuenta/inferencia y Windows pendientes. Gemini ofrece API/Web/Agentic. La autorización de API keys está vigente; excluir Gemini gratuito no significa desactivar todas las API keys.
 - **Modelos precede a API keys**. Las tablas siguen el tema MUI y el contenedor/paginación del resto de Ajustes; mínimo 650 px y scroll horizontal transparente en móvil.
 - Seleccionar clave usa un switch con nombre accesible. Encender una desmarca las restantes de esa conexión, incluso entre páginas y peticiones simultáneas. Con varias claves se permite apagar la seleccionada; esto deja el canal sin selección hasta elegir otra y no habilita un fallback.
 - Una única clave activa queda seleccionada y su switch deshabilitado. Crear la primera, editarla o eliminar hasta dejar una normaliza esa selección en Server. Una clave inactiva no se presenta como utilizable. La migración `1791330000000` repara pools históricos con una sola clave activa sin tocar secretos ni pools múltiples.
@@ -117,3 +125,14 @@ La petición del usuario fija local primero y QA temporal con TryCloudflare desp
 | Alertas | OpenAI conserva ID de conexión para gestionar Codex; no abre el login Gemini ni elige la primera instancia del mismo catálogo. |
 
 [ADR-018](../architecture/decisions/ADR-018-openai-codex-agentic.md) y [funcionalidad/runbook](../features/ai-providers/openai-codex-agentic.md). CG-01..12 conservan las aceptaciones reales pendientes en el plan 33; no borrarlo ni marcar disponible por pruebas sintéticas.
+
+## Consola observable del análisis — 2026-10-08
+
+[Plan 34 y evidencia](34-invoice-analysis-console-plan.md#8-entrega-local--2026-10-08), [ADR-019](../architecture/decisions/ADR-019-invoice-analysis-observations.md). Implementación local autorizada; aceptación operativa pendiente.
+
+- Consola visible junto al drag and drop desde 900 px útiles y debajo en anchos menores; controles compartidos y borrador editable posterior. No guarda factura ni stock al terminar extracción.
+- Reserva de observación sin inferencia, claim atómico antes de multipart/DTO y lectura autenticada por actor/ID/cursor, contexto exacto, no-store y límites/TTL. Reutilizar ID falla antes de otro envío; otra identidad recibe 404.
+- Hitos exclusivamente observados. API/Web ofrecen detalle del adaptador; Agentic categorías del NDJSON; Codex thread/turn propios. Ningún texto de documento, stdout libre, argumentos, secretos ni reasoning. Modelos resueltos dinámicamente; desconocidos permanecen null.
+- Recuperar seguimiento nunca reenvía análisis. Respuesta principal perdida sigue siendo incierta aun con extracción terminal en snapshot; no hay recuperación durable de JSON. Errores conservan entradas/archivo y un aviso por episodio; histórico fallido conserva el catálogo existente.
+- Señal principal llega a API/Gemini/Codex con deadlines existentes. Cancelación Codex solo detiene el lease adquirido; eventos de turnos ajenos quedan excluidos. Renovar token pausa seguimiento; logout/cambio de sesión/negocio/desmontaje invalidan su ejecución y respuestas tardías.
+- Store en memoria permite un proceso por capa. Antes de múltiples réplicas/workers, exigir TTL compartido o afinidad verificada también en Python. No acreditar disponibilidad real ni performance por los mocks/pruebas locales.

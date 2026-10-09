@@ -11,6 +11,7 @@ import { logoutSession } from "../../../../modules/auth/infrastructure/services"
 
 vi.mock("../../../../modules/auth/infrastructure/services", () => ({ loginWithGoogle: vi.fn(), logoutSession: vi.fn() }));
 vi.mock("@react-oauth/google", () => ({ googleLogout: vi.fn() }));
+vi.mock("../../../../layouts/components/Topbar/components/AiProviderIndicators", () => ({ default: () => <div role="group" aria-label="AI indicators" /> }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 
 const renderTopbar = () => render(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
@@ -19,6 +20,20 @@ afterEach(() => useAuthStore.getState().logout());
 const signIn = () => useAuthStore.getState().login({ token: "jwt", user: { id: "42", name: "Oscar", email: "user@gmail.com", image_url: "https://example.com/avatar.png" } });
 
 describe("Topbar", () => {
+  it("only mounts health indicators with a validated session, AI action and module access", () => {
+    signIn();
+    useAuthStore.setState({ expiresAt: Date.now() + 60000 });
+    const context = { roles: [], actions: [{ key: "ai:manage", description: null, translates: [] }], modules: [{ module_group_key: "settings", translates: [], modules: [{ key: "ai-providers", translates: [] }] }] };
+    useGeneralSettingsStore.getState().setContext(context);
+    const { rerender } = renderTopbar();
+    expect(screen.getByRole("group", { name: "AI indicators" })).toBeInTheDocument();
+    useGeneralSettingsStore.getState().setContext({ ...context, actions: [] });
+    rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
+    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
+    useGeneralSettingsStore.getState().setContext({ ...context, modules: [] });
+    rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
+    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
+  });
   it("shows login and theme controls for visitors", () => {
     renderTopbar();
     expect(screen.getByLabelText("Cambiar tema")).toBeInTheDocument();

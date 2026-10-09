@@ -3,6 +3,7 @@ import { AiProviderService } from '../ai-provider.service.js';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import type { ApiThinkingLevel } from '../../common/ai/api-provider.service.js';
 import { validateInvoiceFile } from '../../invoice/invoice-file-validation.js';
+import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
 
 @Injectable()
 export class ExecuteApiInvoiceUseCase {
@@ -18,6 +19,8 @@ export class ExecuteApiInvoiceUseCase {
     fields?: Record<string, unknown>,
     tax = 19,
     thinkingLevel?: ApiThinkingLevel,
+    callerSignal?: AbortSignal,
+    progress?: AnalysisProgress,
   ) {
     validateInvoiceFile(file);
     const provider = await this.providers.findProviderById(providerId);
@@ -69,10 +72,14 @@ export class ExecuteApiInvoiceUseCase {
       throw new BadRequestException(
         'Debe agregar y seleccionar una API key activa para esta conexión.',
       );
-    const deadline = AbortSignal.timeout(90000);
+    progress?.resolve({ providerId, provider: key, mode: 'api_key', model: configured });
+    progress?.emit('model_checked');
+    const timeout = AbortSignal.timeout(90000);
+    const deadline = callerSignal ? AbortSignal.any([callerSignal, timeout]) : timeout;
     for (let index = 0; index < credentials.length; index++) {
       try {
-        return await this.api.extractInvoice(
+        deadline.throwIfAborted();
+        const result = await this.api.extractInvoice(
           key,
           credentials[index],
           configured,
@@ -82,7 +89,9 @@ export class ExecuteApiInvoiceUseCase {
           tax,
           deadline,
           level,
+          ...(progress ? [progress] : []),
         );
+        return result;
       } catch (error) {
         const response =
           error instanceof HttpException ? error.getResponse() : null;
@@ -93,6 +102,7 @@ export class ExecuteApiInvoiceUseCase {
             ? response.upstream_status
             : null;
         if (
+          deadline.aborted ||
           ![401, 403, 429].includes(Number(status)) ||
           index === credentials.length - 1
         )

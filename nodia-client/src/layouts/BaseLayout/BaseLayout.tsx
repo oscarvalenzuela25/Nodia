@@ -4,6 +4,8 @@ import Sidenav from "../components/Sidenav";
 import Topbar from "../components/Topbar";
 import RouteLoader from "../../components/RouteLoader";
 import { LayoutWrapper, MainContainer, PageContent } from "./styles";
+import MobileBottomNav from "../components/MobileBottomNav";
+import useAuth from "../../hooks/useAuth";
 
 type Props = PropsWithChildren;
 
@@ -13,6 +15,9 @@ const BaseLayout: FC<Props> = ({ children }) => {
 
   const theme = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isSessionValid } = useAuth();
+  const hasMobileNav = isMobile && isSessionValid;
 
   // Sidenav is only collapsed on Desktop when toggled. On mobile, it's a full-width drawer.
   const isCollapsed = isLgUp ? desktopCollapsed : false;
@@ -38,11 +43,12 @@ const BaseLayout: FC<Props> = ({ children }) => {
           desktopCollapsed={desktopCollapsed}
           onCollapseToggle={handleCollapseToggle}
         />
-        <PageContent>
+        <PageContent mobileNavigation={hasMobileNav}>
           <Suspense fallback={<RouteLoader variant="page" />}>
             {children}
           </Suspense>
         </PageContent>
+        {hasMobileNav && <MobileBottomNav />}
       </MainContainer>
     </LayoutWrapper>
   );

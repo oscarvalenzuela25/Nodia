@@ -1,4 +1,6 @@
 import { notifyHttpError } from "../../../../../../../../config/httpFeedback";
+import AnalysisConsole, { useAnalysisObservation } from "../../../../../../components/AnalysisConsole";
+import { Workspace, WorkspaceGrid } from "../../../../../../components/AnalysisConsole/styles";
 import { getInvoiceAiModes, isInvoiceAiMode, isProviderVisibleInInvoiceImport, resolveInvoiceAiConfiguration, resolveInvoiceAiProvider, type InvoiceAiMode } from "./aiSelection";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useState, useMemo, useRef, useEffect, Fragment } from "react";
@@ -102,6 +104,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement | null>(null);
   const shouldScrollToResults = useRef<boolean>(false);
+  const analysisIntent = useRef(false);
 
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
   const [selectedProviderTax, setSelectedProviderTax] = useState<number | null>(null);
@@ -203,6 +206,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
   // Mutations
   const analyzeMutation = useAnalyzeInvoice();
+  const observation = useAnalysisObservation(businessId);
   const createInvoiceMutation = useCreateInvoiceWithFile();
   const bulkCreateMutation = useBulkCreateProducts();
   const bulkUpdateMutation = useBulkUpdateProducts();
@@ -280,7 +284,8 @@ export const ProductInvoiceImport: FC<Props> = ({
   ) => {
     const effectiveMode = modeToUse ?? selectedAiMode;
     const configuration = resolveInvoiceAiConfiguration(provider, effectiveMode);
-    if (!file || !selectedProviderId || selectedProviderTax === null || productsError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
+    if (analysisIntent.current || !file || !selectedProviderId || selectedProviderTax === null || productsError || isBusy || !configuration.canAnalyze || !effectiveMode) return;
+    analysisIntent.current = true;
     setLastUsedProvider(provider);
     const targetModel = configuration.model;
     const modelType = "default" as const;
@@ -289,9 +294,9 @@ export const ProductInvoiceImport: FC<Props> = ({
       ? configuration.thinkingLevel : undefined;
 
     setIsPreparingDraft(true);
+    let transport: Awaited<ReturnType<typeof observation.start>> | undefined;
     try {
-      const response = await analyzeMutation.mutateAsync({
-        file,
+      const params = {
         business_id: businessId,
         provider_id: selectedProviderId || undefined,
         ai_provider: provider.key,
@@ -301,7 +306,11 @@ export const ProductInvoiceImport: FC<Props> = ({
         mode: effectiveMode,
         extended_thinking: effectiveMode === "api_key" ? undefined : shouldSendThinking,
         thinking_level: effectiveThinkingLevel,
-      });
+      };
+      transport = await observation.start(params);
+      const response = await analyzeMutation.mutateAsync({ file, ...params, ...transport });
+      if (!transport.isCurrent()) return;
+      observation.preparing();
 
       setInvoiceCode(response.code || "");
       setInvoiceTotalAmount(response.total_amount ?? Number.NaN);
@@ -318,6 +327,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
       let historicalLogs: ProductLogEntity[] = [];
       if (matchedProductIds.length > 0) {
+        observation.emit('history_loading');
         try {
           const logsResponse = await getProductLogs({
             all: true,
@@ -328,11 +338,15 @@ export const ProductInvoiceImport: FC<Props> = ({
           });
           historicalLogs = logsResponse.data || [];
         } catch (error) {
+          if (!transport.isCurrent()) return;
           notifyHttpError(error);
+          observation.emit('history_unavailable');
           // Graceful fallback: existingProducts already provides catalog snapshot
         }
       }
 
+      if (!transport.isCurrent()) return;
+      observation.emit('rows_preparing');
       const mappedRows = mapExtractedItemsToRows(
         items,
         existingProducts,
@@ -341,9 +355,13 @@ export const ProductInvoiceImport: FC<Props> = ({
       );
       shouldScrollToResults.current = true;
       setRows(mappedRows);
-    } catch {
+      observation.emit('draft_ready');
+      observation.finish();
+    } catch (error) {
+      if (!transport || transport.isCurrent()) observation.finish(error);
       // Error handled by mutation onError
     } finally {
+      analysisIntent.current = false;
       setIsPreparingDraft(false);
     }
   };
@@ -609,7 +627,7 @@ export const ProductInvoiceImport: FC<Props> = ({
               gap: 2,
             }}
           >
-            <Box sx={{ flex: 1, minWidth: 280, maxWidth: 400 }}>
+            <Box sx={{ flex: 1, minWidth: { xs: 0, sm: 280 }, width: { xs: '100%', sm: 'auto' }, maxWidth: 400 }}>
               <SelectSingleInput
                 id="invoice-provider-select"
                 label={t("business:select_provider_required")}
@@ -660,6 +678,225 @@ export const ProductInvoiceImport: FC<Props> = ({
           </Box>
 
           {/* Hidden File Input */}
+          {/* Analyze Controls */}
+          {file && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                mt: 2,
+                p: 2.5,
+                borderRadius: 2,
+                border: (theme) => `1px solid ${theme.palette.divider}`,
+                backgroundColor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? "rgba(255, 255, 255, 0.02)"
+                    : "rgba(0, 0, 0, 0.01)",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 2,
+                    flex: 1,
+                    minWidth: 0,
+                    flexBasis: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  {/* AI Provider Selector */}
+                  <Box sx={{ minWidth: { xs: 0, sm: 200 }, flex: 1, flexBasis: { xs: '100%', sm: 'auto' }, maxWidth: 300 }}>
+                    <SelectSingleInput
+                      id="ai-provider-select"
+                      label={t("business:select_ai_provider_label", "Proveedor de IA")}
+                      options={aiProviderOptions}
+                      value={currentAiProvider?.id || null}
+                      onChange={(val) => {
+                        if (val) {
+                          setSelectedAiProviderId(val);
+                          setModeSelection(null);
+                          setUseThinkingMode(false);
+                        }
+                      }}
+                      placeholder={t(
+                        "business:select_ai_provider_placeholder",
+                        "Seleccionar proveedor de IA..."
+                      )}
+                      disabled={isBusy}
+                      dataTestId="ai-provider-select"
+                      clearable={false}
+                    />
+                  </Box>
+
+                  {/* Mode Selector (shown whenever selected provider has active modes) */}
+                  {activeModes.length > 0 && (
+                    <Box sx={{ minWidth: { xs: 0, sm: 200 }, flex: 1, flexBasis: { xs: '100%', sm: 'auto' }, maxWidth: 300 }}>
+                      <SelectSingleInput
+                        id="ai-mode-select"
+                        label={t("business:select_ai_mode_label", "Método de Conexión")}
+                        options={activeModes}
+                        value={selectedAiMode}
+                        onChange={(val) => {
+                          if (currentAiProvider && isInvoiceAiMode(val)) {
+                            setModeSelection({ providerId: currentAiProvider.id, mode: val });
+                            setUseThinkingMode(false);
+                          }
+                        }}
+                        placeholder={t(
+                          "business:select_ai_mode_placeholder",
+                          "Seleccionar modo..."
+                        )}
+                        disabled={isBusy}
+                        dataTestId="ai-mode-select"
+                        clearable={false}
+                      />
+                    </Box>
+                  )}
+                </Box>
+
+                {/* Analyze Action Button */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    alignSelf: "flex-end",
+                    gap: 1,
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
+                  <Tooltip
+                    title={
+                      !currentAiProvider
+                        ? t("business:no_ai_providers_available", "No hay proveedores de IA disponibles o autorizados.")
+                        : !aiConfiguration.canAnalyze
+                        ? (!aiConfiguration.model ? t("business:ai_model_unassigned") : currentAiProvider?.error) ||
+                          (currentAiProvider?.key === "gemini"
+                            ? t("business:gemini_session_expired_tooltip")
+                            : t("business:provider_unavailable"))
+                        : ""
+                    }
+                    arrow
+                    placement="top"
+                  >
+                    <Box component="span" sx={{ width: { xs: '100%', sm: 'auto' }, maxWidth: '100%' }}>
+                      <Button
+                        variant="contained"
+                        color={currentAiProvider?.key === "mistral" ? "secondary" : "primary"}
+                        startIcon={
+                          isAnalyzing ? (
+                            <CircularProgress size={18} color="inherit" />
+                          ) : (
+                            <AutoAwesomeOutlinedIcon />
+                          )
+                        }
+                        disabled={
+                          isUploadDisabled ||
+                          !file ||
+                          !aiConfiguration.canAnalyze ||
+                          isVerifyingProviders
+                        }
+                        onClick={() =>
+                          currentAiProvider && handleAnalyze(currentAiProvider, selectedAiMode)
+                        }
+                        data-testid="analyze-invoice-btn"
+                        sx={{
+                          width: { xs: '100%', sm: 'auto' },
+                          borderRadius: 2,
+                          px: 3,
+                          py: 1,
+                          minHeight: "44px",
+                          fontWeight: 600,
+                          textTransform: "none",
+                        }}
+                      >
+                        {isAnalyzing
+                          ? t("business:analyzing_with_provider", {
+                              provider: currentAiProvider?.name || "IA",
+                              defaultValue: `Analizando con ${currentAiProvider?.name || "IA"}...`,
+                            })
+                          : t("business:analyze_with_provider", {
+                              provider: currentAiProvider?.name || "IA",
+                              defaultValue: `Analizar con ${currentAiProvider?.name || "IA"}`,
+                            })}
+                      </Button>
+                    </Box>
+                  </Tooltip>
+
+                  {!aiConfiguration.canAnalyze && !isVerifyingProviders && (
+                    <Tooltip
+                      title={
+                        currentAiProvider?.error ||
+                        (currentAiProvider?.key === "gemini"
+                          ? t("business:gemini_session_expired_tooltip")
+                          : t("business:provider_unavailable"))
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Box
+                        component="span"
+                        data-testid={`${currentAiProvider?.key || "ai"}-disabled-info-icon`}
+                        sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          cursor: "help",
+                          color: "text.secondary",
+                          "&:hover": { color: "warning.main" },
+                          transition: "color 0.15s ease",
+                        }}
+                      >
+                        <InfoOutlinedIcon sx={{ fontSize: 20 }} />
+                      </Box>
+                    </Tooltip>
+                  )}
+                </Box>
+              </Box>
+            </Box>
+          )}
+
+          {analyzeMutation.isError && (
+            <Alert
+              severity="warning"
+              sx={{ mt: 2, borderRadius: 2 }}
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    const target =
+                      lastUsedProvider ||
+                      providersList.find((p) => p.can_use_model) ||
+                      providersList[0];
+                    if (target) {
+                      handleAnalyze(target);
+                    }
+                  }}
+                  disabled={isUploadDisabled}
+                  data-testid="retry-analyze-btn"
+                  sx={{ fontWeight: 600 }}
+                >
+                  {t("business:retry_analysis_btn")}
+                </Button>
+              }
+            >
+              {analyzeMutation.error?.response?.data?.message ||
+                t("business:ai_analysis_failed_retry_hint")}
+            </Alert>
+          )}
+          <Workspace>
+            <WorkspaceGrid>
+              <Box sx={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           <input
             type="file"
             ref={fileInputRef}
@@ -678,8 +915,14 @@ export const ProductInvoiceImport: FC<Props> = ({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             data-testid="invoice-dropzone"
+            role="button"
+            tabIndex={isUploadDisabled ? -1 : 0}
+            aria-label={t("business:invoice_file_prompt")}
+            onKeyDown={(event) => { if (!isUploadDisabled && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); fileInputRef.current?.click(); } }}
             aria-disabled={isUploadDisabled}
             sx={{
+              flex: 1,
+              minHeight: 320,
               ...(isUploadDisabled && {
                 cursor: "not-allowed",
                 opacity: 0.6,
@@ -782,219 +1025,11 @@ export const ProductInvoiceImport: FC<Props> = ({
               </>
             )}
           </DropzoneBox>
-
-          {/* Analyze Controls */}
-          {file && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                mt: 2,
-                p: 2.5,
-                borderRadius: 2,
-                border: (theme) => `1px solid ${theme.palette.divider}`,
-                backgroundColor: (theme) =>
-                  theme.palette.mode === "dark"
-                    ? "rgba(255, 255, 255, 0.02)"
-                    : "rgba(0, 0, 0, 0.01)",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "flex-end",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: 2,
-                    flex: 1,
-                  }}
-                >
-                  {/* AI Provider Selector */}
-                  <Box sx={{ minWidth: 200, flex: 1, maxWidth: 300 }}>
-                    <SelectSingleInput
-                      id="ai-provider-select"
-                      label={t("business:select_ai_provider_label", "Proveedor de IA")}
-                      options={aiProviderOptions}
-                      value={currentAiProvider?.id || null}
-                      onChange={(val) => {
-                        if (val) {
-                          setSelectedAiProviderId(val);
-                          setModeSelection(null);
-                          setUseThinkingMode(false);
-                        }
-                      }}
-                      placeholder={t(
-                        "business:select_ai_provider_placeholder",
-                        "Seleccionar proveedor de IA..."
-                      )}
-                      disabled={isBusy}
-                      dataTestId="ai-provider-select"
-                      clearable={false}
-                    />
-                  </Box>
-
-                  {/* Mode Selector (shown whenever selected provider has active modes) */}
-                  {activeModes.length > 0 && (
-                    <Box sx={{ minWidth: 200, flex: 1, maxWidth: 300 }}>
-                      <SelectSingleInput
-                        id="ai-mode-select"
-                        label={t("business:select_ai_mode_label", "Método de Conexión")}
-                        options={activeModes}
-                        value={selectedAiMode}
-                        onChange={(val) => {
-                          if (currentAiProvider && isInvoiceAiMode(val)) {
-                            setModeSelection({ providerId: currentAiProvider.id, mode: val });
-                            setUseThinkingMode(false);
-                          }
-                        }}
-                        placeholder={t(
-                          "business:select_ai_mode_placeholder",
-                          "Seleccionar modo..."
-                        )}
-                        disabled={isBusy}
-                        dataTestId="ai-mode-select"
-                        clearable={false}
-                      />
-                    </Box>
-                  )}
-                </Box>
-
-                {/* Analyze Action Button */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    alignSelf: "flex-end",
-                    gap: 1,
-                  }}
-                >
-                  <Tooltip
-                    title={
-                      !currentAiProvider
-                        ? t("business:no_ai_providers_available", "No hay proveedores de IA disponibles o autorizados.")
-                        : !aiConfiguration.canAnalyze
-                        ? (!aiConfiguration.model ? t("business:ai_model_unassigned") : currentAiProvider?.error) ||
-                          (currentAiProvider?.key === "gemini"
-                            ? t("business:gemini_session_expired_tooltip")
-                            : t("business:provider_unavailable"))
-                        : ""
-                    }
-                    arrow
-                    placement="top"
-                  >
-                    <span>
-                      <Button
-                        variant="contained"
-                        color={currentAiProvider?.key === "mistral" ? "secondary" : "primary"}
-                        startIcon={
-                          isAnalyzing ? (
-                            <CircularProgress size={18} color="inherit" />
-                          ) : (
-                            <AutoAwesomeOutlinedIcon />
-                          )
-                        }
-                        disabled={
-                          isUploadDisabled ||
-                          !file ||
-                          !aiConfiguration.canAnalyze ||
-                          isVerifyingProviders
-                        }
-                        onClick={() =>
-                          currentAiProvider && handleAnalyze(currentAiProvider, selectedAiMode)
-                        }
-                        data-testid="analyze-invoice-btn"
-                        sx={{
-                          borderRadius: 2,
-                          px: 3,
-                          py: 1,
-                          minHeight: "44px",
-                          fontWeight: 600,
-                          textTransform: "none",
-                        }}
-                      >
-                        {isAnalyzing
-                          ? t("business:analyzing_with_provider", {
-                              provider: currentAiProvider?.name || "IA",
-                              defaultValue: `Analizando con ${currentAiProvider?.name || "IA"}...`,
-                            })
-                          : t("business:analyze_with_provider", {
-                              provider: currentAiProvider?.name || "IA",
-                              defaultValue: `Analizar con ${currentAiProvider?.name || "IA"}`,
-                            })}
-                      </Button>
-                    </span>
-                  </Tooltip>
-
-                  {!aiConfiguration.canAnalyze && !isVerifyingProviders && (
-                    <Tooltip
-                      title={
-                        currentAiProvider?.error ||
-                        (currentAiProvider?.key === "gemini"
-                          ? t("business:gemini_session_expired_tooltip")
-                          : t("business:provider_unavailable"))
-                      }
-                      arrow
-                      placement="top"
-                    >
-                      <Box
-                        component="span"
-                        data-testid={`${currentAiProvider?.key || "ai"}-disabled-info-icon`}
-                        sx={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          cursor: "help",
-                          color: "text.secondary",
-                          "&:hover": { color: "warning.main" },
-                          transition: "color 0.15s ease",
-                        }}
-                      >
-                        <InfoOutlinedIcon sx={{ fontSize: 20 }} />
-                      </Box>
-                    </Tooltip>
-                  )}
-                </Box>
               </Box>
-            </Box>
-          )}
+              <AnalysisConsole key={observation.view.startedAt ?? 'idle'} view={observation.view} />
+            </WorkspaceGrid>
+          </Workspace>
 
-          {analyzeMutation.isError && (
-            <Alert
-              severity="warning"
-              sx={{ mt: 2, borderRadius: 2 }}
-              action={
-                <Button
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    const target =
-                      lastUsedProvider ||
-                      providersList.find((p) => p.can_use_model) ||
-                      providersList[0];
-                    if (target) {
-                      handleAnalyze(target);
-                    }
-                  }}
-                  disabled={isUploadDisabled}
-                  data-testid="retry-analyze-btn"
-                  sx={{ fontWeight: 600 }}
-                >
-                  {t("business:retry_analysis_btn")}
-                </Button>
-              }
-            >
-              {analyzeMutation.error?.response?.data?.message ||
-                t("business:ai_analysis_failed_retry_hint")}
-            </Alert>
-          )}
         </InvoiceDropzoneContainer>
       </InvoiceSectionPaper>
 

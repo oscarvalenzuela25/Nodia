@@ -4,6 +4,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from collections.abc import Callable
 from dotenv import dotenv_values
 from loguru import logger
 from gemini_webapi import GeminiClient
@@ -300,7 +301,7 @@ class GeminiWebService:
     async def analyze_invoice(self, file_path: Path, provider_fields: Optional[Dict[str, Any]] = None,
                               provider_tax: Optional[int] = None, model: Optional[str] = None,
                               extended_thinking: Optional[bool] = False,
-                              thinking_level: Optional[str] = None) -> Dict[str, Any]:
+                              thinking_level: Optional[str] = None, progress_callback: Callable[[str], None] | None = None) -> Dict[str, Any]:
         # SDK recovery can close its shared HTTP session. Never overlap analyses.
         if self._analysis_lock.locked():
             raise ServiceError("web_busy", "El motor Web está ocupado.", 503)
@@ -308,11 +309,11 @@ class GeminiWebService:
             # Let an already-running bounded quota read finish before generation.
             async with self._quota_lock:
                 return await self._analyze_invoice(file_path, provider_fields, provider_tax, model,
-                                                   extended_thinking, thinking_level)
+                                                   extended_thinking, thinking_level, progress_callback)
 
     async def _analyze_invoice(self, file_path: Path, provider_fields: Optional[Dict[str, Any]],
                                provider_tax: Optional[int], model: Optional[str],
-                               extended_thinking: Optional[bool], thinking_level: Optional[str]) -> Dict[str, Any]:
+                               extended_thinking: Optional[bool], thinking_level: Optional[str], progress_callback: Callable[[str], None] | None = None) -> Dict[str, Any]:
         if not model or not model.strip():
             raise ServiceError("model_required", "Configure un modelo antes de analizar.", 422)
         requested = model.strip()
@@ -320,6 +321,8 @@ class GeminiWebService:
             await self.init_client()
             if not self.client or not self.is_initialized:
                 raise AuthError("Session unavailable")
+            if progress_callback:
+                progress_callback("session_checked")
             prompt, configured, code, net, gross, tax = build_invoice_prompt(provider_fields, provider_tax)
             selected_id = None
 
@@ -338,8 +341,13 @@ class GeminiWebService:
                 options = {"extended_thinking": bool(extended_thinking)} if self.supported_options()["extended_thinking"] else {}
                 # gemini-webapi 2.1.1 forwards this option to its @running(retry=5)
                 # generator. A lost response must not resend an uncertain inference.
+                if progress_callback:
+                    progress_callback("model_checked")
+                    progress_callback("provider_request_started")
                 response = await self._generate_content(
                     prompt, files=[file_path], model=selected, **options)
+                if progress_callback:
+                    progress_callback("response_received")
                 return response.text or ""
 
             active_client = self.client

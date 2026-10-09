@@ -6,6 +6,7 @@ import { Skeleton } from "boneyard-js/react";
 import { useTranslation } from "react-i18next";
 import useAuthStore from "../../../../store/authStore";
 import { useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import {
   rentalKeys,
   useRentalBusy,
@@ -32,6 +33,10 @@ function RentalPage() {
   const property = useRentalProperty(propertyId);
   const busy = useRentalBusy();
   const pending = useRentalPendingCount();
+  const accessRejected =
+    property.isError &&
+    isAxiosError(property.error) &&
+    [401, 403, 404].includes(property.error.response?.status ?? 0);
   const [creating, setCreating] = useState(false);
   const client = useQueryClient();
   const actorId = useAuthStore((state) => state.user?.id);
@@ -98,21 +103,28 @@ function RentalPage() {
         <Alert
           severity="error"
           action={
-            <Button disabled={busy} onClick={() => void property.refetch()}>
+            <Button
+              disabled={property.isFetching}
+              onClick={() => void property.refetch()}
+            >
               {t("rental:retry")}
             </Button>
           }
         >
-          {t("rental:property_inaccessible")}
+          {t(
+            accessRejected
+              ? "rental:property_inaccessible"
+              : "rental:load_error",
+          )}
         </Alert>
       )}
       {property.isFetching && !property.isLoading && <LinearProgress />}
       <Skeleton loading={property.isLoading}>
-        {property.data && (!property.isError || pending > 0) ? (
+        {property.data && (!accessRejected || pending > 0) ? (
           <RentalWorkspace
             key={property.data.id}
             property={property.data}
-            accessible={!property.isError && !creating}
+            accessible={!accessRejected && !creating}
           />
         ) : (
           <Typography color="text.secondary">

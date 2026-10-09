@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useSearchParams } from "react-router";
 import { Alert, Box, Button, Tab, Tabs } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import type { RentalProperty, RentalReservation } from "../../types";
+import type {
+  RentalBlock,
+  RentalProperty,
+  RentalReservation,
+} from "../../types";
 import {
   useRentalBusy,
   useRentalRecord,
@@ -42,7 +46,9 @@ type RentalTab = (typeof TABS)[number];
 type Modal =
   | { kind: "payments"; reservationId?: string }
   | { kind: "audit" }
-  | { kind: "detail" | "edit" | "turnover" | "block_edit"; id: string }
+  | { kind: "detail" | "turnover"; id: string }
+  | { kind: "edit"; id: string; initialData?: RentalReservation }
+  | { kind: "block_edit"; id: string; initialData?: RentalBlock }
   | { kind: "new" | "block_new" }
   | {
       kind: "confirm" | "cancel" | "start" | "complete";
@@ -79,6 +85,12 @@ function Workspace({ property }: { property: RentalProperty }) {
     property.id,
     modal?.kind === "block_edit" ? modal.id : undefined,
   );
+  // Capture the validated detail once when opening the edit intent. Cache eviction
+  // must not destroy its form or the hook that can recover an uncertain write.
+  if (modal?.kind === "edit" && !modal.initialData && editing.data)
+    setModal({ ...modal, initialData: editing.data });
+  if (modal?.kind === "block_edit" && !modal.initialData && block.data)
+    setModal({ ...modal, initialData: block.data });
   const changeTab = (next: RentalTab) => {
     if (busy) return;
     setModal(undefined);
@@ -246,23 +258,30 @@ function Workspace({ property }: { property: RentalProperty }) {
           onClose={() => setModal(undefined)}
         />
       )}
-      {modal?.kind === "edit" && editing.data && !editing.isError && (
+      {modal?.kind === "edit" && modal.initialData && (
         <ReservationModal
           key={modal.id}
           open
           property={property}
-          initialData={editing.data}
+          initialData={editing.data ?? modal.initialData}
+          readError={editing.isError || (!editing.data && !editing.isLoading)}
+          onRetryRead={() => void editing.refetch()}
           onClose={() => setModal(undefined)}
         />
       )}
-      {(editing.isError || block.isError) && (
+      {((modal?.kind === "edit" && !modal.initialData && editing.isError) ||
+        (modal?.kind === "block_edit" &&
+          !modal.initialData &&
+          block.isError)) && (
         <Alert
           severity="error"
           action={
             <Button
               disabled={busy}
               onClick={() =>
-                void (editing.isError ? editing.refetch() : block.refetch())
+                void (modal.kind === "edit"
+                  ? editing.refetch()
+                  : block.refetch())
               }
             >
               {t("rental:retry")}
@@ -308,12 +327,14 @@ function Workspace({ property }: { property: RentalProperty }) {
           onClose={() => setModal(undefined)}
         />
       )}
-      {modal?.kind === "block_edit" && block.data && !block.isError && (
+      {modal?.kind === "block_edit" && modal.initialData && (
         <BlockModal
           key={modal.id}
           open
           property={property}
-          initialData={block.data}
+          initialData={block.data ?? modal.initialData}
+          readError={block.isError || (!block.data && !block.isLoading)}
+          onRetryRead={() => void block.refetch()}
           onClose={() => setModal(undefined)}
         />
       )}

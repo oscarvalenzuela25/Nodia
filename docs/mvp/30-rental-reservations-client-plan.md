@@ -6,6 +6,8 @@
 
 ## Objetivo y estado comprobado
 
+Actualización móvil 2026-10-08: [35](35-mobile-cards-shortcuts-plan.md) implementa barra inferior y piloto ReservationTable en tarjetas solo en `xs` (<600 px), con huésped, estado/inactividad, entrada/salida, noches y saldo, más detalle y editar. Reutiliza consulta, filtros y paginado; desde 600 px conserva tabla. RentalTable admite render móvil optativo y MobileRecordCard compartido; restantes recursos mantienen sus tablas hasta MC-06. Pruebas de carga/refetch/vacío/error, acciones y paginado, QA aislado en nueve tamaños, ES/EN y claro/oscuro registrados en35. Esta entrega no modifica endpoints, no aplica migraciones ni cierra RC-38.
+
 Integrar la gestión de una casa completa en `/tools/reservations`: configurar casa y colaboradores, registrar estadías por noches, consultar disponibilidad, preparar recambio/limpieza y controlar dinero real en CLP. WhatsApp, Facebook y Airbnb son canales de registro manual. Las tarifas, horarios, abonos y reglas de cancelación los configura el propietario; no sembrar ejemplos como obligaciones comerciales.
 
 El usuario solicitó preparar el plan con subagentes después del Backend y autorizó implementarlo. Client está implementado con los tres carriles y el integrador, sobre las 44 operaciones de Server. Pruebas y navegador contra HTTP/PostgreSQL temporal tienen evidencia propia abajo. La aplicación de migración/seed y la sesión real en la BD objetivo permanecen pendientes en RC-38. El desarrollo no aprueba automáticamente este documento.
@@ -489,3 +491,28 @@ No se modificó la BD objetivo ni se ejecutó Server configurado, seed/asignaci�
 Intenciones en memoria de sesión: salir advierte sobre resultado incierto; recargar/logout no ofrece recuperación durable. Archivar estadía ocupante no libera fechas. Regularización de estadía vencida sin start no existe en v1. Canales manuales, sin sincronización ni ejecución de pagos externos.
 
 **Primer paso pendiente: RC-38**, con el runbook de29: baseline, inventario de todas las migraciones pendientes, respaldo/restauración, aplicación explícita, seed, asignación individual y smoke con sesión real. Revisión/aprobación documental de contratos/planes/ADRs sigue separada; solo ERD27 tiene aceptación explícita.
+
+## Revisión de endpoints y recuperación Client — 2026-10-08
+
+Solicitud: revisar Reservas y la interacción de sus endpoints con el frontend. Se contrastaron transporte, DTOs, contratos runtime, autoridad por casa, comandos monetarios, estados y recuperación. No cambia el ERD, los contratos HTTP ni las decisiones de negocio.
+
+| Hallazgo reproducido | Corrección |
+|---|---|
+| Un refetch de la casa fallido desmontaba el workspace y destruía formularios abiertos, aunque existieran datos previos | Se conserva el workspace ante errores temporales. Un 401/403/404 con respuesta sigue retirando el contenido cuando no hay intención pendiente; con intención pendiente conserva recuperación y bloquea operaciones nuevas. Una caída temporal no se interpreta como revocación; cada escritura conserva autorización en Server. |
+| Fallar la revalidación del detalle cerraba el editor de reserva o bloqueo y perdía sus inputs; retirar ese detalle de la caché podía destruir el hook de recuperación de una escritura incierta | Se conserva el detalle validado al abrir la intención de edición, junto con sus valores y recuperación. Error y reintento permanecen dentro del modal; envío y campos quedan deshabilitados hasta recuperar la lectura. El handler también bloquea el envío. No se usa la fila del listado como sustituto de una primera lectura del detalle. |
+| Una comprobación de acceso iniciada en otra sesión del mismo usuario podía retirar datos nuevos después de esperar la cancelación de consultas | La comprobación valida usuario y versión de sesión antes de cancelar, retirar e invalidar; una sesión nueva no recibe efectos tardíos de la anterior. |
+| El botón de reconsultar la casa quedaba deshabilitado por una intención incierta | La lectura de recuperación solo se bloquea mientras su propia consulta está en curso; no reenvía ni descarta la escritura pendiente. |
+
+Regresiones espejo en página, workspace y hooks reproducen los defectos anteriores; se conservan pruebas de respuesta perdida, ack inválido, payload/UUID congelados, refresh401, lectura posterior fallida, rechazo conocido y revocación. El transporte se verificó con respuestas HTTP recién generadas por el ensayo aislado y también con fixtures históricos. Las salidas regeneradas se restauraron después de verificar para evitar cambios de fechas/UUID sin valor en los fixtures versionados.
+
+Evidencia de Server: `npm run test -- src/rental` pasó **159 pruebas/14 suites**; `npm run test:rental:integration` pasó **282 peticiones**, con **44 operaciones** y **42 rutas de casa** que rechazan externos/revocados/anónimos. Incluye PostgreSQL temporal, migración up/down/up, seed idempotente, ESM/DI compilada, validación de respuestas, rollback, concurrencia, revocación con locks, importes CLP y recuperación. El principal del ensayo es sintético: no certifica OAuth/refresh/Redis reales. Build pasó; lint conserva dos advertencias previas del módulo IA.
+
+Client: **200 pruebas/51 suites de Reservas** y **970 pruebas/160 suites de la aplicación completa**, con `npm run test -- --maxWorkers=4`; typecheck/lint/build correctos. Se añadieron seis regresiones, incluidas conservación de inputs al fallar la revalidación, retirada de detalle de caché con una intención incierta y cambio de sesión durante una purga. La concurrencia del runner se acotó para evitar que la carga de imports agotara la espera del test existente de contactos de proveedores; se conservaron sus assertions.
+
+### Estado comprobado del entorno configurado
+
+Inspección **solo de lectura**, usando el DataSource compilado, sin imprimir credenciales ni datos comerciales: `public` contiene **0 tablas `rental_*`**, **0 filas del módulo `rental_reservations`** y **0 registros de `CreateRentalReservations1791146000000`** en el historial de migraciones. Esto confirma que RC-38 sigue abierto; los flujos HTTP aislados no demuestran que ese entorno pueda operar Reservas.
+
+El historial del entorno declara **9 migraciones pendientes**: `AuthSessions1789257600000`, `AddIconToModulesAndModuleGroups1789257700000`, `CreateAiProviderCatalogAndRefactorAiProviders1789257800000`, `SeedSecurityActions1790553500000`, `HardenAiApiKeyEncryption1790553600000`, `AddTokenPlanFlagsToCatalogAndProviders1790553700000`, `AddIsDefaultToAiProviders1790553800000`, `CreatePersonalFinance1791085000000` y `CreateRentalReservations1791146000000`. Una migración pendiente en el historial no demuestra que todos sus cambios físicos estén ausentes; el baseline debe reconciliar ese estado. `migration:run` aplicaría el conjunto pendiente, no exclusivamente Reservas. Mantener el runbook de29 y revisar también las migraciones históricas IA antes de cualquier aplicación.
+
+No se aplicó DDL, seed o asignación de módulos en el entorno configurado. La revisión no modifica la aprobación documental ni cierra RC-38. En esta revisión no se repitió el flujo de navegador de la entrega inicial; la nueva recuperación de UI se verifica mediante Testing Library y el contrato HTTP mediante PostgreSQL aislado.

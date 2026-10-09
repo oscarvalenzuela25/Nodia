@@ -21,6 +21,36 @@ vi.mock('../../config/envs.config.js', async (importOriginal) => {
 });
 
 describe('AnalyzeInvoiceUseCase with the private Gemini adapter', () => {
+  it('forwards caller cancellation to Gemini without a second inference', async () => {
+    const cancellation = new AbortController();
+    const fetchMock = vi.fn((_url, options: RequestInit) => new Promise((_resolve, reject) => {
+      options.signal!.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const pending = create().execute(file, dto, cancellation.signal);
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
+    cancellation.abort();
+    await expect(pending).rejects.toMatchObject({ status: 504 });
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+  it('observes safe private events even when inference completes before the first poll', async () => {
+    const progress = { validateContext: vi.fn(), resolve: vi.fn(), emit: vi.fn() };
+    let privateId = '';
+    const fetchMock = vi.fn(async (url: string, options: RequestInit) => {
+      if (options.method === 'POST') {
+        privateId = String((options.headers as Record<string, string>)['X-Nodia-Analysis-Id']);
+        return new Response(JSON.stringify({ code: null, total_amount: 0, data: { items: [{ name: 'Synthetic item', quantity: 0 }] } }));
+      }
+      return new Response(JSON.stringify({ version: 1, id: privateId, events: [
+        { sequence: 1, stage: 'cli_initialized' }, { sequence: 2, stage: 'document_read_completed' },
+      ] }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(create().execute(file, dto, undefined, progress)).resolves.toMatchObject({ total_amount: 0 });
+    expect(fetchMock.mock.calls.filter(([, options]) => options.method === 'POST')).toHaveLength(1);
+    expect(progress.emit).toHaveBeenCalledWith('document_read_completed');
+    expect(progress.emit).toHaveBeenCalledWith('extraction_validated');
+  });
   afterEach(() => vi.unstubAllGlobals());
 
   const file = {

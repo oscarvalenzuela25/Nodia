@@ -1,11 +1,11 @@
 # OpenAI Codex Agentic
 
-> Estado: código preparado; aceptación operativa aplazada por el usuario el 2026-10-08.
-> No se levantó PostgreSQL, aplicó la migración, autenticó una cuenta ni generó una factura real. El documento no constituye una aprobación.
+> Estado: código preparado; migración aplicada y conexión OpenAI ID 4 habilitada en BD local por solicitud explícita del 2026-10-08. Cuenta/inferencia y soporte Windows pendientes.
+> Se utilizó PostgreSQL ya activo; no se autenticó una cuenta ni generó una factura real. El documento no constituye una aprobación.
 
 ## Comportamiento implementado
 
-OpenAI admite el canal `token_plan_agentic` mediante un runtime Codex supervisado por Nodia Server. API key conserva claves cifradas, modelos y facturación independientes. OpenAI Web permanece deshabilitado. El formulario utiliza los flags del catálogo: Agentic aparecerá habilitable después de aplicar la migración pendiente, y debe activarse explícitamente por conexión.
+OpenAI admite el canal `token_plan_agentic` mediante un runtime Codex supervisado por Nodia Server. API key conserva claves cifradas, modelos y facturación independientes. OpenAI Web permanece deshabilitado. El formulario utiliza los flags del catálogo: Agentic está habilitable en la BD local después de aplicar la migración, y debe activarse explícitamente por conexión. La conexión ID 4 ya lo tiene activado, conservando API como predeterminado.
 
 La sesión Codex pertenece a la conexión de Nodia y es compartida por quienes tengan permiso para gestionarla/usarla. Cada intento de login pertenece además al actor autenticado; otro actor no recibe su código ni el estado privado del job. Conectar no cambia modelos, canal predeterminado, API keys ni sesiones Gemini.
 
@@ -49,7 +49,7 @@ Las cuotas mantienen sus buckets y ventanas separados, sin sumarlos ni atribuirl
 2. Configurar PostgreSQL y las variables normales de Nodia cuando corresponda. Esta entrega no cambió `.env` ni aplica migraciones al arrancar.
 3. En `nodia-server/.env`, establecer `NODIA_CODEX_ENABLED=true`. El perfil por defecto es `~/.local/share/nodia/codex/<connection-id>`; `NODIA_CODEX_PROFILE_ROOT` permite un path absoluto canónico fuera del repositorio. Root/perfil deben pertenecer al usuario de Server, tener permisos 0700 y no atravesar symlinks. No usar el `CODEX_HOME` personal ni copiar `auth.json`.
 4. El runtime exige `cli_auth_credentials_store=keyring`. macOS utiliza el keyring del SO; Linux debe disponer de un keyring utilizable por el proceso y se comprobará antes de inferir. No hay fallback a archivos planos. Windows queda deshabilitado hasta verificar ACL/supervisión.
-5. Cuando haya BD, revisar/aplicar únicamente la migración objetivo con `npm run migration:codex-catalog` desde Server. Preserva el registro existente `key='openai'` y guarda sus flags previos en `nodia_codex_catalog_rollback`. API `true`, Web `false`, Agentic `true`; no activa ninguna instancia ni cambia su predeterminado. La prueba real de up/repetición/down está pendiente.
+5. Para cada entorno, revisar/aplicar únicamente la migración objetivo con `npm run migration:codex-catalog` desde Server. Preserva el registro existente `key='openai'` y guarda sus flags previos en `nodia_codex_catalog_rollback`. API `true`, Web `false`, Agentic `true`; la migración no activa instancias ni cambia su predeterminado. Aplicada en BD local el 2026-10-08; up/repetición/down/repetición comprobados en un esquema PostgreSQL aislado y descartado mediante rollback. No se ejecutó down sobre el catálogo objetivo.
 6. Ejecutar Server con `npm run start` para QA de análisis, evitando un supervisor watch que lo reemplace durante una generación. Iniciar Client con `npm run dev`. Abrir el detalle de una conexión OpenAI y **Gestionar cuenta Codex**; completar el código en el sitio oficial y esperar la comprobación de sesión.
 7. Activar Agentic en esa conexión, sincronizar sus modelos, asignar ID/esfuerzo observados y elegirla explícitamente en facturas. Probar un PNG y PDF sintéticos con resultado conocido antes de usar documentos reales. Registrar el JSON validado, tiempo y acceso efectivo del modelo; no marcar disponible solo por el login.
 
@@ -71,6 +71,7 @@ Codex usa código de dispositivo y polling; no requiere callback a localhost ni 
 
 ## Diagnóstico, reinicio y reversión
 
+- Incidencia reportada el 2026-10-08: `POST /ai-providers/4/session/login` devolvió 503 / `codex_runtime_unavailable`. La inspección confirma que `CodexRuntimeService.create` rechaza Windows y exige `NODIA_CODEX_ENABLED=true`; habilitar únicamente el catálogo o la conexión no hace operativo el runtime. Se conserva esa restricción, sin cambiar `.env`, perfiles o cuentas. El panel ahora distingue disponibilidad, bloquea Conectar con runtime indisponible o consulta de sesión fallida y ofrece reconsulta; un POST fallido deja mensaje/diálogo intactos, sin repetir el login automáticamente. El soporte nativo Windows continúa pendiente.
 - Runtime desconocido tras reinicio: abrir Gestionar cuenta para consultar el perfil; health no crea un proceso por cada fila.
 - Keyring ausente/inaccesible o `auth.json` presente: operación indisponible; configurar almacenamiento protegido. No cambiar a credenciales planas ni importar otra sesión.
 - Perfil ocupado: hay login/análisis/logout en curso o un lock residual. `nodia.lock` registra PID de Server y runtime. Después de una caída, comprobar **ambos** procesos y su identidad antes de retirar ese lock; no hay recuperación automática de locks ni replay de facturas.
@@ -87,7 +88,41 @@ La versión instalada inició en macOS con configuración/keyring/reintentos com
 
 La auditoría de dependencias productivas devuelve los mismos tres hallazgos que HEAD (Nest platform-express, multer y proxy-addr; dos high y uno critical). No se hizo una actualización ajena de esas dependencias para ocultarlos.
 
-Pendientes acordados: migración/reversión PostgreSQL; login/keyring real, renovación/revocación, desconexión y reinicio con cuenta; catálogo efectivo de la cuenta; extracción PNG/PDF desde UI; Linux; QA por Quick Tunnel. Elegibilidad/registro SIWC para servicio alojado y Responses directo quedan como trabajo independiente. El plan se conserva hasta registrar esas aceptaciones.
+Pendientes acordados: reversión sobre el catálogo objetivo si se solicita y migración de otros entornos; login/keyring real, renovación/revocación, desconexión y reinicio con cuenta; catálogo efectivo de la cuenta; extracción PNG/PDF desde UI; Linux/soporte Windows; QA por Quick Tunnel. Elegibilidad/registro SIWC para servicio alojado y Responses directo quedan como trabajo independiente. El plan se conserva hasta registrar esas aceptaciones.
+
+## Revisión solicitada en Windows — 2026-10-08
+
+**Resultado: implementación comprobada con pruebas sintéticas; feature no operativo en el entorno actual.** Esta revisión no aplica migraciones, modifica `.env`, conecta cuentas ni consume inferencias reales. No constituye aprobación documental.
+
+### Estado confirmado del entorno
+
+- Node.js `24.20.0`, Server ejecutado en Windows (`win32`). `CodexRuntimeService.create` rechaza esta plataforma incluso con `NODIA_CODEX_ENABLED=true`: comprobación compilada devuelve HTTP 503 / `codex_runtime_unavailable`. El rechazo está previsto en ADR-018; habilitar una variable no resuelve la ausencia de soporte Windows.
+- La configuración actual no habilita `NODIA_CODEX_ENABLED`. La observación compilada devuelve `available:false`, `authenticated:null`, sin cuota ni inferencia observadas.
+- Lecturas de PostgreSQL con `default_transaction_read_only=on` y timeout de cinco segundos: catálogo OpenAI ID `2`, API habilitada, Web/Agentic deshabilitados; migración `EnableCodexAgenticCatalog1791450000000` ausente. Conexión OpenAI ID `4`, activa, únicamente API, predeterminado `api_key`. No se leyeron claves ni se modificaron filas.
+- Faltaban las dependencias nuevas en `node_modules`; el primer build falló por `image-size` y dos suites no pudieron cargar. Se ejecutó `npm ci --no-audit --no-fund` con el lockfile existente, sin cambios de manifiesto/lockfile. El build y las suites focalizadas pasan después de instalar.
+
+### Hallazgo P1: cancelación sin propiedad del perfil
+
+En `nodia-server/src/ai-provider/use-case/execute-codex-invoice.use-case.ts`, el catch externo llama a `runtime.stop(id)` cuando la señal está abortada, aunque `runtime.acquire(id)` haya rechazado por perfil ocupado y esta solicitud nunca haya recibido un lease. Una segunda solicitud cancelada puede terminar la extracción o el login que posee ese perfil.
+
+Reproducción aislada contra el caso de uso compilado: proveedor/modelo/PNG sintéticos, `runtime.get` devuelve un perfil con `busy:true`, `runtime.stop` registra llamadas y el caller entrega una señal previamente abortada. Resultado observado: HTTP 499 / `codex_cancelled` y llamada `stop('42')` sobre el perfil ajeno. No se inició Codex ni se usó una cuenta. Las suites existentes no cubren esta combinación y su éxito no cierra el defecto.
+
+**Corrección pendiente:** detener el runtime únicamente si la solicitud obtuvo su lease, comprobar cancelación antes de adquirir y añadir una regresión en el caso de uso que preserve la primera operación ante una segunda solicitud cancelada/rechazada. Mantener también las pruebas de cancelación de la operación que sí posee el lease. CG-08/CG-11 continúan pendientes.
+
+### Evidencia de esta revisión
+
+- Server: build correcto; lint sin errores, con dos warnings previos. Suites focalizadas de proveedores/verificación/análisis: 260 pruebas / 26 archivos correctos; suite completa posterior con tres workers: 755 pruebas / 104 archivos correctos. El hallazgo P1 fue reproducido por separado y no está cubierto por esas suites.
+- Client: build/tipado y lint correctos. Ajustes IA: 114 pruebas / 11 archivos; importación/selección IA y modal de factura: 55 pruebas / 3 archivos. Total focalizado Client: 169 pruebas correctas.
+- `node test/codex.integration.mjs`: HTTP compilado con guards reales (401/403, DTO, ownership BIGINT, no-store, cancelación y errores seguros) y worker PDF real (rasterización, límites, rechazo y limpieza) correctos. **En Windows el script omite el peer JSONL**, aunque el mensaje final enumere JSONL; no atribuir cobertura de ese transporte ni del aislamiento de procesos a esta ejecución. No se ejecutó `--runtime` con autenticación.
+- No se comprobó login, keyring, renovación/revocación, catálogo efectivo de cuenta, PNG/PDF mediante inferencia/UI, reinicio autenticado ni Quick Tunnel. Aplicar la migración por sí solo tampoco supera el bloqueo Windows ni el hallazgo de concurrencia.
+
+## Activación explícita en BD local — 2026-10-08
+
+Tras la revisión, el usuario solicitó poner Agentic en `true`. Se aplicó únicamente `EnableCodexAgenticCatalog1791450000000` mediante el script objetivo, con build correcto, y se activó `ai_providers.use_token_plan_agentic` en la conexión OpenAI ID `4` mediante transacción y bloqueo de filas. Verificación posterior al commit: catálogo ID `2`, API `true`, Web `false`, Agentic `true`; conexión ID `4`, API `true`, Web `false`, Agentic `true`, predeterminado `api_key`. La migración aparece en el historial.
+
+Antes de escribir se probó up/up/down/down en un esquema temporal de PostgreSQL con datos sintéticos y rollback completo, preservando el otro proveedor. Respaldo de flags y huellas de integridad: `C:/Users/Oscar/AppData/Local/Nodia/backups/codex-enable-2026-10-08T20-06-03.962Z.json`, sin secretos. Se comprobó que los campos/modelos y demás configuración de la conexión, y todas las filas de API keys, conservaron sus huellas; solo cambiaron el flag solicitado y los timestamps correspondientes. Los flags originales del catálogo también están en `nodia_codex_catalog_rollback`.
+
+La activación de la instancia es independiente de la migración: para revertirla, restaurar su flag desde el respaldo, además de usar el procedimiento de rollback del catálogo cuando corresponda. No se cambió `.env`, ejecutó login/inferencia ni corrigió el P1 de cancelación; Windows continúa rechazado. Esta solicitud reemplaza el aplazamiento de la migración local, sin aprobar documentos ni certificar operación real.
 
 ## Fuentes
 

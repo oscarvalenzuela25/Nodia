@@ -20,12 +20,16 @@ export type BlockModalProps = {
   open: boolean;
   onClose: () => void;
   initialData?: RentalBlock;
+  readError?: boolean;
+  onRetryRead?: () => void;
 };
 export default function BlockModal({
   property,
   open,
   onClose,
   initialData,
+  readError = false,
+  onRetryRead,
 }: BlockModalProps) {
   const { t } = useTranslation();
   const formId = useId();
@@ -47,6 +51,7 @@ export default function BlockModal({
   });
   const busy =
     commonBusy || mutation.isPending || mutation.isUncertain || isSubmitting;
+  const disabled = busy || readError;
   const active = useWatch({ control, name: "is_active" });
   const submit = useBookingSubmit(
     (value: BlockForm) =>
@@ -74,14 +79,31 @@ export default function BlockModal({
             type="submit"
             form={formId}
             variant="contained"
-            disabled={busy || (!property.is_active && !initialData)}
+            disabled={disabled || (!property.is_active && !initialData)}
           >
             {t("rental:save")}
           </Button>
         </ModalActions>
       }
     >
-      <FormContainer id={formId} onSubmit={handleSubmit(submit)}>
+      <FormContainer
+        id={formId}
+        onSubmit={handleSubmit((value) => {
+          if (!disabled) return submit(value);
+        })}
+      >
+        {readError && (
+          <Alert
+            severity="error"
+            action={
+              <Button disabled={busy} onClick={onRetryRead}>
+                {t("rental:retry")}
+              </Button>
+            }
+          >
+            {t("rental:load_error")}
+          </Alert>
+        )}
         <Alert severity="info">
           {t("rental:block_explanation", { timezone: property.timezone })}
         </Alert>
@@ -96,7 +118,7 @@ export default function BlockModal({
                 label={t(`rental:${name}`)}
                 multiline={name === "notes"}
                 disabled={
-                  busy ||
+                  disabled ||
                   (!property.is_active && active && name.endsWith("_at"))
                 }
                 error={!!errors[name]}
@@ -120,7 +142,7 @@ export default function BlockModal({
               checked={field.value}
               onChange={field.onChange}
               disabled={
-                busy || (!property.is_active && !initialData?.is_active)
+                disabled || (!property.is_active && !initialData?.is_active)
               }
             />
           )}

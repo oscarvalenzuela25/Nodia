@@ -41,6 +41,8 @@ Esta carpeta contiene la definición del producto previa al desarrollo. Debe per
 | `19-prelaunch-review.md` | Revisión de Client, Server y Gemini; riesgos y plan de corrección previo al lanzamiento |
 | [Contrato de funcionalidades IA](ai-provider-feature-contract.md) | Esquema vigente, switches, claves, cuotas, thinking y matriz de regresiones que debe conservarse |
 | [32-agentic-cli-implementation-plan.md](32-agentic-cli-implementation-plan.md) | Reemplazo agéntico mediante CLI oficial: doce pasos, rutas, contratos estables, autenticación operativa y aceptación con documentos reales; plan en revisión, AG-01 pendiente |
+| [34-invoice-analysis-console-plan.md](34-invoice-analysis-console-plan.md) | Consola responsive y observación por ejecución implementadas/verificadas localmente; ADR-019, aislamiento y cancelación; AC-11 operativo pendiente |
+| [35-mobile-cards-shortcuts-plan.md](35-mobile-cards-shortcuts-plan.md) | Barra móvil de cinco accesos y piloto de tarjetas en Reservas implementados/verificados localmente; MC-06/MC-07 y aceptación en teléfono físico pendientes, revisión documental conservada |
 
 ## Integraciones pendientes de retomar
 
@@ -48,7 +50,7 @@ Funcionalidad añadida por solicitud del usuario: [Autenticación Gemini Agentic
 
 | Documento | Estado y primer paso |
 |---|---|
-| [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md) | Plan solicitado de OpenAI Codex `token_plan_agentic`: código implementado para local; migración y validación real de BD/cuenta/PNG/PDF/QA aplazadas por el usuario el 2026-10-08. Modelos dinámicos y API conservada; [runbook en features](../features/ai-providers/openai-codex-agentic.md), ADR-018. Conservar el plan hasta aceptar la operación real. |
+| [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md) | OpenAI Codex `token_plan_agentic`: código implementado, migración aplicada en BD local y conexión ID 4 habilitada por solicitud del 2026-10-08; API conserva su predeterminado. Cuenta/PNG/PDF/QA, soporte Windows y P1 de cancelación pendientes. Modelos dinámicos y API conservada; [runbook en features](../features/ai-providers/openai-codex-agentic.md), ADR-018. Conservar el plan hasta aceptar la operación real. |
 
 ## Finanzas personales — ampliación y planes
 
@@ -73,7 +75,7 @@ Estos documentos no están aprobados. Amplían el alcance previo al lanzamiento 
 | [27-rental-reservations-erd.md](27-rental-reservations-erd.md) | **Esquema aceptado explícitamente el 2026-10-04**, once tablas; incorporado a 03 y JSON de Obsidian con respaldo |
 | [28-rental-reservations-contracts.md](28-rental-reservations-contracts.md) | Contratos Backend implementados localmente, en revisión documental: rutas, payloads, dinero, cancelación, preparación y recuperación de escrituras |
 | [29-rental-reservations-backend-plan.md](29-rental-reservations-backend-plan.md) | Plan de desarrollo Backend para múltiples agentes, con tareas, dependencias, archivos y evidencia de cierre; en revisión |
-| [30-rental-reservations-client-plan.md](30-rental-reservations-client-plan.md) | Client implementado con tres carriles e integrador; RC-01..37/39 verificadas localmente, RC-38 aplicación objetivo pendiente |
+| [30-rental-reservations-client-plan.md](30-rental-reservations-client-plan.md) | Client implementado; revisión de endpoints/recuperación del 2026-10-08; RC-38 pendiente, ausencia de tablas/migración/navegación confirmada por inspección de lectura |
 
 Obsidian conserva los objetos anteriores y contiene ahora37 tablas/69 relaciones. Se reconciliaron 03/05/06/07/11/12. [ADR-012](../architecture/decisions/ADR-012-rental-property-collaboration.md) y [ADR-013](../architecture/decisions/ADR-013-rental-integrity-and-idempotency.md) conservan estado propuesto. Backend implementado y verificado en PostgreSQL/HTTP aislados, con 44 operaciones y once entidades; migración/seed objetivo pendientes. Client30 implementado y verificado: 822 pruebas/144 archivos, typecheck/lint/build y navegador→HTTP→PostgreSQL temporal. Primer paso operacional pendiente RC-38: baseline, migración/seed/asignación y smoke con sesión real. Solo 27 está aprobado; no se aprueban automáticamente otros documentos.
 

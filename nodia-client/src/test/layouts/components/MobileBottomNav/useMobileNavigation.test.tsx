@@ -1,0 +1,62 @@
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, afterEach, expect, it, vi } from "vitest";
+import { sileo } from "sileo";
+import useMobileNavigation from "../../../../layouts/components/MobileBottomNav/hooks/useMobileNavigation";
+import useAuthStore from "../../../../store/authStore";
+import { createMobilePreferences, mobileStorageKey, useMobileNavigationStore as store } from "../../../../store/mobileNavigationStore";
+import { reference } from "./fixtures";
+vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
+const login = (id: string) => useAuthStore.getState().login({ token: "synthetic", expiresAt: Date.now() + 900_000, user: { id, name: id } });
+beforeEach(() => { vi.clearAllMocks(); useAuthStore.getState().logout(); store.getState().hydrate(null); login("a"); });
+afterEach(() => vi.restoreAllMocks());
+it("rejects handlers captured before identity change, session replacement or logout", () => {
+  const { result } = renderHook(useMobileNavigation);
+  const stale = result.current.persist;
+  act(() => login("b"));
+  expect(result.current.ownerId).toBe("b");
+  expect(stale({ ...createMobilePreferences(), locked: true }, "layout:mobile_nav.saved")).toBe(false);
+  const beforeRenewal = result.current.persist;
+  act(() => { useAuthStore.getState().logout(); login("b"); });
+  expect(beforeRenewal(createMobilePreferences(), "layout:mobile_nav.saved")).toBe(false);
+  const beforeLogout = result.current.persist;
+  act(() => useAuthStore.getState().logout());
+  expect(result.current.ownerId).toBeNull();
+  expect(beforeLogout(createMobilePreferences(), "layout:mobile_nav.saved")).toBe(false);
+  expect(sileo.success).not.toHaveBeenCalled();
+});
+it("reconciles this person's cross-tab updates and clears without reading another person's key", () => {
+  const { result } = renderHook(useMobileNavigation);
+  const next = { ...createMobilePreferences(), locked: true, slots: [reference, null, null, null] };
+  localStorage.setItem(mobileStorageKey("a"), JSON.stringify(next));
+  act(() => window.dispatchEvent(new StorageEvent("storage", { key: mobileStorageKey("b") })));
+  expect(result.current.preferences.locked).toBe(false);
+  act(() => window.dispatchEvent(new StorageEvent("storage", { key: mobileStorageKey("a") })));
+  expect(result.current.preferences.slots[0]).toEqual(reference);
+  localStorage.clear();
+  act(() => window.dispatchEvent(new StorageEvent("storage", { key: null })));
+  expect(result.current.preferences).toEqual(createMobilePreferences());
+});
+it("reports failed persistence without publishing or reporting success", () => {
+  const { result } = renderHook(useMobileNavigation);
+  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("blocked"); });
+  let saved = true;
+  act(() => { saved = result.current.persist({ ...createMobilePreferences(), locked: true }, "layout:mobile_nav.saved"); });
+  expect(saved).toBe(false);
+  expect(result.current.preferences.locked).toBe(false);
+  expect(sileo.error).toHaveBeenCalledTimes(1);
+  expect(sileo.success).not.toHaveBeenCalled();
+});
+it("does not hydrate preferences without an authenticated id", () => {
+  useAuthStore.getState().logout();
+  const { result } = renderHook(useMobileNavigation);
+  expect(result.current.ready).toBe(false);
+  expect(store.getState().ownerId).toBeNull();
+});
+it("clears memory when the authenticated mobile layout unmounts, preserving local preferences", () => {
+  const { result, unmount } = renderHook(useMobileNavigation);
+  act(() => { result.current.persist({ ...createMobilePreferences(), locked: true }, "layout:mobile_nav.saved"); });
+  unmount();
+  expect(store.getState().ownerId).toBeNull();
+  expect(store.getState().preferences).toEqual(createMobilePreferences());
+  expect(JSON.parse(localStorage.getItem(mobileStorageKey("a"))!).locked).toBe(true);
+});

@@ -15,6 +15,8 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import AddCircleOutlined from "@mui/icons-material/AddCircleOutlined";
@@ -63,6 +65,18 @@ export type RentalTableProps<T extends { id: string }> = {
   busy?: boolean;
   children?: ReactNode;
   title?: string;
+  renderMobileRow?: (row: T, busy: boolean) => ReactNode;
+};
+// Informative placeholders only: controls remain outside the loading surface.
+const mobileRecordBones = {
+  name: "rental-mobile-record", viewportWidth: 390, width: 358, height: 220,
+  bones: [
+    { x: 4.5, y: 16, w: 58, h: 20, r: 4 }, { x: 4.5, y: 46, w: 25, h: 18, r: 8 },
+    { x: 4.5, y: 90, w: 34, h: 12, r: 3 }, { x: 54, y: 90, w: 34, h: 12, r: 3 },
+    { x: 4.5, y: 112, w: 40, h: 18, r: 4 }, { x: 54, y: 112, w: 40, h: 18, r: 4 },
+    { x: 4.5, y: 156, w: 28, h: 12, r: 3 }, { x: 54, y: 156, w: 28, h: 12, r: 3 },
+    { x: 4.5, y: 178, w: 20, h: 18, r: 4 }, { x: 54, y: 178, w: 30, h: 18, r: 4 },
+  ],
 };
 export default function RentalTable<T extends { id: string }>({
   rows,
@@ -80,9 +94,13 @@ export default function RentalTable<T extends { id: string }>({
   busy: externalBusy,
   children,
   title,
+  renderMobileRow,
 }: RentalTableProps<T>) {
   const { t } = useTranslation();
   const menuId = useId();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const showCards = isMobile && Boolean(renderMobileRow);
   const [menu, setMenu] = useState<{
     anchor: HTMLButtonElement;
     id: string;
@@ -159,13 +177,18 @@ export default function RentalTable<T extends { id: string }>({
           {t("rental:load_error")}
         </Alert>
       )}
-      <TablePanel>
+      <TablePanel sx={showCards ? { border: 0, boxShadow: "none", bgcolor: "transparent" } : undefined}>
         {busy && !query.isLoading && (
           <LinearProgress
             sx={{ position: "absolute", top: 0, left: 0, right: 0, height: 2 }}
           />
         )}
-        <Skeleton loading={query.isLoading}>
+        <Skeleton loading={query.isLoading} initialBones={showCards ? mobileRecordBones : undefined}
+          color={showCards ? theme.palette.action.disabledBackground : undefined}>
+          {showCards ? <Box role="list" aria-label={title ?? t("rental:records")} sx={{ display: "grid", gap: 2, minHeight: query.isLoading ? 220 : undefined }}>
+            {rows.map(item => <Box role="listitem" key={item.id}>{renderMobileRow?.(item, busy)}</Box>)}
+            {!query.isLoading && !rows.length && <Typography sx={{ py: 6, textAlign: "center" }}>{t(query.isError ? "rental:load_error" : "rental:empty")}</Typography>}
+          </Box> :
           <ScrollContainer>
             <Table
               sx={{ minWidth: 650 }}
@@ -230,8 +253,10 @@ export default function RentalTable<T extends { id: string }>({
               </TableBody>
             </Table>
           </ScrollContainer>
+          }
         </Skeleton>
         <ResponsivePagination
+          sx={showCards ? { mt: 2, bgcolor: "background.paper", borderRadius: 2 } : undefined}
           component="div"
           count={meta?.total_items ?? 0}
           page={Math.max(0, page - 1)}

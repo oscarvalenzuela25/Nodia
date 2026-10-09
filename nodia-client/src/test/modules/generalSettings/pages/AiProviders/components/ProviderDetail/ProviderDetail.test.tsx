@@ -146,6 +146,11 @@ const mockSupported = [
 ];
 
 describe("ProviderDetail Component", () => {
+  it("opens the requested enabled mode even when a different mode is the default", async () => {
+    renderWithClient(<ProviderDetail providerId="prov-1" initialMode="token_plan_agentic" onBack={vi.fn()} />);
+    expect(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/ })).toHaveAttribute("aria-selected", "true");
+    await waitFor(() => expect(aiServices.getSelectableModels).toHaveBeenCalledWith({ provider_id: "prov-1", mode: "token_plan_agentic" }));
+  });
   beforeEach(() => {
     vi.resetAllMocks();
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: mockProviders, meta: { total_items: 1, total_pages: 1, page: 1, limit: 100 } });
@@ -217,7 +222,7 @@ describe("ProviderDetail Component", () => {
     const user = userEvent.setup(); renderWithClient(<ProviderDetail providerId="prov-1" onBack={() => {}} />);
     await user.click(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/i }));
     expect(screen.queryByRole("tab", { name: /API Key/i })).not.toBeInTheDocument();
-    expect(await screen.findByText("Entorno Agéntico Antigravity")).toBeInTheDocument();
+    expect(await screen.findByText("Entorno Agéntico")).toBeInTheDocument();
     expect(screen.queryByText("Historial de Incidentes, Rotaciones y Auditoría")).not.toBeInTheDocument();
   });
   it("sets the active subscription as default on the correct instance", async () => {

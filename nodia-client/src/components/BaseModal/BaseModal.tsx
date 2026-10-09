@@ -15,6 +15,7 @@ import {
 } from "./styles";
 
 const BaseModal: FC<BaseModalProps> = ({
+  className,
   open,
   onClose,
   title,
@@ -46,6 +47,7 @@ const BaseModal: FC<BaseModalProps> = ({
 
   return (
     <StyledDialog
+      className={className}
       open={open}
       onClose={handleDialogClose}
       modalSize={size}

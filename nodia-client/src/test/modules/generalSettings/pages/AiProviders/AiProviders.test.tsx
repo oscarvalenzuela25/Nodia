@@ -1,9 +1,11 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
+import { MemoryRouter } from "react-router";
 import type { GeminiDualEngineStatus } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
+import i18n from "../../../../../translate";
 import AiProviders from "../../../../../modules/generalSettings/pages/AiProviders/AiProviders";
 import * as aiServices from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 import { sileo } from "sileo";
@@ -47,11 +49,11 @@ const createTestQueryClient = () =>
     },
   });
 
-const renderWithClient = (ui: ReactElement) => {
+const renderWithClient = (ui: ReactElement, entry = "/settings/ai-providers") => {
   const queryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
-  );
+  return { queryClient, ...render(
+    <QueryClientProvider client={queryClient}><MemoryRouter initialEntries={[entry]}>{ui}</MemoryRouter></QueryClientProvider>
+  ) };
 };
 
 const mockProviders = [
@@ -161,6 +163,67 @@ const mockEvents = [
 ];
 
 describe("AiProviders Page", () => {
+  it.each(["overview", "detail"])("shows visible loading while health is pending in %s, without empty or operational states", async (view) => {
+    let resolveHealth!: (value: typeof mockHealthData) => void;
+    vi.mocked(aiServices.getAiProvidersHealth).mockReturnValue(new Promise((resolve) => { resolveHealth = resolve; }));
+    renderWithClient(<AiProviders />, view === "overview" ? "/settings/ai-providers" : "/settings/ai-providers?provider=1&mode=token_plan_agentic");
+    await waitFor(() => expect(aiServices.getAiProviders).toHaveBeenCalledOnce());
+    expect(screen.getByRole("status")).toHaveTextContent(i18n.t("ai_providers:loading.title"));
+    expect(document.querySelectorAll("[data-boneyard-bone]").length).toBeGreaterThan(0);
+    expect(screen.queryByText(i18n.t("ai_providers:connection.empty"))).not.toBeInTheDocument();
+    expect(screen.queryByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Añadir Proveedor/ })).toBeDisabled();
+    expect(within(screen.getByTestId("provider-view-select")).getByRole("button")).toHaveAttribute("aria-disabled", "true");
+    resolveHealth(mockHealthData);
+    await waitFor(() => expect(screen.queryByText(i18n.t("ai_providers:loading.title"))).not.toBeInTheDocument());
+    if (view === "overview") expect(screen.getByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).toBeVisible();
+    else expect(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/ })).toHaveAttribute("aria-selected", "true");
+  });
+  it("keeps loading visible when health arrives before the connections", async () => {
+    let resolveProviders!: (value: Awaited<ReturnType<typeof aiServices.getAiProviders>>) => void;
+    vi.mocked(aiServices.getAiProviders).mockReturnValue(new Promise((resolve) => { resolveProviders = resolve; }));
+    renderWithClient(<AiProviders />);
+    await waitFor(() => expect(aiServices.getAiProvidersHealth).toHaveBeenCalledOnce());
+    expect(screen.getByRole("status")).toHaveTextContent(i18n.t("ai_providers:loading.title"));
+    resolveProviders({ data: mockProviders, meta: { total_items: 2, total_pages: 1, page: 1, limit: 100 } });
+    expect(await screen.findByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).toBeVisible();
+  });
+  it("keeps cached content during a refetch and a refetch failure, with a retry instead of initial loading", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<AiProviders />);
+    await screen.findByText("INCIDENTE ACTIVO: GOOGLE GEMINI");
+    let rejectHealth!: (error: unknown) => void;
+    vi.mocked(aiServices.getAiProvidersHealth).mockReturnValueOnce(new Promise((_resolve, reject) => { rejectHealth = reject; }));
+    const verify = screen.getByRole("button", { name: /Verificar todos/ });
+    await waitFor(() => expect(verify).toBeEnabled());
+    await user.click(verify);
+    expect(screen.getByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).toBeVisible();
+    expect(screen.getByRole("progressbar")).toBeVisible();
+    expect(screen.queryByText(i18n.t("ai_providers:loading.title"))).not.toBeInTheDocument();
+    rejectHealth(new Error("Synthetic health failure"));
+    const retry = await screen.findByRole("button", { name: i18n.t("core:retry") });
+    expect(screen.getByText("INCIDENTE ACTIVO: GOOGLE GEMINI")).toBeVisible();
+    expect(screen.queryByText(i18n.t("ai_providers:loading.title"))).not.toBeInTheDocument();
+    expect(sileo.error).toHaveBeenCalled();
+    await user.click(retry);
+    await waitFor(() => expect(screen.queryByRole("button", { name: i18n.t("core:retry") })).not.toBeInTheDocument());
+  });
+  it("shows an error and retry after initial health failure, without claiming there are no connections", async () => {
+    vi.mocked(aiServices.getAiProvidersHealth).mockRejectedValue(new Error("Synthetic unavailable service"));
+    renderWithClient(<AiProviders />);
+    expect(await screen.findByRole("button", { name: i18n.t("core:retry") })).toBeVisible();
+    await waitFor(() => expect(screen.queryByText(i18n.t("ai_providers:loading.title"))).not.toBeInTheDocument());
+    expect(screen.queryByText(i18n.t("ai_providers:connection.empty"))).not.toBeInTheDocument();
+  });
+  it("opens the exact provider and mode from a topbar link and returns to the overview", async () => {
+    vi.mocked(aiServices.getSelectableModels).mockResolvedValue([]);
+    renderWithClient(<AiProviders />, "/settings/ai-providers?provider=1&mode=token_plan_agentic");
+    expect(await screen.findByRole("tab", { name: /Token Plan \(Agentic\)/ })).toHaveAttribute("aria-selected", "true");
+    await waitFor(() => expect(aiServices.getSelectableModels).toHaveBeenCalledWith({ provider_id: "1", mode: "token_plan_agentic" }));
+    await userEvent.click(screen.getByRole("button", { name: /Volver/ }));
+    expect(await screen.findByRole("button", { name: /General \(Todos los proveedores\)/ })).toBeInTheDocument();
+  });
   beforeEach(() => {
     vi.resetAllMocks();
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({ data: mockProviders, meta: { total_items: 2, total_pages: 1, page: 1, limit: 100 } });

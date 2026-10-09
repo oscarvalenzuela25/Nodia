@@ -149,6 +149,7 @@ Skills disponibles en `nodia-client/skills/`:
   - En `xs` (`<600px`), los botones de acción principal en cabeceras y barras de herramientas (`TableTopBar`, `FilterBar`, diálogos modales) deben ocupar el **100% de ancho** (`width: "100%"` o `flex: 1`) para garantizar ergonomía táctil con el pulgar.
 - **Tablas de Datos en Móvil:**
   - Obligatorio mantener `minWidth: 650` (aplicado globalmente en `theme.components.MuiTable`) dentro de `TableContainer` con scroll horizontal (`overflowX: "auto"`) y scrollbars transparentes, prohibiendo que las columnas se aplasten o se vuelvan ilegibles.
+  - Excepción móvil solicitada el 2026-10-08: listados adaptados explícitamente pueden usar tarjetas en `xs`, conservando consulta, filtros, paginado y acciones. Tablas no adaptadas y vistas desde `sm` mantienen la regla anterior. Ver `docs/mvp/35-mobile-cards-shortcuts-plan.md` y el ajuste en `07`; piloto implementado: ReservationTable.
 
 ## Arquitectura Backend y Testing (`nodia-server`)
 
@@ -160,7 +161,7 @@ Skills disponibles en `nodia-client/skills/`:
 ## Proveedores de IA y credenciales
 
 - API keys permitidas por proveedor por aclaración explícita del usuario el 2026-10-06. Se excluyen las keys gratuitas de Gemini/Google AI Studio como vía operativa del proyecto; no se prohíben APIs de pago ni OpenAI.
-- Catálogo objetivo: `gemini` permite API, Web y Agentic; `openai` permite API y Codex Agentic, con Web deshabilitado. La migración Codex está preparada y no aplicada; validar BD/cuenta después, según solicitud del 2026-10-08. Los flags `can_use_*` definen modos configurables, no disponibilidad de ejecución. Ver `docs/features/ai-providers/openai-codex-agentic.md` y ADR-018.
+- Catálogo objetivo: `gemini` permite API, Web y Agentic; `openai` permite API y Codex Agentic, con Web deshabilitado. Migración Codex aplicada en la BD local configurada y Agentic activado en la conexión OpenAI ID 4 por solicitud explícita del 2026-10-08; API conserva su predeterminado. Cuenta/inferencia y soporte Windows siguen pendientes. Los flags `can_use_*` definen modos configurables, no disponibilidad de ejecución. Ver `docs/features/ai-providers/openai-codex-agentic.md` y ADR-018.
 - Gemini Web y Antigravity conservan sus sesiones independientes. Agentic sigue indisponible hasta comprobar un adaptador real; nunca sustituirlo silenciosamente por Web/API.
 - Guardar claves cifradas en `ai_api_keys`, vinculadas a la instancia. Nunca en frontend, campos JSON, logs, fixtures reales o repositorio. El cliente recibe únicamente etiquetas y máscaras.
 - No cambiar automáticamente de proveedor ni modo. Rotación de claves solo dentro de la misma instancia API, si está habilitada y ante errores de credencial/cuota; no reintentar inferencias con resultado incierto.

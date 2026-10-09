@@ -14,6 +14,7 @@ import { canUseGemini, canUseMistral } from '../../config/envs.config.js';
 import { validateInvoiceFile } from '../invoice-file-validation.js';
 import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
 import { ExecuteCodexInvoiceUseCase } from '../../ai-provider/use-case/execute-codex-invoice.use-case.js';
+import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
 
 @Injectable()
 export class AnalyzeInvoiceUseCase {
@@ -30,7 +31,10 @@ export class AnalyzeInvoiceUseCase {
     file: Express.Multer.File | undefined,
     dto: AnalyzeInvoiceDto,
     signal?: AbortSignal,
+    progress?: AnalysisProgress,
   ): Promise<AnalyzeInvoiceResponse> {
+    progress?.validateContext(dto);
+    signal?.throwIfAborted();
     // Also validate legacy query options after the controller merges query/body.
     // They must never silently override a validated mode or be ignored.
     for (const [key, allowed] of Object.entries({
@@ -59,6 +63,7 @@ export class AnalyzeInvoiceUseCase {
     }
 
     validateInvoiceFile(file);
+    progress?.emit('file_validated');
 
     let providerFields: Record<string, any> | undefined;
     let providerTax = 19;
@@ -223,10 +228,14 @@ export class AnalyzeInvoiceUseCase {
     if (codex && (!configuredAiProvider?.id || !this.executeCodexInvoice)) throw new BadRequestException('Debe seleccionar una conexión Codex configurada.');
     if (effectiveMode === 'api_key' && dto.engine) throw new BadRequestException('Un canal API no admite un motor de sesión.');
     if (effectiveMode === 'api_key' && (!configuredAiProvider?.id || !this.executeApiInvoice)) throw new BadRequestException('Debe seleccionar una conexión API configurada.');
+    if (effectiveMode !== 'api_key') progress?.resolve({ providerId: configuredAiProvider?.id ?? null, provider: engineKey,
+      mode: effectiveMode, model: typeof effectiveModel === 'string' ? effectiveModel : null });
     const extractedData =
-      codex ? await this.executeCodexInvoice!.execute(configuredAiProvider.id, effectiveModel, file, providerFields, providerTax, dto.thinking_level, signal)
+      codex ? await this.executeCodexInvoice!.execute(configuredAiProvider.id, effectiveModel, file, providerFields, providerTax, dto.thinking_level, signal, ...(progress ? [progress] : []))
       : effectiveMode === 'api_key'
-        ? await this.executeApiInvoice!.execute(configuredAiProvider.id, dto.model, file, providerFields, providerTax, dto.thinking_level as 'low' | 'medium' | 'high' | undefined)
+        ? signal || progress
+          ? await this.executeApiInvoice!.execute(configuredAiProvider.id, dto.model, file, providerFields, providerTax, dto.thinking_level as 'low' | 'medium' | 'high' | undefined, signal, progress)
+          : await this.executeApiInvoice!.execute(configuredAiProvider.id, dto.model, file, providerFields, providerTax, dto.thinking_level as 'low' | 'medium' | 'high' | undefined)
         : engineKey === 'mistral'
         ? effectiveModel !== undefined || ocrModel !== undefined
           ? await this.mistralService.extractInvoiceData(
@@ -243,7 +252,10 @@ export class AnalyzeInvoiceUseCase {
               providerFields,
               providerTax,
             )
-        : effectiveModel !== undefined ||
+        : signal || progress
+          ? await this.geminiService.extractInvoiceData(file.buffer, file.mimetype, providerFields, providerTax, effectiveModel,
+              effectiveExtendedThinking, targetGeminiEngine, effectiveThinkingLevel, signal, progress)
+          : effectiveModel !== undefined ||
             dto.extended_thinking !== undefined ||
             targetGeminiEngine !== undefined ||
             dto.thinking_level !== undefined ||
@@ -275,6 +287,8 @@ export class AnalyzeInvoiceUseCase {
               providerTax,
             );
 
+    signal?.throwIfAborted();
+    progress?.emit('extraction_validated');
     return {
       business_id: dto.business_id,
       provider_id: dto.provider_id ?? null,

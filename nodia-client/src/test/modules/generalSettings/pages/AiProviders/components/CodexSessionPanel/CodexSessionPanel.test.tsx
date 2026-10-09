@@ -91,6 +91,50 @@ beforeEach(() => {
   mock.logout.mockResolvedValue({ disconnected: true });
 });
 describe("Codex session panel", () => {
+  it("blocks login for an unavailable runtime and permits connecting only after a successful recheck", async () => {
+    const unavailable = { ...session, available: false, authenticated: null, reason: "codex_runtime_unavailable" };
+    mock.session.mockResolvedValue(unavailable);
+    mount(unavailable);
+    expect(screen.getByText(label("runtime_unavailable"))).toBeVisible();
+    await userEvent.setup().click(screen.getByRole("button", { name: label("manage") }));
+    const dialog = await screen.findByRole("dialog");
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: label("check_status") })).toBeEnabled());
+    expect(within(dialog).getByRole("button", { name: label("connect") })).toBeDisabled();
+    expect(mock.start).not.toHaveBeenCalled();
+    mock.session.mockResolvedValue(session);
+    await userEvent.setup().click(within(dialog).getByRole("button", { name: label("check_status") }));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: label("connect") })).toBeEnabled());
+    await userEvent.setup().click(within(dialog).getByRole("button", { name: label("connect") }));
+    expect(await screen.findByText("TEST-ONLY")).toBeVisible();
+    expect(mock.start).toHaveBeenCalledOnce();
+  });
+  it("shows a runtime 503 inside the modal and prevents another POST until the runtime is checked again", async () => {
+    mock.start.mockRejectedValueOnce({ isAxiosError: true, response: { status: 503, data: {
+      code: "codex_runtime_unavailable", message: "El runtime Codex no está disponible.",
+    } } });
+    mount();
+    await open();
+    await userEvent.setup().click(screen.getByRole("button", { name: label("connect") }));
+    const dialog = screen.getByRole("dialog");
+    expect(await within(dialog).findByText("El runtime Codex no está disponible.")).toBeVisible();
+    expect(within(dialog).getByText(label("runtime_unavailable"))).toBeVisible();
+    expect(within(dialog).getByRole("button", { name: label("connect") })).toBeDisabled();
+    expect(mock.error).toHaveBeenCalledWith(expect.objectContaining({ description: "El runtime Codex no está disponible." }));
+    expect(mock.start).toHaveBeenCalledOnce();
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: label("check_status") })).toBeEnabled());
+    await userEvent.setup().click(within(dialog).getByRole("button", { name: label("check_status") }));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: label("connect") })).toBeEnabled());
+    expect(within(dialog).queryByText("El runtime Codex no está disponible.")).not.toBeInTheDocument();
+  });
+  it("keeps connect disabled if the session query fails even with previously available health", async () => {
+    mock.session.mockRejectedValue(new Error("Synthetic session error"));
+    mount();
+    await userEvent.setup().click(screen.getByRole("button", { name: label("manage") }));
+    await waitFor(() => expect(mock.error).toHaveBeenCalled());
+    expect(screen.getByRole("button", { name: label("connect") })).toBeDisabled();
+    expect(screen.getByRole("dialog")).toBeVisible();
+    expect(mock.start).not.toHaveBeenCalled();
+  });
   it("exposes only the official device URL and recovers a pending login for this connection", async () => {
     mock.current.mockResolvedValue(job);
     mount();

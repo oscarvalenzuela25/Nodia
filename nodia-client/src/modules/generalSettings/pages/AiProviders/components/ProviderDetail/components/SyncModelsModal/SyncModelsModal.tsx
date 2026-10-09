@@ -397,10 +397,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
         title={
           !isOperationalMode
             ? activeMode === "token_plan_agentic"
-              ? t(
-                  "ai_providers:modal_sync_models.agentic_not_operational_warning",
-                  "El entorno agéntico (Antigravity) no se encuentra operativo o no está activo en este equipo. Debes verificar el entorno antes de poder guardar o utilizar estos modelos."
-                )
+              ? t("ai_providers:modal_sync_models.agentic_not_operational_warning")
               : t(
                   "ai_providers:modal_sync_models.session_not_operational_warning",
                   "El modo de conexión seleccionado (Sesión Web) no se encuentra operativo. Debes iniciar sesión en el navegador remoto antes de poder guardar o utilizar estos modelos."
@@ -529,10 +526,7 @@ const SyncModelsModal: FC<SyncModelsModalProps> = ({
               </Typography>
               <Typography variant="body2">
                 {activeMode === "token_plan_agentic"
-                  ? t(
-                      "ai_providers:modal_sync_models.agentic_not_operational_warning",
-                      "El entorno agéntico (Antigravity) no se encuentra operativo o no está activo en este equipo. Debes verificar el entorno antes de poder guardar o utilizar estos modelos."
-                    )
+                  ? t("ai_providers:modal_sync_models.agentic_not_operational_warning")
                   : t(
                       "ai_providers:modal_sync_models.session_not_operational_warning",
                       "El modo de conexión seleccionado (Sesión Web) no se encuentra operativo. Debes iniciar sesión en el navegador remoto antes de poder guardar o utilizar estos modelos."

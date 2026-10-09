@@ -23,6 +23,11 @@ type Props = {
 const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
   const {
     t,
+    currentSession,
+    runtimeUnavailable,
+    canConnect,
+    startError,
+    checkSession,
     sessionObservation,
     open,
     disconnect,
@@ -37,9 +42,8 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
     close,
     handleLogout,
     manage,
-  } = useCodexSession(providerId, disabled);
+  } = useCodexSession(providerId, disabled, session);
   useImperativeHandle(ref, () => ({ manage }));
-  const currentSession = open && job?.state !== "succeeded" ? sessionObservation.data ?? session : session;
   return (
     <DetailPanel>
       <PanelHeader>
@@ -75,6 +79,9 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           )}
         </Box>
       </PanelHeader>
+      {!open && runtimeUnavailable && (
+        <Alert severity="warning">{t("ai_providers:codex.runtime_unavailable")}</Alert>
+      )}
       <Skeleton loading={sessionObservation.isLoading}>
         <Box>
           <Typography role="status">
@@ -144,7 +151,7 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
               </Button>
               <Button
                 variant="contained"
-                disabled={busy || active || current.isError || status.isError}
+                disabled={busy || active || !canConnect}
                 onClick={connect}
               >
                 {t("ai_providers:codex.connect")}
@@ -153,6 +160,20 @@ const CodexSessionPanel = ({ ref, providerId, session, disabled }: Props) => {
           }
         >
           <SessionContent>
+            {runtimeUnavailable && (
+              <Alert severity="warning" sx={{
+                flexWrap: { xs: "wrap", sm: "nowrap" },
+                "& .MuiAlert-message": { flex: 1 },
+                "& .MuiAlert-action": { width: { xs: "100%", sm: "auto" }, pl: { xs: 0, sm: 2 }, mr: { xs: 0, sm: -1 }, pt: { xs: 1, sm: 0 } },
+              }} action={
+                <Button disabled={busy} onClick={checkSession} sx={{ width: { xs: "100%", sm: "auto" } }}>
+                  {t("ai_providers:codex.check_status")}
+                </Button>
+              }>
+                {t("ai_providers:codex.runtime_unavailable")}
+              </Alert>
+            )}
+            {startError && <Alert severity="error">{startError}</Alert>}
             <Alert severity="info">
               {t("ai_providers:codex.shared_session")}
             </Alert>

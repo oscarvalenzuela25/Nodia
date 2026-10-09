@@ -6,6 +6,7 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated, Any
+from collections.abc import Callable
 from uuid import uuid4
 
 from dotenv import load_dotenv
@@ -23,6 +24,7 @@ from gemini_service import GeminiWebService
 from interactive_login import InteractiveLoginManager
 from agentic_login import AgenticLoginManager
 from request_guard import PrivateRequestGuard
+from analysis_observations import AnalysisObservations
 from schemas import (AgenticLoginJobResponse, AgenticLoginCode, AgenticStatusResponse,
                      AgenticModelsResponse, AnalysisOptions, DualEngineStatusResponse,
                      HealthResponse, InvoiceAnalysisResponse, LoginJobResponse,
@@ -56,7 +58,7 @@ def configured_limits() -> RuntimeLimits:
 
 
 async def execute_analysis(file: UploadFile, options: AnalysisOptions, service: Any,
-                           temp_dir: Path, limits: RuntimeLimits) -> InvoiceAnalysisResponse:
+                           temp_dir: Path, limits: RuntimeLimits, progress: Callable[[str], None] | None = None) -> InvoiceAnalysisResponse:
     ext = Path(file.filename or "").suffix.lower()
     if ext not in {".pdf", ".png", ".jpg", ".jpeg", ".webp"}:
         raise ServiceError("invalid_file_type", "Formato de archivo no soportado.", 415)
@@ -79,10 +81,13 @@ async def execute_analysis(file: UploadFile, options: AnalysisOptions, service: 
                     raise ServiceError("file_too_large", "La factura supera el tamaño permitido.", 413)
                 output.write(chunk)
                 chunk = await file.read(64 * 1024)
+        if progress:
+            progress("file_validated")
         result = await asyncio.wait_for(service.analyze_invoice(
             file_path=temp_path, provider_fields=options.provider_fields,
             provider_tax=options.provider_tax, model=options.model,
             extended_thinking=options.extended_thinking, thinking_level=options.thinking_level,
+            **({"progress_callback": progress} if progress else {}),
         ), timeout=limits.analysis_timeout)
         try:
             return InvoiceAnalysisResponse.model_validate(result)
@@ -112,6 +117,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
         state.agentic_login = AgenticLoginManager(state.agentic)
         state.temp_dir = temp_dir if temp_dir is not None else BASE_DIR / "temp_uploads"
         state.analysis_slots = asyncio.Semaphore(state.limits.analysis_slots)
+        state.observations = AnalysisObservations()
         try:
             if isinstance(state.agentic, AntigravityAgentService):
                 await state.agentic.initialize()
@@ -339,7 +345,13 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
             request.state.engine = options.engine
             if options.engine == "agentic" and not service.is_available():
                 raise ServiceError("agentic_unavailable", "Antigravity no dispone de un adaptador de sesión verificado.")
-            return await execute_analysis(file, options, service, application.state.temp_dir, application.state.limits)
+            identifier = getattr(request.state, "analysis_id", None)
+            progress = (lambda stage: application.state.observations.emit(identifier, stage)) if identifier else None
+            return await execute_analysis(file, options, service, application.state.temp_dir, application.state.limits, progress)
+
+    @application.get("/analysis-observations/{identifier}")
+    async def read_observation(identifier: str, after: int = 0):
+        return JSONResponse(application.state.observations.read(identifier, after), headers={"Cache-Control": "no-store"})
 
     return application
 

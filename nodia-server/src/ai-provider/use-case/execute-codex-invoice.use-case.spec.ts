@@ -357,4 +357,32 @@ describe('Codex invoice extraction use case', () => {
     cancellation.abort();
     await expect(extraction).rejects.toMatchObject({ status: 499 });
   });
+  it('does not stop the owned profile when another cancelled request fails to acquire it', async () => {
+    const original = rpc.request.getMockImplementation()!;
+    rpc.request.mockImplementation((method: string) => method === 'turn/start'
+      ? Promise.resolve({ turn: { id: 'synthetic-turn' } }) : original(method));
+    const ownerCancellation = new AbortController();
+    const owner = useCase.execute('42', undefined, png, undefined, 19, undefined, ownerCancellation.signal);
+    await vi.waitFor(() => expect(rpc.request.mock.calls.some(([method]) => method === 'turn/start')).toBe(true));
+    const contender = new AbortController();
+    contender.abort();
+    await expect(useCase.execute('42', undefined, png, undefined, 19, undefined, contender.signal)).rejects.toMatchObject({ status: 499 });
+    expect(runtime.stop).not.toHaveBeenCalled();
+    rpc.emit('notification', 'item/completed', { threadId: 'synthetic-thread', turnId: 'synthetic-turn',
+      item: { type: 'agentMessage', id: 'answer', phase: 'final_answer', text: JSON.stringify(invoice) } });
+    rpc.emit('notification', 'turn/completed', { threadId: 'synthetic-thread', turn: { id: 'synthetic-turn', status: 'completed' } });
+    await expect(owner).resolves.toMatchObject({ code: 'SYNTHETIC' });
+    expect(runtime.stop).not.toHaveBeenCalled();
+  });
+  it('excludes a different turn final message arriving before the turn/start acknowledgement', async () => {
+    const original = rpc.request.getMockImplementation()!;
+    rpc.request.mockImplementation((method: string) => {
+      if (method === 'turn/start') rpc.emit('notification', 'item/completed', {
+        threadId: 'synthetic-thread', turnId: 'foreign-turn', item: { type: 'agentMessage', id: 'foreign',
+          phase: 'final_answer', text: JSON.stringify({ ...invoice, code: 'FOREIGN' }) },
+      });
+      return original(method);
+    });
+    await expect(useCase.execute('42', undefined, png)).resolves.toMatchObject({ code: 'SYNTHETIC' });
+  });
 });

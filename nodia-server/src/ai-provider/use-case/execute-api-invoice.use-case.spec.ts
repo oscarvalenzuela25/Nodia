@@ -67,6 +67,23 @@ const respond = (text = JSON.stringify(invoice)) =>
 afterEach(() => vi.unstubAllGlobals());
 
 describe('API invoice execution through the real adapter', () => {
+  it('propagates caller cancellation without rotating credentials or replaying an uncertain request', async () => {
+    const { useCase, providers } = setup(true);
+    providers.getEligibleApiKeySecrets.mockResolvedValue(['synthetic-key-a', 'synthetic-key-b']);
+    const cancellation = new AbortController();
+    const progress = { validateContext: vi.fn(), resolve: vi.fn(), emit: vi.fn() };
+    const fetchMock = vi.fn((_url, options: RequestInit) => new Promise((_resolve, reject) => {
+      options.signal!.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const pending = useCase.execute('42', undefined, file, undefined, 19, undefined, cancellation.signal, progress);
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
+    cancellation.abort();
+    await expect(pending).rejects.toBeInstanceOf(HttpException);
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(progress.emit).toHaveBeenCalledWith('provider_request_started');
+    expect(progress.emit).not.toHaveBeenCalledWith('response_received');
+  });
   it('sends Gemini API the configured model and document independently from Web sessions', async () => {
     const fetch = vi
       .fn()

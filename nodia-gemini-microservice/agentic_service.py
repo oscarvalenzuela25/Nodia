@@ -7,6 +7,7 @@ import tempfile
 import time
 from pathlib import Path
 from typing import Any
+from collections.abc import Callable
 from loguru import logger
 
 from agentic_cli import CliConfig, CliRunner, prepare_cli_home
@@ -141,7 +142,7 @@ class AntigravityAgentService:
     async def analyze_invoice(self, file_path: Path, provider_fields: dict | None = None,
                               provider_tax: int | None = None, model: str | None = None,
                               extended_thinking: bool = False,
-                              thinking_level: str | None = None) -> dict[str, Any]:
+                              thinking_level: str | None = None, progress_callback: Callable[[str], None] | None = None) -> dict[str, Any]:
         if not self._available:
             raise ServiceError("agentic_unavailable", "Antigravity CLI no está disponible.")
         if extended_thinking or thinking_level not in (None, "low", "medium", "high"):
@@ -158,6 +159,8 @@ class AntigravityAgentService:
                     raise ServiceError("agentic_timeout", "No se pudo comprobar la sesión dentro del tiempo permitido.", 504)
                 raise ServiceError("agentic_session_required", "Inicie sesión en Antigravity CLI.")
             matches = [m for m in status["models"] if model in (m["id"], m["name"])]
+            if progress_callback:
+                progress_callback("session_checked")
             if not model or len(matches) != 1:
                 raise ServiceError("agentic_model_unavailable", "Seleccione un modelo agéntico descubierto.", 422)
             identity = matches[0]["id"]
@@ -168,6 +171,8 @@ class AntigravityAgentService:
                 ["-p", "/model", "--output-format", "json", "--print-timeout", "25s", *options], timeout=25)
             if code != 0 or command_data(preflight, "model").get("id") != identity:
                 raise ServiceError("agentic_model_option_mismatch", "El esfuerzo elegido cambia el modelo; revise su selección.", 422)
+            if progress_callback:
+                progress_callback("model_checked")
             with tempfile.TemporaryDirectory(prefix="nodia-agentic-", dir=self.runner.config.home) as directory:
                 job = Path(directory)
                 home = job / "profile"
@@ -186,14 +191,18 @@ class AntigravityAgentService:
                         f"{self.runner.config.timeout}s", "--log-file", str(job / "cli.log"), *options]
                 try:
                     started = time.monotonic()
-                    progress = CliProgress()
+                    progress = CliProgress(progress_callback)
                     outcome = "interrupted"
                     logger.info("Agentic inference started; deadline_seconds={}", self.runner.config.timeout)
+                    if progress_callback:
+                        progress_callback("provider_request_started")
                     raw, exit_code = await self.runner.run(
                         args, stdin=(json.dumps({"event": "user", "message": {"content": prompt}}) + "\n").encode(),
                         cwd=job, home=home, timeout=self.runner.config.timeout + 2,
                         stdout_observer=progress.feed)
                     outcome = "process_exited"
+                    if progress_callback:
+                        progress_callback("response_received")
                     result = None
                     read_document = False
                     for line in raw.splitlines():

@@ -9,6 +9,9 @@ import useProfileMenu from "./hooks/useProfileMenu";
 import ThemeSelector from "../ThemeSelector";
 import LanguageSelector from "../../../components/LanguageSelector";
 import { TopbarRoot } from "./styles";
+import AiProviderIndicators from "./components/AiProviderIndicators";
+import { useHasAction, useVisibleModules } from "../../../store/generalSettings/useGeneralSettings";
+import { hasModuleAccess } from "../../../store/generalSettings/helpers";
 
 type Props = {
   onDrawerToggle: () => void;
@@ -25,6 +28,8 @@ const Topbar: FC<Props> = ({
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, isAuthenticated, isBusy, anchorEl, openMenu, closeMenu, handleLogout } = useProfileMenu();
+  const modules = useVisibleModules();
+  const canManageAi = useHasAction("ai:manage");
 
   return (
     <TopbarRoot>
@@ -53,7 +58,8 @@ const Topbar: FC<Props> = ({
         <ArrowCircleLeftOutlinedIcon />
       </IconButton>
 
-      <Stack direction="row" spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: "center" }}>
+      {isAuthenticated && canManageAi && hasModuleAccess(modules, "/settings/ai-providers") && <AiProviderIndicators />}
+      <Stack direction="row" spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: "center", justifyContent: "flex-end", gridRow: 1, gridColumn: { xs: 2, sm: 3 } }}>
         <LanguageSelector />
         <ThemeSelector />
         {isAuthenticated ? (

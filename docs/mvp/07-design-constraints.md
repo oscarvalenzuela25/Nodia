@@ -1,7 +1,7 @@
 # Restricciones de Diseño — Nodia Parte 1
 
 > Estado: aprobado (base histórica); aplicación y ampliación Finanzas en revisión
-> Última actualización: 2026-10-04
+> Última actualización: 2026-10-08
 > Dependencias: 05-sitemap.md y 06-route-specs.md aprobados
 
 ## Objetivo
@@ -27,6 +27,12 @@ Definir sistema visual, accesibilidad y restricciones de interacción aplicables
 
 - **Enfoque:** Full Responsive.
 - **Justificación:** Aunque la Parte 1 es de carácter administrativo, los usuarios accederán desde celulares. Las vistas, especialmente las tablas de listados y modales de Ajustes Generales, deben adaptarse correctamente a dispositivos móviles.
+
+### Ajuste móvil solicitado e implementado — 2026-10-08
+
+Según [35](35-mobile-cards-shortcuts-plan.md), en `xs` (<600 px) los listados adaptados explícitamente pueden usar tarjetas verticales con campos principales y acciones del registro, compartiendo consulta, filtros y paginado del servidor. ReservationTable es el piloto implementado. Las tablas sin adaptar y todas las vistas desde 600 px conservan el patrón de tabla, `minWidth: 650` y scroll transparente. No convertir columnas por heurística ni aplicar esta representación a calendarios/resúmenes sin selección específica.
+
+BaseLayout autenticado incorpora barra inferior de borde a borde con cuatro accesos locales por persona e Inicio fijo más grande al centro. Candado flotante arriba a la derecha regula edición, sin alterar permisos. Reservar espacio debajo del contenido y de avisos; safe area dentro de barra y selector. Las tarjetas usan campos visibles, estado separado de archivo/inactividad, acción principal de ancho completo y menú secundario. La aprobación visual corresponde a la barra; no extiende aprobación automática a toda la ampliación documental.
 
 ## 5. Accesibilidad (a11y)
 

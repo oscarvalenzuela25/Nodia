@@ -1,0 +1,148 @@
+[
+  {
+    "bottomGap": 0,
+    "cards": 2,
+    "clientWidth": 310,
+    "collisions": 0,
+    "homeOffset": 0,
+    "homeSize": 64,
+    "lateralGaps": [
+      0,
+      0
+    ],
+    "links": 5,
+    "minimumTarget": 44,
+    "navigation": true,
+    "overflow": false,
+    "tables": 0,
+    "width": 320
+  },
+  {
+    "bottomGap": 0,
+    "cards": 2,
+    "clientWidth": 350,
+    "collisions": 0,
+    "homeOffset": 0,
+    "homeSize": 72,
+    "lateralGaps": [
+      0,
+      0
+    ],
+    "links": 5,
+    "minimumTarget": 44,
+    "navigation": true,
+    "overflow": false,
+    "tables": 0,
+    "width": 360
+  },
+  {
+    "bottomGap": 0,
+    "cards": 2,
+    "clientWidth": 380,
+    "collisions": 0,
+    "homeOffset": 0,
+    "homeSize": 72,
+    "lateralGaps": [
+      0,
+      0
+    ],
+    "links": 5,
+    "minimumTarget": 44,
+    "navigation": true,
+    "overflow": false,
+    "tables": 0,
+    "width": 390
+  },
+  {
+    "bottomGap": 0,
+    "cards": 2,
+    "clientWidth": 420,
+    "collisions": 0,
+    "homeOffset": 0,
+    "homeSize": 72,
+    "lateralGaps": [
+      0,
+      0
+    ],
+    "links": 5,
+    "minimumTarget": 44,
+    "navigation": true,
+    "overflow": false,
+    "tables": 0,
+    "width": 430
+  },
+  {
+    "bottomGap": 0,
+    "cards": 2,
+    "clientWidth": 589,
+    "collisions": 0,
+    "homeOffset": 0,
+    "homeSize": 72,
+    "lateralGaps": [
+      0,
+      0
+    ],
+    "links": 5,
+    "minimumTarget": 44,
+    "navigation": true,
+    "overflow": false,
+    "tables": 0,
+    "width": 599
+  },
+  {
+    "bottomGap": null,
+    "cards": 0,
+    "clientWidth": 590,
+    "collisions": 0,
+    "homeOffset": null,
+    "lateralGaps": null,
+    "links": 0,
+    "minimumTarget": null,
+    "navigation": false,
+    "overflow": false,
+    "tables": 1,
+    "width": 600
+  },
+  {
+    "bottomGap": null,
+    "cards": 0,
+    "clientWidth": 758,
+    "collisions": 0,
+    "homeOffset": null,
+    "lateralGaps": null,
+    "links": 0,
+    "minimumTarget": null,
+    "navigation": false,
+    "overflow": false,
+    "tables": 1,
+    "width": 768
+  },
+  {
+    "bottomGap": null,
+    "cards": 0,
+    "clientWidth": 1270,
+    "collisions": 0,
+    "homeOffset": null,
+    "lateralGaps": null,
+    "links": 0,
+    "minimumTarget": null,
+    "navigation": false,
+    "overflow": false,
+    "tables": 1,
+    "width": 1280
+  },
+  {
+    "bottomGap": null,
+    "cards": 0,
+    "clientWidth": 1430,
+    "collisions": 0,
+    "homeOffset": null,
+    "lateralGaps": null,
+    "links": 0,
+    "minimumTarget": null,
+    "navigation": false,
+    "overflow": false,
+    "tables": 1,
+    "width": 1440
+  }
+]

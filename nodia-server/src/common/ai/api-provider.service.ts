@@ -5,6 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { observedModels } from '../../ai-provider/helpers/model-observation.helper.js';
+import type { AnalysisProgress } from './analysis-progress.js';
 import {
   API_INVOICE_SCHEMA,
   invoicePrompt,
@@ -27,10 +28,13 @@ export class ApiProviderService {
     google: boolean,
     body?: unknown,
     deadline?: AbortSignal,
+    progress?: AnalysisProgress,
   ) {
     const timeout = AbortSignal.timeout(body === undefined ? 15000 : 90000);
     const signal = deadline ? AbortSignal.any([timeout, deadline]) : timeout;
     try {
+      signal.throwIfAborted();
+      if (body !== undefined) progress?.emit('provider_request_started');
       const response = await fetch(url, {
         method: body === undefined ? 'GET' : 'POST',
         signal,
@@ -74,6 +78,7 @@ export class ApiProviderService {
         await reader.cancel();
       }
       const raw = Buffer.concat(chunks).toString('utf8');
+      progress?.emit('response_received');
       let result: unknown;
       try {
         result = JSON.parse(raw);
@@ -167,6 +172,7 @@ export class ApiProviderService {
     tax = 19,
     deadline?: AbortSignal,
     thinkingLevel?: ApiThinkingLevel,
+    progress?: AnalysisProgress,
   ) {
     if (!model.trim())
       throw new BadRequestException('Sin modelo asignado para API.');
@@ -205,6 +211,7 @@ export class ApiProviderService {
           },
         },
         deadline,
+        progress,
       );
       if (response.status !== 'completed' || !Array.isArray(response.output))
         throw new BadGatewayException('La API no completó la extracción.');
@@ -247,6 +254,7 @@ export class ApiProviderService {
         },
       },
       deadline,
+      progress,
     );
     if (!Array.isArray(response.candidates) || response.candidates.length !== 1)
       throw new BadGatewayException('La API no completó la extracción.');

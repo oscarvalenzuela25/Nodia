@@ -11,6 +11,10 @@ import {
   calculatePriceDiff,
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport";
 import * as businessServices from "../../../../../../../modules/business/infrastructure/services";
+vi.mock("../../../../../../../modules/business/components/AnalysisConsole/infrastructure/services", () => ({
+  reserveObservation: vi.fn(async () => ({ version: 1, id: crypto.randomUUID() })),
+  readObservation: vi.fn(async (id: string) => ({ version: 1, id, state: 'succeeded', identity: null, events: [], lastSequence: 0, gap: false })),
+}));
 import useGeneralSettingsStore from "../../../../../../../store/generalSettings/generalSettingsStore";
 import type {
   ProductEntity,
@@ -374,6 +378,19 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(option);
     await waitFor(() => expect(screen.getByTestId("invoice-file-input")).toBeEnabled());
   };
+  it("starts a single analysis on double click and retains the active console", async () => {
+    let release!: (value: Awaited<ReturnType<typeof businessServices.analyzeInvoice>>) => void;
+    vi.mocked(businessServices.analyzeInvoice).mockImplementationOnce(() => new Promise(resolve => { release = resolve; }));
+    renderWithClient(<ProductInvoiceImport businessId="biz-123" onCancel={mockOnCancel} onSuccess={mockOnSuccess} />);
+    await selectProvider();
+    await user.upload(screen.getByTestId("invoice-file-input"), new File(['synthetic'], 'synthetic.pdf', { type: 'application/pdf' }));
+    await user.dblClick(screen.getByTestId("analyze-invoice-btn"));
+    await waitFor(() => expect(businessServices.analyzeInvoice).toHaveBeenCalledOnce());
+    expect(screen.getByTestId("analyze-invoice-btn")).toBeDisabled();
+    expect(within(screen.getByTestId('analysis-console')).getByText('Analizando')).toBeVisible();
+    release({ business_id: 'biz-123', provider_id: 'prov-1', code: 'SYNTHETIC', total_amount: 0, data: { items: [] } });
+    await waitFor(() => expect(within(screen.getByTestId('analysis-console')).getByText('Borrador listo')).toBeVisible());
+  });
 
   it("allows searching providers in SelectSingleInput and does not render a none option", async () => {
     vi.mocked(businessServices.getProviders).mockResolvedValueOnce({

@@ -1,4 +1,5 @@
 import useAuth from "../../../hooks/useAuth";
+import { claimHttpErrorNotification } from "../../../config/httpFeedback";
 import type { AxiosError } from "axios";
 import {
   keepPreviousData,
@@ -520,6 +521,7 @@ export const useUpdateInvoice = () => {
 
 export const useAnalyzeInvoice = () => {
   return useMutation({
+    retry: false,
     mutationFn: (params: import("./types").AnalyzeInvoiceParams) =>
       analyzeInvoice(params),
     onSuccess: (data) => {
@@ -530,6 +532,7 @@ export const useAnalyzeInvoice = () => {
       });
     },
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+      if (!claimHttpErrorNotification(error)) return;
       const serverMessage =
         error.response?.data?.message || error.response?.data?.error;
       const status = error.response?.status;

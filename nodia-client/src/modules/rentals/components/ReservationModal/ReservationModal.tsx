@@ -35,6 +35,8 @@ export type ReservationModalProps = {
   onClose: () => void;
   initialData?: RentalReservation;
   onSaved?: (id: string) => void;
+  readError?: boolean;
+  onRetryRead?: () => void;
 };
 export default function ReservationModal({
   property,
@@ -42,6 +44,8 @@ export default function ReservationModal({
   onClose,
   initialData,
   onSaved,
+  readError = false,
+  onRetryRead,
 }: ReservationModalProps) {
   const { t, i18n } = useTranslation();
   const formId = useId();
@@ -95,6 +99,7 @@ export default function ReservationModal({
     mutation.isUncertain ||
     isSubmitting ||
     history.isFetching;
+  const disabled = busy || readError;
   const submit = useBookingSubmit(
     async (value: ReservationForm) =>
       initialData
@@ -178,14 +183,31 @@ export default function ReservationModal({
             type="submit"
             form={formId}
             variant="contained"
-            disabled={busy || (!initialData && !property.is_active)}
+            disabled={disabled || (!initialData && !property.is_active)}
           >
             {t("rental:save")}
           </Button>
         </ModalActions>
       }
     >
-      <FormContainer id={formId} onSubmit={handleSubmit(submit)}>
+      <FormContainer
+        id={formId}
+        onSubmit={handleSubmit((value) => {
+          if (!disabled) return submit(value);
+        })}
+      >
+        {readError && (
+          <Alert
+            severity="error"
+            action={
+              <Button disabled={busy} onClick={onRetryRead}>
+                {t("rental:retry")}
+              </Button>
+            }
+          >
+            {t("rental:load_error")}
+          </Alert>
+        )}
         <Alert severity="info">
           {t("rental:quote_explanation", { timezone: property.timezone })}
         </Alert>
@@ -205,7 +227,7 @@ export default function ReservationModal({
         )}
         {!initialData && (
           <Button
-            disabled={busy || !property.is_active}
+            disabled={disabled || !property.is_active}
             onClick={() => {
               if (property.default_nightly_rate !== null)
                 setValue("nightly_rate", property.default_nightly_rate);
@@ -250,7 +272,7 @@ export default function ReservationModal({
               options={["whatsapp", "airbnb", "facebook", "other"].map(
                 (value) => ({ value, label: t(`rental:channel_${value}`) }),
               )}
-              disabled={busy || !editable}
+              disabled={disabled || !editable}
               clearable={false}
               onChange={(value) => {
                 if (value) {
@@ -276,7 +298,7 @@ export default function ReservationModal({
                 value={field.value}
                 type={type}
                 disabled={
-                  busy ||
+                  disabled ||
                   (!personal && !editable) ||
                   (name === "deposit_amount" && values.channel === "airbnb")
                 }
@@ -303,7 +325,7 @@ export default function ReservationModal({
               label={t("rental:cancellation_policy")}
               value={field.value}
               onChange={field.onChange}
-              disabled={busy || !editable || values.channel === "airbnb"}
+              disabled={disabled || !editable || values.channel === "airbnb"}
               query={{ active: "active" }}
             />
           )}
@@ -323,7 +345,7 @@ export default function ReservationModal({
               confirmationMessage={t("rental:archive_occupancy_explanation")}
               checked={field.value}
               onChange={field.onChange}
-              disabled={busy}
+              disabled={disabled}
             />
           )}
         />

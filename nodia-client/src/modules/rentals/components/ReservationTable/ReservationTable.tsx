@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Stack } from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import RentalFilters from "../RentalFilters";
@@ -12,6 +12,7 @@ import { useRentalList, useRentalBusy } from "../../infrastructure/useServices";
 import { formatRentalAmount } from "../../utils/money";
 import RentalTable from "../RentalTable";
 import { Filters } from "./styles";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 export type ReservationTableProps = {
   property: RentalProperty;
   onOpenReservation: (id: string) => void;
@@ -78,6 +79,19 @@ export default function ReservationTable({
         onPageChange={(value) => update({ page: value })}
         onLimitChange={(value) => update({ page: 1, limit: value })}
         query={query}
+        renderMobileRow={(reservation, disabled) => <MobileRecordCard title={reservation.guest_name} disabled={disabled}
+          status={<Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", rowGap: 1 }}>
+            <Chip size="small" label={t(`rental:status_${reservation.status}`)} color={reservation.status === "confirmed" ? "success" : "default"} />
+            {!reservation.is_active && <Chip size="small" label={t("rental:inactive")} />}
+          </Stack>}
+          fields={[
+            { key: "in", label: t("rental:check_in_on"), value: `${reservation.check_in_on} · ${reservation.check_in_time}` },
+            { key: "out", label: t("rental:check_out_on"), value: `${reservation.check_out_on} · ${reservation.check_out_time}` },
+            { key: "nights", label: t("rental:nights"), value: reservation.nights },
+            { key: "balance", label: t("rental:balance_due_amount"), value: formatRentalAmount(reservation.balance_due_amount, i18n.language) },
+          ]}
+          primaryAction={{ key: "detail", label: t("rental:open_detail"), onClick: () => onOpenReservation(reservation.id) }}
+          actions={[{ key: "edit", label: t("rental:edit"), onClick: () => onEditReservation(reservation) }]} />}
         search={search}
         onSearchChange={(value) =>
           update({ page: 1, q: value ? { [searchBy]: value } : undefined })

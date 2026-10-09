@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { sileo } from "sileo";
-import { notifyHttpError } from "../../../../../../../config/httpFeedback";
+import { isAxiosError } from "axios";
+import { getHttpErrorMessage, notifyHttpError } from "../../../../../../../config/httpFeedback";
+import type { CodexSession } from "../../../infrastructure/codexSession";
 import {
   cancelCodexLogin,
   codexJobActive,
@@ -13,7 +15,7 @@ import {
   startCodexLogin,
 } from "../../../infrastructure/codexSession";
 
-export const useCodexSession = (providerId: string, disabled: boolean) => {
+export const useCodexSession = (providerId: string, disabled: boolean, session?: CodexSession) => {
   const { t } = useTranslation(["ai_providers", "core"]);
   const client = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -75,6 +77,14 @@ export const useCodexSession = (providerId: string, disabled: boolean) => {
     current.isFetching ||
     status.isFetching ||
     sessionObservation.isFetching;
+  const currentSession = open && job?.state !== "succeeded"
+    ? sessionObservation.data ?? session
+    : session;
+  const runtimeStartError = isAxiosError<{ code?: string }>(start.error) &&
+    start.error.response?.data?.code === "codex_runtime_unavailable";
+  const runtimeUnavailable = currentSession?.available === false || runtimeStartError;
+  const canConnect = currentSession?.available === true && !runtimeUnavailable &&
+    !current.isError && !status.isError && !sessionObservation.isError;
   const notified = useRef<string | null>(null);
   const refresh = () =>
     Promise.all(
@@ -117,7 +127,7 @@ export const useCodexSession = (providerId: string, disabled: boolean) => {
       });
   }, [job, client, providerId, t]);
   const connect = async () => {
-    if (busy || active) return;
+    if (busy || active || !canConnect) return;
     try {
       const result = await start.mutateAsync();
       client.setQueryData(["codex-login", providerId, result.id], result);
@@ -156,12 +166,23 @@ export const useCodexSession = (providerId: string, disabled: boolean) => {
     }
   };
   const manage = () => {
+    if (busy) return;
     start.reset();
     setJobId(null);
     setOpen(true);
   };
+  const checkSession = async () => {
+    if (busy) return;
+    const result = await sessionObservation.refetch();
+    if (!result.isError && result.data?.available) start.reset();
+  };
   return {
     t,
+    currentSession,
+    runtimeUnavailable,
+    canConnect,
+    startError: start.isError ? getHttpErrorMessage(start.error) : null,
+    checkSession,
     sessionObservation,
     open,
     disconnect,

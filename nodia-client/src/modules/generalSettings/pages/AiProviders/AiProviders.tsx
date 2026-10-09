@@ -2,12 +2,12 @@ import QueryErrorAlert from "../../../../components/QueryErrorAlert";
 import { notifyHttpError } from "../../../../config/httpFeedback";
 import type { FC } from "react";
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Button, Box, LinearProgress, Typography } from "@mui/material";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import SyncOutlinedIcon from "@mui/icons-material/SyncOutlined";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import { Skeleton } from "boneyard-js/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
@@ -20,6 +20,7 @@ import type { AiProviderHealthItem } from "./infrastructure/types";
 import AlertBanner from "./components/AlertBanner";
 import ProviderCard from "./components/ProviderCard";
 import ProviderDetail from "./components/ProviderDetail";
+import ProvidersLoading from "./components/ProvidersLoading";
 import AddProviderModal from "./components/AddProviderModal";
 import ConfigureProviderModal from "./components/ConfigureProviderModal";
 import RemoteLoginModal from "./components/RemoteLoginModal";
@@ -40,7 +41,19 @@ const AiProviders: FC = () => {
   const { t } = useTranslation(["ai_providers", "core"]);
   const queryClient = useQueryClient();
 
-  const [selectedView, setSelectedView] = useState<string>("overview");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedView = searchParams.get("provider") || "overview";
+  const requestedMode = searchParams.get("mode");
+  const initialMode = requestedMode === "api_key" || requestedMode === "token_plan_web" || requestedMode === "token_plan_agentic" ? requestedMode : undefined;
+  const setSelectedView = (view: string) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.delete("mode");
+      if (view === "overview") next.delete("provider");
+      else next.set("provider", view);
+      return next;
+    });
+  };
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [configureProvider, setConfigureProvider] =
     useState<AiProviderHealthItem | null>(null);
@@ -67,9 +80,8 @@ const AiProviders: FC = () => {
   const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines } = useGeminiEngines();
 
   const isInitialLoading =
-    isLoadingProviders ||
-    isLoadingHealth ||
-    (!healthResponse && isFetchingHealth);
+    (!providersResponse && (isLoadingProviders || isFetchingProviders)) ||
+    (!healthResponse && (isLoadingHealth || isFetchingHealth));
   const isSoftLoading = (isFetchingHealth || isFetchingProviders) && !isInitialLoading;
   const isBusy = isInitialLoading || isFetchingHealth || isFetchingProviders || isFetchingEngines;
 
@@ -228,6 +240,7 @@ const AiProviders: FC = () => {
                 "Filtrar por proveedor..."
               )}
               clearable={false}
+              disabled={isBusy}
               dataTestId="provider-view-select"
             />
           </Box>
@@ -272,10 +285,11 @@ const AiProviders: FC = () => {
         </HeaderActionsBox>
       </HeaderPanel>
 
-      {selectedView !== "overview" ? (
+      {isInitialLoading ? <ProvidersLoading /> : selectedView !== "overview" ? (
         <ProviderDetail
-          key={selectedView}
+          key={`${selectedView}:${initialMode ?? "default"}`}
           providerId={selectedView}
+          initialMode={initialMode}
           onBack={() => setSelectedView("overview")}
           onRenewSession={handleRenewSession}
           onConfigure={(p) => setConfigureProvider(p)}
@@ -323,7 +337,6 @@ const AiProviders: FC = () => {
                 }}
               />
             )}
-            <Skeleton loading={isInitialLoading}>
               <CardsGrid>
                 {displayProviders.length === 0 && !providersError && !healthError && <Typography color="text.secondary">{t("ai_providers:connection.empty")}</Typography>}
                 {displayProviders.map((prov) => (
@@ -338,7 +351,6 @@ const AiProviders: FC = () => {
                   />
                 ))}
               </CardsGrid>
-            </Skeleton>
           </Box>
         </>
       )}

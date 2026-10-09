@@ -335,7 +335,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <PsychologyOutlinedIcon sx={{ fontSize: 18, color: "primary.main" }} />
                       <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
-                        {t("ai_providers:cards.panel_agentic_title", "Sesión Agéntica (Antigravity)")}
+                        {t("ai_providers:cards.panel_agentic_title")}
                       </Typography>
                     </Box>
                     <CodeBadge
@@ -366,10 +366,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
                       </CodeBadge>
                     </Box>
                     <Typography variant="caption" color="text.secondary">
-                      {t(
-                        "ai_providers:cards.panel_agentic_desc",
-                        "Entorno agéntico Antigravity"
-                      )}
+                      {t("ai_providers:cards.panel_agentic_desc")}
                     </Typography>
                   </ModePanelBody>
                 </ModePanelCard>
@@ -382,7 +379,7 @@ const ProviderCard: FC<ProviderCardProps> = ({
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <DevicesOutlinedIcon sx={{ fontSize: 18, color: "info.main" }} />
                       <Typography variant="caption" sx={{ fontWeight: 700, color: "text.primary" }}>
-                        {t("ai_providers:cards.panel_web_title", "Sesión Web (Google One)")}
+                        {t("ai_providers:cards.panel_web_title")}
                       </Typography>
                     </Box>
                     <CodeBadge

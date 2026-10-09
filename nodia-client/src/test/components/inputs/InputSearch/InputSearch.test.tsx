@@ -4,6 +4,22 @@ import { describe, it, expect, vi } from "vitest";
 import InputSearch from "../../../../../src/components/inputs/InputSearch";
 
 describe("InputSearch", () => {
+  it("disables clearing along with the search input while fetching, preserving the draft", async () => {
+    const change = vi.fn();
+    render(<InputSearch value="Reservas" onChange={change} disabled />);
+    const clear = screen.getByRole("button", { name: "Limpiar búsqueda" });
+    expect(clear).toBeDisabled();
+    await userEvent.tab();
+    expect(clear).not.toHaveFocus();
+    expect(screen.getByRole("textbox")).toHaveValue("Reservas");
+    expect(change).not.toHaveBeenCalled();
+  });
+  it("provides an accessible translated search name and permits a specific label", () => {
+    const view = render(<InputSearch value="" onChange={vi.fn()} placeholder="Buscar sección" />);
+    expect(screen.getByRole("textbox", { name: "Buscar sección" })).toBeInTheDocument();
+    view.rerender(<InputSearch value="" onChange={vi.fn()} placeholder="Buscar sección" ariaLabel="Secciones" />);
+    expect(screen.getByRole("textbox", { name: "Secciones" })).toBeInTheDocument();
+  });
   it("renders with placeholder and value", () => {
     render(
       <InputSearch
@@ -76,7 +92,7 @@ describe("InputSearch", () => {
       />
     );
 
-    const clearButton = screen.getByLabelText("clear search");
+    const clearButton = screen.getByLabelText("Limpiar búsqueda");
     expect(clearButton).toBeInTheDocument();
 
     await user.click(clearButton);

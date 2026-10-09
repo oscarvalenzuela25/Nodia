@@ -16,6 +16,8 @@ import { StorageModule } from '../common/storage/storage.module.js';
 import { GeminiModule } from '../common/ai/gemini.module.js';
 import { ProviderModule } from '../provider/provider.module.js';
 import { AiProviderModule } from '../ai-provider/ai-provider.module.js';
+import { AnalysisObservationsUseCase } from './use-case/analysis-observations.use-case.js';
+import { AnalysisObservationInterceptor } from './analysis-observation.interceptor.js';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { AiProviderModule } from '../ai-provider/ai-provider.module.js';
   controllers: [InvoiceController],
   providers: [
     InvoiceService,
+    AnalysisObservationsUseCase,
+    AnalysisObservationInterceptor,
     // Invoices
     GetAllInvoicesUseCase,
     GetInvoiceByIdUseCase,

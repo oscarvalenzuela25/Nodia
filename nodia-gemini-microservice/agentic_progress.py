@@ -1,10 +1,12 @@
 """Bounded CLI progress diagnostics; never retain text, paths or credentials."""
 import json
 import time
+from collections.abc import Callable
 
 
 class CliProgress:
-    def __init__(self) -> None:
+    def __init__(self, callback: Callable[[str], None] | None = None) -> None:
+        self._callback = callback
         self._pending = b""
         self._skip_line = False
         self._last_event: float | None = None
@@ -68,6 +70,10 @@ class CliProgress:
                 self.stage = "prompt_received"
             else:
                 self.stage = "other_step"
+        safe_stage = {"initialized": "cli_initialized", "document_read_started": "document_read_started",
+                      "document_read_completed": "document_read_completed", "agent_response": "response_receiving"}.get(self.stage)
+        if safe_stage and self._callback:
+            self._callback(safe_stage)
 
     def summary(self) -> dict[str, str | int | bool | None]:
         return {"stage": self.stage, "events": self.events, "invalid_lines": self.invalid_lines,

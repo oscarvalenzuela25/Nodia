@@ -43,7 +43,7 @@ Quick Tunnel expone Vite y el proxy autenticado de Nodia. El runtime no se expon
 - El supervisor controla RSS del runtime cada cinco segundos y lo termina si supera 512 MiB. No es una cuota dura del SO. El worker PDF limita heap JS a 256 MiB y dimensiones/bytes de salida; memoria nativa adicional requiere observación real.
 - Un lock residual falla de forma cerrada. Se registran PID de Server/runtime; no se recupera automáticamente solo porque el PID de Server murió. Revisar ambos procesos antes de retirar el lock. Cierre normal elimina lock y temporales.
 - Windows queda deshabilitado hasta implementar/verificar ACL y supervisión equivalente. Inicio nativo comprobado en macOS; Linux/keyring y operación con cuenta pendientes.
-- Migración de capacidades preparada y no aplicada. Conserva IDs, flags de instancias, claves, modelos y campos. Registra exclusivamente los flags previos del catálogo para reversión.
+- Migración de capacidades aplicada en BD local por solicitud explícita posterior a la revisión el 2026-10-08; up/up/down/down comprobados en esquema PostgreSQL aislado. Conserva IDs, flags de instancias, claves, modelos y campos. Registra exclusivamente los flags previos del catálogo para reversión. La conexión OpenAI ID 4 se habilitó después mediante una escritura explícita independiente, conservando API como predeterminado y respaldo de su flag anterior.
 - La cuenta real, renovación/revocación, PNG/PDF reales, PostgreSQL y QA remoto se verifican en una fase posterior. El login local no acredita acceso SIWC para VPS/servicios alojados.
 
 ## Referencias

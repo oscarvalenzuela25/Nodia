@@ -19,6 +19,7 @@ import {
   parseApiInvoice,
 } from '../../common/ai/api-invoice-contract.js';
 import { validateInvoiceFile } from '../../invoice/invoice-file-validation.js';
+import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
 
 @Injectable()
 export class ExecuteCodexInvoiceUseCase {
@@ -36,6 +37,7 @@ export class ExecuteCodexInvoiceUseCase {
     tax = 19,
     effort?: string,
     callerSignal?: AbortSignal,
+    progress?: AnalysisProgress,
   ) {
     validateInvoiceFile(file);
     const provider = await this.providers.findProviderById(id);
@@ -101,6 +103,7 @@ export class ExecuteCodexInvoiceUseCase {
         throw codexError('codex_session_required', 409);
       if (session.usageAllowed === false)
         throw codexError('codex_quota_exhausted', 429);
+      progress?.emit('session_checked');
       const models = await this.runtime.listModels(id);
       const exact = models.find((m) => m.id === selected);
       if (
@@ -109,6 +112,8 @@ export class ExecuteCodexInvoiceUseCase {
         (thinking && !exact.supportedReasoningEfforts.includes(thinking))
       )
         throw codexError('codex_model_unavailable', 400);
+      progress?.resolve({ providerId: id, provider: 'openai', mode: 'token_plan_agentic', model: selected });
+      progress?.emit('model_checked');
       const images = await codexDocument(
         file.buffer,
         file.mimetype,
@@ -133,7 +138,7 @@ export class ExecuteCodexInvoiceUseCase {
       const threadId = codexObject(threadResult.thread).id;
       if (typeof threadId !== 'string' || threadId.length > 128)
         throw codexError('codex_protocol_invalid', 502);
-      const messages = new Map<string, string>();
+      const messages = new Map<string, { turnId: string | null; text: string }>();
       let turnId: string | null = null;
       let terminal: Record<string, unknown> | null = null;
       let events = 0;
@@ -171,12 +176,13 @@ export class ExecuteCodexInvoiceUseCase {
           );
           return;
         }
-        resolveTurn([...messages.values()].join(''));
+        resolveTurn([...messages.values()].filter(message => message.turnId === null || message.turnId === turnId).map(message => message.text).join(''));
       };
       const onEvent = (method: string, params: unknown) => {
         try {
           const p = codexObject(params);
           if (p.threadId !== threadId) return;
+          if (turnId && p.turnId !== undefined && p.turnId !== turnId) return;
           if (
             ++events > 10000 ||
             (bytes += Buffer.byteLength(JSON.stringify(p))) > 16 * 1024 * 1024
@@ -201,7 +207,9 @@ export class ExecuteCodexInvoiceUseCase {
                 item.text.length > 1024 * 1024
               )
                 throw codexError('codex_protocol_invalid', 502);
-              messages.set(item.id, item.text);
+              const eventTurn = typeof p.turnId === 'string' ? p.turnId : null;
+              messages.set(`${eventTurn ?? ''}:${item.id}`, { turnId: eventTurn, text: item.text });
+              if (turnId) progress?.emit('response_receiving');
             }
           }
           if (method === 'turn/completed') {
@@ -233,6 +241,7 @@ export class ExecuteCodexInvoiceUseCase {
             deadline.aborted ? 'codex_timeout' : 'codex_cancelled',
             deadline.aborted ? 504 : 499,
           );
+        progress?.emit('provider_request_started');
         const result = codexObject(
           await rpc.request(
             'turn/start',
@@ -264,8 +273,11 @@ export class ExecuteCodexInvoiceUseCase {
         if (typeof turn.id !== 'string' || turn.id.length > 128)
           throw codexError('codex_protocol_invalid', 502);
         turnId = turn.id;
+        progress?.emit('turn_started');
+        if ([...messages.values()].some(message => message.turnId === null || message.turnId === turnId)) progress?.emit('response_receiving');
         checkTerminal();
         const extracted = parseApiInvoice(await completion);
+        progress?.emit('response_received');
         lease.profile.lastInferenceAt = new Date().toISOString();
         // Ephemeral contexts must be released after success too; idle shutdown is insufficient.
         try {
@@ -296,7 +308,8 @@ export class ExecuteCodexInvoiceUseCase {
           ? error
           : codexError('codex_runtime_unavailable');
       if (signal.aborted) {
-        await this.runtime.stop(id);
+        // A cancelled request that failed to acquire must never stop another owner's profile.
+        if (lease) await this.runtime.stop(id);
         safe = codexError(
           deadline.aborted ? 'codex_timeout' : 'codex_cancelled',
           deadline.aborted ? 504 : 499,

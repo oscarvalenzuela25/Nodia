@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 import type { ReactNode } from "react";
-import { createElement } from "react";
+import { createElement, useContext } from "react";
+import { RentalAccessContext } from "../../../../modules/rentals/infrastructure/scope";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -32,6 +33,8 @@ const ui = vi.hoisted(() => ({
   pending: false,
   uncertain: false,
   accessError: false,
+  accessCause: null as unknown,
+  propertyRefetch: vi.fn(),
 }));
 export { ui };
 export const property = sourceProperty;
@@ -43,13 +46,18 @@ export const overview = sourceOverview;
 export const calendar = sourceCalendar;
 export const availability = sourceAvailability;
 vi.mock("../../../../modules/rentals/infrastructure/useServices", () => ({
-  useRentalBusy: () => ui.busy,
+  useRentalBusy: () => {
+    const accessible = useContext(RentalAccessContext);
+    return ui.busy || !accessible;
+  },
   useRentalPendingCount: () => (ui.uncertain ? 1 : 0),
   useRentalList: (...args: unknown[]) => ui.list(...args),
   useRentalRecord: (...args: unknown[]) => ui.record(...args),
   useRentalProperty: (id?: string) => ({
     ...result(id ? property : undefined),
     isError: ui.accessError,
+    error: ui.accessCause,
+    refetch: ui.propertyRefetch,
   }),
   useRentalMutation: () => ({
     execute: ui.execute,
@@ -120,6 +128,7 @@ export function resetUI() {
   ui.pending = false;
   ui.uncertain = false;
   ui.accessError = false;
+  ui.accessCause = null;
   ui.execute.mockResolvedValue(undefined);
   ui.recover.mockResolvedValue(undefined);
   ui.retry.mockResolvedValue(undefined);

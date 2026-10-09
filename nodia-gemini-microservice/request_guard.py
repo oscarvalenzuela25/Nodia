@@ -12,6 +12,7 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from schemas import RuntimeLimits
 from service_auth import authenticate_service_request
+from service_errors import ServiceError
 
 ANALYSIS_PATHS = {"/analyze-invoice", "/agentic/analyze-invoice", "/web/analyze-invoice"}
 
@@ -47,6 +48,8 @@ class PrivateRequestGuard:
                                status_code=status, headers=headers)(scope, receive, traced_send)
 
         acquired = False
+        observation_id = None
+        observations = None
         slots = None
         try:
             request = Request(scope)
@@ -84,6 +87,12 @@ class PrivateRequestGuard:
                 await self.app(scope, receive, traced_send)
                 return
             state = scope["app"].state
+            identifier = request.headers.get("x-nodia-analysis-id")
+            if identifier:
+                observations = state.observations
+                observations.claim(identifier)
+                observation_id = identifier
+                scope["state"]["analysis_id"] = identifier
             limits: RuntimeLimits = state.limits
             slots = state.analysis_slots
             length = request.headers.get("content-length")
@@ -156,12 +165,16 @@ class PrivateRequestGuard:
                         if not task.done():
                             task.cancel()
                     await asyncio.gather(processing, disconnect, return_exceptions=True)
+        except ServiceError as error:
+            await reject(error.code, error.message, error.status)
         except Exception as error:
             if response_started:
                 raise
             logger.error("request={} error_type={}", request_id, type(error).__name__)
             await reject("internal_error", "No se pudo completar la solicitud.", 500)
         finally:
+            if observations and observation_id:
+                observations.finish(observation_id, "cancelled" if response_status == 499 else "succeeded" if response_status < 400 else "failed")
             if acquired and slots is not None:
                 slots.release()
             logger.info("request={} route={} engine={} status={} error={} duration_ms={:.0f}",

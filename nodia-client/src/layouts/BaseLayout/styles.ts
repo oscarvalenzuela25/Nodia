@@ -1,4 +1,5 @@
 import { styled } from "@mui/material/styles";
+import { MOBILE_NAV_RESERVED_HEIGHT } from "../components/MobileBottomNav/styles";
 import {
   DRAWER_WIDTH,
   DRAWER_COLLAPSED_WIDTH,
@@ -31,9 +32,10 @@ export const MainContainer = styled("main", {
   };
 });
 
-export const PageContent = styled("div")(({ theme }) => ({
+export const PageContent = styled("div", { shouldForwardProp: prop => prop !== "mobileNavigation" })<{ mobileNavigation?: boolean }>(({ theme, mobileNavigation }) => ({
   flexGrow: 1,
   padding: theme.spacing(2),
+  ...(mobileNavigation ? { paddingBottom: `calc(${theme.spacing(2)} + ${MOBILE_NAV_RESERVED_HEIGHT})` } : {}),
   [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(3),
   },

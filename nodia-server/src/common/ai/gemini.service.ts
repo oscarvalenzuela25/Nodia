@@ -16,6 +16,9 @@ import {
   type GeminiDualEngineStatus,
 } from './gemini-engine-status.js';
 import { envs } from '../../config/envs.config.js';
+import { randomUUID } from 'node:crypto';
+import type { AnalysisProgress } from './analysis-progress.js';
+import { observeGeminiProgress } from './gemini-progress-bridge.js';
 import {
   type ExtractedInvoiceData,
   type ExtractedInvoiceItem,
@@ -320,6 +323,8 @@ export class GeminiService {
     extendedThinking?: boolean,
     engine?: GeminiExecutionEngine,
     thinkingLevel?: 'low' | 'medium' | 'high',
+    callerSignal?: AbortSignal,
+    progress?: AnalysisProgress,
   ): Promise<ExtractedInvoiceData> {
     const baseUrl = envs.GEMINI_MICROSERVICE_URL;
     if (!baseUrl) {
@@ -359,14 +364,19 @@ export class GeminiService {
     formData.append('engine', targetEngine);
 
     let response: Response;
+    const deadline = AbortSignal.timeout(340000);
+    const signal = callerSignal ? AbortSignal.any([callerSignal, deadline]) : deadline;
+    signal.throwIfAborted();
+    const privateId = progress ? randomUUID() : undefined;
+    const stopObservation = privateId && progress ? observeGeminiProgress(baseUrl, this.serviceHeaders(), privateId, progress) : undefined;
     try {
       const endpoint = targetEngine === 'agentic' ? '/agentic/analyze-invoice' : '/analyze-invoice';
       response = await fetch(`${baseUrl}${endpoint}`, {
         method: 'POST',
-        headers: this.serviceHeaders(),
+        headers: { ...this.serviceHeaders(), ...(privateId ? { 'X-Nodia-Analysis-Id': privateId } : {}) },
         body: formData,
         // Includes microservice upload (30s), analysis (300s) and cleanup margin.
-        signal: AbortSignal.timeout(340000),
+        signal,
       });
     } catch (error) {
       this.logger.warn(
@@ -383,6 +393,8 @@ export class GeminiService {
       throw new ServiceUnavailableException(
         'No se pudo conectar con el microservicio de Gemini.',
       );
+    } finally {
+      await stopObservation?.(!signal.aborted);
     }
 
     if (!response.ok) {
@@ -416,6 +428,7 @@ export class GeminiService {
     }
 
     const items = this.normalizeItems(rawItems);
+    progress?.emit('response_received');
     const total = this.numericValue(body.total_amount);
     if (body.code != null && typeof body.code !== 'string') {
       throw new BadGatewayException('Gemini devolvió un folio inválido.');

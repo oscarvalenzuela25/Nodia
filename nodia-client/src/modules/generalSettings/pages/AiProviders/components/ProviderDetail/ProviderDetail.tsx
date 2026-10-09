@@ -86,6 +86,7 @@ import {
 
 const ProviderDetail: FC<ProviderDetailProps> = ({
   providerId,
+  initialMode,
   onBack,
   onRenewSession,
   onConfigure,
@@ -209,7 +210,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     return tabs;
   }, [useApiKey, useTokenPlanWeb, useTokenPlanAgentic, t]);
 
-  const [selectedTab, setSelectedTab] = useState<ModeTabKey | null>(null);
+  const [selectedTab, setSelectedTab] = useState<ModeTabKey | null>(initialMode ?? null);
 
   const activeTab = useMemo<ModeTabKey | "">(() => {
     if (selectedTab && availableTabs.some((tab) => tab.key === selectedTab)) {
@@ -1469,23 +1470,17 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
 
 
-      {/* SUBPANEL: ANTIGRAVITY AGENTIC STATUS */}
+      {/* SUBPANEL: AGENTIC STATUS */}
       {activeTab === "token_plan_agentic" && providerKey !== "openai" && (
         <DetailPanel>
           <PanelHeader>
             <Box>
               <PanelTitle>
                 <PsychologyOutlinedIcon color="primary" />
-                {t(
-                  "ai_providers:detail.agentic_environment_title",
-                  "Entorno Agéntico Antigravity"
-                )}
+                {t("ai_providers:detail.agentic_environment_title")}
               </PanelTitle>
               <PanelSubtitle>
-                {t(
-                  "ai_providers:detail.agentic_environment_subtitle",
-                  "Gestión del entorno de inferencia con sesión activa de Antigravity (Google One AI Premium)."
-                )}
+                {t("ai_providers:detail.agentic_environment_subtitle")}
               </PanelSubtitle>
             </Box>
             {providerKey === "gemini" && <Button variant="outlined" disabled={isBusy}
@@ -1517,10 +1512,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     {agenticStatusLabel}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {t(
-                      "ai_providers:engine_selection.agentic_title",
-                      "Modo Agéntico (Antigravity)"
-                    )}
+                    {t("ai_providers:engine_selection.agentic_title")}
                   </Typography>
                 </Box>
               </Box>

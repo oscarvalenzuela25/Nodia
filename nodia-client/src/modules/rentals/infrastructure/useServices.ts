@@ -91,14 +91,21 @@ function useActor() {
 async function verifyResourceAccess(
   client: QueryClient,
   actorId: string | undefined,
+  sessionVersion: number,
   propertyId: string | undefined,
   error: unknown,
 ) {
+  const sameSession = () => {
+    const state = useAuthStore.getState();
+    return (
+      state.user?.id === actorId && state.sessionVersion === sessionVersion
+    );
+  };
   if (
     !propertyId ||
     !isAxiosError(error) ||
     ![403, 404].includes(error.response?.status ?? 0) ||
-    useAuthStore.getState().user?.id !== actorId
+    !sameSession()
   )
     return;
   try {
@@ -107,7 +114,7 @@ async function verifyResourceAccess(
     if (
       isAxiosError(cause) &&
       cause.response?.status === 404 &&
-      useAuthStore.getState().user?.id === actorId
+      sameSession()
     ) {
       await client.cancelQueries({
         predicate: (query) =>
@@ -116,6 +123,7 @@ async function verifyResourceAccess(
           query.queryKey[2] === propertyId &&
           query.queryKey[4] !== "properties",
       });
+      if (!sameSession()) return;
       client.removeQueries({
         predicate: (query) =>
           query.queryKey[0] === "rental" &&
@@ -125,7 +133,7 @@ async function verifyResourceAccess(
       });
     }
   }
-  if (useAuthStore.getState().user?.id === actorId)
+  if (sameSession())
     void client.invalidateQueries({
       queryKey: rentalKeys.detail(actorId, undefined, "properties", propertyId),
     });
@@ -140,8 +148,8 @@ export function useRentalList<R extends RentalListResource>(
   const client = useQueryClient();
   const verify = useCallback(
     (error: unknown) =>
-      verifyResourceAccess(client, actor.id, propertyId, error),
-    [client, actor.id, propertyId],
+      verifyResourceAccess(client, actor.id, actor.version, propertyId, error),
+    [client, actor.id, actor.version, propertyId],
   );
   return useQuery({
     queryKey: rentalKeys.list(actor.id, propertyId, resource, query),
@@ -177,8 +185,8 @@ export function useRentalRecord<R extends RentalListResource>(
   const client = useQueryClient();
   const verify = useCallback(
     (error: unknown) =>
-      verifyResourceAccess(client, actor.id, propertyId, error),
-    [client, actor.id, propertyId],
+      verifyResourceAccess(client, actor.id, actor.version, propertyId, error),
+    [client, actor.id, actor.version, propertyId],
   );
   return useQuery({
     queryKey: rentalKeys.detail(actor.id, propertyId, resource, id),
@@ -211,8 +219,8 @@ function useRead<K extends keyof typeof rentalReadSchemas>(
   const client = useQueryClient();
   const verify = useCallback(
     (error: unknown) =>
-      verifyResourceAccess(client, actor.id, propertyId, error),
-    [client, actor.id, propertyId],
+      verifyResourceAccess(client, actor.id, actor.version, propertyId, error),
+    [client, actor.id, actor.version, propertyId],
   );
   return useQuery({
     queryKey: rentalKeys.read(actor.id, propertyId, kind, query),
@@ -423,6 +431,7 @@ export function useRentalMutation(propertyId?: string) {
       void verifyResourceAccess(
         client,
         active.actorId,
+        active.sessionVersion,
         active.propertyId,
         cause,
       );

@@ -45,7 +45,7 @@ describe("ProviderConnectionForm", () => {
     await user.click(screen.getByRole("button", { name: "Proveedor" }));
     expect(screen.getByText("API only")).toBeInTheDocument();
     await user.click(screen.getByText("Google Gemini"));
-    expect(screen.getByRole("switch", { name: /Antigravity/i })).toBeDisabled();
+    expect(screen.getByRole("switch", { name: "Sesión Agéntica" })).toBeDisabled();
     await user.click(screen.getByRole("switch", { name: /Web/i }));
     await user.click(screen.getByRole("button", { name: "Guardar" }));
     await waitFor(() => expect(services.createAiProvider).toHaveBeenCalledWith(expect.objectContaining({
@@ -64,7 +64,7 @@ describe("ProviderConnectionForm", () => {
     await user.click(screen.getByRole("button", { name: "Proveedor" })); await user.click(screen.getByText("OpenAI"));
     expect(screen.getByRole("switch", { name: "API key" })).toBeChecked();
     expect(screen.getByRole("switch", { name: /Web/i })).toBeDisabled();
-    expect(screen.getByRole("switch", { name: /Antigravity/i })).toBeDisabled();
+    expect(screen.getByRole("switch", { name: "Sesión Agéntica" })).toBeDisabled();
     const defaultSwitch = screen.getByRole("switch", { name: "Predeterminado" });
     expect(defaultSwitch.compareDocumentPosition(screen.getByRole("switch", { name: "Activo" })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     await user.click(defaultSwitch);

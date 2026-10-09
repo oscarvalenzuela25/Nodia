@@ -6,6 +6,8 @@
 
 ## Experiencia solicitada
 
+Actualización móvil 2026-10-08: BaseLayout incorpora los cinco accesos de [35](35-mobile-cards-shortcuts-plan.md), con preferencias locales por persona y selector autorizado. Las tablas de Finanzas conservan su representación; su adaptación específica a tarjetas corresponde a MC-07 y permanece pendiente. Catálogo de destinos centralizado en `src/routes/navigationOptions.ts` con reexport compatible desde Modules. La ampliación no cierra FC-24 ni aprueba este documento.
+
 Backend 23 completado y verificado localmente el 2026-10-04. Los contratos 22, [fixtures HTTP](../../nodia-server/test/fixtures/finance-api.json) y [OpenAPI](../../nodia-server/test/fixtures/finance-openapi.json) ya están disponibles. Antes de probar contra la BD objetivo, aplicar migración y seed de navegación; la prueba aislada no cambió esa BD. No implementar retries automáticos de mutaciones: no existe deduplicación persistente.
 
 Ruta /finances/personal, constante única PERSONAL_FINANCE_ROUTE disponible en catálogo APP_AVAILABLE_ROUTES de Modules. GuardStrict, BaseLayout y lazyWithRetry. Tabs General inicial, Movimientos, Préstamos y deudas, Categorías y Grupos de categorías. General es el centro de mando: indicadores, últimos movimientos y resúmenes por categoría/grupo.

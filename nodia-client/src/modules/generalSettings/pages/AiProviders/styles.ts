@@ -14,7 +14,9 @@ export const HeaderPanel = styled(Paper)(({ theme }) => ({
   justifyContent: "space-between",
   flexWrap: "wrap",
   gap: theme.spacing(3),
-  padding: theme.spacing(4), // 32px standard panel padding!
+  padding: theme.spacing(2),
+  [theme.breakpoints.up("sm")]: { padding: theme.spacing(3) },
+  [theme.breakpoints.up("md")]: { padding: theme.spacing(4) },
   borderRadius: Number(theme.shape.borderRadius) * 2,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: theme.palette.background.paper,
@@ -30,6 +32,7 @@ export const HeaderTitleBox = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
   flex: 1,
   minWidth: 280,
+  [theme.breakpoints.down("sm")]: { minWidth: 0 },
 }));
 
 export const PageTitleContainer = styled(Box)(({ theme }) => ({
@@ -81,10 +84,12 @@ export const HeaderButtonsRow = styled(Box)(({ theme }) => ({
   },
   [theme.breakpoints.down("sm")]: {
     flexWrap: "wrap",
+    flexDirection: "column",
     justifyContent: "stretch",
     "& > button": {
       flex: 1,
       minWidth: 140,
+      width: "100%",
     },
   },
 }));

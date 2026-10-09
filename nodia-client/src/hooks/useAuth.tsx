@@ -7,6 +7,7 @@ const useAuth = () => {
   const logout = useAuthStore((state) => state.logout);
   const isRefreshing = useAuthStore((state) => state.isRefreshing);
   const sessionStatus = useAuthStore((state) => state.sessionStatus);
+  const sessionVersion = useAuthStore((state) => state.sessionVersion);
   const isSessionActive = useAuthStore(hasActiveSession);
   const isSessionValid = useAuthStore(hasValidatedSession);
 
@@ -18,6 +19,7 @@ const useAuth = () => {
     isSessionValid,
     isDemo: sessionStatus === "anonymous",
     sessionStatus,
+    sessionVersion,
     login,
     logout,
     isRefreshing,
