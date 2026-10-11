@@ -16,14 +16,15 @@ describe("BusinessModal optional description", () => {
     expect(onSubmit).toHaveBeenCalledWith({ name: "Nuevo negocio", is_active: true, translates: [] });
   });
 
-  it("allows a description in Spanish without requiring English", async () => {
+  it("uses one description in both UI languages without a translation editor", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(<BusinessModal open onClose={vi.fn()} onSubmit={onSubmit} />);
     await user.type(screen.getByLabelText(/Nombre del negocio/), "Negocio");
     await user.type(screen.getByLabelText("Descripción"), "Descripción opcional");
+    expect(screen.queryByRole("button", { name: /traducir/i })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Guardar" }));
-    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ translates: [{ key: "description", es: "Descripción opcional", en: "" }] }));
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ translates: [{ key: "description", es: "Descripción opcional", en: "Descripción opcional" }] }));
   });
 
   it("sends empty translations when clearing an existing description", async () => {

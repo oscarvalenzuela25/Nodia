@@ -18,10 +18,13 @@ import { ProviderModule } from '../provider/provider.module.js';
 import { AiProviderModule } from '../ai-provider/ai-provider.module.js';
 import { AnalysisObservationsUseCase } from './use-case/analysis-observations.use-case.js';
 import { AnalysisObservationInterceptor } from './analysis-observation.interceptor.js';
+import { InvoiceUpload } from './entities/invoice-upload.entity.js';
+import { RecoverInvoiceUploadsUseCase } from './use-case/recover-invoice-uploads.use-case.js';
+import { InvoiceUploadRecoveryWorker } from './invoice-upload-recovery.worker.js';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Invoice]),
+    TypeOrmModule.forFeature([Invoice, InvoiceUpload]),
     StorageModule,
     GeminiModule,
     ProviderModule,
@@ -37,6 +40,8 @@ import { AnalysisObservationInterceptor } from './analysis-observation.intercept
     GetInvoiceByIdUseCase,
     GetInvoiceViewUrlUseCase,
     CreateInvoiceUseCase,
+    RecoverInvoiceUploadsUseCase,
+    InvoiceUploadRecoveryWorker,
     UpdateInvoiceUseCase,
     AnalyzeInvoiceUseCase,
     VerifyIaProvidersUseCase,

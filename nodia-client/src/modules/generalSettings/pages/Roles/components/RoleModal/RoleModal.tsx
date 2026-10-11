@@ -30,10 +30,7 @@ const RoleModalInner: FC<RoleModalProps> = ({
     data: actionsResponse,
     isLoading: isLoadingActions,
     isFetching: isFetchingActions,
-  } = useActions(
-    { all: true, includes: false },
-    { enabled: open }
-  );
+  } = useActions({ all: true, includes: false }, { enabled: open });
 
   const dynamicActionOptions = useMemo(() => {
     if (actionsResponse?.data && actionsResponse.data.length > 0) {
@@ -47,8 +44,8 @@ const RoleModalInner: FC<RoleModalProps> = ({
           (i18n.exists(`actions:action_names.${act.key}`)
             ? t(`actions:action_names.${act.key}`)
             : i18n.exists(`roles:action_names.${act.key}`)
-            ? t(`roles:action_names.${act.key}`)
-            : null);
+              ? t(`roles:action_names.${act.key}`)
+              : null);
         const label = translated ? `${translated} (${act.key})` : act.key;
         return {
           value: act.key,
@@ -60,22 +57,22 @@ const RoleModalInner: FC<RoleModalProps> = ({
     return availableActions;
   }, [actionsResponse, availableActions, t, i18n]);
 
+  const isBusy = isSubmitting || isLoadingActions || isFetchingActions;
+
   const [isActive, setIsActive] = useState<boolean>(
-    initialData?.isActive ?? true
+    initialData?.isActive ?? true,
   );
   const [roleKey, setRoleKey] = useState<string>(initialData?.key ?? "");
   const [nameTranslations, setNameTranslations] = useState<
     Record<string, string>
   >(initialData?.nameTranslations ?? { es: "", en: "" });
-  const [actions, setActions] = useState<string[]>(
-    initialData?.actions ?? []
-  );
+  const [actions, setActions] = useState<string[]>(initialData?.actions ?? []);
 
   const isFormValid = roleKey.trim().length > 0;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!isFormValid || isSubmitting) return;
+    if (!isFormValid || isBusy) return;
 
     const translates = [
       {
@@ -111,7 +108,7 @@ const RoleModalInner: FC<RoleModalProps> = ({
         variant="contained"
         color="error"
         onClick={onClose}
-        disabled={isSubmitting}
+        disabled={isBusy}
         sx={(theme) => ({
           color: theme.palette.error.contrastText,
           borderRadius: 2,
@@ -125,7 +122,7 @@ const RoleModalInner: FC<RoleModalProps> = ({
         form="role-form"
         variant="contained"
         color="primary"
-        disabled={!isFormValid || isSubmitting}
+        disabled={!isFormValid || isBusy}
         sx={(theme) => ({
           color: theme.palette.primary.contrastText,
           borderRadius: 2,
@@ -140,7 +137,9 @@ const RoleModalInner: FC<RoleModalProps> = ({
   return (
     <BaseModal
       open={open}
-      onClose={onClose}
+      onClose={() => {
+        if (!isBusy) onClose();
+      }}
       title={modalTitle}
       size="sm"
       actions={modalActions}
@@ -153,7 +152,7 @@ const RoleModalInner: FC<RoleModalProps> = ({
                 checked={isActive}
                 onChange={(e) => setIsActive(e.target.checked)}
                 name="isActive"
-                disabled={isSubmitting}
+                disabled={isBusy}
               />
             }
             label={t("roles:form.active", "Activo")}
@@ -164,21 +163,27 @@ const RoleModalInner: FC<RoleModalProps> = ({
         <TranslationInput
           label={t("roles:form.key", "Identificador")}
           value={roleKey}
+          keyReadOnly={initialData?.key === "super_admin"}
+          keyHelperText={
+            initialData?.key === "super_admin"
+              ? t("roles:protected_key")
+              : undefined
+          }
           onChangeKey={setRoleKey}
           placeholder={t("roles:form.key_placeholder", "ej: super_admin")}
           translations={nameTranslations}
           onChangeTranslations={setNameTranslations}
           sectionTitle={t(
             "roles:form.translations_title",
-            "Traducciones del Identificador"
+            "Traducciones del Identificador",
           )}
           sectionSubtitle={t(
             "roles:form.translations_subtitle",
-            "Define cómo se mostrará el nombre del rol en cada idioma."
+            "Define cómo se mostrará el nombre del rol en cada idioma.",
           )}
           required
           autoFocus={!isEditing}
-          disabled={isSubmitting}
+          disabled={isBusy}
         />
 
         <SelectMultipleInput
@@ -188,10 +193,10 @@ const RoleModalInner: FC<RoleModalProps> = ({
           onChange={setActions}
           placeholder={t(
             "roles:form.actions_placeholder",
-            "Seleccionar acciones permitidas..."
+            "Seleccionar acciones permitidas...",
           )}
           searchPlaceholder={t("core:search", "Buscar...")}
-          disabled={isSubmitting || isLoadingActions || isFetchingActions}
+          disabled={isBusy}
         />
       </FormContainer>
     </BaseModal>

@@ -122,6 +122,13 @@ Lineamiento obligatorio para agentes:
 2. Aplicar su estructura y convenciones en archivos, estilos, hooks e infraestructura.
 3. Si existe conflicto entre la skill y convenciones actuales del repo, priorizar convenciones actuales y documentar el ajuste en el PR/commit message.
 
+### responsive-design
+
+- Skill: [skills/responsive-design/SKILL.md](skills/responsive-design/SKILL.md).
+- Uso obligatorio: al crear, modificar o revisar UI que afecte layout, contenido o interacción responsive/móvil, junto con `frontend-quality` y `create-component` cuando corresponda.
+- Propósito: priorizar tareas móviles, conservar estado al cambiar de ancho, evitar overflow y duplicación de consultas, y verificar formularios, navegación, controles y medios en los tamaños afectados.
+- Leer el [perfil Nodia](skills/responsive-design/references/nodia-profile.md) y solo las referencias pertinentes. Mantener reglas de 07/35, theme, padding único de PageContent, tablas650px y tarjetas optativas por listado; no introducir una auditoría global ni transformar vistas fuera del alcance solicitado.
+
 ## Checklist Antes de Finalizar
 
 Para cambios de código frontend, comprobar primero las invariantes de `frontend-quality` que aplican al cambio y las regresiones correspondientes. Para cambios exclusivamente documentales o de instrucciones, validar estructura, enlaces y consistencia; no ejecutar pruebas de producto sin necesidad.
@@ -140,3 +147,30 @@ Si se tocan variables de entorno:
 
 1. Actualizar `.env.example`.
 2. Verificar consistencia con `src/config/.envs.ts`.
+
+- Listados CRUD nuevos y adaptaciones móviles: seguir `DESIGN.md` 9.6; tarjetas en xs y tabla desde sm, con una consulta/estado de filtros y paginado compartidos. Referencias: ReservationTable, Modules, Users y Actions.
+
+## Filtro de actividad obligatorio en `Filter`
+
+- Usar exclusivamente `src/components/Filter/components/ActiveStatusSelect` para el criterio de actividad: `SelectSingleInput` con exactamente **Activo / Inactivo / Todos**, traducidos desde `core:active_filter` en ES/EN. No usar switch, checkbox, toggle ni selector local de dos opciones dentro de `Filter` para este criterio.
+- Selector y consulta inicial: **Activo**. La acción **Limpiar filtros** restaura Activo. **Todos** es una opción explícita, sin limpiar el select ni mostrar un placeholder: incluye activos/inactivos y omite `is_active_eq` en contratos Ransack o envía `active: "all"` cuando ese es el contrato del endpoint. No alterar el contrato del backend.
+- Mantener borrador separado del filtro aplicado; reabrir debe reflejar el estado aplicado. Aplicar/quitar criterio reinicia la página y conserva búsqueda/otros filtros; redimensionar no cambia la selección. Deshabilitar durante carga/mutación correspondiente.
+- Aplicar a todos los consumidores de `Filter` con actividad en su contrato, incluidos wrappers de Negocios, Finanzas y Reservas. No inventar actividad en historial monetario/auditoría ni sustituir estados comerciales (ej. reserva confirmada/cancelada). Los switches de formularios de creación/edición siguen el patrón UserModal.
+
+## Campos temporales compartidos
+
+Usar DateInput para fechas civiles, TimeInput para horarios por reserva y DateTimeInput para instantes con zona explícita del recurso. Conservar borradores/ref/validación y el LocalizationProvider único; no añadir inputs nativos type=date. Detalle en [DESIGN.md 9.9](DESIGN.md) y [ADR-025](../docs/architecture/decisions/ADR-025-reservation-calendar-date-inputs.md).
+
+## Rendimiento móvil y escritorio
+
+- Seguir [DESIGN.md sección10](DESIGN.md) y el [plan37](../docs/mvp/37-web-performance-implementation-plan.md), aprobado explícitamente e implementación por etapas en curso. Aplicar frontend-quality/react-best-practices y las skills de componentes/responsive según alcance; conservar stack/theme/contratos. Distinguir patrones ya verificados en DESIGN10.5–10.7 de metas, rutas y aceptación pendientes.
+- Medir build productivo por ruta/perfil, con sesión legítima cuando corresponda, entorno sin extensiones y tres ejecuciones comparables. Registrar mediana, LCP/FCP/TBT/CLS, recursos e interacción; separar laboratorio/campo y app/terceros/extensiones. No prometer mejora por estimaciones de cobertura ni cambiar el minificador por código inyectado.
+- Preservar auth/permisos, aislamiento por usuario, feedback Sileo, formulario ante fallo, recuperación de escrituras inciertas y estado al redimensionar/refetch. No ocultar errores, quitar funcionalidades o modificar caché de permisos para elevar el score.
+- Dividir código por ruta/intención con error/reintento y provider único; no retrasar la tarea principal ni montar duplicados móvil/desktop. Memoización, imports y reflow se corrigen a partir de profiler/grafo/trazas, no por sustituciones globales.
+- Cada etapa implementada debe entregar pruebas de comportamiento y medición antes/después; actualizar DESIGN con el patrón final y referencias verificadas, el plan con resultados/pendientes y AGENTS si cambia una regla reusable. Mantener AGENTS como índice y no duplicar detalle del producto.
+- GoogleOAuthProvider solo en Login con client ID, antes de GoogleLogin; mantener locale/reintento recuperable y mutación fuera de la frontera que se remonta. Inicio no solicita GIS. Referencias y límites en DESIGN10.5; no mover validación de sesión o logout para reducir carga.
+- Editores secundarios por intención: loading/disabled y feedback traducido, reintento local sin recargar la página, foco de regreso y borrador conservado. Ignorar importaciones tardías tras cambio de cuenta/sesión/ruta o desmontaje; compartir importación satisfactoria y permitir retry tras rechazo. Referencia MobileShortcutDialog/useShortcutDialog y medición real en DESIGN10.6; no aplicar automáticamente el retry con recarga de lazyRoute a formularios secundarios.
+- Separar metadatos de selectores administrativos del runtime compartido cuando el grafo pruebe ahorro. IconSelect importa iconCatalog directamente; navegación conserva ICON_REGISTRY y resolutores, sin cargar etiquetas/keywords mediante barrels. Mantener claves, catálogo y componentes originales; verificar el grafo transitivo y sesión real. Referencia DESIGN10.7.
+- Listas con hijos li válidos; nombre accesible de controles incluye su texto visible ES/EN, con traducciones y foco preservados. Usar `component` para jerarquía semántica y `variant` para estilo. Referencias Sidenav/LanguageSelector/Home en DESIGN10.5.
+- No conservar refactors que solo redistribuyen chunks: comparar descarga y primera interacción en ambos perfiles y retirar una variante sin ahorro/regresiva. El experimento health IA de37 fue descartado; conservar validación estricta, caché compartida y preferencias móviles.
+- En una misma máquina, ejecutar mediciones y suite completa sin compilaciones pesadas concurrentes; registrar una espera fallida y repetirla aislada antes de atribuir regresión. No modificar tests/timeouts para ocultar el fallo. Referencia y límites en DESIGN10.4/10.6 y evidencia de37.

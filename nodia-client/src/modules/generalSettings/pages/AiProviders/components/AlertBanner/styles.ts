@@ -10,15 +10,18 @@ export const AlertsWrapper = styled(Box)(({ theme }) => ({
 
 export const BannerCard = styled(Box, {
   shouldForwardProp: (prop) => prop !== "alertType",
-})<{ alertType: "incident" | "failover" | "warning" | "info" }>(({ theme, alertType }) => {
+})<{ alertType: "incident" | "failover" | "warning" | "info" }>(({
+  theme,
+  alertType,
+}) => {
   const mainColor =
     alertType === "incident"
       ? "#ef4444"
       : alertType === "warning"
-      ? "#f59e0b"
-      : alertType === "failover"
-      ? "#10b981"
-      : "#3b82f6";
+        ? "#f59e0b"
+        : alertType === "failover"
+          ? "#10b981"
+          : "#3b82f6";
   const bgAlpha = alpha(mainColor, 0.08);
   const borderAlpha = alpha(mainColor, 0.35);
 
@@ -27,6 +30,10 @@ export const BannerCard = styled(Box, {
     flexDirection: "column",
     gap: theme.spacing(1.5),
     padding: theme.spacing(2, 2.5),
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(1.5),
+      "& .MuiButton-root": { width: "100%", minHeight: 44 },
+    },
     borderRadius: Number(theme.shape.borderRadius) * 1.5,
     backgroundColor: bgAlpha,
     border: `1px solid ${borderAlpha}`,
@@ -48,6 +55,8 @@ export const BannerHeader = styled(Box)(({ theme }) => ({
 export const TitleContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
+  minWidth: 0,
+  overflowWrap: "anywhere",
   gap: theme.spacing(1),
 }));
 
@@ -62,10 +71,10 @@ export const BannerTitle = styled(Typography, {
     alertType === "incident"
       ? "#ef4444"
       : alertType === "warning"
-      ? "#f59e0b"
-      : alertType === "failover"
-      ? "#10b981"
-      : "#3b82f6",
+        ? "#f59e0b"
+        : alertType === "failover"
+          ? "#10b981"
+          : "#3b82f6",
 }));
 
 export const TimeBadge = styled(Box)(({ theme }) => ({
@@ -91,6 +100,7 @@ export const MessageContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1.5),
   flex: 1,
   minWidth: 260,
+  [theme.breakpoints.down("sm")]: { minWidth: 0, flexBasis: "100%" },
 }));
 
 export const BannerMessage = styled(Typography)(({ theme }) => ({

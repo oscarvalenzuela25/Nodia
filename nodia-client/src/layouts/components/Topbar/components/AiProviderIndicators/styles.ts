@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { Badge, Stack } from "@mui/material";
+import { Badge, Button, Stack } from "@mui/material";
 
 export const Indicators = styled(Stack)(({ theme }) => ({
   flexDirection: "row",
@@ -14,6 +14,15 @@ export const Indicators = styled(Stack)(({ theme }) => ({
   },
 }));
 
+export const ModeButton = styled(Button)(({ theme }) => ({
+  minWidth: 0,
+  minHeight: 44,
+  gap: theme.spacing(1),
+  padding: theme.spacing(0.5, 1),
+  color: theme.palette.text.secondary,
+  textTransform: "none",
+}));
+
 export const StatusBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     width: 8,
@@ -21,5 +30,8 @@ export const StatusBadge = styled(Badge)(({ theme }) => ({
     minWidth: 8,
     borderRadius: "50%",
     boxShadow: `0 0 0 2px ${theme.palette.background.default}`,
+  },
+  "& .MuiBadge-badge:not(.MuiBadge-colorSuccess):not(.MuiBadge-colorError)": {
+    backgroundColor: theme.palette.text.disabled,
   },
 }));

@@ -5,6 +5,10 @@
 > Dependencias: [01](01-interview.md), [02](02-prd-v1.md), [03](03-domain-model-erd.md), [05](05-sitemap.md); Finanzas personales [20](20-personal-finance-interview.md) solo si se propone integración
 
 
+## Ajuste solicitado — 2026-10-09
+
+El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
+
 ## Aceptación del esquema y etapa actual — 2026-10-04
 
 El usuario aceptó explícitamente el [ERD 27](27-rental-reservations-erd.md) y solicitó incorporarlo al JSON de Obsidian y comenzar con Backend. Se añadió el esquema al diagrama y a 03, con respaldo exacto y conservación de objetos anteriores. La aceptación comprende colaboradores operativos por casa, preparación simple sin inventario, días calendario locales para cancelación directa, devolución sobre dinero pagado y redondeos de importes descritos en 27. Tarifas, horarios y valores de tramos siguen configurables; no se inventan datos de la futura casa.
@@ -34,7 +38,7 @@ Se interpreta que el anfitrión registrará manualmente en Nodia las reservas pr
 
 En ese flujo manual, el anfitrión debe mantener también la disponibilidad publicada en Airbnb cuando registre una reserva directa, y cargar en Nodia las reservas recibidas por Airbnb. La protección de solapamientos en Nodia solo cubre los registros que conoce; no garantiza disponibilidad coordinada con plataformas externas.
 
-La casa completa constituye una unidad arrendable: dos reservas que ocupen disponibilidad no pueden coincidir. La salida y entrada en el mismo día es condicional, con recambio y limpieza. Los valores concretos de horarios se configurarán en la casa; el registro simple de recambio fue presentado y aceptado en ERD 27.
+La casa completa constituye una unidad arrendable: dos reservas que ocupen disponibilidad no pueden coincidir. La salida y entrada en el mismo día es condicional, con recambio y limpieza. Los horarios concretos se registran en cada reserva; el registro simple de recambio fue presentado y aceptado en ERD 27.
 
 ## Aclaración verificada: noches, horarios y canales
 
@@ -46,7 +50,7 @@ Consulta a documentación oficial de Airbnb el 2026-10-04:
 - El abono configurable de reservas directas no debe trasladarse a cobros externos de reservas Airbnb. Airbnb prohíbe en general pagos de reservas fuera de su plataforma, con excepciones específicas que no se presuponen aplicables a esta casa. Fuente: [política sobre actividad fuera de plataforma](https://www.airbnb.com/help/article/2799).
 - Las cancelaciones de Airbnb siguen la política aplicable a la reserva y sus reglas de plataforma; no reemplazarlas con la política de reservas directas. Fuente: [consulta de la política de cancelación](https://www.airbnb.com/help/article/149).
 
-Decisión funcional confirmada después de esta explicación: **cobro por noches y horarios de entrada/salida separados**, configurables para la casa. Propuesta técnica: conservar en cada reserva los horarios acordados, incluidas excepciones, sin que editar los horarios de la casa altere estadías ya confirmadas. Los horarios del ejemplo no están confirmados como valores de la casa.
+Decisión funcional confirmada después de esta explicación: **cobro por noches y horarios de entrada/salida separados**, configurables por reserva según aclaración del 2026-10-09. Cada estadía conserva sus horarios acordados. Los horarios del ejemplo no están confirmados como valores de la casa.
 
 ## Evidencia del proyecto
 
@@ -63,7 +67,7 @@ Herramienta de gestión para el anfitrión y sus colaboradores, propuesta con re
 
 | Área | Información o comportamiento propuesto |
 |---|---|
-| Propiedad | Nombre, ubicación, zona horaria, capacidad máxima y horarios habituales de entrada/salida |
+| Propiedad | Nombre, ubicación y capacidad máxima; zona interna de calendario, sin horarios de entrada/salida en el formulario |
 | Calendario | Disponibilidad, próximas entradas/salidas, reservas y bloqueos de fechas |
 | Reserva | Propiedad, huésped responsable, contacto, entrada, salida, cantidad de huéspedes, origen y notas |
 | Importes | Control monetario confirmado; se propone precio acordado de la estadía, cargos adicionales, descuentos y total; pagos y devoluciones registrados por separado |

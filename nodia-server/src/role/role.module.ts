@@ -9,6 +9,7 @@ import { GetAllRolesUseCase } from './use-case/get-all-roles.use-case.js';
 import { CreateRoleUseCase } from './use-case/create-role.use-case.js';
 import { UpdateRoleUseCase } from './use-case/update-role.use-case.js';
 import { TranslationModule } from '../translation/translation.module.js';
+import { DeleteRoleUseCase } from './use-case/delete-role.use-case.js';
 
 @Module({
   controllers: [RoleController],
@@ -17,6 +18,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     GetAllRolesUseCase,
     CreateRoleUseCase,
     UpdateRoleUseCase,
+    DeleteRoleUseCase,
   ],
   imports: [
     TypeOrmModule.forFeature([Role, RoleAction, Action]),

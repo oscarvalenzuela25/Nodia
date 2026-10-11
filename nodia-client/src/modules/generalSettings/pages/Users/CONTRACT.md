@@ -290,3 +290,11 @@ Los endpoints anteriores `/api/v1/filters/*` han sido **eliminados**. Para pobla
 2. **Para obtener el catálogo de roles disponibles para asignar a un usuario:**  
    - **Ruta:** `GET /api/v1/roles?all=true&includes=false`
    - **Comportamiento:** Retorna todos los roles del sistema de forma liviana para poblar el selector múltiple de roles en `UserModal`.
+
+## Presentación y filtro inicial — 2026-10-09
+
+Por solicitud explícita, el listado de Usuarios inicia con `q[is_active_eq]=true`. Limpiar filtros restaura activos; quitar el chip de activo permite todos, sin imponer filtros a los catálogos auxiliares `all=true&includes=false`. Se conserva la selección de inactivos desde el filtro existente.
+
+En xs (<600 px), MobileRecordCard muestra nombre (o email si es null/vacío), estado, correo, ID completo y asignaciones de roles/módulos con etiquetas existentes. Campos extensos envuelven; vacío de asignaciones mantiene el marcador traducido sin inventar permisos. Actualizar abre UserModal; activar/desactivar conserva ConfirmDialog y copiar usa el ID exacto. Desde sm se muestra la tabla. Una sola consulta/estado de filtros/página/handlers; redimensionar no reinicia la vista ni genera consultas por tarjeta.
+
+Paginación fuera de Boneyard/scroll, controles ES/EN de44px y toolbar que envuelve. Refetch/mutación conserva registros y bloquea controles; error inicial y resultado vacío son diferentes. Reintentos preservan formularios/confirmación. Sin cambios del backend ni de permisos HTTP. Fixture visual aislada: `src/test/manual/users/README.md`; ver DESIGN.md9.6 y tests de Users/MobileRecordCard.

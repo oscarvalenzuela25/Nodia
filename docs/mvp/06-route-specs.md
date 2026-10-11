@@ -32,7 +32,7 @@ Cambiar solo query/hash conserva la instancia de página y sus borradores. Los m
 
 Comprobado localmente: regresión del router real Negocios → Usuarios con importación diferida (fallaba antes de la corrección), acceso inicial público/interno, código cacheado, borrador conservado al navegar con teclado por query/hash y fallo de importación. Suite Client: 847 pruebas en 149 archivos; build/tipado/lint correctos. Navegador con fixture local de demora controlada, escritorio claro ES y móvil 390 px oscuro EN; sin API ni sesión real.
 
-### Ampliación: `/finances/personal`
+### Ampliación: `/tools/finances-personal`
 
 - Acceso: sesión activa y módulo personal_finance asignado; GuardStrict usa mismo modulePath que modules.link. Backend exige identidad autenticada y propietario en todas las consultas/mutaciones. El acceso global de negocios no se extiende a Finanzas.
 - Página: BaseLayout, lazyWithRetry y General inicial. Tabs Movimientos, Préstamos y deudas, Categorías, Grupos de categorías; tab en query string opcional, sin rutas CRUD.
@@ -101,7 +101,7 @@ Comprobado localmente: regresión del router real Negocios → Usuarios con impo
 - **Roles:** Super admin.
 - **Acceso:** Requiere permiso `view` sobre el recurso `Modules`.
 - **Componentes UI:**
-  - Tabla o lista anidada (Módulos > Submódulos).
+  - Dos listados: grupos de módulos y módulos asociados por module_group_id; tarjetas en xs y tablas desde sm.
   - Paginación conectada al servidor (server-side).
   - Botón "Nuevo" (modal de creación).
   - Acciones: Editar (modal), Activar/Desactivar.
@@ -139,7 +139,7 @@ Comprobado localmente: regresión del router real Negocios → Usuarios con impo
 
 ## Negocios: descripción opcional — 2026-10-06
 
-Confirmado por el usuario mediante el formulario «Nuevo Negocio»: el nombre sigue siendo obligatorio; la descripción es opcional. Crear sin descripción envía `translates: []`; se admite texto solo en español o solo en inglés. Al editar, vaciar ambos idiomas envía explícitamente la traducción vacía para borrar el contenido anterior. `has_description` refleja texto no vacío en `description` o su clave histórica `comment`.
+Actualización solicitada el 2026-10-09: el nombre sigue siendo obligatorio y la descripción opcional se edita con un único TextInput, sin editor multidioma. El transporte conserva el contrato `translates`: texto único en es/en; crear sin descripción envía `[]` y editar para borrar envía ambas cadenas vacías. La lectura prioriza la clave canónica `description` (es, luego en), y usa `comment` únicamente cuando no existe esa clave; una descripción explícitamente vaciada no recupera contenido histórico. Server conserva compatibilidad con traducciones parciales y `has_description` refleja texto no vacío en description/comment. No requiere migración. Filtros y presentación móvil vigentes: [contrato de Negocios](../../nodia-client/src/modules/business/CONTRACT.md).
 
 Server aplica un DTO de traducciones específico de negocios; mantiene las validaciones de tipo y las traducciones obligatorias de otros recursos. Regresiones: 13 casos desde los casos de uso reales y tres del modal. Smoke HTTP compilado en ambos aliases `/business` y `/businesses`: creación sin descripción, idioma parcial, edición que borra contenido persistido y rechazo de nombre/tipos inválidos. Repositorios e identidad sintéticos; sin cambios en la BD configurada. Client: 850 pruebas en 150 archivos, tipado/build/lint correctos.
 
@@ -175,3 +175,15 @@ Login exitoso redirige a `/`. Topbar utiliza el avatar de la sesión y muestra n
 Archivar reserva conserva su ocupación/dinero. Cancelar libera disponibilidad y aprueba devolución, sin simular transferencia. Pagos reales y devolución pendiente se muestran separados. Cada intención de escritura conserva su clave idempotente hasta conocer el resultado; ante timeout no habilitar reenvío con clave nueva que pudiera duplicar dinero. Revalidar tras conflictos y conservar formularios al fallar.
 
 Inputs reutilizables, i18n ES/EN, toast sileo, ConfirmDialog y modales existentes. Skeleton solo primera carga informativa, refetch suave, controles disabled/loading, estados vacío/error/reintento. Sincronización automática Airbnb/WhatsApp/Facebook y portal público fuera de esta versión. Payloads/errores están en [28](28-rental-reservations-contracts.md); [29](29-rental-reservations-backend-plan.md) organiza Server. [Plan Client30](30-rental-reservations-client-plan.md) implementado y en revisión documental; ruta con GuardStrict/BaseLayout/lazy, caché e intenciones por actor/casa. 822 pruebas/144 archivos y flujo HTTP/PostgreSQL temporal correctos; RC-38 conserva sesión/BD objetivo pendientes. Pagos accesibles en ficha/General, bloqueos desde Calendario y auditoría en modal paginado de casa; se conservan los siete tabs y una sola ruta.
+
+## Reubicación frontend — 2026-10-09
+
+Por solicitud explícita, Negocios vive en `/tools/business` y su detalle en `/tools/business/:id`; Finanzas personales en `/tools/finances-personal`. GuardStrict usa el path de la sección, incluido el detalle. Las opciones de Módulos, enlaces y breadcrumbs siguen esos destinos. Los endpoints API permanecen iguales. Cambio operativo de links aplicado en BD local con respaldo; ver [sitemap](05-sitemap.md#reubicación-de-herramientas--solicitud-2026-10-09).
+
+### Ajustes: módulos y grupos — 2026-10-09
+
+Por solicitud explícita, ambos listados de `/settings/modules` inician activos; grupos incorpora Activos/Inactivos/Todos con selección exclusiva. Eliminación permanente desde menú con trash/error.main y confirmación: módulo limpia sus asignaciones/traducciones; grupo con cualquier módulo, incluso inactivo, devuelve 409. Error conserva modal y registro. Las tarjetas móviles comparten consultas, filtros/página y acciones con las tablas; el paginado no se oculta en Skeleton ni scroll horizontal. Ver [contrato vigente](../../nodia-client/src/modules/generalSettings/pages/Modules/CONTRACT.md), [ADR-021](../architecture/decisions/ADR-021-module-catalog-deletion.md) y [DESIGN.md 9.6](../../nodia-client/DESIGN.md).
+
+### Ajustes de Acciones — 2026-10-09
+
+Por solicitud explícita, `/settings/actions` inicia activos tanto generales como negocio y adapta ambos listados a tarjetas xs, manteniendo tablas desde sm y perspectivas/filtros/página. Generales añade eliminación permanente con confirmación, trash/error.main y limpieza transaccional de asignaciones a roles/traducciones; error conserva target. Negocio conserva su eliminación y añade filtro exclusivo Activos/Inactivos/Todos. Ver [contrato vigente](../../nodia-client/src/modules/generalSettings/pages/Actions/CONTRACT.md), [ADR-022](../architecture/decisions/ADR-022-general-action-deletion.md) y [plan35](35-mobile-cards-shortcuts-plan.md#ampliación-acciones--2026-10-09). Sin migración ni modificación de acciones reales durante la entrega.

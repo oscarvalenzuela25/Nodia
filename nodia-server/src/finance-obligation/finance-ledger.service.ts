@@ -107,4 +107,23 @@ export class FinanceLedgerService {
     const repo = manager.getRepository(FinanceObligation);
     return repo.save(repo.create(data));
   }
+
+  hasRepayments(manager: EntityManager, obligation: FinanceObligation) {
+    // Pending, cancelled and inactive repayments also prevent implicit data loss.
+    return manager.getRepository(FinanceMovement).existsBy({
+      user_id: obligation.user_id,
+      obligation_id: obligation.id,
+      type: obligation.type === 'loan' ? 'income' : 'expense',
+    });
+  }
+  deleteMovement(manager: EntityManager, userId: string, id: string) {
+    return manager
+      .getRepository(FinanceMovement)
+      .delete({ user_id: userId, id });
+  }
+  deleteObligation(manager: EntityManager, userId: string, id: string) {
+    return manager
+      .getRepository(FinanceObligation)
+      .delete({ user_id: userId, id });
+  }
 }

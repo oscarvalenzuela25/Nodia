@@ -26,12 +26,14 @@ export type PropertyModalProps = {
   onClose: () => void;
   initialData?: RentalProperty;
   onSaved?: (ack: RentalAck) => void;
+  section?: "details" | "defaults";
 };
 function PropertyFormModal({
   open,
   onClose,
   initialData,
   onSaved,
+  section,
 }: PropertyModalProps) {
   const { t } = useTranslation();
   const formId = useId();
@@ -49,10 +51,7 @@ function PropertyFormModal({
     defaultValues: {
       name: initialData?.name ?? "",
       location: initialData?.location ?? "",
-      timezone: initialData?.timezone ?? "",
       max_guests: initialData ? String(initialData.max_guests) : "",
-      check_in_time: initialData?.check_in_time ?? "",
-      check_out_time: initialData?.check_out_time ?? "",
       default_nightly_rate: initialData?.default_nightly_rate ?? "",
       default_deposit_percent: initialData?.default_deposit_percent ?? "",
       minimum_turnover_minutes: String(
@@ -99,7 +98,13 @@ function PropertyFormModal({
       onClose={() => {
         if (!busy && !mutation.isUncertain) onClose();
       }}
-      title={t(initialData ? "rental:edit_property" : "rental:create_property")}
+      title={t(
+        initialData && section
+          ? "rental:configuration_view.edit_" + section
+          : initialData
+            ? "rental:edit_property"
+            : "rental:create_property",
+      )}
       size="md"
       actions={
         <ModalActions>
@@ -130,67 +135,71 @@ function PropertyFormModal({
         }}
       />
       {!authorized && <Alert severity="info">{t("rental:owner_only")}</Alert>}
-      {initialData && (
-        <Alert severity="info">{t("rental:timezone_history")}</Alert>
-      )}
       <FormContainer
         id={formId}
         onSubmit={handleSubmit((values) => {
           if (!disabled) return submit(values);
         })}
       >
-        <Controller
-          name="is_active"
-          control={control}
-          render={({ field }) => (
-            <RentalActiveSwitch
-              confirmChanges={Boolean(initialData)}
-              checked={field.value}
-              onChange={field.onChange}
-              disabled={disabled}
-            />
-          )}
-        />
         {(
           [
             "name",
             "location",
-            "timezone",
             "max_guests",
-            "check_in_time",
-            "check_out_time",
             "default_nightly_rate",
             "default_deposit_percent",
             "minimum_turnover_minutes",
             "notes",
           ] as const
-        ).map((name) => (
+        )
+          .filter(
+            (name) =>
+              !initialData ||
+              !section ||
+              (section === "details"
+                ? ["name", "location", "max_guests", "notes"]
+                : [
+                    "default_nightly_rate",
+                    "default_deposit_percent",
+                    "minimum_turnover_minutes",
+                  ]
+              ).includes(name),
+          )
+          .map((name) => (
+            <Controller
+              key={name}
+              name={name}
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  {...field}
+                  label={t(`rental:${name}`)}
+                  required={["name", "max_guests"].includes(name)}
+                  type="text"
+                  multiline={name === "notes"}
+                  disabled={disabled}
+                  error={Boolean(errors[name])}
+                  helperText={
+                    errors[name]?.message ? t(errors[name].message) : undefined
+                  }
+                />
+              )}
+            />
+          ))}
+        {(!initialData || !section) && (
           <Controller
-            key={name}
-            name={name}
+            name="is_active"
             control={control}
             render={({ field }) => (
-              <TextInput
-                {...field}
-                label={t(`rental:${name}`)}
-                required={[
-                  "name",
-                  "timezone",
-                  "max_guests",
-                  "check_in_time",
-                  "check_out_time",
-                ].includes(name)}
-                type={name.endsWith("time") ? "time" : "text"}
-                multiline={name === "notes"}
+              <RentalActiveSwitch
+                confirmChanges={Boolean(initialData)}
+                checked={field.value}
+                onChange={field.onChange}
                 disabled={disabled}
-                error={Boolean(errors[name])}
-                helperText={
-                  errors[name]?.message ? t(errors[name].message) : undefined
-                }
               />
             )}
           />
-        ))}
+        )}
       </FormContainer>
     </BaseModal>
   );

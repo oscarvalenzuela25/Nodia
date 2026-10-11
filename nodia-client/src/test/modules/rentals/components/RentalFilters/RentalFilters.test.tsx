@@ -42,6 +42,21 @@ describe("RentalFilters", () => {
     );
     expect(ui.execute).not.toHaveBeenCalled();
   });
+  it("defaults activity to active when omitted and applies all explicitly", async () => {
+    const apply = vi.fn();
+    const user = userEvent.setup();
+    render(<RentalFilters resource="blocks" property={property} query={{}} onApply={apply} />);
+    await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
+    expect(screen.getByRole("button", { name: "Estado de actividad" })).toHaveTextContent("Activo");
+    await user.click(screen.getByRole("button", { name: "Estado de actividad" }));
+    await user.click(screen.getByRole("option", { name: "Todos" }));
+    await user.click(screen.getByRole("button", { name: "Filtrar" }));
+    expect(apply).toHaveBeenCalledWith(expect.objectContaining({ active: "all", page: 1 }));
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    expect(apply).toHaveBeenLastCalledWith(expect.objectContaining({ active: "active", page: 1 }));
+  });
+
   it("never offers active for monetary history", async () => {
     render(
       <RentalFilters
@@ -55,7 +70,7 @@ describe("RentalFilters", () => {
       screen.getByRole("button", { name: /filtrar|filtros/i }),
     );
     expect(
-      screen.queryByLabelText(i18n.t("rental:active")),
+      screen.queryByLabelText(i18n.t("core:active_filter.label")),
     ).not.toBeInTheDocument();
   });
 });

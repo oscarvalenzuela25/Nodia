@@ -8,7 +8,7 @@
   "update_role_button": "Actualizar Rol",
   "filter_modal_title": "Filtros de roles",
   "filter_modal_subtitle": "Filtra la lista de roles por identificador, acciones asociadas o estado activo.",
-  "search_placeholder": "Buscar por nombre o identificador...",
+  "search_placeholder": "Buscar por identificador...",
   "form": {
     "active": "Activo",
     "key": "Identificador",
@@ -37,7 +37,8 @@
   "filter_chips": {
     "role": "Rol: {{value}}",
     "action": "Acción: {{value}}",
-    "active_only": "Solo activos"
+    "active_only": "Solo activos",
+    "inactive_only": "Solo inactivos"
   },
   "role_names": {
     "admin": "Super Administrador",
@@ -78,13 +79,29 @@
     "created_success": "Rol creado correctamente",
     "created_error": "No se pudo crear el rol",
     "updated_success": "Rol actualizado correctamente",
-    "updated_error": "No se pudo actualizar el rol"
+    "updated_error": "No se pudo actualizar el rol",
+    "deleted_success": "Rol eliminado correctamente",
+    "deleted_error": "No se pudo eliminar el rol"
   },
   "deactivate": "Desactivar",
   "activate": "Activar",
   "confirm_deactivate_title": "¿Desactivar rol?",
   "confirm_activate_title": "¿Activar rol?",
   "confirm_deactivate_message": "¿Está seguro de que desea desactivar el rol \"{{name}}\"?",
-  "confirm_activate_message": "¿Está seguro de que desea activar el rol \"{{name}}\"?"
+  "confirm_activate_message": "¿Está seguro de que desea activar el rol \"{{name}}\"?",
+  "active": "Activo",
+  "inactive": "Inactivo",
+  "delete": "Eliminar",
+  "confirm_delete_title": "¿Eliminar rol?",
+  "confirm_delete_message": "El rol \"{{name}}\" se eliminará permanentemente junto con sus asignaciones a usuarios, acciones y traducciones. Esta operación no se puede deshacer.",
+  "invalid_id": "El ID del rol no es válido.",
+  "not_found": "El rol ya no existe.",
+  "protected_role": "El rol super_admin no se puede eliminar.",
+  "protected_key": "El identificador del rol super_admin no se puede cambiar.",
+  "pagination": {
+    "next": "Página siguiente",
+    "previous": "Página anterior",
+    "first": "Primera página",
+    "last": "Última página"
+  }
 }
-

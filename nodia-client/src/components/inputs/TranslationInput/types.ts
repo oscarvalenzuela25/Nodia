@@ -16,6 +16,7 @@ export type TranslationInputProps = {
   languages?: LanguageOption[];
   required?: boolean;
   disabled?: boolean;
+  keyReadOnly?: boolean;
   error?: boolean;
   helperText?: string;
   keyHelperText?: string;

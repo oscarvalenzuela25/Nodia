@@ -86,6 +86,7 @@ export const SelectedFileContainer = styled(Box)(({ theme }) => {
 });
 
 export const ModalActionsContainer = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: { flexDirection: "column-reverse", alignItems: "stretch", "& button": { width: "100%", minHeight: 44 } },
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",

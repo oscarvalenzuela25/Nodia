@@ -44,7 +44,12 @@ const AiProviders: FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedView = searchParams.get("provider") || "overview";
   const requestedMode = searchParams.get("mode");
-  const initialMode = requestedMode === "api_key" || requestedMode === "token_plan_web" || requestedMode === "token_plan_agentic" ? requestedMode : undefined;
+  const initialMode =
+    requestedMode === "api_key" ||
+    requestedMode === "token_plan_web" ||
+    requestedMode === "token_plan_agentic"
+      ? requestedMode
+      : undefined;
   const setSelectedView = (view: string) => {
     setSearchParams((current) => {
       const next = new URLSearchParams(current);
@@ -77,13 +82,22 @@ const AiProviders: FC = () => {
     refetch: refetchHealth,
   } = useAiProvidersHealth();
 
-  const { data: geminiEnginesData, isError: enginesError, isFetching: isFetchingEngines } = useGeminiEngines();
+  const {
+    data: geminiEnginesData,
+    isError: enginesError,
+    isFetching: isFetchingEngines,
+  } = useGeminiEngines();
 
   const isInitialLoading =
     (!providersResponse && (isLoadingProviders || isFetchingProviders)) ||
     (!healthResponse && (isLoadingHealth || isFetchingHealth));
-  const isSoftLoading = (isFetchingHealth || isFetchingProviders) && !isInitialLoading;
-  const isBusy = isInitialLoading || isFetchingHealth || isFetchingProviders || isFetchingEngines;
+  const isSoftLoading =
+    (isFetchingHealth || isFetchingProviders) && !isInitialLoading;
+  const isBusy =
+    isInitialLoading ||
+    isFetchingHealth ||
+    isFetchingProviders ||
+    isFetchingEngines;
 
   // View options for SelectSingleInput
   const viewOptions = useMemo(() => {
@@ -92,7 +106,7 @@ const AiProviders: FC = () => {
         value: "overview",
         label: t(
           "ai_providers:view_all_providers",
-          "General (Todos los proveedores)"
+          "General (Todos los proveedores)",
         ),
       },
     ];
@@ -107,10 +121,10 @@ const AiProviders: FC = () => {
         (providerKey === "gemini"
           ? "Google Gemini"
           : providerKey === "mistral"
-          ? "Mistral AI"
-          : providerKey === "openai"
-          ? "OpenAI"
-          : providerKey.charAt(0).toUpperCase() + providerKey.slice(1));
+            ? "Mistral AI"
+            : providerKey === "openai"
+              ? "OpenAI"
+              : providerKey.charAt(0).toUpperCase() + providerKey.slice(1));
 
       options.push({
         value: p.id,
@@ -126,9 +140,7 @@ const AiProviders: FC = () => {
     const list = healthResponse?.providers || [];
     const dbProviders = providersResponse?.data || [];
     const merged = list.map((item) => {
-      const dbMatch = dbProviders.find(
-        (db) => db.id === item.id
-      );
+      const dbMatch = dbProviders.find((db) => db.id === item.id);
       return {
         ...item,
         is_default: Boolean(item.is_default ?? dbMatch?.is_default ?? false),
@@ -143,7 +155,7 @@ const AiProviders: FC = () => {
     const allAlerts = [...(healthResponse?.alerts || [])];
 
     const geminiProvider = displayProviders.find(
-      (p) => p.key.toLowerCase() === "gemini"
+      (p) => p.key.toLowerCase() === "gemini",
     );
 
     if (geminiProvider?.use_token_plan_web) {
@@ -151,7 +163,7 @@ const AiProviders: FC = () => {
         const hasWebAlert = allAlerts.some(
           (a) =>
             a.provider.toLowerCase() === "gemini" &&
-            (a.id.includes("web-expired") || a.actionType === "renew_session")
+            (a.id.includes("web-expired") || a.actionType === "renew_session"),
         );
         if (!hasWebAlert) {
           allAlerts.unshift({
@@ -159,12 +171,16 @@ const AiProviders: FC = () => {
             provider: "gemini",
             type: "incident",
             severity: "error",
-            title: t("ai_providers:alerts.web_expired_title", { provider: geminiProvider.name }),
-            message:
-              t("ai_providers:alerts.web_expired_message"),
+            title: t("ai_providers:alerts.web_expired_title", {
+              provider: geminiProvider.name,
+            }),
+            message: t("ai_providers:alerts.web_expired_message"),
             timeAgo: t("ai_providers:alerts.recent"),
             actionType: "renew_session",
-            actionLabel: t("ai_providers:alerts.renew_session_now", "Renovar Sesión Ahora"),
+            actionLabel: t(
+              "ai_providers:alerts.renew_session_now",
+              "Renovar Sesión Ahora",
+            ),
           });
         }
       }
@@ -172,7 +188,9 @@ const AiProviders: FC = () => {
 
     if (selectedView === "overview") return allAlerts;
     const selected = displayProviders.find((p) => p.id === selectedView);
-    return allAlerts.filter((a) => a.provider.toLowerCase() === selected?.key.toLowerCase());
+    return allAlerts.filter(
+      (a) => a.provider.toLowerCase() === selected?.key.toLowerCase(),
+    );
   }, [
     healthResponse?.alerts,
     displayProviders,
@@ -180,7 +198,6 @@ const AiProviders: FC = () => {
     selectedView,
     t,
   ]);
-
 
   const handleRefreshAllData = async () => {
     await Promise.all([
@@ -199,7 +216,7 @@ const AiProviders: FC = () => {
       sileo.success({
         title: t(
           "ai_providers:notifications.verify_success",
-          "Estado de proveedores de IA actualizado"
+          "Estado de proveedores de IA actualizado",
         ),
       });
     } catch (error) {
@@ -213,18 +230,34 @@ const AiProviders: FC = () => {
 
   return (
     <PageContainer>
-      <QueryErrorAlert isError={providersError || healthError || enginesError} isFetching={isBusy} onRetry={() => Promise.all([refetchProviders(), refetchHealth()])} />
+      <QueryErrorAlert
+        isError={providersError || healthError || enginesError}
+        isFetching={isBusy}
+        onRetry={() => Promise.all([refetchProviders(), refetchHealth()])}
+      />
       {/* HEADER PANEL */}
-      <HeaderPanel>
+      <HeaderPanel
+        sx={{
+          display: {
+            xs:
+              selectedView !== "overview" && !isInitialLoading
+                ? "none"
+                : "flex",
+            sm: "flex",
+          },
+        }}
+      >
         <HeaderTitleBox>
           <PageTitleContainer>
             <SmartToyOutlinedIcon color="primary" sx={{ fontSize: 32 }} />
-            <PageTitle>{t("ai_providers:title", "Proveedores de IA")}</PageTitle>
+            <PageTitle>
+              {t("ai_providers:title", "Proveedores de IA")}
+            </PageTitle>
           </PageTitleContainer>
           <PageSubtitle>
             {t(
               "ai_providers:subtitle",
-              "Configuración de conexiones, modelos y sesiones de los planes Web y Agentic."
+              "Configuración de conexiones, modelos y sesiones de los planes Web y Agentic.",
             )}
           </PageSubtitle>
         </HeaderTitleBox>
@@ -237,7 +270,7 @@ const AiProviders: FC = () => {
               onChange={(val) => setSelectedView(val || "overview")}
               placeholder={t(
                 "ai_providers:view_selector_placeholder",
-                "Filtrar por proveedor..."
+                "Filtrar por proveedor...",
               )}
               clearable={false}
               disabled={isBusy}
@@ -285,7 +318,9 @@ const AiProviders: FC = () => {
         </HeaderActionsBox>
       </HeaderPanel>
 
-      {isInitialLoading ? <ProvidersLoading /> : selectedView !== "overview" ? (
+      {isInitialLoading ? (
+        <ProvidersLoading />
+      ) : selectedView !== "overview" ? (
         <ProviderDetail
           key={`${selectedView}:${initialMode ?? "default"}`}
           providerId={selectedView}
@@ -301,14 +336,16 @@ const AiProviders: FC = () => {
             alerts={activeAlerts}
             disabled={isBusy}
             onAuthenticateAgentic={(alert) => {
-              if (alert.provider === "openai" && alert.providerId) setSelectedView(alert.providerId);
-              else if (alert.provider === "gemini") setIsAgenticLoginModalOpen(true);
+              if (alert.provider === "openai" && alert.providerId)
+                setSelectedView(alert.providerId);
+              else if (alert.provider === "gemini")
+                setIsAgenticLoginModalOpen(true);
             }}
             onCheckStatus={handleVerifyAll}
             onRenewSession={handleRenewSession}
             onConfigure={(providerKey) => {
               const prov = displayProviders.find(
-                (p) => p.key.toLowerCase() === providerKey.toLowerCase()
+                (p) => p.key.toLowerCase() === providerKey.toLowerCase(),
               );
               if (prov) {
                 setConfigureProvider(prov);
@@ -317,8 +354,7 @@ const AiProviders: FC = () => {
             onManageQuotas={() => {
               sileo.info({
                 title: t("ai_providers:connection.quotas_title"),
-                description:
-                  t("ai_providers:connection.quotas_description"),
+                description: t("ai_providers:connection.quotas_description"),
               });
             }}
           />
@@ -337,27 +373,39 @@ const AiProviders: FC = () => {
                 }}
               />
             )}
-              <CardsGrid>
-                {displayProviders.length === 0 && !providersError && !healthError && <Typography color="text.secondary">{t("ai_providers:connection.empty")}</Typography>}
-                {displayProviders.map((prov) => (
-                  <ProviderCard
-                    key={prov.id}
-                    provider={prov}
-                    totalProviders={providersResponse?.data?.length || healthResponse?.providers?.length || 0}
-                    onGoToDetail={(p) => setSelectedView(p.id)}
-                    onConfigure={(p) => setConfigureProvider(p)}
-                    onRenewSession={handleRenewSession}
-                    onViewModels={(p) => setSelectedView(p.id)}
-                  />
-                ))}
-              </CardsGrid>
+            <CardsGrid>
+              {displayProviders.length === 0 &&
+                !providersError &&
+                !healthError && (
+                  <Typography color="text.secondary">
+                    {t("ai_providers:connection.empty")}
+                  </Typography>
+                )}
+              {displayProviders.map((prov) => (
+                <ProviderCard
+                  key={prov.id}
+                  provider={prov}
+                  totalProviders={
+                    providersResponse?.data?.length ||
+                    healthResponse?.providers?.length ||
+                    0
+                  }
+                  onGoToDetail={(p) => setSelectedView(p.id)}
+                  onConfigure={(p) => setConfigureProvider(p)}
+                  onRenewSession={handleRenewSession}
+                  onViewModels={(p) => setSelectedView(p.id)}
+                />
+              ))}
+            </CardsGrid>
           </Box>
         </>
       )}
 
       {/* MODALS */}
       <AddProviderModal
-        totalProviders={providersResponse?.data?.length ?? healthResponse?.providers?.length}
+        totalProviders={
+          providersResponse?.data?.length ?? healthResponse?.providers?.length
+        }
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={handleRefreshAllData}
@@ -366,7 +414,11 @@ const AiProviders: FC = () => {
       <ConfigureProviderModal
         open={Boolean(configureProvider)}
         provider={configureProvider}
-        totalProviders={providersResponse?.data?.length || healthResponse?.providers?.length || 0}
+        totalProviders={
+          providersResponse?.data?.length ||
+          healthResponse?.providers?.length ||
+          0
+        }
         onClose={() => setConfigureProvider(null)}
         onSuccess={handleRefreshAllData}
       />
@@ -376,7 +428,9 @@ const AiProviders: FC = () => {
         onClose={() => setIsLoginModalOpen(false)}
         onSuccess={handleRefreshAllData}
       />
-      {isAgenticLoginModalOpen && <AgenticLoginModal onClose={() => setIsAgenticLoginModalOpen(false)} />}
+      {isAgenticLoginModalOpen && (
+        <AgenticLoginModal onClose={() => setIsAgenticLoginModalOpen(false)} />
+      )}
     </PageContainer>
   );
 };

@@ -1,5 +1,5 @@
 import { styled, alpha } from "@mui/material/styles";
-import { Box, Typography, Chip, Paper } from "@mui/material";
+import { Box, Typography, Chip, Paper, TablePagination } from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
@@ -50,7 +50,7 @@ export const BusinessSectionCard = styled(Paper)(({ theme }) => {
     boxShadow: theme.shadows[2],
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${borderColor}`,
-    marginBottom: theme.spacing(3.5),
+    marginBottom: theme.spacing(3),
     position: "relative",
     transition: theme.transitions.create(["box-shadow", "border-color"], {
       duration: theme.transitions.duration.shorter,
@@ -74,6 +74,7 @@ export const BusinessSectionHeader = styled(Box)(({ theme }) => ({
 }));
 
 export const BusinessHeaderInfo = styled(Box)(({ theme }) => ({
+  minWidth: 0,
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
@@ -84,6 +85,10 @@ export const BusinessHeaderActions = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1.5),
   flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    "& > button:not(.MuiIconButton-root)": { width: "100%" },
+  },
 }));
 
 export const PageTitleContainer = styled(Box)(({ theme }) => ({
@@ -110,6 +115,9 @@ export const FilterRow = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  [theme.breakpoints.down("sm")]: {
+    "& > button": { width: "100%", minHeight: 44 },
+  },
 }));
 
 export const ActiveFilters = styled(Box)(({ theme }) => ({
@@ -166,7 +174,9 @@ export const KeyBadge = styled(Box)(({ theme }) => {
     backgroundColor: isDark
       ? alpha(theme.palette.secondary.main, 0.15)
       : alpha(theme.palette.secondary.main, 0.08),
-    color: isDark ? theme.palette.secondary.light : theme.palette.secondary.dark,
+    color: isDark
+      ? theme.palette.secondary.light
+      : theme.palette.secondary.dark,
     border: `1px solid ${alpha(theme.palette.secondary.main, 0.25)}`,
     letterSpacing: "0.2px",
   };
@@ -174,54 +184,56 @@ export const KeyBadge = styled(Box)(({ theme }) => {
 
 export const ModuleTag = styled(Chip, {
   shouldForwardProp: (prop) => prop !== "hasModule" && prop !== "moduleKey",
-})<{ hasModule?: boolean; moduleKey?: string | null }>(
-  ({ theme, hasModule = true, moduleKey }) => {
-    const isDark = theme.palette.mode === "dark";
+})<{ hasModule?: boolean; moduleKey?: string | null }>(({
+  theme,
+  hasModule = true,
+  moduleKey,
+}) => {
+  const isDark = theme.palette.mode === "dark";
 
-    if (!hasModule || !moduleKey) {
-      return {
-        fontSize: "0.75rem",
-        fontStyle: "italic",
-        height: "24px",
-        borderRadius: "6px",
-        backgroundColor: isDark
-          ? "rgba(255, 255, 255, 0.05)"
-          : "rgba(0, 0, 0, 0.04)",
-        color: theme.palette.text.disabled,
-        border: `1px dashed ${
-          theme.palette.border?.default ?? theme.palette.divider
-        }`,
-      };
-    }
-
-    let mainColor = theme.palette.primary.main;
-    if (moduleKey === "users") {
-      mainColor = theme.palette.secondary.main;
-    } else if (moduleKey === "settings") {
-      mainColor = theme.palette.tertiary?.main ?? theme.palette.warning.main;
-    } else if (moduleKey === "reports" || moduleKey === "auth") {
-      mainColor = theme.palette.info.main;
-    }
-
-    const bg = isDark ? alpha(mainColor, 0.16) : alpha(mainColor, 0.08);
-    const text = isDark ? alpha(mainColor, 0.95) : mainColor;
-    const border = alpha(mainColor, 0.28);
-
+  if (!hasModule || !moduleKey) {
     return {
       fontSize: "0.75rem",
-      fontWeight: 600,
+      fontStyle: "italic",
       height: "24px",
       borderRadius: "6px",
-      backgroundColor: bg,
-      color: text,
-      border: `1px solid ${border}`,
-      "& .MuiChip-label": {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-      },
+      backgroundColor: isDark
+        ? "rgba(255, 255, 255, 0.05)"
+        : "rgba(0, 0, 0, 0.04)",
+      color: theme.palette.text.disabled,
+      border: `1px dashed ${
+        theme.palette.border?.default ?? theme.palette.divider
+      }`,
     };
   }
-);
+
+  let mainColor = theme.palette.primary.main;
+  if (moduleKey === "users") {
+    mainColor = theme.palette.secondary.main;
+  } else if (moduleKey === "settings") {
+    mainColor = theme.palette.tertiary?.main ?? theme.palette.warning.main;
+  } else if (moduleKey === "reports" || moduleKey === "auth") {
+    mainColor = theme.palette.info.main;
+  }
+
+  const bg = isDark ? alpha(mainColor, 0.16) : alpha(mainColor, 0.08);
+  const text = isDark ? alpha(mainColor, 0.95) : mainColor;
+  const border = alpha(mainColor, 0.28);
+
+  return {
+    fontSize: "0.75rem",
+    fontWeight: 600,
+    height: "24px",
+    borderRadius: "6px",
+    backgroundColor: bg,
+    color: text,
+    border: `1px solid ${border}`,
+    "& .MuiChip-label": {
+      paddingLeft: "8px",
+      paddingRight: "8px",
+    },
+  };
+});
 
 export const DescriptionTypography = styled(Typography)(({ theme }) => ({
   fontSize: "0.875rem",
@@ -233,3 +245,11 @@ export const DescriptionTypography = styled(Typography)(({ theme }) => ({
   WebkitBoxOrient: "vertical",
   overflow: "hidden",
 }));
+
+export const MobileList = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gap: theme.spacing(2),
+  padding: theme.spacing(2),
+  minWidth: 0,
+}));
+export const ListPagination = TablePagination;

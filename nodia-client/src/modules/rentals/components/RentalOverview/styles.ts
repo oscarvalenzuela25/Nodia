@@ -20,3 +20,9 @@ export const MetricCard = styled(Paper)(({ theme }) => ({
   overflowWrap: "anywhere",
 }));
 export { FilterRow } from "../PaymentTable/styles";
+export const PeriodFilters = styled(Box)(({ theme }) => ({
+  minWidth: 0,
+  display: "grid",
+  gridTemplateColumns: "minmax(0,1fr)",
+  gap: theme.spacing(2),
+}));

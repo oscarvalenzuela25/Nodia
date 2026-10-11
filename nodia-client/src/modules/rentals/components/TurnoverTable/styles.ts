@@ -1,6 +1,8 @@
 import { styled } from "@mui/material/styles";
 export const Wrapper = styled("section")(({ theme }) => ({
   display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  minWidth: 0,
   gap: theme.spacing(3),
 }));
 export const Filters = styled("div")(({ theme }) => ({

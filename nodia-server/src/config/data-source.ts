@@ -2,7 +2,8 @@ import { fileURLToPath } from 'node:url';
 import { DataSource } from 'typeorm';
 import { envs } from './envs.config.js';
 
-// Compiled CLI data source. Run migrations against an existing Nodia schema.
+// Compiled CLI data source. Initial baselines support empty installations;
+// incremental migrations preserve the existing TypeORM history.
 export default new DataSource({
   type: 'postgres',
   host: envs.POSTGRES_HOST,

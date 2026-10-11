@@ -53,6 +53,17 @@ export const StyledTextField = styled(TextField)(({ theme }) => {
         borderColor: theme.palette.error.main,
       },
     },
+    '& input[type="date"], & input[type="datetime-local"]': {
+      minWidth: 0,
+      colorScheme: theme.palette.mode,
+      '&::-webkit-calendar-picker-indicator': {
+        backgroundColor: "currentColor",
+        backgroundImage: "none",
+        mask: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z'/%3E%3C/svg%3E") center / contain no-repeat`,
+        opacity: 1,
+        cursor: "pointer",
+      },
+    },
     "& .MuiOutlinedInput-input": {
       padding: "10px 14px",
       fontSize: "0.875rem",

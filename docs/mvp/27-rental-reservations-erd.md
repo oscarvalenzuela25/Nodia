@@ -1,8 +1,12 @@
 # Reservas — ERD aceptado
 
-> Estado: aprobado — esquema aceptado explícitamente por el usuario el 2026-10-04; Backend implementado; migración objetivo pendiente
+> Estado: esquema base aprobado el 2026-10-04; ajuste técnico del 2026-10-09 en revisión; migraciones aplicadas en BD local
 > Fecha: 2026-10-04
 > Dependencias: [entrevista 25](25-rental-reservations-interview.md), [especificación 26](26-rental-reservations-spec.md), [ADR-012 propuesto](../architecture/decisions/ADR-012-rental-property-collaboration.md)
+
+## Ajuste solicitado — 2026-10-09
+
+El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
 
 ## Alcance de esta entrega
 
@@ -16,7 +20,7 @@ El JSON se actualizó en `C:\Users\Oscar\Documents\Obsidian Vault\obsidian-notes
 
 | Tabla | Propósito |
 |---|---|
-| `rental_properties` | Casa, propietario, capacidad, zona horaria, horarios y valores habituales |
+| `rental_properties` | Alojamiento, propietario, capacidad, zona interna y valores habituales; horarios legacy nullable |
 | `rental_collaborators` | Usuarios agregados para administrar una casa |
 | `rental_cancellation_policies` | Políticas de cancelación de reservas directas configuradas por casa |
 | `rental_cancellation_rules` | Tramos: anticipación mínima y porcentaje a devolver |
@@ -176,8 +180,8 @@ Table rental_properties {
   location varchar(500)
   timezone varchar(64) [not null]
   max_guests integer [not null]
-  check_in_time time [not null]
-  check_out_time time [not null]
+  check_in_time time // Legacy nullable: no se hereda a nuevas reservas
+  check_out_time time // Legacy nullable: no se hereda a nuevas reservas
   default_nightly_rate bigint
   default_deposit_percent numeric(5,2)
   minimum_turnover_minutes integer [not null, default: 0]
@@ -532,3 +536,19 @@ Validación documental de integración: 15 documentos y 153 enlaces locales vál
 ## Evidencia posterior de Backend — 2026-10-04
 
 Las once entidades y migración incremental reproducen este esquema; TypeORM no detecta drift en PostgreSQL temporal. Se probó up/down/up, constraints, idempotencia/concurrencia y restauración sin alterar la BD configurada. Ver [entrega29](29-rental-reservations-backend-plan.md). La aprobación se mantiene sobre el mismo esquema; JSON de Obsidian conserva su hash después del desarrollo.
+
+## Diagrama Obsidian reconciliado y avisos circulares — 2026-10-09
+
+Solicitud explícita del usuario: actualizar el esquema externo y corregir los19 avisos de dependencia circular de `rental_properties`/`rental_cancellation_policies`. Archivo: `C:/Users/Oscar/Documents/Obsidian Vault/obsidian-notes/Diagramas DB/nodia.json`.
+
+Causa confirmada: política → alojamiento y alojamiento → política predeterminada. La segunda es una FK compuesta opcional `(id, default_cancellation_policy_id) → (property_id, id)`, válida en PostgreSQL y necesaria para impedir seleccionar políticas ajenas. No se cambia el modelo físico ni se retira la protección para satisfacer un validador visual.
+
+El JSON usa ahora una **proyección visual sin ciclo**:37 tablas,68 referencias dibujadas y1 FK documentada en nota con SQL completo. Solo la arista de retorno se representa como nota. DBML, entidades y migraciones conservan las69 relaciones físicas. Al exportar SQL de este JSON para una instalación nueva, agregar al final `nodia.rental-default-policy.sql`, creado junto al archivo, después de las dos tablas. Es orden de DDL; no equivale a `DEFERRABLE`, no es una migración para la BD existente y el SQL exportado sin ese complemento omitiría esta FK.
+
+`rental_properties.check_in_time/check_out_time` quedan nullable en el JSON, con comentarios legacy; los horarios de reserva siguen NOT NULL y timezone sigue requerido internamente. IDs de tablas/campos, índices,68 referencias restantes, todos los demás objetos y posiciones/pan/zoom preservados. Nota explicativa añadida fuera del grafo. Respaldo exacto verificado byte a byte: `nodia.json.before-rental-diagram-2026-10-09T15-37-37.990Z.bak`, junto al original.
+
+[Script reproducible](../../nodia-server/scripts/update-rental-diagram.mjs): valida extremos/columnas de la FK esperada, respalda, rechaza cambios concurrentes, escribe mediante archivo temporal/rename y comprueba lectura posterior. Segunda ejecución sin cambios/respaldo adicional; rechaza sobrescribir un SQL adjunto editado manualmente.
+
+Verificación: recorrido equivalente al [validador oficial DrawDB](https://github.com/drawdb-io/drawdb/blob/main/src/utils/issues.js) reproduce **exactamente19 avisos originales en el mismo orden** y devuelve0 después. Se validan todos los extremos/columnas y la nulabilidad contra `information_schema` local. SQL adjunto ejecutado en esquema PostgreSQL aislado dentro de una transacción: FK creada, política propia/null aceptados, política ajena/inexistente rechazadas23503. Esquema de prueba eliminado al rollback; constraint real comprobado intacto. No se ejecuta DDL persistente ni se cambian datos de la app. No se renderizó el editor DrawDB/Obsidian; la validación aquí es de archivo, grafo y SQL. Reimportar el JSON si el editor mantiene una copia anterior en memoria.
+
+Revisión documental de ADR/contratos y RC-38 con sesión real continúan pendientes; este mantenimiento no aprueba documentos completos.

@@ -13,32 +13,31 @@ const getEndpoint = (path: string) => {
 };
 
 export const getRoles = async (
-  params?: GetRolesParams
+  params?: GetRolesParams,
 ): Promise<PaginatedResponse<Role>> => {
   const { data } = await mainInstance.get<PaginatedResponse<Role>>(
     getEndpoint("/roles"),
-    { params }
+    { params },
   );
   return data;
 };
 
-export const createRole = async (
-  payload: CreateRolePayload
-): Promise<Role> => {
-  const { data } = await mainInstance.post<Role>(
-    getEndpoint("/role"),
-    payload
-  );
+export const createRole = async (payload: CreateRolePayload): Promise<Role> => {
+  const { data } = await mainInstance.post<Role>(getEndpoint("/role"), payload);
   return data;
 };
 
 export const updateRole = async (
   roleId: string,
-  payload: UpdateRolePayload
+  payload: UpdateRolePayload,
 ): Promise<Role> => {
   const { data } = await mainInstance.put<Role>(
     getEndpoint(`/role/${roleId}`),
-    payload
+    payload,
   );
   return data;
+};
+
+export const deleteRole = async (roleId: string): Promise<void> => {
+  await mainInstance.delete(getEndpoint(`/role/${roleId}`));
 };

@@ -15,6 +15,7 @@
 7. Guard global de API y guards de rutas de cliente. Contexto de permisos obtenido para el usuario autenticado; Home sigue público.
 8. Notificaciones Sileo es/en, botones bloqueados durante las peticiones y eliminación del login simulado.
 9. Rate limiting integrado: login 10 intentos/minuto por IP y cuotas por usuario verificado de 300 solicitudes/minuto y 30 escrituras/minuto, conservando los límites por IP previos ([ADR-003](../architecture/decisions/ADR-003-api-rate-limiting.md)).
+10. Optimización2026-10-10: GoogleOAuthProvider/GIS se montan solo en Login, con client ID configurado, locale ES/EN y reintento de script fallido con feedback traducido. El intercambio de credencial conserva su estado fuera de la frontera que se remonta; App conserva los providers de sesión/query/theme/rutas. Inicio autenticado no inserta GIS. `googleLogout` continúa compartido, sin modificar restauración/refresh/permisos. Pruebas y límites de la primera entrega en [plan37](37-web-performance-implementation-plan.md#primera-entrega-verificada--2026-10-10); OAuth real adicional y Lighthouse autenticado posterior pendientes.
 
 ## Cuándo está activa una sesión y cuándo se permite HTTP
 
@@ -63,11 +64,13 @@ Requisito confirmado el 2026-09-12: separar la navegación estricta de la navega
 
 | Guard | Regla | Uso actual |
 |---|---|---|
-| `GuardStrict` | Sesión validada y módulo asignado para el destino indicado en `modulePath` | `/settings/users`, `/settings/roles`, `/settings/actions`, `/settings/modules` |
+| `GuardStrict` | Sesión validada y módulo asignado para el destino indicado en `modulePath` | `/tools/reservations`, `/tools/finances-personal`, `/tools/business` y `/:id`, `/settings/users`, `/settings/roles`, `/settings/actions`, `/settings/modules`, `/settings/ai-providers` |
 | `Guard` | Permite visitantes en modo demo y usuarios con sesión validada | `/` y futuros módulos públicos |
 | `NoGuard` | Pantalla exclusiva para visitantes; una sesión autenticada redirige a `/` | `/login` |
 
 `GuardStrict` carga el contexto de autorización antes de montar la página, también al entrar escribiendo la URL. Sin sesión redirige a `/login`; sin el módulo correspondiente, a `/404`. No basta pertenecer al grupo `settings` o tener otro módulo. Se compara el destino exacto del módulo (`link`, con fallback para claves conocidas), normalizando slash final y mayúsculas; los query parameters no conceden permisos adicionales. Durante una renovación anticipada se conserva la vista ya validada, con controles inhabilitados. Un fallo inicial de contexto muestra error y reintento sin montar la página ni enviar sus consultas.
+
+Ajuste solicitado el 2026-10-09: las nueve rutas privadas componen `BaseLayout → PageContent → GuardStrict → página`. El shell conserva topbar y navegación durante carga, error y reintento del contexto; `BaseLayout` ya no utiliza el HOC que sustituía todo el shell por un spinner. La lectura y el bloqueo corresponden al guard y, en Inicio, a su hook existente. El aviso aparece dentro de `PageContent`, debajo del topbar, con su padding responsive y sin quedar detrás del drawer fijo. Un reintento inicial mantiene el aviso y deshabilita su botón hasta terminar; un fallo de revalidación conserva la página y sus datos locales, con controles `inert`, mientras el reintento del aviso sigue accesible. Recuperar el contexto habilita la misma vista; la pérdida de asignación sigue redirigiendo a `/404`. [Restricciones visuales](07-design-constraints.md#avisos-de-autorización-bajo-el-topbar--2026-10-09).
 
 El menú lateral y las tarjetas de Home usan únicamente asignaciones de una sesión validada y omiten grupos vacíos. La navegación no concede acceso por un nombre de rol hardcodeado; el contexto de módulos y las reglas de acciones del backend son responsabilidades distintas. La autorización fina de operaciones del Kanban permanece pendiente.
 
@@ -78,7 +81,9 @@ Al confirmar una actualización de usuario (`PUT /user/:id`), el cliente invalid
 Ejemplo al registrar rutas:
 
 ```tsx
-<GuardStrict modulePath="/settings/users"><Users /></GuardStrict>
+<BaseLayout>
+  <GuardStrict modulePath="/settings/users"><Users /></GuardStrict>
+</BaseLayout>
 <Guard><PublicModule /></Guard>
 ```
 

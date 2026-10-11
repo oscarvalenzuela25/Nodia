@@ -1,5 +1,10 @@
 import { styled, alpha } from "@mui/material/styles";
-import { Box, Typography, Paper } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Paper,
+  TablePagination,
+} from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -60,6 +65,11 @@ export const ViewModeContainer = styled(Box)(({ theme }) => {
         ? theme.shape.borderRadius * 2
         : 12,
     border: `1px solid ${borderColor}`,
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+      "& .MuiToggleButtonGroup-root": { width: "100%" },
+      "& button": { flex: 1, minHeight: 44 },
+    },
   };
 });
 
@@ -76,7 +86,7 @@ export const GroupsSectionCard = styled(Paper)(({ theme }) => {
     boxShadow: theme.shadows[2],
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${borderColor}`,
-    marginBottom: theme.spacing(3.5),
+    marginBottom: theme.spacing(3),
     position: "relative",
     transition: theme.transitions.create(["box-shadow", "border-color"], {
       duration: theme.transitions.duration.shorter,
@@ -103,6 +113,8 @@ export const GroupsHeaderInfo = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
+  minWidth: 0,
+  "& > div": { minWidth: 0 },
 }));
 
 export const GroupsHeaderActions = styled(Box)(({ theme }) => ({
@@ -110,9 +122,16 @@ export const GroupsHeaderActions = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1.5),
   flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    "& > button:not(.MuiIconButton-root)": { width: "100%", minHeight: 44 },
+    "& > span": { marginLeft: "auto" },
+    "& .MuiIconButton-root": { width: 44, height: 44 },
+  },
 }));
 
 export const FilterRow = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: { "& > button": { minHeight: 44 } },
   marginBottom: theme.spacing(2),
   display: "flex",
   alignItems: "center",
@@ -173,8 +192,12 @@ export const KeyBadge = styled(Box)(({ theme }) => {
     backgroundColor: isDark
       ? alpha(theme.palette.secondary.main, 0.15)
       : alpha(theme.palette.secondary.main, 0.08),
-    color: isDark ? theme.palette.secondary.light : theme.palette.secondary.dark,
+    color: isDark
+      ? theme.palette.secondary.light
+      : theme.palette.secondary.dark,
     border: `1px solid ${alpha(theme.palette.secondary.main, 0.25)}`,
     letterSpacing: "0.2px",
   };
 });
+
+export const ListPagination = TablePagination;

@@ -19,16 +19,16 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Switch,
-  FormControlLabel,
-  TablePagination,
   Alert,
   AlertTitle,
   LinearProgress,
   Collapse,
   ToggleButton,
   ToggleButtonGroup,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ViewModuleOutlinedIcon from "@mui/icons-material/ViewModuleOutlined";
 import ViewAgendaOutlinedIcon from "@mui/icons-material/ViewAgendaOutlined";
@@ -46,10 +46,12 @@ import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 
 import Filter from "../../../../components/Filter";
+import ActiveStatusSelect from "../../../../components/Filter/components/ActiveStatusSelect";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import InputSearch from "../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 import ModuleModal from "./components/ModuleModal";
 import ModuleGroupModal from "./components/ModuleGroupModal";
 import { getModuleIcon, getGroupIcon } from "../../../../store/generalSettings";
@@ -67,6 +69,9 @@ import {
   useModuleGroups,
   useCreateModuleGroup,
   useUpdateModuleGroup,
+  useDeleteModule,
+  useDeleteModuleGroup,
+  deleteErrorMessage,
 } from "./infrastructure/useServices";
 import {
   PageHeader,
@@ -84,12 +89,15 @@ import {
   TableTopBar,
   StyledTableContainer,
   KeyBadge,
+  ListPagination,
 } from "./styles";
 
 type ViewMode = "split" | "modules" | "groups";
 
 const Modules: FC = () => {
   const { t, i18n } = useTranslation(["modules", "core"]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Perspective view mode: split, modules, groups
   const [viewMode, setViewMode] = useState<ViewMode>("split");
@@ -104,16 +112,29 @@ const Modules: FC = () => {
   const [searchTermGroups, setSearchTermGroups] = useState<string>("");
   const [pageGroups, setPageGroups] = useState<number>(0);
   const [rowsPerPageGroups, setRowsPerPageGroups] = useState<number>(5);
+  const [groupActiveFilter, setGroupActiveFilter] = useState<
+    "active" | "inactive" | "all"
+  >("active");
+  const [moduleToDelete, setModuleToDelete] = useState<ModuleEntity | null>(
+    null,
+  );
+  const [groupToDelete, setGroupToDelete] = useState<ModuleGroupEntity | null>(
+    null,
+  );
 
   // Filter modal draft state for Modules
   const [draftFilterKeys, setDraftFilterKeys] = useState<string[]>([]);
   const [draftFilterGroupIds, setDraftFilterGroupIds] = useState<string[]>([]);
-  const [draftFilterActive, setDraftFilterActive] = useState<boolean>(true);
+  const [draftFilterActive, setDraftFilterActive] = useState<boolean | null>(true);
 
   // Applied filter state for Modules
   const [appliedFilterKeys, setAppliedFilterKeys] = useState<string[]>([]);
-  const [appliedFilterGroupIds, setAppliedFilterGroupIds] = useState<string[]>([]);
-  const [appliedFilterActive, setAppliedFilterActive] = useState<boolean | null>(null);
+  const [appliedFilterGroupIds, setAppliedFilterGroupIds] = useState<string[]>(
+    [],
+  );
+  const [appliedFilterActive, setAppliedFilterActive] = useState<
+    boolean | null
+  >(true);
 
   // Module Create / Edit Modal state
   const [isModuleModalOpen, setIsModuleModalOpen] = useState<boolean>(false);
@@ -133,14 +154,21 @@ const Modules: FC = () => {
   // Group row actions menu
   const [groupActionMenuAnchor, setGroupActionMenuAnchor] =
     useState<HTMLButtonElement | null>(null);
-  const [targetGroup, setTargetGroup] = useState<ModuleGroupEntity | null>(null);
+  const [targetGroup, setTargetGroup] = useState<ModuleGroupEntity | null>(
+    null,
+  );
 
   // Confirm Active / Inactive Dialog state for Module
-  const [moduleToToggle, setModuleToToggle] = useState<ModuleEntity | null>(null);
-  const [isConfirmToggleOpen, setIsConfirmToggleOpen] = useState<boolean>(false);
+  const [moduleToToggle, setModuleToToggle] = useState<ModuleEntity | null>(
+    null,
+  );
+  const [isConfirmToggleOpen, setIsConfirmToggleOpen] =
+    useState<boolean>(false);
 
   // Confirm Active / Inactive Dialog state for Group
-  const [groupToToggle, setGroupToToggle] = useState<ModuleGroupEntity | null>(null);
+  const [groupToToggle, setGroupToToggle] = useState<ModuleGroupEntity | null>(
+    null,
+  );
   const [isConfirmToggleGroupOpen, setIsConfirmToggleGroupOpen] =
     useState<boolean>(false);
 
@@ -163,7 +191,7 @@ const Modules: FC = () => {
 
       return t("modules:empty_value", "-");
     },
-    [i18n, t]
+    [i18n, t],
   );
 
   // Helper: resolves translated name for a module group
@@ -177,7 +205,7 @@ const Modules: FC = () => {
       if (translated) return translated;
       return group.key || t("modules:empty_value", "-");
     },
-    [i18n, t]
+    [i18n, t],
   );
 
   // Query: All modules for filter dropdowns (all=true, includes=false)
@@ -263,11 +291,13 @@ const Modules: FC = () => {
   // Ransack query for paginated module groups
   const ransackQueryGroups = useMemo(() => {
     const q: Record<string, unknown> = {};
+    if (groupActiveFilter !== "all")
+      q.is_active_eq = groupActiveFilter === "active";
     if (searchTermGroups.trim()) {
       q.key_cont = searchTermGroups.trim();
     }
     return Object.keys(q).length > 0 ? q : undefined;
-  }, [searchTermGroups]);
+  }, [searchTermGroups, groupActiveFilter]);
 
   // Query: Paginated module groups
   const {
@@ -286,28 +316,37 @@ const Modules: FC = () => {
   // Module Mutations
   const createModuleMutation = useCreateModule();
   const updateModuleMutation = useUpdateModule();
+  const deleteModuleMutation = useDeleteModule();
   const isMutatingModule =
-    createModuleMutation.isPending || updateModuleMutation.isPending;
-  const isBusyModules =
-    isLoadingModules || isFetchingModules || isMutatingModule;
+    createModuleMutation.isPending ||
+    updateModuleMutation.isPending ||
+    deleteModuleMutation.isPending;
 
   // Group Mutations
   const createGroupMutation = useCreateModuleGroup();
   const updateGroupMutation = useUpdateModuleGroup();
+  const deleteGroupMutation = useDeleteModuleGroup();
   const isMutatingGroup =
-    createGroupMutation.isPending || updateGroupMutation.isPending;
+    createGroupMutation.isPending ||
+    updateGroupMutation.isPending ||
+    deleteGroupMutation.isPending;
+  const isBusyModules =
+    isLoadingModules ||
+    isFetchingModules ||
+    isMutatingModule ||
+    isMutatingGroup;
   const isBusyGroups =
-    isLoadingGroups || isFetchingGroups || isMutatingGroup;
+    isLoadingGroups || isFetchingGroups || isMutatingGroup || isMutatingModule;
 
   const modulesList: ModuleEntity[] = useMemo(
     () => modulesResponse?.data ?? [],
-    [modulesResponse?.data]
+    [modulesResponse?.data],
   );
   const totalModulesCount = modulesResponse?.meta?.total_items ?? 0;
 
   const groupsList: ModuleGroupEntity[] = useMemo(
     () => groupsResponse?.data ?? [],
-    [groupsResponse?.data]
+    [groupsResponse?.data],
   );
   const totalGroupsCount = groupsResponse?.meta?.total_items ?? 0;
 
@@ -330,7 +369,7 @@ const Modules: FC = () => {
       title: t("modules:notifications.link_copied_title", "Enlace copiado"),
       description: t(
         "modules:notifications.link_copied_desc",
-        "La URL del módulo ha sido copiada al portapapeles."
+        "La URL del módulo ha sido copiada al portapapeles.",
       ),
     });
   };
@@ -346,7 +385,7 @@ const Modules: FC = () => {
   // Module Row Actions
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
-    item: ModuleEntity
+    item: ModuleEntity,
   ) => {
     setActionMenuAnchor(e.currentTarget);
     setTargetModule(item);
@@ -362,23 +401,20 @@ const Modules: FC = () => {
     setIsModuleModalOpen(true);
   };
 
-  const handleOpenEditModal = () => {
-    if (targetModule) {
-      const transItem = targetModule.translates?.find((tr) => tr.key === "key");
+  const handleOpenEditModal = (item = targetModule) => {
+    if (item) {
+      const transItem = item.translates?.find((tr) => tr.key === "key");
       setSelectedModuleForEdit({
-        id: targetModule.id,
-        key: targetModule.key,
-        link: targetModule.link || "",
-        icon: targetModule.icon || null,
-        module_group_id:
-          targetModule.module_group_id ||
-          targetModule.module_group?.id ||
-          "",
+        id: item.id,
+        key: item.key,
+        link: item.link || "",
+        icon: item.icon || null,
+        module_group_id: item.module_group_id || item.module_group?.id || "",
         nameTranslations: {
           es: transItem?.es || "",
           en: transItem?.en || "",
         },
-        isActive: targetModule.is_active ?? true,
+        isActive: item.is_active ?? true,
       });
       setIsModuleModalOpen(true);
     }
@@ -446,7 +482,7 @@ const Modules: FC = () => {
   // Group Row Actions
   const handleOpenGroupActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
-    group: ModuleGroupEntity
+    group: ModuleGroupEntity,
   ) => {
     setGroupActionMenuAnchor(e.currentTarget);
     setTargetGroup(group);
@@ -462,18 +498,18 @@ const Modules: FC = () => {
     setIsGroupModalOpen(true);
   };
 
-  const handleOpenEditGroupModal = () => {
-    if (targetGroup) {
-      const transItem = targetGroup.translates?.find((tr) => tr.key === "key");
+  const handleOpenEditGroupModal = (item = targetGroup) => {
+    if (item) {
+      const transItem = item.translates?.find((tr) => tr.key === "key");
       setSelectedGroupForEdit({
-        id: targetGroup.id,
-        key: targetGroup.key,
-        icon: targetGroup.icon || null,
+        id: item.id,
+        key: item.key,
+        icon: item.icon || null,
         nameTranslations: {
           es: transItem?.es || "",
           en: transItem?.en || "",
         },
-        isActive: targetGroup.is_active ?? true,
+        isActive: item.is_active ?? true,
       });
       setIsGroupModalOpen(true);
     }
@@ -557,7 +593,7 @@ const Modules: FC = () => {
     setDraftFilterActive(true);
     setAppliedFilterKeys([]);
     setAppliedFilterGroupIds([]);
-    setAppliedFilterActive(null);
+    setAppliedFilterActive(true);
     setPage(0);
   };
 
@@ -571,6 +607,38 @@ const Modules: FC = () => {
 
   const showGroups = viewMode === "split" || viewMode === "groups";
   const showModules = viewMode === "split" || viewMode === "modules";
+
+  const requestDeleteModule = (item: ModuleEntity) => {
+    deleteModuleMutation.reset();
+    setModuleToDelete(item);
+    handleCloseActionMenu();
+  };
+  const requestDeleteGroup = (item: ModuleGroupEntity) => {
+    deleteGroupMutation.reset();
+    setGroupToDelete(item);
+    handleCloseGroupActionMenu();
+  };
+  const confirmDeleteModule = async () => {
+    if (!moduleToDelete || isBusyModules) return;
+    try {
+      await deleteModuleMutation.mutateAsync(moduleToDelete.id);
+      if (modulesList.length === 1 && page > 0) setPage((value) => value - 1);
+      setModuleToDelete(null);
+    } catch {
+      /* Keep the confirmation and target for retry; hook emits the toast. */
+    }
+  };
+  const confirmDeleteGroup = async () => {
+    if (!groupToDelete || isBusyGroups) return;
+    try {
+      await deleteGroupMutation.mutateAsync(groupToDelete.id);
+      if (groupsList.length === 1 && pageGroups > 0)
+        setPageGroups((value) => value - 1);
+      setGroupToDelete(null);
+    } catch {
+      /* Keep the confirmation and target for retry; hook emits the toast. */
+    }
+  };
 
   return (
     <Box>
@@ -591,7 +659,8 @@ const Modules: FC = () => {
               if (newMode) setViewMode(newMode);
             }}
             size="small"
-            aria-label="perspective-view-modes"
+            aria-label={t("modules:views.label")}
+            disabled={isBusyModules || isBusyGroups}
             sx={{
               "& .MuiToggleButton-root": {
                 border: 0,
@@ -614,19 +683,31 @@ const Modules: FC = () => {
           >
             <ToggleButton value="split" aria-label={t("modules:views.split")}>
               <ViewAgendaOutlinedIcon fontSize="small" />
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}
+              >
                 {t("modules:views.split", "Vista Conjunta")}
               </Box>
             </ToggleButton>
-            <ToggleButton value="modules" aria-label={t("modules:views.modules")}>
+            <ToggleButton
+              value="modules"
+              aria-label={t("modules:views.modules")}
+            >
               <ViewModuleOutlinedIcon fontSize="small" />
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}
+              >
                 {t("modules:views.modules", "Solo Módulos")}
               </Box>
             </ToggleButton>
             <ToggleButton value="groups" aria-label={t("modules:views.groups")}>
               <CategoryOutlinedIcon fontSize="small" />
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}
+              >
                 {t("modules:views.groups", "Solo Grupos")}
               </Box>
             </ToggleButton>
@@ -658,28 +739,14 @@ const Modules: FC = () => {
                 <Typography variant="caption" color="text.secondary">
                   {t(
                     "modules:groups.subtitle",
-                    "Administra los grupos lógicos para clasificar y organizar los módulos del sistema."
+                    "Administra los grupos lógicos para clasificar y organizar los módulos del sistema.",
                   )}
                 </Typography>
               </Box>
             </GroupsHeaderInfo>
 
             <GroupsHeaderActions>
-              <Box sx={{ width: { xs: "100%", sm: "240px" } }}>
-                <InputSearch
-                  value={searchTermGroups}
-                  onChange={(val) => {
-                    setSearchTermGroups(val);
-                    setPageGroups(0);
-                  }}
-                  placeholder={t(
-                    "modules:groups.search_placeholder",
-                    "Buscar grupo..."
-                  )}
-                  fullWidth
-                  disabled={isLoadingGroups || isMutatingGroup}
-                />
-              </Box>
+
               <Button
                 variant="contained"
                 size="small"
@@ -704,19 +771,80 @@ const Modules: FC = () => {
                       : t("modules:views.expand_groups", "Expandir grupos")
                   }
                 >
-                  <IconButton
-                    size="small"
-                    onClick={() => setIsGroupsExpanded((prev) => !prev)}
-                    aria-label="toggle-groups-collapse"
-                  >
-                    {isGroupsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </IconButton>
+                  <Box component="span" sx={{ display: "inline-flex" }}>
+                    <IconButton
+                      size="small"
+                      onClick={() => setIsGroupsExpanded((prev) => !prev)}
+                      aria-label={t(
+                        isGroupsExpanded
+                          ? "modules:views.collapse_groups"
+                          : "modules:views.expand_groups",
+                      )}
+                      disabled={isBusyGroups}
+                    >
+                      {isGroupsExpanded ? (
+                        <ExpandLessIcon />
+                      ) : (
+                        <ExpandMoreIcon />
+                      )}
+                    </IconButton>
+                  </Box>
                 </Tooltip>
               )}
             </GroupsHeaderActions>
           </GroupsSectionHeader>
 
           <Collapse in={viewMode === "groups" || isGroupsExpanded}>
+            <Box sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 2,
+            }}>
+              <Box sx={{ width: { xs: "100%", sm: 360 }, minWidth: 0 }}>
+                <InputSearch
+                  value={searchTermGroups}
+                  onChange={(val) => {
+                    setSearchTermGroups(val);
+                    setPageGroups(0);
+                  }}
+                  placeholder={t(
+                    "modules:groups.search_placeholder",
+                    "Buscar grupo...",
+                  )}
+                  fullWidth
+                  disabled={isBusyGroups}
+                />
+              </Box>
+              <ToggleButtonGroup
+                value={groupActiveFilter}
+                exclusive
+                disabled={isBusyGroups}
+                aria-label={t("modules:groups.status_filter")}
+                onChange={(_, value: "active" | "inactive" | "all" | null) => {
+                  if (value) {
+                    setGroupActiveFilter(value);
+                    setPageGroups(0);
+                  }
+                }}
+                sx={{
+                  width: { xs: "100%", sm: "auto" },
+                  "& button": { flex: { xs: 1, sm: "initial" }, minHeight: 44 },
+                }}
+              >
+                <ToggleButton value="active">
+                  {t("modules:status.active_only")}
+                </ToggleButton>
+                <ToggleButton value="inactive">
+                  {t("modules:status.inactive_only")}
+                </ToggleButton>
+                <ToggleButton value="all">
+                  {t("modules:status.all")}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
             {isErrorGroups && (
               <Box sx={{ p: 2 }}>
                 <Alert
@@ -725,6 +853,7 @@ const Modules: FC = () => {
                     <Button
                       color="inherit"
                       size="small"
+                      disabled={isFetchingGroups}
                       onClick={() => refetchGroups()}
                     >
                       {t("core:retry", "Reintentar")}
@@ -734,7 +863,7 @@ const Modules: FC = () => {
                   <AlertTitle>
                     {t(
                       "modules:groups.notifications.created_error",
-                      "Error al cargar grupos de módulos"
+                      "Error al cargar grupos de módulos",
                     )}
                   </AlertTitle>
                   {groupsError instanceof Error
@@ -748,278 +877,419 @@ const Modules: FC = () => {
               {isFetchingGroups && !isLoadingGroups && (
                 <LinearProgress sx={{ height: 2 }} />
               )}
-              <TableContainer component={Paper} elevation={0}>
-                <Table size="small">
-                  <TableHead
-                    sx={{
-                      bgcolor: "primary.main",
-                      "& th": {
-                        fontWeight: "bold",
-                        color: "primary.contrastText",
-                      },
-                    }}
-                  >
-                    <TableRow>
-                      <TableCell>{t("modules:groups.table.id", "Id")}</TableCell>
-                      <TableCell align="center">
-                        {t("modules:groups.table.icon", "Ícono")}
-                      </TableCell>
-                      <TableCell>
-                        {t("modules:groups.table.name", "Nombre del Grupo")}
-                      </TableCell>
-                      <TableCell>
-                        {t("modules:groups.table.key", "Identificador")}
-                      </TableCell>
-                      <TableCell>
-                        {t("modules:groups.table.active", "Activo")}
-                      </TableCell>
-                      <TableCell align="center">
-                        {t("modules:groups.table.actions", "Acciones")}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {!isLoadingGroups && groupsList.length === 0 ? (
-                      <TableRow>
-                        <TableCell
-                          colSpan={6}
-                          align="center"
-                          sx={{ py: 4, color: "text.secondary" }}
+              {isMobile ? (
+                <Box
+                  sx={{ p: 2, display: "grid", gap: 2 }}
+                  aria-label={t("modules:groups.title")}
+                >
+                  {!isErrorGroups &&
+                    !isLoadingGroups &&
+                    groupsList.length === 0 && (
+                      <Box sx={{ textAlign: "center", py: 3 }}>
+                        <Typography>
+                          {t("modules:groups.empty_state.title")}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ my: 2 }}
                         >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <CategoryOutlinedIcon
-                              sx={{ fontSize: 36, color: "text.disabled" }}
-                            />
-                            <Typography variant="body1" color="text.secondary">
-                              {t(
-                                "modules:groups.empty_state.title",
-                                "No hay grupos de módulos disponibles"
-                              )}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.disabled"
-                              sx={{ maxWidth: 360 }}
-                            >
-                              {t(
-                                "modules:groups.empty_state.description",
-                                "No se encontraron grupos actualmente. Comience agregando uno nuevo."
-                              )}
-                            </Typography>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              color="primary"
-                              startIcon={<AddCircleOutlinedIcon />}
-                              onClick={handleOpenCreateGroupModal}
-                              disabled={isBusyGroups}
-                              sx={(theme) => ({
-                                mt: 0.5,
-                                borderRadius: 2,
-                                color: theme.palette.primary.contrastText,
-                              })}
-                            >
-                              {t(
-                                "modules:groups.empty_state.cta",
-                                "Crear primer grupo"
-                              )}
-                            </Button>
-                          </Box>
+                          {t("modules:groups.empty_state.description")}
+                        </Typography>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          disabled={isBusyGroups}
+                          onClick={handleOpenCreateGroupModal}
+                        >
+                          {t("modules:groups.empty_state.cta")}
+                        </Button>
+                      </Box>
+                    )}
+                  {groupsList.map((group) => (
+                    <MobileRecordCard
+                      key={group.id}
+                      title={getGroupDisplayName(group)}
+                      disabled={isBusyGroups}
+                      status={
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mt: 1,
+                          }}
+                        >
+                          {getGroupIcon(group.key, group.icon)}
+                          <Chip
+                            size="small"
+                            label={t(
+                              group.is_active === undefined
+                                ? "modules:empty_value"
+                                : group.is_active
+                                  ? "modules:status.active"
+                                  : "modules:status.inactive",
+                            )}
+                            color={group.is_active ? "success" : "default"}
+                          />
+                        </Box>
+                      }
+                      fields={[
+                        {
+                          key: "id",
+                          label: t("modules:groups.table.id"),
+                          value: group.id,
+                        },
+                        {
+                          key: "key",
+                          label: t("modules:groups.table.key"),
+                          value: group.key,
+                        },
+                      ]}
+                      primaryAction={{
+                        key: "filter",
+                        label: t("modules:groups.filter_by_group"),
+                        onClick: () => handleQuickFilterByGroup(group.id),
+                      }}
+                      actions={[
+                        {
+                          key: "update",
+                          label: t("modules:actions_menu.update"),
+                          icon: <EditOutlinedIcon color="primary" />,
+                          onClick: () => handleOpenEditGroupModal(group),
+                        },
+                        {
+                          key: "toggle",
+                          disabled: group.is_active === undefined,
+                          label: t(
+                            group.is_active
+                              ? "modules:deactivate"
+                              : "modules:activate",
+                          ),
+                          onClick: () => handleRequestToggleActiveGroup(group),
+                        },
+                        {
+                          key: "copy",
+                          label: t("modules:copy"),
+                          icon: <ContentCopyIcon />,
+                          onClick: () => handleCopyId(group.id),
+                        },
+                        {
+                          key: "delete",
+                          label: t("modules:actions_menu.delete"),
+                          icon: <DeleteOutlinedIcon />,
+                          color: "error",
+                          onClick: () => requestDeleteGroup(group),
+                        },
+                      ]}
+                    />
+                  ))}
+                </Box>
+              ) : (
+                <TableContainer component={Paper} elevation={0}>
+                  <Table size="small">
+                    <TableHead
+                      sx={{
+                        bgcolor: "primary.main",
+                        "& th": {
+                          fontWeight: "bold",
+                          color: "primary.contrastText",
+                        },
+                      }}
+                    >
+                      <TableRow>
+                        <TableCell>
+                          {t("modules:groups.table.id", "Id")}
+                        </TableCell>
+                        <TableCell align="center">
+                          {t("modules:groups.table.icon", "Ícono")}
+                        </TableCell>
+                        <TableCell>
+                          {t("modules:groups.table.name", "Nombre del Grupo")}
+                        </TableCell>
+                        <TableCell>
+                          {t("modules:groups.table.key", "Identificador")}
+                        </TableCell>
+                        <TableCell>
+                          {t("modules:groups.table.active", "Activo")}
+                        </TableCell>
+                        <TableCell align="center">
+                          {t("modules:groups.table.actions", "Acciones")}
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      groupsList.map((g) => {
-                        const displayName = getGroupDisplayName(g);
-                        const isRowActive = g.is_active ?? true;
-                        const isFiltered = appliedFilterGroupIds.includes(g.id);
-
-                        return (
-                          <TableRow
-                            key={g.id}
-                            hover
-                            sx={{
-                              bgcolor: isFiltered
-                                ? "action.selected"
-                                : "inherit",
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
+                    </TableHead>
+                    <TableBody>
+                      {!isLoadingGroups &&
+                      !isErrorGroups &&
+                      groupsList.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={6}
+                            align="center"
+                            sx={{ py: 4, color: "text.secondary" }}
                           >
-                            <TableCell
+                            <Box
                               sx={{
-                                color: "text.secondary",
-                                fontSize: "0.8125rem",
-                                fontFamily: "monospace",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 1,
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                }}
+                              <CategoryOutlinedIcon
+                                sx={{ fontSize: 36, color: "text.disabled" }}
+                              />
+                              <Typography
+                                variant="body1"
+                                color="text.secondary"
                               >
-                                {g.id.includes("-")
-                                  ? `${g.id.split("-")[0]}...`
-                                  : g.id}
-                                <Tooltip
-                                  title={t("modules:copy")}
-                                  arrow
-                                  placement="top"
-                                >
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleCopyId(g.id)}
-                                    aria-label={t("modules:copy")}
-                                    disabled={isBusyGroups}
-                                  >
-                                    <ContentCopyIcon
-                                      fontSize="small"
-                                      sx={{ fontSize: "0.95rem" }}
-                                    />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                            </TableCell>
-                            <TableCell align="center">
-                              <Tooltip
-                                title={
-                                  g.icon
-                                    ? `${g.icon}`
-                                    : t("modules:form.default_icon", "Ícono por defecto")
-                                }
-                                arrow
-                                placement="top"
+                                {t(
+                                  "modules:groups.empty_state.title",
+                                  "No hay grupos de módulos disponibles",
+                                )}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.disabled"
+                                sx={{ maxWidth: 360 }}
+                              >
+                                {t(
+                                  "modules:groups.empty_state.description",
+                                  "No se encontraron grupos actualmente. Comience agregando uno nuevo.",
+                                )}
+                              </Typography>
+                              <Button
+                                variant="contained"
+                                size="small"
+                                color="primary"
+                                startIcon={<AddCircleOutlinedIcon />}
+                                onClick={handleOpenCreateGroupModal}
+                                disabled={isBusyGroups}
+                                sx={(theme) => ({
+                                  mt: 0.5,
+                                  borderRadius: 2,
+                                  color: theme.palette.primary.contrastText,
+                                })}
+                              >
+                                {t(
+                                  "modules:groups.empty_state.cta",
+                                  "Crear primer grupo",
+                                )}
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        groupsList.map((g) => {
+                          const displayName = getGroupDisplayName(g);
+                          const isRowActive = g.is_active ?? true;
+                          const isFiltered = appliedFilterGroupIds.includes(
+                            g.id,
+                          );
+
+                          return (
+                            <TableRow
+                              key={g.id}
+                              hover
+                              sx={{
+                                bgcolor: isFiltered
+                                  ? "action.selected"
+                                  : "inherit",
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell
+                                sx={{
+                                  color: "text.secondary",
+                                  fontSize: "0.8125rem",
+                                  fontFamily: "monospace",
+                                }}
                               >
                                 <Box
                                   sx={{
-                                    display: "inline-flex",
+                                    display: "flex",
                                     alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "primary.main",
+                                    gap: 1,
                                   }}
-                                  data-testid={`group-icon-${g.key}`}
                                 >
-                                  {getGroupIcon(g.key, g.icon)}
-                                </Box>
-                              </Tooltip>
-                            </TableCell>
-                            <TableCell>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                }}
-                              >
-                                <Typography
-                                  variant="body2"
-                                  sx={{ fontWeight: "medium" }}
-                                >
-                                  {displayName}
-                                </Typography>
-                                {showModules && (
+                                  {g.id.includes("-")
+                                    ? `${g.id.split("-")[0]}...`
+                                    : g.id}
                                   <Tooltip
-                                    title={
-                                      isFiltered
-                                        ? t(
-                                            "modules:groups.view_all",
-                                            "Ver todos"
-                                          )
-                                        : t(
-                                            "modules:groups.filter_by_group",
-                                            "Filtrar módulos de este grupo"
-                                          )
-                                    }
+                                    title={t("modules:copy")}
+                                    arrow
+                                    placement="top"
                                   >
-                                    <IconButton
-                                      size="small"
-                                      color={isFiltered ? "primary" : "default"}
-                                      onClick={() => {
-                                        if (isFiltered) {
-                                          setAppliedFilterGroupIds((prev) =>
-                                            prev.filter((id) => id !== g.id)
-                                          );
-                                        } else {
-                                          handleQuickFilterByGroup(g.id);
-                                        }
-                                      }}
-                                      sx={{ p: 0.25 }}
+                                    <Box
+                                      component="span"
+                                      sx={{ display: "inline-flex" }}
                                     >
-                                      <FilterAltOutlinedIcon
-                                        sx={{ fontSize: "1rem" }}
-                                      />
-                                    </IconButton>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() => handleCopyId(g.id)}
+                                        aria-label={t("modules:copy")}
+                                        disabled={isBusyGroups}
+                                      >
+                                        <ContentCopyIcon
+                                          fontSize="small"
+                                          sx={{ fontSize: "0.95rem" }}
+                                        />
+                                      </IconButton>
+                                    </Box>
                                   </Tooltip>
-                                )}
-                              </Box>
-                            </TableCell>
-                            <TableCell>
-                              <KeyBadge>{g.key}</KeyBadge>
-                            </TableCell>
-                            <TableCell>
-                              <Chip
-                                label={
-                                  isRowActive
-                                    ? t("modules:yes")
-                                    : t("modules:no")
-                                }
-                                color={isRowActive ? "success" : "error"}
-                                size="small"
-                                variant={isRowActive ? "filled" : "outlined"}
-                                sx={
-                                  isRowActive
-                                    ? { color: "success.contrastText" }
-                                    : {}
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="center">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                aria-label={t("modules:groups.table.actions")}
-                                onClick={(e) => handleOpenGroupActionMenu(e, g)}
-                                disabled={isBusyGroups}
-                              >
-                                <MoreVertIcon fontSize="small" />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                component="div"
-                count={totalGroupsCount}
-                page={pageGroups}
-                onPageChange={(_, newPage) => setPageGroups(newPage)}
-                rowsPerPage={rowsPerPageGroups}
-                onRowsPerPageChange={(e) => {
-                  setRowsPerPageGroups(parseInt(e.target.value, 10));
-                  setPageGroups(0);
-                }}
-                rowsPerPageOptions={[5, 10, 20]}
-                disabled={isBusyGroups}
-                labelRowsPerPage={t("core:pagination.rows_per_page")}
-                labelDisplayedRows={({ from, to, count }) =>
-                  `${from}–${to} ${t("core:pagination.of")} ${
-                    count !== -1
-                      ? count
-                      : `${t("core:pagination.more_than")} ${to}`
-                  }`
-                }
-              />
+                                </Box>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Tooltip
+                                  title={
+                                    g.icon
+                                      ? `${g.icon}`
+                                      : t(
+                                          "modules:form.default_icon",
+                                          "Ícono por defecto",
+                                        )
+                                  }
+                                  arrow
+                                  placement="top"
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      color: "primary.main",
+                                    }}
+                                    data-testid={`group-icon-${g.key}`}
+                                  >
+                                    {getGroupIcon(g.key, g.icon)}
+                                  </Box>
+                                </Tooltip>
+                              </TableCell>
+                              <TableCell>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: "medium" }}
+                                  >
+                                    {displayName}
+                                  </Typography>
+                                  {showModules && (
+                                    <Tooltip
+                                      title={
+                                        isFiltered
+                                          ? t(
+                                              "modules:groups.view_all",
+                                              "Ver todos",
+                                            )
+                                          : t(
+                                              "modules:groups.filter_by_group",
+                                              "Filtrar módulos de este grupo",
+                                            )
+                                      }
+                                    >
+                                      <Box
+                                        component="span"
+                                        sx={{ display: "inline-flex" }}
+                                      >
+                                        <IconButton
+                                          size="small"
+                                          color={
+                                            isFiltered ? "primary" : "default"
+                                          }
+                                          onClick={() => {
+                                            if (isFiltered) {
+                                              setAppliedFilterGroupIds((prev) =>
+                                                prev.filter(
+                                                  (id) => id !== g.id,
+                                                ),
+                                              );
+                                            } else {
+                                              handleQuickFilterByGroup(g.id);
+                                            }
+                                          }}
+                                          sx={{ p: 0.25 }}
+                                        >
+                                          <FilterAltOutlinedIcon
+                                            sx={{ fontSize: "1rem" }}
+                                          />
+                                        </IconButton>
+                                      </Box>
+                                    </Tooltip>
+                                  )}
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <KeyBadge>{g.key}</KeyBadge>
+                              </TableCell>
+                              <TableCell>
+                                <Chip
+                                  label={
+                                    isRowActive
+                                      ? t("modules:yes")
+                                      : t("modules:no")
+                                  }
+                                  color={isRowActive ? "success" : "error"}
+                                  size="small"
+                                  variant={isRowActive ? "filled" : "outlined"}
+                                  sx={
+                                    isRowActive
+                                      ? { color: "success.contrastText" }
+                                      : {}
+                                  }
+                                />
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  aria-label={t("modules:groups.table.actions")}
+                                  onClick={(e) =>
+                                    handleOpenGroupActionMenu(e, g)
+                                  }
+                                  disabled={isBusyGroups}
+                                >
+                                  <MoreVertIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </Skeleton>
+            <ListPagination
+              getItemAriaLabel={(type) => t(`modules:pagination.${type}`)}
+              component="div"
+              count={totalGroupsCount}
+              page={pageGroups}
+              onPageChange={(_, newPage) => setPageGroups(newPage)}
+              rowsPerPage={rowsPerPageGroups}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPageGroups(parseInt(e.target.value, 10));
+                setPageGroups(0);
+              }}
+              rowsPerPageOptions={[5, 10, 20]}
+              disabled={isBusyGroups}
+              labelRowsPerPage={t("core:pagination.rows_per_page")}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} ${t("core:pagination.of")} ${
+                  count !== -1
+                    ? count
+                    : `${t("core:pagination.more_than")} ${to}`
+                }`
+              }
+            />
           </Collapse>
         </GroupsSectionCard>
       )}
@@ -1031,7 +1301,10 @@ const Modules: FC = () => {
         <Box>
           <FilterRow>
             <Filter
-              onFilter={handleApplyFilters}
+              disabled={isBusyModules}
+              applyDisabled={isBusyModules}
+              onOpen={() => setDraftFilterActive(appliedFilterActive)}
+                onFilter={handleApplyFilters}
               onClear={handleClearFilters}
               activeCount={activeFiltersCount}
               title={t("modules:filter_modal_title")}
@@ -1043,7 +1316,9 @@ const Modules: FC = () => {
                 value={draftFilterKeys}
                 onChange={setDraftFilterKeys}
                 placeholder={t("modules:form.key_placeholder")}
-                disabled={isBusyModules || isLoadingAllModules || isFetchingAllModules}
+                disabled={
+                  isBusyModules || isLoadingAllModules || isFetchingAllModules
+                }
               />
 
               <SelectMultipleInput
@@ -1052,35 +1327,16 @@ const Modules: FC = () => {
                 value={draftFilterGroupIds}
                 onChange={setDraftFilterGroupIds}
                 placeholder={t("modules:form.group_placeholder")}
-                disabled={isBusyModules || isLoadingAllGroups || isFetchingAllGroups}
+                disabled={
+                  isBusyModules || isLoadingAllGroups || isFetchingAllGroups
+                }
               />
 
-              <Box
-                sx={(theme) => ({
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  p: 1.5,
-                  borderRadius: 1.5,
-                  border: `1px solid ${
-                    theme.palette.border?.default ?? theme.palette.divider
-                  }`,
-                })}
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={draftFilterActive}
-                      onChange={(e) => setDraftFilterActive(e.target.checked)}
-                      color="primary"
-                      disabled={isBusyModules}
-                    />
-                  }
-                  label={t("modules:form.active")}
-                  labelPlacement="start"
-                  sx={{ m: 0, width: "100%", justifyContent: "space-between" }}
-                />
-              </Box>
+              <ActiveStatusSelect
+                value={draftFilterActive === null ? "all" : draftFilterActive ? "active" : "inactive"}
+                onChange={(value) => setDraftFilterActive(value === "all" ? null : value === "active")}
+                disabled={isBusyModules}
+              />
             </Filter>
           </FilterRow>
 
@@ -1088,18 +1344,19 @@ const Modules: FC = () => {
             <ActiveFilters>
               {appliedFilterKeys.map((key) => {
                 const matched = allModulesResponse?.data?.find(
-                  (m) => m.key === key
+                  (m) => m.key === key,
                 );
                 const label = matched ? getModuleDisplayName(matched) : key;
                 return (
                   <FilterChips
+                    disabled={isBusyModules}
                     key={`mod-key-${key}`}
                     label={t("modules:filter_chips.key", {
                       value: label !== "-" ? `${label} (${key})` : key,
                     })}
                     onAction={() => {
                       setAppliedFilterKeys((prev) =>
-                        prev.filter((k) => k !== key)
+                        prev.filter((k) => k !== key),
                       );
                       setPage(0);
                     }}
@@ -1108,9 +1365,11 @@ const Modules: FC = () => {
               })}
               {appliedFilterGroupIds.map((groupId) => {
                 const matched = allGroupsResponse?.data?.find(
-                  (g) => g.id === groupId
+                  (g) => g.id === groupId,
                 );
-                const groupName = matched ? getGroupDisplayName(matched) : groupId;
+                const groupName = matched
+                  ? getGroupDisplayName(matched)
+                  : groupId;
                 const displayLabel =
                   matched && groupName !== "-" && groupName !== matched.key
                     ? `${groupName} (${matched.key})`
@@ -1118,13 +1377,14 @@ const Modules: FC = () => {
 
                 return (
                   <FilterChips
+                    disabled={isBusyModules}
                     key={`mod-group-${groupId}`}
                     label={t("modules:filter_chips.group", {
                       value: displayLabel,
                     })}
                     onAction={() => {
                       setAppliedFilterGroupIds((prev) =>
-                        prev.filter((id) => id !== groupId)
+                        prev.filter((id) => id !== groupId),
                       );
                       setPage(0);
                     }}
@@ -1133,6 +1393,7 @@ const Modules: FC = () => {
               })}
               {appliedFilterActive !== null && (
                 <FilterChips
+                  disabled={isBusyModules}
                   label={
                     appliedFilterActive
                       ? t("modules:filter_chips.active_only")
@@ -1155,6 +1416,7 @@ const Modules: FC = () => {
                   <Button
                     color="inherit"
                     size="small"
+                    disabled={isFetchingModules}
                     onClick={() => refetchModules()}
                   >
                     {t("core:retry", "Reintentar")}
@@ -1162,13 +1424,16 @@ const Modules: FC = () => {
                 }
               >
                 <AlertTitle>
-                  {t("modules:error_state.title", "Error al cargar los módulos")}
+                  {t(
+                    "modules:error_state.title",
+                    "Error al cargar los módulos",
+                  )}
                 </AlertTitle>
                 {modulesError instanceof Error
                   ? modulesError.message
                   : t(
                       "modules:error_state.description",
-                      "No se pudo obtener el listado de módulos desde el servidor."
+                      "No se pudo obtener el listado de módulos desde el servidor.",
                     )}
               </Alert>
             </Box>
@@ -1184,7 +1449,7 @@ const Modules: FC = () => {
                 }}
                 placeholder={t("modules:search_placeholder")}
                 fullWidth
-                disabled={isLoadingModules || isMutatingModule}
+                disabled={isBusyModules}
               />
             </Box>
             <Button
@@ -1196,330 +1461,501 @@ const Modules: FC = () => {
               sx={(theme) => ({
                 borderRadius: 2,
                 color: theme.palette.primary.contrastText,
+                minHeight: { xs: 44, sm: 36 },
               })}
             >
               {t("modules:new_module")}
             </Button>
           </TableTopBar>
 
-          <Skeleton loading={isLoadingModules} name="modules-table">
-            <StyledTableContainer>
+          <StyledTableContainer>
+            <Skeleton loading={isLoadingModules} name="modules-table">
               {isFetchingModules && !isLoadingModules && (
                 <LinearProgress sx={{ height: 3 }} />
               )}
-              <TableContainer component={Paper} elevation={0}>
-                <Table>
-                  <TableHead
-                    sx={{
-                      bgcolor: "primary.main",
-                      "& th": {
-                        color: "primary.contrastText",
-                        fontWeight: "bold",
-                      },
-                    }}
-                  >
-                    <TableRow>
-                      <TableCell>{t("modules:table.id")}</TableCell>
-                      <TableCell align="center">
-                        {t("modules:table.icon", "Ícono")}
-                      </TableCell>
-                      <TableCell>{t("modules:table.name")}</TableCell>
-                      <TableCell>{t("modules:table.key")}</TableCell>
-                      <TableCell>{t("modules:table.link", "Ruta")}</TableCell>
-                      <TableCell>{t("modules:table.group_name")}</TableCell>
-                      <TableCell>{t("modules:table.group_key")}</TableCell>
-                      <TableCell>{t("modules:table.active")}</TableCell>
-                      <TableCell align="center">
-                        {t("modules:table.actions")}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {!isLoadingModules && modulesList.length === 0 ? (
-                      <TableRow>
-                        <TableCell
-                          colSpan={9}
-                          align="center"
-                          sx={{ py: 6, color: "text.secondary" }}
+              {isMobile ? (
+                <Box
+                  sx={{ p: 2, display: "grid", gap: 2 }}
+                  aria-label={t("modules:title")}
+                >
+                  {!isErrorModules &&
+                    !isLoadingModules &&
+                    modulesList.length === 0 && (
+                      <Box sx={{ textAlign: "center", py: 3 }}>
+                        <Typography>
+                          {t("modules:empty_state.title")}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ my: 2 }}
                         >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: 1.5,
-                            }}
-                          >
-                            <ViewModuleOutlinedIcon
-                              sx={{ fontSize: 48, color: "text.disabled" }}
-                            />
-                            <Typography variant="h6" color="text.secondary">
-                              {t(
-                                "modules:empty_state.title",
-                                "No hay módulos disponibles"
-                              )}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.disabled"
-                              sx={{ maxWidth: 400 }}
-                            >
-                              {t(
-                                "modules:empty_state.description",
-                                "No se encontraron módulos actualmente. Comience agregando uno nuevo."
-                              )}
-                            </Typography>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              color="primary"
-                              startIcon={<AddCircleOutlinedIcon />}
-                              onClick={handleOpenCreateModal}
-                              disabled={isBusyModules}
-                              sx={(theme) => ({
-                                mt: 1,
-                                borderRadius: 2,
-                                color: theme.palette.primary.contrastText,
-                              })}
-                            >
-                              {t("modules:empty_state.cta", "Crear primer módulo")}
-                            </Button>
-                          </Box>
+                          {t("modules:empty_state.description")}
+                        </Typography>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          disabled={isBusyModules}
+                          onClick={handleOpenCreateModal}
+                        >
+                          {t("modules:empty_state.cta")}
+                        </Button>
+                      </Box>
+                    )}
+                  {modulesList.map((module) => (
+                    <MobileRecordCard
+                      key={module.id}
+                      title={getModuleDisplayName(module)}
+                      disabled={isBusyModules}
+                      status={
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mt: 1,
+                          }}
+                        >
+                          {getModuleIcon(module.key, module.icon)}
+                          <Chip
+                            size="small"
+                            label={t(
+                              module.is_active === undefined
+                                ? "modules:empty_value"
+                                : module.is_active
+                                  ? "modules:status.active"
+                                  : "modules:status.inactive",
+                            )}
+                            color={module.is_active ? "success" : "default"}
+                          />
+                        </Box>
+                      }
+                      fields={[
+                        {
+                          key: "id",
+                          label: t("modules:table.id"),
+                          value: module.id,
+                        },
+                        {
+                          key: "key",
+                          label: t("modules:table.key"),
+                          value: module.key,
+                        },
+                        {
+                          key: "group",
+                          label: t("modules:table.group_name"),
+                          value: getGroupDisplayName(module.module_group),
+                        },
+                        {
+                          key: "group-key",
+                          label: t("modules:table.group_key"),
+                          value:
+                            module.module_group?.key ??
+                            t("modules:empty_value"),
+                        },
+                        {
+                          key: "link",
+                          label: t("modules:table.link"),
+                          value: module.link ?? t("modules:empty_value"),
+                        },
+                      ]}
+                      primaryAction={
+                        module.link
+                          ? {
+                              key: "link",
+                              label: t("modules:open_link"),
+                              onClick: () =>
+                                window.open(
+                                  getModuleFullUrl(module.link),
+                                  "_blank",
+                                  "noopener,noreferrer",
+                                ),
+                            }
+                          : undefined
+                      }
+                      actions={[
+                        {
+                          key: "update",
+                          label: t("modules:actions_menu.update"),
+                          icon: <EditOutlinedIcon color="primary" />,
+                          onClick: () => handleOpenEditModal(module),
+                        },
+                        {
+                          key: "toggle",
+                          disabled: module.is_active === undefined,
+                          label: t(
+                            module.is_active
+                              ? "modules:deactivate"
+                              : "modules:activate",
+                          ),
+                          onClick: () => handleRequestToggleActive(module),
+                        },
+                        {
+                          key: "copy",
+                          label: t("modules:copy"),
+                          icon: <ContentCopyIcon />,
+                          onClick: () => handleCopyId(module.id),
+                        },
+                        ...(module.link
+                          ? [
+                              {
+                                key: "copy-link",
+                                label: t("modules:copy_link"),
+                                icon: <ContentCopyIcon />,
+                                onClick: () =>
+                                  handleCopyLink(getModuleFullUrl(module.link)),
+                              },
+                            ]
+                          : []),
+                        {
+                          key: "delete",
+                          label: t("modules:actions_menu.delete"),
+                          icon: <DeleteOutlinedIcon />,
+                          color: "error",
+                          onClick: () => requestDeleteModule(module),
+                        },
+                      ]}
+                    />
+                  ))}
+                </Box>
+              ) : (
+                <TableContainer component={Paper} elevation={0}>
+                  <Table>
+                    <TableHead
+                      sx={{
+                        bgcolor: "primary.main",
+                        "& th": {
+                          color: "primary.contrastText",
+                          fontWeight: "bold",
+                        },
+                      }}
+                    >
+                      <TableRow>
+                        <TableCell>{t("modules:table.id")}</TableCell>
+                        <TableCell align="center">
+                          {t("modules:table.icon", "Ícono")}
+                        </TableCell>
+                        <TableCell>{t("modules:table.name")}</TableCell>
+                        <TableCell>{t("modules:table.key")}</TableCell>
+                        <TableCell>{t("modules:table.link", "Ruta")}</TableCell>
+                        <TableCell>{t("modules:table.group_name")}</TableCell>
+                        <TableCell>{t("modules:table.group_key")}</TableCell>
+                        <TableCell>{t("modules:table.active")}</TableCell>
+                        <TableCell align="center">
+                          {t("modules:table.actions")}
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      modulesList.map((m) => {
-                        const displayName = getModuleDisplayName(m);
-                        const groupName = getGroupDisplayName(m.module_group);
-                        const groupKey = m.module_group?.key || null;
-                        const isRowActive = m.is_active ?? true;
-
-                        return (
-                          <TableRow
-                            key={m.id}
-                            hover
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
+                    </TableHead>
+                    <TableBody>
+                      {!isLoadingModules &&
+                      !isErrorModules &&
+                      modulesList.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={9}
+                            align="center"
+                            sx={{ py: 6, color: "text.secondary" }}
                           >
-                            <TableCell
+                            <Box
                               sx={{
-                                color: "text.secondary",
-                                fontSize: "0.875rem",
-                                fontFamily: "monospace",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 1.5,
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                }}
-                              >
-                                {m.id.includes("-")
-                                  ? `${m.id.split("-")[0]}...`
-                                  : m.id}
-                                <Tooltip
-                                  title={t("modules:copy")}
-                                  arrow
-                                  placement="top"
-                                >
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleCopyId(m.id)}
-                                    aria-label={t("modules:copy")}
-                                    disabled={isBusyModules}
-                                  >
-                                    <ContentCopyIcon
-                                      fontSize="small"
-                                      sx={{ fontSize: "1rem" }}
-                                    />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                            </TableCell>
-                            <TableCell align="center">
-                              <Tooltip
-                                title={
-                                  m.icon
-                                    ? `${m.icon}`
-                                    : t("modules:form.default_icon", "Ícono por defecto")
-                                }
-                                arrow
-                                placement="top"
-                              >
-                                <Box
-                                  sx={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "primary.main",
-                                  }}
-                                  data-testid={`module-icon-${m.key}`}
-                                >
-                                  {getModuleIcon(m.key, m.icon)}
-                                </Box>
-                              </Tooltip>
-                            </TableCell>
-                            <TableCell>
+                              <ViewModuleOutlinedIcon
+                                sx={{ fontSize: 48, color: "text.disabled" }}
+                              />
+                              <Typography variant="h6" color="text.secondary">
+                                {t(
+                                  "modules:empty_state.title",
+                                  "No hay módulos disponibles",
+                                )}
+                              </Typography>
                               <Typography
                                 variant="body2"
-                                sx={{ fontWeight: "medium" }}
+                                color="text.disabled"
+                                sx={{ maxWidth: 400 }}
                               >
-                                {displayName}
+                                {t(
+                                  "modules:empty_state.description",
+                                  "No se encontraron módulos actualmente. Comience agregando uno nuevo.",
+                                )}
                               </Typography>
-                            </TableCell>
-                            <TableCell>
-                              <KeyBadge>{m.key}</KeyBadge>
-                            </TableCell>
-                            <TableCell>
-                              {m.link ? (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                color="primary"
+                                startIcon={<AddCircleOutlinedIcon />}
+                                onClick={handleOpenCreateModal}
+                                disabled={isBusyModules}
+                                sx={(theme) => ({
+                                  mt: 1,
+                                  borderRadius: 2,
+                                  color: theme.palette.primary.contrastText,
+                                })}
+                              >
+                                {t(
+                                  "modules:empty_state.cta",
+                                  "Crear primer módulo",
+                                )}
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        modulesList.map((m) => {
+                          const displayName = getModuleDisplayName(m);
+                          const groupName = getGroupDisplayName(m.module_group);
+                          const groupKey = m.module_group?.key || null;
+                          const isRowActive = m.is_active ?? true;
+
+                          return (
+                            <TableRow
+                              key={m.id}
+                              hover
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell
+                                sx={{
+                                  color: "text.secondary",
+                                  fontSize: "0.875rem",
+                                  fontFamily: "monospace",
+                                }}
+                              >
                                 <Box
                                   sx={{
-                                    display: "inline-flex",
+                                    display: "flex",
                                     alignItems: "center",
-                                    gap: 0.5,
+                                    gap: 1,
                                   }}
                                 >
-                                  <Typography
-                                    component="a"
-                                    href={getModuleFullUrl(m.link)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    variant="body2"
-                                    sx={{
-                                      color: "primary.main",
-                                      textDecoration: "none",
-                                      "&:hover": {
-                                        textDecoration: "underline",
-                                      },
-                                      fontFamily: "monospace",
-                                      fontSize: "0.8125rem",
-                                      display: "inline-flex",
-                                      alignItems: "center",
-                                      gap: 0.5,
-                                      maxWidth: 220,
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "nowrap",
-                                    }}
-                                    title={getModuleFullUrl(m.link)}
-                                  >
-                                    <LinkOutlinedIcon
-                                      sx={{
-                                        fontSize: "0.95rem",
-                                        flexShrink: 0,
-                                      }}
-                                    />
-                                    {getModuleFullUrl(m.link)}
-                                  </Typography>
+                                  {m.id.includes("-")
+                                    ? `${m.id.split("-")[0]}...`
+                                    : m.id}
                                   <Tooltip
-                                    title={t(
-                                      "modules:copy_link",
-                                      "Copiar enlace"
-                                    )}
+                                    title={t("modules:copy")}
                                     arrow
                                     placement="top"
                                   >
-                                    <IconButton
-                                      size="small"
-                                      onClick={() =>
-                                        handleCopyLink(getModuleFullUrl(m.link))
-                                      }
-                                      aria-label={t(
-                                        "modules:copy_link",
-                                        "Copiar enlace"
-                                      )}
-                                      sx={{ p: 0.25 }}
+                                    <Box
+                                      component="span"
+                                      sx={{ display: "inline-flex" }}
                                     >
-                                      <ContentCopyIcon
-                                        sx={{ fontSize: "0.875rem" }}
-                                      />
-                                    </IconButton>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() => handleCopyId(m.id)}
+                                        aria-label={t("modules:copy")}
+                                        disabled={isBusyModules}
+                                      >
+                                        <ContentCopyIcon
+                                          fontSize="small"
+                                          sx={{ fontSize: "1rem" }}
+                                        />
+                                      </IconButton>
+                                    </Box>
                                   </Tooltip>
                                 </Box>
-                              ) : (
-                                t("modules:empty_value", "-")
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <Typography
-                                variant="body2"
-                                sx={{ fontWeight: 500 }}
-                              >
-                                {groupName}
-                              </Typography>
-                            </TableCell>
-                            <TableCell>
-                              {groupKey ? (
+                              </TableCell>
+                              <TableCell align="center">
+                                <Tooltip
+                                  title={
+                                    m.icon
+                                      ? `${m.icon}`
+                                      : t(
+                                          "modules:form.default_icon",
+                                          "Ícono por defecto",
+                                        )
+                                  }
+                                  arrow
+                                  placement="top"
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      color: "primary.main",
+                                    }}
+                                    data-testid={`module-icon-${m.key}`}
+                                  >
+                                    {getModuleIcon(m.key, m.icon)}
+                                  </Box>
+                                </Tooltip>
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: "medium" }}
+                                >
+                                  {displayName}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <KeyBadge>{m.key}</KeyBadge>
+                              </TableCell>
+                              <TableCell>
+                                {m.link ? (
+                                  <Box
+                                    sx={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: 0.5,
+                                    }}
+                                  >
+                                    <Typography
+                                      component="a"
+                                      href={getModuleFullUrl(m.link)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      variant="body2"
+                                      sx={{
+                                        color: "primary.main",
+                                        textDecoration: "none",
+                                        "&:hover": {
+                                          textDecoration: "underline",
+                                        },
+                                        fontFamily: "monospace",
+                                        fontSize: "0.8125rem",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                        maxWidth: 220,
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                      }}
+                                      title={getModuleFullUrl(m.link)}
+                                    >
+                                      <LinkOutlinedIcon
+                                        sx={{
+                                          fontSize: "0.95rem",
+                                          flexShrink: 0,
+                                        }}
+                                      />
+                                      {getModuleFullUrl(m.link)}
+                                    </Typography>
+                                    <Tooltip
+                                      title={t(
+                                        "modules:copy_link",
+                                        "Copiar enlace",
+                                      )}
+                                      arrow
+                                      placement="top"
+                                    >
+                                      <Box
+                                        component="span"
+                                        sx={{ display: "inline-flex" }}
+                                      >
+                                        <IconButton
+                                          size="small"
+                                          onClick={() =>
+                                            handleCopyLink(
+                                              getModuleFullUrl(m.link),
+                                            )
+                                          }
+                                          aria-label={t(
+                                            "modules:copy_link",
+                                            "Copiar enlace",
+                                          )}
+                                          sx={{ p: 0.25 }}
+                                        >
+                                          <ContentCopyIcon
+                                            sx={{ fontSize: "0.875rem" }}
+                                          />
+                                        </IconButton>
+                                      </Box>
+                                    </Tooltip>
+                                  </Box>
+                                ) : (
+                                  t("modules:empty_value", "-")
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: 500 }}
+                                >
+                                  {groupName}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                {groupKey ? (
+                                  <Chip
+                                    label={groupKey}
+                                    size="small"
+                                    variant="outlined"
+                                    color="primary"
+                                  />
+                                ) : (
+                                  t("modules:empty_value")
+                                )}
+                              </TableCell>
+                              <TableCell>
                                 <Chip
-                                  label={groupKey}
+                                  label={
+                                    isRowActive
+                                      ? t("modules:yes")
+                                      : t("modules:no")
+                                  }
+                                  color={isRowActive ? "success" : "error"}
                                   size="small"
-                                  variant="outlined"
-                                  color="primary"
+                                  variant={isRowActive ? "filled" : "outlined"}
+                                  sx={
+                                    isRowActive
+                                      ? { color: "success.contrastText" }
+                                      : {}
+                                  }
                                 />
-                              ) : (
-                                t("modules:empty_value")
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <Chip
-                                label={
-                                  isRowActive
-                                    ? t("modules:yes")
-                                    : t("modules:no")
-                                }
-                                color={isRowActive ? "success" : "error"}
-                                size="small"
-                                variant={isRowActive ? "filled" : "outlined"}
-                                sx={
-                                  isRowActive
-                                    ? { color: "success.contrastText" }
-                                    : {}
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="center">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                aria-label={t("modules:table.actions")}
-                                onClick={(e) => handleOpenActionMenu(e, m)}
-                                disabled={isBusyModules}
-                              >
-                                <MoreVertIcon fontSize="small" />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                component="div"
-                count={totalModulesCount}
-                page={page}
-                onPageChange={(_, newPage) => setPage(newPage)}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={(e) => {
-                  setRowsPerPage(parseInt(e.target.value, 10));
-                  setPage(0);
-                }}
-                rowsPerPageOptions={[5, 10, 25, 50]}
-                disabled={isBusyModules}
-                labelRowsPerPage={t("core:pagination.rows_per_page")}
-                labelDisplayedRows={({ from, to, count }) =>
-                  `${from}–${to} ${t("core:pagination.of")} ${
-                    count !== -1
-                      ? count
-                      : `${t("core:pagination.more_than")} ${to}`
-                  }`
-                }
-              />
-            </StyledTableContainer>
-          </Skeleton>
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  aria-label={t("modules:table.actions")}
+                                  onClick={(e) => handleOpenActionMenu(e, m)}
+                                  disabled={isBusyModules}
+                                >
+                                  <MoreVertIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Skeleton>
+            <ListPagination
+              getItemAriaLabel={(type) => t(`modules:pagination.${type}`)}
+              component="div"
+              count={totalModulesCount}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              disabled={isBusyModules}
+              labelRowsPerPage={t("core:pagination.rows_per_page")}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} ${t("core:pagination.of")} ${
+                  count !== -1
+                    ? count
+                    : `${t("core:pagination.more_than")} ${to}`
+                }`
+              }
+            />
+          </StyledTableContainer>
         </Box>
       )}
 
@@ -1552,7 +1988,7 @@ const Modules: FC = () => {
         }}
       >
         <MenuItem
-          onClick={handleOpenEditModal}
+          onClick={() => handleOpenEditModal()}
           sx={{ borderRadius: 1 }}
           disabled={isBusyModules}
         >
@@ -1568,7 +2004,7 @@ const Modules: FC = () => {
             disabled={isBusyModules}
           >
             <ListItemIcon>
-              {targetModule.is_active ?? true ? (
+              {(targetModule.is_active ?? true) ? (
                 <BlockOutlinedIcon fontSize="small" color="error" />
               ) : (
                 <CheckCircleOutlineOutlinedIcon
@@ -1579,11 +2015,26 @@ const Modules: FC = () => {
             </ListItemIcon>
             <ListItemText
               primary={
-                targetModule.is_active ?? true
+                (targetModule.is_active ?? true)
                   ? t("modules:deactivate")
                   : t("modules:activate")
               }
             />
+          </MenuItem>
+        )}
+        {targetModule && (
+          <MenuItem
+            onClick={() => requestDeleteModule(targetModule)}
+            disabled={isBusyModules}
+            sx={{ borderRadius: 1, color: "error.main" }}
+          >
+            <ListItemIcon>
+              <DeleteOutlinedIcon
+                fontSize="small"
+                sx={{ color: "error.main" }}
+              />
+            </ListItemIcon>
+            <ListItemText primary={t("modules:actions_menu.delete")} />
           </MenuItem>
         )}
       </Menu>
@@ -1617,7 +2068,7 @@ const Modules: FC = () => {
         }}
       >
         <MenuItem
-          onClick={handleOpenEditGroupModal}
+          onClick={() => handleOpenEditGroupModal()}
           sx={{ borderRadius: 1 }}
           disabled={isBusyGroups}
         >
@@ -1633,7 +2084,7 @@ const Modules: FC = () => {
             disabled={isBusyGroups}
           >
             <ListItemIcon>
-              {targetGroup.is_active ?? true ? (
+              {(targetGroup.is_active ?? true) ? (
                 <BlockOutlinedIcon fontSize="small" color="error" />
               ) : (
                 <CheckCircleOutlineOutlinedIcon
@@ -1644,14 +2095,72 @@ const Modules: FC = () => {
             </ListItemIcon>
             <ListItemText
               primary={
-                targetGroup.is_active ?? true
+                (targetGroup.is_active ?? true)
                   ? t("modules:deactivate")
                   : t("modules:activate")
               }
             />
           </MenuItem>
         )}
+        {targetGroup && (
+          <MenuItem
+            onClick={() => requestDeleteGroup(targetGroup)}
+            disabled={isBusyGroups}
+            sx={{ borderRadius: 1, color: "error.main" }}
+          >
+            <ListItemIcon>
+              <DeleteOutlinedIcon
+                fontSize="small"
+                sx={{ color: "error.main" }}
+              />
+            </ListItemIcon>
+            <ListItemText primary={t("modules:actions_menu.delete")} />
+          </MenuItem>
+        )}
       </Menu>
+
+      <ConfirmDialog
+        open={Boolean(moduleToDelete)}
+        onClose={() => {
+          if (!deleteModuleMutation.isPending) setModuleToDelete(null);
+        }}
+        onConfirm={confirmDeleteModule}
+        isLoading={deleteModuleMutation.isPending}
+        confirmDisabled={isBusyModules}
+        title={t("modules:confirm_delete_title")}
+        message={t("modules:confirm_delete_message", {
+          name: moduleToDelete ? getModuleDisplayName(moduleToDelete) : "",
+        })}
+        confirmText={t("modules:actions_menu.delete")}
+        cancelText={t("core:cancel")}
+      >
+        {deleteModuleMutation.error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {deleteErrorMessage(deleteModuleMutation.error)}
+          </Alert>
+        )}
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={Boolean(groupToDelete)}
+        onClose={() => {
+          if (!deleteGroupMutation.isPending) setGroupToDelete(null);
+        }}
+        onConfirm={confirmDeleteGroup}
+        isLoading={deleteGroupMutation.isPending}
+        confirmDisabled={isBusyGroups}
+        title={t("modules:groups.confirm_delete_title")}
+        message={t("modules:groups.confirm_delete_message", {
+          name: groupToDelete ? getGroupDisplayName(groupToDelete) : "",
+        })}
+        confirmText={t("modules:actions_menu.delete")}
+        cancelText={t("core:cancel")}
+      >
+        {deleteGroupMutation.error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {deleteErrorMessage(deleteGroupMutation.error)}
+          </Alert>
+        )}
+      </ConfirmDialog>
 
       {/* Confirm Toggle Active Dialog for Module */}
       <ConfirmDialog
@@ -1660,12 +2169,12 @@ const Modules: FC = () => {
         onConfirm={handleConfirmToggleActive}
         isLoading={isMutatingModule}
         title={
-          moduleToToggle?.is_active ?? true
+          (moduleToToggle?.is_active ?? true)
             ? t("modules:confirm_deactivate_title")
             : t("modules:confirm_activate_title")
         }
         message={
-          moduleToToggle?.is_active ?? true
+          (moduleToToggle?.is_active ?? true)
             ? t("modules:confirm_deactivate_message", {
                 name: moduleToToggle?.key,
               })
@@ -1674,7 +2183,7 @@ const Modules: FC = () => {
               })
         }
         confirmText={
-          moduleToToggle?.is_active ?? true
+          (moduleToToggle?.is_active ?? true)
             ? t("modules:deactivate")
             : t("modules:activate")
         }
@@ -1688,12 +2197,12 @@ const Modules: FC = () => {
         onConfirm={handleConfirmToggleActiveGroup}
         isLoading={isMutatingGroup}
         title={
-          groupToToggle?.is_active ?? true
+          (groupToToggle?.is_active ?? true)
             ? t("modules:groups.confirm_deactivate_title")
             : t("modules:groups.confirm_activate_title")
         }
         message={
-          groupToToggle?.is_active ?? true
+          (groupToToggle?.is_active ?? true)
             ? t("modules:groups.confirm_deactivate_message", {
                 name: groupToToggle?.key,
               })
@@ -1702,7 +2211,7 @@ const Modules: FC = () => {
               })
         }
         confirmText={
-          groupToToggle?.is_active ?? true
+          (groupToToggle?.is_active ?? true)
             ? t("modules:deactivate")
             : t("modules:activate")
         }

@@ -6,7 +6,11 @@ import PersonalFinance from "../../../../../modules/finances/pages/PersonalFinan
 import type { FinanceQuery } from "../../../../../modules/finances/types";
 import i18n from "../../../../../translate";
 
-const mocks = vi.hoisted(() => ({ busy: vi.fn() }));
+const mocks = vi.hoisted(() => ({ busy: vi.fn(), mobile: false }));
+vi.mock("@mui/material", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@mui/material")>()),
+  useMediaQuery: () => mocks.mobile,
+}));
 vi.mock("../../../../../modules/finances/infrastructure/useServices", () => ({
   useFinanceBusy: mocks.busy,
 }));
@@ -42,14 +46,17 @@ function Location() {
   return <output data-testid="location">{location.search}</output>;
 }
 
-const renderPage = (path = "/finances/personal") =>
+const renderPage = (path = "/tools/finances-personal") =>
   render(
     <MemoryRouter initialEntries={[path]}>
       <PersonalFinance />
       <Location />
     </MemoryRouter>,
   );
-beforeEach(() => mocks.busy.mockReturnValue(false));
+beforeEach(() => {
+  mocks.busy.mockReturnValue(false);
+  mocks.mobile = false;
+});
 
 describe("PersonalFinance", () => {
   it("starts on General with active records and mounts only the selected panel", () => {
@@ -60,18 +67,18 @@ describe("PersonalFinance", () => {
   });
 
   it("supports direct links and safely falls back on an invalid tab", () => {
-    const view = renderPage("/finances/personal?tab=movements");
+    const view = renderPage("/tools/finances-personal?tab=movements");
     expect(screen.getByTestId("resource-panel")).toHaveTextContent(
       "movements:active",
     );
     expect(screen.queryByTestId("general-panel")).not.toBeInTheDocument();
     view.unmount();
-    renderPage("/finances/personal?tab=unknown");
+    renderPage("/tools/finances-personal?tab=unknown");
     expect(screen.getByTestId("general-panel")).toBeInTheDocument();
   });
 
   it("preserves filters separately while unmounting hidden data consumers", async () => {
-    renderPage("/finances/personal?tab=movements&other=keep");
+    renderPage("/tools/finances-personal?tab=movements&other=keep");
     const user = userEvent.setup();
     await user.click(
       screen.getByRole("button", { name: "Change section filter" }),
@@ -104,4 +111,39 @@ describe("PersonalFinance", () => {
     renderPage();
     screen.getAllByRole("tab").forEach((tab) => expect(tab).toBeDisabled());
   });
+});
+
+it("uses one mobile section selector and preserves route/filter while resizing to tabs", async () => {
+  mocks.mobile = true;
+  const user = userEvent.setup();
+  const view = renderPage("/tools/finances-personal?tab=movements&other=keep");
+  expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+  await user.click(
+    screen.getByRole("button", { name: "Change section filter" }),
+  );
+  await user.click(screen.getByRole("button", { name: "Sección" }));
+  await user.click(screen.getByRole("option", { name: "Categorías" }));
+  expect(screen.getByTestId("resource-panel")).toHaveTextContent(
+    "categories:active",
+  );
+  await user.click(await screen.findByRole("button", { name: "Sección" }));
+  await user.click(screen.getByRole("option", { name: "Movimientos" }));
+  expect(screen.getByTestId("resource-panel")).toHaveTextContent(
+    "movements:inactive",
+  );
+  mocks.mobile = false;
+  view.rerender(
+    <MemoryRouter>
+      <PersonalFinance />
+      <Location />
+    </MemoryRouter>,
+  );
+  expect(screen.getByRole("tab", { name: "Movimientos" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  expect(screen.getByTestId("resource-panel")).toHaveTextContent(
+    "movements:inactive",
+  );
+  expect(screen.getByTestId("location")).toHaveTextContent("other=keep");
 });

@@ -34,6 +34,12 @@ export class RoleFilterDto implements RansackFilter<Role> {
   actions_id_in?: string[];
 
   @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsArray()
+  @IsString({ each: true })
+  actions_key_in?: string[];
+
+  @IsOptional()
   @IsString()
   actions_key_cont?: string;
 

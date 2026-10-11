@@ -40,6 +40,21 @@ describe("Topbar", () => {
     expect(screen.getByText("Ingresar")).toBeInTheDocument();
   });
 
+  it("honors the server super_admin permission without an ai:manage action row", () => {
+    signIn();
+    useAuthStore.setState({ expiresAt: Date.now() + 60000 });
+    const context = { roles: ["super_admin"], actions: [], modules: [{ module_group_key: "settings", translates: [], modules: [{ key: "ai-providers", link: "/settings/ai-providers", translates: [] }] }] };
+    useGeneralSettingsStore.getState().setContext(context);
+    const { rerender } = renderTopbar();
+    expect(screen.getByRole("group", { name: "AI indicators" })).toBeInTheDocument();
+    useGeneralSettingsStore.getState().setContext({ ...context, modules: [] });
+    rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
+    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
+    useGeneralSettingsStore.getState().setContext({ ...context, roles: ["admin"] });
+    rerender(<MemoryRouter><Topbar onDrawerToggle={vi.fn()} /></MemoryRouter>);
+    expect(screen.queryByRole("group", { name: "AI indicators" })).not.toBeInTheDocument();
+  });
+
   it("shows the Google avatar and clears session, permissions, persist and cache on logout", async () => {
     signIn();
     useGeneralSettingsStore.getState().setContext({ roles: ["super_admin"], actions: [], modules: [] });

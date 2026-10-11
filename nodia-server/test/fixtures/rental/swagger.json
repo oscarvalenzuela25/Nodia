@@ -157,11 +157,13 @@
                           },
                           "check_in_time": {
                             "type": "string",
-                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                            "nullable": true
                           },
                           "check_out_time": {
                             "type": "string",
-                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                            "nullable": true
                           },
                           "default_nightly_rate": {
                             "type": "string",
@@ -359,11 +361,13 @@
                     },
                     "check_in_time": {
                       "type": "string",
-                      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                      "nullable": true
                     },
                     "check_out_time": {
                       "type": "string",
-                      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                      "nullable": true
                     },
                     "default_nightly_rate": {
                       "type": "string",
@@ -7571,10 +7575,12 @@
             "maximum": 1000
           },
           "check_in_time": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "check_out_time": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "location": {
             "type": "object",
@@ -7603,10 +7609,7 @@
         },
         "required": [
           "name",
-          "timezone",
-          "max_guests",
-          "check_in_time",
-          "check_out_time"
+          "max_guests"
         ]
       },
       "RentalMutationResultDto": {

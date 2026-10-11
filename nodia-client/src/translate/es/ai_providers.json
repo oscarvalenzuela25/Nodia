@@ -344,6 +344,7 @@
     "status_healthy": "Disponible",
     "status_expired": "Requiere Iniciar Sesión",
     "status_degraded": "Degradado",
+    "status_unverified": "Sin verificar",
     "status_unconfigured": "Sin Configurar",
     "verify_state": "Verificar estado",
     "configure_provider": "Configurar",

@@ -1,55 +1,74 @@
-import { styled } from "@mui/material/styles";
+import { Box, Button, Paper } from "@mui/material";
+import { styled, alpha } from "@mui/material/styles";
 export const Wrapper = styled("section")(({ theme }) => ({
   display: "grid",
   gap: theme.spacing(3),
+  minWidth: 0,
 }));
-export const Filters = styled("div")(({ theme }) => ({
+export const CalendarLayout = styled(Box)(({ theme }) => ({
   display: "grid",
   gap: theme.spacing(2),
-  gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
+  gridTemplateColumns: "minmax(0,1fr)",
+  alignItems: "start",
+  [theme.breakpoints.up("lg")]: { gridTemplateColumns: "minmax(0,1fr) 300px" },
 }));
-export const FormContainer = styled("form")(({ theme }) => ({
+export const CalendarPanel = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
   display: "grid",
   gap: theme.spacing(2),
+  minWidth: 0,
+  borderRadius: 20,
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: "none",
+  ".rental-reservation": {
+    minHeight: 28,
+    borderRadius: 6,
+    borderLeft: `3px solid ${theme.palette.success.main}`,
+  },
+  ".rental-status-draft, .rental-status-cancelled": {
+    borderLeftColor: theme.palette.warning.main,
+  },
+  ".rental-status-in_progress": { borderLeftColor: theme.palette.primary.main },
+  ".rental-event-muted": { opacity: 0.75, borderStyle: "dashed" },
+  ".fc": { fontFamily: theme.typography.fontFamily },
+  [theme.breakpoints.up("sm")]: { padding: theme.spacing(3) },
 }));
-export const ModalActions = styled("div")(({ theme }) => ({
+export const ContextPanel = styled(CalendarPanel)(({ theme }) => ({
+  background: alpha(
+    theme.palette.primary.main,
+    theme.palette.mode === "dark" ? 0.08 : 0.025,
+  ),
+  [theme.breakpoints.up("lg")]: { position: "sticky", top: theme.spacing(2) },
+}));
+export const Toolbar = styled(Box)(({ theme }) => ({
   display: "flex",
-  gap: theme.spacing(2),
+  gap: theme.spacing(1),
+  alignItems: "center",
+  justifyContent: "space-between",
   flexWrap: "wrap",
-  justifyContent: "flex-end",
   [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
 }));
-export const DetailList = styled("section")(({ theme }) => ({
+export const Agenda = styled(Box)(({ theme }) => ({
   display: "grid",
+  gap: theme.spacing(1.5),
+}));
+export const AgendaCard = styled(Button)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
   gap: theme.spacing(2),
-}));
-export const ReviewContainer = DetailList;
-export const Information = DetailList;
-export const Toolbar = ModalActions;
-export const CalendarGrid = styled("div")(({ theme }) => ({
-  display: "grid",
-  gridTemplateColumns: "repeat(7,minmax(0,1fr))",
-  gap: theme.spacing(1),
-  [theme.breakpoints.down("md")]: {
-    gridTemplateColumns: "repeat(2,minmax(0,1fr))",
-  },
-  [theme.breakpoints.down("sm")]: { gridTemplateColumns: "minmax(0,1fr)" },
-}));
-export const DayPanel = styled("article")(({ theme }) => ({
-  padding: theme.spacing(1),
+  textAlign: "left",
+  padding: theme.spacing(2),
+  borderRadius: 12,
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
-  display: "grid",
-  alignContent: "start",
-  gap: theme.spacing(1),
+  color: theme.palette.text.primary,
+  textTransform: "none",
+  whiteSpace: "normal",
   overflowWrap: "anywhere",
-  "& button": {
-    whiteSpace: "normal",
-    textAlign: "left",
-    justifyContent: "flex-start",
-  },
+  flexWrap: "wrap",
+  background: theme.palette.background.paper,
 }));
-export const Agenda = styled("div")(({ theme }) => ({
-  display: "grid",
-  gap: theme.spacing(2),
+export const Legend = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: theme.spacing(1),
 }));

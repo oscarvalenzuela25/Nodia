@@ -11,6 +11,7 @@ import type {
 import { useRentalBusy, useRentalList } from "../../infrastructure/useServices";
 import { formatRentalInstant } from "../../utils/dates";
 import RentalTable from "../RentalTable";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 import RentalFilters from "../RentalFilters";
 import { auditFieldLabel, formatAuditValue } from "./formatChanges";
 import { DetailFields } from "./styles";
@@ -37,6 +38,37 @@ function Audit({ property }: RentalAuditProps) {
         disabled={busy}
       />
       <RentalTable
+        renderMobileRow={(row, cardBusy, actions) => (
+          <MobileRecordCard
+            title={t("rental:audit_actions." + row.action.replaceAll(".", "_"))}
+            disabled={cardBusy}
+            primaryAction={actions[0]}
+            fields={[
+              {
+                key: "date",
+                label: t("rental:created_at"),
+                value: formatRentalInstant(
+                  row.created_at,
+                  property.timezone,
+                  i18n.language,
+                ),
+                fullWidth: true,
+              },
+              { key: "actor", label: t("rental:actor"), value: row.actor_id },
+              {
+                key: "type",
+                label: t("rental:resource_type"),
+                value: t("rental:resource_" + row.resource_type),
+              },
+              {
+                key: "id",
+                label: t("rental:resource_id"),
+                value: row.resource_id,
+                fullWidth: true,
+              },
+            ]}
+          />
+        )}
         title={t("rental:history")}
         rows={list.data?.data ?? []}
         columns={[

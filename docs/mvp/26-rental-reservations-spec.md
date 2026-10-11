@@ -5,6 +5,10 @@
 > Dependencias: [entrevista 25](25-rental-reservations-interview.md), [modelo global 03](03-domain-model-erd.md), [sitemap 05](05-sitemap.md), [ADR-012 propuesto](../architecture/decisions/ADR-012-rental-property-collaboration.md)
 
 
+## Ajuste solicitado — 2026-10-09
+
+El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
+
 ## Aceptación del esquema y etapa actual — 2026-10-04
 
 El usuario aceptó explícitamente el [ERD 27](27-rental-reservations-erd.md) y solicitó incorporarlo al JSON de Obsidian y comenzar con Backend. Se añadió el esquema al diagrama y a 03, con respaldo exacto y conservación de objetos anteriores. La aceptación comprende colaboradores operativos por casa, preparación simple sin inventario, días calendario locales para cancelación directa, devolución sobre dinero pagado y redondeos de importes descritos en 27. Tarifas, horarios y valores de tramos siguen configurables; no se inventan datos de la futura casa.
@@ -25,7 +29,7 @@ La unidad de gestión es **la casa**. Reservas, pagos, gastos, preparación y bl
 | Consultar calendario, reservas, contactos y resumen monetario | Sí | Sí |
 | Crear/editar/cancelar reservas y registrar pagos/devoluciones | Sí | Sí |
 | Registrar gastos, bloqueos y preparación | Sí | Sí |
-| Configurar casa, horarios y políticas generales | Sí | No |
+| Configurar alojamiento y políticas generales | Sí | No |
 | Agregar/reactivar/retirar colaboradores | Sí | No |
 
 Esta matriz propone un colaborador operativo, sin catálogo granular por acción. La solicitud de experiencia similar a Business no confirma heredar su `action_ids`, su acceso global ni privilegios especiales de superadministrador sobre casas ajenas. Seleccionar usuarios existentes de Nodia; alta de cuentas y visibilidad del módulo siguen la administración actual. No enviar correo/WhatsApp ni crear invitaciones externas como efecto incidental.
@@ -44,7 +48,7 @@ Una entrada **Tools → Reservas**, con selector de casa cuando el usuario tenga
 | Preparación | Recambio de ropa de cama, limpieza y casa lista desde una fecha/hora |
 | Gastos | Gastos de la casa, pagados/pendientes/anulados y relación opcional con una reserva |
 | Colaboradores | Personas agregadas, activación/desactivación y acceso operativo |
-| Configuración | Datos de casa, capacidad, zona horaria, horarios y políticas editables |
+| Configuración | Datos del alojamiento, capacidad y políticas editables; zona interna sin input y horarios por reserva |
 
 Pagos y devoluciones se consultan/registran dentro de cada reserva. La disposición de tabs y ruta técnica se fijará con ERD/contratos y especificación de rutas; este documento no crea rutas activas.
 
@@ -54,7 +58,7 @@ Aplicar MUI/Emotion, i18n ES/EN, inputs reutilizables y modales existentes. Bone
 
 | Registro | Información |
 |---|---|
-| Casa | Propietario, nombre, ubicación, zona horaria, capacidad, horarios y configuración comercial |
+| Casa | Propietario, nombre, ubicación, capacidad y configuración comercial; zona interna de calendario |
 | Colaborador | Casa, usuario existente, estado y autoría de asignación |
 | Reserva | Casa, responsable/contacto, cantidad de huéspedes, entrada/salida, horarios acordados, canal, referencia opcional, estado, notas, importes y política acordados |
 | Pago/devolución | Reserva, tipo, monto CLP, fecha efectiva, medio/referencia opcional y usuario que registró |

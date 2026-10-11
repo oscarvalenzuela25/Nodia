@@ -149,5 +149,17 @@
     "group_summary": "Resumen por grupo",
     "overlapping_groups": "Una categoría puede estar en varios grupos: sus totales pueden solaparse.",
     "summary_error": "No se pudo cargar el resumen."
-  }
+  },
+  "id": "ID",
+  "delete": "Eliminar",
+  "deleted_success": "Registro eliminado",
+  "confirm_delete": "¿Estás seguro de eliminar «{{name}}»? Esta acción no se puede deshacer.",
+  "delete_movement_warning": "Eliminar el movimiento retira su efecto de los saldos. Si es un pago confirmado, aumentará el saldo pendiente del préstamo o deuda. El movimiento inicial se elimina desde el préstamo o deuda.",
+  "delete_obligation_warning": "Solo se puede eliminar si no tiene pagos, incluidos los pendientes, cancelados o inactivos. Se eliminará también su movimiento inicial y se recalcularán los saldos.",
+  "delete_category_warning": "No se puede eliminar una categoría vinculada a cualquier movimiento, incluidos los inactivos o cancelados. Sus asociaciones con grupos se retirarán.",
+  "delete_group_warning": "Se eliminará el grupo y sus asociaciones. Las categorías y sus movimientos se conservarán.",
+  "category_has_movements": "La categoría está vinculada a movimientos y no se puede eliminar.",
+  "obligation_has_payments": "El préstamo o deuda tiene pagos asociados y no se puede eliminar.",
+  "delete_initial_on_obligation": "El movimiento inicial se elimina desde el préstamo o deuda, únicamente si no tiene pagos.",
+  "section": "Sección"
 }

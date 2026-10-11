@@ -4,7 +4,6 @@
     "home": "Go to Home",
     "go": "Go to {{section}}",
     "editing": "Customize your shortcuts",
-    "locked": "Your shortcuts · locked",
     "lock": "Lock shortcut editing",
     "unlock": "Unlock shortcut editing",
     "locked_success": "Shortcut editing locked",
@@ -28,11 +27,15 @@
     "empty": "No sections are available to add.",
     "no_matches": "No sections match your search.",
     "loading": "Checking shortcuts…",
+    "editor_loading": "Opening shortcut editor…",
+    "editor_load_error": "Could not open the editor. Press the shortcut to retry.",
     "storage_error": "Could not read or save local preferences. Check browser storage permissions and try again.",
     "storage_error_short": "Check local storage",
     "permission_error": "Could not verify shortcuts"
   },
-  "mobile_cards": { "actions": "Actions for {{name}}" },
+  "mobile_cards": {
+    "actions": "Actions for {{name}}"
+  },
   "menu_home": "Home",
   "menu_general_settings": "General Settings",
   "menu_users": "Users",
@@ -45,15 +48,18 @@
   "collapse_drawer": "Collapse drawer",
   "toggle_theme": "Toggle theme",
   "toggle_language": "Change language",
+  "toggle_language_label": "{{language}} · Change language",
   "ai_indicators": {
     "group": "AI status: {{provider}}",
     "label": "{{provider}} · {{mode}}: {{status}}. Open settings for this mode",
-    "api_key": "API key",
-    "token_plan_web": "Token Plan Web",
-    "token_plan_agentic": "Token Plan Agentic",
+    "api_key": "API",
+    "token_plan_web": "Web",
+    "token_plan_agentic": "Agentic",
     "session_ready": "Session available; inference not established",
     "healthy": "Verified healthy status",
     "needs_review": "Needs review",
-    "unverified": "Unverified; review status"
+    "unverified": "Unverified; review status",
+    "disabled": "Disabled",
+    "disabled_label": "{{provider}} · {{mode}}: {{status}}"
   }
 }

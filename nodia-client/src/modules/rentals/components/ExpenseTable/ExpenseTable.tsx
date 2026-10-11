@@ -6,6 +6,7 @@ import { useRentalBusy, useRentalList } from "../../infrastructure/useServices";
 import { formatRentalAmount } from "../../utils/money";
 
 import RentalTable from "../RentalTable";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 import RentalFilters from "../RentalFilters";
 
 import ExpenseModal from "../ExpenseModal";
@@ -52,6 +53,42 @@ function ExpenseHistory({
         />
       </FilterRow>
       <RentalTable
+        renderMobileRow={(row, cardBusy, actions) => (
+          <MobileRecordCard
+            title={row.name}
+            disabled={cardBusy}
+            actions={actions}
+            primaryAction={actions.find((a) => a.key === "edit")}
+            fields={[
+              {
+                key: "amount",
+                label: t("rental:amount"),
+                value: formatRentalAmount(row.amount, i18n.language),
+              },
+              {
+                key: "status",
+                label: t("rental:status"),
+                value: t("rental:" + row.status),
+              },
+              {
+                key: "incurred",
+                label: t("rental:incurred_on"),
+                value: row.incurred_on,
+              },
+              {
+                key: "paid",
+                label: t("rental:paid_on"),
+                value: row.paid_on ?? t("rental:not_recorded"),
+              },
+              {
+                key: "category",
+                label: t("rental:category"),
+                value: row.category ?? t("rental:not_assigned"),
+                fullWidth: true,
+              },
+            ]}
+          />
+        )}
         title={t("rental:tabs.expenses")}
         rows={list.data?.data ?? []}
         columns={[

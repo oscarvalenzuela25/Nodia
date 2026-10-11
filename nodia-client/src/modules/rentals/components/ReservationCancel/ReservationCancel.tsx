@@ -1,3 +1,4 @@
+import DateTimeInput from "../../../../components/inputs/DateTimeInput";
 import { useId, useState } from "react";
 import {
   Alert,
@@ -157,15 +158,16 @@ export default function ReservationCancel({
           name="cancelled_at"
           control={control}
           render={({ field }) => (
-            <TextInput
+            <DateTimeInput
               {...field}
+              timezone={property.timezone}
               label={t("rental:cancelled_at")}
               disabled={busy}
               error={!!errors.cancelled_at}
               helperText={
                 errors.cancelled_at?.message
                   ? t(errors.cancelled_at.message)
-                  : t("rental:instant_with_offset")
+                  : undefined
               }
             />
           )}

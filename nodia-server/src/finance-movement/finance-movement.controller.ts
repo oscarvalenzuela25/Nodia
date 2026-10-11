@@ -1,6 +1,9 @@
+import { DeleteFinanceMovementUseCase } from './use-case/delete-finance-movement.use-case.js';
 import {
   Body,
   Controller,
+  Delete,
+  HttpCode,
   Get,
   Param,
   Post,
@@ -14,6 +17,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -50,6 +54,7 @@ import {
 @Controller('finance/movements')
 export class FinanceMovementController {
   constructor(
+    private readonly deleteMovement: DeleteFinanceMovementUseCase,
     private readonly createMovement: CreateFinanceMovementUseCase,
     private readonly updateMovement: UpdateFinanceMovementUseCase,
     private readonly getMovements: GetFinanceMovementsUseCase,
@@ -86,5 +91,15 @@ export class FinanceMovementController {
     @Body() dto: UpdateFinanceMovementDto,
   ) {
     return this.updateMovement.execute(request.auth.user.id, params.id, dto);
+  }
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({
+    summary:
+      'Delete an owned personal finance record with association safeguards',
+  })
+  @ApiNoContentResponse({ description: 'Record deleted atomically.' })
+  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
+    return this.deleteMovement.execute(request.auth.user.id, params.id);
   }
 }

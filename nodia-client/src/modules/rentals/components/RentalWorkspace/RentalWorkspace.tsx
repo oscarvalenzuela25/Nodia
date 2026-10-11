@@ -1,6 +1,17 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router";
-import { Alert, Box, Button, Tab, Tabs } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
+import AddOutlined from "@mui/icons-material/AddOutlined";
+import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
 import { useTranslation } from "react-i18next";
 import type {
   RentalBlock,
@@ -25,15 +36,16 @@ import BlockModal from "../BlockModal";
 import TurnoverTable from "../TurnoverTable";
 import TurnoverModal from "../TurnoverModal";
 import PaymentTable from "../PaymentTable";
+import PaymentModal from "../PaymentModal";
 import ExpenseTable from "../ExpenseTable";
 import CollaboratorTable from "../CollaboratorTable";
 import ConfigurationPanel from "../ConfigurationPanel";
-import PolicyTable from "../PolicyTable";
 import RentalAudit from "../RentalAudit";
 import { RentalAccessContext } from "../../infrastructure/scope";
-import { WorkspaceStack, WorkspaceAction } from "./styles";
+import { WorkspaceStack, WorkspaceAction, WorkspaceHeader } from "./styles";
 
 const TABS = [
+  "cash",
   "general",
   "calendar",
   "reservations",
@@ -44,12 +56,14 @@ const TABS = [
 ] as const;
 type RentalTab = (typeof TABS)[number];
 type Modal =
+  | { kind: "payment_new"; reservationId: string }
   | { kind: "payments"; reservationId?: string }
   | { kind: "audit" }
   | { kind: "detail" | "turnover"; id: string }
   | { kind: "edit"; id: string; initialData?: RentalReservation }
   | { kind: "block_edit"; id: string; initialData?: RentalBlock }
-  | { kind: "new" | "block_new" }
+  | { kind: "new"; stay?: { check_in_on: string; check_out_on: string } }
+  | { kind: "block_new" }
   | {
       kind: "confirm" | "cancel" | "start" | "complete";
       row: RentalReservation;
@@ -70,10 +84,13 @@ export default function RentalWorkspace({
 function Workspace({ property }: { property: RentalProperty }) {
   const { t } = useTranslation();
   const [params, setParams] = useSearchParams();
-  const tab = TABS.find((value) => value === params.get("tab")) ?? "general";
+  const tab = TABS.find((value) => value === params.get("tab")) ?? "calendar";
+  const primaryTab = tab === "general" || tab === "expenses" ? "cash" : tab;
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [modal, setModal] = useState<Modal>();
   const [secondaryTurnover, setSecondaryTurnover] = useState<string>();
   const [blocks, setBlocks] = useState(false);
+  const [selectedReservationId, setSelectedReservationId] = useState<string>();
   const busy = useRentalBusy(property.id);
   const editing = useRentalRecord(
     "reservations",
@@ -95,6 +112,7 @@ function Workspace({ property }: { property: RentalProperty }) {
     if (busy) return;
     setModal(undefined);
     setBlocks(false);
+    setSelectedReservationId(undefined);
     setParams((previous) => {
       const query = new URLSearchParams(previous);
       query.set("tab", next);
@@ -112,20 +130,95 @@ function Workspace({ property }: { property: RentalProperty }) {
       {!property.is_active && (
         <Alert severity="info">{t("rental:archive_warning")}</Alert>
       )}
-      <WorkspaceAction
-        disabled={busy || Boolean(modal)}
-        onClick={() => setModal({ kind: "audit" })}
+      <WorkspaceHeader>
+        <Box sx={{ minWidth: 0 }}>
+          <Typography
+            variant="h5"
+            component="h2"
+            sx={{ fontWeight: 700, overflowWrap: "anywhere" }}
+          >
+            {property.name}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {property.timezone}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            flexWrap: "wrap",
+            width: { xs: "100%", sm: "auto" },
+          }}
+        >
+          <WorkspaceAction
+            variant="contained"
+            startIcon={<AddOutlined />}
+            disabled={busy || Boolean(modal) || !property.is_active}
+            onClick={() => setModal({ kind: "new" })}
+          >
+            {t("rental:new_reservation")}
+          </WorkspaceAction>
+          <WorkspaceAction
+            variant="outlined"
+            endIcon={<ExpandMoreOutlined />}
+            disabled={busy || Boolean(modal)}
+            aria-haspopup="menu"
+            aria-expanded={Boolean(menuAnchor)}
+            onClick={(event) => setMenuAnchor(event.currentTarget)}
+          >
+            {t("rental:calendar_manage")}
+          </WorkspaceAction>
+        </Box>
+      </WorkspaceHeader>
+      <Menu
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={() => setMenuAnchor(null)}
       >
-        {t("rental:history")}
-      </WorkspaceAction>
+        <MenuItem
+          onClick={() => {
+            setMenuAnchor(null);
+            changeTab("calendar");
+            setBlocks(true);
+          }}
+        >
+          {t("rental:manage_blocks")}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setMenuAnchor(null);
+            changeTab("expenses");
+          }}
+        >
+          {t("rental:tabs.expenses")}
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setMenuAnchor(null);
+            setModal({ kind: "audit" });
+          }}
+        >
+          {t("rental:history")}
+        </MenuItem>
+      </Menu>
       <Tabs
-        value={tab}
+        value={primaryTab}
         onChange={(_, next: RentalTab) => changeTab(next)}
         variant="scrollable"
         scrollButtons="auto"
         aria-label={t("rental:title")}
       >
-        {TABS.map((value) => (
+        {(
+          [
+            "calendar",
+            "reservations",
+            "turnovers",
+            "cash",
+            "collaborators",
+            "configuration",
+          ] as RentalTab[]
+        ).map((value) => (
           <Tab
             key={value}
             value={value}
@@ -138,11 +231,12 @@ function Workspace({ property }: { property: RentalProperty }) {
       </Tabs>
       <Box
         role="tabpanel"
-        id={`rental-panel-${tab}`}
-        aria-labelledby={`rental-tab-${tab}`}
+        id={`rental-panel-${primaryTab}`}
+        aria-labelledby={`rental-tab-${primaryTab}`}
       >
-        {tab === "general" && (
+        {(tab === "general" || tab === "cash") && (
           <RentalOverview
+            cashOnly={tab === "cash"}
             property={property}
             onOpenReservation={detail}
             onOpenTurnover={turnover}
@@ -161,7 +255,13 @@ function Workspace({ property }: { property: RentalProperty }) {
               property={property}
               onOpenReservation={detail}
               onOpenTurnover={turnover}
+              selectedReservationId={selectedReservationId}
+              onSelectReservation={setSelectedReservationId}
               onManageBlocks={() => setBlocks((value) => !value)}
+              onCreateReservation={(stay) => setModal({ kind: "new", stay })}
+              onQuickPayment={(reservationId) =>
+                setModal({ kind: "payment_new", reservationId })
+              }
             />
             {blocks && (
               <BlockTable
@@ -194,7 +294,6 @@ function Workspace({ property }: { property: RentalProperty }) {
         {tab === "configuration" && (
           <WorkspaceStack>
             <ConfigurationPanel property={property} />
-            <PolicyTable property={property} />
           </WorkspaceStack>
         )}
       </Box>
@@ -251,10 +350,20 @@ function Workspace({ property }: { property: RentalProperty }) {
           onOpenTurnover={turnover}
         />
       )}
+      {modal?.kind === "payment_new" && (
+        <PaymentModal
+          open
+          property={property}
+          reservationId={modal.reservationId}
+          onClose={() => setModal(undefined)}
+        />
+      )}
       {modal?.kind === "new" && (
         <ReservationModal
           open
           property={property}
+          initialStay={modal.stay}
+          onSaved={setSelectedReservationId}
           onClose={() => setModal(undefined)}
         />
       )}

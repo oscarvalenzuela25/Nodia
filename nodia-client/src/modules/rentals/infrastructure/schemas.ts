@@ -17,10 +17,12 @@ export const propertySchema = z.strictObject({
   max_guests: z.number().finite().int().max(Number.MAX_SAFE_INTEGER).min(0),
   check_in_time: z
     .string()
-    .regex(new RegExp("^([01][0-9]|2[0-3]):[0-5][0-9]$")),
+    .regex(new RegExp("^([01][0-9]|2[0-3]):[0-5][0-9]$"))
+    .nullable(),
   check_out_time: z
     .string()
-    .regex(new RegExp("^([01][0-9]|2[0-3]):[0-5][0-9]$")),
+    .regex(new RegExp("^([01][0-9]|2[0-3]):[0-5][0-9]$"))
+    .nullable(),
   default_nightly_rate: z
     .string()
     .regex(new RegExp("^(0|[1-9][0-9]*)$"))

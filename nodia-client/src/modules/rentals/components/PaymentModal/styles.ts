@@ -11,6 +11,6 @@ export const ModalActions = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
-    "& button": { width: "100%" },
+    "& button": { width: "100%", minHeight: 44 },
   },
 }));

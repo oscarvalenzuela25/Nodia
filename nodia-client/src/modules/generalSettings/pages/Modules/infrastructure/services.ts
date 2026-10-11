@@ -17,63 +17,71 @@ const getEndpoint = (path: string) => {
 };
 
 export const getModules = async (
-  params?: GetModulesParams
+  params?: GetModulesParams,
 ): Promise<PaginatedResponse<ModuleEntity>> => {
   const { data } = await mainInstance.get<PaginatedResponse<ModuleEntity>>(
     getEndpoint("/modules"),
-    { params }
+    { params },
   );
   return data;
 };
 
 export const createModule = async (
-  payload: CreateModulePayload
+  payload: CreateModulePayload,
 ): Promise<ModuleEntity> => {
   const { data } = await mainInstance.post<ModuleEntity>(
     getEndpoint("/module"),
-    payload
+    payload,
   );
   return data;
 };
 
 export const updateModule = async (
   moduleId: string,
-  payload: UpdateModulePayload
+  payload: UpdateModulePayload,
 ): Promise<ModuleEntity> => {
   const { data } = await mainInstance.put<ModuleEntity>(
     getEndpoint(`/module/${moduleId}`),
-    payload
+    payload,
   );
   return data;
 };
 
 export const getModuleGroups = async (
-  params?: GetModuleGroupsParams
+  params?: GetModuleGroupsParams,
 ): Promise<PaginatedResponse<ModuleGroupEntity>> => {
   const { data } = await mainInstance.get<PaginatedResponse<ModuleGroupEntity>>(
     getEndpoint("/module-groups"),
-    { params }
+    { params },
   );
   return data;
 };
 
 export const createModuleGroup = async (
-  payload: CreateModuleGroupPayload
+  payload: CreateModuleGroupPayload,
 ): Promise<ModuleGroupEntity> => {
   const { data } = await mainInstance.post<ModuleGroupEntity>(
     getEndpoint("/module-group"),
-    payload
+    payload,
   );
   return data;
 };
 
 export const updateModuleGroup = async (
   groupId: string,
-  payload: UpdateModuleGroupPayload
+  payload: UpdateModuleGroupPayload,
 ): Promise<ModuleGroupEntity> => {
   const { data } = await mainInstance.put<ModuleGroupEntity>(
     getEndpoint(`/module-group/${groupId}`),
-    payload
+    payload,
   );
   return data;
+};
+
+export const deleteModule = async (moduleId: string): Promise<void> => {
+  await mainInstance.delete(getEndpoint(`/module/${moduleId}`));
+};
+
+export const deleteModuleGroup = async (groupId: string): Promise<void> => {
+  await mainInstance.delete(getEndpoint(`/module-group/${groupId}`));
 };

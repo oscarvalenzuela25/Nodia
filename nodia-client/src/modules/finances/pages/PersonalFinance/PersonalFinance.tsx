@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { Box, Tab, Tabs } from "@mui/material";
+import { Box, Tab, Tabs, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import FinanceOverview from "../../components/FinanceOverview";
 import FinanceResourceTab from "../../components/FinanceResourceTab";
@@ -33,6 +35,8 @@ const TAB_LABELS: Record<FinanceTab, string> = {
 
 const PersonalFinance = () => {
   const { t } = useTranslation("finance");
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedTab = searchParams.get("tab");
   const tab: FinanceTab =
@@ -67,28 +71,54 @@ const PersonalFinance = () => {
         </PageTitleContainer>
         <PageSubtitle>{t("finance:subtitle")}</PageSubtitle>
       </PageHeader>
-      <Tabs
-        value={tab}
-        onChange={changeTab}
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label={t("finance:title")}
-      >
-        {TABS.map((value) => (
-          <Tab
-            key={value}
-            value={value}
-            label={t(TAB_LABELS[value])}
-            disabled={busy}
-            id={`finance-tab-${value}`}
-            aria-controls={`finance-panel-${value}`}
-          />
-        ))}
-      </Tabs>
+      {mobile ? (
+        <SelectSingleInput
+          label={t("finance:section")}
+          value={tab}
+          options={TABS.map((value) => ({
+            value,
+            label: t(TAB_LABELS[value]),
+          }))}
+          onChange={(value) => {
+            const next = TABS.find((item) => item === value);
+            if (next) changeTab(undefined, next);
+          }}
+          disabled={busy}
+          clearable={false}
+          fullWidth
+        />
+      ) : (
+        <Tabs
+          value={tab}
+          onChange={changeTab}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          sx={{
+            minWidth: 0,
+            "& .MuiTab-root": { minHeight: 44 },
+            "& .MuiTabs-scrollButtons": { width: 44 },
+          }}
+          aria-label={t("finance:title")}
+        >
+          {TABS.map((value) => (
+            <Tab
+              key={value}
+              value={value}
+              label={t(TAB_LABELS[value])}
+              disabled={busy}
+              id={`finance-tab-${value}`}
+              aria-controls={`finance-panel-${value}`}
+            />
+          ))}
+        </Tabs>
+      )}
       <Box
+        sx={{ minWidth: 0 }}
         role="tabpanel"
         id={`finance-panel-${tab}`}
-        aria-labelledby={`finance-tab-${tab}`}
+        aria-labelledby={mobile ? undefined : `finance-tab-${tab}`}
+        aria-label={mobile ? t(TAB_LABELS[tab]) : undefined}
       >
         {tab === "general" ? (
           <FinanceOverview

@@ -6,6 +6,7 @@ import { Module as ModuleEntity } from './entities/module.entity.js';
 import { GetAllModulesUseCase } from './use-case/get-all-modules.use-case.js';
 import { CreateModuleUseCase } from './use-case/create-module.use-case.js';
 import { UpdateModuleUseCase } from './use-case/update-module.use-case.js';
+import { DeleteModuleUseCase } from './use-case/delete-module.use-case.js';
 import { TranslationModule } from '../translation/translation.module.js';
 
 @Module({
@@ -16,6 +17,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     GetAllModulesUseCase,
     CreateModuleUseCase,
     UpdateModuleUseCase,
+    DeleteModuleUseCase,
   ],
   exports: [ModuleService],
 })

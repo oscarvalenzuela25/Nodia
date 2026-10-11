@@ -33,6 +33,7 @@ export class Invoice {
   @Column({ type: 'integer', default: 0 })
   total_amount: number;
 
+  @Index('idx_invoices_path_storage')
   @Column({ type: 'varchar', length: 255, default: '' })
   path_storage: string;
 

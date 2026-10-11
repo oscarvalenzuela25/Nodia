@@ -1,0 +1,346 @@
+{
+  "stage": "shared-icon-catalog",
+  "date": "2026-10-10",
+  "scope": "Nodia Client; administrative icon metadata separated from shared runtime registry",
+  "sourceChanges": [
+    "src/store/generalSettings/moduleIcons.tsx",
+    "src/store/generalSettings/iconCatalog.ts",
+    "src/components/inputs/IconSelect/IconSelect.tsx"
+  ],
+  "build": {
+    "protocol": "Transitive static imports from the production entry; raw file length and Node gzipSync default. Excludes route dynamic imports and HTTP headers. These are build estimates, not measured transfer.",
+    "before": {
+      "sizes": [
+        {
+          "fileName": "assets/index-BEAcFkBM.js",
+          "raw": 401027,
+          "gzip": 127629
+        },
+        {
+          "fileName": "assets/rolldown-runtime-B0Z9INg1.js",
+          "raw": 901,
+          "gzip": 510
+        },
+        {
+          "fileName": "assets/Button-BWFKXJib.js",
+          "raw": 120397,
+          "gzip": 41129
+        },
+        {
+          "fileName": "assets/Menu-C_lu7kB6.js",
+          "raw": 41499,
+          "gzip": 14140
+        },
+        {
+          "fileName": "assets/react-DEgJrMBm.js",
+          "raw": 3501,
+          "gzip": 1570
+        },
+        {
+          "fileName": "assets/RtlProvider-BuqJysNE.js",
+          "raw": 268,
+          "gzip": 219
+        },
+        {
+          "fileName": "assets/Alert-twFAiCNz.js",
+          "raw": 11459,
+          "gzip": 4058
+        },
+        {
+          "fileName": "assets/createSvgIcon-Bg6mhHqj.js",
+          "raw": 2415,
+          "gzip": 1143
+        },
+        {
+          "fileName": "assets/api-BW9A_oXG.js",
+          "raw": 497687,
+          "gzip": 151654
+        },
+        {
+          "fileName": "assets/hooks-BNQWnpaZ.js",
+          "raw": 70006,
+          "gzip": 22956
+        },
+        {
+          "fileName": "assets/styled-EgpUIBzs.js",
+          "raw": 61,
+          "gzip": 78
+        },
+        {
+          "fileName": "assets/useThemeProps-D-YxS3GZ.js",
+          "raw": 214,
+          "gzip": 182
+        },
+        {
+          "fileName": "assets/KeyboardArrowDown-DrAhfB8p.js",
+          "raw": 34660,
+          "gzip": 12341
+        },
+        {
+          "fileName": "assets/useMutation-BN2RxbEg.js",
+          "raw": 8301,
+          "gzip": 2703
+        },
+        {
+          "fileName": "assets/HolidayVillageOutlined-BTJrT77h.js",
+          "raw": 416,
+          "gzip": 315
+        },
+        {
+          "fileName": "assets/react-BLV4Qw4P.js",
+          "raw": 16437,
+          "gzip": 6316
+        },
+        {
+          "fileName": "assets/useAuth-D30KBTAA.js",
+          "raw": 838,
+          "gzip": 466
+        },
+        {
+          "fileName": "assets/routes-B1nYRRXA.js",
+          "raw": 39,
+          "gzip": 59
+        },
+        {
+          "fileName": "assets/schemas-D7iZCweC.js",
+          "raw": 71568,
+          "gzip": 18993
+        }
+      ],
+      "raw": 1281694,
+      "gzip": 406461
+    },
+    "after": {
+      "sizes": [
+        {
+          "fileName": "assets/index-BqVCewJv.js",
+          "raw": 388031,
+          "gzip": 124159,
+          "sha256": "9c1953d58dd2af06d27dc2f788514b951da754d8294cfbf102f0a78b6a9003d0"
+        },
+        {
+          "fileName": "assets/rolldown-runtime-B0Z9INg1.js",
+          "raw": 901,
+          "gzip": 510,
+          "sha256": "5e9b0d884d2ebb14e241ab38b43e41efb61bce2e74d71507b0b95b264fba4047"
+        },
+        {
+          "fileName": "assets/Button-BWFKXJib.js",
+          "raw": 120397,
+          "gzip": 41129,
+          "sha256": "de4131e62945c7607d353273ae91860f589818ce58054636f0f5b08be484e552"
+        },
+        {
+          "fileName": "assets/Menu-C_lu7kB6.js",
+          "raw": 41499,
+          "gzip": 14140,
+          "sha256": "fa53105fc24d838e8f7b3d268d5127744b4aaabf98d48379aefd207040f1b06b"
+        },
+        {
+          "fileName": "assets/react-DEgJrMBm.js",
+          "raw": 3501,
+          "gzip": 1570,
+          "sha256": "dc5e14ca0e8f91d68dad29b03fd1c06d3cd8d14ff2894ebd70422e69f04084e4"
+        },
+        {
+          "fileName": "assets/RtlProvider-BuqJysNE.js",
+          "raw": 268,
+          "gzip": 219,
+          "sha256": "c2952983bb5f19f5cfbfd012a137eb445625ea2405ddddf60f58f97e0fd29fe0"
+        },
+        {
+          "fileName": "assets/Alert-twFAiCNz.js",
+          "raw": 11459,
+          "gzip": 4058,
+          "sha256": "fa216eb9990e3b7ab30045e3356e5498e4fb6ede7fad80cbd0be6afcd143c9b2"
+        },
+        {
+          "fileName": "assets/createSvgIcon-Bg6mhHqj.js",
+          "raw": 2415,
+          "gzip": 1143,
+          "sha256": "2931de5dd631bd97d5ace4d54cd3b93fa84dd19eda783a45fe5928ee89aa5bf8"
+        },
+        {
+          "fileName": "assets/api-BW9A_oXG.js",
+          "raw": 497687,
+          "gzip": 151654,
+          "sha256": "678e963043ba170c156a18921e5121af061d6b711918a985239ff4a44ecc96a2"
+        },
+        {
+          "fileName": "assets/hooks-BNQWnpaZ.js",
+          "raw": 70006,
+          "gzip": 22956,
+          "sha256": "b80c8d3481b5462d40e2fc3f8c44250021d0825eabdcd6728db6413448395684"
+        },
+        {
+          "fileName": "assets/styled-EgpUIBzs.js",
+          "raw": 61,
+          "gzip": 78,
+          "sha256": "b99062cd06426482a463a16e80c0330e40e16b2f79e1b78c360b2098edfd1774"
+        },
+        {
+          "fileName": "assets/useThemeProps-D-YxS3GZ.js",
+          "raw": 214,
+          "gzip": 182,
+          "sha256": "1c4f936d4b6b8130349bf1de3ec557fa89b0bb0315f5764579d361c835ef7ac1"
+        },
+        {
+          "fileName": "assets/KeyboardArrowDown-DrAhfB8p.js",
+          "raw": 34660,
+          "gzip": 12341,
+          "sha256": "82c668924d7eb1d51636a2b2fbe5451229b9d381433ed4b8b1bc530628a0b995"
+        },
+        {
+          "fileName": "assets/useMutation-BN2RxbEg.js",
+          "raw": 8301,
+          "gzip": 2703,
+          "sha256": "b63309fe8fb764a6332968ca4f1bc24d3310f9f8dc6ec89e46041af4cf7c3084"
+        },
+        {
+          "fileName": "assets/HolidayVillageOutlined-BTJrT77h.js",
+          "raw": 416,
+          "gzip": 315,
+          "sha256": "317c1b0ae0bbfc65d645a22582846a0911650f0461b551898b157a2d9145bd59"
+        },
+        {
+          "fileName": "assets/react-BLV4Qw4P.js",
+          "raw": 16437,
+          "gzip": 6316,
+          "sha256": "d03541f1cfc9425c5866e75220cda17a96c84648564d2db26bef41512d1b5b06"
+        },
+        {
+          "fileName": "assets/useAuth-D30KBTAA.js",
+          "raw": 838,
+          "gzip": 466,
+          "sha256": "973d83cd0f5ef605284fb29b9f9bbb52714f94171c026bcdba916191ae563772"
+        },
+        {
+          "fileName": "assets/routes-B1nYRRXA.js",
+          "raw": 39,
+          "gzip": 59,
+          "sha256": "e98740212d5246166dd03c4ff1eb1cb2e97e660ef48e16e21f5a5c06ca349d25"
+        },
+        {
+          "fileName": "assets/schemas-D7iZCweC.js",
+          "raw": 71568,
+          "gzip": 18993,
+          "sha256": "82927e3f5f6610f844af343641020c093a23dc61d0789b5843fe6ec02a85fc1f"
+        }
+      ],
+      "raw": 1268698,
+      "gzip": 402991,
+      "metadataChunks": [
+        {
+          "fileName": "assets/Modules-BPCvURPZ.js",
+          "isInitial": false
+        }
+      ]
+    },
+    "savings": {
+      "raw": 12996,
+      "gzip": 3470
+    },
+    "moduleGraph": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-shared-stage-2026-10-10/after-bundle-graph.json"
+  },
+  "catalog": {
+    "options": 91,
+    "registryUnchanged": true,
+    "resolversUnchanged": true,
+    "allMetadataAndBindingsEquivalent": true
+  },
+  "authenticatedBaseline": {
+    "source": "User supplied inline Lighthouse JSON in this chat; aggregate transcribed. No complete raw JSON file or hash recorded for this report.",
+    "fetchTime": "2026-10-10T23:34:53.281Z",
+    "lighthouseVersion": "13.4.1",
+    "hostChromeMajor": 154,
+    "url": "http://localhost:5174/",
+    "gatherMode": "navigation",
+    "formFactor": "mobile",
+    "disableStorageReset": true,
+    "screenEmulation": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": true
+    },
+    "throttlingMethod": "simulate",
+    "cpuSlowdownMultiplier": 4,
+    "executions": 1,
+    "scores": {
+      "performance": 69,
+      "accessibility": 100,
+      "bestPractices": 96,
+      "seo": 82
+    },
+    "metrics": {
+      "fcpMs": 3527.27025,
+      "lcpMs": 4386.592675,
+      "speedIndexMs": 3527.27025,
+      "tbtMs": 341,
+      "cls": 0.06114332387002824
+    },
+    "scripts": {
+      "transferBytes": 427280,
+      "requests": 23
+    },
+    "totalAppTransferBytes": 488099,
+    "entry": "index-BEAcFkBM.js",
+    "api": "api-BW9A_oXG.js",
+    "sessionEvidence": [
+      "auth/me HTTP 200",
+      "authorization/context HTTP 200",
+      "ai-providers/health HTTP 200"
+    ],
+    "limitations": [
+      "Chrome extensions warning; several long tasks attributed to extensions.",
+      "One run; no median or clean acceptance.",
+      "Cannot compare this private report causally against prior anonymous Lighthouse 13.5.0 reports.",
+      "Coverage unused JS 1023335 bytes includes extensions; own entry/API estimated waste 84505 bytes.",
+      "Unminified JS warning 44753 bytes belongs to extensions.",
+      "Two asynchronous listener/channel console errors; origin not confirmed."
+    ]
+  },
+  "authenticatedAfter": null,
+  "verification": {
+    "catalogComparison": "TypeScript AST printer normalizes moved array; keys/order/labels/categories/keywords and registry component bindings identical; runtime registry and resolver source unchanged.",
+    "typecheck": "passed",
+    "lint": "passed",
+    "focusedTests": {
+      "passed": 72,
+      "files": 10
+    },
+    "fullTests": {
+      "passed": 1153,
+      "files": 184,
+      "durationSeconds": 257.32,
+      "workers": 4,
+      "log": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-shared-stage-2026-10-10/full-tests.log"
+    },
+    "normalBuild": {
+      "status": "passed",
+      "staticHashesMatchAnalyzedBuild": true,
+      "log": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-shared-stage-2026-10-10/build.log"
+    },
+    "browser": {
+      "session": "Existing legitimate local session preserved; no token extraction or session synthesis.",
+      "home": {
+        "entry": "index-BqVCewJv.js",
+        "modulesAssetObserved": false,
+        "method": "pageAssets inventory, not transfer/timing"
+      },
+      "iconSelect": {
+        "desktop": "Opened New Module; full catalog observed; search proveedores de ia returns filled/outlined robot options.",
+        "mobile320": "Selected Robot / IA (SmartToyOutlined), searched Usuarios, selected PeopleOutlined, cleared to automatic; cancel without saving.",
+        "screenshot": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-shared-stage-2026-10-10/icon-selector-mobile.png"
+      },
+      "restored": "Original reservations URL/property, default viewport; Spanish/dark unchanged. No business record or preference save."
+    }
+  },
+  "acceptance": {
+    "mobile90": false,
+    "cleanAuthenticatedMedianPending": true,
+    "measuredInitial400KiBPending": true,
+    "productionAcceptancePending": true
+  }
+}

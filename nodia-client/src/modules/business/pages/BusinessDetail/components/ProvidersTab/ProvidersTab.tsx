@@ -1,3 +1,7 @@
+import BusinessPagination from "../../../../components/BusinessPagination";
+import BusinessStatusFilter from "../../../../components/BusinessStatusFilter/BusinessStatusFilter";
+import { ProviderMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
+import { useMediaQuery, useTheme } from "@mui/material";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC, MouseEvent } from "react";
 import { lazy, Suspense, useState } from "react";
@@ -18,7 +22,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Tooltip,
   Typography,
@@ -48,10 +51,10 @@ import {
   useExportProvidersCsv,
 } from "../../../../infrastructure/useServices";
 import type { ProviderEntity } from "../../../../infrastructure/types";
-import ProviderModal, { type ProviderFormData } from "./components/ProviderModal";
-import {
-  ProviderBulkImport,
-} from "./components/ProviderBulkImport";
+import ProviderModal, {
+  type ProviderFormData,
+} from "./components/ProviderModal";
+import { ProviderBulkImport } from "./components/ProviderBulkImport";
 import {
   exportProvidersToCSV,
   downloadCSVFile,
@@ -72,23 +75,30 @@ export const ProvidersTab: FC<Props> = ({
   onCloseDirectCreateModal,
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
+  const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
 
   const [search, setSearch] = useState("");
-  const [contactsProvider, setContactsProvider] = useState<ProviderEntity | null>(null);
+  const [status, setStatus] = useState<"active" | "inactive" | null>("active");
+  const [contactsProvider, setContactsProvider] =
+    useState<ProviderEntity | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(50);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<ProviderEntity | null>(null);
+  const [selectedProvider, setSelectedProvider] =
+    useState<ProviderEntity | null>(null);
   const [isBulkMode, setIsBulkMode] = useState(false);
-  const [manageMenuAnchorEl, setManageMenuAnchorEl] = useState<null | HTMLElement>(null);
-  const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [manageMenuAnchorEl, setManageMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
 
   // 3-Dots Action Menu state
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [menuProvider, setMenuProvider] = useState<ProviderEntity | null>(null);
 
   // Confirm Dialog state
-  const [confirmToggleProvider, setConfirmToggleProvider] = useState<ProviderEntity | null>(null);
+  const [confirmToggleProvider, setConfirmToggleProvider] =
+    useState<ProviderEntity | null>(null);
 
   const {
     data: providersData,
@@ -102,6 +112,7 @@ export const ProvidersTab: FC<Props> = ({
     q: {
       business_id_eq: businessId,
       name_cont: search.trim() || undefined,
+      is_active_eq: status === null ? undefined : status === "active",
       s: "created_at desc",
     },
   });
@@ -110,7 +121,11 @@ export const ProvidersTab: FC<Props> = ({
   const createMutation = useCreateProvider();
   const updateMutation = useUpdateProvider();
   const exportMutation = useExportProvidersCsv();
-  const isBusy = isLoading || isFetching || createMutation.isPending || updateMutation.isPending;
+  const isBusy =
+    isLoading ||
+    isFetching ||
+    createMutation.isPending ||
+    updateMutation.isPending;
   const isExporting = exportMutation.isPending;
 
   const handleDownloadCurrentView = () => {
@@ -162,7 +177,7 @@ export const ProvidersTab: FC<Props> = ({
 
   const handleOpenActionMenu = (
     event: MouseEvent<HTMLButtonElement>,
-    provider: ProviderEntity
+    provider: ProviderEntity,
   ) => {
     setMenuAnchorEl(event.currentTarget);
     setMenuProvider(provider);
@@ -231,17 +246,47 @@ export const ProvidersTab: FC<Props> = ({
 
   if (contactsProvider?.business_id === businessId) {
     return (
-      <Suspense fallback={<LinearProgress aria-label={t("provider_contacts:loading")} />}>
-        <ProviderContacts key={contactsProvider.id} providerId={contactsProvider.id} providerName={contactsProvider.name} onBack={() => setContactsProvider(null)} />
+      <Suspense
+        fallback={
+          <LinearProgress aria-label={t("provider_contacts:loading")} />
+        }
+      >
+        <ProviderContacts
+          key={contactsProvider.id}
+          providerId={contactsProvider.id}
+          providerName={contactsProvider.name}
+          onBack={() => setContactsProvider(null)}
+        />
       </Suspense>
     );
   }
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <QueryErrorAlert isError={isError} isFetching={isFetching} onRetry={refetch} />
+      <QueryErrorAlert
+        isError={isError}
+        isFetching={isFetching}
+        onRetry={refetch}
+      />
+      <BusinessStatusFilter
+        layout="stacked"
+        value={status}
+        onChange={(value) => {
+          setStatus(value);
+          setPage(0);
+        }}
+        disabled={isBusy}
+      />
       {/* Toolbar */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
         <Box sx={{ width: { xs: "100%", sm: 320 } }}>
           <InputSearch
             value={search}
@@ -251,10 +296,23 @@ export const ProvidersTab: FC<Props> = ({
             }}
             placeholder={t("business:search_providers_placeholder")}
             fullWidth
+            disabled={isBusy}
           />
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            flexDirection: { xs: "column", sm: "row" },
+            width: { xs: "100%", sm: "auto" },
+            "& > button": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+            },
+          }}
+        >
           <Button
             variant="outlined"
             startIcon={<FileDownloadOutlinedIcon />}
@@ -299,6 +357,7 @@ export const ProvidersTab: FC<Props> = ({
             endIcon={<KeyboardArrowDownIcon />}
             onClick={(e) => setManageMenuAnchorEl(e.currentTarget)}
             sx={{ borderRadius: 2 }}
+            disabled={isBusy}
             data-testid="manage-providers-btn"
           >
             {t("business:manage_providers")}
@@ -339,229 +398,331 @@ export const ProvidersTab: FC<Props> = ({
       </Box>
 
       {/* Table */}
-      <Skeleton
-        loading={isLoading}
-        fallback={
-          <TableSkeleton
-            columns={[
-              { width: 100, header: t("business:provider_id") },
-              { header: t("business:provider_name") },
-              { width: 110, align: "center", header: t("business:provider_tax") },
-              { header: t("business:provider_fields_label") },
-              { align: "center", header: t("business:product_status") },
-              { width: 80, align: "right", header: t("core:actions") },
-            ]}
-            rows={rowsPerPage > 10 ? 10 : rowsPerPage}
-          />
-        }
+      <Paper
+        sx={{
+          borderRadius: 3,
+          p: { xs: 0, sm: 0 },
+          border: (theme) =>
+            mobile ? "none" : `1px solid ${theme.palette.divider}`,
+          boxShadow: "none",
+          bgcolor: mobile ? "transparent" : "background.paper",
+          overflow: "hidden",
+        }}
       >
-        <Paper
-          sx={{
-            borderRadius: 3,
-            border: (theme) => `1px solid ${theme.palette.divider}`,
-            boxShadow: "none",
-            overflow: "hidden",
-          }}
+        <Skeleton
+          loading={isLoading}
+          fallback={
+            <TableSkeleton
+              columns={[
+                { width: 100, header: t("business:provider_id") },
+                { header: t("business:provider_name") },
+                {
+                  width: 110,
+                  align: "center",
+                  header: t("business:provider_tax"),
+                },
+                { header: t("business:provider_fields_label") },
+                { align: "center", header: t("business:product_status") },
+                { width: 80, align: "right", header: t("core:actions") },
+              ]}
+              rows={rowsPerPage > 10 ? 10 : rowsPerPage}
+            />
+          }
         >
-          <TableContainer>
-            <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell width={100}>{t("business:provider_id")}</TableCell>
-                <TableCell>{t("business:provider_name")}</TableCell>
-                <TableCell align="center" width={110}>{t("business:provider_tax")}</TableCell>
-                <TableCell>{t("business:provider_fields_label")}</TableCell>
-                <TableCell align="center">{t("business:product_status")}</TableCell>
-                <TableCell align="right" width={80}>{t("core:actions")}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {!isLoading && providers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                      {t("business:providers_empty_title")}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {t("business:providers_empty_desc")}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+          {mobile ? (
+            <Box sx={{ display: "grid", gap: 2 }}>
+              {providers.length === 0 && !isError ? (
+                <Box sx={{ p: 2, textAlign: "center" }}>
+                  <Typography sx={{ fontWeight: 600 }}>
+                    {t("business:providers_empty_title")}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t("business:providers_empty_desc")}
+                  </Typography>
+                </Box>
               ) : (
                 providers.map((prov) => (
-                  <TableRow key={prov.id} hover data-testid={`provider-row-${prov.id}`}>
-                    {/* ID */}
-                    <TableCell sx={{ fontFamily: "monospace", color: "text.secondary", fontSize: "0.8rem" }}>
-                      {prov.id}
+                  <ProviderMobileCard
+                    key={prov.id}
+                    provider={prov}
+                    disabled={isBusy}
+                    onEdit={handleOpenEdit}
+                    onToggle={setConfirmToggleProvider}
+                    onContacts={setContactsProvider}
+                  />
+                ))
+              )}
+            </Box>
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell width={100}>
+                      {t("business:provider_id")}
                     </TableCell>
-
-                    {/* Name */}
-                    <TableCell sx={{ fontWeight: 600 }}>
-                      {prov.name}
-                      <Box sx={{ mt: 0.5 }}>
-                        <Button size="small" startIcon={<ContactsOutlinedIcon fontSize="small" />} disabled={isBusy}
-                          onClick={() => setContactsProvider(prov)} data-testid={`provider-contacts-${prov.id}`}>
-                          {t("provider_contacts:contacts")}
-                        </Button>
-                      </Box>
+                    <TableCell>{t("business:provider_name")}</TableCell>
+                    <TableCell align="center" width={110}>
+                      {t("business:provider_tax")}
                     </TableCell>
-
-                    {/* Tax */}
+                    <TableCell>{t("business:provider_fields_label")}</TableCell>
                     <TableCell align="center">
-                      <Chip
-                        size="small"
-                        variant="outlined"
-                        label={`${prov.tax ?? 19}%`}
-                        sx={{ fontWeight: 600, borderRadius: 1.5 }}
-                        data-testid={`provider-tax-chip-${prov.id}`}
-                      />
+                      {t("business:product_status")}
                     </TableCell>
+                    <TableCell align="right" width={80}>
+                      {t("core:actions")}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {!isLoading && providers.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 600, mb: 0.5 }}
+                        >
+                          {t("business:providers_empty_title")}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {t("business:providers_empty_desc")}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    providers.map((prov) => (
+                      <TableRow
+                        key={prov.id}
+                        hover
+                        data-testid={`provider-row-${prov.id}`}
+                      >
+                        {/* ID */}
+                        <TableCell
+                          sx={{
+                            fontFamily: "monospace",
+                            color: "text.secondary",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          {prov.id}
+                        </TableCell>
 
-                    {/* Fields: Structured format with support for { value, instructions } */}
-                    <TableCell data-testid={`provider-fields-cell-${prov.id}`}>
-                      {(() => {
-                        const getFieldConfig = (
-                          field: unknown,
-                        ): { value: string; instructions: string } => {
-                          if (!field) return { value: "", instructions: "" };
-                          if (typeof field === "string")
-                            return { value: field, instructions: "" };
-                          if (
-                            typeof field === "object" &&
-                            field !== null &&
-                            "value" in field
-                          ) {
-                            const val = (field as Record<string, unknown>).value;
-                            const inst = (field as Record<string, unknown>).instructions;
-                            return {
-                              value: typeof val === "string" ? val : "",
-                              instructions: typeof inst === "string" ? inst : "",
-                            };
-                          }
-                          return { value: "", instructions: "" };
-                        };
-
-                        const codeConfig = getFieldConfig(prov.fields?.code);
-                        const costPriceConfig = getFieldConfig(prov.fields?.cost_price);
-                        const costPriceTaxConfig = getFieldConfig(prov.fields?.cost_price_tax);
-                        const packagesConfig = getFieldConfig(prov.fields?.packages);
-                        const unitsPerPackageConfig = getFieldConfig(prov.fields?.units_per_package);
-
-                        const renderFieldRow = (
-                          label: string,
-                          config: { value: string; instructions: string },
-                          testId: string,
-                        ) => (
-                          <Typography
-                            variant="caption"
-                            component="div"
-                            sx={{
-                              lineHeight: 1.5,
-                              display: "inline-flex",
-                              alignItems: "center",
-                              flexWrap: "wrap",
-                            }}
-                            data-testid={testId}
-                          >
-                            <Box component="span" sx={{ fontWeight: 600 }}>
-                              {label}:
-                            </Box>{" "}
-                            <Box
-                              component="span"
-                              sx={{
-                                ml: 0.5,
-                                color: config.value ? "text.primary" : "text.secondary",
-                                fontStyle: config.value ? "normal" : "italic",
-                              }}
+                        {/* Name */}
+                        <TableCell sx={{ fontWeight: 600 }}>
+                          {prov.name}
+                          <Box sx={{ mt: 0.5 }}>
+                            <Button
+                              size="small"
+                              startIcon={
+                                <ContactsOutlinedIcon fontSize="small" />
+                              }
+                              disabled={isBusy}
+                              onClick={() => setContactsProvider(prov)}
+                              data-testid={`provider-contacts-${prov.id}`}
                             >
-                              {config.value || t("business:no_info")}
-                            </Box>
-                            {config.instructions ? (
-                              <Tooltip
-                                title={`${t("business:mapping_field_instructions_label")}: ${config.instructions}`}
-                                arrow
-                                placement="top"
+                              {t("provider_contacts:contacts")}
+                            </Button>
+                          </Box>
+                        </TableCell>
+
+                        {/* Tax */}
+                        <TableCell align="center">
+                          <Chip
+                            size="small"
+                            variant="outlined"
+                            label={`${prov.tax ?? 19}%`}
+                            sx={{ fontWeight: 600, borderRadius: 1.5 }}
+                            data-testid={`provider-tax-chip-${prov.id}`}
+                          />
+                        </TableCell>
+
+                        {/* Fields: Structured format with support for { value, instructions } */}
+                        <TableCell
+                          data-testid={`provider-fields-cell-${prov.id}`}
+                        >
+                          {(() => {
+                            const getFieldConfig = (
+                              field: unknown,
+                            ): { value: string; instructions: string } => {
+                              if (!field)
+                                return { value: "", instructions: "" };
+                              if (typeof field === "string")
+                                return { value: field, instructions: "" };
+                              if (
+                                typeof field === "object" &&
+                                field !== null &&
+                                "value" in field
+                              ) {
+                                const val = (field as Record<string, unknown>)
+                                  .value;
+                                const inst = (field as Record<string, unknown>)
+                                  .instructions;
+                                return {
+                                  value: typeof val === "string" ? val : "",
+                                  instructions:
+                                    typeof inst === "string" ? inst : "",
+                                };
+                              }
+                              return { value: "", instructions: "" };
+                            };
+
+                            const codeConfig = getFieldConfig(
+                              prov.fields?.code,
+                            );
+                            const costPriceConfig = getFieldConfig(
+                              prov.fields?.cost_price,
+                            );
+                            const costPriceTaxConfig = getFieldConfig(
+                              prov.fields?.cost_price_tax,
+                            );
+                            const packagesConfig = getFieldConfig(
+                              prov.fields?.packages,
+                            );
+                            const unitsPerPackageConfig = getFieldConfig(
+                              prov.fields?.units_per_package,
+                            );
+
+                            const renderFieldRow = (
+                              label: string,
+                              config: { value: string; instructions: string },
+                              testId: string,
+                            ) => (
+                              <Typography
+                                variant="caption"
+                                component="div"
+                                sx={{
+                                  lineHeight: 1.5,
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  flexWrap: "wrap",
+                                }}
+                                data-testid={testId}
                               >
+                                <Box component="span" sx={{ fontWeight: 600 }}>
+                                  {label}:
+                                </Box>{" "}
                                 <Box
                                   component="span"
                                   sx={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    cursor: "help",
                                     ml: 0.5,
+                                    color: config.value
+                                      ? "text.primary"
+                                      : "text.secondary",
+                                    fontStyle: config.value
+                                      ? "normal"
+                                      : "italic",
                                   }}
-                                  data-testid={`${testId}-instructions`}
                                 >
-                                  <InfoOutlinedIcon
-                                    sx={{ fontSize: 13, color: "info.main" }}
-                                  />
+                                  {config.value || t("business:no_info")}
                                 </Box>
-                              </Tooltip>
-                            ) : null}
-                          </Typography>
-                        );
+                                {config.instructions ? (
+                                  <Tooltip
+                                    title={`${t("business:mapping_field_instructions_label")}: ${config.instructions}`}
+                                    arrow
+                                    placement="top"
+                                  >
+                                    <Box
+                                      component="span"
+                                      sx={{
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        cursor: "help",
+                                        ml: 0.5,
+                                      }}
+                                      data-testid={`${testId}-instructions`}
+                                    >
+                                      <InfoOutlinedIcon
+                                        sx={{
+                                          fontSize: 13,
+                                          color: "info.main",
+                                        }}
+                                      />
+                                    </Box>
+                                  </Tooltip>
+                                ) : null}
+                              </Typography>
+                            );
 
-                        return (
-                          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
-                            {renderFieldRow(
-                              t("business:provider_col_code"),
-                              codeConfig,
-                              `provider-field-code-${prov.id}`,
-                            )}
-                            {renderFieldRow(
-                              t("business:provider_col_cost_price"),
-                              costPriceConfig,
-                              `provider-field-cost-price-${prov.id}`,
-                            )}
-                            {renderFieldRow(
-                              t("business:provider_col_cost_price_tax"),
-                              costPriceTaxConfig,
-                              `provider-field-cost-price-tax-${prov.id}`,
-                            )}
-                            {renderFieldRow(
-                              t("business:provider_col_packages"),
-                              packagesConfig,
-                              `provider-field-packages-${prov.id}`,
-                            )}
-                            {renderFieldRow(
-                              t("business:provider_col_units_per_package"),
-                              unitsPerPackageConfig,
-                              `provider-field-units-per-package-${prov.id}`,
-                            )}
+                            return (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: 0.25,
+                                }}
+                              >
+                                {renderFieldRow(
+                                  t("business:provider_col_code"),
+                                  codeConfig,
+                                  `provider-field-code-${prov.id}`,
+                                )}
+                                {renderFieldRow(
+                                  t("business:provider_col_cost_price"),
+                                  costPriceConfig,
+                                  `provider-field-cost-price-${prov.id}`,
+                                )}
+                                {renderFieldRow(
+                                  t("business:provider_col_cost_price_tax"),
+                                  costPriceTaxConfig,
+                                  `provider-field-cost-price-tax-${prov.id}`,
+                                )}
+                                {renderFieldRow(
+                                  t("business:provider_col_packages"),
+                                  packagesConfig,
+                                  `provider-field-packages-${prov.id}`,
+                                )}
+                                {renderFieldRow(
+                                  t("business:provider_col_units_per_package"),
+                                  unitsPerPackageConfig,
+                                  `provider-field-units-per-package-${prov.id}`,
+                                )}
+                              </Box>
+                            );
+                          })()}
+                        </TableCell>
+
+                        {/* Status */}
+                        <TableCell align="center">
+                          <Box
+                            sx={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <StatusDot active={prov.is_active} />
+                            <Typography
+                              variant="caption"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              {prov.is_active
+                                ? t("business:status_active")
+                                : t("business:status_inactive")}
+                            </Typography>
                           </Box>
-                        );
-                      })()}
-                    </TableCell>
+                        </TableCell>
 
-                    {/* Status */}
-                    <TableCell align="center">
-                      <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
-                        <StatusDot active={prov.is_active} />
-                        <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                          {prov.is_active ? t("business:status_active") : t("business:status_inactive")}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-
-                    {/* Actions Menu Trigger */}
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleOpenActionMenu(e, prov)}
-                        disabled={isBusy}
-                        data-testid={`provider-actions-btn-${prov.id}`}
-                        aria-label={t("core:actions")}
-                      >
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
+                        {/* Actions Menu Trigger */}
+                        <TableCell align="right">
+                          <IconButton
+                            size="small"
+                            onClick={(e) => handleOpenActionMenu(e, prov)}
+                            disabled={isBusy}
+                            data-testid={`provider-actions-btn-${prov.id}`}
+                            aria-label={t("core:actions")}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Skeleton>
+        <BusinessPagination
           component="div"
           count={providersData?.meta?.total_items ?? providers.length}
           page={page}
@@ -581,7 +742,6 @@ export const ProvidersTab: FC<Props> = ({
           }
         />
       </Paper>
-    </Skeleton>
 
       {/* 3-Dots Actions Menu */}
       <Menu

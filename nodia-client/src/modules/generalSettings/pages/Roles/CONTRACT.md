@@ -1,307 +1,41 @@
-# Contrato de API — Módulo de Roles (`Roles`)
+# Contrato de Roles
 
-> **Módulo:** `generalSettings/pages/Roles`  
-> **Versión de API:** `v1` (`/api/v1`)  
-> **Fecha de creación:** 2026-08-28  
-> **Convención de filtrado:** Ransack (`q[campo_predicado]`)
+> Revisado contra entidades, DTOs y runtime de Nodia Server el 2026-10-09. Implementación solicitada; sin aprobación documental automática.
 
----
+## Rutas y datos
 
-## 1. Convenciones Generales
+Los aliases `/api/v1/role` y `/api/v1/roles` comparten controlador. IDs bigint positivos como **strings**, nunca UUID ni Number. Rol: `id`, `key` único, `is_active`, timestamps y traducciones opcionales `translates: [{key,es,en}]`. Las traducciones usan namespace `roles` y la etiqueta utiliza `key` como source_key. Las acciones generales asociadas tienen ID, key, description nullable, is_active, timestamps y traducciones; **no tienen module_id**.
 
-### Filtrado estilo Ransack
+| Operación | Contrato |
+| --- | --- |
+| GET colección | `{data: Role[], meta: {page,limit,total_items,total_pages}}` |
+| GET `/:id` | Rol y acciones/traducciones disponibles |
+| POST colección | CreateRoleDto: key requerido; is_active, actions y translates opcionales. La creación existente actualiza el rol de la misma clave |
+| PUT/PATCH `/:id` | UpdateRoleDto parcial. actions ausente conserva asignaciones; `[]` las retira. acepta claves o IDs string de acciones |
+| DELETE `/:id` | 204 sin cuerpo; ID inválido400, ausente404 y super_admin403 |
 
-Todos los endpoints de tipo `GET` aceptan el parámetro `q` para aplicar predicados de búsqueda y filtrado dinámico.
+La edición bloquea el registro y persiste rol, reemplazo de RoleAction y traducciones en la misma transacción. La clave `super_admin` no puede renombrarse (`roles:protected_key`); en el formulario se conserva en solo lectura con traducciones editables. Esta entrega no cierra las invariantes pendientes de última persona superadministradora activa ni la inmutabilidad general de claves de S-04 en19.
 
-Ejemplos comunes de predicados:
+## Consulta y filtros
 
-- `q[key_cont]`: Búsqueda parcial / `ILIKE` en el identificador o key del rol.
-- `q[is_active_eq]`: Coincidencia exacta booleana (`true` / `false`).
-- `q[actions_id_in][]` o `q[actions_id_eq]`: Filtrado por IDs de acciones asociadas.
-- `q[actions_key_cont]`: Búsqueda por identificador de acciones.
-- `q[s]`: Ordenamiento (ej. `created_at desc`, `key asc`).
+Paginación base1; `page`, `size` o `limit` (default10), `all=true` omite paginado. `includes=true` (default) devuelve acciones; false devuelve `actions: []`. Traducciones de Roles disponibles en ambos casos.
 
-### Paginación
+Predicados públicos: `key_cont`, `key_in`, `is_active_eq`, `actions_id_eq`, `actions_id_in`, `actions_key_cont`, `actions_key_in` y orden `s` conforme a la política Role. Booleanos estrictos; arrays transformados/validados por RoleFilterDto. Los filtros de acciones seleccionan roles mediante EXISTS y **no recortan las acciones incluidas en la respuesta**. Filtros/search se aplican antes de paginar; no filtrar solo la página descargada en Client.
 
-Los endpoints que devuelven listados paginados admiten los siguientes `queryParams`:
+Client inicia con `q.is_active_eq=true`; Limpiar restaura activos y vacía los filtros por roles/acciones. Quitar el chip permite todos; switch del filtro permite inactivos. Cambiar filtros/búsqueda/tamaño reinicia página. Búsqueda por identificador real (`key_cont`). Catálogos auxiliares: GET roles/actions con all=true/includes=false, conservan activos e inactivos y no heredan el filtro principal. Sin peticiones por tarjeta.
 
-- `page`: Número de página actual (entero `1`-indexed, default: `1`).
-- `size`: Cantidad de registros por página (entero, ej: `10`, `25`, `50`).
-- `all`: Booleano opcional (`true` / `false`). Si es `true`, ignora la paginación y retorna la totalidad de registros que cumplan con `q`.
+## Eliminación
 
-### Inclusión de Relaciones (`includes`)
-Los endpoints de tipo `GET` de listado aceptan el parámetro booleano opcional `includes` (default: `true`).
-- `includes=true` (o no enviado): Retorna las entidades con sus relaciones cargadas (`eager loading` / joins). En Roles, incluye el arreglo de acciones asociadas (`actions: Action[]`).
-- `includes=false`: Omite las relaciones y retorna únicamente los campos propios de la entidad base (`actions` omitido o vacío `[]`).
-- En caso de que el endpoint o entidad no disponga de relaciones, el parámetro es inocuo y no produce error.
-- **Sustitución de endpoints de filtros:** Para poblar selectores, combos o autocompletados de roles o acciones de forma liviana, se consumen directamente los endpoints principales con `all=true&includes=false` (ej. `/api/v1/roles?all=true&includes=false` o `/api/v1/actions?all=true&includes=false`), habiendo quedado eliminados los endpoints dedicados `/api/v1/filters/*`.
+DeleteRoleUseCase valida el ID exacto dentro del rango bigint, toma FOR UPDATE sobre Role y comprueba su clave canónica. **super_admin no se elimina aunque esté inactivo o tenga otro nombre traducido**. Para otros roles elimina UserRole y RoleAction activas/inactivas, traducciones exclusivamente `source_entity=roles/source_id=id`, y finalmente Role, en una sola transacción. Usuarios y acciones de catálogo permanecen. Un fallo revierte todos los cambios; las FK serializan nuevas asignaciones y evitan huérfanos. Redis auth:context se invalida después del commit con la política existente de mejor esfuerzo.
 
-### Borrado Lógico
+Menú Eliminar con DeleteOutlined/error.main y ConfirmDialog traducido: identifica rol y pérdida permanente de asignaciones/traducciones. No hay DELETE antes de confirmar; error conserva selección/modal y permite reintento. Éxito emite Sileo, cierra y revalida roles, usuarios y contexto. El último registro de una página posterior eliminado devuelve a la página anterior. Autenticación vigente conservada; sin nuevos permisos por acción conforme a la decisión del2026-10-03.
 
-No existe el endpoint `DELETE`. La desactivación/eliminación lógica se realiza mediante `PUT /api/v1/role/:roleId` estableciendo `is_active: false`.
+## Presentación responsive y estados
 
----
+xs (<600px): MobileRecordCard con nombre traducido o clave real, estado textual, ID completo, identificador y todas las acciones asociadas con etiquetas que envuelven; ausencia explícita `-`. Actualizar principal y menú copiar/estado/eliminar (este último omitido para super_admin). sm+: tabla con mínimo650px y scroll local transparente; misma consulta/página/handlers. Paginación fuera del scroll/Skeleton con etiquetas ES/EN y controles44px.
 
-## 2. Definición de Entidades y Tipos (TypeScript)
+Boneyard inicial informativo; refetch/mutación conserva registros y bloquea controles, incluido menú abierto. Error con Alert/reintento y toast del gestor HTTP; vacío solo tras respuesta exitosa. Formularios permanecen abiertos con datos ante fallo. Los botones de RoleModal se apilan al100% en móvil. Ver DESIGN9.6 y plan35.
 
-```typescript
-export interface Action {
-  id: string; // UUID
-  module_id: string; // UUID del módulo al que pertenece
-  key: string; // Identificador único de la acción (ej. "users.create", "roles.manage")
-  description: string | null; // Descripción funcional o técnica de la acción
-  is_active: boolean; // Estado de la acción
-  created_at?: string; // ISO 8601
-  updated_at?: string; // ISO 8601
-}
+## Evidencia y límites
 
-export interface Role {
-  id: string; // ID del rol
-  key: string; // Clave de traducción / identificador único del rol (ej. "admin", "manager")
-  is_active: boolean; // Estado de activación / borrado lógico
-  created_at: string; // ISO 8601
-  updated_at: string; // ISO 8601
-  actions?: Action[]; // Arreglo de objetos Action asociados si includes=true; omitido o vacío si includes=false
-}
-
-export interface PaginationMeta {
-  page: number;
-  limit: number;
-  total_items: number;
-  total_pages: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  meta: PaginationMeta;
-}
-
-export interface GetRolesParams {
-  page?: number;
-  size?: number;
-  all?: boolean;
-  includes?: boolean; // Default: true. Si es false, omite las acciones asociadas
-  q?: Record<string, unknown>;
-}
-```
-
----
-
-## 3. Especificación de Endpoints
-
-### 3.1. Fetch Roles (Listado Principal)
-
-Obtiene el listado paginado y filtrable de roles. Si `includes=false`, omite la inclusión del arreglo completo de `actions`, acelerando la carga para selectores o tablas que no requieran listar los permisos asociados.
-
-- **Método:** `GET`
-- **Ruta:** `/api/v1/roles`
-- **Query Params:**
-  - `page` _(opcional, number)_: Página actual.
-  - `size` _(opcional, number)_: Elementos por página.
-  - `all` _(opcional, boolean)_: Traer todos sin paginar.
-  - `includes` _(opcional, boolean, default: `true`)_: Si es `false`, omite el array `actions` asociado a cada rol.
-  - `q[campo_predicado]` _(opcional)_: Filtros Ransack (`q[key_cont]`, `q[is_active_eq]`, `q[actions_id_in][]`, etc.).
-
-#### Respuesta exitosa con relaciones (`includes=true` o por defecto, `200 OK`):
-
-```json
-{
-  "data": [
-    {
-      "id": "1",
-      "key": "admin",
-      "is_active": true,
-      "created_at": "2026-08-01T10:00:00.000Z",
-      "updated_at": "2026-08-20T14:32:00.000Z",
-      "actions": [
-        {
-          "id": "10",
-          "module_id": "1",
-          "key": "users.create",
-          "description": "Permite registrar nuevos usuarios en la plataforma",
-          "is_active": true,
-          "created_at": "2026-08-01T10:00:00.000Z",
-          "updated_at": "2026-08-01T10:00:00.000Z"
-        },
-        {
-          "id": "11",
-          "module_id": "1",
-          "key": "users.read",
-          "description": "Permite visualizar el listado y detalle de usuarios",
-          "is_active": true,
-          "created_at": "2026-08-01T10:00:00.000Z",
-          "updated_at": "2026-08-01T10:00:00.000Z"
-        }
-      ]
-    }
-  ],
-  "meta": {
-    "page": 1,
-    "limit": 10,
-    "total_items": 1,
-    "total_pages": 1
-  }
-}
-```
-
-#### Respuesta exitosa sin relaciones (`includes=false`, `200 OK`):
-
-```json
-{
-  "data": [
-    {
-      "id": "1",
-      "key": "admin",
-      "is_active": true,
-      "created_at": "2026-08-01T10:00:00.000Z",
-      "updated_at": "2026-08-20T14:32:00.000Z",
-      "actions": []
-    }
-  ],
-  "meta": {
-    "page": 1,
-    "limit": 10,
-    "total_items": 1,
-    "total_pages": 1
-  }
-}
-```
-
----
-
-### 3.2. Create Role
-
-Crea un nuevo rol en el sistema y le asocia las acciones indicadas.
-
-- **Método:** `POST`
-- **Ruta:** `/api/v1/role`
-- **Headers:** `Content-Type: application/json`
-- **Body (`JSON`):**
-
-| Campo       | Tipo       | Requerido | Descripción                                                            |
-| :---------- | :--------- | :-------- | :--------------------------------------------------------------------- |
-| `key`       | `string`   | **Sí**    | Identificador o clave única del rol (ej: `"super_admin"`, `"editor"`). |
-| `actions`   | `string[]` | No        | Arreglo de IDs (UUIDs) de acciones asignadas (o `[]`).                 |
-| `is_active` | `boolean`  | No        | Estado del rol (Default: `true`).                                      |
-
-#### Ejemplo de Request Body:
-
-```json
-{
-  "key": "supervisor",
-  "is_active": true,
-  "actions": [
-    "a1114567-e89b-12d3-a456-426614174002",
-    "a2224567-e89b-12d3-a456-426614174001"
-  ]
-}
-```
-
-#### Respuesta exitosa (`201 Created`):
-
-```json
-{
-  "id": "123e4567-e89b-12d3-a456-426614174099",
-  "key": "supervisor",
-  "is_active": true,
-  "created_at": "2026-08-28T01:00:00.000Z",
-  "updated_at": "2026-08-28T01:00:00.000Z",
-  "actions": [
-    {
-      "id": "a1114567-e89b-12d3-a456-426614174002",
-      "module_id": "m1114567-e89b-12d3-a456-426614174001",
-      "key": "users.read",
-      "description": "Permite visualizar el listado y detalle de usuarios",
-      "is_active": true,
-      "created_at": "2026-08-01T10:00:00.000Z",
-      "updated_at": "2026-08-01T10:00:00.000Z"
-    },
-    {
-      "id": "a2224567-e89b-12d3-a456-426614174001",
-      "module_id": "m2224567-e89b-12d3-a456-426614174002",
-      "key": "roles.manage",
-      "description": "Permite crear y editar roles de acceso",
-      "is_active": true,
-      "created_at": "2026-08-01T10:00:00.000Z",
-      "updated_at": "2026-08-01T10:00:00.000Z"
-    }
-  ]
-}
-```
-
----
-
-### 3.3. Update Role
-
-Actualiza los datos, identificador o acciones de un rol existente. También se utiliza para la desactivación lógica (`is_active: false`).
-
-- **Método:** `PUT`
-- **Ruta:** `/api/v1/role/:roleId`
-- **Path Params:** `roleId` (string, UUID del rol)
-- **Headers:** `Content-Type: application/json`
-- **Body (`JSON`):** _(todos los campos son opcionales)_
-
-| Campo       | Tipo       | Requerido | Descripción                                   |
-| :---------- | :--------- | :-------- | :-------------------------------------------- |
-| `key`       | `string`   | No        | Identificador o clave única del rol.          |
-| `actions`   | `string[]` | No        | Arreglo de IDs (UUIDs) de acciones asignadas. |
-| `is_active` | `boolean`  | No        | Estado de activación/borrado lógico.          |
-
-#### Ejemplo de Request Body:
-
-```json
-{
-  "key": "supervisor_editado",
-  "is_active": true,
-  "actions": [
-    "a1114567-e89b-12d3-a456-426614174001",
-    "a1114567-e89b-12d3-a456-426614174002"
-  ]
-}
-```
-
-#### Respuesta exitosa (`200 OK`):
-
-```json
-{
-  "id": "123e4567-e89b-12d3-a456-426614174099",
-  "key": "supervisor_editado",
-  "is_active": true,
-  "created_at": "2026-08-28T01:00:00.000Z",
-  "updated_at": "2026-08-28T01:10:00.000Z",
-  "actions": [
-    {
-      "id": "a1114567-e89b-12d3-a456-426614174001",
-      "module_id": "m1114567-e89b-12d3-a456-426614174001",
-      "key": "users.create",
-      "description": "Permite registrar nuevos usuarios en la plataforma",
-      "is_active": true,
-      "created_at": "2026-08-01T10:00:00.000Z",
-      "updated_at": "2026-08-01T10:00:00.000Z"
-    },
-    {
-      "id": "a1114567-e89b-12d3-a456-426614174002",
-      "module_id": "m1114567-e89b-12d3-a456-426614174001",
-      "key": "users.read",
-      "description": "Permite visualizar el listado y detalle de usuarios",
-      "is_active": true,
-      "created_at": "2026-08-01T10:00:00.000Z",
-      "updated_at": "2026-08-01T10:00:00.000Z"
-    }
-  ]
-}
-```
-
----
-
-## 4. Obtención de Opciones para Selectores y Filtros (Sin Endpoints Dedicados)
-
-Los endpoints anteriores `/api/v1/filters/*` han sido **eliminados**. Para poblar selectores, filtros o combos de roles o de acciones asociadas (ej. en el modal de asignación de permisos de roles o en filtros de usuarios), se consumen directamente los endpoints principales con `all=true` e `includes=false`:
-
-1. **Para obtener el catálogo de roles (ej. selectores o filtros):**  
-   - **Ruta:** `GET /api/v1/roles?all=true&includes=false`
-   - **Comportamiento:** Retorna todos los roles activos sin resolver el arreglo de acciones asociadas (`actions: []` o excluido).
-
-2. **Para obtener el catálogo de acciones disponibles para asignar a un rol:**  
-   - **Ruta:** `GET /api/v1/actions?all=true&includes=false`
-   - **Comportamiento:** Retorna todas las acciones del sistema sin relaciones complejas para ser seleccionadas en el formulario de roles (`RoleModal`).
+Casos de uso e integración compilada Nest/HTTP/PostgreSQL temporal cubren aliases, IDs grandes, filtros, protección activa/inactiva/renombrado, limpieza selectiva, rollback de borrado/edición y ambos órdenes de nuevas asignaciones de usuarios/acciones. Fixtures Client aislados en `src/test/manual/roles`; medidas/capturas externas registradas en00. No se eliminan roles reales ni se aplican migraciones. Aceptación en teléfono físico, sesión real y garantías de revocación durante caída de Redis permanecen pendientes.

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -7,6 +7,8 @@ import {
   Button,
   IconButton,
   LinearProgress,
+  ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
   Table,
@@ -15,9 +17,16 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { Skeleton } from "boneyard-js/react";
 import InputSearch from "../../../../components/inputs/InputSearch";
 import type { FinancePage } from "../../types";
@@ -36,6 +45,15 @@ export interface FinanceColumn<T> {
   render: (record: T) => ReactNode;
 }
 
+export interface FinanceRowActions {
+  onEdit: () => void;
+  onToggle: () => void;
+  onDelete?: () => void;
+  onPayment?: () => void;
+  paymentDisabled: boolean;
+  disabled: boolean;
+}
+
 export interface FinanceTableProps<
   T extends { id: string; name: string; is_active: boolean },
 > {
@@ -46,6 +64,8 @@ export interface FinanceTableProps<
   onCreate: () => void;
   onEdit: (record: T) => void;
   onToggle: (record: T) => void;
+  onDelete?: (record: T) => void;
+  renderMobileRow?: (record: T, actions: FinanceRowActions) => ReactNode;
   onPayment?: (record: T) => void;
   canPay?: (record: T) => boolean;
   meta?: FinancePage<T>["meta"];
@@ -71,6 +91,8 @@ const FinanceTable = <
   onCreate,
   onEdit,
   onToggle,
+  onDelete,
+  renderMobileRow,
   onPayment,
   canPay,
   meta,
@@ -86,11 +108,23 @@ const FinanceTable = <
   titleKey,
 }: FinanceTableProps<T>) => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const menuId = useId();
   const [action, setAction] = useState<{
     anchor: HTMLButtonElement;
     record: T;
   } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    if (mobile && renderMobileRow)
+      queueMicrotask(() => {
+        if (!cancelled) setAction(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [mobile, renderMobileRow]);
   const busy = disabled || isLoading || isFetching;
   const closeMenu = () => setAction(null);
   const perform = (callback: (record: T) => void) => {
@@ -139,88 +173,124 @@ const FinanceTable = <
           {t("finance:load_error")}
         </Alert>
       )}
-      <TablePanel>
+      <TablePanel
+        sx={
+          mobile && renderMobileRow
+            ? { border: 0, boxShadow: "none", bgcolor: "transparent" }
+            : undefined
+        }
+      >
         {isFetching && !isLoading && (
           <LinearProgress
             sx={{ position: "absolute", top: 0, left: 0, right: 0, height: 2 }}
           />
         )}
         <Skeleton loading={isLoading}>
-          <ScrollContainer>
-            <Table
-              sx={{ minWidth: 650 }}
-              aria-label={t(titleKey ?? "finance:records")}
-            >
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell key={column.key} align={column.align}>
-                      {t(column.labelKey)}
-                    </TableCell>
-                  ))}
-                  <TableCell align="center">{t("finance:actions")}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((record) => (
-                  <TableRow key={record.id} hover>
+          {mobile && renderMobileRow ? (
+            <Box sx={{ display: "grid", gap: 2 }}>
+              {rows.map((record) => (
+                <Box key={record.id} sx={{ minWidth: 0 }}>
+                  {renderMobileRow(record, {
+                    onEdit: () => onEdit(record),
+                    onToggle: () => onToggle(record),
+                    onDelete: onDelete ? () => onDelete(record) : undefined,
+                    onPayment: onPayment ? () => onPayment(record) : undefined,
+                    paymentDisabled: Boolean(canPay && !canPay(record)),
+                    disabled: busy,
+                  })}
+                </Box>
+              ))}
+              {!isLoading && !isError && rows.length === 0 && (
+                <Typography
+                  color="text.secondary"
+                  sx={{ py: 4, textAlign: "center" }}
+                >
+                  {t("finance:empty_records")}
+                </Typography>
+              )}
+              {isLoading &&
+                rows.length === 0 &&
+                Array.from({ length: 3 }, (_, index) => (
+                  <Box key={index} sx={{ minHeight: 180 }} />
+                ))}
+            </Box>
+          ) : (
+            <ScrollContainer>
+              <Table
+                sx={{ minWidth: 650 }}
+                aria-label={t(titleKey ?? "finance:records")}
+              >
+                <TableHead>
+                  <TableRow>
                     {columns.map((column) => (
                       <TableCell key={column.key} align={column.align}>
-                        {column.render(record)}
+                        {t(column.labelKey)}
                       </TableCell>
                     ))}
-                    <TableCell align="center">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        disabled={busy}
-                        aria-label={t("finance:row_actions", {
-                          name: record.name,
-                        })}
-                        aria-haspopup="menu"
-                        aria-controls={
-                          action?.record.id === record.id ? menuId : undefined
-                        }
-                        aria-expanded={
-                          action?.record.id === record.id ? true : undefined
-                        }
-                        onClick={(event) =>
-                          setAction({ anchor: event.currentTarget, record })
-                        }
-                      >
-                        <MoreVertOutlinedIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
+                    <TableCell align="center">{t("finance:actions")}</TableCell>
                   </TableRow>
-                ))}
-                {!isLoading && !isError && rows.length === 0 && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length + 1}
-                      align="center"
-                      sx={{ py: 6 }}
-                    >
-                      <Typography color="text.secondary">
-                        {t("finance:empty_records")}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {isLoading &&
-                  rows.length === 0 &&
-                  Array.from({ length: 5 }, (_, index) => (
-                    <TableRow key={index}>
+                </TableHead>
+                <TableBody>
+                  {rows.map((record) => (
+                    <TableRow key={record.id} hover>
                       {columns.map((column) => (
-                        <TableCell key={column.key}>
-                          <Box sx={{ height: 22, minWidth: 70 }} />
+                        <TableCell key={column.key} align={column.align}>
+                          {column.render(record)}
                         </TableCell>
                       ))}
-                      <TableCell />
+                      <TableCell align="center">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          disabled={busy}
+                          aria-label={t("finance:row_actions", {
+                            name: record.name,
+                          })}
+                          aria-haspopup="menu"
+                          aria-controls={
+                            action?.record.id === record.id ? menuId : undefined
+                          }
+                          aria-expanded={
+                            action?.record.id === record.id ? true : undefined
+                          }
+                          onClick={(event) =>
+                            setAction({ anchor: event.currentTarget, record })
+                          }
+                        >
+                          <MoreVertOutlinedIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   ))}
-              </TableBody>
-            </Table>
-          </ScrollContainer>
+                  {!isLoading && !isError && rows.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length + 1}
+                        align="center"
+                        sx={{ py: 6 }}
+                      >
+                        <Typography color="text.secondary">
+                          {t("finance:empty_records")}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {isLoading &&
+                    rows.length === 0 &&
+                    Array.from({ length: 5 }, (_, index) => (
+                      <TableRow key={index}>
+                        {columns.map((column) => (
+                          <TableCell key={column.key}>
+                            <Box sx={{ height: 22, minWidth: 70 }} />
+                          </TableCell>
+                        ))}
+                        <TableCell />
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </ScrollContainer>
+          )}
         </Skeleton>
         <ResponsivePagination
           component="div"
@@ -245,19 +315,34 @@ const FinanceTable = <
       </TablePanel>
       <Menu
         id={menuId}
-        anchorEl={action?.anchor ?? null}
-        open={Boolean(action)}
+        anchorEl={mobile && renderMobileRow ? null : (action?.anchor ?? null)}
+        open={Boolean(action) && !(mobile && renderMobileRow)}
         onClose={closeMenu}
       >
         <MenuItem disabled={busy} onClick={() => perform(onEdit)}>
-          {t("finance:update")}
+          <ListItemIcon>
+            <EditOutlinedIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          <ListItemText primary={t("finance:update")} />
         </MenuItem>
         <MenuItem disabled={busy} onClick={() => perform(onToggle)}>
-          {t(
-            action?.record.is_active
-              ? "finance:deactivate"
-              : "finance:activate",
-          )}
+          <ListItemIcon>
+            {action?.record.is_active ? (
+              <BlockOutlinedIcon fontSize="small" color="error" />
+            ) : (
+              <CheckCircleOutlineOutlinedIcon
+                fontSize="small"
+                color="success"
+              />
+            )}
+          </ListItemIcon>
+          <ListItemText
+            primary={t(
+              action?.record.is_active
+                ? "finance:deactivate"
+                : "finance:activate",
+            )}
+          />
         </MenuItem>
         {onPayment && (
           <MenuItem
@@ -266,7 +351,18 @@ const FinanceTable = <
             }
             onClick={() => perform(onPayment)}
           >
-            {t("finance:register_payment")}
+            <ListItemIcon>
+              <PaymentsOutlinedIcon fontSize="small" color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={t("finance:register_payment")} />
+          </MenuItem>
+        )}
+        {onDelete && (
+          <MenuItem disabled={busy} onClick={() => perform(onDelete)}>
+            <ListItemIcon>
+              <DeleteOutlineIcon fontSize="small" color="error" />
+            </ListItemIcon>
+            <ListItemText primary={t("finance:delete")} />
           </MenuItem>
         )}
       </Menu>

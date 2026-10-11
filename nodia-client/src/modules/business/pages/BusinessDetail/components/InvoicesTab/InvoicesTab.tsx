@@ -1,3 +1,7 @@
+import DateInput from "../../../../../../components/inputs/DateInput";
+import BusinessPagination from "../../../../components/BusinessPagination";
+import { InvoiceMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
+import { useMediaQuery, useTheme } from "@mui/material";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC, MouseEvent } from "react";
 import { useState, useMemo } from "react";
@@ -17,7 +21,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   LinearProgress,
   Tooltip,
   Typography,
@@ -37,8 +40,7 @@ import { sileo } from "sileo";
 import { TableSkeleton } from "../../../../../../components/skeletons";
 import Filter from "../../../../../../components/Filter";
 import FilterChips from "../../../../../../components/Filter/components/FilterChips";
-import TextInput from "../../../../../../components/inputs/TextInput";
-import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
+import ActiveStatusSelect from "../../../../../../components/Filter/components/ActiveStatusSelect";
 import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
@@ -72,6 +74,7 @@ export const InvoicesTab: FC<Props> = ({
   onCloseDirectCreateModal,
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
+  const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "-";
@@ -127,14 +130,14 @@ export const InvoicesTab: FC<Props> = ({
   const [draftFilterProviders, setDraftFilterProviders] = useState<string[]>([]);
   const [draftFilterDateFrom, setDraftFilterDateFrom] = useState<string>("");
   const [draftFilterDateTo, setDraftFilterDateTo] = useState<string>("");
-  const [draftFilterActive, setDraftFilterActive] = useState<"active" | "inactive" | null>(null);
+  const [draftFilterActive, setDraftFilterActive] = useState<"active" | "inactive" | null>("active");
 
   // Applied filter state
   const [appliedFilterCodes, setAppliedFilterCodes] = useState<string[]>([]);
   const [appliedFilterProviders, setAppliedFilterProviders] = useState<string[]>([]);
   const [appliedFilterDateFrom, setAppliedFilterDateFrom] = useState<string>("");
   const [appliedFilterDateTo, setAppliedFilterDateTo] = useState<string>("");
-  const [appliedFilterActive, setAppliedFilterActive] = useState<"active" | "inactive" | null>(null);
+  const [appliedFilterActive, setAppliedFilterActive] = useState<"active" | "inactive" | null>("active");
 
   const providerQuery = usePagedProviderOptions(businessId);
   const codeQuery = usePagedInvoiceCodeOptions(businessId);
@@ -142,13 +145,6 @@ export const InvoicesTab: FC<Props> = ({
   const providerOptions = providerQuery.options;
   const codeOptions = codeQuery.options;
 
-  const statusOptions = useMemo(
-    () => [
-      { value: "active", label: t("business:status_active") },
-      { value: "inactive", label: t("business:status_inactive") },
-    ],
-    [t]
-  );
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
@@ -181,13 +177,13 @@ export const InvoicesTab: FC<Props> = ({
     setDraftFilterProviders([]);
     setDraftFilterDateFrom("");
     setDraftFilterDateTo("");
-    setDraftFilterActive(null);
+    setDraftFilterActive("active");
 
     setAppliedFilterCodes([]);
     setAppliedFilterProviders([]);
     setAppliedFilterDateFrom("");
     setAppliedFilterDateTo("");
-    setAppliedFilterActive(null);
+    setAppliedFilterActive("active");
   };
 
   const {
@@ -312,6 +308,8 @@ export const InvoicesTab: FC<Props> = ({
       {/* Filter Row */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Filter
+          disabled={isBusy}
+          onOpen={() => setDraftFilterActive(appliedFilterActive)}
           onFilter={handleApplyFilters}
           onClear={handleClearFilters}
           activeCount={activeFiltersCount}
@@ -347,34 +345,26 @@ export const InvoicesTab: FC<Props> = ({
               gap: 1.5,
             }}
           >
-            <TextInput
-              type="date"
+            <DateInput
               label={t("business:filter_date_from_label")}
               value={draftFilterDateFrom}
-              onChange={(e) => setDraftFilterDateFrom(e.target.value)}
+              onChange={setDraftFilterDateFrom}
               disabled={isLoading || isFetching}
               dataTestId="filter-invoice-date-from-input"
             />
-            <TextInput
-              type="date"
+            <DateInput
               label={t("business:filter_date_to_label")}
               value={draftFilterDateTo}
-              onChange={(e) => setDraftFilterDateTo(e.target.value)}
+              onChange={setDraftFilterDateTo}
               disabled={isLoading || isFetching}
               dataTestId="filter-invoice-date-to-input"
             />
           </Box>
 
-          <SelectSingleInput
-            label={t("business:filter_status_label")}
-            placeholder={t("business:filter_status_placeholder")}
-            options={statusOptions}
-            value={draftFilterActive}
-            onChange={(val) =>
-              setDraftFilterActive(val as "active" | "inactive" | null)
-            }
-            disabled={isLoading || isFetching}
-            clearable
+          <ActiveStatusSelect
+            value={draftFilterActive ?? "all"}
+            onChange={(value) => setDraftFilterActive(value === "all" ? null : value)}
+            disabled={isBusy}
           />
         </Filter>
       </Box>
@@ -474,6 +464,7 @@ export const InvoicesTab: FC<Props> = ({
               onChange={(val: string) => { setSearch(val); setPage(0); }}
               placeholder={t("business:search_invoices_placeholder")}
               fullWidth
+            disabled={isBusy}
             />
           </Box>
 
@@ -546,7 +537,8 @@ export const InvoicesTab: FC<Props> = ({
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleOpenCreate}
-          sx={{ borderRadius: 2 }}
+          sx={{ borderRadius: 2, width: { xs: "100%", sm: "auto" }, minHeight: { xs: 44, sm: "auto" } }}
+          disabled={isBusy}
           data-testid="new-invoice-btn"
         >
           {t("business:new_invoice_btn")}
@@ -572,10 +564,16 @@ export const InvoicesTab: FC<Props> = ({
           />
         }
       >
-        <TableContainer
+{mobile ? <Box sx={{ display: "grid", gap: 2 }}>
+            {invoices.length === 0 && !isError ? <Box sx={{ p: 2, textAlign: "center" }}>
+              <Typography sx={{ fontWeight: 600 }}>{t("business:invoices_empty_title")}</Typography>
+              <Typography variant="body2" color="text.secondary">{t("business:invoices_empty_desc")}</Typography>
+            </Box> : invoices.map((inv) => (<InvoiceMobileCard key={inv.id} invoice={inv} disabled={isBusy} formatDate={formatDate} onEdit={handleOpenEdit} onToggle={setConfirmToggleInvoice} onPreview={setPreviewInvoice} onCopy={handleCopyPath} />))}
+          </Box> : (        <TableContainer
           component={Paper}
           sx={{
             borderRadius: 3,
+            p: { xs: 0, sm: 0 },
             border: (theme) => `1px solid ${theme.palette.divider}`,
             boxShadow: "none",
           }}
@@ -716,9 +714,10 @@ export const InvoicesTab: FC<Props> = ({
               )}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer>)}
       </Skeleton>
-      <TablePagination
+      <BusinessPagination
+
         component="div"
         count={invoicesData?.meta?.total_items ?? 0}
         page={page}

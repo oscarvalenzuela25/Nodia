@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { GlobalStyles, Typography } from "@mui/material";
 import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import AddOutlined from "@mui/icons-material/AddOutlined";
@@ -15,9 +15,9 @@ import useGeneralSettingsStore from "../../../store/generalSettings/generalSetti
 import { useVisibleModules, getModuleIcon } from "../../../store/generalSettings";
 import { shortcutIdentity } from "../../../store/mobileNavigationStore";
 import type { ShortcutReference } from "../../../store/mobileNavigationStore";
-import MobileShortcutDialog from "../MobileShortcutDialog";
 import { buildShortcutCatalog } from "./catalog";
 import useMobileNavigation from "./hooks/useMobileNavigation";
+import useShortcutDialog from "./hooks/useShortcutDialog";
 import { Dock, EditBadge, HomeLink, LockButton, MOBILE_NAV_RESERVED_HEIGHT, NavRoot, RoundButton, RoundLink, Slot, SlotLabel } from "./styles";
 
 const keyboardSnapshot = () => Boolean(window.visualViewport && window.innerHeight - window.visualViewport.height > 120 &&
@@ -36,11 +36,29 @@ export default function MobileBottomNav() {
   const catalog = buildShortcutCatalog(groups, i18n.language);
   const { ownerId, sessionVersion, preferences, ready, hydrated, readError, persist } = useMobileNavigation();
   const location = useLocation();
+  const { Dialog: MobileShortcutDialog, open: loadEditor, loadingSlot, failed: editorFailed } = useShortcutDialog(`${ownerId}:${sessionVersion}:${location.key}`);
+  const editorLoading = loadingSlot !== null;
   const [editing, setEditing] = useState<{ slotIndex: number; ownerId: string; sessionVersion: number } | null>(null);
+  const returnFocus = useRef<{ element: HTMLButtonElement; ownerId: string; sessionVersion: number; navigationKey: string } | null>(null);
   const keyboardOpen = useSyncExternalStore(subscribeKeyboard, keyboardSnapshot, () => false);
   const busy = !ready || !isLoaded || context.isFetching || context.isError;
   const currentEditing = editing && editing.ownerId === ownerId && editing.sessionVersion === sessionVersion ? editing.slotIndex : null;
-  const openEditor = (slotIndex: number) => { if (ready && !context.isFetching && ownerId) setEditing({ slotIndex, ownerId, sessionVersion }); };
+  useEffect(() => {
+    if (currentEditing !== null || editorLoading || !returnFocus.current) return;
+    const trigger = returnFocus.current;
+    returnFocus.current = null;
+    if (trigger.ownerId === ownerId && trigger.sessionVersion === sessionVersion && trigger.navigationKey === location.key && trigger.element.isConnected) trigger.element.focus();
+  }, [currentEditing, editorLoading, ownerId, sessionVersion, location.key]);
+  const openEditor = (slotIndex: number, element: HTMLButtonElement) => {
+    if (!ready || context.isFetching || !ownerId) return;
+    returnFocus.current = { element, ownerId, sessionVersion, navigationKey: location.key };
+    void loadEditor(slotIndex, () => {
+      const current = useAuthStore.getState();
+      if (hasActiveSession(current) && current.user?.id === ownerId && current.sessionVersion === sessionVersion) {
+        setEditing({ slotIndex, ownerId, sessionVersion });
+      }
+    });
+  };
   const save = (reference: ShortcutReference | null) => {
     const currentAuth = useAuthStore.getState();
     if (busy || currentEditing === null || !hasActiveSession(currentAuth) || currentAuth.sessionVersion !== sessionVersion) return false;
@@ -60,8 +78,8 @@ export default function MobileBottomNav() {
     const active = Boolean(option && (location.pathname === option.path || location.pathname.startsWith(`${option.path}/`)));
     return <Slot key={slotIndex}>
       {locked && option && !busy ? <RoundLink to={option.path} data-configured="true" aria-label={t("layout:mobile_nav.go", { section: option.label })} aria-current={active ? "page" : undefined}>{icon}</RoundLink> :
-        <RoundButton disabled={!ready || context.isFetching || locked} data-configured={Boolean(option)} data-empty={!reference} aria-label={locked ? t("layout:mobile_nav.unavailable") : t(reference ? "layout:mobile_nav.edit_slot" : "layout:mobile_nav.add_slot", { position: t(`layout:mobile_nav.slot_${slotIndex}`), section: option?.label ?? label })}
-          onClick={() => openEditor(slotIndex)}>{icon}{reference && !locked && <EditBadge aria-hidden="true"><EditOutlined /></EditBadge>}</RoundButton>}
+        <RoundButton disabled={!ready || context.isFetching || locked || editorLoading} loading={loadingSlot === slotIndex} aria-busy={loadingSlot === slotIndex} data-configured={Boolean(option)} data-empty={!reference} aria-label={locked ? t("layout:mobile_nav.unavailable") : t(reference ? "layout:mobile_nav.edit_slot" : "layout:mobile_nav.add_slot", { position: t(`layout:mobile_nav.slot_${slotIndex}`), section: option?.label ?? label })}
+          onClick={event => openEditor(slotIndex, event.currentTarget)}>{icon}{reference && !locked && <EditBadge aria-hidden="true"><EditOutlined /></EditBadge>}</RoundButton>}
       <SlotLabel>{label}</SlotLabel>
     </Slot>;
   };
@@ -70,10 +88,12 @@ export default function MobileBottomNav() {
       "[data-sileo-viewport][data-position^=bottom]": { bottom: `calc(${theme.spacing(2)} + ${MOBILE_NAV_RESERVED_HEIGHT})` },
     } })} />
     <NavRoot sx={keyboardOpen ? { display: "none" } : undefined} data-testid="mobile-bottom-nav">
-      <Typography variant="caption" sx={{ position: "absolute", top: 18, left: 16, maxWidth: "calc(100% - 80px)", color: readError ? "error.main" : "text.secondary", bgcolor: "background.default", borderRadius: 1, px: .5 }}>
-        {t(readError ? "layout:mobile_nav.storage_error_short" : context.isError ? "layout:mobile_nav.permission_error" : busy ? "layout:mobile_nav.loading" : preferences.locked ? "layout:mobile_nav.locked" : "layout:mobile_nav.editing")}
-      </Typography>
-      <LockButton disabled={!ready || context.isFetching} aria-label={t(preferences.locked ? "layout:mobile_nav.unlock" : "layout:mobile_nav.lock")}
+      {(editorLoading || editorFailed || readError || context.isError || busy || !preferences.locked) && (
+        <Typography role={editorFailed ? "alert" : editorLoading ? "status" : undefined} variant="caption" sx={{ position: "absolute", top: 18, left: 16, maxWidth: "calc(100% - 80px)", color: readError || editorFailed ? "error.main" : "text.secondary", bgcolor: "background.default", borderRadius: 1, px: .5 }}>
+          {t(editorLoading ? "layout:mobile_nav.editor_loading" : editorFailed ? "layout:mobile_nav.editor_load_error" : readError ? "layout:mobile_nav.storage_error_short" : context.isError ? "layout:mobile_nav.permission_error" : busy ? "layout:mobile_nav.loading" : "layout:mobile_nav.editing")}
+        </Typography>
+      )}
+      <LockButton disabled={!ready || context.isFetching || editorLoading} aria-label={t(preferences.locked ? "layout:mobile_nav.unlock" : "layout:mobile_nav.lock")}
         aria-pressed={ready && preferences.locked} onClick={() => persist({ ...preferences, locked: !preferences.locked }, preferences.locked ? "layout:mobile_nav.unlocked_success" : "layout:mobile_nav.locked_success")}>
         {ready && preferences.locked ? <LockOutlined /> : <LockOpenOutlined />}
       </LockButton>
@@ -83,7 +103,7 @@ export default function MobileBottomNav() {
         {renderSlot(2)}{renderSlot(3)}
       </Dock>
     </NavRoot>
-    {currentEditing !== null && <MobileShortcutDialog key={`${ownerId}:${sessionVersion}:${currentEditing}`} slotIndex={currentEditing}
+    {currentEditing !== null && MobileShortcutDialog && <MobileShortcutDialog key={`${ownerId}:${sessionVersion}:${currentEditing}`} slotIndex={currentEditing}
       current={preferences.slots[currentEditing]} occupied={preferences.slots.flatMap((reference, slotIndex) => reference && slotIndex !== currentEditing ? [shortcutIdentity(reference)] : [])}
       options={catalog} busy={busy} contextError={context.isError} loading={context.isFetching || !isLoaded && !context.isError}
       onRetry={() => { void context.refetch(); }} onSave={save} onClose={() => setEditing(null)} />}

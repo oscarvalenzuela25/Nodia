@@ -4,13 +4,19 @@
 > Fecha: 2026-10-04
 > Dependencias: [entrevista 25](25-rental-reservations-interview.md), [especificación 26](26-rental-reservations-spec.md), [ERD 27 aprobado](27-rental-reservations-erd.md), [contratos 28](28-rental-reservations-contracts.md), [Backend 29](29-rental-reservations-backend-plan.md), [sitemap 05](05-sitemap.md), [rutas 06](06-route-specs.md), [diseño 07](07-design-constraints.md), [autenticación 14](14-authentication.md)
 
+## Ajuste solicitado — 2026-10-09
+
+El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
+
 ## Objetivo y estado comprobado
+
+Solicitud de rediseño 2026-10-09: [propuesta36](36-reservations-redesign-proposal.md) reúne diagnóstico, mockup interactivo y migración global de fechas investigada. Esta entrega prueba la interfaz antes de implementarla, por instrucción del usuario; no sustituye todavía los flujos existentes ni cierra RC-38. Decisión transversal ADR-025 en estado propuesto; sin dependencias instaladas ni cambios productivos.
 
 Actualización móvil 2026-10-08: [35](35-mobile-cards-shortcuts-plan.md) implementa barra inferior y piloto ReservationTable en tarjetas solo en `xs` (<600 px), con huésped, estado/inactividad, entrada/salida, noches y saldo, más detalle y editar. Reutiliza consulta, filtros y paginado; desde 600 px conserva tabla. RentalTable admite render móvil optativo y MobileRecordCard compartido; restantes recursos mantienen sus tablas hasta MC-06. Pruebas de carga/refetch/vacío/error, acciones y paginado, QA aislado en nueve tamaños, ES/EN y claro/oscuro registrados en35. Esta entrega no modifica endpoints, no aplica migraciones ni cierra RC-38.
 
 Integrar la gestión de una casa completa en `/tools/reservations`: configurar casa y colaboradores, registrar estadías por noches, consultar disponibilidad, preparar recambio/limpieza y controlar dinero real en CLP. WhatsApp, Facebook y Airbnb son canales de registro manual. Las tarifas, horarios, abonos y reglas de cancelación los configura el propietario; no sembrar ejemplos como obligaciones comerciales.
 
-El usuario solicitó preparar el plan con subagentes después del Backend y autorizó implementarlo. Client está implementado con los tres carriles y el integrador, sobre las 44 operaciones de Server. Pruebas y navegador contra HTTP/PostgreSQL temporal tienen evidencia propia abajo. La aplicación de migración/seed y la sesión real en la BD objetivo permanecen pendientes en RC-38. El desarrollo no aprueba automáticamente este documento.
+El usuario solicitó preparar el plan con subagentes después del Backend y autorizó implementarlo. Client está implementado con los tres carriles y el integrador, sobre las 44 operaciones de Server. Pruebas y navegador contra HTTP/PostgreSQL temporal tienen evidencia propia abajo. Las migraciones de Reservas están aplicadas en la BD local desde el 2026-10-09, reutilizando el módulo existente; RC-38 conserva el smoke con sesión real y acceso owner/colaborador como pendientes. El desarrollo no aprueba automáticamente este documento.
 
 Fuentes verificables para cada tarea:
 
@@ -32,7 +38,7 @@ Una página con selector paginado de casa y siete tabs: **General**, **Calendari
 | Preparación | Tabla y modal: recambio disponible/no disponible/por confirmar, limpieza, hora prevista, hora real y revisión de entradas/salidas del mismo día |
 | Gastos | Tabla, crear/editar pendientes, corregir metadatos de pagados, registrar pago y anular captura errónea. Asociación opcional a reserva de la misma casa |
 | Colaboradores | Lectura para miembros; propietario busca usuarios existentes, agrega, cambia cargo, retira o reactiva |
-| Configuración | Datos y horarios habituales, capacidad, zona y abono sugerido; políticas de cancelación con reglas completas. Colaborador consulta sin acciones de edición |
+| Configuración | Datos, capacidad y abono sugerido; sin campos de zona ni horarios habituales; políticas de cancelación con reglas completas. Colaborador consulta sin acciones de edición |
 
 Pagos/devoluciones se consultan tanto en la ficha de reserva como en un listado paginado abierto desde General. Auditoría abre un modal paginado desde la cabecera de la casa. Bloqueos se gestionan desde Calendario mediante listado y modales. Estos paneles no añaden rutas CRUD, un octavo tab ni tablas de dominio.
 
@@ -57,7 +63,7 @@ Modales usan BaseModal, RHF/Zod, TextInput, SelectSingleInput/SelectMultipleInpu
 
 El filtro global HTTP no conserva `turnover_ids` de una excepción 409. Usar `GET availability` y su `turnover_requirements` para revisar planes; no diseñar un modal que dependa de IDs inexistentes en errores. Antes de guardar draft, esos IDs pueden ser null. Consultar tras crearlo con exclude_reservation_id para obtener la transición de ese registro. El detalle del vecino muestra la transición persistida, no garantiza que describa la futura tras confirmar el draft.
 
-La casa no expone `has_history`/`can_change_timezone`. No inferir editabilidad de zona de una página vacía de reservas. Explicar su inmutabilidad con historial y manejar el rechazo conservando valores; no descargar todo el historial para inventar esa capacidad.
+El formulario no expone zona. Server conserva su validación e inmutabilidad con historial para clientes existentes; Client no infiere zona ni capacidad de edición a partir de páginas de reservas.
 
 BusinessCollaboratorModal consulta usuarios/acciones globales con `all:true` y email. Ese transporte no aplica a Rental: reutilizar apariencia/inputs, implementar candidatos de la casa sin email, sin creación de usuarios ni permisos por acción.
 
@@ -206,7 +212,7 @@ Todas las tareas siguientes están **pendientes de implementación**. Los criter
 - Dependencias: RC-09/11. Responsable: A.
 - Archivos: `components/ConfigurationPanel/`; tests propios.
 - [x] Detalle leído por ambos roles, edición/archivo/reactivación owner-only; ConfirmDialog explica efectos sobre nuevos acuerdos y conservación de historia/liquidación.
-- [x] Asignar/quitar default policy de la misma casa mediante opciones remotas; horarios/defaults solo nuevas propuestas, no acuerdos existentes.
+- [x] Asignar/quitar default policy de la misma casa mediante opciones remotas; defaults comerciales solo nuevas propuestas; horarios explícitos por reserva, sin herencia del alojamiento.
 - Cierre: colaborador sin edición incluso modal abierto, casa archivada con historia consultable, cambios rechazados conservados.
 
 ### RC-13 — Políticas de cancelación por anticipación
@@ -411,7 +417,8 @@ Todas las tareas siguientes están **pendientes de implementación**. Los criter
 
 - Dependencias: RC-37 y runbook de29/migración/seed/auth14 sobre entorno objetivo autorizado y respaldado. Responsable: integrador.
 - Archivos: evidencia operacional/documentos; sin DDL implícito ni cambios improvisados de entorno.
-- [ ] Revisar baseline y migraciones pendientes, apply/seed explícitos, módulo asignado, sesión/refresh/Redis y acceso owner/colaborador reales según runbooks existentes.
+- [x] Baseline y respaldo de esquema/historial local verificados; migraciones de Reservas aplicadas selectivamente el 2026-10-09. Módulo existente ID15/key `reservas`/path `/tools/reservations` preservado, sin sembrar otra key.
+- [ ] Sesión/refresh/Redis y acceso owner/colaborador reales; confirmar asignación desde Settings según runbooks existentes.
 - [ ] Verificar ruta directa, casa seleccionada, captura/consulta y revocación con datos de prueba delimitados; no usar dinero/huéspedes reales como fixture.
 - Cierre: evidencia objetivo y limpieza de pruebas. Mantener pendiente si falta entorno/sesión; runtime synchronize=false significa que iniciar Server no aplica esquema.
 
@@ -516,3 +523,55 @@ Inspección **solo de lectura**, usando el DataSource compilado, sin imprimir cr
 El historial del entorno declara **9 migraciones pendientes**: `AuthSessions1789257600000`, `AddIconToModulesAndModuleGroups1789257700000`, `CreateAiProviderCatalogAndRefactorAiProviders1789257800000`, `SeedSecurityActions1790553500000`, `HardenAiApiKeyEncryption1790553600000`, `AddTokenPlanFlagsToCatalogAndProviders1790553700000`, `AddIsDefaultToAiProviders1790553800000`, `CreatePersonalFinance1791085000000` y `CreateRentalReservations1791146000000`. Una migración pendiente en el historial no demuestra que todos sus cambios físicos estén ausentes; el baseline debe reconciliar ese estado. `migration:run` aplicaría el conjunto pendiente, no exclusivamente Reservas. Mantener el runbook de29 y revisar también las migraciones históricas IA antes de cualquier aplicación.
 
 No se aplicó DDL, seed o asignación de módulos en el entorno configurado. La revisión no modifica la aprobación documental ni cierra RC-38. En esta revisión no se repitió el flujo de navegador de la entrega inicial; la nueva recuperación de UI se verifica mediante Testing Library y el contrato HTTP mediante PostgreSQL aislado.
+
+## Ajuste de alojamientos verificado — 2026-10-09
+
+Botón contained «Crear alojamiento» / «Create accommodation»; una instrucción de selección, y estado vacío único si la consulta devuelve cero alojamientos. El selector mantiene su error y reintento, sin añadir instrucción contradictoria tras fallo. El formulario retira IANA/entrada/salida y coloca el switch Core Activo después de Notas. La edición solo envía campos modificados y conserva valores/modal ante error. Cada reserva nueva empieza con ambos horarios vacíos y exige valores explícitos; edición conserva los de la reserva. Configuración ya no muestra horarios del alojamiento.
+
+Ajuste final solicitado2026-10-09: «Crear alojamiento» iguala los44px del campo SelectSingleInput mediante minHeight:44 y alignSelf:end; no se estira hasta incluir la etiqueta. Ancho completo xs y bordes superior/inferior alineados con el campo desde sm. Sustituye la altura convencional36.5px pedida inicialmente. QA Chromium con transporte sintético a390/1280px confirma44px en ambos controles y alineación exacta en escritorio, sin overflow móvil. Tipado/lint y seis regresiones RentalReservations correctos; evidencia matched-height en rental-button-qa del directorio externo registrado en00. Sin cambios de lógica, backend o BD.
+
+Contrato alineado con DTO/entidad/nullable de Server y OpenAPI verificado; `PropertyInput` requiere nombre/capacidad, con metadatos históricos opcionales. No se debilita el contrato requerido de horarios por reserva. Validadores regenerados desde Swagger verificado y formatos preservados.
+
+Checks: suite Client completa **1021 pruebas/167 archivos**, tipado/lint/build correctos; Reservas focalizadas **208/51**, incluyendo alta sin inputs técnicos, switch al final, rechazo conservando ubicación y horarios obligatorios por reserva. [Fixture manual aislado](../../nodia-client/src/test/manual/rental-property/README.md) con adapter bloquea servicios reales/mutaciones. QA en navegador in-app Chromium, viewports320/390/600/1280, ES/EN y claro/oscuro:16 variantes, una instrucción, contained visible, siete campos sin zona/horarios, Activo último y ningún overflow horizontal. Acciones a ancho completo en xs; scroll permite alcanzar Activo. Capturas/métricas fuera del repo en `C:/Users/Oscar/.codex/visualizations/2026/10/09/01a12123-a341-7fa0-98a0-31ab092d0357/rental-property-qa/`. Se comprobó además cero alojamientos. Viewport redimensionado: no acredita teclado virtual o teléfono físico.
+
+Aplicación local y smoke de lectura compilada200 registrados en [29](29-rental-reservations-backend-plan.md#aplicación-local-y-corrección-del-500--2026-10-09). RC-38 permanece abierto para sesión/creación/colaboración reales. Sin aprobación documental automática.
+
+Mantenimiento posterior solicitado del 2026-10-09: JSON de Obsidian reconciliado con horarios legacy nullable y avisos circulares resueltos mediante nota SQL de la FK de retorno; restricción real/DBML conservados. [Evidencia y complemento necesario al exportar SQL](27-rental-reservations-erd.md#diagrama-obsidian-reconciliado-y-avisos-circulares--2026-10-09). Sustituye el pendiente de actualización externa descrito en esta entrega; RC-38 y aprobación documental conservan su estado.
+
+## Calendario primero implementado — 2026-10-09
+
+El usuario eligió explícitamente la variante del mockup y solicitó implementar. Workspace inicia en Agenda con FullCalendar Standard/MUI, ficha contextual con lectura única, nueva cotización por día/rango y pasos, Caja por agregados y administración secundaria. Inputs de fechas compartidos con MUI X Community también en Finanzas/Facturas; instantes de Reservas en zona explícita con DST y borradores preservados. Detalle técnico, inventario y evidencia en [36](36-reservations-redesign-proposal.md) y ADR-025. Conserva los controles remotos, modales ante error, recuperaciones inciertas, permisos y acciones anteriores. QA aislado22 casos en ocho anchos/ambos temas y ES/EN; no cierra RC-38 ni aceptación en teléfono/sesión real. Checks finales en00.
+
+### Contacto del huésped con prefijo — 2026-10-10
+
+Por solicitud del usuario, formulario de Reservas utiliza PhoneInput con PhoneCountryInput compartido con el selector de Contactos de Business. País/prefijo buscable y número nacional, Chile inicial, detección de teléfono internacional pegado y normalización E.164 de teléfonos modificados. Conserva país/borrador entre pasos, rechazo y recuperación; ref de RHF permite foco tras validación. El contrato guest_contact no se restringe a teléfonos: texto/contactos históricos editables, valores sin cambios se envían en su representación original. Campos numéricos modificados inválidos bloquean envío/avance; sin columnas nuevas ni cambios de DTOs. QA sintético en390/600/1440px ES oscuro y390 EN claro: selección, número inválido bloqueado, rechazo409 preservando país/número, sin overflow ni errores JS. Suite/build/tipado/lint y evidencia registrados en00-progress.
+
+### Alineación de formulario — 2026-10-10
+
+Acuerdo reorganizado por solicitud del usuario: tarifa/limpieza y descuento/comisión emparejados, abono y notas de ancho completo; vencimientos en filas completas con título común y fecha/hora sincronizadas. Etiquetas cortas de los controles mantienen nombres accesibles completos. Campos individuales de estadía/huésped expanden su fila y móvil usa una columna. Contratos/transporte/validación y valores preservados. 29 regresiones, build/tipado/lint y QA de10 combinaciones ES/EN en390/599/600/768/1440px correctos; no equivale a aceptación física/RC-38.
+
+### Colaboradores como pestaña permanente — 2026-10-10
+
+Por solicitud explícita, Colaboradores se muestra desde la apertura del alojamiento junto a Agenda, Reservas, Preparación y Caja; retirado su acceso duplicado de Administrar. Agenda sigue siendo la selección inicial. Cambiar de vista conserva el alojamiento y el enlace con tab=collaborators admite recarga. Se monta/consulta únicamente el panel seleccionado, con permisos de colaboración existentes. Regresión de navegación/carga diferida y pruebas de CollaboratorTable: 8 pruebas/2 archivos; typecheck/lint correctos. QA Edge headless con transporte sintético en390/1440px, ES oscuro/EN claro: acceso directo, recarga y teclado correctos, sin overflow horizontal. Sin cambios de contratos, Server ni BD; RC-38/aceptación física pendientes.
+
+### Configuración como pestaña permanente — 2026-10-10
+
+Por solicitud explícita, Configuración también queda visible desde la apertura del alojamiento, después de Colaboradores; retirado su acceso duplicado de Administrar. Conserva ConfigurationPanel, PolicyTable y sus permisos; consultas de políticas solo al seleccionar esa vista. Agenda sigue inicial y los enlaces con tab=configuration admiten recarga. Regresión parametrizada de ambas pestañas y suites de colaboradores/configuración/políticas: 15 pruebas/4 archivos; typecheck/lint correctos. QA Edge headless sintético en390/1440px ES oscuro/EN claro verifica acceso directo, recarga, teclado tras finalizar la carga y ausencia de overflow horizontal. Evidencia configuration-tab-results.json/capturas en directorio externo de Reservas; sin Server/BD ni cierre de RC-38/aceptación física.
+
+### Formulario uniforme de bloqueos — 2026-10-10
+
+Por solicitud explícita, BlockModal aplica el patrón compartido DateTimeInput: título de Inicio/Fin y etiquetas cortas Fecha/Hora, alineadas desde sm y apiladas en xs, conservando nombres accesibles completos y zona. Todos los campos ocupan el ancho disponible dentro de una columna minmax(0,1fr). La tabla de bloqueos contiene su ancho mínimo/scroll horizontal en su propia columna, evitando ensanchar la página móvil. Validación temporal, payloads y permisos intactos; regresión comprueba fechas/horas/notas preservados tras rechazo de edición. 7 pruebas/5 archivos, tipado/lint correctos. QA Edge headless sintético:10 variantes ES oscuro/EN claro en390/599/600/768/1440px, medidas de fecha/hora/campos y ausencia de overflow correctas. Evidencia block-layout-results.json/block-aligned-*.png en directorio externo de Reservas. Sin Server/BD ni aceptación física.
+
+### Acción de quitar tramo alineada — 2026-10-10
+
+Por solicitud explícita, PolicyModal usa color error del tema para el basurero habilitado y centra la acción en la fila de los inputs. RuleRow comparte filas de etiqueta/input/helper mediante subgrid, de modo que etiquetas largas y validación no desplazan el icono. Área táctil44px; xs apila campos y coloca eliminación junto al porcentaje, sm+ mantiene ambos campos en paralelo. Conserva labels accesibles, bloqueos/permisos y mínimo de un tramo. QA Edge headless sintético con propietario de prueba (owner=1, únicamente en harness):8 variantes390/600/768/1440px ES oscuro/EN claro, centros coincidentes antes/con error, rojo del tema, eliminación/minimo y cero overflow del modal. 4 pruebas PolicyModal, build/tipado/lint correctos; evidencia policy-trash-results.json/capturas en directorio externo de Reservas. Sin operaciones en API/BD real.
+
+### Filtros verticales — 2026-10-10
+
+Por política explícita del usuario, todos los inputs de filtros de Reservas ocupan una fila completa en una columna, también en escritorio. RentalFilters aplica la distribución a Reservas, Bloqueos, Preparación, Pagos, Gastos, Colaboradores, Políticas e Historial; el período de Caja usa PeriodFilters vertical. Búsqueda de Reservas tiene un único selector y conserva su disposición. No se modifican payloads, validación, chips, actividad predeterminada ni acciones. Regla registrada en DESIGN6.6. 4 regresiones RentalFilters/RentalOverview, build/tipado/lint correctos. QA Edge headless con transporte sintético:36 casos (ocho paneles de filtro y período de Caja x390/1440px xES oscuro/EN claro), posiciones/ancho de cada campo en columna y cero overflow del contenedor comprobados. Evidencia filters-vertical-results.json/capturas en directorio externo de Reservas. Sin API/BD reales ni aceptación física.
+
+### Configuración Panel de casa y móvil de Reservas — 2026-10-10
+
+Variante primera del mockup elegida explícitamente por el usuario e integrada: datos, sugerencias y políticas en paneles/tarjetas, archivo al final y editores por grupo. Selección predeterminada por ID desde tarjeta o selector, errores/borradores y permisos conservados; revalidación de la propiedad no desmonta editores ni reinicia filtros. Consulta de políticas paginada/buscable, sin N+1 ni descarga completa.
+
+MobileRecordCard incorporado en xs a Preparación, Colaboradores, Bloqueos, Pagos, Gastos e Historial; comparte acciones/query/paginado con tablas desde sm. Agenda/Reservas/Caja existentes comprobadas; controles principales44px y contención del detalle. QA y alcance sintético en36 y00-progress; fixture manual reproducible. Sin cambios de contrato, API/BD reales ni aceptación física; RC-38 conserva lo pendiente.

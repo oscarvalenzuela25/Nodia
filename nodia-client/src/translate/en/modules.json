@@ -50,7 +50,8 @@
     "actions": "Actions"
   },
   "actions_menu": {
-    "update": "Update"
+    "update": "Update",
+    "delete": "Delete"
   },
   "filter_chips": {
     "key": "Identifier: {{value}}",
@@ -90,15 +91,22 @@
       "created_success": "Module group created successfully",
       "created_error": "Failed to create module group",
       "updated_success": "Module group updated successfully",
-      "updated_error": "Failed to update module group"
-    }
+      "updated_error": "Failed to update module group",
+      "deleted_success": "Module group deleted successfully"
+    },
+    "status_filter": "Module group status",
+    "confirm_delete_title": "Delete module group?",
+    "confirm_delete_message": "Are you sure you want to delete the group “{{name}}”? This action is permanent. Only groups with no associated modules can be deleted.",
+    "not_found": "The module group no longer exists.",
+    "delete_has_modules": "The group cannot be deleted because it has associated modules, including inactive ones."
   },
   "views": {
     "split": "Combined View",
     "modules": "Modules Only",
     "groups": "Groups Only",
-    "collapse_groups": "Collapse groups table",
-    "expand_groups": "Expand groups table"
+    "collapse_groups": "Collapse groups",
+    "expand_groups": "Expand groups",
+    "label": "Modules view"
   },
   "module_names": {
     "general_settings": "General Settings",
@@ -155,6 +163,25 @@
     "updated_success": "Module updated successfully",
     "updated_error": "Could not update module",
     "link_copied_title": "Link copied",
-    "link_copied_desc": "Module URL has been copied to clipboard."
+    "link_copied_desc": "Module URL has been copied to clipboard.",
+    "deleted_success": "Module deleted successfully"
+  },
+  "status": {
+    "active_only": "Active",
+    "inactive_only": "Inactive",
+    "all": "All",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "confirm_delete_title": "Delete module?",
+  "confirm_delete_message": "Are you sure you want to delete the module “{{name}}”? This action is permanent and also removes its user assignments.",
+  "not_found": "The module no longer exists.",
+  "invalid_id": "The identifier is invalid.",
+  "open_link": "Open link",
+  "pagination": {
+    "next": "Next page",
+    "previous": "Previous page",
+    "first": "First page",
+    "last": "Last page"
   }
 }

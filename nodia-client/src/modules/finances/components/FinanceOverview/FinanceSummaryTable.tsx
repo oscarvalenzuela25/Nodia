@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Chip, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import FinanceTable from "../FinanceTable";
+import FinanceRecordCard from "../FinanceRecordCard";
+import FinanceDeleteDialog from "../FinanceDeleteDialog";
 import type { FinanceColumn } from "../FinanceTable";
 import FinanceCatalogModal from "../FinanceCatalogModal";
 import FinanceGroupModal from "../FinanceGroupModal";
@@ -29,6 +31,7 @@ const FinanceSummaryTable = ({ kind, query }: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editId, setEditId] = useState<string>();
   const [toggleRow, setToggleRow] = useState<FinanceSummary | null>(null);
+  const [deleteRow, setDeleteRow] = useState<FinanceSummary | null>(null);
   const toggleInFlight = useRef(false);
   const summaryQuery = { ...query.q };
   delete summaryQuery.name_cont;
@@ -42,6 +45,17 @@ const FinanceSummaryTable = ({ kind, query }: Props) => {
   const detail = useFinanceRecord(kind, editId, Boolean(editId));
   const mutation = useFinanceMutation(kind);
   const financeBusy = useFinanceBusy();
+  const lastPage = Math.max(1, summary.data?.meta.total_pages ?? page);
+  useEffect(() => {
+    let cancelled = false;
+    if (summary.data && !summary.isPlaceholderData && page > lastPage)
+      queueMicrotask(() => {
+        if (!cancelled) setPage(lastPage);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [summary.data, summary.isPlaceholderData, page, lastPage]);
   const busy =
     financeBusy || summary.isFetching || summary.isLoading || detail.isFetching;
   const columns: FinanceColumn<FinanceSummary>[] = [
@@ -178,6 +192,40 @@ const FinanceSummaryTable = ({ kind, query }: Props) => {
         onCreate={openCreate}
         onEdit={openEdit}
         onToggle={setToggleRow}
+        onDelete={setDeleteRow}
+        renderMobileRow={(row, actions) => (
+          <FinanceRecordCard
+            record={row}
+            actions={actions}
+            fields={[
+              { key: "id", label: t("finance:id"), value: row.id },
+              { key: "key", label: t("finance:key"), value: row.key },
+              {
+                key: "movements",
+                label: t("finance:table.movement_count"),
+                value: row.movement_count,
+              },
+              {
+                key: "income",
+                fullWidth: true,
+                label: t("finance:table.income"),
+                value: formatFinanceAmount(row.income_amount, i18n.language),
+              },
+              {
+                key: "expense",
+                fullWidth: true,
+                label: t("finance:table.expense"),
+                value: formatFinanceAmount(row.expense_amount, i18n.language),
+              },
+              {
+                key: "net",
+                fullWidth: true,
+                label: t("finance:table.net"),
+                value: formatFinanceAmount(row.net_amount, i18n.language),
+              },
+            ]}
+          />
+        )}
         meta={summary.data?.meta}
         page={page}
         limit={limit}
@@ -237,6 +285,14 @@ const FinanceSummaryTable = ({ kind, query }: Props) => {
           </Alert>
         )}
       </ConfirmDialog>
+      {deleteRow && (
+        <FinanceDeleteDialog
+          resource={kind}
+          record={deleteRow}
+          onClose={() => setDeleteRow(null)}
+          onDeleted={() => setDeleteRow(null)}
+        />
+      )}
     </OverviewStack>
   );
 };

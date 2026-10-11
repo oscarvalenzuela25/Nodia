@@ -39,11 +39,14 @@ export type RentalQuery = {
 };
 type PropertyInput = Pick<
   RentalProperty,
-  "name" | "timezone" | "max_guests" | "check_in_time" | "check_out_time"
+  "name" | "max_guests"
 > &
   Partial<
     Pick<
       RentalProperty,
+      | "timezone"
+      | "check_in_time"
+      | "check_out_time"
       | "location"
       | "default_nightly_rate"
       | "default_deposit_percent"

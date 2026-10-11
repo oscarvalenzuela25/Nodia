@@ -1,8 +1,8 @@
+import DateInput from "../../../../components/inputs/DateInput";
 import { useState } from "react";
 import { Alert, Button, LinearProgress, Typography } from "@mui/material";
 import { Skeleton } from "boneyard-js/react";
 import { useTranslation } from "react-i18next";
-import TextInput from "../../../../components/inputs/TextInput";
 import {
   useRentalBusy,
   useRentalOverview,
@@ -15,8 +15,15 @@ import {
 import { validRentalPeriod } from "../PaymentModal/schema";
 import { formatRentalAmount } from "../../utils/money";
 import type { RentalProperty } from "../../types";
-import { FilterRow, MetricCard, MetricGrid, OverviewStack } from "./styles";
+import {
+  FilterRow,
+  MetricCard,
+  MetricGrid,
+  OverviewStack,
+  PeriodFilters,
+} from "./styles";
 export type RentalOverviewProps = {
+  cashOnly?: boolean;
   property: RentalProperty;
   onOpenReservation?: (id: string) => void;
   onOpenTurnover?: (id: string) => void;
@@ -26,6 +33,7 @@ export type RentalOverviewProps = {
   onViewTurnovers?: () => void;
 };
 function Overview({
+  cashOnly = false,
   property,
   onOpenReservation,
   onOpenTurnover,
@@ -68,22 +76,20 @@ function Overview({
     : [];
   return (
     <OverviewStack>
-      <FilterRow>
-        <TextInput
+      <PeriodFilters>
+        <DateInput
           label={t("rental:from_on")}
-          type="date"
           value={from}
-          onChange={(event) => setFrom(event.target.value)}
+          onChange={setFrom}
           disabled={busy}
         />
-        <TextInput
+        <DateInput
           label={t("rental:to_on")}
-          type="date"
           value={to}
-          onChange={(event) => setTo(event.target.value)}
+          onChange={setTo}
           disabled={busy}
         />
-      </FilterRow>
+      </PeriodFilters>
       {!valid && (
         <Alert severity="warning">{t("rental:cash_period_invalid")}</Alert>
       )}
@@ -160,80 +166,85 @@ function Overview({
                     ),
                 )}
               </FilterRow>
-              {[
-                {
-                  title: "upcoming_check_ins",
-                  rows: data.upcoming_check_ins,
-                  date: "check_in_at" as const,
-                },
-                {
-                  title: "upcoming_check_outs",
-                  rows: data.upcoming_check_outs,
-                  date: "check_out_at" as const,
-                },
-              ].map((section) => (
-                <OverviewStack key={section.title}>
-                  <Typography variant="h6">
-                    {t(`rental:${section.title}`)}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("rental:sample_limit")}
-                  </Typography>
-                  {section.rows.length === 0 ? (
-                    <Typography>{t("rental:empty")}</Typography>
-                  ) : (
-                    section.rows.map((row) => (
-                      <MetricCard key={row.id}>
-                        <Typography>
-                          {row.guest_name} ·{" "}
-                          {formatRentalInstant(
-                            row[section.date],
-                            property.timezone,
-                            i18n.language,
-                          )}{" "}
-                          · {t(`rental:${row.status}`)}
-                        </Typography>
-                        {onOpenReservation && (
-                          <Button
-                            disabled={busy}
-                            onClick={() => onOpenReservation(row.id)}
-                          >
-                            {t("rental:open_reservation")}
-                          </Button>
-                        )}
-                      </MetricCard>
-                    ))
-                  )}
-                </OverviewStack>
-              ))}
-              <OverviewStack>
-                <Typography variant="h6">
-                  {t("rental:pending_turnovers")}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {t("rental:sample_limit")}
-                </Typography>
-                {data.pending_turnovers.length === 0 ? (
-                  <Typography>{t("rental:empty")}</Typography>
-                ) : (
-                  data.pending_turnovers.map((row) => (
-                    <MetricCard key={row.id}>
-                      <Typography>
-                        {t("rental:reservation")}: {row.incoming_reservation_id}{" "}
-                        · {t(`rental:${row.cleaning_status}`)}
+              {!cashOnly && (
+                <>
+                  {[
+                    {
+                      title: "upcoming_check_ins",
+                      rows: data.upcoming_check_ins,
+                      date: "check_in_at" as const,
+                    },
+                    {
+                      title: "upcoming_check_outs",
+                      rows: data.upcoming_check_outs,
+                      date: "check_out_at" as const,
+                    },
+                  ].map((section) => (
+                    <OverviewStack key={section.title}>
+                      <Typography variant="h6">
+                        {t(`rental:${section.title}`)}
                       </Typography>
-                      {onOpenTurnover && (
-                        <Button
-                          disabled={busy}
-                          onClick={() => onOpenTurnover(row.id)}
-                        >
-                          {t("rental:view_turnovers")}
-                        </Button>
+                      <Typography variant="body2" color="text.secondary">
+                        {t("rental:sample_limit")}
+                      </Typography>
+                      {section.rows.length === 0 ? (
+                        <Typography>{t("rental:empty")}</Typography>
+                      ) : (
+                        section.rows.map((row) => (
+                          <MetricCard key={row.id}>
+                            <Typography>
+                              {row.guest_name} ·{" "}
+                              {formatRentalInstant(
+                                row[section.date],
+                                property.timezone,
+                                i18n.language,
+                              )}{" "}
+                              · {t(`rental:${row.status}`)}
+                            </Typography>
+                            {onOpenReservation && (
+                              <Button
+                                disabled={busy}
+                                onClick={() => onOpenReservation(row.id)}
+                              >
+                                {t("rental:open_reservation")}
+                              </Button>
+                            )}
+                          </MetricCard>
+                        ))
                       )}
-                    </MetricCard>
-                  ))
-                )}
-              </OverviewStack>
+                    </OverviewStack>
+                  ))}
+                  <OverviewStack>
+                    <Typography variant="h6">
+                      {t("rental:pending_turnovers")}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {t("rental:sample_limit")}
+                    </Typography>
+                    {data.pending_turnovers.length === 0 ? (
+                      <Typography>{t("rental:empty")}</Typography>
+                    ) : (
+                      data.pending_turnovers.map((row) => (
+                        <MetricCard key={row.id}>
+                          <Typography>
+                            {t("rental:reservation")}:{" "}
+                            {row.incoming_reservation_id} ·{" "}
+                            {t(`rental:${row.cleaning_status}`)}
+                          </Typography>
+                          {onOpenTurnover && (
+                            <Button
+                              disabled={busy}
+                              onClick={() => onOpenTurnover(row.id)}
+                            >
+                              {t("rental:view_turnovers")}
+                            </Button>
+                          )}
+                        </MetricCard>
+                      ))
+                    )}
+                  </OverviewStack>
+                </>
+              )}
             </>
           )}
         </OverviewStack>

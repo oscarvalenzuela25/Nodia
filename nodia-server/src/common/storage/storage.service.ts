@@ -1,5 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { envs } from '../../config/envs.config.js';
 
@@ -11,7 +16,11 @@ export class StorageService {
   constructor() {
     this.bucketName = envs.R2_BUCKET_NAME;
 
-    if (envs.R2_ACCESS_KEY_ID && envs.R2_SECRET_ACCESS_KEY && envs.R2_ACCOUNT_ID) {
+    if (
+      envs.R2_ACCESS_KEY_ID &&
+      envs.R2_SECRET_ACCESS_KEY &&
+      envs.R2_ACCOUNT_ID
+    ) {
       const endpoint =
         envs.R2_ENDPOINT ||
         `https://${envs.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
@@ -36,7 +45,11 @@ export class StorageService {
    * @param mimeType MIME type (e.g. "application/pdf", "image/png")
    * @returns The relative storage path key
    */
-  async uploadFile(key: string, buffer: Buffer, mimeType: string): Promise<string> {
+  async uploadFile(
+    key: string,
+    buffer: Buffer,
+    mimeType: string,
+  ): Promise<string> {
     if (!this.s3Client || !this.bucketName) {
       throw new InternalServerErrorException(
         'Storage service is not configured. Missing R2 credentials.',
@@ -51,11 +64,31 @@ export class StorageService {
           Body: buffer,
           ContentType: mimeType,
         }),
+        { abortSignal: AbortSignal.timeout(60_000) },
       );
       return key;
-    } catch (error: any) {
+    } catch {
       throw new InternalServerErrorException(
-        `Failed to upload file to storage: ${error.message}`,
+        'Failed to upload file to storage.',
+      );
+    }
+  }
+
+  /** Idempotent compensation; a failed PUT may already have stored the object. */
+  async deleteFile(key: string): Promise<void> {
+    if (!this.s3Client || !this.bucketName) {
+      throw new InternalServerErrorException(
+        'Storage service is not configured.',
+      );
+    }
+    try {
+      await this.s3Client.send(
+        new DeleteObjectCommand({ Bucket: this.bucketName, Key: key }),
+        { abortSignal: AbortSignal.timeout(10_000) },
+      );
+    } catch {
+      throw new InternalServerErrorException(
+        'Failed to delete file from storage.',
       );
     }
   }
@@ -66,7 +99,10 @@ export class StorageService {
    * @param expiresInSeconds Duration in seconds for URL validity (default: 1800s = 30min)
    * @returns Temporary presigned URL
    */
-  async getSignedFileUrl(key: string, expiresInSeconds = 1800): Promise<string> {
+  async getSignedFileUrl(
+    key: string,
+    expiresInSeconds = 1800,
+  ): Promise<string> {
     if (!this.s3Client || !this.bucketName) {
       throw new InternalServerErrorException(
         'Storage service is not configured. Missing R2 credentials.',

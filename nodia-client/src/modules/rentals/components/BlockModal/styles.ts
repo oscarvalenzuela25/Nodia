@@ -9,7 +9,9 @@ export const Filters = styled("div")(({ theme }) => ({
   gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
 }));
 export const FormContainer = styled("form")(({ theme }) => ({
+  minWidth: 0,
   display: "grid",
+  gridTemplateColumns: "minmax(0,1fr)",
   gap: theme.spacing(2),
 }));
 export const ModalActions = styled("div")(({ theme }) => ({
@@ -17,7 +19,9 @@ export const ModalActions = styled("div")(({ theme }) => ({
   gap: theme.spacing(2),
   flexWrap: "wrap",
   justifyContent: "flex-end",
-  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
+  [theme.breakpoints.down("sm")]: {
+    "& > button": { width: "100%", minHeight: 44 },
+  },
 }));
 export const DetailList = styled("section")(({ theme }) => ({
   display: "grid",

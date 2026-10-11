@@ -1,7 +1,9 @@
+import DateInput from "../../../../components/inputs/DateInput";
 import { useState } from "react";
 import { Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Filter from "../../../../components/Filter";
+import ActiveStatusSelect from "../../../../components/Filter/components/ActiveStatusSelect";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import TextInput from "../../../../components/inputs/TextInput";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
@@ -89,12 +91,7 @@ export default function RentalFilters({
   ) => setDraft((current) => ({ ...current, [name]: value }));
   const select = (
     name:
-      | "active"
-      | "status"
-      | "type"
-      | "cleaning_status"
-      | "linen_ready"
-      | "resource_type",
+      "status" | "type" | "cleaning_status" | "linen_ready" | "resource_type",
     values: readonly string[],
     prefix = "",
   ) => (
@@ -147,7 +144,12 @@ export default function RentalFilters({
         activeCount={chips.length}
         onOpen={() => setDraft(structuredClone(query))}
         onFilter={() => {
-          if (valid) onApply({ ...draft, page: 1 });
+          if (valid)
+            onApply({
+              ...draft,
+              ...(active ? { active: draft.active ?? "active" } : {}),
+              page: 1,
+            });
         }}
         onClear={() =>
           onApply({
@@ -159,7 +161,13 @@ export default function RentalFilters({
         }
       >
         <Fields>
-          {active && select("active", ["active", "inactive", "all"])}
+          {active && (
+            <ActiveStatusSelect
+              value={draft.active ?? "active"}
+              onChange={(value) => change("active", value)}
+              disabled={disabled}
+            />
+          )}
           {resource === "reservations" && (
             <>
               <SelectMultipleInput
@@ -286,24 +294,36 @@ export default function RentalFilters({
           )}
           {(civil || instant) && (
             <>
-              {[start, end].map((name) => (
-                <TextInput
-                  key={name}
-                  label={t(`rental:${name}`)}
-                  value={draft[name] ?? ""}
-                  type={civil ? "date" : "text"}
-                  onChange={(event) =>
-                    change(name, event.target.value || undefined)
-                  }
-                  disabled={disabled}
-                  error={!valid}
-                  helperText={
-                    instant
-                      ? t("rental:instant_with_offset")
-                      : t("rental:exclusive_period")
-                  }
-                />
-              ))}
+              {[start, end].map((name) =>
+                civil ? (
+                  <DateInput
+                    key={name}
+                    label={t(`rental:${name}`)}
+                    value={draft[name] ?? ""}
+                    onChange={(value) => change(name, value || undefined)}
+                    disabled={disabled}
+                    error={!valid}
+                    helperText={t("rental:exclusive_period")}
+                  />
+                ) : (
+                  <TextInput
+                    key={name}
+                    label={t(`rental:${name}`)}
+                    value={draft[name] ?? ""}
+
+                    onChange={(event) =>
+                      change(name, event.target.value || undefined)
+                    }
+                    disabled={disabled}
+                    error={!valid}
+                    helperText={
+                      instant
+                        ? t("rental:instant_with_offset")
+                        : t("rental:exclusive_period")
+                    }
+                  />
+                ),
+              )}
             </>
           )}
         </Fields>

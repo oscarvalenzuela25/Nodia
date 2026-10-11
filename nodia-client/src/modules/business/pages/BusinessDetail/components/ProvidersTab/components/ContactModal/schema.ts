@@ -1,33 +1,13 @@
 import { z } from "zod";
-import {
-  getCountryCallingCode,
-  isSupportedCountry,
-  parsePhoneNumberFromString,
-  type CountryCode,
-} from "libphonenumber-js/max";
+import { parsePhoneNumberFromString } from "libphonenumber-js/max";
+import { normalizedPhone } from "../../../../../../../../utils/phoneNumbers";
+export { normalizedPhone } from "../../../../../../../../utils/phoneNumbers";
 import {
   CONTACT_DAYS,
   type ContactDay,
   type ContactValues,
   type ProviderContact,
 } from "../ProviderContacts/types";
-export function normalizedPhone(
-  country: string,
-  number: string,
-): string | undefined {
-  if (!isSupportedCountry(country)) return undefined;
-  const parsed = parsePhoneNumberFromString(number, {
-    defaultCountry: country as CountryCode,
-    extract: false,
-  });
-  if (
-    !parsed?.isValid() ||
-    parsed.ext ||
-    parsed.countryCallingCode !== getCountryCallingCode(country as CountryCode)
-  )
-    return undefined;
-  return parsed.number;
-}
 const daySchema = z.object({
   from: z.string(),
   to: z.string(),

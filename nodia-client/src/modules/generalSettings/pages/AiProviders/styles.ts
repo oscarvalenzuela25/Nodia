@@ -24,6 +24,10 @@ export const HeaderPanel = styled(Paper)(({ theme }) => ({
     theme.palette.mode === "dark"
       ? "0 4px 20px 0 rgba(0, 0, 0, 0.4)"
       : "0 4px 20px 0 rgba(0, 0, 0, 0.05)",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(2),
+  },
 }));
 
 export const HeaderTitleBox = styled(Box)(({ theme }) => ({
@@ -39,12 +43,16 @@ export const PageTitleContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
+  minWidth: 0,
+  "& svg": { flexShrink: 0 },
 }));
 
 export const PageTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 700,
   fontSize: "1.5rem",
   color: theme.palette.text.primary,
+  overflowWrap: "anywhere",
+  [theme.breakpoints.down("sm")]: { fontSize: "1.25rem" },
 }));
 
 export const PageSubtitle = styled(Typography)(({ theme }) => ({
@@ -83,14 +91,11 @@ export const HeaderButtonsRow = styled(Box)(({ theme }) => ({
     whiteSpace: "nowrap",
   },
   [theme.breakpoints.down("sm")]: {
+    gap: theme.spacing(1),
     flexWrap: "wrap",
     flexDirection: "column",
     justifyContent: "stretch",
-    "& > button": {
-      flex: 1,
-      minWidth: 140,
-      width: "100%",
-    },
+    "& > button": { width: "100%", minHeight: 44, whiteSpace: "normal" },
   },
 }));
 

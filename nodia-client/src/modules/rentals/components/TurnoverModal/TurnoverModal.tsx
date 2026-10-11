@@ -1,3 +1,4 @@
+import DateTimeInput from "../../../../components/inputs/DateTimeInput";
 import { useId } from "react";
 import { Alert, Button, Typography } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
@@ -133,22 +134,22 @@ function TurnoverFormView({
           key={name}
           name={name}
           control={control}
-          render={({ field }) => (
-            <TextInput
-              {...field}
-              label={t(`rental:${name}`)}
-              multiline={name === "notes"}
-              disabled={busy}
-              error={!!errors[name]}
-              helperText={
-                errors[name]?.message
-                  ? t(errors[name].message)
-                  : name.endsWith("_at")
-                    ? t("rental:instant_with_offset")
-                    : undefined
-              }
-            />
-          )}
+          render={({ field }) => {
+            const Input = name.endsWith("_at") ? DateTimeInput : TextInput;
+            return (
+              <Input
+                {...field}
+                timezone={property.timezone}
+                label={t(`rental:${name}`)}
+                multiline={name === "notes"}
+                disabled={busy}
+                error={!!errors[name]}
+                helperText={
+                  errors[name]?.message ? t(errors[name].message) : undefined
+                }
+              />
+            );
+          }}
         />
       ))}
       <Alert severity="warning">

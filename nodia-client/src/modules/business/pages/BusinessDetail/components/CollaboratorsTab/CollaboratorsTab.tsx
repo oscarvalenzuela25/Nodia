@@ -1,3 +1,7 @@
+import BusinessStatusFilter from "../../../../components/BusinessStatusFilter/BusinessStatusFilter";
+import InputSearch from "../../../../../../components/inputs/InputSearch";
+import MobileRecordCard from "../../../../../../components/MobileRecordCard";
+import { useMediaQuery, useTheme } from "@mui/material";
 import type { FC, MouseEvent } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,7 +36,7 @@ import { TableSkeleton } from "../../../../../../components/skeletons";
 import { useAssignCollaborators } from "../../../../infrastructure/useServices";
 import type { BusinessCollaborator } from "../../../../infrastructure/types";
 import EditCollaboratorModal from "./components/EditCollaboratorModal";
-import { SectionCard, SectionHeader, SectionTitle, StatusDot } from "../../styles";
+import { StatusDot } from "../../styles";
 
 interface Props {
   businessId?: string;
@@ -53,6 +57,16 @@ export const CollaboratorsTab: FC<Props> = ({
   isLoading = false,
 }) => {
   const { t } = useTranslation(["business", "core"]);
+  const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
+
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"active" | "inactive" | null>("active");
+  const normalizedSearch = search.trim().toLocaleLowerCase();
+  const visibleCollaborators = collaborators.filter((collaborator) =>
+    (status === null || collaborator.is_active === (status === "active")) &&
+    [collaborator.user?.name, collaborator.user?.email, collaborator.position, collaborator.user_id]
+      .some((value) => value?.toLocaleLowerCase().includes(normalizedSearch))
+  );
 
   // 3-Dots Action Menu state
   const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -116,21 +130,46 @@ export const CollaboratorsTab: FC<Props> = ({
   };
 
   return (
-    <SectionCard>
-      <SectionHeader>
-        <SectionTitle>{t("business:collaborators_title")}</SectionTitle>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <BusinessStatusFilter
+        layout="stacked"
+        value={status}
+        onChange={setStatus}
+        disabled={isBusy || isMutating}
+      />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
+        <Box sx={{ width: { xs: "100%", sm: 320 } }}>
+          <InputSearch
+            value={search}
+            onChange={setSearch}
+            fullWidth
+            disabled={isBusy || isMutating}
+            placeholder={t("business:search_collaborators_placeholder")}
+          />
+        </Box>
         <Button
           variant="contained"
           startIcon={<GroupAddOutlinedIcon />}
           onClick={onOpenAddCollaborator}
           disabled={isActionDisabled}
-          sx={{ borderRadius: 2 }}
+          sx={{
+            borderRadius: 2,
+            width: { xs: "100%", sm: "auto" },
+            minHeight: { xs: 44, sm: "auto" },
+          }}
           data-testid="add-collab-tab-btn"
         >
           {t("business:action_add_collaborator")}
         </Button>
-      </SectionHeader>
-
+      </Box>
       <Skeleton
         loading={Boolean(isLoading)}
         fallback={
@@ -147,11 +186,23 @@ export const CollaboratorsTab: FC<Props> = ({
           />
         }
       >
-        {collaborators.length > 0 ? (
-          <TableContainer
+        {visibleCollaborators.length > 0 ? (
+mobile ? <Box sx={{ display: "grid", gap: 2 }}>
+            {visibleCollaborators.map((collab) => <MobileRecordCard key={collab.id}
+              title={collab.user?.name ?? collab.user_id} disabled={isActionDisabled}
+              status={<Chip size="small" color={collab.is_active ? "success" : "default"} label={t(collab.is_active ? "business:status_active" : "business:status_inactive")} />}
+              fields={[
+                { key: "email", label: t("business:collab_col_user"), value: collab.user?.email ?? "—" },
+                { key: "position", label: t("business:collab_col_position"), value: collab.position || t("business:collab_no_position") },
+                { key: "actions", label: t("business:collab_col_actions"), value: t("business:collab_actions_assigned_count", { count: collab.action_ids.length }) },
+              ]} actions={[
+                { key: "edit", label: t("business:action_update"), icon: <EditOutlinedIcon />, onClick: () => setEditingCollab(collab) },
+                { key: "remove", label: t("business:remove_collaborator"), icon: <DeleteOutlinedIcon />, color: "error", onClick: () => setConfirmRemoveCollab(collab) },
+              ]} />)}
+          </Box> : (          <TableContainer
             component={Paper}
             variant="outlined"
-            sx={{ borderRadius: 2, overflow: "hidden" }}
+            sx={{ borderRadius: 2, overflowX: "auto" }}
           >
             <Table>
               <TableHead>
@@ -174,7 +225,7 @@ export const CollaboratorsTab: FC<Props> = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {collaborators.map((collab) => (
+                {visibleCollaborators.map((collab) => (
                   <TableRow key={collab.id} hover>
                     {/* Colaborador / Usuario */}
                     <TableCell>
@@ -266,7 +317,7 @@ export const CollaboratorsTab: FC<Props> = ({
                 ))}
               </TableBody>
             </Table>
-          </TableContainer>
+          </TableContainer>)
         ) : (
           <Box
             sx={{
@@ -277,7 +328,7 @@ export const CollaboratorsTab: FC<Props> = ({
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              {t("business:collaborators_empty")}
+              {t(collaborators.length === 0 ? "business:collaborators_empty" : "business:collaborators_no_results")}
             </Typography>
             <Button
               variant="outlined"
@@ -367,7 +418,7 @@ export const CollaboratorsTab: FC<Props> = ({
           collaborator={editingCollab}
         />
       )}
-    </SectionCard>
+    </Box>
   );
 };
 

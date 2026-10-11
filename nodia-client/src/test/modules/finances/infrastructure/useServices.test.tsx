@@ -12,6 +12,7 @@ import {
   useFinanceList,
   useFinanceMutation,
   useFinanceOptions,
+  useFinanceDelete,
 } from "../../../../modules/finances/infrastructure/useServices";
 import * as services from "../../../../modules/finances/infrastructure/services";
 import type {
@@ -25,6 +26,7 @@ vi.mock("../../../../modules/finances/infrastructure/services", () => ({
   getFinanceOverview: vi.fn(),
   getFinanceSummary: vi.fn(),
   saveFinanceRecord: vi.fn(),
+  deleteFinanceRecord: vi.fn(),
 }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 const record: FinanceCategory = {
@@ -52,13 +54,11 @@ function setup() {
   return { client, wrapper };
 }
 const signIn = (id = "42") =>
-  useAuthStore
-    .getState()
-    .login({
-      token: "fixture",
-      expiresAt: Date.now() + 900000,
-      user: { id, name: "Fixture" },
-    });
+  useAuthStore.getState().login({
+    token: "fixture",
+    expiresAt: Date.now() + 900000,
+    user: { id, name: "Fixture" },
+  });
 beforeEach(() => {
   vi.clearAllMocks();
   signIn();
@@ -218,5 +218,97 @@ describe("finance mutations", () => {
       config: { headers: {} as never },
     };
     expect(isFinanceWriteUncertain(rejected)).toBe(false);
+  });
+});
+
+describe("finance deletion and recovery", () => {
+  it("deletes once with exact identity and invalidates only the actor’s finance scope", async () => {
+    const { client, wrapper } = setup();
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    const hook = renderHook(() => useFinanceDelete("movements"), { wrapper });
+    await act(() => hook.result.current.mutateAsync("9007199254740993"));
+    expect(services.deleteFinanceRecord).toHaveBeenCalledWith(
+      "movements",
+      "9007199254740993",
+    );
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: financeKeys.scope("42"),
+    });
+    expect(sileo.success).toHaveBeenCalledOnce();
+  });
+  it.each([true, false])(
+    "reviews an uncertain deletion without replaying it; absent=%s",
+    async (absent) => {
+      vi.mocked(services.deleteFinanceRecord).mockRejectedValueOnce(
+        new AxiosError("lost", "ERR_NETWORK"),
+      );
+      const { wrapper } = setup();
+      const hook = renderHook(() => useFinanceDelete("categories"), {
+        wrapper,
+      });
+      await act(async () => {
+        await expect(hook.result.current.mutateAsync("1")).rejects.toThrow();
+      });
+      await waitFor(() => expect(hook.result.current.isUncertain).toBe(true));
+      vi.mocked(services.getFinanceRecord).mockRejectedValueOnce(
+        new AxiosError("read unavailable", "ERR_NETWORK"),
+      );
+      await act(async () => {
+        await expect(hook.result.current.reviewResult("1")).rejects.toThrow();
+      });
+      expect(hook.result.current.isUncertain).toBe(true);
+      if (absent) {
+        const gone = new AxiosError("missing", "ERR_BAD_RESPONSE");
+        gone.response = {
+          status: 404,
+          data: {},
+          statusText: "Not found",
+          headers: {},
+          config: { headers: {} as never },
+        };
+        vi.mocked(services.getFinanceRecord).mockRejectedValueOnce(gone);
+      } else vi.mocked(services.getFinanceRecord).mockResolvedValueOnce(record);
+      await act(async () => {
+        expect(await hook.result.current.reviewResult("1")).toBe(absent);
+      });
+      await waitFor(() => expect(hook.result.current.isUncertain).toBe(false));
+      expect(services.deleteFinanceRecord).toHaveBeenCalledOnce();
+      expect(sileo.success).toHaveBeenCalledTimes(absent ? 1 : 0);
+    },
+  );
+  it("does not delete without an authenticated principal", async () => {
+    useAuthStore.getState().logout();
+    const { wrapper } = setup();
+    const hook = renderHook(() => useFinanceDelete("categories"), { wrapper });
+    await act(async () => {
+      await expect(hook.result.current.mutateAsync("1")).rejects.toThrow(
+        "finance:session_changed",
+      );
+    });
+    expect(services.deleteFinanceRecord).not.toHaveBeenCalled();
+    expect(sileo.success).not.toHaveBeenCalled();
+  });
+  it("does not notify or invalidate a later principal after an earlier deletion completes", async () => {
+    let finish!: () => void;
+    vi.mocked(services.deleteFinanceRecord).mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      }),
+    );
+    const { client, wrapper } = setup();
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    const hook = renderHook(() => useFinanceDelete("categories"), { wrapper });
+    let pending!: Promise<void>;
+    act(() => {
+      pending = hook.result.current.mutateAsync("1");
+    });
+    await waitFor(() => expect(finish).toBeDefined());
+    act(() => signIn("84"));
+    await act(async () => {
+      finish();
+      await expect(pending).rejects.toThrow("finance:session_changed");
+    });
+    expect(invalidate).not.toHaveBeenCalled();
+    expect(sileo.success).not.toHaveBeenCalled();
   });
 });

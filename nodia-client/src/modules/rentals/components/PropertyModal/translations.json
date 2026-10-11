@@ -1,7 +1,7 @@
 {
   "es": {
-    "edit_property": "Editar casa",
-    "create_property": "Crear casa",
+    "edit_property": "Editar alojamiento",
+    "create_property": "Crear alojamiento",
     "save": "Guardar",
     "owner_only": "La configuración y los colaboradores son administrados por el propietario.",
     "timezone_history": "La zona horaria no puede cambiar una vez que existan reservas o bloqueos. El servidor verificará el historial al guardar.",
@@ -36,7 +36,7 @@
     "inactive": "Inactivo",
     "all": "Todos",
     "not_assigned": "Sin asignar",
-    "property_summary": "Zona: {{timezone}} · Capacidad: {{guests}} · Entrada: {{checkIn}} · Salida: {{checkOut}}",
+    "property_summary": "Capacidad: {{guests}} huéspedes",
     "property_defaults": "Tarifa habitual CLP: {{rate}} · Abono habitual %: {{percent}} · Recambio mínimo: {{minutes}} min",
     "configuration_future_only": "Los horarios y valores habituales se ofrecen al crear nuevas reservas; no cambian los acuerdos ya registrados.",
     "archive_property": "Archivar casa",
@@ -66,8 +66,8 @@
     "validation_rules": "Defina entre 1 y 100 tramos distintos y un tramo para 0 días."
   },
   "en": {
-    "edit_property": "Edit house",
-    "create_property": "Create house",
+    "edit_property": "Edit accommodation",
+    "create_property": "Create accommodation",
     "save": "Save",
     "owner_only": "The owner manages configuration and collaborators.",
     "timezone_history": "The timezone cannot change once reservations or blocks exist. The server checks history when saving.",
@@ -102,7 +102,7 @@
     "inactive": "Inactive",
     "all": "All",
     "not_assigned": "Not assigned",
-    "property_summary": "Timezone: {{timezone}} · Capacity: {{guests}} · Check-in: {{checkIn}} · Check-out: {{checkOut}}",
+    "property_summary": "Capacity: {{guests}} guests",
     "property_defaults": "Usual CLP rate: {{rate}} · Usual deposit %: {{percent}} · Minimum turnover: {{minutes}} min",
     "configuration_future_only": "Usual times and amounts are offered for new reservations; recorded agreements are unchanged.",
     "archive_property": "Archive house",

@@ -13,14 +13,21 @@ import { IsBoolean } from 'class-validator';
 
 export class CreateRentalPropertyDto {
   @ApiProperty() @RentalText() name!: string;
-  @ApiProperty() @IsTimezone() timezone!: string;
+  @ApiPropertyOptional() @OptionalDefined() @IsTimezone() timezone?: string;
   @ApiProperty({ minimum: 1, maximum: 1000 })
   @IsInt()
   @Min(1)
   @Max(1000)
   max_guests!: number;
-  @ApiProperty() @IsLocalTime() check_in_time!: string;
-  @ApiProperty() @IsLocalTime() check_out_time!: string;
+  // Legacy metadata only. New agreements always require their own explicit times.
+  @ApiPropertyOptional({ nullable: true, type: String })
+  @OptionalNullable()
+  @IsLocalTime()
+  check_in_time?: string | null;
+  @ApiPropertyOptional({ nullable: true, type: String })
+  @OptionalNullable()
+  @IsLocalTime()
+  check_out_time?: string | null;
   @ApiPropertyOptional({ nullable: true })
   @OptionalNullable()
   @RentalText(500, true)

@@ -178,6 +178,8 @@ const user = object({ id, name: nullable(text), image_url: nullable(text) });
 const property = shape(
   `id owner_id name location timezone max_guests check_in_time check_out_time default_nightly_rate default_deposit_percent minimum_turnover_minutes default_cancellation_policy_id notes is_active ${authorship}`,
   {
+    check_in_time: nullable(field('check_in_time')),
+    check_out_time: nullable(field('check_out_time')),
     membership: object({
       type: enumeration('owner', 'collaborator'),
       can_manage_configuration: boolean,

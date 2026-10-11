@@ -171,8 +171,5 @@ export class ModuleService {
     return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} module`;
-  }
 }
 

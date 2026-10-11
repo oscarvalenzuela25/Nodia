@@ -96,7 +96,7 @@ const Home: FC = () => {
         ) : (
           !isError && !isLoading && (
             <Box sx={{ py: 6, textAlign: "center" }}>
-              <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+              <Typography component="h2" variant="h6" color="text.secondary" sx={{ mb: 1 }}>
                 {t("home:no_modules_title")}
               </Typography>
               <Typography variant="body2" color="text.secondary">

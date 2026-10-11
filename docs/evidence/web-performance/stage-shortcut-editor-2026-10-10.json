@@ -1,0 +1,3199 @@
+{
+  "stage": "WP-02B — mobile shortcut editor on intent",
+  "date": "2026-10-10",
+  "gitHead": "e0942bb328d2bbaaf003d9a296669dab203f4021",
+  "checkout": "Dirty existing workspace; preserve unrelated changes. Source and report hashes identify this stage.",
+  "measurement": {
+    "authentication": "Anonymous Home only; authenticated performance score remains unverified.",
+    "protocol": "Production preview 4174; three sequential cold navigations per profile per phase, separate Chrome headless profiles without extensions. Builds/tests did not run during audits.",
+    "reports": 18,
+    "finalSourceChange": "Navigation focus guard, followed by isolated full suite and six new audits."
+  },
+  "phases": [
+    {
+      "phase": "before",
+      "profiles": [
+        {
+          "profile": "mobile",
+          "runs": [
+            {
+              "run": 1,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/before-mobile-1.json",
+              "sha256": "4234f8a15598d46343783c8007bc98fd4ac93b216a174f4dcfb0d3c4cfebc6fb",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:07:01.726Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 77,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 4044.010374999999,
+                "lcpMs": 4133.21245,
+                "tbtMs": 29,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 442300
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BjXoAJxm.js",
+                  "transferBytes": 129292,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-Xa7zeFJv.js",
+                  "transferBytes": 153483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-CaSXFNO4.js",
+                  "transferBytes": 3172,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-D0cFliOd.js",
+                  "transferBytes": 10621,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/BaseModal-DSoIZLcp.js",
+                  "transferBytes": 42576,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-DP2xjzzT.js",
+                  "transferBytes": 587,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-BGzqePyj.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/ReceiptLongOutlined-BBjje3JI.js",
+                  "transferBytes": 1582,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-HKkF3KiG.js",
+                  "transferBytes": 3032,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-CflRhNIT.js",
+                  "transferBytes": 5687,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 2,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/before-mobile-2.json",
+              "sha256": "9d4a306e49da1e2b437f530a90f85b68ec0e65bf79e4e333f8eec59414e11747",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:07:15.201Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 77,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 4004.6195000000007,
+                "lcpMs": 4099.143400000001,
+                "tbtMs": 44.47609999999986,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 442300
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BjXoAJxm.js",
+                  "transferBytes": 129292,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-Xa7zeFJv.js",
+                  "transferBytes": 153483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-CaSXFNO4.js",
+                  "transferBytes": 3172,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-D0cFliOd.js",
+                  "transferBytes": 10621,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/BaseModal-DSoIZLcp.js",
+                  "transferBytes": 42576,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-DP2xjzzT.js",
+                  "transferBytes": 587,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-BGzqePyj.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/ReceiptLongOutlined-BBjje3JI.js",
+                  "transferBytes": 1582,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-HKkF3KiG.js",
+                  "transferBytes": 3032,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-CflRhNIT.js",
+                  "transferBytes": 5687,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 3,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/before-mobile-3.json",
+              "sha256": "7bd56fbd20f047bd975b3ae0f6518a754169aed48c6b023838fa61a8f4b44988",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:07:28.641Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 77,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 4000.0297499999992,
+                "lcpMs": 4089.2356999999993,
+                "tbtMs": 53.79404999999997,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 442300
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BjXoAJxm.js",
+                  "transferBytes": 129292,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-Xa7zeFJv.js",
+                  "transferBytes": 153483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-CaSXFNO4.js",
+                  "transferBytes": 3172,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-D0cFliOd.js",
+                  "transferBytes": 10621,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/BaseModal-DSoIZLcp.js",
+                  "transferBytes": 42576,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-DP2xjzzT.js",
+                  "transferBytes": 587,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-BGzqePyj.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/ReceiptLongOutlined-BBjje3JI.js",
+                  "transferBytes": 1582,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-HKkF3KiG.js",
+                  "transferBytes": 3032,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-CflRhNIT.js",
+                  "transferBytes": 5687,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "median": {
+            "performance": 77,
+            "accessibility": 100,
+            "bestPractices": 100,
+            "seo": 82,
+            "fcpMs": 4004.6195000000007,
+            "lcpMs": 4099.143400000001,
+            "tbtMs": 44.47609999999986,
+            "cls": 0.0001696400923719693,
+            "scriptTransferBytes": 442300
+          }
+        },
+        {
+          "profile": "desktop",
+          "runs": [
+            {
+              "run": 1,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/before-desktop-1.json",
+              "sha256": "e724c8fbdcf2eb9ae34e97da229ee0ab3566e004c86a60ada41c0748df295d2b",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:07:42.654Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 884.0977499999999,
+                "lcpMs": 917.3172999999999,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 442300
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BjXoAJxm.js",
+                  "transferBytes": 129292,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-Xa7zeFJv.js",
+                  "transferBytes": 153483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-CaSXFNO4.js",
+                  "transferBytes": 3172,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-D0cFliOd.js",
+                  "transferBytes": 10621,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/BaseModal-DSoIZLcp.js",
+                  "transferBytes": 42576,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-DP2xjzzT.js",
+                  "transferBytes": 587,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-BGzqePyj.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/ReceiptLongOutlined-BBjje3JI.js",
+                  "transferBytes": 1582,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-HKkF3KiG.js",
+                  "transferBytes": 3032,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-CflRhNIT.js",
+                  "transferBytes": 5687,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 2,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/before-desktop-2.json",
+              "sha256": "6da05655b6dd16910612be6641e5d48e8c4910e8c99c950b6ff71c3f944ae6ee",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:07:56.469Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 878.2785,
+                "lcpMs": 906.3342,
+                "tbtMs": 0,
+                "cls": 0.00022526084989638962,
+                "scriptTransferBytes": 442300
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BjXoAJxm.js",
+                  "transferBytes": 129292,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-Xa7zeFJv.js",
+                  "transferBytes": 153483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-CaSXFNO4.js",
+                  "transferBytes": 3172,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-D0cFliOd.js",
+                  "transferBytes": 10621,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/BaseModal-DSoIZLcp.js",
+                  "transferBytes": 42576,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-DP2xjzzT.js",
+                  "transferBytes": 587,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-BGzqePyj.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/ReceiptLongOutlined-BBjje3JI.js",
+                  "transferBytes": 1582,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-HKkF3KiG.js",
+                  "transferBytes": 3032,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-CflRhNIT.js",
+                  "transferBytes": 5687,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 3,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/before-desktop-3.json",
+              "sha256": "e2cdef3c71b5b477992dae2027a7c9cb1bf8cf94a8b7e29345766f2a08a329de",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:08:10.183Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 879.7927500000001,
+                "lcpMs": 909.3513000000002,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 442300
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BjXoAJxm.js",
+                  "transferBytes": 129292,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-Xa7zeFJv.js",
+                  "transferBytes": 153483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-CaSXFNO4.js",
+                  "transferBytes": 3172,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-D0cFliOd.js",
+                  "transferBytes": 10621,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/BaseModal-DSoIZLcp.js",
+                  "transferBytes": 42576,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-DP2xjzzT.js",
+                  "transferBytes": 587,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-BGzqePyj.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/ReceiptLongOutlined-BBjje3JI.js",
+                  "transferBytes": 1582,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-HKkF3KiG.js",
+                  "transferBytes": 3032,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-CflRhNIT.js",
+                  "transferBytes": 5687,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "median": {
+            "performance": 98,
+            "accessibility": 100,
+            "bestPractices": 100,
+            "seo": 82,
+            "fcpMs": 879.7927500000001,
+            "lcpMs": 909.3513000000002,
+            "tbtMs": 0,
+            "cls": 0.0003810580564311356,
+            "scriptTransferBytes": 442300
+          }
+        }
+      ]
+    },
+    {
+      "phase": "editor-before-navigation-focus-guard",
+      "profiles": [
+        {
+          "profile": "mobile",
+          "runs": [
+            {
+              "run": 1,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/after-mobile-1.json",
+              "sha256": "19f824e6077c7612f3817bbbc9555f3731e2a6d5dc78a7876068d7eaa65af0ff",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:10:09.561Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 78,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 3931.731525,
+                "lcpMs": 3943.1984500000003,
+                "tbtMs": 49.53307500000005,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 427262
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BRuR2TjO.js",
+                  "transferBytes": 128124,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-Bpo4kH6-.js",
+                  "transferBytes": 3043,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 2,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/after-mobile-2.json",
+              "sha256": "a1e425ffcfbf22216b3b7244c6665742a59839be868f4ef253729cba16b2ffad",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:10:23.130Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 78,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 3935.8591499999993,
+                "lcpMs": 3952.4506999999994,
+                "tbtMs": 35.40845000000013,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 427262
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BRuR2TjO.js",
+                  "transferBytes": 128124,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-Bpo4kH6-.js",
+                  "transferBytes": 3043,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 3,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/after-mobile-3.json",
+              "sha256": "8946e97b35f94ccacbd616985114cd579f1ddeee4a375d0993cc3fc69795633e",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:10:36.673Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 78,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 3929.275575,
+                "lcpMs": 3941.09335,
+                "tbtMs": 44.18222500000002,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 427262
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BRuR2TjO.js",
+                  "transferBytes": 128124,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-Bpo4kH6-.js",
+                  "transferBytes": 3043,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "median": {
+            "performance": 78,
+            "accessibility": 100,
+            "bestPractices": 100,
+            "seo": 82,
+            "fcpMs": 3931.731525,
+            "lcpMs": 3943.1984500000003,
+            "tbtMs": 44.18222500000002,
+            "cls": 0.0001696400923719693,
+            "scriptTransferBytes": 427262
+          }
+        },
+        {
+          "profile": "desktop",
+          "runs": [
+            {
+              "run": 1,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/after-desktop-1.json",
+              "sha256": "0978cfbb6585ff70ab2aa6938cb1fe59df841799fb96ec609fbbd1c536335191",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:10:50.297Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 841.8718000000001,
+                "lcpMs": 860.7788500000001,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 427262
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BRuR2TjO.js",
+                  "transferBytes": 128124,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-Bpo4kH6-.js",
+                  "transferBytes": 3043,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 2,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/after-desktop-2.json",
+              "sha256": "01e1a58e238716fe9dc166663c87f421c6b5e34001b1ac750cc9d44865a7ded4",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:11:03.853Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 843.2701999999999,
+                "lcpMs": 861.82765,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 427262
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BRuR2TjO.js",
+                  "transferBytes": 128124,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-Bpo4kH6-.js",
+                  "transferBytes": 3043,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 3,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/after-desktop-3.json",
+              "sha256": "a9373e42784f705ee68d20bdfa1970b59d008c7be7834a265f037cf94b014e16",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:11:17.488Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 842.3972000000002,
+                "lcpMs": 861.1729000000003,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 427262
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BRuR2TjO.js",
+                  "transferBytes": 128124,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-Bpo4kH6-.js",
+                  "transferBytes": 3043,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "median": {
+            "performance": 98,
+            "accessibility": 100,
+            "bestPractices": 100,
+            "seo": 82,
+            "fcpMs": 842.3972000000002,
+            "lcpMs": 861.1729000000003,
+            "tbtMs": 0,
+            "cls": 0.0003810580564311356,
+            "scriptTransferBytes": 427262
+          }
+        }
+      ]
+    },
+    {
+      "phase": "final",
+      "profiles": [
+        {
+          "profile": "mobile",
+          "runs": [
+            {
+              "run": 1,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/final-mobile-1.json",
+              "sha256": "d3a7b963db2b8b109b7f54d72f76979678a0e779c06d96167f204f4c7c3c714d",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:25:35.523Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 78,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 3949.7936,
+                "lcpMs": 3978.1088,
+                "tbtMs": 39.684799999999996,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 427280
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BEAcFkBM.js",
+                  "transferBytes": 128144,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-C6PNzmv6.js",
+                  "transferBytes": 3041,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 2,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/final-mobile-2.json",
+              "sha256": "d1ead9296a08af099bf6966cdbcfe92d9076e90529ed646ac72956fb0e8e9951",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:25:48.985Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 78,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 3929.469,
+                "lcpMs": 3942.402,
+                "tbtMs": 54.06700000000001,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 427280
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BEAcFkBM.js",
+                  "transferBytes": 128144,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-C6PNzmv6.js",
+                  "transferBytes": 3041,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 3,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/final-mobile-3.json",
+              "sha256": "f95e74bccfbb4f5e26f26a0da555bd20bf549e1c7c2c2c136c912221aa9790c5",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:26:02.427Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "mobile",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 150,
+                  "throughputKbps": 1638.4,
+                  "requestLatencyMs": 562.5,
+                  "downloadThroughputKbps": 1474.5600000000002,
+                  "uploadThroughputKbps": 675,
+                  "cpuSlowdownMultiplier": 4
+                },
+                "screenEmulation": {
+                  "mobile": true,
+                  "width": 412,
+                  "height": 823,
+                  "deviceScaleFactor": 1.75,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 78,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 3927.645199999999,
+                "lcpMs": 3937.981599999999,
+                "tbtMs": 64.66360000000009,
+                "cls": 0.0001696400923719693,
+                "scriptTransferBytes": 427280
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BEAcFkBM.js",
+                  "transferBytes": 128144,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-C6PNzmv6.js",
+                  "transferBytes": 3041,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "median": {
+            "performance": 78,
+            "accessibility": 100,
+            "bestPractices": 100,
+            "seo": 82,
+            "fcpMs": 3929.469,
+            "lcpMs": 3942.402,
+            "tbtMs": 54.06700000000001,
+            "cls": 0.0001696400923719693,
+            "scriptTransferBytes": 427280
+          }
+        },
+        {
+          "profile": "desktop",
+          "runs": [
+            {
+              "run": 1,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/final-desktop-1.json",
+              "sha256": "dbfe949a835a9f40d26b7e50b45c122bc4a0244ac1e4d0cf1ce4f5a10a060c1e",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:26:15.928Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 844.0277999999998,
+                "lcpMs": 864.2708499999999,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 427280
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BEAcFkBM.js",
+                  "transferBytes": 128144,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-C6PNzmv6.js",
+                  "transferBytes": 3041,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 2,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/final-desktop-2.json",
+              "sha256": "6b64cd1b6323f7dcc85674910165a741bfc2efb7da81cd2904237c626899fab4",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:26:29.647Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 844.6980000000002,
+                "lcpMs": 864.7735000000002,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 427280
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BEAcFkBM.js",
+                  "transferBytes": 128144,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-C6PNzmv6.js",
+                  "transferBytes": 3041,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            },
+            {
+              "run": 3,
+              "reportPath": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/final-desktop-3.json",
+              "sha256": "4c3a979332cf0a4d3ef3f9b80b234cd117d27736b131a2049afd8dd2f5f0fa32",
+              "lighthouseVersion": "13.5.0",
+              "chromeVersion": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+              "fetchTime": "2026-10-10T23:26:43.319Z",
+              "requestedUrl": "http://localhost:4174/",
+              "finalDisplayedUrl": "http://localhost:4174/",
+              "settings": {
+                "formFactor": "desktop",
+                "throttlingMethod": "simulate",
+                "throttling": {
+                  "rttMs": 40,
+                  "throughputKbps": 10240,
+                  "requestLatencyMs": 0,
+                  "downloadThroughputKbps": 0,
+                  "uploadThroughputKbps": 0,
+                  "cpuSlowdownMultiplier": 1
+                },
+                "screenEmulation": {
+                  "mobile": false,
+                  "width": 1350,
+                  "height": 940,
+                  "deviceScaleFactor": 1,
+                  "disabled": false
+                },
+                "disableStorageReset": false
+              },
+              "warnings": [],
+              "runtimeError": null,
+              "metrics": {
+                "performance": 98,
+                "accessibility": 100,
+                "bestPractices": 100,
+                "seo": 82,
+                "fcpMs": 845.5554000000002,
+                "lcpMs": 864.1665500000001,
+                "tbtMs": 0,
+                "cls": 0.0003810580564311356,
+                "scriptTransferBytes": 427280
+              },
+              "scripts": [
+                {
+                  "url": "http://localhost:4174/assets/index-BEAcFkBM.js",
+                  "transferBytes": 128144,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/rolldown-runtime-B0Z9INg1.js",
+                  "transferBytes": 1276,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Button-BWFKXJib.js",
+                  "transferBytes": 41575,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-DEgJrMBm.js",
+                  "transferBytes": 1994,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/RtlProvider-BuqJysNE.js",
+                  "transferBytes": 643,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/createSvgIcon-Bg6mhHqj.js",
+                  "transferBytes": 1567,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Alert-twFAiCNz.js",
+                  "transferBytes": 4483,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Menu-C_lu7kB6.js",
+                  "transferBytes": 14566,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/api-BW9A_oXG.js",
+                  "transferBytes": 152190,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/hooks-BNQWnpaZ.js",
+                  "transferBytes": 23390,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/styled-EgpUIBzs.js",
+                  "transferBytes": 434,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useThemeProps-D-YxS3GZ.js",
+                  "transferBytes": 589,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/KeyboardArrowDown-DrAhfB8p.js",
+                  "transferBytes": 12767,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useMutation-BN2RxbEg.js",
+                  "transferBytes": 3127,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/HolidayVillageOutlined-BTJrT77h.js",
+                  "transferBytes": 791,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/react-BLV4Qw4P.js",
+                  "transferBytes": 6742,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/useAuth-D30KBTAA.js",
+                  "transferBytes": 1213,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/routes-B1nYRRXA.js",
+                  "transferBytes": 412,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/schemas-D7iZCweC.js",
+                  "transferBytes": 19426,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/Home-C6PNzmv6.js",
+                  "transferBytes": 3041,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/skeletons-Dbh6Mcbx.js",
+                  "transferBytes": 5707,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/isMuiElement-Bj-IU5b7.js",
+                  "transferBytes": 607,
+                  "statusCode": 200
+                },
+                {
+                  "url": "http://localhost:4174/assets/TableRow-DL83t2gs.js",
+                  "transferBytes": 2596,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "median": {
+            "performance": 98,
+            "accessibility": 100,
+            "bestPractices": 100,
+            "seo": 82,
+            "fcpMs": 844.6980000000002,
+            "lcpMs": 864.2708499999999,
+            "tbtMs": 0,
+            "cls": 0.0003810580564311356,
+            "scriptTransferBytes": 427280
+          }
+        }
+      ]
+    }
+  ],
+  "graph": {
+    "path": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/final-bundle-graph.json",
+    "sha256": "c7a898dfc208ab6ab9decdb36f01e49db55e793be59142f070ce848d6e4cb526",
+    "initialChunks": [
+      "assets/index-BEAcFkBM.js",
+      "assets/rolldown-runtime-B0Z9INg1.js",
+      "assets/Button-BWFKXJib.js",
+      "assets/Menu-C_lu7kB6.js",
+      "assets/react-DEgJrMBm.js",
+      "assets/RtlProvider-BuqJysNE.js",
+      "assets/Alert-twFAiCNz.js",
+      "assets/createSvgIcon-Bg6mhHqj.js",
+      "assets/api-BW9A_oXG.js",
+      "assets/hooks-BNQWnpaZ.js",
+      "assets/styled-EgpUIBzs.js",
+      "assets/useThemeProps-D-YxS3GZ.js",
+      "assets/KeyboardArrowDown-DrAhfB8p.js",
+      "assets/useMutation-BN2RxbEg.js",
+      "assets/HolidayVillageOutlined-BTJrT77h.js",
+      "assets/react-BLV4Qw4P.js",
+      "assets/useAuth-D30KBTAA.js",
+      "assets/routes-B1nYRRXA.js",
+      "assets/schemas-D7iZCweC.js"
+    ],
+    "editorChunk": "assets/MobileShortcutDialog-xzVf2-5f.js",
+    "editorInitiallyImported": false,
+    "baseModalInitiallyImported": false,
+    "intentOnlyChunks": [
+      {
+        "fileName": "assets/MobileShortcutDialog-xzVf2-5f.js",
+        "minifiedBytes": 6256,
+        "gzipBytes": 3073
+      },
+      {
+        "fileName": "assets/BaseModal-C7ycuns6.js",
+        "minifiedBytes": 60075,
+        "gzipBytes": 17257
+      },
+      {
+        "fileName": "assets/isMuiElement-Bj-IU5b7.js",
+        "minifiedBytes": 232,
+        "gzipBytes": 202
+      }
+    ],
+    "gzipSizesAreEstimatesNotInteractionTransfer": true
+  },
+  "sourceHashes": [
+    {
+      "path": "src/layouts/components/MobileBottomNav/MobileBottomNav.tsx",
+      "sha256": "c50d8baa39b63fafb286c7902cdbdbf0e2270fe599b40f27be857322eeb6eca4"
+    },
+    {
+      "path": "src/layouts/components/MobileBottomNav/hooks/useShortcutDialog.ts",
+      "sha256": "b35e546b438b576c0f897c0a9e47d0f501639c7ec10cfdf27c4b4cf570d62dca"
+    },
+    {
+      "path": "src/layouts/components/MobileBottomNav/loadShortcutDialog.ts",
+      "sha256": "c3b61168f5e0dc06f864841afe97f32f8085326ac769ea9c46227675fdd70da7"
+    },
+    {
+      "path": "src/layouts/components/MobileShortcutDialog/MobileShortcutDialog.tsx",
+      "sha256": "020d7f6d72956c94e933aa7cded3622bc01a945059ee40a3f37e73cc81eaaa55"
+    },
+    {
+      "path": "src/layouts/components/MobileShortcutDialog/types.ts",
+      "sha256": "8cbe9f5bdb6160b3ac1d3b02ba83e27476b8d9544f8e6c5add2708a2843e78c7"
+    },
+    {
+      "path": "src/translate/es/layout.json",
+      "sha256": "a9fd0f299b6e88d6610bcaf0729c731ce011d7353c6f795aa7365e71b3e328d4"
+    },
+    {
+      "path": "src/translate/en/layout.json",
+      "sha256": "0e10108c62bb19fa892fe55f9567f1995625f948468052d372ab968b96f05f6c"
+    }
+  ],
+  "verification": {
+    "fullClientSuite": {
+      "files": 184,
+      "tests": 1153,
+      "passed": true
+    },
+    "focusedSuite": {
+      "files": 36,
+      "tests": 252,
+      "passed": true,
+      "sourceScope": "Before final navigation focus guard"
+    },
+    "typecheck": "passed after navigation focus guard",
+    "lint": "passed after navigation focus guard",
+    "build": "passed final npm run build; SHA-256 of all 23 measured scripts matches the final production build",
+    "automatedScenarios": [
+      "No load before intent",
+      "One import while pending and component reuse",
+      "Translated error/toast and retry; surrounding draft intact",
+      "Focus contained in dialog and returned on Escape",
+      "Pending import ignored across account/session/navigation/unmount",
+      "Existing permissions, preference write failure, duplicate slots and virtual keyboard behavior preserved"
+    ],
+    "authenticatedBrowser": {
+      "origin": "http://localhost:5174",
+      "legitimateExistingSession": true,
+      "businessWrites": false,
+      "preferencesSaved": false,
+      "initialEditorAndNewBaseModalAssetsAbsent": true,
+      "editorAndBaseModalObservedAfterIntent": true,
+      "assetInventoryIsNotTransferOrTiming": true,
+      "googleSdkScripts": 0,
+      "firstOpeningObservationMs": 317,
+      "firstOpeningObservationIncludesAutomationAndAXOverhead": true,
+      "firstOpeningNotINPAndNoBeforeTiming": true,
+      "responsiveWidths": [
+        320,
+        390,
+        599,
+        600,
+        900,
+        1200,
+        1440
+      ],
+      "overflowObserved": false,
+      "navMountedBelow600Only": true,
+      "languageAndThemeCases": [
+        "es/dark",
+        "en/light"
+      ],
+      "searchAndSelectionPreserved390To320": true,
+      "escapeFocusReturn": true,
+      "originalPreferencesAndURLRestored": true,
+      "finalBuildEditorOpenedFromReservations": true,
+      "screenshot": {
+        "path": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/editor-mobile-final.png",
+        "sha256": "dbd92039b810a32c583601623126bbb353937b52771252d6d33cb21c663edc94",
+        "repositoryCopy": false
+      }
+    },
+    "finalFocusedSuite": {
+      "files": 6,
+      "tests": 27,
+      "passed": true
+    },
+    "transientTestFailure": {
+      "suite": "Full suite while production build also ran",
+      "failedTests": 1,
+      "test": "ProvidersTab — opens selected provider contacts",
+      "observed": "findByText timeout with the lazy contacts loading indicator still visible",
+      "interpretation": "CPU contention is an inference; not reproduced in isolated checks.",
+      "isolatedProvidersRetest": {
+        "files": 1,
+        "tests": 13,
+        "passed": true
+      },
+      "fullSuiteWithoutConcurrentBuild": {
+        "files": 184,
+        "tests": 1153,
+        "passed": true,
+        "runDurationSeconds": 129.11
+      },
+      "testOrTimeoutChanged": false
+    }
+  },
+  "limitations": [
+    "Mobile performance 90 and 400 KiB script budget are not met.",
+    "No authenticated Lighthouse after this stage; do not compare scores to user reports.",
+    "Throttled first-editor-opening timing and physical phone/field INP remain pending.",
+    "Shared Zod, motion/feedback, icon catalog and all UI namespaces still remain initial; validation and error feedback preserved.",
+    "ADR-002 reconciliation is required before translation loading changes."
+  ],
+  "finalBuildScriptHashes": [
+    {
+      "file": "assets/index-BEAcFkBM.js",
+      "sha256": "88f3000c72d779b2d2ab285f341bbaa4694e2ac8ebeef90a0797626614a5e331"
+    },
+    {
+      "file": "assets/rolldown-runtime-B0Z9INg1.js",
+      "sha256": "5e9b0d884d2ebb14e241ab38b43e41efb61bce2e74d71507b0b95b264fba4047"
+    },
+    {
+      "file": "assets/Button-BWFKXJib.js",
+      "sha256": "de4131e62945c7607d353273ae91860f589818ce58054636f0f5b08be484e552"
+    },
+    {
+      "file": "assets/react-DEgJrMBm.js",
+      "sha256": "dc5e14ca0e8f91d68dad29b03fd1c06d3cd8d14ff2894ebd70422e69f04084e4"
+    },
+    {
+      "file": "assets/RtlProvider-BuqJysNE.js",
+      "sha256": "c2952983bb5f19f5cfbfd012a137eb445625ea2405ddddf60f58f97e0fd29fe0"
+    },
+    {
+      "file": "assets/createSvgIcon-Bg6mhHqj.js",
+      "sha256": "2931de5dd631bd97d5ace4d54cd3b93fa84dd19eda783a45fe5928ee89aa5bf8"
+    },
+    {
+      "file": "assets/Alert-twFAiCNz.js",
+      "sha256": "fa216eb9990e3b7ab30045e3356e5498e4fb6ede7fad80cbd0be6afcd143c9b2"
+    },
+    {
+      "file": "assets/Menu-C_lu7kB6.js",
+      "sha256": "fa53105fc24d838e8f7b3d268d5127744b4aaabf98d48379aefd207040f1b06b"
+    },
+    {
+      "file": "assets/api-BW9A_oXG.js",
+      "sha256": "678e963043ba170c156a18921e5121af061d6b711918a985239ff4a44ecc96a2"
+    },
+    {
+      "file": "assets/hooks-BNQWnpaZ.js",
+      "sha256": "b80c8d3481b5462d40e2fc3f8c44250021d0825eabdcd6728db6413448395684"
+    },
+    {
+      "file": "assets/styled-EgpUIBzs.js",
+      "sha256": "b99062cd06426482a463a16e80c0330e40e16b2f79e1b78c360b2098edfd1774"
+    },
+    {
+      "file": "assets/useThemeProps-D-YxS3GZ.js",
+      "sha256": "1c4f936d4b6b8130349bf1de3ec557fa89b0bb0315f5764579d361c835ef7ac1"
+    },
+    {
+      "file": "assets/KeyboardArrowDown-DrAhfB8p.js",
+      "sha256": "82c668924d7eb1d51636a2b2fbe5451229b9d381433ed4b8b1bc530628a0b995"
+    },
+    {
+      "file": "assets/useMutation-BN2RxbEg.js",
+      "sha256": "b63309fe8fb764a6332968ca4f1bc24d3310f9f8dc6ec89e46041af4cf7c3084"
+    },
+    {
+      "file": "assets/HolidayVillageOutlined-BTJrT77h.js",
+      "sha256": "317c1b0ae0bbfc65d645a22582846a0911650f0461b551898b157a2d9145bd59"
+    },
+    {
+      "file": "assets/react-BLV4Qw4P.js",
+      "sha256": "d03541f1cfc9425c5866e75220cda17a96c84648564d2db26bef41512d1b5b06"
+    },
+    {
+      "file": "assets/useAuth-D30KBTAA.js",
+      "sha256": "973d83cd0f5ef605284fb29b9f9bbb52714f94171c026bcdba916191ae563772"
+    },
+    {
+      "file": "assets/routes-B1nYRRXA.js",
+      "sha256": "e98740212d5246166dd03c4ff1eb1cb2e97e660ef48e16e21f5a5c06ca349d25"
+    },
+    {
+      "file": "assets/schemas-D7iZCweC.js",
+      "sha256": "82927e3f5f6610f844af343641020c093a23dc61d0789b5843fe6ec02a85fc1f"
+    },
+    {
+      "file": "assets/Home-C6PNzmv6.js",
+      "sha256": "d8e09062d1b9f7db1f170a79e7e120d3c4f20ccfb85f9e52cae79332f784b9db"
+    },
+    {
+      "file": "assets/skeletons-Dbh6Mcbx.js",
+      "sha256": "dc2adc908cc1d16211dd212f1d1e56447cb0c0f4e92cc22f1894774948b9687b"
+    },
+    {
+      "file": "assets/isMuiElement-Bj-IU5b7.js",
+      "sha256": "3808f505b65c478bdb01079e0fe41a0986c2ac1848e69a44746d2a7c31bea90f"
+    },
+    {
+      "file": "assets/TableRow-DL83t2gs.js",
+      "sha256": "e0753fd738d37ecf4c83b858c5dd3bbe3547c7285933e1d02be75e2144e7ec52"
+    }
+  ],
+  "graphBeforeFocusGuard": {
+    "path": "C:/Users/Oscar/.codex/visualizations/2026/10/09/01a122cc-c313-7bf2-b636-485bd5292431/performance-js-stage-2026-10-10/after-bundle-graph.json",
+    "sha256": "934a49f75dbf44631351ec2324f305dde84982ecc0ed4266352e6325daa9bcaf",
+    "initialChunks": [
+      "assets/index-BRuR2TjO.js",
+      "assets/rolldown-runtime-B0Z9INg1.js",
+      "assets/Button-BWFKXJib.js",
+      "assets/Menu-C_lu7kB6.js",
+      "assets/react-DEgJrMBm.js",
+      "assets/RtlProvider-BuqJysNE.js",
+      "assets/Alert-twFAiCNz.js",
+      "assets/createSvgIcon-Bg6mhHqj.js",
+      "assets/api-BW9A_oXG.js",
+      "assets/hooks-BNQWnpaZ.js",
+      "assets/styled-EgpUIBzs.js",
+      "assets/useThemeProps-D-YxS3GZ.js",
+      "assets/KeyboardArrowDown-DrAhfB8p.js",
+      "assets/useMutation-BN2RxbEg.js",
+      "assets/HolidayVillageOutlined-BTJrT77h.js",
+      "assets/react-BLV4Qw4P.js",
+      "assets/useAuth-D30KBTAA.js",
+      "assets/routes-B1nYRRXA.js",
+      "assets/schemas-D7iZCweC.js"
+    ],
+    "editorChunk": "assets/MobileShortcutDialog-CuYdUi_2.js",
+    "editorInitiallyImported": false,
+    "baseModalInitiallyImported": false,
+    "intentOnlyChunks": [
+      {
+        "fileName": "assets/MobileShortcutDialog-CuYdUi_2.js",
+        "minifiedBytes": 6256,
+        "gzipBytes": 3072
+      },
+      {
+        "fileName": "assets/BaseModal-C7ycuns6.js",
+        "minifiedBytes": 60075,
+        "gzipBytes": 17257
+      },
+      {
+        "fileName": "assets/isMuiElement-Bj-IU5b7.js",
+        "minifiedBytes": 232,
+        "gzipBytes": 202
+      }
+    ],
+    "gzipSizesAreEstimatesNotInteractionTransfer": true
+  },
+  "sourceHashesBeforeFocusGuard": [
+    {
+      "path": "src/layouts/components/MobileBottomNav/MobileBottomNav.tsx",
+      "sha256": "5392a67f226c06873cce11e5d90dd41b1b7fb88d2e90c7551a241e9b155e716c"
+    },
+    {
+      "path": "src/layouts/components/MobileBottomNav/hooks/useShortcutDialog.ts",
+      "sha256": "b35e546b438b576c0f897c0a9e47d0f501639c7ec10cfdf27c4b4cf570d62dca"
+    },
+    {
+      "path": "src/layouts/components/MobileBottomNav/loadShortcutDialog.ts",
+      "sha256": "c3b61168f5e0dc06f864841afe97f32f8085326ac769ea9c46227675fdd70da7"
+    },
+    {
+      "path": "src/layouts/components/MobileShortcutDialog/MobileShortcutDialog.tsx",
+      "sha256": "020d7f6d72956c94e933aa7cded3622bc01a945059ee40a3f37e73cc81eaaa55"
+    },
+    {
+      "path": "src/layouts/components/MobileShortcutDialog/types.ts",
+      "sha256": "8cbe9f5bdb6160b3ac1d3b02ba83e27476b8d9544f8e6c5add2708a2843e78c7"
+    },
+    {
+      "path": "src/translate/es/layout.json",
+      "sha256": "a9fd0f299b6e88d6610bcaf0729c731ce011d7353c6f795aa7365e71b3e328d4"
+    },
+    {
+      "path": "src/translate/en/layout.json",
+      "sha256": "0e10108c62bb19fa892fe55f9567f1995625f948468052d372ab968b96f05f6c"
+    }
+  ],
+  "comparison": {
+    "scriptSavingBytes": 15020,
+    "scriptSavingPercent": 3.395885145828623,
+    "mobileGoalReached": false,
+    "scriptBudget400KiBReached": false
+  }
+}

@@ -1,4 +1,20 @@
 import { styled } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
+export const FieldGrid = styled("div")(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "minmax(0,1fr)",
+  gap: theme.spacing(2),
+  [theme.breakpoints.up("sm")]: {
+    gridTemplateColumns: "repeat(2,minmax(0,1fr))",
+  },
+}));
+export const QuoteSummary = styled("div")(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderRadius: 12,
+  background: alpha(theme.palette.primary.main, 0.08),
+  color: theme.palette.text.primary,
+  fontWeight: 700,
+}));
 export const Wrapper = styled("section")(({ theme }) => ({
   display: "grid",
   gap: theme.spacing(3),
@@ -17,7 +33,9 @@ export const ModalActions = styled("div")(({ theme }) => ({
   gap: theme.spacing(2),
   flexWrap: "wrap",
   justifyContent: "flex-end",
-  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
+  [theme.breakpoints.down("sm")]: {
+    "& > button": { width: "100%", minHeight: 44 },
+  },
 }));
 export const DetailList = styled("section")(({ theme }) => ({
   display: "grid",

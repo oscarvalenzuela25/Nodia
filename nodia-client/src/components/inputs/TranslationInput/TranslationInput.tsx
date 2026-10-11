@@ -38,6 +38,7 @@ const TranslationInput: FC<TranslationInputProps> = ({
   languages = DEFAULT_LANGUAGES,
   required = false,
   disabled = false,
+  keyReadOnly = false,
   error = false,
   helperText,
   keyHelperText,
@@ -53,16 +54,17 @@ const TranslationInput: FC<TranslationInputProps> = ({
 
   // By default, expand if there is a value or explicit defaultExpanded
   const [isManuallyExpanded, setIsManuallyExpanded] = useState<boolean | null>(
-    defaultExpanded ?? null
+    defaultExpanded ?? null,
   );
 
   const isExpanded =
     isManuallyExpanded !== null
       ? isManuallyExpanded
-      : value.trim().length > 0 || Object.values(translations).some((v) => v?.trim()?.length > 0);
+      : value.trim().length > 0 ||
+        Object.values(translations).some((v) => v?.trim()?.length > 0);
 
   const handleKeyChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChangeKey(e.target.value);
+    if (!disabled && !keyReadOnly) onChangeKey(e.target.value);
   };
 
   const handleTranslationChange = (code: string, text: string) => {
@@ -77,12 +79,13 @@ const TranslationInput: FC<TranslationInputProps> = ({
   };
 
   const resolvedSectionTitle =
-    sectionTitle ?? t("roles:form.translations_title", "Traducciones del Nombre");
+    sectionTitle ??
+    t("roles:form.translations_title", "Traducciones del Nombre");
   const resolvedSectionSubtitle =
     sectionSubtitle ??
     t(
       "roles:form.translations_subtitle",
-      "Define cómo se mostrará el nombre en cada idioma."
+      "Define cómo se mostrará el nombre en cada idioma.",
     );
 
   return (
@@ -99,7 +102,9 @@ const TranslationInput: FC<TranslationInputProps> = ({
         name={name}
         value={value}
         onChange={handleKeyChange}
-        placeholder={placeholder ?? t("roles:form.key_placeholder", "ej: super_admin")}
+        placeholder={
+          placeholder ?? t("roles:form.key_placeholder", "ej: super_admin")
+        }
         disabled={disabled}
         error={error}
         helperText={helperText ?? keyHelperText}
@@ -108,26 +113,36 @@ const TranslationInput: FC<TranslationInputProps> = ({
         variant="outlined"
         slotProps={{
           input: {
+            readOnly: keyReadOnly,
             sx: { fontFamily: value ? "monospace" : "inherit" },
             endAdornment: (
               <Tooltip
-                title={isExpanded ? t("core:collapse", "Ocultar traducciones") : t("core:expand", "Ver traducciones")}
+                title={
+                  isExpanded
+                    ? t("core:collapse", "Ocultar traducciones")
+                    : t("core:expand", "Ver traducciones")
+                }
                 arrow
               >
-                <IconButton
-                  size="small"
-                  onClick={toggleExpand}
-                  aria-label="toggle translations"
-                  sx={(theme) => ({
-                    color: isExpanded ? theme.palette.primary.main : theme.palette.text.secondary,
-                    transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: theme.transitions.create("transform", {
-                      duration: theme.transitions.duration.shorter,
-                    }),
-                  })}
-                >
-                  <ExpandMoreIcon fontSize="small" />
-                </IconButton>
+                <span>
+                  <IconButton
+                    disabled={disabled}
+                    size="small"
+                    onClick={toggleExpand}
+                    aria-label="toggle translations"
+                    sx={(theme) => ({
+                      color: isExpanded
+                        ? theme.palette.primary.main
+                        : theme.palette.text.secondary,
+                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: theme.transitions.create("transform", {
+                        duration: theme.transitions.duration.shorter,
+                      }),
+                    })}
+                  >
+                    <ExpandMoreIcon fontSize="small" />
+                  </IconButton>
+                </span>
               </Tooltip>
             ),
           },
@@ -156,14 +171,26 @@ const TranslationInput: FC<TranslationInputProps> = ({
               const langVal = translations[langCode] ?? "";
               const fieldPlaceholder =
                 langCode === "es"
-                  ? t("roles:form.name_es_placeholder", "ej: Administrador Principal")
-                  : t("roles:form.name_en_placeholder", "ej: Super Administrator");
+                  ? t(
+                      "roles:form.name_es_placeholder",
+                      "ej: Administrador Principal",
+                    )
+                  : t(
+                      "roles:form.name_en_placeholder",
+                      "ej: Super Administrator",
+                    );
 
               return (
                 <LanguageFieldContainer key={langCode}>
                   <LanguageLabel htmlFor={fieldId}>
-                    <LanguageBadge langCode={langCode}>{langCode}</LanguageBadge>
-                    <Typography component="span" variant="caption" sx={{ fontWeight: 600 }}>
+                    <LanguageBadge langCode={langCode}>
+                      {langCode}
+                    </LanguageBadge>
+                    <Typography
+                      component="span"
+                      variant="caption"
+                      sx={{ fontWeight: 600 }}
+                    >
                       {lang.label}
                     </Typography>
                   </LanguageLabel>
@@ -171,7 +198,9 @@ const TranslationInput: FC<TranslationInputProps> = ({
                     id={fieldId}
                     name={`translation_${langCode}`}
                     value={langVal}
-                    onChange={(e) => handleTranslationChange(langCode, e.target.value)}
+                    onChange={(e) =>
+                      handleTranslationChange(langCode, e.target.value)
+                    }
                     placeholder={fieldPlaceholder}
                     disabled={disabled}
                     fullWidth

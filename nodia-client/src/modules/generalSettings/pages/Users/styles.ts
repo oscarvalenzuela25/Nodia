@@ -1,5 +1,9 @@
 import { styled } from "@mui/material/styles";
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TablePagination,
+} from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
@@ -35,6 +39,7 @@ export const PageSubtitle = styled(Typography)(({ theme }) => ({
 }));
 
 export const FilterRow = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: { "& > button": { minHeight: 44 } },
   marginBottom: theme.spacing(2),
   display: "flex",
   alignItems: "center",
@@ -87,3 +92,22 @@ export const StyledTableContainer = styled(Box)(({ theme }) => {
     border: `1px solid ${borderColor}`,
   };
 });
+
+export const MobileList = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gap: theme.spacing(2),
+  padding: theme.spacing(2),
+  minWidth: 0,
+}));
+export const AssignmentList = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: theme.spacing(0.5),
+  "& .MuiChip-root": { maxWidth: "100%", height: "auto", minHeight: 24 },
+  "& .MuiChip-label": {
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+    paddingBlock: theme.spacing(0.5),
+  },
+}));
+export const ListPagination = TablePagination;

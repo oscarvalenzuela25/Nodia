@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import ProductsTab from "../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab";
@@ -151,6 +151,13 @@ const renderWithClient = (ui: ReactElement) => {
     <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
   );
 };
+
+
+const mockMobile = () => vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+  matches: query.includes("599.95"), media: query, onchange: null,
+  addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+}));
+afterEach(() => vi.restoreAllMocks());
 
 describe("ProductsTab Component", () => {
   const user = userEvent.setup();
@@ -352,7 +359,7 @@ describe("ProductsTab Component", () => {
     });
 
     // Click filter trigger button (badge or trigger)
-    const filterBtn = screen.getByRole("button", { name: /abrir filtros|filtro/i });
+    const filterBtn = screen.getByRole("button", { name: /^abrir filtros/i });
     await user.click(filterBtn);
 
     await waitFor(() => {
@@ -393,7 +400,7 @@ describe("ProductsTab Component", () => {
     });
 
     // Open filter modal
-    const filterBtn = screen.getByRole("button", { name: /abrir filtros|filtro/i });
+    const filterBtn = screen.getByRole("button", { name: /^abrir filtros/i });
     await user.click(filterBtn);
 
     await waitFor(() => {
@@ -576,7 +583,7 @@ describe("ProductsTab Component", () => {
     });
 
     // Open filter modal
-    const filterBtn = screen.getByRole("button", { name: /abrir filtros|filtro/i });
+    const filterBtn = screen.getByRole("button", { name: /^abrir filtros/i });
     await user.click(filterBtn);
 
     await waitFor(() => {
@@ -612,4 +619,25 @@ describe("ProductsTab Component", () => {
       })
     );
   });
+  it("queries active records by default and restores that default after clearing filters", async () => {
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+    await waitFor(() => expect(businessServices.getProducts).toHaveBeenCalledWith(expect.objectContaining({ q: expect.objectContaining({ is_active_eq: true }) })));
+    await user.click(screen.getByRole("button", { name: /^abrir filtros/i }));
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    expect(businessServices.getProducts).toHaveBeenLastCalledWith(expect.objectContaining({ q: expect.objectContaining({ is_active_eq: true }) }));
+  });
+
+  it("shows mobile product cards with the same historical comparison and edit target", async () => {
+    mockMobile();
+    vi.mocked(businessServices.getProductLogs).mockResolvedValue({ data: mockProductLogs, meta: { page: 1, limit: 100, total_items: mockProductLogs.length, total_pages: 1 } });
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+    const card = await screen.findByRole("article", { name: "Café de Especialidad 250g" });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    await user.click(await within(card).findByRole("button", { name: /histórico/i }));
+    expect(await screen.findByRole("article", { name: /Histórico.*Antiguo/ })).toBeInTheDocument();
+    await user.click(within(card).getByRole("button", { name: /Acciones de/ }));
+    await user.click(screen.getByRole("menuitem", { name: "Actualizar" }));
+    expect(await screen.findByDisplayValue("Café de Especialidad 250g")).toBeInTheDocument();
+  });
+
 });

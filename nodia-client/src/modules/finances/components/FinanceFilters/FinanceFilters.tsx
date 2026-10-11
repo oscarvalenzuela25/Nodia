@@ -1,9 +1,10 @@
+import DateInput from "../../../../components/inputs/DateInput";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Filter from "../../../../components/Filter";
+import ActiveStatusSelect from "../../../../components/Filter/components/ActiveStatusSelect";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
-import TextInput from "../../../../components/inputs/TextInput";
 import FinanceRemoteSelect, {
   FinanceRemoteMultiSelect,
 } from "../FinanceRemoteSelect";
@@ -11,7 +12,7 @@ import type {
   FinanceRemoteOption,
   FinanceRemoteResource,
 } from "../FinanceRemoteSelect/types";
-import type { FinanceActive, FinanceQuery, FinanceResource } from "../../types";
+import type { FinanceQuery, FinanceResource } from "../../types";
 import { financePeriod } from "../../utils/dates";
 import { ActiveFilters, FilterBar } from "./styles";
 
@@ -219,17 +220,9 @@ const FinanceFilters = ({
         applyDisabled={dateError || selectorBlocked}
         title={t("finance:filters")}
       >
-        <SelectSingleInput
-          label={t("finance:visibility")}
+        <ActiveStatusSelect
           value={draft.active ?? "active"}
-          options={options(["active", "inactive", "all"])}
-          onChange={(value) =>
-            setDraft((current) => ({
-              ...current,
-              active: (value ?? "active") as FinanceActive,
-            }))
-          }
-          clearable={false}
+          onChange={(active) => setDraft((current) => ({ ...current, active }))}
           disabled={disabled}
         />
         {hasTypes && (
@@ -264,18 +257,16 @@ const FinanceFilters = ({
               onChange={(value) => updatePredicate("status_eq", value)}
               disabled={disabled}
             />
-            <TextInput
+            <DateInput
               label={t("finance:created_from")}
-              type="date"
               value={start}
-              onChange={(event) => setStart(event.target.value)}
+              onChange={setStart}
               disabled={disabled}
             />
-            <TextInput
+            <DateInput
               label={t("finance:created_to")}
-              type="date"
               value={end}
-              onChange={(event) => setEnd(event.target.value)}
+              onChange={setEnd}
               disabled={disabled}
               error={dateError}
               helperText={

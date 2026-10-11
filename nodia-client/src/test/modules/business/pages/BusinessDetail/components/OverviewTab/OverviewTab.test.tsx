@@ -438,4 +438,11 @@ describe("OverviewTab Component", () => {
     expect(screen.queryByTestId("kpi-stock-normal-chip")).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Los indicadores completos no están disponibles");
   });
+  it("requests the ten latest active invoices before pagination and excludes historical inactive records", async () => {
+    vi.mocked(businessServices.getInvoices).mockResolvedValue({ data: [...mockInvoices, { ...mockInvoices[0], id: "inactive-1", code: "INACTIVE-HISTORICAL", is_active: false }], meta: { page: 1, limit: 10, total_items: 3, total_pages: 1 } });
+    renderOverviewTab(<OverviewTab businessId="biz-123" />);
+    await waitFor(() => expect(businessServices.getInvoices).toHaveBeenCalledWith({ page: 1, limit: 10, q: { business_id_eq: "biz-123", is_active_eq: true, s: "created_at desc" } }));
+    expect(screen.queryByText("INACTIVE-HISTORICAL")).not.toBeInTheDocument();
+  });
+
 });

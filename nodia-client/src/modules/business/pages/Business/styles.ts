@@ -156,6 +156,8 @@ export const BusinessCard = styled(Card)(({ theme }) => {
     flexDirection: "column",
     justifyContent: "space-between",
     padding: theme.spacing(2.5),
+    minWidth: 0,
+    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5), "& button": { minHeight: 44 }, "& .MuiIconButton-root": { minWidth: 44 } },
     borderRadius: 12,
     border: `1px solid ${borderColor}`,
     boxShadow:
@@ -241,6 +243,7 @@ export const CardFooter = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(1.5),
   borderTop: `1px solid ${theme.palette.divider}`,
   marginTop: "auto",
+  [theme.breakpoints.down("sm")]: { flexDirection: "column", alignItems: "stretch", gap: theme.spacing(1.5), "& button": { width: "100%", minHeight: 44 } },
 }));
 
 export const EmptyStateContainer = styled(Box)(({ theme }) => ({

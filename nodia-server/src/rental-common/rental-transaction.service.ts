@@ -83,6 +83,9 @@ function normalizedCommand(
     Record<RentalMutationOptions['operation'], Record<string, unknown>>
   > = {
     'property.create': {
+      timezone: null,
+      check_in_time: null,
+      check_out_time: null,
       location: null,
       default_nightly_rate: null,
       default_deposit_percent: null,

@@ -13,7 +13,7 @@ export class FinanceNavigationService {
     const modules = await manager.query<{ id: string }[]>(
       `
       INSERT INTO modules (key,module_group_id,link,icon,is_active)
-      VALUES ('personal_finance',$1,'/finances/personal','AccountBalanceWalletOutlined',true)
+      VALUES ('personal_finance',$1,'/tools/finances-personal','AccountBalanceWalletOutlined',true)
       ON CONFLICT (key) DO UPDATE SET module_group_id=EXCLUDED.module_group_id,
         link=EXCLUDED.link, updated_at=now() RETURNING id`,
       [groupId],

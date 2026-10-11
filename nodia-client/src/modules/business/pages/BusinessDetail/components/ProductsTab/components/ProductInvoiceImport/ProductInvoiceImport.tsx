@@ -1,3 +1,4 @@
+import BusinessWorkflow from "../../../../../../components/BusinessWorkflow";
 import { notifyHttpError } from "../../../../../../../../config/httpFeedback";
 import AnalysisConsole, { useAnalysisObservation } from "../../../../../../components/AnalysisConsole";
 import { Workspace, WorkspaceGrid } from "../../../../../../components/AnalysisConsole/styles";
@@ -597,9 +598,9 @@ export const ProductInvoiceImport: FC<Props> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <BusinessWorkflow>
       {/* Header with back button */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+      <Box data-business-toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={onCancel} sx={{ borderRadius: 2 }} disabled={isBusy}>
           {t("business:back_to_catalog")}
         </Button>
@@ -618,7 +619,7 @@ export const ProductInvoiceImport: FC<Props> = ({
 
         <InvoiceDropzoneContainer>
           {/* Linked Provider Selector & Thinking Mode Toggle */}
-          <Box
+          <Box data-business-toolbar
             sx={{
               display: "flex",
               justifyContent: "space-between",
@@ -1041,7 +1042,7 @@ export const ProductInvoiceImport: FC<Props> = ({
           data-testid="invoice-results-section"
           sx={{ scrollMarginTop: "90px", outline: "none" }}
         >
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
+          <Box data-business-toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               {t("business:invoice_summary_title")}
             </Typography>
@@ -1106,7 +1107,7 @@ export const ProductInvoiceImport: FC<Props> = ({
           </Alert>
 
           {/* Table Header / Save Action */}
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
+          <Box data-business-toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2, mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
               {t("business:provisional_table_title", { count: rows.length })}
             </Typography>
@@ -1557,7 +1558,7 @@ export const ProductInvoiceImport: FC<Props> = ({
           </Grid>
         </FormContainer>
       </BaseModal>
-    </Box>
+    </BusinessWorkflow>
   );
 };
 

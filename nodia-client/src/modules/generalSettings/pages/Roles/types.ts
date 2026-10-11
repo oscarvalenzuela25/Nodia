@@ -6,7 +6,6 @@ export type TranslateItem = {
 
 export interface Action {
   id: string;
-  module_id: string;
   key: string;
   description: string | null;
   is_active: boolean;

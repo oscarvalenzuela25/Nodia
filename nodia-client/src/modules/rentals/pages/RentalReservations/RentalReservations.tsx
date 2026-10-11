@@ -126,11 +126,7 @@ function RentalPage() {
             property={property.data}
             accessible={!accessRejected && !creating}
           />
-        ) : (
-          <Typography color="text.secondary">
-            {t("rental:select_property_help")}
-          </Typography>
-        )}
+        ) : null}
       </Skeleton>
       {creating && (
         <PropertyModal

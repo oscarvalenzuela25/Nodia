@@ -149,5 +149,17 @@
     "group_summary": "Group summary",
     "overlapping_groups": "A category may belong to several groups: their totals may overlap.",
     "summary_error": "Unable to load the summary."
-  }
+  },
+  "id": "ID",
+  "delete": "Delete",
+  "deleted_success": "Record deleted",
+  "confirm_delete": "Are you sure you want to delete “{{name}}”? This action cannot be undone.",
+  "delete_movement_warning": "Deleting this movement removes its effect on balances. Deleting a confirmed repayment increases the outstanding loan or debt balance. Delete the initial movement through its loan or debt.",
+  "delete_obligation_warning": "Deletion is allowed only without repayments, including pending, cancelled or inactive ones. Its initial movement will also be deleted and balances recalculated.",
+  "delete_category_warning": "Categories linked to any movement, including inactive or cancelled ones, cannot be deleted. Group memberships will be removed.",
+  "delete_group_warning": "The group and its memberships will be deleted. Categories and movements will be preserved.",
+  "category_has_movements": "This category is linked to movements and cannot be deleted.",
+  "obligation_has_payments": "This loan or debt has repayments and cannot be deleted.",
+  "delete_initial_on_obligation": "Delete the initial movement through its loan or debt, only when it has no repayments.",
+  "section": "Section"
 }

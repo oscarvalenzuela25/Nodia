@@ -115,6 +115,10 @@ describe("Sidenav", () => {
     // Inicio is ALWAYS present by default
     expect(screen.getByText("Inicio")).toBeInTheDocument();
 
+    for (const list of screen.getAllByRole("list")) {
+      expect([...list.children].every((child) => child.tagName === "LI")).toBe(true);
+    }
+
     // Check for module group header
     const moduleHeader = screen.getByText("Ajustes Generales");
     expect(moduleHeader).toBeInTheDocument();
@@ -209,7 +213,7 @@ describe("Sidenav", () => {
             modules: [
               {
                 key: "businesses",
-                link: "/business",
+                link: "/tools/business",
                 translates: [{ key: "key", es: "Mis Negocios", en: "My Businesses" }],
               },
             ],

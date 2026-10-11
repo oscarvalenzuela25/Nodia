@@ -102,5 +102,28 @@
   "confirm_delete_title": "¿Eliminar acción de negocio?",
   "confirm_deactivate_message": "¿Está seguro de que desea desactivar la acción \"{{name}}\"?",
   "confirm_activate_message": "¿Está seguro de que desea activar la acción \"{{name}}\"?",
-  "confirm_delete_message": "¿Está seguro de que desea eliminar permanentemente la acción \"{{name}}\"?"
+  "confirm_delete_message": "¿Está seguro de que desea eliminar permanentemente la acción \"{{name}}\"?",
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "status_filter": {
+    "active": "Activos",
+    "inactive": "Inactivos",
+    "all": "Todos"
+  },
+  "pagination": {
+    "next": "Página siguiente",
+    "previous": "Página anterior",
+    "first": "Primera página",
+    "last": "Última página"
+  },
+  "view_mode_label": "Vista de acciones",
+  "business_status_filter": "Estado de acciones de negocio",
+  "confirm_delete_general_title": "¿Eliminar acción general?",
+  "confirm_delete_general_message": "¿Está seguro de eliminar permanentemente la acción \"{{name}}\"? También se eliminarán sus asignaciones a roles y traducciones. Esta operación no se puede deshacer.",
+  "invalid_id": "El ID de la acción no es válido.",
+  "not_found": "La acción ya no existe.",
+  "collapse_business": "Colapsar acciones de negocio",
+  "expand_business": "Expandir acciones de negocio"
 }

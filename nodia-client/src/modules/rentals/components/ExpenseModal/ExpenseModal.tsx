@@ -1,3 +1,4 @@
+import DateInput from "../../../../components/inputs/DateInput";
 import { useId, useRef } from "react";
 import { Alert, Button } from "@mui/material";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -164,32 +165,35 @@ function ExpenseFormModal({
               key={name}
               name={name}
               control={control}
-              render={({ field }) => (
-                <TextInput
-                  {...field}
-                  label={t(`rental:${name}`)}
-                  type={name.endsWith("_on") ? "date" : "text"}
-                  required={[
-                    "name",
-                    "amount",
-                    "incurred_on",
-                    "paid_on",
-                  ].includes(name)}
-                  disabled={busy || mutation.isUncertain || immutable}
-                  multiline={name === "notes"}
-                  error={
-                    Boolean(errors[name]) ||
-                    (name.endsWith("_on") && dateBlocked)
-                  }
-                  helperText={
-                    errors[name]?.message
-                      ? t(errors[name]!.message!)
-                      : name.endsWith("_on") && dateBlocked
-                        ? t("rental:future_date")
-                        : undefined
-                  }
-                />
-              )}
+              render={({ field }) => {
+                const Input = name.endsWith("_on") ? DateInput : TextInput;
+                return (
+                  <Input
+                    {...field}
+                    label={t(`rental:${name}`)}
+
+                    required={[
+                      "name",
+                      "amount",
+                      "incurred_on",
+                      "paid_on",
+                    ].includes(name)}
+                    disabled={busy || mutation.isUncertain || immutable}
+                    multiline={name === "notes"}
+                    error={
+                      Boolean(errors[name]) ||
+                      (name.endsWith("_on") && dateBlocked)
+                    }
+                    helperText={
+                      errors[name]?.message
+                        ? t(errors[name]!.message!)
+                        : name.endsWith("_on") && dateBlocked
+                          ? t("rental:future_date")
+                          : undefined
+                    }
+                  />
+                );
+              }}
             />
           );
         })}

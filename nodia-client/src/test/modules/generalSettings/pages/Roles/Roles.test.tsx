@@ -1,7 +1,7 @@
 import useAuthStore from "../../../../../store/authStore";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { sileo } from "sileo";
@@ -28,14 +28,15 @@ vi.mock(
     getRoles: vi.fn(),
     createRole: vi.fn(),
     updateRole: vi.fn(),
-  })
+    deleteRole: vi.fn(),
+  }),
 );
 
 vi.mock(
   "../../../../../modules/generalSettings/pages/Actions/infrastructure/services",
   () => ({
     getActions: vi.fn(),
-  })
+  }),
 );
 
 const mockRoles: Role[] = [
@@ -117,49 +118,37 @@ const mockActionsResponse = {
       id: "act-1",
       key: "users.create",
       is_active: true,
-      translates: [
-        { key: "key", es: "Crear Usuarios", en: "Create Users" },
-      ],
+      translates: [{ key: "key", es: "Crear Usuarios", en: "Create Users" }],
     },
     {
       id: "act-2",
       key: "users.read",
       is_active: true,
-      translates: [
-        { key: "key", es: "Ver Usuarios", en: "View Users" },
-      ],
+      translates: [{ key: "key", es: "Ver Usuarios", en: "View Users" }],
     },
     {
       id: "act-3",
       key: "users.update",
       is_active: true,
-      translates: [
-        { key: "key", es: "Editar Usuarios", en: "Edit Users" },
-      ],
+      translates: [{ key: "key", es: "Editar Usuarios", en: "Edit Users" }],
     },
     {
       id: "act-4",
       key: "users.delete",
       is_active: true,
-      translates: [
-        { key: "key", es: "Eliminar Usuarios", en: "Delete Users" },
-      ],
+      translates: [{ key: "key", es: "Eliminar Usuarios", en: "Delete Users" }],
     },
     {
       id: "act-5",
       key: "roles.manage",
       is_active: true,
-      translates: [
-        { key: "key", es: "Gestionar Roles", en: "Manage Roles" },
-      ],
+      translates: [{ key: "key", es: "Gestionar Roles", en: "Manage Roles" }],
     },
     {
       id: "act-6",
       key: "reports.view",
       is_active: true,
-      translates: [
-        { key: "key", es: "Ver Reportes", en: "View Reports" },
-      ],
+      translates: [{ key: "key", es: "Ver Reportes", en: "View Reports" }],
     },
     {
       id: "act-7",
@@ -173,9 +162,7 @@ const mockActionsResponse = {
       id: "act-8",
       key: "audit.logs",
       is_active: true,
-      translates: [
-        { key: "key", es: "Auditoría y Logs", en: "Audit & Logs" },
-      ],
+      translates: [{ key: "key", es: "Auditoría y Logs", en: "Audit & Logs" }],
     },
   ],
   meta: {
@@ -199,14 +186,37 @@ const createTestQueryClient = () =>
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = createTestQueryClient();
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   );
 };
 
+const mobile = () =>
+  vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+    matches: query.includes("599.95"),
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+
+afterEach(() => vi.restoreAllMocks());
+
 describe("Roles Page", () => {
   beforeEach(() => {
-    useAuthStore.getState().login({ token: "test-jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test user" } });
+    useAuthStore
+      .getState()
+      .login({
+        token: "test-jwt",
+        expiresAt: Date.now() + 900_000,
+        user: { id: "42", name: "Test user" },
+      });
     vi.clearAllMocks();
+    Object.values(services).forEach((service) =>
+      vi.mocked(service).mockReset(),
+    );
     vi.mocked(services.getRoles).mockResolvedValue(mockPaginatedResponse);
     vi.mocked(actionServices.getActions).mockResolvedValue(mockActionsResponse);
   });
@@ -248,6 +258,14 @@ describe("Roles Page", () => {
 
   it("filters roles using InputSearch by identifier", async () => {
     const user = userEvent.setup();
+    vi.mocked(services.getRoles).mockImplementation(async (params) => ({
+      ...mockPaginatedResponse,
+      data: params?.q?.key_cont
+        ? mockRoles.filter((role) =>
+            role.key.includes(String(params.q?.key_cont)),
+          )
+        : mockRoles,
+    }));
     renderWithClient(<Roles />);
 
     await waitFor(() => {
@@ -255,7 +273,7 @@ describe("Roles Page", () => {
     });
 
     const searchInput = screen.getByPlaceholderText(
-      "Buscar por nombre o identificador..."
+      "Buscar por identificador...",
     );
 
     await user.type(searchInput, "editor");
@@ -277,7 +295,7 @@ describe("Roles Page", () => {
     await user.click(newRoleButton);
 
     expect(
-      screen.getByRole("heading", { name: "Nuevo Rol" })
+      screen.getByRole("heading", { name: "Nuevo Rol" }),
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/super_admin/i)).toBeInTheDocument();
   });
@@ -299,7 +317,7 @@ describe("Roles Page", () => {
     await user.click(updateOption);
 
     expect(
-      screen.getByRole("heading", { name: "Actualizar Rol" })
+      screen.getByRole("heading", { name: "Actualizar Rol" }),
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("admin")).toBeInTheDocument();
   });
@@ -356,10 +374,12 @@ describe("Roles Page", () => {
 
     // ConfirmDialog should be open
     expect(
-      screen.getByRole("heading", { name: "¿Desactivar rol?" })
+      screen.getByRole("heading", { name: "¿Desactivar rol?" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/¿Está seguro de que desea desactivar el rol "admin"\?/i)
+      screen.getByText(
+        /¿Está seguro de que desea desactivar el rol "admin"\?/i,
+      ),
     ).toBeInTheDocument();
 
     // Confirm action
@@ -371,7 +391,7 @@ describe("Roles Page", () => {
         "123e4567-e89b-12d3-a456-426614174001",
         expect.objectContaining({
           is_active: false,
-        })
+        }),
       );
     });
   });
@@ -393,7 +413,7 @@ describe("Roles Page", () => {
     await user.click(deactivateOption);
 
     expect(
-      screen.getByRole("heading", { name: "¿Desactivar rol?" })
+      screen.getByRole("heading", { name: "¿Desactivar rol?" }),
     ).toBeInTheDocument();
 
     const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
@@ -401,7 +421,7 @@ describe("Roles Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByRole("heading", { name: "¿Desactivar rol?" })
+        screen.queryByRole("heading", { name: "¿Desactivar rol?" }),
       ).not.toBeInTheDocument();
     });
 
@@ -424,7 +444,7 @@ describe("Roles Page", () => {
     await waitFor(() => {
       expect(screen.getByText("No hay roles disponibles")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /Crear primer rol/i })
+        screen.getByRole("button", { name: /Crear primer rol/i }),
       ).toBeInTheDocument();
     });
   });
@@ -467,11 +487,11 @@ describe("Roles Page", () => {
     await user.click(newRoleButton);
 
     expect(
-      screen.getByRole("heading", { name: "Nuevo Rol" })
+      screen.getByRole("heading", { name: "Nuevo Rol" }),
     ).toBeInTheDocument();
 
     const keyInput = screen.getByPlaceholderText(
-      "ej: super_admin, editor, gestor"
+      "ej: super_admin, editor, gestor",
     );
     await user.type(keyInput, "custom_operator");
 
@@ -483,7 +503,7 @@ describe("Roles Page", () => {
         expect.objectContaining({
           key: "custom_operator",
           is_active: true,
-        })
+        }),
       );
     });
   });
@@ -508,7 +528,7 @@ describe("Roles Page", () => {
     await user.click(updateOption);
 
     expect(
-      screen.getByRole("heading", { name: "Actualizar Rol" })
+      screen.getByRole("heading", { name: "Actualizar Rol" }),
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("admin")).toBeInTheDocument();
 
@@ -521,7 +541,7 @@ describe("Roles Page", () => {
         expect.objectContaining({
           key: "admin",
           is_active: true,
-        })
+        }),
       );
     });
   });
@@ -545,13 +565,13 @@ describe("Roles Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Super Administrador (admin)")
+        screen.getByText("Super Administrador (admin)"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Gerente de Operaciones (manager)")
+        screen.getByText("Gerente de Operaciones (manager)"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Editor de Recursos (editor)")
+        screen.getByText("Editor de Recursos (editor)"),
       ).toBeInTheDocument();
     });
 
@@ -559,16 +579,267 @@ describe("Roles Page", () => {
     await user.keyboard("{Escape}");
 
     // Verify actions select has Translate (key) options
-    const actionsTrigger = screen.getByText(/Seleccionar acciones permitidas\.\.\./i);
+    const actionsTrigger = screen.getByText(
+      /Seleccionar acciones permitidas\.\.\./i,
+    );
     await user.click(actionsTrigger);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Crear Usuarios (users.create)")
+        screen.getByText("Crear Usuarios (users.create)"),
       ).toBeInTheDocument();
-      expect(
-        screen.getByText("Ver Usuarios (users.read)")
-      ).toBeInTheDocument();
+      expect(screen.getByText("Ver Usuarios (users.read)")).toBeInTheDocument();
     });
+  });
+
+  it("queries active roles by default, permits all by removing the chip, and restores active on Clear", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Roles />);
+    await screen.findByText("admin");
+    expect(services.getRoles).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 1, q: { is_active_eq: true } }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+    );
+    await waitFor(() =>
+      expect(services.getRoles).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 1, q: undefined }),
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: /Abrir filtros/i }));
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+      ).toBeVisible(),
+    );
+  });
+
+  it("sends role and action filters to the server instead of filtering only the fetched page", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Roles />);
+    await screen.findByText("admin");
+    await user.click(screen.getByRole("button", { name: /Abrir filtros/i }));
+    await user.click(screen.getByText(/ej: super_admin, editor, gestor/i));
+    await user.click(await screen.findByText("Editor de Recursos (editor)"));
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByText(/Seleccionar acciones permitidas/i));
+    await user.click(await screen.findByText("Ver Usuarios (users.read)"));
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Filtrar" }));
+    await waitFor(() =>
+      expect(services.getRoles).toHaveBeenCalledWith(
+        expect.objectContaining({
+          page: 1,
+          q: {
+            key_in: ["editor"],
+            actions_key_in: ["users.read"],
+            is_active_eq: true,
+          },
+        }),
+      ),
+    );
+  });
+
+  it("confirms deletion, cancels, and retains the exact target after server failure for retry", async () => {
+    const role = { ...mockRoles[0], id: "9007199254740993" };
+    vi.mocked(services.getRoles).mockResolvedValue({
+      ...mockPaginatedResponse,
+      data: [role],
+    });
+    vi.mocked(services.deleteRole)
+      .mockRejectedValueOnce({
+        response: { data: { message: "roles:not_found" } },
+      })
+      .mockResolvedValueOnce(undefined);
+    const client = createTestQueryClient(),
+      invalidate = vi.spyOn(client, "invalidateQueries");
+    const user = userEvent.setup();
+    render(
+      <QueryClientProvider client={client}>
+        <Roles />
+      </QueryClientProvider>,
+    );
+    await screen.findByText("admin");
+    await user.click(screen.getByRole("button", { name: "Acciones" }));
+    await user.click(screen.getByRole("menuitem", { name: "Eliminar" }));
+    let dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveTextContent(
+      "asignaciones a usuarios, acciones y traducciones",
+    );
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    expect(services.deleteRole).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    await user.click(screen.getByRole("button", { name: "Acciones" }));
+    await user.click(screen.getByRole("menuitem", { name: "Eliminar" }));
+    dialog = screen.getByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+    await waitFor(() =>
+      expect(sileo.error).toHaveBeenCalledWith(
+        expect.objectContaining({ description: "El rol ya no existe." }),
+      ),
+    );
+    expect(dialog).toHaveTextContent("Super Administrador");
+    expect(
+      within(dialog).getByRole("button", { name: "Eliminar" }),
+    ).toBeEnabled();
+    await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    expect(services.deleteRole).toHaveBeenNthCalledWith(2, "9007199254740993");
+    for (const queryKey of [["roles"], ["users"], ["authorization"]])
+      expect(invalidate).toHaveBeenCalledWith({ queryKey });
+    expect(sileo.success).toHaveBeenCalledWith(
+      expect.objectContaining({ description: "Rol eliminado correctamente" }),
+    );
+  });
+
+  it("hides deletion for the reserved key on desktop, even when inactive", async () => {
+    vi.mocked(services.getRoles).mockResolvedValue({
+      ...mockPaginatedResponse,
+      data: [{ id: "7", key: "super_admin", is_active: false }],
+    });
+    const user = userEvent.setup();
+    renderWithClient(<Roles />);
+    await screen.findAllByText("super_admin");
+    await user.click(screen.getByRole("button", { name: "Acciones" }));
+    expect(
+      screen.queryByRole("menuitem", { name: "Eliminar" }),
+    ).not.toBeInTheDocument();
+    expect(services.deleteRole).not.toHaveBeenCalled();
+  });
+
+  it("renders full mobile data and preserves reserved-key translations while locking its identifier", async () => {
+    mobile();
+    vi.mocked(services.getRoles).mockResolvedValue({
+      ...mockPaginatedResponse,
+      data: [
+        {
+          id: "9007199254740993",
+          key: "super_admin",
+          is_active: true,
+          actions: mockRoles[0].actions,
+        },
+      ],
+    });
+    const user = userEvent.setup();
+    renderWithClient(<Roles />);
+    const card = await screen.findByRole("article", { name: "super_admin" });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(within(card).getByText("9007199254740993")).toBeVisible();
+    expect(within(card).getByText("Auditoría y Logs")).toBeVisible();
+    await user.click(
+      within(card).getByRole("button", { name: "Acciones de super_admin" }),
+    );
+    expect(
+      screen.queryByRole("menuitem", { name: "Eliminar" }),
+    ).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    await user.click(within(card).getByRole("button", { name: "Actualizar" }));
+    expect(screen.getByDisplayValue("super_admin")).toHaveAttribute("readonly");
+    expect(screen.getByRole("textbox", { name: "esEspañol" })).toBeEnabled();
+  });
+
+  it("keeps cards visible and blocks controls while the next page is being fetched", async () => {
+    mobile();
+    let resolve!: (value: PaginatedResponse<Role>) => void;
+    vi.mocked(services.getRoles).mockImplementation(async (params) =>
+      params?.page === 2
+        ? new Promise((done) => {
+            resolve = done;
+          })
+        : {
+            ...mockPaginatedResponse,
+            meta: { page: 1, limit: 10, total_items: 11, total_pages: 2 },
+          },
+    );
+    const user = userEvent.setup();
+    renderWithClient(<Roles />);
+    const card = await screen.findByRole("article", {
+      name: "Super Administrador",
+    });
+    await user.click(screen.getByRole("button", { name: "Página siguiente" }));
+    expect(card).toBeVisible();
+    expect(
+      within(card).getByRole("button", { name: "Actualizar" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("textbox", {
+        name: "Buscar por identificador...",
+      }),
+    ).toBeDisabled();
+    await act(async () =>
+      resolve({
+        ...mockPaginatedResponse,
+        data: [mockRoles[1]],
+        meta: { page: 2, limit: 10, total_items: 11, total_pages: 2 },
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("article", { name: "Super Administrador" }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it("returns to the preceding page after its last mobile role is deleted", async () => {
+    mobile();
+    let deleted = false;
+    vi.mocked(services.deleteRole).mockImplementation(async () => {
+      deleted = true;
+    });
+    vi.mocked(services.getRoles).mockImplementation(async (params) => ({
+      data:
+        params?.page === 2 ? (deleted ? [] : [mockRoles[1]]) : [mockRoles[0]],
+      meta: {
+        page: params?.page ?? 1,
+        limit: 10,
+        total_items: deleted ? 10 : 11,
+        total_pages: deleted ? 1 : 2,
+      },
+    }));
+    const user = userEvent.setup();
+    renderWithClient(<Roles />);
+    await screen.findByRole("article", { name: "Super Administrador" });
+    await user.click(screen.getByRole("button", { name: "Página siguiente" }));
+    const card = await screen.findByRole("article", {
+      name: "Gerente de Operaciones",
+    });
+    await user.click(
+      within(card).getByRole("button", {
+        name: "Acciones de Gerente de Operaciones",
+      }),
+    );
+    await user.click(screen.getByRole("menuitem", { name: "Eliminar" }));
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Eliminar",
+      }),
+    );
+    await screen.findByRole("article", { name: "Super Administrador" });
+    expect(
+      screen.getByRole("button", { name: "Página anterior" }),
+    ).toBeDisabled();
+  });
+
+  it("shows a failed mobile query as an error rather than an empty successful list", async () => {
+    mobile();
+    vi.mocked(services.getRoles).mockImplementation(async (params) => {
+      if (params?.page) throw new Error("Synthetic outage");
+      return mockPaginatedResponse;
+    });
+    renderWithClient(<Roles />);
+    await screen.findByRole("alert");
+    expect(
+      screen.queryByText("No hay roles disponibles"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reintentar" })).toBeVisible();
   });
 });

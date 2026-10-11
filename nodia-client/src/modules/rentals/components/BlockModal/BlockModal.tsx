@@ -1,3 +1,4 @@
+import DateTimeInput from "../../../../components/inputs/DateTimeInput";
 import { useId } from "react";
 import { Alert, Button } from "@mui/material";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -112,25 +113,26 @@ export default function BlockModal({
             name={name}
             key={name}
             control={control}
-            render={({ field }) => (
-              <TextInput
-                {...field}
-                label={t(`rental:${name}`)}
-                multiline={name === "notes"}
-                disabled={
-                  disabled ||
-                  (!property.is_active && active && name.endsWith("_at"))
-                }
-                error={!!errors[name]}
-                helperText={
-                  errors[name]?.message
-                    ? t(errors[name].message)
-                    : name.endsWith("_at")
-                      ? t("rental:instant_with_offset")
-                      : undefined
-                }
-              />
-            )}
+            render={({ field }) => {
+              const Input = name.endsWith("_at") ? DateTimeInput : TextInput;
+              return (
+                <Input
+                  {...field}
+                  fullWidth
+                  timezone={property.timezone}
+                  label={t(`rental:${name}`)}
+                  multiline={name === "notes"}
+                  disabled={
+                    disabled ||
+                    (!property.is_active && active && name.endsWith("_at"))
+                  }
+                  error={!!errors[name]}
+                  helperText={
+                    errors[name]?.message ? t(errors[name].message) : undefined
+                  }
+                />
+              );
+            }}
           />
         ))}
         <Controller

@@ -17,6 +17,15 @@ it("keeps edited inputs open when the write is rejected", async () => {
   render(
     <BlockModal property={property} open initialData={row} onClose={close} />,
   );
+  const dateTimeInputs = (["starts_at", "ends_at"] as const).flatMap((name) => {
+    const label = i18n.t(`rental:${name}`);
+    const group = screen.getByRole("group", { name: label });
+    expect(group).toBeInTheDocument();
+    return ["core:date_time_date", "core:date_time_time"].map((key) => {
+      const input = screen.getByRole("textbox", { name: i18n.t(key, { label }) });
+      return { input, value: (input as HTMLInputElement).value };
+    });
+  });
   const input = screen.getByLabelText(i18n.t("rental:notes"));
   fireEvent.change(input, { target: { value: "Edited after initial data" } });
   await userEvent.click(
@@ -32,5 +41,6 @@ it("keeps edited inputs open when the write is rejected", async () => {
   );
   expect(close).not.toHaveBeenCalled();
   expect(input).toHaveValue("Edited after initial data");
+  dateTimeInputs.forEach(({ input, value }) => expect(input).toHaveValue(value));
   expect(screen.getByRole("dialog")).toBeInTheDocument();
 });

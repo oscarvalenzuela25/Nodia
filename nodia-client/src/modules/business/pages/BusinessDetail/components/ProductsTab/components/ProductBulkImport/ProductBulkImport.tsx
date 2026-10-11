@@ -1,3 +1,4 @@
+import BusinessWorkflow from "../../../../../../components/BusinessWorkflow";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -305,9 +306,9 @@ export const ProductBulkImport: FC<Props> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <BusinessWorkflow>
       {/* Header with back button & Download template */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+      <Box data-business-toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
         <Button startIcon={<ArrowBackIcon />} onClick={onCancel} sx={{ borderRadius: 2 }}>
           {t("business:back_to_catalog")}
         </Button>
@@ -371,7 +372,7 @@ export const ProductBulkImport: FC<Props> = ({
       {/* Provisional Table */}
       {rows.length > 0 && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
+          <Box data-business-toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               {t("business:provisional_table_title", { count: rows.length })}
             </Typography>
@@ -617,7 +618,7 @@ export const ProductBulkImport: FC<Props> = ({
           </Grid>
         </FormContainer>
       </BaseModal>
-    </Box>
+    </BusinessWorkflow>
   );
 };
 

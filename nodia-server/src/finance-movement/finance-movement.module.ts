@@ -1,3 +1,4 @@
+import { DeleteFinanceMovementUseCase } from './use-case/delete-finance-movement.use-case.js';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FinanceMovement } from './entities/finance-movement.entity.js';
@@ -16,6 +17,7 @@ import { GetFinanceMovementByIdUseCase } from './use-case/get-finance-movement-b
   ],
   controllers: [FinanceMovementController],
   providers: [
+    DeleteFinanceMovementUseCase,
     FinanceMovementService,
     CreateFinanceMovementUseCase,
     UpdateFinanceMovementUseCase,

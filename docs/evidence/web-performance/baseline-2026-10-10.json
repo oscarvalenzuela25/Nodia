@@ -1,0 +1,498 @@
+{
+  "date": "2026-10-10",
+  "scope": "Anonymous Home only; production build served by Vite preview at localhost:4174. Not authenticated route or deployed VPS evidence.",
+  "runs": [
+    {
+      "report": "home-desktop-1.report.json",
+      "sha256": "5DD4FBB201FC865A381915DBD8F4B1F33E1EA2C0F0BA0C6004FDC27EDE1EE32B",
+      "url": "http://localhost:4174/",
+      "timestamp": "2026-10-10T22:06:01.168Z",
+      "lighthouseVersion": "13.5.0",
+      "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+      "formFactor": "desktop",
+      "throttlingMethod": "simulate",
+      "throttling": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "screenEmulation": {
+        "mobile": false,
+        "width": 1350,
+        "height": 940,
+        "deviceScaleFactor": 1,
+        "disabled": false
+      },
+      "authenticated": false,
+      "runtimeError": null,
+      "warnings": [],
+      "categories": {
+        "performance": 96.0,
+        "accessibility": 98.0,
+        "bestPractices": 100,
+        "seo": 82.0
+      },
+      "metrics": {
+        "fcpMs": 875.8687500000002,
+        "lcpMs": 1250.1350000000002,
+        "tbtMs": 0,
+        "cls": 0.0003810580564311356
+      },
+      "resources": [
+        {
+          "resourceType": "total",
+          "label": "Total",
+          "requestCount": 26,
+          "transferSize": 658955
+        },
+        {
+          "resourceType": "script",
+          "label": "Script",
+          "requestCount": 19,
+          "transferSize": 545154
+        },
+        {
+          "resourceType": "font",
+          "label": "Font",
+          "requestCount": 4,
+          "transferSize": 101254
+        },
+        {
+          "resourceType": "other",
+          "label": "Other",
+          "requestCount": 1,
+          "transferSize": 6875
+        },
+        {
+          "resourceType": "stylesheet",
+          "label": "Stylesheet",
+          "requestCount": 1,
+          "transferSize": 4475
+        },
+        {
+          "resourceType": "document",
+          "label": "Document",
+          "requestCount": 1,
+          "transferSize": 1197
+        },
+        {
+          "resourceType": "image",
+          "label": "Image",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "media",
+          "label": "Media",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "third-party",
+          "label": "Third-party",
+          "requestCount": 1,
+          "transferSize": 102862
+        }
+      ],
+      "unusedJs": [
+        {
+          "url": "https://accounts.google.com/gsi/client?hl=es",
+          "totalBytes": 94900,
+          "wastedBytes": 80418,
+          "wastedPercent": 84.73922303906501
+        },
+        {
+          "url": "http://localhost:4174/assets/api-Cut6ygnY.js",
+          "totalBytes": 152547,
+          "wastedBytes": 60804,
+          "wastedPercent": 39.8592124873796
+        },
+        {
+          "url": "http://localhost:4174/assets/index-BkDIvytn.js",
+          "totalBytes": 128931,
+          "wastedBytes": 50000,
+          "wastedPercent": 38.77999483532637
+        },
+        {
+          "url": "http://localhost:4174/assets/BaseModal-C2miCD_G.js",
+          "totalBytes": 42159,
+          "wastedBytes": 33135,
+          "wastedPercent": 78.59385272239746
+        }
+      ],
+      "unusedJsSavingsBytes": 224357
+    },
+    {
+      "report": "home-mobile-1.report.json",
+      "sha256": "3E15601475F64F19608DB089F24CDE99FF239F770763983BB5708F1028718927",
+      "url": "http://localhost:4174/",
+      "timestamp": "2026-10-10T22:03:07.027Z",
+      "lighthouseVersion": "13.5.0",
+      "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+      "formFactor": "mobile",
+      "throttlingMethod": "simulate",
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "screenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "authenticated": false,
+      "runtimeError": null,
+      "warnings": [],
+      "categories": {
+        "performance": 70.0,
+        "accessibility": 98.0,
+        "bestPractices": 100,
+        "seo": 82.0
+      },
+      "metrics": {
+        "fcpMs": 4036.261875,
+        "lcpMs": 5403.026249999999,
+        "tbtMs": 54.5,
+        "cls": 0.0001696400923719693
+      },
+      "resources": [
+        {
+          "resourceType": "total",
+          "label": "Total",
+          "requestCount": 25,
+          "transferSize": 601685
+        },
+        {
+          "resourceType": "script",
+          "label": "Script",
+          "requestCount": 19,
+          "transferSize": 545164
+        },
+        {
+          "resourceType": "font",
+          "label": "Font",
+          "requestCount": 3,
+          "transferSize": 43974
+        },
+        {
+          "resourceType": "other",
+          "label": "Other",
+          "requestCount": 1,
+          "transferSize": 6875
+        },
+        {
+          "resourceType": "stylesheet",
+          "label": "Stylesheet",
+          "requestCount": 1,
+          "transferSize": 4475
+        },
+        {
+          "resourceType": "document",
+          "label": "Document",
+          "requestCount": 1,
+          "transferSize": 1197
+        },
+        {
+          "resourceType": "image",
+          "label": "Image",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "media",
+          "label": "Media",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "third-party",
+          "label": "Third-party",
+          "requestCount": 1,
+          "transferSize": 102872
+        }
+      ],
+      "unusedJs": [
+        {
+          "url": "https://accounts.google.com/gsi/client?hl=es",
+          "totalBytes": 94910,
+          "wastedBytes": 80416,
+          "wastedPercent": 84.72819307601917
+        },
+        {
+          "url": "http://localhost:4174/assets/api-Cut6ygnY.js",
+          "totalBytes": 152547,
+          "wastedBytes": 60804,
+          "wastedPercent": 39.8592124873796
+        },
+        {
+          "url": "http://localhost:4174/assets/index-BkDIvytn.js",
+          "totalBytes": 128931,
+          "wastedBytes": 52587,
+          "wastedPercent": 40.78676850343649
+        },
+        {
+          "url": "http://localhost:4174/assets/BaseModal-C2miCD_G.js",
+          "totalBytes": 42159,
+          "wastedBytes": 33693,
+          "wastedPercent": 79.91830222268185
+        }
+      ],
+      "unusedJsSavingsBytes": 227500
+    },
+    {
+      "report": "home-mobile-2.report.json",
+      "sha256": "CBAA95730FBBA011599918C8FAE1446B936A54D70454C911E2C4784DB2017CE4",
+      "url": "http://localhost:4174/",
+      "timestamp": "2026-10-10T22:05:23.872Z",
+      "lighthouseVersion": "13.5.0",
+      "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+      "formFactor": "mobile",
+      "throttlingMethod": "simulate",
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "screenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "authenticated": false,
+      "runtimeError": null,
+      "warnings": [],
+      "categories": {
+        "performance": 70.0,
+        "accessibility": 98.0,
+        "bestPractices": 100,
+        "seo": 82.0
+      },
+      "metrics": {
+        "fcpMs": 4069.4298750000003,
+        "lcpMs": 5323.0130500000005,
+        "tbtMs": 44.51402499999995,
+        "cls": 0.0001696400923719693
+      },
+      "resources": [
+        {
+          "resourceType": "total",
+          "label": "Total",
+          "requestCount": 25,
+          "transferSize": 601674
+        },
+        {
+          "resourceType": "script",
+          "label": "Script",
+          "requestCount": 19,
+          "transferSize": 545153
+        },
+        {
+          "resourceType": "font",
+          "label": "Font",
+          "requestCount": 3,
+          "transferSize": 43974
+        },
+        {
+          "resourceType": "other",
+          "label": "Other",
+          "requestCount": 1,
+          "transferSize": 6875
+        },
+        {
+          "resourceType": "stylesheet",
+          "label": "Stylesheet",
+          "requestCount": 1,
+          "transferSize": 4475
+        },
+        {
+          "resourceType": "document",
+          "label": "Document",
+          "requestCount": 1,
+          "transferSize": 1197
+        },
+        {
+          "resourceType": "image",
+          "label": "Image",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "media",
+          "label": "Media",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "third-party",
+          "label": "Third-party",
+          "requestCount": 1,
+          "transferSize": 102861
+        }
+      ],
+      "unusedJs": [
+        {
+          "url": "https://accounts.google.com/gsi/client?hl=es",
+          "totalBytes": 97297,
+          "wastedBytes": 82449,
+          "wastedPercent": 84.73922303906501
+        },
+        {
+          "url": "http://localhost:4174/assets/api-Cut6ygnY.js",
+          "totalBytes": 152547,
+          "wastedBytes": 60804,
+          "wastedPercent": 39.8592124873796
+        },
+        {
+          "url": "http://localhost:4174/assets/index-BkDIvytn.js",
+          "totalBytes": 128931,
+          "wastedBytes": 52587,
+          "wastedPercent": 40.78676850343649
+        },
+        {
+          "url": "http://localhost:4174/assets/BaseModal-C2miCD_G.js",
+          "totalBytes": 42159,
+          "wastedBytes": 33693,
+          "wastedPercent": 79.91830222268185
+        }
+      ],
+      "unusedJsSavingsBytes": 229533
+    },
+    {
+      "report": "home-mobile-3.report.json",
+      "sha256": "781506977E5D9D807F612577EE555EFFD6DF0C5286F428C40BDACEA9DB17EFE6",
+      "url": "http://localhost:4174/",
+      "timestamp": "2026-10-10T22:05:37.488Z",
+      "lighthouseVersion": "13.5.0",
+      "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+      "formFactor": "mobile",
+      "throttlingMethod": "simulate",
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "screenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": false
+      },
+      "authenticated": false,
+      "runtimeError": null,
+      "warnings": [],
+      "categories": {
+        "performance": 71.0,
+        "accessibility": 98.0,
+        "bestPractices": 100,
+        "seo": 82.0
+      },
+      "metrics": {
+        "fcpMs": 4000.6022500000004,
+        "lcpMs": 5331.3151,
+        "tbtMs": 40.079550000000154,
+        "cls": 0.0001696400923719693
+      },
+      "resources": [
+        {
+          "resourceType": "total",
+          "label": "Total",
+          "requestCount": 25,
+          "transferSize": 601675
+        },
+        {
+          "resourceType": "script",
+          "label": "Script",
+          "requestCount": 19,
+          "transferSize": 545154
+        },
+        {
+          "resourceType": "font",
+          "label": "Font",
+          "requestCount": 3,
+          "transferSize": 43974
+        },
+        {
+          "resourceType": "other",
+          "label": "Other",
+          "requestCount": 1,
+          "transferSize": 6875
+        },
+        {
+          "resourceType": "stylesheet",
+          "label": "Stylesheet",
+          "requestCount": 1,
+          "transferSize": 4475
+        },
+        {
+          "resourceType": "document",
+          "label": "Document",
+          "requestCount": 1,
+          "transferSize": 1197
+        },
+        {
+          "resourceType": "image",
+          "label": "Image",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "media",
+          "label": "Media",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "third-party",
+          "label": "Third-party",
+          "requestCount": 1,
+          "transferSize": 102862
+        }
+      ],
+      "unusedJs": [
+        {
+          "url": "https://accounts.google.com/gsi/client?hl=es",
+          "totalBytes": 102088,
+          "wastedBytes": 86509,
+          "wastedPercent": 84.73922303906501
+        },
+        {
+          "url": "http://localhost:4174/assets/api-Cut6ygnY.js",
+          "totalBytes": 152547,
+          "wastedBytes": 60804,
+          "wastedPercent": 39.8592124873796
+        },
+        {
+          "url": "http://localhost:4174/assets/index-BkDIvytn.js",
+          "totalBytes": 128931,
+          "wastedBytes": 52587,
+          "wastedPercent": 40.78676850343649
+        },
+        {
+          "url": "http://localhost:4174/assets/BaseModal-C2miCD_G.js",
+          "totalBytes": 42159,
+          "wastedBytes": 33693,
+          "wastedPercent": 79.91830222268185
+        }
+      ],
+      "unusedJsSavingsBytes": 233593
+    }
+  ]
+}

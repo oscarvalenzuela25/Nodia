@@ -239,7 +239,7 @@ No despachar dos agentes que escriban mismo recurso común o migración. Client 
 - Estado: completado localmente — evidencia de cierre al final de este documento.
 - Dependencias: FB-01, FB-04.
 - Archivos/alcance exclusivo: seed de navegación finance bajo use-case; integración con seed existente coordinada en FB-20.
-- [x] Registrar module_groups.key=finances y modules.key=personal_finance con link=/finances/personal, icono y traducciones es/en del Core según contrato actual.
+- [x] Registrar module_groups.key=finances y modules.key=personal_finance con link=/tools/finances-personal, icono y traducciones es/en del Core según contrato actual.
 - [x] Repetir seed conserva IDs y no duplica keys/translations; no actualizar otros módulos ni asignar finanzas a todos los usuarios.
 - [x] Documentar asignación manual por Settings y actualización del contexto de autorización; el registro no abre API anónima.
 - [x] Crear mecanismo invocable coherente con seed existente, sin ejecutar contra la BD real en esta planificación.
@@ -337,4 +337,10 @@ En la BD objetivo, aplicar npm run migration:run tras respaldo y luego npm run s
 
 La primera versión conserva la limitación de idempotencia de FB-22: no reintentar automáticamente escrituras con resultado incierto; refetch y revisión antes de repetir. El ensayo descarta una respuesta ya confirmada y recupera la fila por lectura, sin simular una garantía persistente de deduplicación.
 
-Client sigue pendiente según [24](24-personal-finance-client-plan.md). No se ejecutaron login real, AppModule con infraestructura real, migración de la BD del usuario ni despliegue. Los documentos y ADR siguen en revisión/propuestos donde correspondía.
+Client implementado según [24](24-personal-finance-client-plan.md); integración con identidad/BD objetivo sigue pendiente. No se ejecutaron login real, AppModule con infraestructura real, migración de la BD del usuario ni despliegue en estas verificaciones. Los documentos y ADR siguen en revisión/propuestos donde correspondía.
+
+## Ampliación de eliminación explícita — 2026-10-09
+
+Solicitud y aclaración del usuario registradas en20/22 y ADR-024. Cuatro casos de uso DELETE con control de propietario, DTO bigint existente y204 sin cuerpo. Categoría con movimientos bloqueada, grupo conserva categorías, movimiento inicial protegido y obligación eliminable únicamente sin pagos; las pertenencias y el origen se retiran atómicamente. Mismo lock de obligación y orden obligación/movimiento que al pagar. FKs NO ACTION conservadas, sin migración ni acceso a datos financieros reales.
+
+21 pruebas nuevas de casos de uso cubren restricciones, ámbito y errores. Suite Server842 pruebas/113 archivos correcta; build/lint correctos con dos warnings históricos ajenos al cambio. Integración HTTP/DI/PostgreSQL16 temporal correcta:204,400,401,404/propietario ajeno,409; estados/actividad de pagos y movimientos; recálculo de agregado/saldo; limpieza de pertenencias; rollback forzado de categoría y obligación; ambas carreras reales pago/eliminación (204/404 o201/409). Ejecución reproducible con npm run test:finance:integration; contenedor y registros sintéticos, sin leer.env. Fixtures antiguos no regenerados; el runner valida además los endpoints DELETE nuevos. Los pendientes de BD objetivo, identidad real y despliegue se conservan.

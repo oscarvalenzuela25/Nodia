@@ -1,4 +1,6 @@
 {
+  "collaborators_no_results": "No collaborators match the search and selected status.",
+  "search_collaborators_placeholder": "Search by name, email or position…",
   "title": "Businesses",
   "subtitle": "Manage your businesses, branches, and assigned collaborators.",
   "new_business": "New Business",

@@ -14,6 +14,7 @@ import type {
   RentalQuery,
 } from "../../types";
 import RentalTable from "../RentalTable";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 import RentalIntentReview from "../RentalIntentReview";
 import CollaboratorModal from "../CollaboratorModal";
 import { useAdministrationSubmit } from "../PropertyModal/hooks/useAdministrationSubmit";
@@ -74,6 +75,31 @@ function CollaboratorContent({ property }: CollaboratorTableProps) {
         disabled={busy}
       />
       <RentalTable
+        renderMobileRow={(row, cardBusy, actions) => (
+          <MobileRecordCard
+            title={
+              row.user.name ?? t("rental:unnamed_user", { id: row.user_id })
+            }
+            disabled={cardBusy}
+            actions={actions}
+            primaryAction={actions.find((a) => a.key === "edit")}
+            status={
+              <Chip
+                size="small"
+                label={t(row.is_active ? "rental:active" : "rental:inactive")}
+                color={row.is_active ? "success" : "default"}
+              />
+            }
+            fields={[
+              {
+                key: "position",
+                label: t("rental:position"),
+                value: row.position ?? t("rental:not_assigned"),
+                fullWidth: true,
+              },
+            ]}
+          />
+        )}
         title={t("rental:tabs.collaborators")}
         rows={listing.data?.data ?? []}
         columns={[

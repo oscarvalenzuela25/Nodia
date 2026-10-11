@@ -1,3 +1,4 @@
+import DateInput from "../../../../components/inputs/DateInput";
 import { useId, useRef } from "react";
 import { Alert, Button, Typography } from "@mui/material";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -225,36 +226,41 @@ function CaptureForm({
             key={name}
             name={name as keyof PaymentForm}
             control={control}
-            render={({ field }) => (
-              <TextInput
-                {...field}
-                value={String(field.value)}
-                label={t(`rental:${name}`)}
-                type={name === "occurred_on" ? "date" : "text"}
-                required={[
-                  "amount",
-                  "occurred_on",
-                  "platform_reference",
-                  "platform_description",
-                ].includes(name)}
-                multiline={name === "notes" || name === "platform_description"}
-                disabled={busy || mutation.isUncertain}
-                error={
-                  Boolean(errors[name as keyof PaymentForm]) ||
-                  (name === "occurred_on" && dateBlocked) ||
-                  (name === "amount" && amountBlocked)
-                }
-                helperText={
-                  errors[name as keyof PaymentForm]?.message
-                    ? t(errors[name as keyof PaymentForm]!.message!)
-                    : name === "occurred_on" && dateBlocked
-                      ? t("rental:invalid_date")
-                      : name === "amount" && amountBlocked
-                        ? t("rental:overpayment")
-                        : undefined
-                }
-              />
-            )}
+            render={({ field }) => {
+              const Input = name === "occurred_on" ? DateInput : TextInput;
+              return (
+                <Input
+                  {...field}
+                  value={String(field.value)}
+                  label={t(`rental:${name}`)}
+
+                  required={[
+                    "amount",
+                    "occurred_on",
+                    "platform_reference",
+                    "platform_description",
+                  ].includes(name)}
+                  multiline={
+                    name === "notes" || name === "platform_description"
+                  }
+                  disabled={busy || mutation.isUncertain}
+                  error={
+                    Boolean(errors[name as keyof PaymentForm]) ||
+                    (name === "occurred_on" && dateBlocked) ||
+                    (name === "amount" && amountBlocked)
+                  }
+                  helperText={
+                    errors[name as keyof PaymentForm]?.message
+                      ? t(errors[name as keyof PaymentForm]!.message!)
+                      : name === "occurred_on" && dateBlocked
+                        ? t("rental:invalid_date")
+                        : name === "amount" && amountBlocked
+                          ? t("rental:overpayment")
+                          : undefined
+                  }
+                />
+              );
+            }}
           />
         ))}
       </FormContainer>

@@ -1,3 +1,4 @@
+import DateInput from "../../../../../../../../components/inputs/DateInput";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -280,28 +281,6 @@ export const InvoiceModal: FC<Props> = ({
         id="invoice-form"
         onSubmit={handleSubmit(onFormSubmit)}
       >
-        {/* is_active Switch at top, matching Core pattern */}
-        <SwitchWrapper>
-          <Controller
-            name="is_active"
-            control={control}
-            render={({ field }) => (
-              <StyledFormControlLabel
-                control={
-                  <StyledSwitch
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                    name="is_active"
-                    disabled={isSubmitting}
-                    data-testid="invoice-active-switch"
-                  />
-                }
-                label={t("business:active_label")}
-                labelPlacement="start"
-              />
-            )}
-          />
-        </SwitchWrapper>
 
         {/* File Upload Section */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -524,11 +503,10 @@ export const InvoiceModal: FC<Props> = ({
               name="issue_date"
               control={control}
               render={({ field }) => (
-                <TextInput
+                <DateInput
                   id="invoice-issue-date"
                   name={field.name}
-                  type="date"
-                  label={t("business:invoice_issue_date")}
+                      label={t("business:invoice_issue_date")}
                   value={field.value}
                   onChange={field.onChange}
                   onBlur={field.onBlur}
@@ -559,6 +537,31 @@ export const InvoiceModal: FC<Props> = ({
                 />
               )}
             />
+          </Grid>
+
+          <Grid size={{ xs: 12 }}>
+        <SwitchWrapper>
+          <Controller
+            name="is_active"
+            control={control}
+            render={({ field }) => (
+              <StyledFormControlLabel
+                control={
+                  <StyledSwitch
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    name="is_active"
+                    disabled={isSubmitting}
+                    data-testid="invoice-active-switch"
+                  />
+                }
+                label={t("business:active_label")}
+                labelPlacement="start"
+              />
+            )}
+          />
+        </SwitchWrapper>
+
           </Grid>
 
           <Grid size={{ xs: 12 }}>

@@ -344,6 +344,7 @@
     "status_healthy": "Available",
     "status_expired": "Requires Sign In",
     "status_degraded": "Degraded",
+    "status_unverified": "Unverified",
     "status_unconfigured": "Unconfigured",
     "verify_state": "Verify Status",
     "configure_provider": "Configure",

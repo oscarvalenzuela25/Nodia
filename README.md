@@ -1,122 +1,65 @@
 # Nodia
 
-Nodia es una aplicacion organizada en varios proyectos independientes dentro de un mismo repositorio. La raiz centraliza los comandos de desarrollo para que no sea necesario entrar manualmente en cada carpeta.
+Nodia reúne tres aplicaciones independientes en un mismo repositorio. Cada aplicación instala sus dependencias y se ejecuta desde su carpeta. La raíz conserva la documentación, las reglas del proyecto y la configuración compartida de Git y del editor.
 
-Actualmente el repositorio contiene solo el cliente web. En el futuro se incorporara un servidor siguiendo la misma estructura.
-
-## Proyectos
+## Estructura
 
 ```text
 Nodia/
-├── nodia-client/   # Cliente web
-├── package.json    # Comandos centralizados
+├── nodia-client/               # Frontend React + Vite + MUI
+├── nodia-server/               # API NestJS + TypeORM
+├── nodia-gemini-microservice/   # Adaptador privado FastAPI para Gemini
+├── docs/
+│   ├── mvp/                    # Producto, contratos y seguimiento
+│   ├── architecture/           # Arquitectura y decisiones técnicas
+│   ├── features/               # Funcionalidades y operación
+│   └── evidence/               # Capturas y medidas de QA versionadas
+├── AGENTS.md                   # Reglas generales del proyecto
+├── .editorconfig               # Configuración compartida del editor
+├── .gitattributes              # Normalización de archivos en Git
+├── .gitignore                  # Exclusiones compartidas
 └── README.md
 ```
 
-### Cliente
+Client y Server mantienen su propio `package.json` y `package-lock.json`; Gemini utiliza `requirements.txt` y una `.venv` local. La raíz no necesita un manifiesto npm ni una instalación adicional.
 
-Aplicacion web construida con:
+## Desarrollo local
 
-- React
-- TypeScript
-- Vite
-- Material UI
-- React Router
-- TanStack Query
-- Zustand
-- i18next
+Ejecutar cada aplicación en una terminal independiente, después de preparar su entorno.
 
-La documentacion tecnica y las decisiones de arquitectura del cliente se encuentran en [`nodia-client/README.md`](./nodia-client/README.md).
+| Aplicación | Carpeta de trabajo | Instalación | Inicio |
+| --- | --- | --- | --- |
+| Cliente | `nodia-client` | `npm ci` | `npm run dev` |
+| API | `nodia-server` | `npm ci` | `npm run dev` |
+| Gemini | `nodia-gemini-microservice` | Ver preparación Python debajo | `./.venv/Scripts/python.exe run.py` en Windows |
 
-## Requisitos
+Requisitos: Node según el manifiesto de cada aplicación (el cliente exige `>=24.20.0`), npm y Python `>=3.11` para Gemini. La API requiere PostgreSQL y Redis configurados; el microservicio requiere el token interno compartido con la API.
 
-- Node.js 24.20.0 o superior
-- npm
+Crear el `.env` de cada aplicación desde su `.env.example` únicamente cuando no exista, y completar las variables indicadas en su documentación. El cliente consume la API; Gemini es un servicio privado consumido por Nodia Server.
 
-Puedes comprobar las versiones instaladas con:
-
-```bash
-node --version
-npm --version
-```
-
-## Instalacion
-
-Clona el repositorio, entra en su carpeta e instala las dependencias de todos los proyectos registrados:
-
-```bash
-npm run setup
-```
-
-Por ahora este comando instala unicamente las dependencias de `nodia-client`. Cuando se agreguen nuevos proyectos, sus instalaciones se incorporaran al script `setup`.
-
-## Comandos desde la raiz
-
-Todos los comandos siguientes se ejecutan desde la carpeta raiz del repositorio.
-
-| Comando | Descripcion |
-| --- | --- |
-| `npm run setup` | Instala las dependencias de los proyectos internos. |
-| `npm run dev` | Inicia el cliente en modo desarrollo. |
-| `npm run build` | Comprueba los tipos y genera el build de produccion del cliente. |
-| `npm run typecheck` | Comprueba los tipos de TypeScript. |
-| `npm run lint` | Ejecuta ESLint en el cliente. |
-| `npm run preview` | Sirve localmente el build de produccion. |
-
-Tambien existen comandos explicitos por proyecto:
-
-```bash
-npm run install:client
-npm run dev:client
-npm run build:client
-npm run typecheck:client
-npm run lint:client
-npm run preview:client
-```
-
-## Inicio rapido
-
-```bash
-npm run setup
-npm run dev
-```
-
-Vite mostrara en la terminal la URL local en la que se encuentra disponible el cliente.
-
-## Variables de entorno
-
-Crea `nodia-client/.env` a partir del archivo de ejemplo:
-
-```bash
-cp nodia-client/.env.example nodia-client/.env
-```
-
-En PowerShell puedes usar:
+Preparación de Gemini en PowerShell, dentro de `nodia-gemini-microservice`:
 
 ```powershell
-Copy-Item nodia-client/.env.example nodia-client/.env
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m playwright install chromium
+.\.venv\Scripts\python.exe run.py
 ```
 
-Variable disponible actualmente:
+En Linux, el intérprete del entorno es `./.venv/bin/python`. Consultar los requisitos y límites adicionales en el README del microservicio.
 
-| Variable | Descripcion |
-| --- | --- |
-| `VITE_API_URL` | URL base de la API que consumira el cliente. |
+## Documentación
 
-## Incorporar el servidor en el futuro
+- [Cliente: configuración y comandos](nodia-client/README.md).
+- [Servidor: configuración y comandos](nodia-server/README.md).
+- [Gemini: instalación, sesiones y operación](nodia-gemini-microservice/README.md).
+- [MVP y contratos](docs/mvp/README.md), [progreso](docs/mvp/00-progress.md) y [decisiones técnicas](docs/architecture/decisions/).
+- [Instalación de una BD vacía y bootstrap de Core](docs/mvp/database-installation.md): `npm run db:setup` desde `nodia-server`, con `BOOTSTRAP_SUPER_ADMIN_EMAIL` configurado.
+- [Revisión previa al despliegue](docs/mvp/19-prelaunch-review.md) y [runbook de seguridad](docs/mvp/18-security-deployment-runbook.md).
+- [Evidencia de QA conservada](docs/evidence/README.md).
 
-La organizacion no depende de herramientas de monorepo. Cada proyecto conserva su propio `package.json` y la raiz delega los comandos mediante `npm --prefix`.
+## Qué pertenece a la raíz
 
-Al crear, por ejemplo, una carpeta `nodia-server`, se pueden agregar scripts equivalentes en el `package.json` raiz:
+Conservar aquí lo compartido entre aplicaciones: documentación, reglas y configuración del repositorio. El código, las migraciones, scripts, dependencias, variables de entorno y configuración de ejecución de cada aplicación pertenecen a su carpeta.
 
-```json
-{
-  "scripts": {
-    "install:server": "npm install --prefix nodia-server",
-    "dev:server": "npm run dev --prefix nodia-server",
-    "build:server": "npm run build --prefix nodia-server"
-  }
-}
-```
-
-Despues se deben actualizar los comandos generales (`setup`, `dev` y `build`) para incluir ambos proyectos.
+Las capturas que respaldan verificaciones documentadas se conservan en `docs/evidence/`. Los resultados temporales pueden generarse en `output/` (ignorado por Git); los logs también están ignorados. Revisar los resultados antes de trasladar evidencia a documentación, sin incluir credenciales, sesiones ni documentos reales de usuarios.

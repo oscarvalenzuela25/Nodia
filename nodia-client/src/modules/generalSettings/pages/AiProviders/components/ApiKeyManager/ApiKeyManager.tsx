@@ -12,12 +12,13 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  TablePagination,
+  useMediaQuery,
   LinearProgress,
   Chip,
   IconButton,
   Tooltip,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { StyledSwitch } from "../ProviderConnectionForm/styles";
 import { Skeleton } from "boneyard-js/react";
@@ -34,7 +35,21 @@ import {
   useDeleteAiApiKey,
 } from "../../infrastructure/useServices";
 import type { AiApiKeyEntity } from "../../infrastructure/types";
-import { Wrapper, Actions, ScrollTable, Form, TableFrame, RowActions, TableTopBar, EmptyBox } from "./styles";
+import {
+  Wrapper,
+  Actions,
+  ScrollTable,
+  Form,
+  TableFrame,
+  RowActions,
+  TableTopBar,
+  EmptyBox,
+  KeyCards,
+  KeyCard,
+  KeyHeader,
+  KeySelection,
+  ListPagination,
+} from "./styles";
 
 const schema = z.object({
   label: z.string().trim().min(1).max(100),
@@ -50,6 +65,7 @@ const ApiKeyManager = ({
   disabled?: boolean;
 }) => {
   const { t } = useTranslation(["ai_providers", "core"]);
+  const isMobile = useMediaQuery(useTheme().breakpoints.down("sm"));
   const [page, setPage] = useState(0);
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState<{
@@ -101,8 +117,7 @@ const ApiKeyManager = ({
     try {
       await remove.mutateAsync(action.key.id);
       sileo.success({ title: t("ai_providers:api_keys.deleted") });
-      if (query.data?.data.length === 1 && page > 0)
-        setPage(page - 1);
+      if (query.data?.data.length === 1 && page > 0) setPage(page - 1);
       setAction(null);
     } catch (error) {
       fail(error);
@@ -111,9 +126,20 @@ const ApiKeyManager = ({
   const selectKey = async (key: AiApiKeyEntity, checked: boolean) => {
     if (busy) return;
     try {
-      await update.mutateAsync({ id: key.id, payload: { is_selected: checked } });
-      sileo.success({ title: t(checked ? "ai_providers:api_keys.selected" : "ai_providers:api_keys.deselected") });
-    } catch (error) { fail(error); }
+      await update.mutateAsync({
+        id: key.id,
+        payload: { is_selected: checked },
+      });
+      sileo.success({
+        title: t(
+          checked
+            ? "ai_providers:api_keys.selected"
+            : "ai_providers:api_keys.deselected",
+        ),
+      });
+    } catch (error) {
+      fail(error);
+    }
   };
   return (
     <Wrapper>
@@ -135,90 +161,176 @@ const ApiKeyManager = ({
       />
       {query.isFetching && !query.isLoading && <LinearProgress />}
       <TableFrame>
-      <Skeleton loading={query.isLoading}>
-        {!query.isError && !query.data?.data.length ? (
-          <EmptyBox>
-            <Typography color="text.secondary">
-              {t("ai_providers:api_keys.empty")}
-            </Typography>
-          </EmptyBox>
-        ) : (
-          <ScrollTable>
-            <Table sx={{ minWidth: 650 }}>
-              <TableHead>
-                <TableRow>
-                  {["label", "mask", "state", "select", "actions"].map((name) => (
-                    <TableCell key={name}>
-                      {t(`ai_providers:api_keys.${name}`)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {query.data?.data.map((key) => (
-                  <TableRow key={key.id}>
-                    <TableCell>{key.label}</TableCell>
-                    <TableCell>{key.display_hint}</TableCell>
-                    <TableCell>
-                      <Chip
-                        size="small"
-                        label={t(
-                          `ai_providers:api_keys.${key.is_selected ? "primary" : "stored"}`,
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <StyledSwitch
-                        checked={key.is_selected}
-                        disabled={busy || !key.is_active || query.data?.meta.total_items === 1}
-                        slotProps={{ input: { "aria-label": t("ai_providers:api_keys.select_named", { label: key.label }) } }}
-                        onChange={(_event, checked) => { void selectKey(key, checked); }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <RowActions>
-                        <Tooltip title={t("ai_providers:api_keys.delete")}>
-                        <span><IconButton
+        <Skeleton loading={query.isLoading}>
+          {!query.isError && !query.data?.data.length ? (
+            <EmptyBox>
+              <Typography color="text.secondary">
+                {t("ai_providers:api_keys.empty")}
+              </Typography>
+            </EmptyBox>
+          ) : isMobile ? (
+            <KeyCards>
+              {query.data?.data.map((key) => (
+                <KeyCard
+                  component="article"
+                  key={key.id}
+                  aria-label={key.label}
+                >
+                  <KeyHeader>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ fontWeight: 700, minWidth: 0 }}
+                    >
+                      {key.label}
+                    </Typography>
+                    <Tooltip title={t("ai_providers:api_keys.delete")}>
+                      <span>
+                        <IconButton
                           color="error"
                           disabled={busy}
                           aria-label={t("ai_providers:api_keys.delete")}
                           onClick={() => setAction({ key })}
                         >
                           <DeleteOutlinedIcon fontSize="small" />
-                        </IconButton></span>
-                        </Tooltip>
-                      </RowActions>
-                    </TableCell>
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  </KeyHeader>
+                  <Typography variant="caption" color="text.secondary">
+                    {t("ai_providers:api_keys.mask")}
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
+                    {key.display_hint}
+                  </Typography>
+                  <Chip
+                    size="small"
+                    sx={{ alignSelf: "flex-start" }}
+                    label={t(
+                      `ai_providers:api_keys.${key.is_selected ? "primary" : "stored"}`,
+                    )}
+                  />
+                  <KeySelection>
+                    <Typography variant="body2">
+                      {t("ai_providers:api_keys.select")}
+                    </Typography>
+                    <StyledSwitch
+                      checked={key.is_selected}
+                      disabled={
+                        busy ||
+                        !key.is_active ||
+                        query.data?.meta.total_items === 1
+                      }
+                      slotProps={{
+                        input: {
+                          "aria-label": t(
+                            "ai_providers:api_keys.select_named",
+                            { label: key.label },
+                          ),
+                        },
+                      }}
+                      onChange={(_event, checked) => {
+                        void selectKey(key, checked);
+                      }}
+                    />
+                  </KeySelection>
+                </KeyCard>
+              ))}
+            </KeyCards>
+          ) : (
+            <ScrollTable>
+              <Table sx={{ minWidth: 650 }}>
+                <TableHead>
+                  <TableRow>
+                    {["label", "mask", "state", "select", "actions"].map(
+                      (name) => (
+                        <TableCell key={name}>
+                          {t(`ai_providers:api_keys.${name}`)}
+                        </TableCell>
+                      ),
+                    )}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollTable>
-        )}
-      </Skeleton>
-      <TablePagination
-        component="div"
-        count={query.data?.meta.total_items ?? 0}
-        page={page}
-        rowsPerPage={10}
-        rowsPerPageOptions={[10]}
-        labelDisplayedRows={({ from, to, count }) =>
-          t("ai_providers:api_keys.rows", { from, to, count })
-        }
-        getItemAriaLabel={(type) => t(`ai_providers:api_keys.page_${type}`)}
-        slotProps={{
-          actions: {
-            previousButton: { disabled: busy || page === 0 },
-            nextButton: {
-              disabled:
-                busy || (page + 1) * 10 >= (query.data?.meta.total_items ?? 0),
+                </TableHead>
+                <TableBody>
+                  {query.data?.data.map((key) => (
+                    <TableRow key={key.id}>
+                      <TableCell>{key.label}</TableCell>
+                      <TableCell>{key.display_hint}</TableCell>
+                      <TableCell>
+                        <Chip
+                          size="small"
+                          label={t(
+                            `ai_providers:api_keys.${key.is_selected ? "primary" : "stored"}`,
+                          )}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <StyledSwitch
+                          checked={key.is_selected}
+                          disabled={
+                            busy ||
+                            !key.is_active ||
+                            query.data?.meta.total_items === 1
+                          }
+                          slotProps={{
+                            input: {
+                              "aria-label": t(
+                                "ai_providers:api_keys.select_named",
+                                { label: key.label },
+                              ),
+                            },
+                          }}
+                          onChange={(_event, checked) => {
+                            void selectKey(key, checked);
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <RowActions>
+                          <Tooltip title={t("ai_providers:api_keys.delete")}>
+                            <span>
+                              <IconButton
+                                color="error"
+                                disabled={busy}
+                                aria-label={t("ai_providers:api_keys.delete")}
+                                onClick={() => setAction({ key })}
+                              >
+                                <DeleteOutlinedIcon fontSize="small" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </RowActions>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollTable>
+          )}
+        </Skeleton>
+        <ListPagination
+          component="div"
+          count={query.data?.meta.total_items ?? 0}
+          page={page}
+          rowsPerPage={10}
+          rowsPerPageOptions={[10]}
+          labelDisplayedRows={({ from, to, count }) =>
+            t("ai_providers:api_keys.rows", { from, to, count })
+          }
+          getItemAriaLabel={(type) => t(`ai_providers:api_keys.page_${type}`)}
+          slotProps={{
+            actions: {
+              previousButton: { disabled: busy || page === 0 },
+              nextButton: {
+                disabled:
+                  busy ||
+                  (page + 1) * 10 >= (query.data?.meta.total_items ?? 0),
+              },
             },
-          },
-        }}
-        onPageChange={(_event, next) => {
-          if (!busy) setPage(next);
-        }}
-      />
+          }}
+          onPageChange={(_event, next) => {
+            if (!busy) setPage(next);
+          }}
+        />
       </TableFrame>
       <BaseModal
         open={open}

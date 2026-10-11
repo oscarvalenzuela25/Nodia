@@ -1,6 +1,9 @@
+import { DeleteFinanceCategoryUseCase } from './use-case/delete-finance-category.use-case.js';
 import {
   Body,
   Controller,
+  Delete,
+  HttpCode,
   Get,
   Param,
   Post,
@@ -14,6 +17,7 @@ import {
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -55,6 +59,7 @@ import { UpdateFinanceCategoryUseCase } from './use-case/update-finance-category
 @Controller('finance/categories')
 export class FinanceCategoryController {
   constructor(
+    private readonly deleteCategory: DeleteFinanceCategoryUseCase,
     private readonly list: GetFinanceCategoriesUseCase,
     private readonly detail: GetFinanceCategoryUseCase,
     private readonly createCategory: CreateFinanceCategoryUseCase,
@@ -89,5 +94,15 @@ export class FinanceCategoryController {
     @Body() dto: UpdateFinanceCategoryDto,
   ) {
     return this.updateCategory.execute(request.auth.user.id, params.id, dto);
+  }
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({
+    summary:
+      'Delete an owned personal finance record with association safeguards',
+  })
+  @ApiNoContentResponse({ description: 'Record deleted atomically.' })
+  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
+    return this.deleteCategory.execute(request.auth.user.id, params.id);
   }
 }

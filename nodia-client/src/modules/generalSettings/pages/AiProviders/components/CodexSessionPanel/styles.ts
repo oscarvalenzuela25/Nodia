@@ -8,11 +8,14 @@ export const SessionActions = styled(Box)(({ theme }) => ({
   flexDirection: "row",
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
-    "& .MuiButton-root": { width: "100%" },
+    "& .MuiButton-root": { width: "100%", minHeight: 44 },
   },
 }));
 export const SessionContent = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(3),
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  [theme.breakpoints.down("sm")]: { gap: theme.spacing(2) },
 }));

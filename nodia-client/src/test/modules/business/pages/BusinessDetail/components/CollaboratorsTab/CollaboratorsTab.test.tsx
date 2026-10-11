@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { CollaboratorsTab } from "../../../../../../../modules/business/pages/BusinessDetail/components/CollaboratorsTab/CollaboratorsTab";
@@ -75,6 +75,13 @@ const renderWithClient = (ui: ReactElement) => {
   );
 };
 
+
+const mockMobile = () => vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+  matches: query.includes("599.95"), media: query, onchange: null,
+  addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+}));
+afterEach(() => vi.restoreAllMocks());
+
 describe("CollaboratorsTab Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -113,8 +120,8 @@ describe("CollaboratorsTab Component", () => {
       />
     );
 
-    // Header title and add button
-    expect(screen.getByText("Colaboradores del Negocio")).toBeInTheDocument();
+    // The tab name already identifies the section.
+    expect(screen.queryByText("Colaboradores del Negocio")).not.toBeInTheDocument();
 
     // Table column headers
     expect(screen.getByText("Colaborador / Usuario")).toBeInTheDocument();
@@ -127,17 +134,18 @@ describe("CollaboratorsTab Component", () => {
     expect(screen.getByText("carlos@test.com")).toBeInTheDocument();
     expect(screen.getByText("Jefe de Compras")).toBeInTheDocument();
     expect(screen.getByText("2 asignadas")).toBeInTheDocument();
-    expect(screen.getByText("Activo")).toBeInTheDocument();
+    expect(within(screen.getByRole("table")).getByText("Activo")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Quitar filtro: Estado: Activo" })).toBeInTheDocument();
 
     // Second collaborator
-    expect(screen.getByText("Ana Gomez")).toBeInTheDocument();
-    expect(screen.getByText("ana@test.com")).toBeInTheDocument();
-    expect(screen.getByText("Sin especificar")).toBeInTheDocument();
-    expect(screen.getByText("1 asignadas")).toBeInTheDocument();
-    expect(screen.getByText("Inactivo")).toBeInTheDocument();
+    expect(screen.queryByText("Ana Gomez")).not.toBeInTheDocument();
+    expect(screen.queryByText("ana@test.com")).not.toBeInTheDocument();
+    expect(screen.queryByText("Sin especificar")).not.toBeInTheDocument();
+    expect(screen.queryByText("1 asignadas")).not.toBeInTheDocument();
+    expect(screen.queryByText("Inactivo")).not.toBeInTheDocument();
   });
 
-  it("calls onOpenAddCollaborator when clicking header button", async () => {
+  it("calls onOpenAddCollaborator when clicking toolbar button", async () => {
     const user = userEvent.setup();
     const onOpenAdd = vi.fn();
     renderWithClient(
@@ -215,4 +223,36 @@ describe("CollaboratorsTab Component", () => {
       ],
     });
   });
+  it("filters by inactive status, clears to active and searches the complete collection", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<CollaboratorsTab businessId="biz-1" collaborators={mockCollaborators} onOpenAddCollaborator={vi.fn()} />);
+    expect(screen.queryByText("Ana Gomez")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
+    await user.click(screen.getByRole("button", { name: "Estado de actividad" }));
+    await user.click(await screen.findByRole("option", { name: "Inactivo" }));
+    await user.click(screen.getByRole("button", { name: "Filtrar" }));
+    expect(await screen.findByText("Ana Gomez")).toBeInTheDocument();
+    expect(screen.queryByText("Carlos Sanchez")).not.toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    expect(await screen.findByText("Carlos Sanchez")).toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: "Quitar filtro: Estado: Activo" }));
+    await user.type(screen.getByRole("textbox", { name: /Buscar por nombre/ }), "ana@test.com");
+    expect(await screen.findByText("Ana Gomez")).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByText("Carlos Sanchez")).not.toBeInTheDocument());
+  });
+
+  it("shows only active collaborators in mobile cards and preserves removal confirmation", async () => {
+    mockMobile();
+    const user = userEvent.setup();
+    renderWithClient(<CollaboratorsTab businessId="biz-1" collaborators={mockCollaborators} onOpenAddCollaborator={vi.fn()} />);
+    const card = screen.getByRole("article", { name: "Carlos Sanchez" });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ana Gomez")).not.toBeInTheDocument();
+    await user.click(within(card).getByRole("button", { name: /Acciones de/ }));
+    await user.click(screen.getByRole("menuitem", { name: "Quitar colaborador" }));
+    expect(await screen.findByRole("dialog")).toHaveTextContent("Carlos Sanchez");
+    expect(businessServices.assignCollaborators).not.toHaveBeenCalled();
+  });
+
 });

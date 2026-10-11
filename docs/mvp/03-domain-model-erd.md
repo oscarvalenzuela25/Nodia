@@ -633,8 +633,8 @@ Table rental_properties {
   location varchar(500)
   timezone varchar(64) [not null]
   max_guests integer [not null]
-  check_in_time time [not null]
-  check_out_time time [not null]
+  check_in_time time // Legacy nullable desde 2026-10-09
+  check_out_time time // Legacy nullable desde 2026-10-09
   default_nightly_rate bigint
   default_deposit_percent numeric(5,2)
   minimum_turnover_minutes integer [not null, default: 0]
@@ -896,6 +896,8 @@ Ref: rental_operations.actor_id > users.id [delete: restrict]
 
 ## 3. Reglas de Finanzas personales — 2026-10-04
 
+Ampliación solicitada2026-10-09: eliminación física explícita con restricciones según contrato22 y ADR-024. Categorías con movimientos y obligaciones con pagos protegidas; grupo retira solo sus pertenencias; obligación sin pagos se elimina junto con su origen. Se conservan tablas, FKs compuestas NO ACTION y propietario por sesión; sin cambios al diagrama Obsidian.
+
 Se incorpora el modelo simplificado solicitado por el usuario, sin aprobar de nuevo todo el documento ni resolver las revisiones históricas de auth/IA.
 
 - Todas las tablas financieras tienen usuario propio. FKs compuestas evitan asociaciones entre usuarios.
@@ -918,3 +920,9 @@ Las reglas temporales, monetarias, snapshots y checks descritos en 27 acompañan
 Contratos y desarrollo se especifican en [28](28-rental-reservations-contracts.md) y [plan Backend 29](29-rental-reservations-backend-plan.md), en revisión. El plan Client se preparará después. La aprobación de 27 no cambia el estado de los otros documentos o ADRs.
 
 Backend de Reservas implementado: once entidades TypeORM y migración incremental, con metadata sin drift en PostgreSQL aislado. Se conservan las 143 columnas/38 FKs/22 índices del diagrama; checks monetarios/estados/fechas/preparación acompañan la migración. [Entrega29](29-rental-reservations-backend-plan.md) separa ensayo aislado de aplicación objetivo pendiente.
+
+Actualización de Obsidian solicitada el 2026-10-09: nulabilidad de horarios legacy alineada y proyección visual de Reservas sin ciclos, con FK de política predeterminada documentada como ALTER TABLE y complemento SQL adjunto. Este DBML conserva la relación física completa. [Evidencia y requisitos de exportación](27-rental-reservations-erd.md#diagrama-obsidian-reconciliado-y-avisos-circulares--2026-10-09).
+
+### Eliminación del catálogo de navegación — 2026-10-09
+
+Sin cambios de esquema: la FK module→group continúa NO ACTION. El caso de uso DELETE módulo elimina primero sus user_modules y traducciones del namespace modules dentro de una transacción. DELETE grupo exige cero módulos asociados, incluso inactivos, y limpia solo traducciones module_groups. Lock padre y FK evitan asociaciones huérfanas concurrentes. Ver ADR-021 y contrato de Modules.

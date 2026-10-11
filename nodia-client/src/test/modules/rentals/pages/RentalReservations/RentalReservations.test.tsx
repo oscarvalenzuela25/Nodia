@@ -6,6 +6,15 @@ import { AxiosError, AxiosHeaders } from "axios";
 import RentalReservations from "../../../../../modules/rentals/pages/RentalReservations";
 import i18n from "../../../../../translate";
 beforeEach(resetUI);
+it("renders the selection instruction once and a contained accommodation creation button", () => {
+  renderRoute(<RentalReservations />, "/tools/reservations");
+  expect(
+    screen.getAllByText(i18n.t("rental:select_property_help")),
+  ).toHaveLength(1);
+  expect(screen.getByRole("button", { name: "Crear alojamiento" })).toHaveClass(
+    "MuiButton-contained",
+  );
+});
 it("rejects invalid property IDs before enabling dependent views", () => {
   renderRoute(
     <RentalReservations />,
@@ -33,6 +42,8 @@ it("preserves an edited form through a temporary house read failure and recovery
   await userEvent.click(
     screen.getByRole("button", { name: i18n.t("rental:create") }),
   );
+  for (const [name, value] of Object.entries({ check_in_on: "2026-11-08", check_out_on: "2026-11-10", check_in_time: "15:00", check_out_time: "11:00" })) fireEvent.change(screen.getByLabelText(i18n.t(`rental:${name}`)), { target: { value } });
+  await userEvent.click(screen.getByRole("button", { name: i18n.t("rental:wizard_continue") }));
   fireEvent.change(screen.getByLabelText(i18n.t("rental:guest_name")), {
     target: { value: "Unsaved synthetic guest" },
   });
@@ -44,7 +55,7 @@ it("preserves an edited form through a temporary house read failure and recovery
     "Unsaved synthetic guest",
   );
   expect(
-    screen.getByRole("button", { name: i18n.t("rental:save") }),
+    screen.getByRole("button", { name: i18n.t("rental:wizard_continue") }),
   ).toBeEnabled();
   screen
     .getAllByRole("button", { name: i18n.t("rental:close") })

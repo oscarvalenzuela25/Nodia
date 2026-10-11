@@ -1,9 +1,18 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 import FinanceTable from "../../../../../modules/finances/components/FinanceTable";
 import type { FinanceTableProps } from "../../../../../modules/finances/components/FinanceTable";
+
+const media = vi.hoisted(() => ({ mobile: false }));
+vi.mock("@mui/material", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@mui/material")>()),
+  useMediaQuery: () => media.mobile,
+}));
+beforeEach(() => {
+  media.mobile = false;
+});
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -97,8 +106,13 @@ describe("FinanceTable", () => {
     expect(
       screen.getByRole("button", { name: "finance:create" }),
     ).toBeDisabled();
-    expect(screen.getByRole("combobox")).toHaveAttribute("aria-disabled", "true");
-    expect(screen.getByRole("button", { name: "finance:pagination_next" })).toBeDisabled();
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    expect(
+      screen.getByRole("button", { name: "finance:pagination_next" }),
+    ).toBeDisabled();
     expect(
       screen.getByRole("button", {
         name: "finance:row_actions:Movimiento personal",
@@ -152,4 +166,46 @@ describe("FinanceTable", () => {
     await user.click(screen.getByRole("option", { name: "25" }));
     expect(callbacks.onLimitChange).toHaveBeenCalledWith(25);
   });
+});
+
+it("renders only mobile records below the breakpoint and keeps controlled search/page when resizing", async () => {
+  const user = userEvent.setup();
+  media.mobile = true;
+  const callbacks = props({
+    search: "Guardado",
+    page: 2,
+    onDelete: vi.fn(),
+    renderMobileRow: (record, actions) => (
+      <article aria-label={record.name}>
+        <span>{record.id}</span>
+        <button disabled={actions.disabled} onClick={actions.onDelete}>
+          Delete mobile record
+        </button>
+      </article>
+    ),
+  });
+  const view = render(<FinanceTable {...callbacks} />);
+  expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  expect(screen.getByRole("article")).toHaveTextContent(row.id);
+  await user.click(
+    screen.getByRole("button", { name: "Delete mobile record" }),
+  );
+  expect(callbacks.onDelete).toHaveBeenCalledWith(row);
+  media.mobile = false;
+  view.rerender(<FinanceTable {...callbacks} />);
+  expect(screen.getByRole("table")).toHaveTextContent(row.name);
+  expect(screen.queryByRole("article")).not.toBeInTheDocument();
+  expect(screen.getByRole("textbox")).toHaveValue("Guardado");
+  expect(callbacks.onSearchChange).not.toHaveBeenCalled();
+  expect(callbacks.onPageChange).not.toHaveBeenCalled();
+  media.mobile = true;
+  view.rerender(<FinanceTable {...callbacks} isFetching />);
+  expect(screen.getByRole("article")).toHaveTextContent(row.id);
+  expect(
+    screen.getByRole("button", { name: "Delete mobile record" }),
+  ).toBeDisabled();
+  expect(screen.getByTestId("skeleton")).toHaveAttribute(
+    "data-loading",
+    "false",
+  );
 });

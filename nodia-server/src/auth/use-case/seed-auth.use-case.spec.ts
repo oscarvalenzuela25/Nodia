@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  ConflictException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import type { DataSource, EntityManager, Repository } from 'typeorm';
 import { SeedAuthUseCase } from './seed-auth.use-case.js';
 import type { TranslationService } from '../../translation/translation.service.js';
@@ -31,29 +28,33 @@ describe('SeedAuthUseCase', () => {
   let userModulesStore: UserModule[];
 
   let idCounter = 1;
-  function createMockRepo<T extends { id?: string; key?: string; email?: string }>(
-    store: Map<string, T> | T[],
-  ): Partial<Repository<T>> {
+  function createMockRepo<
+    T extends { id?: string; key?: string; email?: string },
+  >(store: Map<string, T> | T[]): Partial<Repository<T>> {
     return {
-      findOne: vi.fn().mockImplementation(async ({ where }: { where: Record<string, any> }) => {
-        if (Array.isArray(store)) {
-          return (
-            store.find((item: any) =>
-              Object.entries(where).every(([k, v]) => item[k] === v),
-            ) ?? null
-          );
-        }
-        for (const item of store.values() as any) {
-          const match = Object.entries(where).every(([k, v]) => {
-            if (k === 'email' && typeof item[k] === 'string') {
-              return item[k].toLowerCase() === String(v).toLowerCase();
+      findOne: vi
+        .fn()
+        .mockImplementation(
+          async ({ where }: { where: Record<string, any> }) => {
+            if (Array.isArray(store)) {
+              return (
+                store.find((item: any) =>
+                  Object.entries(where).every(([k, v]) => item[k] === v),
+                ) ?? null
+              );
             }
-            return item[k] === v;
-          });
-          if (match) return item;
-        }
-        return null;
-      }),
+            for (const item of store.values() as any) {
+              const match = Object.entries(where).every(([k, v]) => {
+                if (k === 'email' && typeof item[k] === 'string') {
+                  return item[k].toLowerCase() === String(v).toLowerCase();
+                }
+                return item[k] === v;
+              });
+              if (match) return item;
+            }
+            return null;
+          },
+        ),
       create: vi.fn().mockImplementation((entity: any) => ({
         id: String(idCounter++),
         ...entity,
@@ -100,17 +101,20 @@ describe('SeedAuthUseCase', () => {
 
     managerMock = {
       getRepository: getRepo as any,
+      query: vi.fn().mockResolvedValue([]),
     };
 
     dataSourceMock = {
       getRepository: getRepo as any,
-      transaction: vi.fn().mockImplementation(async (cb: (m: EntityManager) => any) => {
-        return cb(managerMock as EntityManager);
-      }),
+      transaction: vi
+        .fn()
+        .mockImplementation(async (cb: (m: EntityManager) => any) => {
+          return cb(managerMock as EntityManager);
+        }),
     };
 
     translationServiceMock = {
-      saveTranslations: vi.fn().mockResolvedValue(undefined),
+      updateTranslations: vi.fn().mockResolvedValue(undefined),
     };
 
     redisServiceMock = {
@@ -118,6 +122,7 @@ describe('SeedAuthUseCase', () => {
     };
 
     envs.SECRET_SEED = 'valid_secret_seed';
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = '';
 
     useCase = new SeedAuthUseCase(
       dataSourceMock as DataSource,
@@ -179,17 +184,20 @@ describe('SeedAuthUseCase', () => {
     expect(result.modules).toEqual(['users', 'roles', 'actions', 'modules']);
 
     // Check Role created
-    const createdRole = Array.from(rolesStore.values()).find((r) => r.key === 'super_admin');
+    const createdRole = Array.from(rolesStore.values()).find(
+      (r) => r.key === 'super_admin',
+    );
     expect(createdRole).toBeDefined();
     expect(createdRole?.is_active).toBe(true);
 
     // Check Translations called for Role
-    expect(translationServiceMock.saveTranslations).toHaveBeenCalledWith(
+    expect(translationServiceMock.updateTranslations).toHaveBeenCalledWith(
       'roles',
       createdRole?.id,
       expect.arrayContaining([
         expect.objectContaining({ key: 'key', es: 'Super Administrador' }),
       ]),
+      managerMock,
     );
 
     // Check ModuleGroup created
@@ -199,12 +207,13 @@ describe('SeedAuthUseCase', () => {
     expect(createdGroup).toBeDefined();
 
     // Check Translations called for ModuleGroup
-    expect(translationServiceMock.saveTranslations).toHaveBeenCalledWith(
+    expect(translationServiceMock.updateTranslations).toHaveBeenCalledWith(
       'module_groups',
       createdGroup?.id,
       expect.arrayContaining([
         expect.objectContaining({ key: 'key', es: 'Administrador General' }),
       ]),
+      managerMock,
     );
 
     // Check Modules created with links and group_id
@@ -236,10 +245,14 @@ describe('SeedAuthUseCase', () => {
     expect(userRole).toBeDefined();
     expect(userRole?.is_active).toBe(true);
 
-    expect(userModulesStore.filter((um) => um.user_id === createdUser?.id)).toHaveLength(4);
+    expect(
+      userModulesStore.filter((um) => um.user_id === createdUser?.id),
+    ).toHaveLength(4);
 
     // Check Redis cache invalidated
-    expect(redisServiceMock.delByPattern).toHaveBeenCalledWith('auth:context:*');
+    expect(redisServiceMock.delByPattern).toHaveBeenCalledWith(
+      'auth:context:*',
+    );
   });
 
   it('should reuse existing user if already registered and assign super_admin role and modules', async () => {
@@ -264,10 +277,74 @@ describe('SeedAuthUseCase', () => {
     expect(result.super_admin_email).toBe('existing@nodia.com');
     expect(existingUser.is_active).toBe(true);
 
-    const role = Array.from(rolesStore.values()).find((r) => r.key === 'super_admin');
+    const role = Array.from(rolesStore.values()).find(
+      (r) => r.key === 'super_admin',
+    );
     const assignedUserRole = userRolesStore.find(
       (ur) => ur.user_id === '88' && ur.role_id === role?.id,
     );
     expect(assignedUserRole).toBeDefined();
+  });
+
+  it('requires an explicit valid environment email before opening the transaction', async () => {
+    for (const value of ['', 'not-an-email']) {
+      envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = value;
+      await expect(useCase.bootstrap()).rejects.toThrow(
+        'BOOTSTRAP_SUPER_ADMIN_EMAIL',
+      );
+    }
+    expect(dataSourceMock.transaction).not.toHaveBeenCalled();
+  });
+
+  it('normalizes environment email and creates exactly one role assignment and four module assignments', async () => {
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = '  Owner@Example.com  ';
+    const result = await useCase.bootstrap();
+    expect(result.super_admin_email).toBe('owner@example.com');
+    expect(userRolesStore).toHaveLength(1);
+    expect(userModulesStore).toHaveLength(4);
+    expect(managerMock.query).toHaveBeenCalledWith(
+      'SELECT pg_advisory_xact_lock(1789257400)',
+    );
+    for (const call of vi.mocked(translationServiceMock.updateTranslations!)
+      .mock.calls) {
+      expect(call[3]).toBe(managerMock);
+    }
+  });
+
+  it('repeats bootstrap without duplicating records or rewriting translations', async () => {
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'owner@example.com';
+    const first = await useCase.bootstrap();
+    vi.mocked(translationServiceMock.updateTranslations!).mockClear();
+    expect(await useCase.bootstrap()).toEqual(first);
+    expect(usersStore.size).toBe(1);
+    expect(userRolesStore).toHaveLength(1);
+    expect(userModulesStore).toHaveLength(4);
+    expect(translationServiceMock.updateTranslations).not.toHaveBeenCalled();
+  });
+
+  it('rejects changing the bootstrap identity without promoting another account', async () => {
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'owner@example.com';
+    await useCase.bootstrap();
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'different@example.com';
+    await expect(useCase.bootstrap()).rejects.toThrow(ConflictException);
+    expect(usersStore.size).toBe(1);
+    expect(userRolesStore).toHaveLength(1);
+  });
+
+  it('does not restore an explicitly disabled module assignment', async () => {
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'owner@example.com';
+    await useCase.bootstrap();
+    userModulesStore[0].is_active = false;
+    await expect(useCase.bootstrap()).rejects.toThrow(ConflictException);
+    expect(userModulesStore[0].is_active).toBe(false);
+  });
+
+  it('does not bootstrap a different account after the original role assignment is deactivated', async () => {
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'owner@example.com';
+    await useCase.bootstrap();
+    userRolesStore[0].is_active = false;
+    envs.BOOTSTRAP_SUPER_ADMIN_EMAIL = 'different@example.com';
+    await expect(useCase.bootstrap()).rejects.toThrow(ConflictException);
+    expect(usersStore.size).toBe(1);
   });
 });

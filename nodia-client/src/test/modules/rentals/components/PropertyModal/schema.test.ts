@@ -7,10 +7,7 @@ import {
 const valid = {
   name: " Casa ",
   location: "",
-  timezone: "America/Santiago",
   max_guests: "4",
-  check_in_time: "15:00",
-  check_out_time: "11:00",
   default_nightly_rate: "",
   default_deposit_percent: "",
   minimum_turnover_minutes: "0",
@@ -51,10 +48,8 @@ describe("PropertyModal contract", () => {
         propertySchema.safeParse({ ...valid, default_nightly_rate }).success,
       ).toBe(false),
   );
-  it("validates timezone, civil time, percentages and turnover bounds", () => {
+  it("validates percentages and turnover bounds", () => {
     for (const change of [
-      { timezone: "missing" },
-      { check_in_time: "24:00" },
       { default_deposit_percent: "100.01" },
       { minimum_turnover_minutes: "10081" },
     ])

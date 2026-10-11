@@ -30,9 +30,10 @@ const LanguageSelector: FC = () => {
       <Tooltip title={t("layout:toggle_language")}>
         <Button
           onClick={handleOpenMenu}
-          aria-label={t("layout:toggle_language")}
+          aria-label={t("layout:toggle_language_label", { language: currentLanguage.substring(0, 2).toUpperCase() })}
           aria-controls="language-menu"
           aria-haspopup="true"
+          aria-expanded={Boolean(anchorEl)}
           startIcon={<TranslateOutlinedIcon sx={{ fontSize: "1.75rem", color: "text.primary" }} />}
           sx={{ 
             color: "text.primary", 
@@ -42,7 +43,7 @@ const LanguageSelector: FC = () => {
             px: 1 
           }}
         >
-          {currentLanguage.substring(0, 2)}
+          {currentLanguage.substring(0, 2).toUpperCase()}
         </Button>
       </Tooltip>
       <Menu

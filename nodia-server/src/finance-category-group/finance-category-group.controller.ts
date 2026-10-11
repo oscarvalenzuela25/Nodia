@@ -1,6 +1,9 @@
+import { DeleteFinanceCategoryGroupUseCase } from './use-case/delete-finance-category-group.use-case.js';
 import {
   Body,
   Controller,
+  Delete,
+  HttpCode,
   Get,
   Param,
   Post,
@@ -14,6 +17,7 @@ import {
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -57,6 +61,7 @@ import { UpdateFinanceCategoryGroupUseCase } from './use-case/update-finance-cat
 @Controller('finance/category-groups')
 export class FinanceCategoryGroupController {
   constructor(
+    private readonly deleteGroup: DeleteFinanceCategoryGroupUseCase,
     private readonly list: GetFinanceCategoryGroupsUseCase,
     private readonly detail: GetFinanceCategoryGroupUseCase,
     private readonly createGroup: CreateFinanceCategoryGroupUseCase,
@@ -101,5 +106,15 @@ export class FinanceCategoryGroupController {
     @Body() dto: UpdateFinanceCategoryGroupDto,
   ) {
     return this.updateGroup.execute(request.auth.user.id, params.id, dto);
+  }
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({
+    summary:
+      'Delete an owned personal finance record with association safeguards',
+  })
+  @ApiNoContentResponse({ description: 'Record deleted atomically.' })
+  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
+    return this.deleteGroup.execute(request.auth.user.id, params.id);
   }
 }

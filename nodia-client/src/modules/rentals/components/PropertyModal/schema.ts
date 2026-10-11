@@ -41,25 +41,7 @@ const integerInput = (min: number, max: number) =>
 export const propertySchema = z.object({
   name: requiredText,
   location: nullableText(500),
-  timezone: z
-    .string()
-    .trim()
-    .refine((value) => {
-      if (!value || (!value.includes("/") && value !== "UTC")) return false;
-      try {
-        new Intl.DateTimeFormat("en", { timeZone: value }).format();
-        return true;
-      } catch {
-        return false;
-      }
-    }, "rental:validation_timezone"),
   max_guests: integerInput(1, 1000),
-  check_in_time: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "rental:validation_time"),
-  check_out_time: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "rental:validation_time"),
   default_nightly_rate: z
     .union([z.literal(""), moneyInput])
     .transform((value) => value || null),

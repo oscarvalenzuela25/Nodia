@@ -97,11 +97,11 @@ const createTestQueryClient = () =>
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = createTestQueryClient();
   return render(
-    <MemoryRouter initialEntries={["/business/biz-123"]}>
+    <MemoryRouter initialEntries={["/tools/business/biz-123"]}>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route path="/business/:id" element={ui} />
-          <Route path="/business" element={<div>Business List Page</div>} />
+          <Route path="/tools/business/:id" element={ui} />
+          <Route path="/tools/business" element={<div>Business List Page</div>} />
         </Routes>
       </QueryClientProvider>
     </MemoryRouter>

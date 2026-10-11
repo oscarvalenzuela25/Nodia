@@ -13,6 +13,6 @@ export const ModalActions = styled(Box)(({ theme }) => ({
   justifyContent: "flex-end",
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
-    "& button": { width: "100%" },
+    "& button": { width: "100%", minHeight: 44 },
   },
 }));

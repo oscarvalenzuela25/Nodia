@@ -1,4 +1,5 @@
 import type { ModuleContext, ModuleGroupContext, TranslateItem } from "./types";
+import { BUSINESS_ROUTE } from "../../modules/business/constants/routes";
 
 const normalizeModulePath = (path: string) => {
   const pathname = path.trim().split(/[?#]/, 1)[0];
@@ -25,7 +26,7 @@ export const getModulePath = (module: ModuleContext): string => {
   if (normalized === "roles") return "/settings/roles";
   if (normalized === "actions" || normalized === "acciones") return "/settings/actions";
   if (normalized === "modules" || normalized === "modulos") return "/settings/modules";
-  if (normalized === "business" || normalized === "businesses" || normalized === "negocios") return "/business";
+  if (normalized === "business" || normalized === "businesses" || normalized === "negocios") return BUSINESS_ROUTE;
   if (
     normalized === "ai-providers" ||
     normalized === "ai_providers" ||

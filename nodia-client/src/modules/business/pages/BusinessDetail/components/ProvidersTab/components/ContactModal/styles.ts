@@ -33,5 +33,5 @@ export const ContactActions = styled(Box)(({ theme }) => ({
   justifyContent: "flex-end",
   width: "100%",
   gap: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: { "& > button": { flex: 1 } },
+  [theme.breakpoints.down("sm")]: { flexDirection: "column-reverse", "& > button": { width: "100%", minHeight: 44 } },
 }));

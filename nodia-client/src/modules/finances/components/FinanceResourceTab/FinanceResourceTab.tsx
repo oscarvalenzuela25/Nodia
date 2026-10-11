@@ -4,6 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Alert, Button, Chip, Typography } from "@mui/material";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import FinanceTable from "../FinanceTable";
+import FinanceRecordCard from "../FinanceRecordCard";
+import type { FinanceCardField } from "../FinanceRecordCard";
+import FinanceDeleteDialog from "../FinanceDeleteDialog";
 import type { FinanceColumn } from "../FinanceTable";
 import FinanceFilters from "../FinanceFilters";
 import FinanceCatalogModal from "../FinanceCatalogModal";
@@ -49,6 +52,7 @@ type ResourceViewProps<R extends FinanceResource> = Omit<
 > & {
   resource: R;
   columns: FinanceColumn<FinanceRecordMap[R]>[];
+  mobileFields: (record: FinanceRecordMap[R]) => FinanceCardField[];
   renderModal: (props: ModalProps<FinanceRecordMap[R]>) => ReactNode;
   canPay?: (record: FinanceRecordMap[R]) => boolean;
 };
@@ -61,6 +65,7 @@ function ResourceView<R extends FinanceResource>({
   titleKey,
   limit = 10,
   columns,
+  mobileFields,
   renderModal,
   canPay,
 }: ResourceViewProps<R>) {
@@ -86,6 +91,7 @@ function ResourceView<R extends FinanceResource>({
   const globalBusy = useFinanceBusy();
   const [modal, setModal] = useState<{ id?: string } | null>(null);
   const [toToggle, setToToggle] = useState<FinanceRecordMap[R] | null>(null);
+  const [toDelete, setToDelete] = useState<FinanceRecordMap[R] | null>(null);
   const [payment, setPayment] = useState<FinanceObligation | null>(null);
   const selected = useFinanceRecord(resource, modal?.id, Boolean(modal?.id));
   const submittingToggle = useRef(false);
@@ -201,6 +207,17 @@ function ResourceView<R extends FinanceResource>({
         onCreate={() => setModal({})}
         onEdit={(record) => setModal({ id: record.id })}
         onToggle={setToToggle}
+        onDelete={setToDelete}
+        renderMobileRow={(record, actions) => (
+          <FinanceRecordCard
+            record={record}
+            actions={actions}
+            fields={[
+              { key: "id", label: t("finance:id"), value: record.id },
+              ...mobileFields(record),
+            ]}
+          />
+        )}
         onPayment={
           resource === "obligations"
             ? (record) => setPayment(record as FinanceObligation)
@@ -233,6 +250,14 @@ function ResourceView<R extends FinanceResource>({
           open
           onClose={() => setPayment(null)}
           obligation={payment}
+        />
+      )}
+      {toDelete && (
+        <FinanceDeleteDialog
+          resource={resource}
+          record={toDelete}
+          onClose={() => setToDelete(null)}
+          onDeleted={() => setToDelete(null)}
         />
       )}
       <ConfirmDialog
@@ -302,6 +327,14 @@ const FinanceResourceTab = (props: FinanceResourceTabProps) => {
         <ResourceView
           {...props}
           resource="categories"
+          mobileFields={(row) => [
+            { key: "key", label: t("finance:key"), value: row.key },
+            {
+              key: "created",
+              label: t("finance:created_at"),
+              value: formatFinanceDate(row.created_at, i18n.language),
+            },
+          ]}
           columns={[nameColumn, keyColumn, activeColumn, createdColumn]}
           renderModal={(modalProps) => <FinanceCatalogModal {...modalProps} />}
         />
@@ -311,6 +344,19 @@ const FinanceResourceTab = (props: FinanceResourceTabProps) => {
         <ResourceView
           {...props}
           resource="category-groups"
+          mobileFields={(row) => [
+            { key: "key", label: t("finance:key"), value: row.key },
+            {
+              key: "count",
+              label: t("finance:category_count"),
+              value: row.category_count,
+            },
+            {
+              key: "created",
+              label: t("finance:created_at"),
+              value: formatFinanceDate(row.created_at, i18n.language),
+            },
+          ]}
           columns={[
             nameColumn,
             keyColumn,
@@ -331,6 +377,39 @@ const FinanceResourceTab = (props: FinanceResourceTabProps) => {
         <ResourceView
           {...props}
           resource="movements"
+          mobileFields={(row) => [
+            {
+              key: "amount",
+              fullWidth: true,
+              label: t("finance:amount"),
+              value: formatFinanceAmount(row.amount, i18n.language),
+            },
+            {
+              key: "type",
+              label: t("finance:type"),
+              value: t(`finance:${row.type}`),
+            },
+            {
+              key: "status",
+              label: t("finance:status"),
+              value: t(`finance:${row.status}`),
+            },
+            {
+              key: "category",
+              label: t("finance:category"),
+              value: row.category.name,
+            },
+            {
+              key: "obligation",
+              label: t("finance:obligation"),
+              value: row.obligation?.name ?? t("finance:unlinked"),
+            },
+            {
+              key: "created",
+              label: t("finance:created_at"),
+              value: formatFinanceDate(row.created_at, i18n.language),
+            },
+          ]}
           columns={[
             nameColumn,
             {
@@ -378,6 +457,50 @@ const FinanceResourceTab = (props: FinanceResourceTabProps) => {
         <ResourceView
           {...props}
           resource="obligations"
+          mobileFields={(row) => [
+            { key: "key", label: t("finance:key"), value: row.key },
+            {
+              key: "type",
+              label: t("finance:type"),
+              value: t(`finance:${row.type}`),
+            },
+            {
+              key: "amount",
+              fullWidth: true,
+              label: t("finance:principal"),
+              value: formatFinanceAmount(row.amount, i18n.language),
+            },
+            {
+              key: "paid",
+              fullWidth: true,
+              label: t("finance:paid_amount"),
+              value: formatFinanceAmount(row.paid_amount, i18n.language),
+            },
+            {
+              key: "remaining",
+              fullWidth: true,
+              label: t("finance:remaining_amount"),
+              value:
+                row.remaining_amount === null
+                  ? t("finance:void_obligation")
+                  : formatFinanceAmount(row.remaining_amount, i18n.language),
+            },
+            {
+              key: "created",
+              label: t("finance:created_at"),
+              value: formatFinanceDate(row.created_at, i18n.language),
+            },
+            ...(row.description
+              ? [
+                  {
+                    key: "description",
+                    fullWidth: true,
+                    label: t("finance:description"),
+                    value: row.description,
+                  },
+                ]
+              : []),
+          ]}
           columns={[
             nameColumn,
             {

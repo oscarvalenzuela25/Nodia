@@ -22,13 +22,13 @@ vi.mock("../../modules/business/pages/Business", () => ({
 }));
 vi.mock("../../modules/generalSettings/pages/Users", async () => {
   await usersImport.promise;
-  return { default: () => <><h1>Users page</h1><Link to="/business">Go back</Link></> };
+  return { default: () => <><h1>Users page</h1><Link to="/tools/business">Go back</Link></> };
 });
 
 describe("production lazy route navigation", () => {
   it("shows loading immediately while the new chunk waits and keeps the navigation shell", async () => {
     const user = userEvent.setup();
-    const testRouter = createMemoryRouter(router.routes, { initialEntries: ["/business"] });
+    const testRouter = createMemoryRouter(router.routes, { initialEntries: ["/tools/business"] });
     render(<RouterProvider router={testRouter} />);
     await screen.findByRole("heading", { name: "Businesses page" });
     await user.click(screen.getByRole("link", { name: "Open users" }));

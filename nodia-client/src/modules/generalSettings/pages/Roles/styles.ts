@@ -1,5 +1,10 @@
 import { styled, alpha } from "@mui/material/styles";
-import { Box, Typography, Chip } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Chip,
+  TablePagination,
+} from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
@@ -39,6 +44,9 @@ export const FilterRow = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  [theme.breakpoints.down("sm")]: {
+    "& > button": { width: "100%", minHeight: 44 },
+  },
 }));
 
 export const ActiveFilters = styled(Box)(({ theme }) => ({
@@ -63,7 +71,9 @@ export const TableTopBar = styled(Box)(({ theme }) => ({
     },
     "& button": {
       width: "100%",
+      minHeight: 44,
     },
+    "& .MuiInputBase-root": { minHeight: 44 },
   },
 }));
 
@@ -127,14 +137,16 @@ export const ActionTag = styled(Chip, {
   if (category === "users") {
     mainColor = theme.palette.secondary.main;
     bg = isDark ? alpha(mainColor, 0.16) : alpha(mainColor, 0.08);
-    text = isDark ? theme.palette.secondary.light : theme.palette.secondary.dark;
+    text = isDark
+      ? theme.palette.secondary.light
+      : theme.palette.secondary.dark;
     border = alpha(mainColor, 0.25);
   } else if (category === "settings") {
     mainColor = theme.palette.tertiary?.main ?? theme.palette.warning.main;
     bg = isDark ? alpha(mainColor, 0.16) : alpha(mainColor, 0.08);
     text = isDark
-      ? theme.palette.tertiary?.light ?? theme.palette.warning.light
-      : theme.palette.tertiary?.dark ?? theme.palette.warning.dark;
+      ? (theme.palette.tertiary?.light ?? theme.palette.warning.light)
+      : (theme.palette.tertiary?.dark ?? theme.palette.warning.dark);
     border = alpha(mainColor, 0.25);
   } else if (category === "audit" || category === "reports") {
     mainColor = theme.palette.info.main;
@@ -182,3 +194,23 @@ export const MoreActionsChip = styled(Chip)(({ theme }) => {
     },
   };
 });
+
+export const MobileList = styled(Box)(({ theme }) => ({
+  "& dl > div:last-of-type": { gridColumn: "1 / -1" },
+  display: "grid",
+  gap: theme.spacing(2),
+  padding: theme.spacing(2),
+  minWidth: 0,
+}));
+export const AssignmentList = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: theme.spacing(0.5),
+  "& .MuiChip-root": { maxWidth: "100%", height: "auto", minHeight: 24 },
+  "& .MuiChip-label": {
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+    paddingBlock: theme.spacing(0.5),
+  },
+}));
+export const ListPagination = TablePagination;

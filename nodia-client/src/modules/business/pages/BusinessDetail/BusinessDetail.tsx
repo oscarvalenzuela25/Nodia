@@ -1,4 +1,6 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import type { FC, SyntheticEvent } from "react";
+import { BUSINESS_ROUTE } from "../../constants/routes";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -33,7 +35,7 @@ import {
   useInvoices,
 } from "../../infrastructure/useServices";
 import type { BusinessFormData } from "../../infrastructure/types";
-import { getTranslatedName } from "../../../../store/generalSettings/helpers";
+import { getBusinessDescription } from "../../infrastructure/businessDescription";
 
 import OverviewTab from "./components/OverviewTab";
 import ProductsTab from "./components/ProductsTab";
@@ -60,8 +62,8 @@ const BusinessDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { t, i18n } = useTranslation(["business", "core"]);
-  const lang = i18n.language || "es";
+  const { t } = useTranslation(["business", "core"]);
+  const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
 
   const [activeTab, setActiveTab] = useState(0);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -113,7 +115,7 @@ const BusinessDetail: FC = () => {
       <DetailContainer>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/business")}
+          onClick={() => navigate(BUSINESS_ROUTE)}
           sx={{ alignSelf: "flex-start", borderRadius: 2 }}
         >
           {t("business:back_to_list")}
@@ -132,9 +134,7 @@ const BusinessDetail: FC = () => {
     );
   }
 
-  const descriptionText = business
-    ? getTranslatedName(business.translates, "", lang)
-    : "";
+  const descriptionText = getBusinessDescription(business);
 
   return (
     <DetailContainer>
@@ -148,7 +148,7 @@ const BusinessDetail: FC = () => {
       {/* Global Breadcrumb */}
       <Breadcrumb
         items={[
-          { label: t("business:title"), to: "/business" },
+          { label: t("business:title"), to: BUSINESS_ROUTE },
           { label: business?.name ?? t("business:detail_title") },
         ]}
       />
@@ -162,7 +162,7 @@ const BusinessDetail: FC = () => {
                 <StorefrontOutlinedIcon sx={{ fontSize: 32 }} />
               </BusinessAvatarBox>
 
-              <Box sx={{ flex: 1 }}>
+              <Box sx={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
                   <Typography variant="h5" sx={{ fontWeight: 700, color: "text.primary" }}>
                     {business?.name ?? "..."}
@@ -231,6 +231,7 @@ const BusinessDetail: FC = () => {
           {/* Embedded Navigation Tabs */}
           <TabsWrapper>
             <StyledTabs
+              orientation={mobile ? "vertical" : "horizontal"}
               value={activeTab}
               onChange={handleTabChange}
               variant="scrollable"
@@ -238,12 +239,14 @@ const BusinessDetail: FC = () => {
             >
               <StyledTab
                 icon={<DashboardOutlinedIcon sx={{ fontSize: 18 }} />}
+                disabled={isBusy}
                 iconPosition="start"
                 label={t("business:tab_overview")}
                 data-testid="tab-overview"
               />
               <StyledTab
                 icon={<StorefrontOutlinedIcon sx={{ fontSize: 18 }} />}
+                disabled={isBusy}
                 iconPosition="start"
                 label={
                   <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
@@ -255,6 +258,7 @@ const BusinessDetail: FC = () => {
               />
               <StyledTab
                 icon={<Inventory2OutlinedIcon sx={{ fontSize: 18 }} />}
+                disabled={isBusy}
                 iconPosition="start"
                 label={
                   <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
@@ -266,6 +270,7 @@ const BusinessDetail: FC = () => {
               />
               <StyledTab
                 icon={<ReceiptLongOutlinedIcon sx={{ fontSize: 18 }} />}
+                disabled={isBusy}
                 iconPosition="start"
                 label={
                   <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
@@ -277,6 +282,7 @@ const BusinessDetail: FC = () => {
               />
               <StyledTab
                 icon={<PeopleOutlinedIcon sx={{ fontSize: 18 }} />}
+                disabled={isBusy}
                 iconPosition="start"
                 label={
                   <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>

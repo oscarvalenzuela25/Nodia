@@ -16,6 +16,8 @@ import {
   createModuleGroup,
   getModuleGroups,
   updateModuleGroup,
+  deleteModule,
+  deleteModuleGroup,
 } from "./services";
 import type {
   CreateModulePayload,
@@ -41,7 +43,7 @@ export const moduleGroupKeys = {
 
 export const useModules = (
   params?: GetModulesParams,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) => {
   const { isSessionActive } = useAuth();
   return useQuery({
@@ -54,7 +56,7 @@ export const useModules = (
 
 export const useModuleGroups = (
   params?: GetModuleGroupsParams,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) => {
   const { isSessionActive } = useAuth();
   return useQuery({
@@ -66,9 +68,12 @@ export const useModuleGroups = (
 };
 
 const extractErrorMessage = (
-  error: AxiosError<{ message?: string }> | Error
+  error: AxiosError<{ message?: string }> | Error,
 ): string => {
-  if ("response" in error && typeof error.response?.data?.message === "string") {
+  if (
+    "response" in error &&
+    typeof error.response?.data?.message === "string"
+  ) {
     return error.response.data.message;
   }
   return error.message;
@@ -182,6 +187,70 @@ export const useUpdateModuleGroup = () => {
         description:
           backendMessage ||
           i18n.t("modules:groups.notifications.updated_error"),
+      });
+    },
+  });
+};
+
+export const deleteErrorMessage = (
+  error: AxiosError<{ message?: string | string[] }> | Error,
+): string => {
+  const message =
+    "response" in error ? error.response?.data?.message : undefined;
+  const messages = (Array.isArray(message) ? message : [message]).filter(
+    (value): value is string =>
+      typeof value === "string" && Boolean(value.trim()),
+  );
+  return messages.length
+    ? messages
+        .map((value) => (i18n.exists(value) ? i18n.t(value) : value))
+        .join(". ")
+    : i18n.t("core:server_error_toast");
+};
+
+export const useDeleteModule = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteModule(id),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: moduleKeys.all }),
+        queryClient.invalidateQueries({ queryKey: ["users"] }),
+        queryClient.invalidateQueries({ queryKey: authorizationKeys.all }),
+      ]);
+      sileo.success({
+        title: i18n.t("modules:notifications.success_title"),
+        description: i18n.t("modules:notifications.deleted_success"),
+      });
+    },
+    onError: (error: AxiosError<{ message?: string }> | Error) => {
+      sileo.error({
+        title: i18n.t("modules:notifications.error_title"),
+        description: deleteErrorMessage(error),
+      });
+    },
+  });
+};
+
+export const useDeleteModuleGroup = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteModuleGroup(id),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: moduleGroupKeys.all }),
+        queryClient.invalidateQueries({ queryKey: moduleKeys.all }),
+        queryClient.invalidateQueries({ queryKey: authorizationKeys.all }),
+      ]);
+      sileo.success({
+        title: i18n.t("modules:notifications.success_title"),
+        description: i18n.t("modules:groups.notifications.deleted_success"),
+      });
+    },
+    onError: (error: AxiosError<{ message?: string }> | Error) => {
+      sileo.error({
+        title: i18n.t("modules:notifications.error_title"),
+        description: deleteErrorMessage(error),
       });
     },
   });

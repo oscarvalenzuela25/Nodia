@@ -128,7 +128,7 @@ describe("GuardStrict", () => {
         {
           module_group_key: "negocios",
           translates: [],
-          modules: [{ key: "business", link: "/business", translates: [] }],
+          modules: [{ key: "business", link: "/tools/business", translates: [] }],
         },
         {
           module_group_key: "settings",
@@ -139,10 +139,10 @@ describe("GuardStrict", () => {
     };
 
     const businessRouter = createMemoryRouter([
-      { path: "/business", element: <GuardStrict modulePath="/business"><p>Business View</p></GuardStrict> },
+      { path: "/tools/business", element: <GuardStrict modulePath="/tools/business"><p>Business View</p></GuardStrict> },
       { path: "/login", element: <p>Login page</p> },
       { path: "/404", element: <p>No access</p> },
-    ], { initialEntries: ["/business"] });
+    ], { initialEntries: ["/tools/business"] });
 
     mainInstance.defaults.adapter = async (config) => response(config, customContext);
     render(

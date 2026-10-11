@@ -1,0 +1,457 @@
+{
+  "scope": "Two user-provided authenticated Home audits; one run per profile, affected by extensions. No tokens, cookie values or complete report screenshots retained in this summary.",
+  "runs": [
+    {
+      "providedProfile": "mobile",
+      "sourceSha256": "21256E8D87D881575E722363D2FAAB4A54DCBA9DE57F62D957395A636A122271",
+      "date": "2026-10-10T22:13:35.845Z",
+      "lighthouseVersion": "13.4.1",
+      "url": "http://localhost:5174/",
+      "formFactor": "mobile",
+      "disableStorageReset": true,
+      "throttlingMethod": "simulate",
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "screenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": true
+      },
+      "observedScreenshotDimensions": {
+        "width": 412,
+        "height": 2089
+      },
+      "warnings": [
+        "Chrome extensions negatively affected this page's load performance. Try auditing the page in incognito mode or from a Chrome profile without extensions."
+      ],
+      "runtimeError": null,
+      "categories": [
+        {
+          "id": "performance",
+          "score": 64.0
+        },
+        {
+          "id": "accessibility",
+          "score": 100
+        },
+        {
+          "id": "best-practices",
+          "score": 73.0
+        },
+        {
+          "id": "seo",
+          "score": 82.0
+        },
+        {
+          "id": "agentic-browsing",
+          "score": 66.0
+        }
+      ],
+      "metrics": {
+        "fcpMs": 3805.2415999999994,
+        "lcpMs": 5557.675999999999,
+        "tbtMs": 277,
+        "cls": 0.06150512936435221,
+        "totalTransferBytes": 605139
+      },
+      "authenticationRequests": [
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200,
+          "startMs": 235.81599999964237,
+          "endMs": 251.472999997437,
+          "durationMs": 15.656999997794628
+        },
+        {
+          "path": "/api/v1/authorization/context",
+          "status": 200,
+          "startMs": 555.1339999958873,
+          "endMs": 568.7990000024438,
+          "durationMs": 13.665000006556511
+        }
+      ],
+      "unusedJs": {
+        "estimatedTotalBytes": 1144077,
+        "extensionEstimatedBytes": 939079.0,
+        "appEstimatedBytes": 119660.0,
+        "googleEstimatedBytes": 85338.0,
+        "appAndGoogle": [
+          {
+            "path": "/gsi/client",
+            "estimatedBytes": 85338,
+            "totalBytes": 102057
+          },
+          {
+            "path": "/assets/index-BkDIvytn.js",
+            "estimatedBytes": 45434,
+            "totalBytes": 128931
+          },
+          {
+            "path": "/assets/api-Cut6ygnY.js",
+            "estimatedBytes": 40533,
+            "totalBytes": 152547
+          },
+          {
+            "path": "/assets/BaseModal-C2miCD_G.js",
+            "estimatedBytes": 33693,
+            "totalBytes": 42159
+          }
+        ]
+      },
+      "resources": [
+        {
+          "resourceType": "total",
+          "label": "Total",
+          "requestCount": 29,
+          "transferSize": 605139
+        },
+        {
+          "resourceType": "script",
+          "label": "Script",
+          "requestCount": 19,
+          "transferSize": 544374
+        },
+        {
+          "resourceType": "font",
+          "label": "Font",
+          "requestCount": 3,
+          "transferSize": 43974
+        },
+        {
+          "resourceType": "other",
+          "label": "Other",
+          "requestCount": 3,
+          "transferSize": 10347
+        },
+        {
+          "resourceType": "stylesheet",
+          "label": "Stylesheet",
+          "requestCount": 2,
+          "transferSize": 5247
+        },
+        {
+          "resourceType": "document",
+          "label": "Document",
+          "requestCount": 1,
+          "transferSize": 1197
+        },
+        {
+          "resourceType": "image",
+          "label": "Image",
+          "requestCount": 1,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "media",
+          "label": "Media",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "third-party",
+          "label": "Third-party",
+          "requestCount": 3,
+          "transferSize": 102854
+        }
+      ],
+      "consoleExceptions": [
+        {
+          "message": "Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received",
+          "count": 6
+        }
+      ],
+      "thirdPartyCookieOrigins": [
+        {
+          "origin": "accounts.google.com",
+          "count": 35
+        }
+      ],
+      "failedSemantics": [
+        {
+          "audit": "list",
+          "score": null,
+          "nodes": [
+            {
+              "selector": null,
+              "label": null,
+              "explanation": null
+            }
+          ]
+        },
+        {
+          "audit": "label-content-name-mismatch",
+          "score": 0,
+          "nodes": [
+            {
+              "selector": "header.css-htq39s > div.MuiStack-root > div.css-k4qwh2 > button.MuiButtonBase-root",
+              "label": "ES",
+              "explanation": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "layoutShifts": [
+        {
+          "selector": "div#root > div.css-1d76jkc > main.css-vkrij8 > div.css-1xp0716",
+          "score": 0.05704170351483547
+        },
+        {
+          "selector": "section",
+          "score": 0.003785887304597798
+        },
+        {
+          "selector": "section > button > div",
+          "score": 0.0002956726370851052
+        },
+        {
+          "selector": "section > button > div",
+          "score": 0.000154596356457471
+        },
+        {
+          "selector": "section > button > div",
+          "score": 0.0001406234124202162
+        },
+        {
+          "selector": "section > button > div",
+          "score": 8.664613895614451E-05
+        }
+      ]
+    },
+    {
+      "providedProfile": "desktop",
+      "sourceSha256": "7A2F3BA200D9DC220DED3C64CF0041067C8E275EA5ADFAB0331042891F24406D",
+      "date": "2026-10-10T22:15:02.934Z",
+      "lighthouseVersion": "13.4.1",
+      "url": "http://localhost:5174/",
+      "formFactor": "desktop",
+      "disableStorageReset": true,
+      "throttlingMethod": "simulate",
+      "throttling": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "screenEmulation": {
+        "mobile": true,
+        "width": 412,
+        "height": 823,
+        "deviceScaleFactor": 1.75,
+        "disabled": true
+      },
+      "observedScreenshotDimensions": {
+        "width": 1373,
+        "height": 1229
+      },
+      "warnings": [
+        "Chrome extensions negatively affected this page's load performance. Try auditing the page in incognito mode or from a Chrome profile without extensions."
+      ],
+      "runtimeError": null,
+      "categories": [
+        {
+          "id": "performance",
+          "score": 97.0
+        },
+        {
+          "id": "accessibility",
+          "score": 96.0
+        },
+        {
+          "id": "best-practices",
+          "score": 73.0
+        },
+        {
+          "id": "seo",
+          "score": 82.0
+        },
+        {
+          "id": "agentic-browsing",
+          "score": 67.0
+        }
+      ],
+      "metrics": {
+        "fcpMs": 738.6619999999999,
+        "lcpMs": 1195.3722500000001,
+        "tbtMs": 0,
+        "cls": 0.00960043166398414,
+        "totalTransferBytes": 662420
+      },
+      "authenticationRequests": [
+        {
+          "path": "/api/v1/auth/me",
+          "status": 200,
+          "startMs": 231.91999999433756,
+          "endMs": 254.79399999976158,
+          "durationMs": 22.874000005424023
+        },
+        {
+          "path": "/api/v1/authorization/context",
+          "status": 200,
+          "startMs": 860.4059999957681,
+          "endMs": 898.0259999930859,
+          "durationMs": 37.61999999731779
+        }
+      ],
+      "unusedJs": {
+        "estimatedTotalBytes": 1141671,
+        "extensionEstimatedBytes": 938830.0,
+        "appEstimatedBytes": 117503.0,
+        "googleEstimatedBytes": 85338.0,
+        "appAndGoogle": [
+          {
+            "path": "/gsi/client",
+            "estimatedBytes": 85338,
+            "totalBytes": 102057
+          },
+          {
+            "path": "/assets/index-BkDIvytn.js",
+            "estimatedBytes": 44429,
+            "totalBytes": 128931
+          },
+          {
+            "path": "/assets/api-Cut6ygnY.js",
+            "estimatedBytes": 40500,
+            "totalBytes": 152547
+          },
+          {
+            "path": "/assets/BaseModal-C2miCD_G.js",
+            "estimatedBytes": 32574,
+            "totalBytes": 42159
+          }
+        ]
+      },
+      "resources": [
+        {
+          "resourceType": "total",
+          "label": "Total",
+          "requestCount": 30,
+          "transferSize": 662420
+        },
+        {
+          "resourceType": "script",
+          "label": "Script",
+          "requestCount": 19,
+          "transferSize": 544374
+        },
+        {
+          "resourceType": "font",
+          "label": "Font",
+          "requestCount": 4,
+          "transferSize": 101254
+        },
+        {
+          "resourceType": "other",
+          "label": "Other",
+          "requestCount": 3,
+          "transferSize": 10348
+        },
+        {
+          "resourceType": "stylesheet",
+          "label": "Stylesheet",
+          "requestCount": 2,
+          "transferSize": 5247
+        },
+        {
+          "resourceType": "document",
+          "label": "Document",
+          "requestCount": 1,
+          "transferSize": 1197
+        },
+        {
+          "resourceType": "image",
+          "label": "Image",
+          "requestCount": 1,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "media",
+          "label": "Media",
+          "requestCount": 0,
+          "transferSize": 0
+        },
+        {
+          "resourceType": "third-party",
+          "label": "Third-party",
+          "requestCount": 3,
+          "transferSize": 102854
+        }
+      ],
+      "consoleExceptions": [
+        {
+          "message": "Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received",
+          "count": 7
+        }
+      ],
+      "thirdPartyCookieOrigins": [
+        {
+          "origin": "accounts.google.com",
+          "count": 35
+        }
+      ],
+      "failedSemantics": [
+        {
+          "audit": "list",
+          "score": 0,
+          "nodes": [
+            {
+              "selector": "div.MuiDrawer-root > div.MuiPaper-root > div.MuiBox-root > ul.MuiList-root",
+              "label": "Inicio\nHerramientas\nFinanzas Personales\nMis Negocios\nReservas\nAjustes Generales…",
+              "explanation": "Fix all of the following:\n  List element has direct children that are not allowed: div"
+            }
+          ]
+        },
+        {
+          "audit": "label-content-name-mismatch",
+          "score": 0,
+          "nodes": [
+            {
+              "selector": "header.css-htq39s > div.MuiStack-root > div.css-k4qwh2 > button.MuiButtonBase-root",
+              "label": "ES",
+              "explanation": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "layoutShifts": [
+        {
+          "selector": "div.MuiBox-root > section.css-ux80tx > div > div",
+          "score": 0.009101850413775496
+        },
+        {
+          "selector": "section",
+          "score": 0.0002806456846320913
+        },
+        {
+          "selector": "section",
+          "score": 7.374135644409487E-05
+        },
+        {
+          "selector": "section",
+          "score": 6.910225355015651E-05
+        },
+        {
+          "selector": "section > button > div",
+          "score": 4.437301976902516E-05
+        },
+        {
+          "selector": "section > button > div",
+          "score": 1.537919318091059E-05
+        },
+        {
+          "selector": "section > button > div",
+          "score": 1.53397426323651E-05
+        }
+      ]
+    }
+  ]
+}

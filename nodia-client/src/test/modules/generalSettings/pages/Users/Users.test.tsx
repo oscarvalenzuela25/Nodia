@@ -1,7 +1,7 @@
 import useAuthStore from "../../../../../store/authStore";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import Users from "../../../../../modules/generalSettings/pages/Users/Users";
@@ -20,21 +20,21 @@ vi.mock(
     getUsers: vi.fn(),
     createUser: vi.fn(),
     updateUser: vi.fn(),
-  })
+  }),
 );
 
 vi.mock(
   "../../../../../modules/generalSettings/pages/Roles/infrastructure/services",
   () => ({
     getRoles: vi.fn(),
-  })
+  }),
 );
 
 vi.mock(
   "../../../../../modules/generalSettings/pages/Modules/infrastructure/services",
   () => ({
     getModules: vi.fn(),
-  })
+  }),
 );
 
 const mockUsers: User[] = [
@@ -132,21 +132,47 @@ const renderWithClient = (ui: ReactElement) => {
   const queryClient = createTestQueryClient();
   return {
     ...render(
-      <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
     ),
     queryClient,
   };
 };
 
 describe("Users Page", () => {
+  afterEach(() => vi.restoreAllMocks());
   beforeEach(() => {
-    useAuthStore.getState().login({ token: "test-jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test user" } });
+    useAuthStore
+      .getState()
+      .login({
+        token: "test-jwt",
+        expiresAt: Date.now() + 900_000,
+        user: { id: "42", name: "Test user" },
+      });
     vi.clearAllMocks();
     vi.mocked(rolesServices.getRoles).mockResolvedValue(mockRolesResponse);
     vi.mocked(modulesServices.getModules).mockResolvedValue({
       data: [{ id: "m1", key: "auth", is_active: true }],
       meta: { page: 1, limit: 10, total_items: 1, total_pages: 1 },
     });
+  });
+
+  it.each([["Inactivo", false], ["Todos", undefined]])("filters %s explicitly and restores active after clear", async (label, active) => {
+    const user = userEvent.setup();
+    vi.mocked(services.getUsers).mockResolvedValue(mockPaginatedResponse);
+    renderWithClient(<Users />);
+    await screen.findByText("Juan Perez");
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    await user.click(screen.getByRole("button", { name: "Estado de actividad" }));
+    await user.click(screen.getByRole("option", { name: label }));
+    await user.click(screen.getByRole("button", { name: "Filtrar" }));
+    await waitFor(() => expect(services.getUsers).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 1, q: active === undefined ? undefined : expect.objectContaining({ is_active_eq: active }) }),
+    ));
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    expect(screen.getByRole("button", { name: "Estado de actividad" })).toHaveTextContent(label);
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    expect(screen.getByRole("button", { name: "Estado de actividad" })).toHaveTextContent("Activo");
   });
 
   it("renders users table with expected columns and data from getUsers (Endpoint 1)", async () => {
@@ -173,13 +199,15 @@ describe("Users Page", () => {
       expect(screen.getByText("Maria Lopez")).toBeInTheDocument();
       expect(screen.getByText("maria@example.com")).toBeInTheDocument();
       expect(screen.getByText("Ajustes (settings)")).toBeInTheDocument();
-      expect(screen.getByText("Super Administrador (admin)")).toBeInTheDocument();
+      expect(
+        screen.getByText("Super Administrador (admin)"),
+      ).toBeInTheDocument();
     });
 
     expect(services.getUsers).toHaveBeenCalledWith({
       page: 1,
       size: 10,
-      q: undefined,
+      q: { is_active_eq: true },
     });
     expect(services.getUsers).toHaveBeenCalledWith({
       all: true,
@@ -212,7 +240,7 @@ describe("Users Page", () => {
       expect(services.getUsers).toHaveBeenCalledWith(
         expect.objectContaining({
           q: expect.objectContaining({ name_cont: "Maria" }),
-        })
+        }),
       );
     });
   });
@@ -227,10 +255,10 @@ describe("Users Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("No hay usuarios disponibles")
+        screen.getByText("No hay usuarios disponibles"),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Crear primer usuario" })
+        screen.getByRole("button", { name: "Crear primer usuario" }),
       ).toBeInTheDocument();
     });
   });
@@ -247,7 +275,7 @@ describe("Users Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Error al cargar los usuarios")
+        screen.getByText("Error al cargar los usuarios"),
       ).toBeInTheDocument();
       expect(screen.getByText("Network Error")).toBeInTheDocument();
     });
@@ -305,7 +333,7 @@ describe("Users Page", () => {
           email: "carlos@example.com",
           name: "Carlos Santana",
           is_active: true,
-        })
+        }),
       );
     });
   });
@@ -333,7 +361,7 @@ describe("Users Page", () => {
     await user.click(updateOption);
 
     expect(
-      screen.getByRole("heading", { name: "Actualizar Usuario" })
+      screen.getByRole("heading", { name: "Actualizar Usuario" }),
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("Juan Perez")).toBeInTheDocument();
 
@@ -341,7 +369,9 @@ describe("Users Page", () => {
     await user.clear(nameInput);
     await user.type(nameInput, "Juan Perez Editado");
 
-    const updateBtn = screen.getByRole("button", { name: "Actualizar Usuario" });
+    const updateBtn = screen.getByRole("button", {
+      name: "Actualizar Usuario",
+    });
     await user.click(updateBtn);
 
     await waitFor(() => {
@@ -349,7 +379,7 @@ describe("Users Page", () => {
         "123e4567-e89b-12d3-a456-426614174000",
         expect.objectContaining({
           name: "Juan Perez Editado",
-        })
+        }),
       );
     });
   });
@@ -380,10 +410,12 @@ describe("Users Page", () => {
 
     // ConfirmDialog should be open
     expect(
-      screen.getByRole("heading", { name: "¿Desactivar usuario?" })
+      screen.getByRole("heading", { name: "¿Desactivar usuario?" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/¿Está seguro de que desea desactivar al usuario Juan Perez\?/i)
+      screen.getByText(
+        /¿Está seguro de que desea desactivar al usuario Juan Perez\?/i,
+      ),
     ).toBeInTheDocument();
 
     // Confirm action
@@ -395,7 +427,7 @@ describe("Users Page", () => {
         "123e4567-e89b-12d3-a456-426614174000",
         expect.objectContaining({
           is_active: false,
-        })
+        }),
       );
     });
   });
@@ -419,7 +451,7 @@ describe("Users Page", () => {
     await user.click(deactivateOption);
 
     expect(
-      screen.getByRole("heading", { name: "¿Desactivar usuario?" })
+      screen.getByRole("heading", { name: "¿Desactivar usuario?" }),
     ).toBeInTheDocument();
 
     const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
@@ -427,7 +459,7 @@ describe("Users Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByRole("heading", { name: "¿Desactivar usuario?" })
+        screen.queryByRole("heading", { name: "¿Desactivar usuario?" }),
       ).not.toBeInTheDocument();
     });
 
@@ -482,7 +514,7 @@ describe("Users Page", () => {
     // Verify option is rendered with Translate (key)
     await waitFor(() => {
       expect(
-        screen.getAllByText("Ajustes (settings)").length
+        screen.getAllByText("Ajustes (settings)").length,
       ).toBeGreaterThanOrEqual(2);
     });
 
@@ -493,8 +525,163 @@ describe("Users Page", () => {
     // Verify role option is rendered with Translate (key)
     await waitFor(() => {
       expect(
-        screen.getAllByText("Super Administrador (admin)").length
+        screen.getAllByText("Super Administrador (admin)").length,
       ).toBeGreaterThanOrEqual(1);
     });
+  });
+  const mobile = () =>
+    vi
+      .spyOn(window, "matchMedia")
+      .mockImplementation((media) => ({
+        matches: media.includes("max-width:599.95px"),
+        media,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+
+  it("defaults to active, permits all by removing the chip, and clear restores active", async () => {
+    vi.mocked(services.getUsers).mockResolvedValue(mockPaginatedResponse);
+    const user = userEvent.setup();
+    renderWithClient(<Users />);
+    await screen.findByText("Juan Perez");
+    expect(services.getUsers).toHaveBeenCalledWith({
+      page: 1,
+      size: 10,
+      q: { is_active_eq: true },
+    });
+    await user.click(
+      screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+    );
+    await waitFor(() =>
+      expect(services.getUsers).toHaveBeenLastCalledWith({
+        page: 1,
+        size: 10,
+        q: undefined,
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: /Abrir filtros/ }));
+    await user.click(screen.getByRole("button", { name: /Limpiar filtros/ }));
+    await waitFor(() => expect(screen.getByText("Solo activos")).toBeVisible());
+  });
+
+  it("renders mobile email, assignments and exact ID and opens the existing edit form", async () => {
+    mobile();
+    vi.mocked(services.getUsers).mockResolvedValue(mockPaginatedResponse);
+    const user = userEvent.setup();
+    renderWithClient(<Users />);
+    const card = await screen.findByRole("article", { name: "Juan Perez" });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(within(card).getByText(mockUsers[0].id)).toBeVisible();
+    expect(within(card).getByText("juan@example.com")).toBeVisible();
+    expect(within(card).getByText("Super Administrador (admin)")).toBeVisible();
+    expect(within(card).getByText("Ajustes (settings)")).toBeVisible();
+    await user.click(within(card).getByRole("button", { name: "Actualizar" }));
+    expect(screen.getByRole("dialog")).toHaveTextContent("Actualizar Usuario");
+    expect(screen.getByDisplayValue("juan@example.com")).toBeVisible();
+  });
+
+  it("uses email when name is absent and represents empty assignments explicitly", async () => {
+    mobile();
+    vi.mocked(services.getUsers).mockResolvedValue({
+      ...mockPaginatedResponse,
+      data: [{ ...mockUsers[0], name: null, roles: [], modules: undefined }],
+    });
+    renderWithClient(<Users />);
+    const card = await screen.findByRole("article", {
+      name: "juan@example.com",
+    });
+    expect(within(card).getAllByText("-", { exact: true })).toHaveLength(2);
+    expect(within(card).getByText("Activo", { exact: true })).toBeVisible();
+  });
+
+  it("preserves mobile cards and disables actions during a paginated refetch", async () => {
+    mobile();
+    let resolve!: (value: PaginatedResponse<User>) => void;
+    vi.mocked(services.getUsers).mockImplementation(async (params) =>
+      params?.page === 2
+        ? new Promise((done) => {
+            resolve = done;
+          })
+        : {
+            ...mockPaginatedResponse,
+            meta: { page: 1, limit: 10, total_items: 11, total_pages: 2 },
+          },
+    );
+    const user = userEvent.setup();
+    renderWithClient(<Users />);
+    const card = await screen.findByRole("article", { name: "Juan Perez" });
+    await user.click(screen.getByRole("button", { name: "Página siguiente" }));
+    expect(card).toBeVisible();
+    expect(
+      within(card).getByRole("button", { name: "Actualizar" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("textbox", { name: "Buscar por nombre..." }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+    ).toBeDisabled();
+    await act(async () =>
+      resolve({
+        ...mockPaginatedResponse,
+        data: [mockUsers[1]],
+        meta: { page: 2, limit: 10, total_items: 11, total_pages: 2 },
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("article", { name: "Juan Perez" }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(screen.getByRole("article", { name: "Maria Lopez" })).toBeVisible();
+  });
+
+  it("keeps the mobile confirmation after a rejected state change", async () => {
+    mobile();
+    vi.mocked(services.getUsers).mockResolvedValue(mockPaginatedResponse);
+    vi.mocked(services.updateUser).mockRejectedValueOnce(
+      new Error("Synthetic update failure"),
+    );
+    const user = userEvent.setup();
+    renderWithClient(<Users />);
+    const card = await screen.findByRole("article", { name: "Juan Perez" });
+    await user.click(
+      within(card).getByRole("button", { name: "Acciones de Juan Perez" }),
+    );
+    await user.click(screen.getByRole("menuitem", { name: "Desactivar" }));
+    const dialog = screen.getByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() =>
+      expect(services.updateUser).toHaveBeenCalledWith(mockUsers[0].id, {
+        is_active: false,
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole("button", { name: "Confirmar" }),
+      ).toBeEnabled(),
+    );
+    expect(dialog).toHaveTextContent("Juan Perez");
+    expect(
+      screen.getByRole("heading", { name: "¿Desactivar usuario?" }),
+    ).toBeVisible();
+  });
+
+  it("does not present a failed initial mobile query as an empty success", async () => {
+    mobile();
+    vi.mocked(services.getUsers).mockRejectedValue(
+      new Error("Synthetic outage"),
+    );
+    renderWithClient(<Users />);
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent("Synthetic outage"),
+    );
+    expect(
+      screen.queryByText("No hay usuarios disponibles"),
+    ).not.toBeInTheDocument();
   });
 });

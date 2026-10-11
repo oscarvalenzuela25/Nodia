@@ -1,3 +1,4 @@
+import BusinessWorkflow from "../../../../../../components/BusinessWorkflow";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -260,9 +261,9 @@ export const ProviderBulkImport: FC<Props> = ({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <BusinessWorkflow>
       {/* Header with back button & Download template */}
-      <Box
+      <Box data-business-toolbar
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -343,7 +344,7 @@ export const ProviderBulkImport: FC<Props> = ({
       {/* Provisional Table */}
       {rows.length > 0 && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box
+          <Box data-business-toolbar
             sx={{
               display: "flex",
               justifyContent: "space-between",
@@ -792,6 +793,6 @@ export const ProviderBulkImport: FC<Props> = ({
           </Grid>
         </FormContainer>
       </BaseModal>
-    </Box>
+    </BusinessWorkflow>
   );
 };

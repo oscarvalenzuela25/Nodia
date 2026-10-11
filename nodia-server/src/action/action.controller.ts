@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Patch, Body, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Patch,
+  Body,
+  Param,
+  Delete,
+  Query,
+  HttpCode,
+} from '@nestjs/common';
 import { ActionService } from './action.service.js';
 import { CreateActionDto } from './dto/create-action.dto.js';
 import { UpdateActionDto } from './dto/update-action.dto.js';
@@ -6,6 +17,8 @@ import { GetActionsDto } from './dto/get-actions.dto.js';
 import { GetAllActionsUseCase } from './use-case/get-all-actions.use-case.js';
 import { CreateActionUseCase } from './use-case/create-action.use-case.js';
 import { UpdateActionUseCase } from './use-case/update-action.use-case.js';
+import { DeleteActionUseCase } from './use-case/delete-action.use-case.js';
+import { ActionIdDto } from './dto/action-id.dto.js';
 
 @Controller(['action', 'actions'])
 export class ActionController {
@@ -14,6 +27,7 @@ export class ActionController {
     private readonly getAllActionsUseCase: GetAllActionsUseCase,
     private readonly createActionUseCase: CreateActionUseCase,
     private readonly updateActionUseCase: UpdateActionUseCase,
+    private readonly deleteActionUseCase: DeleteActionUseCase,
   ) {}
 
   @Post()
@@ -37,12 +51,16 @@ export class ActionController {
   }
 
   @Patch(':id')
-  updatePatch(@Param('id') id: string, @Body() updateActionDto: UpdateActionDto) {
+  updatePatch(
+    @Param('id') id: string,
+    @Body() updateActionDto: UpdateActionDto,
+  ) {
     return this.updateActionUseCase.execute(id, updateActionDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.actionService.remove(+id);
+  @HttpCode(204)
+  remove(@Param() { id }: ActionIdDto) {
+    return this.deleteActionUseCase.execute(id);
   }
 }

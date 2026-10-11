@@ -50,7 +50,8 @@
     "actions": "Acciones"
   },
   "actions_menu": {
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "delete": "Eliminar"
   },
   "filter_chips": {
     "key": "Identificador: {{value}}",
@@ -90,15 +91,22 @@
       "created_success": "Grupo de módulos creado correctamente",
       "created_error": "No se pudo crear el grupo de módulos",
       "updated_success": "Grupo de módulos actualizado correctamente",
-      "updated_error": "No se pudo actualizar el grupo de módulos"
-    }
+      "updated_error": "No se pudo actualizar el grupo de módulos",
+      "deleted_success": "Grupo de módulos eliminado correctamente"
+    },
+    "status_filter": "Estado de los grupos de módulos",
+    "confirm_delete_title": "¿Eliminar grupo de módulos?",
+    "confirm_delete_message": "¿Está seguro de que desea eliminar el grupo «{{name}}»? Esta acción es permanente. Solo puede eliminarse si no tiene módulos asociados.",
+    "not_found": "El grupo de módulos ya no existe.",
+    "delete_has_modules": "No se puede eliminar el grupo porque tiene módulos asociados, incluidos los inactivos."
   },
   "views": {
     "split": "Vista Conjunta",
     "modules": "Solo Módulos",
     "groups": "Solo Grupos",
-    "collapse_groups": "Colapsar tabla de grupos",
-    "expand_groups": "Expandir tabla de grupos"
+    "collapse_groups": "Colapsar grupos",
+    "expand_groups": "Expandir grupos",
+    "label": "Vista de módulos"
   },
   "module_names": {
     "general_settings": "Ajustes Generales",
@@ -155,6 +163,25 @@
     "updated_success": "Módulo actualizado correctamente",
     "updated_error": "No se pudo actualizar el módulo",
     "link_copied_title": "Enlace copiado",
-    "link_copied_desc": "La URL del módulo ha sido copiada al portapapeles."
+    "link_copied_desc": "La URL del módulo ha sido copiada al portapapeles.",
+    "deleted_success": "Módulo eliminado correctamente"
+  },
+  "status": {
+    "active_only": "Activos",
+    "inactive_only": "Inactivos",
+    "all": "Todos",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "confirm_delete_title": "¿Eliminar módulo?",
+  "confirm_delete_message": "¿Está seguro de que desea eliminar el módulo «{{name}}»? Esta acción es permanente y también elimina sus asignaciones a usuarios.",
+  "not_found": "El módulo ya no existe.",
+  "invalid_id": "El identificador no es válido.",
+  "open_link": "Abrir enlace",
+  "pagination": {
+    "next": "Página siguiente",
+    "previous": "Página anterior",
+    "first": "Primera página",
+    "last": "Última página"
   }
 }

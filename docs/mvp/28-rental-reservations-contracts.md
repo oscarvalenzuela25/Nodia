@@ -1,8 +1,12 @@
 # Reservas — contratos Backend e integración Client
 
-> Estado: en revisión documental — Backend implementado y verificado localmente; integración Client y aplicación objetivo pendientes
+> Estado: en revisión documental — Backend/Client implementados; migraciones aplicadas en BD local; smoke de sesión real pendiente
 > Fecha: 2026-10-04
 > Dependencias: [entrevista 25](25-rental-reservations-interview.md), [especificación 26](26-rental-reservations-spec.md), [ERD 27](27-rental-reservations-erd.md), [ADR-012](../architecture/decisions/ADR-012-rental-property-collaboration.md), [ADR-013](../architecture/decisions/ADR-013-rental-integrity-and-idempotency.md)
+
+## Ajuste solicitado — 2026-10-09
+
+El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
 
 ## Alcance y evidencia
 
@@ -130,7 +134,7 @@ Reserva añade `nights`, `check_in_at`, `check_out_at`, `expected_amount`, `rece
 
 | Comando | Campos admitidos |
 |---|---|
-| Crear casa | Requeridos name, timezone, max_guests, check_in_time, check_out_time; opcionales location/null, default_nightly_rate/null, default_deposit_percent/null, minimum_turnover_minutes (default 0), notes/null, is_active (default true) |
+| Crear casa | Requeridos name, max_guests; timezone opcional resuelto con configuración interna validada; check_in_time/check_out_time opcionales nullable solo por compatibilidad histórica; opcionales location/null, default_nightly_rate/null, default_deposit_percent/null, minimum_turnover_minutes (default 0), notes/null, is_active (default true) |
 | Editar casa | Los anteriores + default_cancellation_policy_id/null; owner no editable; timezone inmutable tras cualquier reserva/bloqueo |
 | Crear colaborador | user_id; position/null opcional; is_active opcional true |
 | Editar colaborador | position/null, is_active; user_id/property inmutables |
@@ -142,7 +146,7 @@ Casa se crea con política por defecto null; política se crea después, y PUT a
 
 Cada política usable contiene 1..100 reglas, umbrales únicos y regla de mínimo cero. Orden ascendente de respuesta. Reemplazo reutiliza fila por umbral cuando corresponda y elimina las reglas sustituidas dentro de la misma transacción; no expone CRUD de reglas ni elimina políticas/historia. Una política activa por defecto no puede desactivarse sin quitar/reemplazar el default en operación coherente; PUT propiedad puede limpiar default primero. Snapshots no cambian por reemplazo.
 
-Cambiar capacidad no admite quedar por debajo de guests_count de reservas confirmed/in_progress futuras/vigentes. Cambiar minimum_turnover_minutes verifica transiciones pendientes y rechaza si invalida aprobaciones de reservas vigentes; no modifica historia completed. Horarios habituales cambian futuras propuestas, nunca horas de reservas existentes. Cambiar timezone por el mismo valor es no-op válido; distinto valor con historia se rechaza.
+Cambiar capacidad no admite quedar por debajo de guests_count de reservas confirmed/in_progress futuras/vigentes. Cambiar minimum_turnover_minutes verifica transiciones pendientes y rechaza si invalida aprobaciones de reservas vigentes; no modifica historia completed. Los horarios legacy del alojamiento no se proponen ni heredan en reservas; cada reserva exige valores explícitos. Cambiar timezone por el mismo valor es no-op válido; distinto valor con historia se rechaza.
 
 ## Reservas: creación, edición y transiciones
 

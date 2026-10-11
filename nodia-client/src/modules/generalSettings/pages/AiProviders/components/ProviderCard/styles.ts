@@ -1,5 +1,11 @@
 import { styled, alpha } from "@mui/material/styles";
-import { Box, Paper, Typography, FormControlLabel, Switch } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  FormControlLabel,
+  Switch,
+} from "@mui/material";
 
 export const CardContainer = styled(Paper)(({ theme }) => ({
   display: "flex",
@@ -9,14 +15,22 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   borderRadius: Number(theme.shape.borderRadius) * 2,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: theme.palette.background.paper,
-  boxShadow: theme.palette.mode === "dark"
-    ? "0 4px 20px 0 rgba(0, 0, 0, 0.4)"
-    : "0 4px 20px 0 rgba(0, 0, 0, 0.05)",
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 4px 20px 0 rgba(0, 0, 0, 0.4)"
+      : "0 4px 20px 0 rgba(0, 0, 0, 0.05)",
   transition: theme.transitions.create(["box-shadow", "border-color"], {
     duration: theme.transitions.duration.shorter,
   }),
   "&:hover": {
     borderColor: alpha(theme.palette.primary.main, 0.4),
+  },
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(2),
+    "& .MuiButton-root": { minHeight: 44 },
   },
 }));
 
@@ -32,6 +46,8 @@ export const ProviderInfo = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(2),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { gap: theme.spacing(1.25) },
 }));
 
 export const IconBox = styled(Box)(({ theme }) => ({
@@ -44,9 +60,12 @@ export const IconBox = styled(Box)(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.main, 0.1),
   color: theme.palette.primary.main,
   border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+  flexShrink: 0,
 }));
 
 export const TitleBox = styled(Box)(() => ({
+  minWidth: 0,
+  "& > .MuiBox-root:first-of-type": { flexWrap: "wrap" },
   display: "flex",
   flexDirection: "column",
   gap: 2,
@@ -56,6 +75,7 @@ export const ProviderName = styled(Typography)(({ theme }) => ({
   fontWeight: 700,
   fontSize: "1.25rem",
   color: theme.palette.text.primary,
+  [theme.breakpoints.down("sm")]: { fontSize: "1.125rem" },
 }));
 
 export const TagRow = styled(Box)(({ theme }) => ({
@@ -73,7 +93,10 @@ export const SubtitleTag = styled(Typography)(({ theme }) => ({
 
 export const StatusPill = styled(Box, {
   shouldForwardProp: (prop) => prop !== "statusType",
-})<{ statusType: "healthy" | "expired" | "degraded" | "unconfigured" | "unverified" }>(({ theme, statusType }) => {
+})<{
+  statusType:
+    "healthy" | "expired" | "degraded" | "unconfigured" | "unverified";
+}>(({ theme, statusType }) => {
   let mainColor = theme.palette.success.main;
   if (statusType === "expired" || statusType === "degraded") {
     mainColor = "#f59e0b";
@@ -115,6 +138,11 @@ export const MetricsGrid = styled(Box)(({ theme }) => ({
   borderRadius: Number(theme.shape.borderRadius) * 1.5,
   backgroundColor: alpha(theme.palette.background.default, 0.6),
   border: `1px solid ${theme.palette.divider}`,
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: {
+    gridTemplateColumns: "minmax(0, 1fr)",
+    padding: theme.spacing(1.5),
+  },
 }));
 
 export const MetricBlock = styled(Box)(() => ({
@@ -191,6 +219,9 @@ export const CodeBadge = styled("span")(({ theme }) => ({
   backgroundColor: alpha(theme.palette.primary.main, 0.1),
   color: theme.palette.primary.main,
   border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+  minWidth: 0,
+  maxWidth: "100%",
+  overflowWrap: "anywhere",
 }));
 
 export const CardActionsRow = styled(Box)(({ theme }) => ({
@@ -212,9 +243,10 @@ export const SecondaryActionsGroup = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1),
   [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    alignItems: "stretch",
     width: "100%",
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    "& > button:first-of-type": { gridColumn: "1 / -1" },
   },
 }));
 
@@ -235,13 +267,17 @@ export const ModePanelCard = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.background.default, 0.7),
   border: `1px solid ${theme.palette.divider}`,
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
 }));
 
-export const ModePanelHeader = styled(Box)(() => ({
+export const ModePanelHeader = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   gap: 8,
+  flexWrap: "wrap",
+  [theme.breakpoints.down("sm")]: { alignItems: "flex-start" },
 }));
 
 export const ModePanelBody = styled(Box)(() => ({

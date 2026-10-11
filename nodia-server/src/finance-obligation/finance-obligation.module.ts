@@ -1,3 +1,4 @@
+import { DeleteFinanceObligationUseCase } from './use-case/delete-finance-obligation.use-case.js';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FinanceCategory } from '../finance-category/entities/finance-category.entity.js';
@@ -21,6 +22,7 @@ import { GetFinanceObligationByIdUseCase } from './use-case/get-finance-obligati
   ],
   controllers: [FinanceObligationController],
   providers: [
+    DeleteFinanceObligationUseCase,
     FinanceLedgerService,
     FinanceObligationService,
     CreateFinanceObligationUseCase,

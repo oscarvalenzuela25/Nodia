@@ -14,10 +14,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 
 import {
-  AVAILABLE_ICONS,
   DEFAULT_MODULE_ICON_KEY,
   ICON_REGISTRY,
 } from "../../../store/generalSettings/moduleIcons";
+import { AVAILABLE_ICONS } from "../../../store/generalSettings/iconCatalog";
 import type { IconSelectProps } from "./types";
 import {
   SelectContainer,

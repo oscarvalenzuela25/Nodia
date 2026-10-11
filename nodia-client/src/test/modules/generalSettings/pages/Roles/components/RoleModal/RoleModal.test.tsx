@@ -11,7 +11,7 @@ vi.mock(
   "../../../../../../../modules/generalSettings/pages/Actions/infrastructure/services",
   () => ({
     getActions: vi.fn(),
-  })
+  }),
 );
 
 const mockActionsResponse = {
@@ -20,17 +20,13 @@ const mockActionsResponse = {
       id: "act-1",
       key: "users.create",
       is_active: true,
-      translates: [
-        { key: "key", es: "Crear Usuarios", en: "Create Users" },
-      ],
+      translates: [{ key: "key", es: "Crear Usuarios", en: "Create Users" }],
     },
     {
       id: "act-2",
       key: "users.read",
       is_active: true,
-      translates: [
-        { key: "key", es: "Ver Usuarios", en: "View Users" },
-      ],
+      translates: [{ key: "key", es: "Ver Usuarios", en: "View Users" }],
     },
   ],
   meta: { page: 1, limit: 10, total_items: 2, total_pages: 1 },
@@ -49,24 +45,26 @@ const createTestQueryClient = () =>
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = createTestQueryClient();
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   );
 };
 
 describe("RoleModal", () => {
   beforeEach(() => {
-    useAuthStore.getState().login({ token: "test-jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test user" } });
+    useAuthStore
+      .getState()
+      .login({
+        token: "test-jwt",
+        expiresAt: Date.now() + 900_000,
+        user: { id: "42", name: "Test user" },
+      });
     vi.clearAllMocks();
     vi.mocked(actionServices.getActions).mockResolvedValue(mockActionsResponse);
   });
 
   it("renders create modal with empty fields, active switch enabled, and disabled submit button", () => {
     renderWithClient(
-      <RoleModal
-        open={true}
-        onClose={vi.fn()}
-        onSubmit={vi.fn()}
-      />
+      <RoleModal open={true} onClose={vi.fn()} onSubmit={vi.fn()} />,
     );
 
     expect(screen.getByText("Nuevo Rol")).toBeInTheDocument();
@@ -84,14 +82,11 @@ describe("RoleModal", () => {
     const user = userEvent.setup();
 
     renderWithClient(
-      <RoleModal
-        open={true}
-        onClose={handleClose}
-        onSubmit={handleSubmit}
-      />
+      <RoleModal open={true} onClose={handleClose} onSubmit={handleSubmit} />,
     );
 
     const keyInput = screen.getByPlaceholderText(/super_admin/i);
+    await waitFor(() => expect(keyInput).toBeEnabled());
     await user.type(keyInput, "custom_role");
 
     const submitBtn = screen.getByRole("button", { name: "Crear Rol" });
@@ -110,7 +105,7 @@ describe("RoleModal", () => {
             en: "custom_role",
           },
         ],
-      })
+      }),
     );
     expect(handleClose).not.toHaveBeenCalled();
   });
@@ -120,14 +115,11 @@ describe("RoleModal", () => {
     const user = userEvent.setup();
 
     renderWithClient(
-      <RoleModal
-        open={true}
-        onClose={handleClose}
-        onSubmit={vi.fn()}
-      />
+      <RoleModal open={true} onClose={handleClose} onSubmit={vi.fn()} />,
     );
 
     const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
+    await waitFor(() => expect(cancelBtn).toBeEnabled());
     await user.click(cancelBtn);
 
     expect(handleClose).toHaveBeenCalledTimes(1);
@@ -153,16 +145,16 @@ describe("RoleModal", () => {
           actions: ["users.read"],
           isActive: false,
         }}
-      />
+      />,
     );
 
     expect(
-      screen.getByRole("heading", { name: "Actualizar Rol" })
+      screen.getByRole("heading", { name: "Actualizar Rol" }),
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("editor")).toBeInTheDocument();
 
     const updateBtn = screen.getByRole("button", { name: "Actualizar Rol" });
-    expect(updateBtn).toBeEnabled();
+    await waitFor(() => expect(updateBtn).toBeEnabled());
 
     await user.click(updateBtn);
 
@@ -198,7 +190,7 @@ describe("RoleModal", () => {
           actions: [],
           isActive: true,
         }}
-      />
+      />,
     );
 
     const cancelBtn = screen.getByRole("button", { name: "Cancelar" });
@@ -210,11 +202,7 @@ describe("RoleModal", () => {
 
   it("fetches actions with all=true and includes=false when modal is opened", async () => {
     renderWithClient(
-      <RoleModal
-        open={true}
-        onClose={vi.fn()}
-        onSubmit={vi.fn()}
-      />
+      <RoleModal open={true} onClose={vi.fn()} onSubmit={vi.fn()} />,
     );
 
     await waitFor(() => {
@@ -228,11 +216,7 @@ describe("RoleModal", () => {
   it("renders action options in Translate (key) format", async () => {
     const user = userEvent.setup();
     renderWithClient(
-      <RoleModal
-        open={true}
-        onClose={vi.fn()}
-        onSubmit={vi.fn()}
-      />
+      <RoleModal open={true} onClose={vi.fn()} onSubmit={vi.fn()} />,
     );
 
     await waitFor(() => {
@@ -244,11 +228,9 @@ describe("RoleModal", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Crear Usuarios (users.create)")
+        screen.getByText("Crear Usuarios (users.create)"),
       ).toBeInTheDocument();
-      expect(
-        screen.getByText("Ver Usuarios (users.read)")
-      ).toBeInTheDocument();
+      expect(screen.getByText("Ver Usuarios (users.read)")).toBeInTheDocument();
     });
   });
 });

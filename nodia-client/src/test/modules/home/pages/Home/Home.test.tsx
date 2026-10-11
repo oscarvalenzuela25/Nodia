@@ -121,6 +121,7 @@ describe("Home", () => {
     );
 
     expect(screen.getByText(/sin módulos disponibles/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /sin módulos disponibles/i, level: 2 })).toBeVisible();
     expect(
       screen.getByText(/actualmente no tienes módulos asignados/i)
     ).toBeInTheDocument();
@@ -140,7 +141,7 @@ describe("Home", () => {
             modules: [
               {
                 key: "businesses",
-                link: "/business",
+                link: "/tools/business",
                 translates: [{ key: "key", es: "Mis Negocios", en: "My Businesses" }],
               },
             ],

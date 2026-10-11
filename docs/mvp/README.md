@@ -2,6 +2,12 @@
 
 Esta carpeta contiene la definición del producto previa al desarrollo. Debe permitir que una persona o agente retome el proyecto sin depender de conversaciones anteriores.
 
+Instalación y reutilización de Core: [guía e inventario de migraciones](database-installation.md), con comandos, configuración del administrador y límites del historial existente.
+
+Primer ensayo de despliegue: [paso a paso de VPS](vps-first-test-deployment.md), con PostgreSQL/Redis locales elegidos para la prueba, API/systemd, Gemini/Docker, HTTPS, Pages, bootstrap y restauración; operación en VPS pendiente.
+
+Rendimiento web: [plan37](37-web-performance-implementation-plan.md), aprobado explícitamente para implementación por etapas. Google solo en Login, semántica y editor de accesos por intención verificados. Segunda entrega pública móvil77→78/desktop98, A11y100 y scripts442.300→427.280B; sesión real preservada, sin atribuir esos scores a Inicio privado. Tercera etapa: catálogo administrativo de iconos separado, −3.470B gzip estático,91 opciones conservadas; referencia privada69 con extensiones y medición posterior pendiente. DESIGN10.5–10.7 y AGENTS registran patrones/evidencia y experimento health descartado. Meta90 móvil/presupuesto400KiB, Lighthouse privado limpio, otros límites de carga, i18n condicionado y aceptación VPS pendientes.
+
 ## Cómo continuar
 
 1. Leer `00-progress.md`.
@@ -76,6 +82,7 @@ Estos documentos no están aprobados. Amplían el alcance previo al lanzamiento 
 | [28-rental-reservations-contracts.md](28-rental-reservations-contracts.md) | Contratos Backend implementados localmente, en revisión documental: rutas, payloads, dinero, cancelación, preparación y recuperación de escrituras |
 | [29-rental-reservations-backend-plan.md](29-rental-reservations-backend-plan.md) | Plan de desarrollo Backend para múltiples agentes, con tareas, dependencias, archivos y evidencia de cierre; en revisión |
 | [30-rental-reservations-client-plan.md](30-rental-reservations-client-plan.md) | Client implementado; revisión de endpoints/recuperación del 2026-10-08; RC-38 pendiente, ausencia de tablas/migración/navegación confirmada por inspección de lectura |
+| [36-reservations-redesign-proposal.md](36-reservations-redesign-proposal.md) | «Calendario primero» elegido por el usuario: workspace, FullCalendar/MUI X y migración de fechas implementados en Client; QA aislado y aceptación operativa RC-38 pendientes de distinguir |
 
 Obsidian conserva los objetos anteriores y contiene ahora37 tablas/69 relaciones. Se reconciliaron 03/05/06/07/11/12. [ADR-012](../architecture/decisions/ADR-012-rental-property-collaboration.md) y [ADR-013](../architecture/decisions/ADR-013-rental-integrity-and-idempotency.md) conservan estado propuesto. Backend implementado y verificado en PostgreSQL/HTTP aislados, con 44 operaciones y once entidades; migración/seed objetivo pendientes. Client30 implementado y verificado: 822 pruebas/144 archivos, typecheck/lint/build y navegador→HTTP→PostgreSQL temporal. Primer paso operacional pendiente RC-38: baseline, migración/seed/asignación y smoke con sesión real. Solo 27 está aprobado; no se aprueban automáticamente otros documentos.
 

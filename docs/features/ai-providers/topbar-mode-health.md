@@ -4,8 +4,8 @@ Solicitud del usuario del 2026-10-08; implementación local, sin aprobación aut
 
 ## Comportamiento
 
-- Sin una conexión `is_default: true`, no se renderiza este grupo opcional. Con predeterminado, muestra hasta tres iconos según los modos habilitados de esa instancia: llave para `api_key`, globo para `token_plan_web` y razonamiento para `token_plan_agentic`. Los flags explícitos false prevalecen sobre el modo histórico.
-- Solo se monta para una sesión validada con acción `ai:manage` y acceso al módulo `/settings/ai-providers`, conforme al endpoint y al guard de la página. No modifica los permisos del servidor.
+- Sin una conexión `is_default: true`, no se renderiza este grupo opcional. Con predeterminado, muestra los tres modos de esa instancia, incluso los deshabilitados, con iconos y etiquetas API/Web/Agéntico: llave para `api_key`, globo para `token_plan_web` y razonamiento para `token_plan_agentic`. Los flags explícitos false prevalecen sobre el modo histórico; un modo deshabilitado queda visible con indicador gris, tooltip Deshabilitado y botón bloqueado.
+- Solo se monta para una sesión validada con acción `ai:manage` o rol activo `super_admin`, y acceso al módulo `/settings/ai-providers`, conforme a la excepción del caso de uso CheckActionPermissionUseCase y al guard de la página. No modifica los permisos del servidor.
 - Consume `GET /ai-providers/health` mediante el hook y caché existentes `ai-providers-health`, con intervalo de 30 segundos. No agrega una consulta al listado ni a `gemini-engines`.
 - Punto verde (`theme.palette.success.main`): sesión Web/Agentic disponible y autenticada en la observación correspondiente. Para Codex usa `codexSession` de la misma conexión y respeta `usageAllowed: false`. El tooltip aclara que una sesión disponible no acredita inferencia.
 - Punto rojo (`theme.palette.error.main`): requiere revisión o estado sin verificar. Datos ausentes, inválidos o un refetch fallido no acreditan disponibilidad. En API, solo un estado saludable observado del propio modo puede ser verde; la respuesta actual de Server mantiene la API configurada como `unverified`, por lo que una clave/modelo guardados no producen verde.
@@ -20,3 +20,9 @@ Pruebas sintéticas de componentes: ausencia de predeterminado, tres modos indep
 Suite completa Client: 946 pruebas en 157 archivos correctas. Revalidación focalizada posterior a ajustes de UI y navegación: 55 pruebas en cuatro archivos correctas. Tipado/lint/build comprobados al cierre. Navegador local con fixtures aislados comprobó 320/600/1280 px, temas claro/oscuro, ES/EN y recorrido Tab entre indicadores; los botones permanecen dentro del ancho del header. Fixtures temporales retirados tras QA.
 
 No se autenticaron cuentas, consumieron inferencias, modificaron claves/BD ni reiniciaron servicios del usuario. La UI utiliza el contrato de salud existente; no implementa un probe de inferencia API. Verificación autenticada contra los servicios reales pendiente.
+
+## Corrección solicitada — 2026-10-09
+
+Lectura de BD local confirma conexión predeterminada Gemini ID 3, API deshabilitada y Web/Agentic habilitados. No existe fila de acción `ai:manage`; el backend autoriza a `super_admin` sin esa fila, pero el topbar omitía esa excepción y ocultaba el grupo. Frontend reconciliado con la regla real; tres modos visibles y deshabilitado explícito, sin activar flags ni iniciar inferencias. Regresiones del rol con actions vacío y del modo API desactivado añadidas.
+
+Verificación de cierre del 2026-10-09: Client 1018 pruebas/167 archivos, tipado/lint/build correctos; 3 regresiones del permiso Server correctas. QA Edge Chromium con fixtures de `src/test/manual/topbar-health/`: 320/390/600/1280 px, ES/EN, claro/oscuro, tres controles de 44 px sin overflow; ausencia de intersecciones a 320 px, teclado y navegación exacta comprobados. Capturas fuera del repositorio en la carpeta de visualizaciones local. No se acredita inferencia real ni se cambian credenciales/modos configurados.

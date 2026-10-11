@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   list: vi.fn(),
   record: vi.fn(),
   mutate: vi.fn(),
+  remove: vi.fn(),
   busy: vi.fn(),
   refetch: vi.fn(),
   uncertain: false,
@@ -31,6 +32,13 @@ vi.mock("../../../../../modules/finances/infrastructure/useServices", () => ({
   useFinanceList: mocks.list,
   useFinanceRecord: mocks.record,
   useFinanceBusy: mocks.busy,
+  useFinanceDelete: () => ({
+    mutateAsync: mocks.remove,
+    isPending: false,
+    isReviewing: false,
+    isUncertain: false,
+    reviewResult: mocks.review,
+  }),
   useFinanceMutation: () => ({
     mutateAsync: mocks.mutate,
     isPending: false,
@@ -85,18 +93,53 @@ const listing = {
 
 describe("FinanceResourceTab", () => {
   it.each([
-    {remaining:'60000',expected:'$60.000',canPay:true},
-    {remaining:'0',expected:'$0',canPay:false},
-    {remaining:null,expected:'finance:void_obligation',canPay:false},
-  ])('shows the server obligation balance and restricts payment actions: $remaining',async({remaining,expected,canPay})=>{
-    mocks.list.mockReturnValue({...listing,data:{...listing.data,data:[{...category,id:'30',type:'loan',amount:'100000',paid_amount:remaining==='0'?'100000':'40000',remaining_amount:remaining,description:null,initial_movement:{id:'40',type:'expense',status:'paid',amount:'100000',category_id:category.id}}]}});
-    render(<FinanceResourceTab resource="obligations"/>);
-    expect(screen.getAllByText(expected).length).toBeGreaterThan(0);
-    await userEvent.click(screen.getByRole('button',{name:'finance:row_actions:Categoría personal'}));
-    const action=screen.getByRole('menuitem',{name:'finance:register_payment'});
-    if(canPay){expect(action).not.toHaveAttribute('aria-disabled','true');}
-    else{expect(action).toHaveAttribute('aria-disabled','true');}
-  });
+    { remaining: "60000", expected: "$60.000", canPay: true },
+    { remaining: "0", expected: "$0", canPay: false },
+    { remaining: null, expected: "finance:void_obligation", canPay: false },
+  ])(
+    "shows the server obligation balance and restricts payment actions: $remaining",
+    async ({ remaining, expected, canPay }) => {
+      mocks.list.mockReturnValue({
+        ...listing,
+        data: {
+          ...listing.data,
+          data: [
+            {
+              ...category,
+              id: "30",
+              type: "loan",
+              amount: "100000",
+              paid_amount: remaining === "0" ? "100000" : "40000",
+              remaining_amount: remaining,
+              description: null,
+              initial_movement: {
+                id: "40",
+                type: "expense",
+                status: "paid",
+                amount: "100000",
+                category_id: category.id,
+              },
+            },
+          ],
+        },
+      });
+      render(<FinanceResourceTab resource="obligations" />);
+      expect(screen.getAllByText(expected).length).toBeGreaterThan(0);
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: "finance:row_actions:Categoría personal",
+        }),
+      );
+      const action = screen.getByRole("menuitem", {
+        name: "finance:register_payment",
+      });
+      if (canPay) {
+        expect(action).not.toHaveAttribute("aria-disabled", "true");
+      } else {
+        expect(action).toHaveAttribute("aria-disabled", "true");
+      }
+    },
+  );
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.uncertain = false;
@@ -255,4 +298,31 @@ describe("FinanceResourceTab", () => {
       ),
     );
   });
+});
+
+it("opens deletion from a resource menu and retains confirmation after a server conflict", async () => {
+  mocks.list.mockReturnValue(listing);
+  mocks.record.mockReturnValue({
+    data: undefined,
+    isLoading: false,
+    isFetching: false,
+  });
+  mocks.busy.mockReturnValue(false);
+  mocks.uncertain = false;
+  const user = userEvent.setup();
+  mocks.remove.mockReset();
+  mocks.remove.mockRejectedValueOnce(
+    new Error("finance:category_has_movements"),
+  );
+  render(<FinanceResourceTab resource="categories" />);
+  await user.click(
+    screen.getByRole("button", {
+      name: "finance:row_actions:Categoría personal",
+    }),
+  );
+  await user.click(screen.getByRole("menuitem", { name: "finance:delete" }));
+  expect(mocks.remove).not.toHaveBeenCalled();
+  await user.click(screen.getByRole("button", { name: "finance:delete" }));
+  await waitFor(() => expect(mocks.remove).toHaveBeenCalledWith(category.id));
+  expect(screen.getByRole("dialog")).toHaveTextContent(category.name);
 });

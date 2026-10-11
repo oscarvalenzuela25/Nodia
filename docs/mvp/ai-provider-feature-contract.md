@@ -4,9 +4,11 @@ Fecha: 2026-10-06. Estado documental: en revisión; requisitos pedidos explícit
 
 ## Indicadores del topbar — 2026-10-08
 
-El predeterminado muestra hasta tres indicadores por sus modos habilitados, consumiendo la misma caché de salud. Verde exige observación de sesión disponible/autenticada; API configurada sin comprobación conserva estado sin verificar en rojo. El clic abre el ID y pestaña exactos en Ajustes IA. Sin predeterminado o permisos, se omite el grupo. Revalidación no desmonta los iconos; un fallo invalida el verde anterior. Contrato, pruebas y límites: [funcionalidad del topbar](../features/ai-providers/topbar-mode-health.md).
+El predeterminado muestra los tres indicadores API/Web/Agéntico, con estado deshabilitado explícito para los modos apagados, consumiendo la misma caché de salud. Verde exige observación de sesión disponible/autenticada; API configurada sin comprobación conserva estado sin verificar en rojo. El clic abre el ID y pestaña exactos en Ajustes IA. Sin predeterminado o permisos, se omite el grupo. La autorización contempla acción `ai:manage` o rol `super_admin`, además del módulo asignado, conforme al backend. Revalidación no desmonta los iconos; un fallo invalida el verde anterior. Contrato, pruebas y límites: [funcionalidad del topbar](../features/ai-providers/topbar-mode-health.md).
 
 ## Esquema y separación de responsabilidades
+
+Instalación vacía 2026-10-10: catálogo inicial de 16 identidades preservado y Moonshot/Kimi añadido por `CompleteAiProviderCatalog1791640000000`, con sus tres canales apagados y sin adaptador nuevo. Gemini/OpenAI conservan sus flags configurables vigentes; insertar identidades no prueba disponibilidad ni amplía el selector de compatibles. Ver [instalación e inventario](database-installation.md) y ADR-027. Ningún modelo, clave o cuota se incorpora al seed.
 
 | Recurso | Contrato vigente |
 |---|---|
@@ -136,3 +138,12 @@ La petición del usuario fija local primero y QA temporal con TryCloudflare desp
 - Recuperar seguimiento nunca reenvía análisis. Respuesta principal perdida sigue siendo incierta aun con extracción terminal en snapshot; no hay recuperación durable de JSON. Errores conservan entradas/archivo y un aviso por episodio; histórico fallido conserva el catálogo existente.
 - Señal principal llega a API/Gemini/Codex con deadlines existentes. Cancelación Codex solo detiene el lease adquirido; eventos de turnos ajenos quedan excluidos. Renovar token pausa seguimiento; logout/cambio de sesión/negocio/desmontaje invalidan su ejecución y respuestas tardías.
 - Store en memoria permite un proceso por capa. Antes de múltiples réplicas/workers, exigir TTL compartido o afinidad verificada también en Python. No acreditar disponibilidad real ni performance por los mocks/pruebas locales.
+
+
+## Presentación móvil — 2026-10-09
+
+El usuario solicita una vista más cómoda en celular con menos padding interno. AiProviders conserva los contratos y reduce paneles de listado/detalle/modelos a12px en xs, sin duplicar los16px externos de PageContent. El detalle móvil usa su cabecera propia; escritorio conserva la cabecera general. Pestañas verticales en xs, horizontales desde sm y navegación de teclado correspondiente, misma conexión/modo seleccionado sin mutaciones al cambiar vista/ancho. Nombres/IDs dinámicos envuelven; preferencia de razonamiento y foco OCR se apilan. Panel Web con label flexible y switch dentro del ancho a320px; cuotas desconocidas siguen sin cifras inventadas.
+
+API keys presenta tarjetas en xs y tabla650px desde sm, manteniendo una consulta paginada por conexión, la máscara recibida, el switch de selección y papelera directa. Paginar/redimensionar no dispara peticiones por tarjeta ni cambia la selección global. Pendientes bloquean los controles; errores de guardado/borrado conservan formulario/confirmación y permiten reintentar. El badge del detalle distingue `unverified` (Sin verificar / Unverified, color neutro) de `unconfigured`.
+
+Regresiones añadidas: selección de clave inactiva bloqueada en tarjetas, confirmación y reintento de borrado, paginación remota sin N+1, navegación vertical por teclado sin guardar otro predeterminado y estado sin verificar. Fixture aislado en `src/test/manual/ai-providers`: no usa cuentas reales, no autentica ni ejecuta inferencias. La evidencia visual no acredita disponibilidad de ningún proveedor; aceptación física y pendientes operativos previos permanecen abiertos.

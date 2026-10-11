@@ -47,10 +47,10 @@ describe("ExpenseModal", () => {
       screen.getByLabelText(new RegExp(i18n.t("rental:amount"))),
     ).toBeDisabled();
     expect(
-      screen.getByLabelText(new RegExp(i18n.t("rental:incurred_on"))),
+      screen.getByRole("textbox", { name: new RegExp(i18n.t("rental:incurred_on")) }),
     ).toBeDisabled();
     expect(
-      screen.getByLabelText(new RegExp(i18n.t("rental:paid_on"))),
+      screen.getByRole("textbox", { name: new RegExp(i18n.t("rental:paid_on")) }),
     ).toBeDisabled();
     await user.click(
       screen.getByRole("button", { name: i18n.t("rental:save") }),

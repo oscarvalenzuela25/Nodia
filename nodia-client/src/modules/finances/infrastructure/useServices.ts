@@ -23,6 +23,7 @@ import {
   getFinanceRecord,
   getFinanceSummary,
   saveFinanceRecord,
+  deleteFinanceRecord,
 } from "./services";
 
 export const financeKeys = {
@@ -193,4 +194,69 @@ export function useFinanceMutation<R extends FinanceResource>(resource: R) {
 export function useFinanceBusy(): boolean {
   const actor = useFinanceActor();
   return useIsMutating({ mutationKey: financeKeys.scope(actor.userId) }) > 0;
+}
+
+export function useFinanceDelete(resource: FinanceResource) {
+  const actor = useFinanceActor();
+  const client = useQueryClient();
+  const requireActor = () => {
+    if (!actor.enabled || useAuthStore.getState().user?.id !== actor.userId)
+      throw new Error("finance:session_changed");
+  };
+  const invalidate = () =>
+    client.invalidateQueries({ queryKey: financeKeys.scope(actor.userId) });
+  const success = () =>
+    sileo.success({ title: i18n.t("finance:deleted_success") });
+  const mutation = useMutation({
+    mutationKey: financeKeys.scope(actor.userId),
+    retry: false,
+    mutationFn: async (id: string) => {
+      requireActor();
+      await deleteFinanceRecord(resource, id);
+      requireActor();
+    },
+    onSuccess: async () => {
+      success();
+      await invalidate();
+    },
+    onError: (error) => {
+      if (useAuthStore.getState().user?.id !== actor.userId) return;
+      if (isFinanceWriteUncertain(error))
+        sileo.error({
+          title: i18n.t("finance:uncertain_title"),
+          description: i18n.t("finance:uncertain_description"),
+        });
+      else notifyHttpError(error);
+    },
+  });
+  const review = useMutation({
+    mutationKey: financeKeys.scope(actor.userId),
+    retry: false,
+    mutationFn: async (id: string) => {
+      requireActor();
+      let deleted = false;
+      try {
+        await getFinanceRecord(resource, id);
+      } catch (error) {
+        if (isAxiosError(error) && error.response?.status === 404)
+          deleted = true;
+        else throw error;
+      }
+      requireActor();
+      await invalidate();
+      requireActor();
+      return deleted;
+    },
+    onSuccess: (deleted) => {
+      mutation.reset();
+      if (deleted) success();
+    },
+    onError: notifyHttpError,
+  });
+  return {
+    ...mutation,
+    isUncertain: isFinanceWriteUncertain(mutation.error),
+    isReviewing: review.isPending,
+    reviewResult: review.mutateAsync,
+  };
 }

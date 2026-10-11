@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import ProvidersTab from "../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/ProvidersTab";
@@ -82,6 +82,13 @@ const renderWithClient = (ui: ReactElement) => {
   );
 };
 
+
+const mockMobile = () => vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+  matches: query.includes("599.95"), media: query, onchange: null,
+  addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+}));
+afterEach(() => vi.restoreAllMocks());
+
 describe("ProvidersTab Component", () => {
   const user = userEvent.setup();
 
@@ -95,6 +102,28 @@ describe("ProvidersTab Component", () => {
       data: mockProviders,
       meta: { total_items: 2, page: 1, limit: 50, total_pages: 1 },
     });
+  });
+
+  it.each([
+    ["Inactivo", false],
+    ["Todos", undefined],
+  ])("applies %s through the normalized select and clear restores active", async (label, active) => {
+    renderWithClient(<ProvidersTab businessId="biz-123" />);
+    await screen.findByText("Lácteos del Sur");
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Estado de actividad" }));
+    await user.click(screen.getByRole("option", { name: label }));
+    await user.click(screen.getByRole("button", { name: "Filtrar" }));
+    await waitFor(() => expect(businessServices.getProviders).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1, q: expect.objectContaining({ is_active_eq: active }) }),
+    ));
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    expect(screen.getByRole("button", { name: "Estado de actividad" })).toHaveTextContent(label);
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    await waitFor(() => expect(businessServices.getProviders).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1, q: expect.objectContaining({ is_active_eq: true }) }),
+    ));
   });
 
   it("opens only the selected provider's contacts on demand and returns to the provider list", async () => {
@@ -260,6 +289,7 @@ describe("ProvidersTab Component", () => {
       q: {
         business_id_eq: "biz-123",
         name_cont: undefined,
+        is_active_eq: true,
         s: "created_at desc",
       },
     });
@@ -286,6 +316,7 @@ describe("ProvidersTab Component", () => {
         q: {
           business_id_eq: "biz-123",
           name_cont: undefined,
+          is_active_eq: true,
           s: "created_at desc",
         },
       });
@@ -369,4 +400,15 @@ describe("ProvidersTab Component", () => {
       })
     );
   });
+  it("shows mobile cards and paginates the existing remote query without fetching contacts", async () => {
+    mockMobile();
+    vi.mocked(businessServices.getProviders).mockResolvedValueOnce({ data: [mockProviders[0]], meta: { page: 1, limit: 50, total_items: 51, total_pages: 2 } });
+    renderWithClient(<ProvidersTab businessId="biz-123" />);
+    expect(await screen.findByRole("article", { name: mockProviders[0].name })).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(contactServices.getContacts).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: /siguiente|next page/i }));
+    await waitFor(() => expect(businessServices.getProviders).toHaveBeenCalledWith(expect.objectContaining({ page: 2, limit: 50, q: expect.objectContaining({ is_active_eq: true }) })));
+  });
+
 });

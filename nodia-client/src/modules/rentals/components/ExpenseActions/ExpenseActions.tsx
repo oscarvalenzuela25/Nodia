@@ -1,3 +1,4 @@
+import DateInput from "../../../../components/inputs/DateInput";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
@@ -108,22 +109,25 @@ function ExpenseCommand({
         <Controller
           name="value"
           control={control}
-          render={({ field }) => (
-            <TextInput
-              {...field}
-              label={t(
-                action === "pay" ? "rental:paid_on" : "rental:void_reason",
-              )}
-              type={action === "pay" ? "date" : "text"}
-              multiline={action === "void"}
-              required
-              disabled={busy || mutation.isUncertain}
-              error={Boolean(errors.value)}
-              helperText={
-                errors.value?.message ? t(errors.value.message) : undefined
-              }
-            />
-          )}
+          render={({ field }) => {
+            const Input = action === "pay" ? DateInput : TextInput;
+            return (
+              <Input
+                {...field}
+                label={t(
+                  action === "pay" ? "rental:paid_on" : "rental:void_reason",
+                )}
+
+                multiline={action === "void"}
+                required
+                disabled={busy || mutation.isUncertain}
+                error={Boolean(errors.value)}
+                helperText={
+                  errors.value?.message ? t(errors.value.message) : undefined
+                }
+              />
+            );
+          }}
         />
       </FormContainer>
     </ConfirmDialog>

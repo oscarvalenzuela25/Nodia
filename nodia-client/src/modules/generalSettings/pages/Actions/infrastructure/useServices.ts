@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import i18n from "../../../../../translate";
+import { authorizationKeys } from "../../../../../services/authorizationService";
+import { roleKeys } from "../../Roles/infrastructure/useServices";
 import {
   createAction,
   getActions,
@@ -16,6 +18,7 @@ import {
   getBusinessActions,
   updateBusinessAction,
   deleteBusinessAction,
+  deleteAction,
 } from "./services";
 import type {
   CreateActionPayload,
@@ -40,7 +43,7 @@ export const businessActionKeys = {
 
 export const useActions = (
   params?: GetActionsParams,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) => {
   const { isSessionActive } = useAuth();
   return useQuery({
@@ -52,9 +55,12 @@ export const useActions = (
 };
 
 const extractErrorMessage = (
-  error: AxiosError<{ message?: string }> | Error
+  error: AxiosError<{ message?: string }> | Error,
 ): string => {
-  if ("response" in error && typeof error.response?.data?.message === "string") {
+  if (
+    "response" in error &&
+    typeof error.response?.data?.message === "string"
+  ) {
     return error.response.data.message;
   }
   return error.message;
@@ -114,7 +120,7 @@ export const useUpdateAction = () => {
 
 export const useBusinessActions = (
   params?: GetActionsParams,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) => {
   const { isSessionActive } = useAuth();
   return useQuery({
@@ -187,7 +193,7 @@ export const useDeleteBusinessAction = () => {
       await queryClient.invalidateQueries({ queryKey: businessActionKeys.all });
       sileo.success({
         title: i18n.t("actions:notifications.success_title"),
-        description: i18n.t("actions:notifications.updated_success"),
+        description: i18n.t("actions:notifications.deleted_success"),
       });
     },
     onError: (error: AxiosError<{ message?: string }> | Error) => {
@@ -195,7 +201,34 @@ export const useDeleteBusinessAction = () => {
       sileo.error({
         title: i18n.t("actions:notifications.error_title"),
         description:
-          backendMessage || i18n.t("actions:notifications.updated_error"),
+          backendMessage || i18n.t("actions:notifications.deleted_error"),
+      });
+    },
+  });
+};
+
+export const useDeleteAction = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (actionId: string) => deleteAction(actionId),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: actionKeys.all }),
+        queryClient.invalidateQueries({ queryKey: roleKeys.all }),
+        queryClient.invalidateQueries({ queryKey: authorizationKeys.all }),
+      ]);
+      sileo.success({
+        title: i18n.t("actions:notifications.success_title"),
+        description: i18n.t("actions:notifications.deleted_success"),
+      });
+    },
+    onError: (error: AxiosError<{ message?: string }> | Error) => {
+      const message = extractErrorMessage(error);
+      sileo.error({
+        title: i18n.t("actions:notifications.error_title"),
+        description: message
+          ? i18n.t(message, { defaultValue: message })
+          : i18n.t("actions:notifications.deleted_error"),
       });
     },
   });

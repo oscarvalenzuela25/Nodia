@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Chip } from "@mui/material";
+import { Alert, Box, Button, Chip, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import RentalFilters from "../RentalFilters";
@@ -16,8 +17,16 @@ import PolicyModal from "../PolicyModal";
 import { useAdministrationSubmit } from "../PropertyModal/hooks/useAdministrationSubmit";
 import { Content } from "./styles";
 
-export type PolicyTableProps = { property: RentalProperty };
-function PolicyContent({ property }: PolicyTableProps) {
+export type PolicyTableProps = {
+  property: RentalProperty;
+  disabled?: boolean;
+  onDefaultChange?: (id: string, name: string) => void;
+};
+function PolicyContent({
+  property,
+  disabled,
+  onDefaultChange,
+}: PolicyTableProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState<RentalQuery>({
     page: 1,
@@ -37,6 +46,7 @@ function PolicyContent({ property }: PolicyTableProps) {
   const globalBusy = useRentalBusy(property.id);
   const owner = property.membership.can_manage_configuration;
   const busy =
+    Boolean(disabled) ||
     globalBusy ||
     listing.isLoading ||
     listing.isFetching ||
@@ -82,6 +92,143 @@ function PolicyContent({ property }: PolicyTableProps) {
       />
       <RentalTable
         title={t("rental:policies")}
+        hideTitle
+        createLabel={t("rental:create_policy")}
+        renderCardRow={(row, cardBusy) => {
+          const isDefault = row.id === property.default_cancellation_policy_id;
+          return (
+            <Box
+              component="article"
+              aria-label={row.name}
+              sx={(theme) => ({
+                height: "100%",
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                border: "1px solid",
+                borderColor: isDefault ? "primary.main" : "divider",
+                borderRadius: 2,
+                bgcolor: isDefault
+                  ? alpha(theme.palette.primary.main, 0.06)
+                  : "background.paper",
+                minWidth: 0,
+              })}
+            >
+              <Typography
+                variant="h6"
+                component="h4"
+                sx={{ overflowWrap: "anywhere" }}
+              >
+                {row.name}
+              </Typography>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                {isDefault && (
+                  <Chip
+                    size="small"
+                    color="primary"
+                    label={t("rental:configuration_view.default_policy")}
+                  />
+                )}
+                <Chip
+                  size="small"
+                  label={t(row.is_active ? "rental:active" : "rental:inactive")}
+                  color={row.is_active ? "success" : "default"}
+                />
+              </Box>
+              <Box component="dl" sx={{ m: 0, display: "grid", gap: 1 }}>
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+                    gap: 2,
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    {t("rental:min_days_before")}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ textAlign: "right" }}
+                  >
+                    {t("rental:refund_percent")}
+                  </Typography>
+                </Box>
+                {[...row.rules]
+                  .sort((a, b) => b.min_days_before - a.min_days_before)
+                  .map((rule) => (
+                    <Box
+                      key={rule.id}
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+                        gap: 2,
+                        borderTop: "1px solid",
+                        borderColor: "divider",
+                        pt: 1,
+                      }}
+                    >
+                      <Typography component="dt" variant="body2">
+                        {t("rental:configuration_view.days", {
+                          count: rule.min_days_before,
+                        })}
+                      </Typography>
+                      <Typography
+                        component="dd"
+                        variant="body2"
+                        sx={{ m: 0, textAlign: "right", fontWeight: 600 }}
+                      >
+                        {t("rental:configuration_view.percent", {
+                          value: rule.refund_percent,
+                        })}
+                      </Typography>
+                    </Box>
+                  ))}
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  mt: "auto",
+                  gap: 1,
+                  flexWrap: "wrap",
+                  flexDirection: { xs: "column", sm: "row" },
+                  "& button": { minHeight: 44 },
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  disabled={cardBusy}
+                  onClick={() => setModal({ id: row.id })}
+                >
+                  {t(owner ? "rental:edit_policy" : "rental:view_policy")}
+                </Button>
+                {owner && (
+                  <Button
+                    color={row.is_active ? "error" : "primary"}
+                    disabled={
+                      cardBusy ||
+                      mutation.isUncertain ||
+                      isDefault ||
+                      (!row.is_active && !property.is_active)
+                    }
+                    onClick={() => setToggling(row)}
+                  >
+                    {t(row.is_active ? "rental:deactivate" : "rental:activate")}
+                  </Button>
+                )}
+                {owner && row.is_active && !isDefault && onDefaultChange && (
+                  <Button
+                    disabled={cardBusy || !property.is_active}
+                    onClick={() => onDefaultChange(row.id, row.name)}
+                  >
+                    {t("rental:configuration_view.use_default")}
+                  </Button>
+                )}
+              </Box>
+            </Box>
+          );
+        }}
         rows={listing.data?.data ?? []}
         columns={[
           {

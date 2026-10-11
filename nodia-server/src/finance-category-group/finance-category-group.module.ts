@@ -1,3 +1,4 @@
+import { DeleteFinanceCategoryGroupUseCase } from './use-case/delete-finance-category-group.use-case.js';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FinanceCategoryGroup } from './entities/finance-category-group.entity.js';
@@ -20,6 +21,7 @@ import { UpdateFinanceCategoryGroupUseCase } from './use-case/update-finance-cat
   ],
   controllers: [FinanceCategoryGroupController],
   providers: [
+    DeleteFinanceCategoryGroupUseCase,
     FinanceCategoryGroupService,
     GetFinanceCategoryGroupsUseCase,
     GetFinanceCategoryGroupUseCase,

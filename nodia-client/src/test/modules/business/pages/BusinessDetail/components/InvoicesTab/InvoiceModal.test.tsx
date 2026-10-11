@@ -47,6 +47,11 @@ describe("InvoiceModal Component", () => {
     expect(screen.queryByTestId("invoice-due-date-input")).not.toBeInTheDocument();
     expect(screen.getByTestId("invoice-path-input")).toBeInTheDocument();
     expect(screen.getByTestId("invoice-notes-input")).toBeInTheDocument();
+    const path = screen.getByTestId("invoice-path-input");
+    const active = screen.getByTestId("invoice-active-switch");
+    const notes = screen.getByTestId("invoice-notes-input");
+    expect(path.compareDocumentPosition(active) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(active.compareDocumentPosition(notes) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByTestId("save-invoice-btn")).toBeInTheDocument();
   });
 

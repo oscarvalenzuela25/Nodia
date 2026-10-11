@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Put, Patch, Body, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Patch,
+  Body,
+  Param,
+  Delete,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ModuleService } from './module.service.js';
 import { CreateModuleDto } from './dto/create-module.dto.js';
 import { UpdateModuleDto } from './dto/update-module.dto.js';
@@ -6,6 +18,8 @@ import { GetModulesDto } from './dto/get-modules.dto.js';
 import { GetAllModulesUseCase } from './use-case/get-all-modules.use-case.js';
 import { CreateModuleUseCase } from './use-case/create-module.use-case.js';
 import { UpdateModuleUseCase } from './use-case/update-module.use-case.js';
+import { DeleteModuleUseCase } from './use-case/delete-module.use-case.js';
+import { CatalogIdDto } from '../common/dto/catalog-id.dto.js';
 
 @Controller(['module', 'modules'])
 export class ModuleController {
@@ -14,6 +28,7 @@ export class ModuleController {
     private readonly getAllModulesUseCase: GetAllModulesUseCase,
     private readonly createModuleUseCase: CreateModuleUseCase,
     private readonly updateModuleUseCase: UpdateModuleUseCase,
+    private readonly deleteModuleUseCase: DeleteModuleUseCase,
   ) {}
 
   @Post()
@@ -37,12 +52,16 @@ export class ModuleController {
   }
 
   @Patch(':id')
-  updatePatch(@Param('id') id: string, @Body() updateModuleDto: UpdateModuleDto) {
+  updatePatch(
+    @Param('id') id: string,
+    @Body() updateModuleDto: UpdateModuleDto,
+  ) {
     return this.updateModuleUseCase.execute(id, updateModuleDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.moduleService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param() params: CatalogIdDto) {
+    return this.deleteModuleUseCase.execute(params.id);
   }
 }

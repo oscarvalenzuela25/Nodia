@@ -6,6 +6,7 @@ import { Action } from './entities/action.entity.js';
 import { GetAllActionsUseCase } from './use-case/get-all-actions.use-case.js';
 import { CreateActionUseCase } from './use-case/create-action.use-case.js';
 import { UpdateActionUseCase } from './use-case/update-action.use-case.js';
+import { DeleteActionUseCase } from './use-case/delete-action.use-case.js';
 import { TranslationModule } from '../translation/translation.module.js';
 
 @Module({
@@ -15,6 +16,7 @@ import { TranslationModule } from '../translation/translation.module.js';
     GetAllActionsUseCase,
     CreateActionUseCase,
     UpdateActionUseCase,
+    DeleteActionUseCase,
   ],
   imports: [TypeOrmModule.forFeature([Action]), TranslationModule],
 })

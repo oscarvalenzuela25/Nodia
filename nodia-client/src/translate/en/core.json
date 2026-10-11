@@ -1,4 +1,10 @@
 {
+  "active_filter": {
+    "label": "Activity status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "all": "All"
+  },
   "generic_error_title": "Unexpected error",
   "generic_error_message": "The application found a problem.",
   "route_error_title": "Something went wrong",
@@ -42,7 +48,11 @@
   "pagination": {
     "rows_per_page": "Rows per page:",
     "of": "of",
-    "more_than": "more than"
+    "more_than": "more than",
+    "page_next": "Go to next page",
+    "page_previous": "Go to previous page",
+    "page_first": "Go to first page",
+    "page_last": "Go to last page"
   },
   "rows_per_page": "Rows per page",
   "displayed_rows": "{{from}}–{{to}} of {{count}}",
@@ -51,5 +61,13 @@
   "deselect_loaded": "Deselect loaded results",
   "clear_search": "Clear search",
   "clear_selection": "Clear selection",
-  "open_filters": "Open filters"
+  "open_filters": "Open filters",
+  "open_date_calendar": "Choose date: {{label}}",
+  "close_date_calendar": "Close",
+  "open_time_picker": "Choose time: {{label}}",
+  "date_time_date": "{{label}} · Date",
+  "date_time_time": "{{label}} · Time",
+  "phone_country": "Country / calling code",
+  "date_label": "Date",
+  "time_label": "Time"
 }

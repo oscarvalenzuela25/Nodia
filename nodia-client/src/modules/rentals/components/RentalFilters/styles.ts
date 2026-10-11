@@ -20,8 +20,8 @@ export const ActiveFilters = styled(Box)(({ theme }) => ({
   },
 }));
 export const Fields = styled(Box)(({ theme }) => ({
+  minWidth: 0,
   display: "grid",
-  gridTemplateColumns: "repeat(2,minmax(0,1fr))",
+  gridTemplateColumns: "minmax(0,1fr)",
   gap: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: { gridTemplateColumns: "1fr" },
 }));

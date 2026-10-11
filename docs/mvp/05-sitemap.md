@@ -1,7 +1,7 @@
 # Sitemap — Nodia Parte 1
 
 > Estado: en revisión — ampliaciones IA, Finanzas personales y Reservas; aprobación histórica 2026-08-21 conservada
-> Última actualización: 2026-10-04
+> Última actualización: 2026-10-09
 > Dependencias: 04-prd-v2.md aprobado, 03-domain-model-erd.md aprobado
 
 ## Sitemap MVP
@@ -17,11 +17,12 @@
 | `/settings/modules` | Super admin | Modules | Gestión de módulos y submódulos mediante tabla y modales | MVP |
 | `/settings/resources` | Super admin | Resources | Gestión de recursos mediante tabla y modales | MVP |
 | `/settings/roles` | Super admin | Roles | Gestión de roles y permisos mediante tabla y modales | MVP |
-| `/finances/personal` | Sesión validada y módulo asignado | personal_finance (grupo finances) | General y tabs personales de movimientos, préstamos/deudas, categorías y grupos | Ampliación Finanzas |
+| `/tools/business` y `/tools/business/:id` | Sesión validada y módulo asignado | Negocios | Listado y detalle de negocio con sus tabs | MVP |
+| `/tools/finances-personal` | Sesión validada y módulo asignado | personal_finance (grupo finances) | General y tabs personales de movimientos, préstamos/deudas, categorías y grupos | Ampliación Finanzas |
 
 ## Finanzas personales — planificación 2026-10-04
 
-Ruta propuesta única `/finances/personal`, protegida por GuardStrict y BaseLayout, con constante PERSONAL_FINANCE_ROUTE en `nodia-client/src/modules/finances/constants/routes.ts`. Se utiliza el mismo valor en router y APP_AVAILABLE_ROUTES de Modules; módulo asignado mediante la administración existente.
+Ruta propuesta única `/tools/finances-personal`, protegida por GuardStrict y BaseLayout, con constante PERSONAL_FINANCE_ROUTE en `nodia-client/src/modules/finances/constants/routes.ts`. Se utiliza el mismo valor en router y APP_AVAILABLE_ROUTES de Modules; módulo asignado mediante la administración existente.
 
 General es el tab inicial/centro de mando. Tabs de Movimientos, Préstamos y deudas, Categorías y Grupos de categorías en la misma página. Create/update por modales; no rutas /new, /edit ni detalle CRUD separado. Sin acceso demo a datos financieros remotos ni asignación automática del módulo a todos.
 
@@ -52,3 +53,7 @@ Contrato y desglose: [22](22-personal-finance-contracts.md), [plan Server](23-pe
 Una sola página con selector de casa y tabs General, Calendario, Reservas, Preparación, Gastos, Colaboradores y Configuración. Edición y detalle en modales; colaborador opera la casa y propietario administra miembros/configuración. GuardStrict y ocultación de pestañas no sustituyen validación de Server. Sin demo de datos remotos ni asignación automática a todos los usuarios. El [plan Client30](30-rental-reservations-client-plan.md) implementa la constante única RENTAL_RESERVATIONS_ROUTE para router y catálogo. QA local y navegador contra PostgreSQL temporal verificados; RC-38 objetivo pendiente.
 
 [Especificación26](26-rental-reservations-spec.md), [ERD 27 aceptado](27-rental-reservations-erd.md), [contratos 28](28-rental-reservations-contracts.md), [plan Backend 29](29-rental-reservations-backend-plan.md) y [plan Client30](30-rental-reservations-client-plan.md). Contratos, navegación y planes en revisión; aceptación del ERD no aprueba toda esta ampliación.
+
+## Reubicación de herramientas — solicitud 2026-10-09
+
+Rutas frontend: `/tools/finances-personal`, `/tools/business` y `/tools/business/:id`. GuardStrict conserva el módulo asignado; router, enlaces, breadcrumbs, catálogo de Módulos y accesos móviles comparten los paths nuevos. Los endpoints HTTP de negocios conservan sus contratos vigentes. BD local: módulos ID 12 (`businesses`) e ID 14 (`perfonal_finance`, clave histórica conservada) actualizados mediante `nodia-server/scripts/move-tool-module-paths.mjs`; solo link/updated_at cambiaron, con respaldo anterior y repetición idempotente. No se cambia grupo, identidad, traducciones ni asignaciones. No se aprueban documentos automáticamente.

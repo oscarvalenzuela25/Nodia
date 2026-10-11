@@ -60,9 +60,9 @@ describe("FinanceFilters", () => {
       />,
     );
     await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
-    expect(screen.getByLabelText("Visibilidad")).toHaveValue("active");
+    expect(screen.getByLabelText("Estado de actividad")).toHaveValue("active");
     await user.selectOptions(
-      screen.getByLabelText("Visibilidad"),
+      screen.getByLabelText("Estado de actividad"),
       "inactive",
     );
     await user.click(screen.getByRole("button", { name: "Filtrar" }));
@@ -129,7 +129,7 @@ describe("FinanceFilters", () => {
     );
     await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
     await user.selectOptions(
-      screen.getByLabelText("Visibilidad"),
+      screen.getByLabelText("Estado de actividad"),
       "all",
     );
     await user.click(screen.getByRole("button", { name: "Cancelar" }));
@@ -137,7 +137,7 @@ describe("FinanceFilters", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
     );
     await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
-    expect(screen.getByLabelText("Visibilidad")).toHaveValue("active");
+    expect(screen.getByLabelText("Estado de actividad")).toHaveValue("active");
     await user.selectOptions(screen.getByLabelText("Tipo"), "income");
     expect(screen.getByLabelText("Estado")).toHaveValue("");
     await user.click(screen.getByRole("button", { name: "Filtrar" }));

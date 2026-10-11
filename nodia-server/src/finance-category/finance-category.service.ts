@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, type EntityManager } from 'typeorm';
 import { FinanceCategory } from './entities/finance-category.entity.js';
+import { FinanceMovement } from '../finance-movement/entities/finance-movement.entity.js';
+import { FinanceCategoryGroupMembership } from '../finance-category-group/entities/finance-category-group-membership.entity.js';
 import { FinanceQueryDto } from '../finance-common/dto/finance-query.dto.js';
 import { applyFinanceQuery } from '../finance-common/finance-query.js';
 
@@ -53,5 +55,21 @@ export class FinanceCategoryService {
     category: FinanceCategory,
   ): Promise<FinanceCategory> {
     return manager.getRepository(FinanceCategory).save(category);
+  }
+
+  hasMovements(manager: EntityManager, userId: string, id: string) {
+    return manager
+      .getRepository(FinanceMovement)
+      .existsBy({ user_id: userId, category_id: id });
+  }
+  deleteMemberships(manager: EntityManager, userId: string, id: string) {
+    return manager
+      .getRepository(FinanceCategoryGroupMembership)
+      .delete({ user_id: userId, category_id: id });
+  }
+  deleteOwned(manager: EntityManager, userId: string, id: string) {
+    return manager
+      .getRepository(FinanceCategory)
+      .delete({ user_id: userId, id });
   }
 }

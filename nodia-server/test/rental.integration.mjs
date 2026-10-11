@@ -25,6 +25,7 @@ import {
   formatLocalOn,
 } from '../dist/rental-common/rental-time.js';
 import { CreateRentalReservations1791146000000 } from '../dist/migrations/1791146000000-CreateRentalReservations.js';
+import { OptionalRentalPropertyTimes1791540000000 } from '../dist/migrations/1791540000000-OptionalRentalPropertyTimes.js';
 
 // Owns an ephemeral database; never imports configured DataSource or reads .env.
 const container = `template_rental_integration_${process.pid}_${randomBytes(4).toString('hex')}`;
@@ -79,7 +80,10 @@ try {
     entities: [
       fileURLToPath(new URL('../dist/**/*.entity.js', import.meta.url)),
     ],
-    migrations: [CreateRentalReservations1791146000000],
+    migrations: [
+      CreateRentalReservations1791146000000,
+      OptionalRentalPropertyTimes1791540000000,
+    ],
   };
   for (let attempt = 0; attempt < 80; attempt++) {
     db = new DataSource(options);
@@ -99,6 +103,7 @@ try {
     CREATE TABLE translations(id BIGSERIAL PRIMARY KEY,source_entity VARCHAR(255),source_id VARCHAR(255),source_key VARCHAR(255),locale VARCHAR(10),value TEXT,is_active BOOLEAN DEFAULT true,created_at TIMESTAMP DEFAULT now(),updated_at TIMESTAMP DEFAULT now(),UNIQUE(source_entity,source_id,source_key,locale));
     CREATE TABLE user_modules(id BIGSERIAL PRIMARY KEY,user_id BIGINT,module_id BIGINT);`);
   await db.runMigrations();
+  await db.undoLastMigration();
   await db.undoLastMigration();
   await db.runMigrations();
   assert.deepEqual(await db.query('SELECT * FROM legacy_probe'), [
@@ -226,10 +231,7 @@ try {
     const occurredOn = day(-1);
     const propertyInput = {
       name: 'Synthetic house',
-      timezone: 'America/Santiago',
       max_guests: 6,
-      check_in_time: '15:00',
-      check_out_time: '11:00',
       minimum_turnover_minutes: 120,
     };
     assert.equal((await request('GET', api, undefined, null)).status, 401);
@@ -275,6 +277,23 @@ try {
     duplicateCreates.forEach((response) => expectStatus(response, 201));
     assert.deepEqual(duplicateCreates[0].data, duplicateCreates[1].data);
     const propertyId = duplicateCreates[0].data.resource_id;
+    assert.deepEqual(
+      (
+        await db.query(
+          'SELECT timezone,check_in_time,check_out_time FROM rental_properties WHERE id=$1',
+          [propertyId],
+        )
+      )[0],
+      {
+        timezone: 'America/Santiago',
+        check_in_time: null,
+        check_out_time: null,
+      },
+    );
+    await assert.rejects(db.undoLastMigration(), /restore.*backup/i);
+    checks.push(
+      'Accommodations omit timezone and legacy times; rollback refuses to invent missing times.',
+    );
     const house = `${api}/${propertyId}`;
     assert.equal(
       (

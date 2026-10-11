@@ -95,6 +95,13 @@ export async function getFinanceOverview(
   return financeOverviewSchema.parse(data);
 }
 
+export async function deleteFinanceRecord(
+  resource: FinanceResource,
+  id: string,
+): Promise<void> {
+  await mainInstance.delete(endpoint(`/${resource}/${encodeURIComponent(id)}`));
+}
+
 export async function getFinanceSummary(
   kind: "categories" | "category-groups",
   query: FinanceQuery,

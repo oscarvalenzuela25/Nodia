@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
@@ -16,10 +16,10 @@ import {
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
-import { getCountries, getCountryCallingCode } from "libphonenumber-js/max";
+import type { CountryCode } from "libphonenumber-js/max";
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
-import SelectSingleInput from "../../../../../../../../components/inputs/SelectSingleInput";
+import PhoneCountryInput from "../../../../../../../../components/inputs/PhoneCountryInput";
 import {
   CONTACT_DAYS,
   type ContactValues,
@@ -56,7 +56,7 @@ export default function ContactModal({
   onClose,
   onSave,
 }: Props) {
-  const { t, i18n } = useTranslation(["provider_contacts", "core"]);
+  const { t } = useTranslation(["provider_contacts", "core"]);
   const formId = useId();
   const [expanded, setExpanded] = useState(false);
   const [uncertain, setUncertain] = useState(false);
@@ -81,15 +81,6 @@ export default function ContactModal({
       (phone) =>
         phone.number.trim() && normalizedPhone(phone.country, phone.number),
     );
-  const countries = useMemo(() => {
-    const names = new Intl.DisplayNames([i18n.language], { type: "region" });
-    return getCountries()
-      .map((country) => ({
-        value: country,
-        label: `${names.of(country)} (+${getCountryCallingCode(country)})`,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label, i18n.language));
-  }, [i18n.language]);
   async function save(form: ContactForm) {
     if (submitting.current || busy) return;
     submitting.current = true;
@@ -182,13 +173,11 @@ export default function ContactModal({
                 name={`phone.${index}.country`}
                 control={control}
                 render={({ field }) => (
-                  <SelectSingleInput
+                  <PhoneCountryInput
                     id={`${formId}-country-${index}`}
                     label={t("provider_contacts:country")}
-                    value={field.value}
-                    onChange={(value) => field.onChange(value ?? "CL")}
-                    options={countries}
-                    clearable={false}
+                    value={field.value as CountryCode}
+                    onChange={field.onChange}
                     disabled={disabled}
                   />
                 )}

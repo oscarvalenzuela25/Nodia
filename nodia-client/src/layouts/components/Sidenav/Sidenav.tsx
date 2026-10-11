@@ -194,7 +194,7 @@ const Sidenav: FC<Props> = ({
               const isModuleOpen = openModules[moduleItem.id] ?? true;
 
               return (
-                <Box key={moduleItem.id}>
+                <ListItem key={moduleItem.id} disablePadding sx={{ display: "block" }}>
                   {isCollapsed ? (
                     <Divider sx={{ my: 2 }} />
                   ) : (
@@ -283,7 +283,7 @@ const Sidenav: FC<Props> = ({
                       })}
                     </List>
                   </Collapse>
-                </Box>
+                </ListItem>
               );
             }
 

@@ -1,5 +1,6 @@
 import { PERSONAL_FINANCE_ROUTE } from "../modules/finances/constants/routes";
 import { RENTAL_RESERVATIONS_ROUTE } from "../modules/rentals/constants/routes";
+import { BUSINESS_ROUTE } from "../modules/business/constants/routes";
 
 export interface AppRouteOption {
   value: string;
@@ -12,13 +13,13 @@ export const APP_AVAILABLE_ROUTES: AppRouteOption[] = [
   {
     value: PERSONAL_FINANCE_ROUTE,
     labelKey: "modules:routes.personal_finance",
-    defaultLabel: "Finanzas personales (/finances/personal)",
+    defaultLabel: "Finanzas personales (/tools/finances-personal)",
   },
   { value: "/", labelKey: "modules:routes.home", defaultLabel: "Inicio (/)" },
   {
-    value: "/business",
+    value: BUSINESS_ROUTE,
     labelKey: "modules:routes.business",
-    defaultLabel: "Negocios (/business)",
+    defaultLabel: "Negocios (/tools/business)",
   },
   {
     value: "/settings/users",

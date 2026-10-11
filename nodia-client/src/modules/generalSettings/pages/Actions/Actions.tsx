@@ -19,12 +19,11 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Switch,
-  FormControlLabel,
   LinearProgress,
   Alert,
   AlertTitle,
-  TablePagination,
+  useMediaQuery,
+  useTheme,
   Collapse,
   ToggleButton,
   ToggleButtonGroup,
@@ -45,10 +44,12 @@ import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 
 import Filter from "../../../../components/Filter";
+import ActiveStatusSelect from "../../../../components/Filter/components/ActiveStatusSelect";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import InputSearch from "../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
+import MobileRecordCard from "../../../../components/MobileRecordCard/MobileRecordCard";
 import ActionModal from "./components/ActionModal";
 import BusinessActionModal from "./components/BusinessActionModal";
 import {
@@ -59,6 +60,7 @@ import {
   useCreateBusinessAction,
   useUpdateBusinessAction,
   useDeleteBusinessAction,
+  useDeleteAction,
 } from "./infrastructure/useServices";
 import type {
   ActionItem,
@@ -84,12 +86,16 @@ import {
   StyledTableContainer,
   KeyBadge,
   DescriptionTypography,
+  MobileList,
+  ListPagination,
 } from "./styles";
 
 type ViewMode = "split" | "system" | "business";
 
 const Actions: FC = () => {
   const { t, i18n } = useTranslation(["actions", "core"]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Perspective view mode: split, system, business
   const [viewMode, setViewMode] = useState<ViewMode>("split");
@@ -104,12 +110,15 @@ const Actions: FC = () => {
   const [searchTermBusiness, setSearchTermBusiness] = useState<string>("");
   const [pageBusiness, setPageBusiness] = useState<number>(0);
   const [rowsPerPageBusiness, setRowsPerPageBusiness] = useState<number>(10);
+  const [appliedBusinessActive, setAppliedBusinessActive] = useState<
+    boolean | null
+  >(true);
 
   // Filter modal draft state for System Actions
   const [draftFilterActionKeys, setDraftFilterActionKeys] = useState<string[]>(
-    []
+    [],
   );
-  const [draftFilterActive, setDraftFilterActive] = useState<boolean>(true);
+  const [draftFilterActive, setDraftFilterActive] = useState<boolean | null>(true);
 
   // Applied filter state for System Actions
   const [appliedFilterActionKeys, setAppliedFilterActionKeys] = useState<
@@ -117,7 +126,7 @@ const Actions: FC = () => {
   >([]);
   const [appliedFilterActive, setAppliedFilterActive] = useState<
     boolean | null
-  >(null);
+  >(true);
 
   // System Action Create / Edit Modal state
   const [isActionModalOpen, setIsActionModalOpen] = useState<boolean>(false);
@@ -157,12 +166,16 @@ const Actions: FC = () => {
     useState<BusinessAction | null>(null);
   const [isConfirmDeleteBusinessOpen, setIsConfirmDeleteBusinessOpen] =
     useState<boolean>(false);
+  const [actionToDelete, setActionToDelete] = useState<ActionItem | null>(null);
 
   // System Mutations
   const createActionMutation = useCreateAction();
   const updateActionMutation = useUpdateAction();
+  const deleteActionMutation = useDeleteAction();
   const isMutatingSystem =
-    createActionMutation.isPending || updateActionMutation.isPending;
+    createActionMutation.isPending ||
+    updateActionMutation.isPending ||
+    deleteActionMutation.isPending;
 
   // Business Mutations
   const createBusinessActionMutation = useCreateBusinessAction();
@@ -213,17 +226,18 @@ const Actions: FC = () => {
       includes: true,
       q: Object.keys(ransackQuery).length > 0 ? ransackQuery : undefined,
     },
-    { enabled: showSystem }
+    { enabled: showSystem },
   );
 
   // Build Ransack query for Business Actions
   const ransackQueryBusiness = useMemo(() => {
     const q: Record<string, unknown> = {};
+    if (appliedBusinessActive !== null) q.is_active_eq = appliedBusinessActive;
     if (searchTermBusiness.trim()) {
       q.key_cont = searchTermBusiness.trim();
     }
     return q;
-  }, [searchTermBusiness]);
+  }, [searchTermBusiness, appliedBusinessActive]);
 
   // Query: Paginated business actions
   const {
@@ -242,7 +256,7 @@ const Actions: FC = () => {
           ? ransackQueryBusiness
           : undefined,
     },
-    { enabled: showBusiness }
+    { enabled: showBusiness },
   );
 
   const actions: ActionItem[] = useMemo(() => {
@@ -304,7 +318,7 @@ const Actions: FC = () => {
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -315,7 +329,7 @@ const Actions: FC = () => {
   };
 
   const handleChangeRowsPerPageBusiness = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPageBusiness(parseInt(event.target.value, 10));
     setPageBusiness(0);
@@ -345,7 +359,7 @@ const Actions: FC = () => {
   // System Action Menu Handlers
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
-    action: ActionItem
+    action: ActionItem,
   ) => {
     setActionMenuAnchor(e.currentTarget);
     setTargetAction(action);
@@ -361,26 +375,24 @@ const Actions: FC = () => {
     setIsActionModalOpen(true);
   };
 
-  const handleOpenEditModal = () => {
-    if (targetAction) {
-      const keyTrans = targetAction.translates?.find((t) => t.key === "key");
-      const commentTrans = targetAction.translates?.find(
-        (t) => t.key === "comment"
-      );
+  const handleOpenEditModal = (action: ActionItem | null = targetAction) => {
+    if (action) {
+      const keyTrans = action.translates?.find((t) => t.key === "key");
+      const commentTrans = action.translates?.find((t) => t.key === "comment");
       setSelectedActionForEdit({
-        id: targetAction.id,
-        key: targetAction.key,
-        nameTranslations: targetAction.nameTranslations ?? {
+        id: action.id,
+        key: action.key,
+        nameTranslations: action.nameTranslations ?? {
           es: keyTrans?.es ?? "",
           en: keyTrans?.en ?? "",
         },
-        descriptionTranslations: targetAction.descriptionTranslations ?? {
+        descriptionTranslations: action.descriptionTranslations ?? {
           es: commentTrans?.es ?? "",
           en: commentTrans?.en ?? "",
         },
-        description: targetAction.description,
-        isActive: targetAction.isActive,
-        translates: targetAction.translates,
+        description: action.description,
+        isActive: action.isActive,
+        translates: action.translates,
       });
       setIsActionModalOpen(true);
     }
@@ -390,7 +402,7 @@ const Actions: FC = () => {
   // Business Action Menu Handlers
   const handleOpenBusinessActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
-    action: BusinessAction
+    action: BusinessAction,
   ) => {
     setBusinessActionMenuAnchor(e.currentTarget);
     setTargetBusinessAction(action);
@@ -406,19 +418,19 @@ const Actions: FC = () => {
     setIsBusinessModalOpen(true);
   };
 
-  const handleOpenEditBusinessModal = () => {
-    if (targetBusinessAction) {
-      const keyTrans = targetBusinessAction.translates?.find(
-        (t) => t.key === "key"
-      );
-      const descTrans = targetBusinessAction.translates?.find(
-        (t) => t.key === "description" || t.key === "comment"
+  const handleOpenEditBusinessModal = (
+    action: BusinessAction | null = targetBusinessAction,
+  ) => {
+    if (action) {
+      const keyTrans = action.translates?.find((t) => t.key === "key");
+      const descTrans = action.translates?.find(
+        (t) => t.key === "description" || t.key === "comment",
       );
       setSelectedBusinessActionForEdit({
-        id: targetBusinessAction.id,
-        key: targetBusinessAction.key,
-        is_active: targetBusinessAction.is_active ?? true,
-        has_description: targetBusinessAction.has_description ?? false,
+        id: action.id,
+        key: action.key,
+        is_active: action.is_active ?? true,
+        has_description: action.has_description ?? false,
         nameTranslations: {
           es: keyTrans?.es ?? "",
           en: keyTrans?.en ?? "",
@@ -427,7 +439,7 @@ const Actions: FC = () => {
           es: descTrans?.es ?? "",
           en: descTrans?.en ?? "",
         },
-        translates: targetBusinessAction.translates,
+        translates: action.translates,
       });
       setIsBusinessModalOpen(true);
     }
@@ -501,7 +513,7 @@ const Actions: FC = () => {
   };
 
   const handleConfirmToggleActive = async () => {
-    if (!actionToToggle) return;
+    if (!actionToToggle || isBusySystem) return;
     try {
       await updateActionMutation.mutateAsync({
         actionId: actionToToggle.id,
@@ -529,7 +541,7 @@ const Actions: FC = () => {
   };
 
   const handleConfirmToggleActiveBusiness = async () => {
-    if (!businessActionToToggle) return;
+    if (!businessActionToToggle || isBusyBusiness) return;
     try {
       await updateBusinessActionMutation.mutateAsync({
         actionId: businessActionToToggle.id,
@@ -557,11 +569,11 @@ const Actions: FC = () => {
   };
 
   const handleConfirmDeleteBusiness = async () => {
-    if (!businessActionToDelete) return;
+    if (!businessActionToDelete || isBusyBusiness) return;
     try {
-      await deleteBusinessActionMutation.mutateAsync(
-        businessActionToDelete.id
-      );
+      await deleteBusinessActionMutation.mutateAsync(businessActionToDelete.id);
+      if (businessActionsList.length === 1 && pageBusiness > 0)
+        setPageBusiness(pageBusiness - 1);
       setIsConfirmDeleteBusinessOpen(false);
       setBusinessActionToDelete(null);
     } catch {
@@ -577,6 +589,22 @@ const Actions: FC = () => {
     });
   };
 
+  const handleRequestDeleteAction = (action: ActionItem) => {
+    setActionToDelete(action);
+    handleCloseActionMenu();
+  };
+
+  const handleConfirmDeleteAction = async () => {
+    if (!actionToDelete || isBusySystem) return;
+    try {
+      await deleteActionMutation.mutateAsync(actionToDelete.id);
+      if (actions.length === 1 && page > 0) setPage(page - 1);
+      setActionToDelete(null);
+    } catch {
+      // Mutation owns the toast; preserve the target for review and retry.
+    }
+  };
+
   // Filter application for System Actions
   const handleApplyFilters = () => {
     setAppliedFilterActionKeys(draftFilterActionKeys);
@@ -588,7 +616,7 @@ const Actions: FC = () => {
     setDraftFilterActionKeys([]);
     setDraftFilterActive(true);
     setAppliedFilterActionKeys([]);
-    setAppliedFilterActive(null);
+    setAppliedFilterActive(true);
     setPage(0);
   };
 
@@ -612,7 +640,7 @@ const Actions: FC = () => {
     const lang = i18n.language?.startsWith("en") ? "en" : "es";
     const altLang = lang === "en" ? "es" : "en";
     const descTrans = ba.translates?.find(
-      (tr) => tr.key === "description" || tr.key === "comment"
+      (tr) => tr.key === "description" || tr.key === "comment",
     );
     return descTrans?.[lang] || descTrans?.[altLang] || null;
   };
@@ -620,6 +648,99 @@ const Actions: FC = () => {
   const isBusySystem = isLoading || isFetching || isMutatingSystem;
   const isBusyBusiness =
     isLoadingBusiness || isFetchingBusiness || isMutatingBusiness;
+
+  const renderMobileCard = (
+    record: {
+      id: string;
+      key: string;
+      name?: string | null;
+      description: string | null;
+      isActive: boolean;
+    },
+    busy: boolean,
+    onEdit: () => void,
+    onToggle: () => void,
+    onDelete: () => void,
+  ) => (
+    <MobileRecordCard
+      key={record.id}
+      title={record.name || record.key}
+      disabled={busy}
+      status={
+        <Chip
+          size="small"
+          label={t(
+            record.isActive
+              ? "actions:status.active"
+              : "actions:status.inactive",
+          )}
+          color={record.isActive ? "success" : "default"}
+        />
+      }
+      fields={[
+        { key: "id", label: t("actions:table.id"), value: record.id },
+        { key: "key", label: t("actions:table.key"), value: record.key },
+        {
+          key: "description",
+          label: t("actions:table.description"),
+          value: record.description || t("actions:empty_value"),
+        },
+      ]}
+      primaryAction={{
+        key: "edit",
+        label: t("actions:actions_menu.update"),
+        icon: <EditOutlinedIcon />,
+        onClick: onEdit,
+      }}
+      actions={[
+        {
+          key: "toggle",
+          label: t(record.isActive ? "actions:deactivate" : "actions:activate"),
+          icon: record.isActive ? (
+            <BlockOutlinedIcon />
+          ) : (
+            <CheckCircleOutlineOutlinedIcon />
+          ),
+          onClick: onToggle,
+        },
+        {
+          key: "copy",
+          label: t("actions:copy"),
+          icon: <ContentCopyIcon />,
+          onClick: () => handleCopyId(record.id),
+        },
+        {
+          key: "delete",
+          label: t("actions:delete"),
+          color: "error",
+          icon: <DeleteOutlinedIcon />,
+          onClick: onDelete,
+        },
+      ]}
+    />
+  );
+
+  const renderMobileEmpty = (onCreate: () => void, busy: boolean) => (
+    <Box sx={{ textAlign: "center", py: 3 }}>
+      <Typography variant="h6">{t("actions:empty_state.title")}</Typography>
+      <Typography sx={{ mt: 1, mb: 2 }} color="text.secondary">
+        {t("actions:empty_state.description")}
+      </Typography>
+      <Button
+        fullWidth
+        variant="outlined"
+        sx={{ minHeight: 44 }}
+        disabled={busy}
+        onClick={onCreate}
+        startIcon={<AddCircleOutlinedIcon />}
+      >
+        {t("actions:empty_state.cta")}
+      </Button>
+    </Box>
+  );
+
+  const paginationItemLabel = (type: "first" | "last" | "next" | "previous") =>
+    t(`actions:pagination.${type}`);
 
   return (
     <Box>
@@ -634,16 +755,19 @@ const Actions: FC = () => {
 
         <ViewModeContainer>
           <ToggleButtonGroup
+            disabled={isBusySystem || isBusyBusiness}
             value={viewMode}
             exclusive
             onChange={(_, val) => {
               if (val) setViewMode(val as ViewMode);
             }}
             size="small"
-            aria-label="perspective-view-mode"
+            aria-label={t("actions:view_mode_label")}
             sx={{
               "& .MuiToggleButton-root": {
                 border: "none",
+                minWidth: { xs: 44, sm: 0 },
+                minHeight: { xs: 44, sm: 0 },
                 borderRadius: "8px !important",
                 px: 1.5,
                 py: 0.6,
@@ -668,19 +792,22 @@ const Actions: FC = () => {
               aria-label={t("actions:view_mode_split", "Vista Dividida")}
             >
               <ViewAgendaOutlinedIcon fontSize="small" />
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}
+              >
                 {t("actions:view_mode_split", "Vista Dividida")}
               </Box>
             </ToggleButton>
             <ToggleButton
               value="system"
-              aria-label={t(
-                "actions:view_mode_system",
-                "Acciones del Sistema"
-              )}
+              aria-label={t("actions:view_mode_system", "Acciones del Sistema")}
             >
               <BoltOutlinedIcon fontSize="small" />
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}
+              >
                 {t("actions:view_mode_system", "Acciones del Sistema")}
               </Box>
             </ToggleButton>
@@ -688,11 +815,14 @@ const Actions: FC = () => {
               value="business"
               aria-label={t(
                 "actions:view_mode_business",
-                "Acciones de Negocio"
+                "Acciones de Negocio",
               )}
             >
               <StorefrontOutlinedIcon fontSize="small" />
-              <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}>
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" }, ml: 0.75 }}
+              >
                 {t("actions:view_mode_business", "Acciones de Negocio")}
               </Box>
             </ToggleButton>
@@ -711,10 +841,7 @@ const Actions: FC = () => {
               <Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    {t(
-                      "actions:business_actions_title",
-                      "Acciones de Negocio"
-                    )}
+                    {t("actions:business_actions_title", "Acciones de Negocio")}
                   </Typography>
                   <Chip
                     label={totalBusinessItems}
@@ -731,28 +858,14 @@ const Actions: FC = () => {
                 <Typography variant="caption" color="text.secondary">
                   {t(
                     "actions:business_actions_subtitle",
-                    "Catálogo de permisos asignables a colaboradores dentro de cada negocio."
+                    "Catálogo de permisos asignables a colaboradores dentro de cada negocio.",
                   )}
                 </Typography>
               </Box>
             </BusinessHeaderInfo>
 
             <BusinessHeaderActions>
-              <Box sx={{ width: { xs: "100%", sm: "240px" } }}>
-                <InputSearch
-                  value={searchTermBusiness}
-                  onChange={(val) => {
-                    setSearchTermBusiness(val);
-                    setPageBusiness(0);
-                  }}
-                  placeholder={t(
-                    "actions:search_business_actions_placeholder",
-                    "Buscar acción de negocio..."
-                  )}
-                  fullWidth
-                  disabled={isLoadingBusiness || isMutatingBusiness}
-                />
-              </Box>
+
               <Button
                 variant="contained"
                 size="small"
@@ -765,6 +878,7 @@ const Actions: FC = () => {
                   color: theme.palette.primary.contrastText,
                   fontWeight: 600,
                   whiteSpace: "nowrap",
+                  minHeight: isMobile ? 44 : 32,
                 })}
               >
                 {t("actions:new_business_action", "Nueva Acción de Negocio")}
@@ -773,27 +887,92 @@ const Actions: FC = () => {
                 <Tooltip
                   title={
                     isBusinessExpanded
-                      ? t("core:collapse", "Colapsar")
-                      : t("core:expand", "Expandir")
+                      ? t("actions:collapse_business")
+                      : t("actions:expand_business")
                   }
                 >
-                  <IconButton
-                    size="small"
-                    onClick={() => setIsBusinessExpanded((prev) => !prev)}
-                    aria-label="toggle-business-collapse"
-                  >
-                    {isBusinessExpanded ? (
-                      <ExpandLessIcon />
-                    ) : (
-                      <ExpandMoreIcon />
-                    )}
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      size="small"
+                      disabled={isBusyBusiness}
+                      onClick={() => setIsBusinessExpanded((prev) => !prev)}
+                      aria-label={
+                        isBusinessExpanded
+                          ? t("actions:collapse_business")
+                          : t("actions:expand_business")
+                      }
+                      sx={{ width: 44, height: 44 }}
+                    >
+                      {isBusinessExpanded ? (
+                        <ExpandLessIcon />
+                      ) : (
+                        <ExpandMoreIcon />
+                      )}
+                    </IconButton>
+                  </span>
                 </Tooltip>
               )}
             </BusinessHeaderActions>
           </BusinessSectionHeader>
 
           <Collapse in={viewMode === "business" || isBusinessExpanded}>
+            <Box sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 2,
+            }}>
+              <Box sx={{ width: { xs: "100%", sm: 360 }, minWidth: 0 }}>
+                <InputSearch
+                  value={searchTermBusiness}
+                  onChange={(val) => {
+                    setSearchTermBusiness(val);
+                    setPageBusiness(0);
+                  }}
+                  placeholder={t(
+                    "actions:search_business_actions_placeholder",
+                    "Buscar acción de negocio...",
+                  )}
+                  fullWidth
+                  disabled={isBusyBusiness}
+                />
+              </Box>
+              <ToggleButtonGroup
+                exclusive
+                value={
+                  appliedBusinessActive === null
+                    ? "all"
+                    : appliedBusinessActive
+                      ? "active"
+                      : "inactive"
+                }
+                disabled={isBusyBusiness}
+                aria-label={t("actions:business_status_filter")}
+                onChange={(_, value: string | null) => {
+                  if (!value) return;
+                  setAppliedBusinessActive(
+                    value === "all" ? null : value === "active",
+                  );
+                  setPageBusiness(0);
+                }}
+                sx={{
+                  width: { xs: "100%", sm: "auto" },
+                  "& button": { flex: 1, minHeight: 44, px: 1.5 },
+                }}
+              >
+                <ToggleButton value="active">
+                  {t("actions:status_filter.active")}
+                </ToggleButton>
+                <ToggleButton value="inactive">
+                  {t("actions:status_filter.inactive")}
+                </ToggleButton>
+                <ToggleButton value="all">
+                  {t("actions:status_filter.all")}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
             {isErrorBusiness && (
               <Box sx={{ p: 2 }}>
                 <Alert
@@ -803,6 +982,7 @@ const Actions: FC = () => {
                       color="inherit"
                       size="small"
                       onClick={() => refetchBusiness()}
+                      disabled={isBusyBusiness}
                     >
                       {t("core:retry", "Reintentar")}
                     </Button>
@@ -811,7 +991,7 @@ const Actions: FC = () => {
                   <AlertTitle>
                     {t(
                       "actions:error_state.title",
-                      "Error al cargar las acciones"
+                      "Error al cargar las acciones",
                     )}
                   </AlertTitle>
                   {errorBusiness instanceof Error
@@ -821,215 +1001,250 @@ const Actions: FC = () => {
               </Box>
             )}
 
-            <Skeleton
-              loading={isLoadingBusiness}
-              name="business-actions-table"
-            >
+            <Skeleton loading={isLoadingBusiness} name="business-actions-table">
               {isFetchingBusiness && !isLoadingBusiness && (
                 <LinearProgress sx={{ height: 2 }} />
               )}
-              <TableContainer component={Paper} elevation={0}>
-                <Table size="small">
-                  <TableHead
-                    sx={{
-                      bgcolor: "primary.main",
-                      "& th": {
-                        fontWeight: "bold",
-                        color: "primary.contrastText",
+              {isMobile ? (
+                <MobileList aria-label={t("actions:business_actions_title")}>
+                  {!isLoadingBusiness &&
+                    !isErrorBusiness &&
+                    businessActionsList.length === 0 &&
+                    renderMobileEmpty(
+                      handleOpenCreateBusinessModal,
+                      isBusyBusiness,
+                    )}
+                  {businessActionsList.map((action) =>
+                    renderMobileCard(
+                      {
+                        id: action.id,
+                        key: action.key,
+                        name: getBusinessActionDisplayName(action),
+                        description: getBusinessActionDescription(action),
+                        isActive: action.is_active ?? true,
                       },
-                    }}
-                  >
-                    <TableRow>
-                      <TableCell>{t("actions:table.id")}</TableCell>
-                      <TableCell>{t("actions:table.name")}</TableCell>
-                      <TableCell>{t("actions:table.key")}</TableCell>
-                      <TableCell>{t("actions:table.description")}</TableCell>
-                      <TableCell>{t("actions:table.active")}</TableCell>
-                      <TableCell align="center">
-                        {t("actions:table.actions")}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {!isLoadingBusiness && businessActionsList.length === 0 ? (
+                      isBusyBusiness,
+                      () => handleOpenEditBusinessModal(action),
+                      () => handleRequestToggleActiveBusiness(action),
+                      () => handleRequestDeleteBusiness(action),
+                    ),
+                  )}
+                </MobileList>
+              ) : (
+                <TableContainer component={Paper} elevation={0}>
+                  <Table size="small">
+                    <TableHead
+                      sx={{
+                        bgcolor: "primary.main",
+                        "& th": {
+                          fontWeight: "bold",
+                          color: "primary.contrastText",
+                        },
+                      }}
+                    >
                       <TableRow>
-                        <TableCell
-                          colSpan={6}
-                          align="center"
-                          sx={{ py: 5, color: "text.secondary" }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: 1.5,
-                            }}
-                          >
-                            <StorefrontOutlinedIcon
-                              sx={{ fontSize: 40, color: "text.disabled" }}
-                            />
-                            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                              {t(
-                                "actions:empty_state.title",
-                                "No hay acciones disponibles"
-                              )}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.disabled"
-                              sx={{ maxWidth: 380 }}
-                            >
-                              {t(
-                                "actions:empty_state.description",
-                                "No se encontraron acciones actualmente. Comience agregando una nueva."
-                              )}
-                            </Typography>
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              startIcon={<AddCircleOutlinedIcon />}
-                              onClick={handleOpenCreateBusinessModal}
-                              disabled={isBusyBusiness}
-                              sx={{ mt: 1 }}
-                            >
-                              {t(
-                                "actions:empty_state.cta",
-                                "Crear primera acción"
-                              )}
-                            </Button>
-                          </Box>
+                        <TableCell>{t("actions:table.id")}</TableCell>
+                        <TableCell>{t("actions:table.name")}</TableCell>
+                        <TableCell>{t("actions:table.key")}</TableCell>
+                        <TableCell>{t("actions:table.description")}</TableCell>
+                        <TableCell>{t("actions:table.active")}</TableCell>
+                        <TableCell align="center">
+                          {t("actions:table.actions")}
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      businessActionsList.map((ba) => {
-                        const displayName = getBusinessActionDisplayName(ba);
-                        const displayDesc = getBusinessActionDescription(ba);
-                        const isActive = ba.is_active ?? true;
-
-                        return (
-                          <TableRow
-                            key={ba.id}
-                            hover
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
+                    </TableHead>
+                    <TableBody>
+                      {!isLoadingBusiness &&
+                      !isErrorBusiness &&
+                      businessActionsList.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={6}
+                            align="center"
+                            sx={{ py: 5, color: "text.secondary" }}
                           >
-                            <TableCell
+                            <Box
                               sx={{
-                                color: "text.secondary",
-                                fontSize: "0.8125rem",
-                                fontFamily: "monospace",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 1.5,
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                }}
-                              >
-                                {ba.id.includes("-")
-                                  ? `${ba.id.split("-")[0]}...`
-                                  : ba.id}
-                                <Tooltip
-                                  title={t("actions:copy")}
-                                  arrow
-                                  placement="top"
-                                >
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleCopyId(ba.id)}
-                                    aria-label={t("actions:copy")}
-                                    disabled={isBusyBusiness}
-                                  >
-                                    <ContentCopyIcon
-                                      fontSize="small"
-                                      sx={{ fontSize: "0.875rem" }}
-                                    />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                            </TableCell>
-                            <TableCell>
+                              <StorefrontOutlinedIcon
+                                sx={{ fontSize: 40, color: "text.disabled" }}
+                              />
                               <Typography
-                                variant="body2"
+                                variant="subtitle1"
                                 sx={{ fontWeight: 600 }}
                               >
-                                {displayName}
+                                {t(
+                                  "actions:empty_state.title",
+                                  "No hay acciones disponibles",
+                                )}
                               </Typography>
-                            </TableCell>
-                            <TableCell>
-                              <KeyBadge>{ba.key}</KeyBadge>
-                            </TableCell>
-                            <TableCell>
-                              {displayDesc ? (
-                                <DescriptionTypography>
-                                  {displayDesc}
-                                </DescriptionTypography>
-                              ) : (
-                                t("actions:empty_value", "-")
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <Chip
-                                label={
-                                  isActive
-                                    ? t("actions:yes")
-                                    : t("actions:no")
-                                }
-                                color={isActive ? "success" : "error"}
-                                size="small"
-                                variant={isActive ? "filled" : "outlined"}
-                                sx={
-                                  isActive
-                                    ? {
-                                        color: "success.contrastText",
-                                        height: 22,
-                                        fontSize: "0.75rem",
-                                      }
-                                    : { height: 22, fontSize: "0.75rem" }
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="center">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                aria-label={t("actions:table.actions")}
-                                onClick={(e) =>
-                                  handleOpenBusinessActionMenu(e, ba)
-                                }
-                                disabled={isBusyBusiness}
+                              <Typography
+                                variant="body2"
+                                color="text.disabled"
+                                sx={{ maxWidth: 380 }}
                               >
-                                <MoreVertIcon fontSize="small" />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                component="div"
-                count={totalBusinessItems}
-                page={pageBusiness}
-                onPageChange={handleChangePageBusiness}
-                rowsPerPage={rowsPerPageBusiness}
-                onRowsPerPageChange={handleChangeRowsPerPageBusiness}
-                rowsPerPageOptions={[5, 10, 25, 50]}
-                labelRowsPerPage={t("core:pagination.rows_per_page")}
-                labelDisplayedRows={({ from, to, count }) =>
-                  `${from}–${to} ${t("core:pagination.of")} ${
-                    count !== -1
-                      ? count
-                      : `${t("core:pagination.more_than")} ${to}`
-                  }`
-                }
-              />
+                                {t(
+                                  "actions:empty_state.description",
+                                  "No se encontraron acciones actualmente. Comience agregando una nueva.",
+                                )}
+                              </Typography>
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<AddCircleOutlinedIcon />}
+                                onClick={handleOpenCreateBusinessModal}
+                                disabled={isBusyBusiness}
+                                sx={{ mt: 1 }}
+                              >
+                                {t(
+                                  "actions:empty_state.cta",
+                                  "Crear primera acción",
+                                )}
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        businessActionsList.map((ba) => {
+                          const displayName = getBusinessActionDisplayName(ba);
+                          const displayDesc = getBusinessActionDescription(ba);
+                          const isActive = ba.is_active ?? true;
+
+                          return (
+                            <TableRow
+                              key={ba.id}
+                              hover
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell
+                                sx={{
+                                  color: "text.secondary",
+                                  fontSize: "0.8125rem",
+                                  fontFamily: "monospace",
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  {ba.id.includes("-")
+                                    ? `${ba.id.split("-")[0]}...`
+                                    : ba.id}
+                                  <Tooltip
+                                    title={t("actions:copy")}
+                                    arrow
+                                    placement="top"
+                                  >
+                                    <span>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() => handleCopyId(ba.id)}
+                                        aria-label={t("actions:copy")}
+                                        disabled={isBusyBusiness}
+                                      >
+                                        <ContentCopyIcon
+                                          fontSize="small"
+                                          sx={{ fontSize: "0.875rem" }}
+                                        />
+                                      </IconButton>
+                                    </span>
+                                  </Tooltip>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: 600 }}
+                                >
+                                  {displayName}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <KeyBadge>{ba.key}</KeyBadge>
+                              </TableCell>
+                              <TableCell>
+                                {displayDesc ? (
+                                  <DescriptionTypography>
+                                    {displayDesc}
+                                  </DescriptionTypography>
+                                ) : (
+                                  t("actions:empty_value", "-")
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Chip
+                                  label={
+                                    isActive
+                                      ? t("actions:yes")
+                                      : t("actions:no")
+                                  }
+                                  color={isActive ? "success" : "error"}
+                                  size="small"
+                                  variant={isActive ? "filled" : "outlined"}
+                                  sx={
+                                    isActive
+                                      ? {
+                                          color: "success.contrastText",
+                                          height: 22,
+                                          fontSize: "0.75rem",
+                                        }
+                                      : { height: 22, fontSize: "0.75rem" }
+                                  }
+                                />
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  aria-label={t("actions:table.actions")}
+                                  onClick={(e) =>
+                                    handleOpenBusinessActionMenu(e, ba)
+                                  }
+                                  disabled={isBusyBusiness}
+                                >
+                                  <MoreVertIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </Skeleton>
+            <ListPagination
+              disabled={isBusyBusiness}
+              getItemAriaLabel={paginationItemLabel}
+              component="div"
+              count={totalBusinessItems}
+              page={pageBusiness}
+              onPageChange={handleChangePageBusiness}
+              rowsPerPage={rowsPerPageBusiness}
+              onRowsPerPageChange={handleChangeRowsPerPageBusiness}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              labelRowsPerPage={t("core:pagination.rows_per_page")}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} ${t("core:pagination.of")} ${
+                  count !== -1
+                    ? count
+                    : `${t("core:pagination.more_than")} ${to}`
+                }`
+              }
+            />
           </Collapse>
         </BusinessSectionCard>
       )}
@@ -1041,7 +1256,10 @@ const Actions: FC = () => {
         <Box>
           <FilterRow>
             <Filter
-              onFilter={handleApplyFilters}
+              disabled={isBusySystem}
+              applyDisabled={isBusySystem}
+              onOpen={() => setDraftFilterActive(appliedFilterActive)}
+                onFilter={handleApplyFilters}
               onClear={handleClearFilters}
               activeCount={activeFiltersCount}
               title={t("actions:filter_modal_title")}
@@ -1054,37 +1272,15 @@ const Actions: FC = () => {
                 onChange={setDraftFilterActionKeys}
                 placeholder={t("actions:form.key_placeholder")}
                 disabled={
-                  isLoadingAllActions ||
-                  isFetchingAllActions ||
-                  isMutatingSystem
+                  isLoadingAllActions || isFetchingAllActions || isBusySystem
                 }
               />
 
-              <Box
-                sx={(theme) => ({
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  p: 1.5,
-                  borderRadius: 1.5,
-                  border: `1px solid ${
-                    theme.palette.border?.default ?? theme.palette.divider
-                  }`,
-                })}
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={draftFilterActive}
-                      onChange={(e) => setDraftFilterActive(e.target.checked)}
-                      color="primary"
-                    />
-                  }
-                  label={t("actions:form.active")}
-                  labelPlacement="start"
-                  sx={{ m: 0, width: "100%", justifyContent: "space-between" }}
-                />
-              </Box>
+              <ActiveStatusSelect
+                value={draftFilterActive === null ? "all" : draftFilterActive ? "active" : "inactive"}
+                onChange={(value) => setDraftFilterActive(value === "all" ? null : value === "active")}
+                disabled={isBusySystem}
+              />
             </Filter>
           </FilterRow>
 
@@ -1095,7 +1291,7 @@ const Actions: FC = () => {
                   allActionsResponse?.data ?? actionsResponse?.data
                 )?.find((a) => a.key === actionKey);
                 const keyTrans = matched?.translates?.find(
-                  (t) => t.key === "key"
+                  (t) => t.key === "key",
                 );
                 const lang = i18n.language?.startsWith("en") ? "en" : "es";
                 const altLang = lang === "en" ? "es" : "en";
@@ -1108,13 +1304,14 @@ const Actions: FC = () => {
                 const actLabel = name ? `${name} (${actionKey})` : actionKey;
                 return (
                   <FilterChips
+                    disabled={isBusySystem}
                     key={`action-${actionKey}`}
                     label={t("actions:filter_chips.action", {
                       value: actLabel,
                     })}
                     onAction={() => {
                       setAppliedFilterActionKeys((prev) =>
-                        prev.filter((k) => k !== actionKey)
+                        prev.filter((k) => k !== actionKey),
                       );
                       setPage(0);
                     }}
@@ -1123,10 +1320,11 @@ const Actions: FC = () => {
               })}
               {appliedFilterActive !== null && (
                 <FilterChips
+                  disabled={isBusySystem}
                   label={
                     appliedFilterActive
                       ? t("actions:filter_chips.active_only")
-                      : t("actions:no")
+                      : t("actions:status_filter.inactive")
                   }
                   onAction={() => {
                     setAppliedFilterActive(null);
@@ -1146,6 +1344,7 @@ const Actions: FC = () => {
                     color="inherit"
                     size="small"
                     onClick={() => refetch()}
+                    disabled={isBusySystem}
                   >
                     {t("core:retry", "Reintentar")}
                   </Button>
@@ -1154,14 +1353,14 @@ const Actions: FC = () => {
                 <AlertTitle>
                   {t(
                     "actions:error_state.title",
-                    "Error al cargar las acciones"
+                    "Error al cargar las acciones",
                   )}
                 </AlertTitle>
                 {error instanceof Error
                   ? error.message
                   : t(
                       "actions:error_state.description",
-                      "No se pudo obtener el listado de acciones desde el servidor."
+                      "No se pudo obtener el listado de acciones desde el servidor.",
                     )}
               </Alert>
             </Box>
@@ -1177,7 +1376,7 @@ const Actions: FC = () => {
                 }}
                 placeholder={t("actions:search_placeholder")}
                 fullWidth
-                disabled={isLoading || isMutatingSystem}
+                disabled={isBusySystem}
               />
             </Box>
             <Button
@@ -1189,14 +1388,15 @@ const Actions: FC = () => {
               sx={(theme) => ({
                 borderRadius: 2,
                 color: theme.palette.primary.contrastText,
+                minHeight: isMobile ? 44 : 36,
               })}
             >
               {t("actions:new_action")}
             </Button>
           </TableTopBar>
 
-          <Skeleton loading={isLoading} name="actions-table">
-            <StyledTableContainer>
+          <StyledTableContainer>
+            <Skeleton loading={isLoading} name="actions-table">
               {isFetching && !isLoading && (
                 <LinearProgress
                   sx={{
@@ -1204,199 +1404,223 @@ const Actions: FC = () => {
                   }}
                 />
               )}
-              <TableContainer component={Paper} elevation={0}>
-                <Table>
-                  <TableHead
-                    sx={{
-                      bgcolor: "primary.main",
-                      "& th": {
-                        color: "primary.contrastText",
-                        fontWeight: "bold",
-                      },
-                    }}
-                  >
-                    <TableRow>
-                      <TableCell>{t("actions:table.id")}</TableCell>
-                      <TableCell>{t("actions:table.name")}</TableCell>
-                      <TableCell>{t("actions:table.key")}</TableCell>
-                      <TableCell>{t("actions:table.description")}</TableCell>
-                      <TableCell>{t("actions:table.active")}</TableCell>
-                      <TableCell align="center">
-                        {t("actions:table.actions")}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {!isLoading && actions.length === 0 ? (
+              {isMobile ? (
+                <MobileList aria-label={t("actions:view_mode_system")}>
+                  {!isLoading &&
+                    !isError &&
+                    actions.length === 0 &&
+                    renderMobileEmpty(handleOpenCreateModal, isBusySystem)}
+                  {actions.map((action) =>
+                    renderMobileCard(
+                      action,
+                      isBusySystem,
+                      () => handleOpenEditModal(action),
+                      () => handleRequestToggleActive(action),
+                      () => handleRequestDeleteAction(action),
+                    ),
+                  )}
+                </MobileList>
+              ) : (
+                <TableContainer component={Paper} elevation={0}>
+                  <Table>
+                    <TableHead
+                      sx={{
+                        bgcolor: "primary.main",
+                        "& th": {
+                          color: "primary.contrastText",
+                          fontWeight: "bold",
+                        },
+                      }}
+                    >
                       <TableRow>
-                        <TableCell
-                          colSpan={6}
-                          align="center"
-                          sx={{ py: 6, color: "text.secondary" }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: 1.5,
-                            }}
-                          >
-                            <BoltOutlinedIcon
-                              sx={{ fontSize: 48, color: "text.disabled" }}
-                            />
-                            <Typography variant="h6" color="text.secondary">
-                              {t(
-                                "actions:empty_state.title",
-                                "No hay acciones disponibles"
-                              )}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.disabled"
-                              sx={{ maxWidth: 400 }}
-                            >
-                              {t(
-                                "actions:empty_state.description",
-                                "No se encontraron acciones actualmente. Comience agregando una nueva."
-                              )}
-                            </Typography>
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              startIcon={<AddCircleOutlinedIcon />}
-                              onClick={handleOpenCreateModal}
-                              disabled={isBusySystem}
-                              sx={{ mt: 1 }}
-                            >
-                              {t(
-                                "actions:empty_state.cta",
-                                "Crear primera acción"
-                              )}
-                            </Button>
-                          </Box>
+                        <TableCell>{t("actions:table.id")}</TableCell>
+                        <TableCell>{t("actions:table.name")}</TableCell>
+                        <TableCell>{t("actions:table.key")}</TableCell>
+                        <TableCell>{t("actions:table.description")}</TableCell>
+                        <TableCell>{t("actions:table.active")}</TableCell>
+                        <TableCell align="center">
+                          {t("actions:table.actions")}
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      actions.map((act) => {
-                        return (
-                          <TableRow
-                            key={act.id}
-                            hover
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
-                            }}
+                    </TableHead>
+                    <TableBody>
+                      {!isLoading && !isError && actions.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={6}
+                            align="center"
+                            sx={{ py: 6, color: "text.secondary" }}
                           >
-                            <TableCell
+                            <Box
                               sx={{
-                                color: "text.secondary",
-                                fontSize: "0.875rem",
-                                fontFamily: "monospace",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 1.5,
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                }}
-                              >
-                                {act.id.includes("-")
-                                  ? `${act.id.split("-")[0]}...`
-                                  : act.id}
-                                <Tooltip
-                                  title={t("actions:copy")}
-                                  arrow
-                                  placement="top"
-                                >
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleCopyId(act.id)}
-                                    aria-label={t("actions:copy")}
-                                    disabled={isBusySystem}
-                                  >
-                                    <ContentCopyIcon
-                                      fontSize="small"
-                                      sx={{ fontSize: "1rem" }}
-                                    />
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                            </TableCell>
-                            <TableCell>
+                              <BoltOutlinedIcon
+                                sx={{ fontSize: 48, color: "text.disabled" }}
+                              />
+                              <Typography variant="h6" color="text.secondary">
+                                {t(
+                                  "actions:empty_state.title",
+                                  "No hay acciones disponibles",
+                                )}
+                              </Typography>
                               <Typography
                                 variant="body2"
-                                sx={{ fontWeight: "medium" }}
+                                color="text.disabled"
+                                sx={{ maxWidth: 400 }}
                               >
-                                {act.name || t("actions:empty_value", "-")}
+                                {t(
+                                  "actions:empty_state.description",
+                                  "No se encontraron acciones actualmente. Comience agregando una nueva.",
+                                )}
                               </Typography>
-                            </TableCell>
-                            <TableCell>
-                              <KeyBadge>{act.key}</KeyBadge>
-                            </TableCell>
-                            <TableCell>
-                              {act.description ? (
-                                <DescriptionTypography>
-                                  {act.description}
-                                </DescriptionTypography>
-                              ) : (
-                                t("actions:empty_value")
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <Chip
-                                label={
-                                  act.isActive
-                                    ? t("actions:yes")
-                                    : t("actions:no")
-                                }
-                                color={act.isActive ? "success" : "error"}
+                              <Button
+                                variant="outlined"
                                 size="small"
-                                variant={act.isActive ? "filled" : "outlined"}
-                                sx={
-                                  act.isActive
-                                    ? { color: "success.contrastText" }
-                                    : {}
-                                }
-                              />
-                            </TableCell>
-                            <TableCell align="center">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                aria-label={t("actions:table.actions")}
-                                onClick={(e) => handleOpenActionMenu(e, act)}
+                                startIcon={<AddCircleOutlinedIcon />}
+                                onClick={handleOpenCreateModal}
                                 disabled={isBusySystem}
+                                sx={{ mt: 1 }}
                               >
-                                <MoreVertIcon fontSize="small" />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                component="div"
-                count={totalItems}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25, 50]}
-                labelRowsPerPage={t("core:pagination.rows_per_page")}
-                labelDisplayedRows={({ from, to, count }) =>
-                  `${from}–${to} ${t("core:pagination.of")} ${
-                    count !== -1
-                      ? count
-                      : `${t("core:pagination.more_than")} ${to}`
-                  }`
-                }
-              />
-            </StyledTableContainer>
-          </Skeleton>
+                                {t(
+                                  "actions:empty_state.cta",
+                                  "Crear primera acción",
+                                )}
+                              </Button>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        actions.map((act) => {
+                          return (
+                            <TableRow
+                              key={act.id}
+                              hover
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell
+                                sx={{
+                                  color: "text.secondary",
+                                  fontSize: "0.875rem",
+                                  fontFamily: "monospace",
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  {act.id.includes("-")
+                                    ? `${act.id.split("-")[0]}...`
+                                    : act.id}
+                                  <Tooltip
+                                    title={t("actions:copy")}
+                                    arrow
+                                    placement="top"
+                                  >
+                                    <span>
+                                      <IconButton
+                                        size="small"
+                                        onClick={() => handleCopyId(act.id)}
+                                        aria-label={t("actions:copy")}
+                                        disabled={isBusySystem}
+                                      >
+                                        <ContentCopyIcon
+                                          fontSize="small"
+                                          sx={{ fontSize: "1rem" }}
+                                        />
+                                      </IconButton>
+                                    </span>
+                                  </Tooltip>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: "medium" }}
+                                >
+                                  {act.name || t("actions:empty_value", "-")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell>
+                                <KeyBadge>{act.key}</KeyBadge>
+                              </TableCell>
+                              <TableCell>
+                                {act.description ? (
+                                  <DescriptionTypography>
+                                    {act.description}
+                                  </DescriptionTypography>
+                                ) : (
+                                  t("actions:empty_value")
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Chip
+                                  label={
+                                    act.isActive
+                                      ? t("actions:yes")
+                                      : t("actions:no")
+                                  }
+                                  color={act.isActive ? "success" : "error"}
+                                  size="small"
+                                  variant={act.isActive ? "filled" : "outlined"}
+                                  sx={
+                                    act.isActive
+                                      ? { color: "success.contrastText" }
+                                      : {}
+                                  }
+                                />
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  aria-label={t("actions:table.actions")}
+                                  onClick={(e) => handleOpenActionMenu(e, act)}
+                                  disabled={isBusySystem}
+                                >
+                                  <MoreVertIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Skeleton>
+            <ListPagination
+              disabled={isBusySystem}
+              getItemAriaLabel={paginationItemLabel}
+              component="div"
+              count={totalItems}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              labelRowsPerPage={t("core:pagination.rows_per_page")}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}–${to} ${t("core:pagination.of")} ${
+                  count !== -1
+                    ? count
+                    : `${t("core:pagination.more_than")} ${to}`
+                }`
+              }
+            />
+          </StyledTableContainer>
         </Box>
       )}
 
@@ -1428,7 +1652,11 @@ const Actions: FC = () => {
           },
         }}
       >
-        <MenuItem onClick={handleOpenEditModal} sx={{ borderRadius: 1 }}>
+        <MenuItem
+          disabled={isBusySystem}
+          onClick={() => handleOpenEditModal()}
+          sx={{ borderRadius: 1 }}
+        >
           <ListItemIcon>
             <EditOutlinedIcon fontSize="small" color="primary" />
           </ListItemIcon>
@@ -1437,6 +1665,7 @@ const Actions: FC = () => {
         {targetAction && (
           <MenuItem
             onClick={() => handleRequestToggleActive(targetAction)}
+            disabled={isBusySystem}
             sx={{ borderRadius: 1 }}
           >
             <ListItemIcon>
@@ -1456,6 +1685,18 @@ const Actions: FC = () => {
                   : t("actions:activate")
               }
             />
+          </MenuItem>
+        )}
+        {targetAction && (
+          <MenuItem
+            disabled={isBusySystem}
+            onClick={() => handleRequestDeleteAction(targetAction)}
+            sx={{ borderRadius: 1, color: "error.main" }}
+          >
+            <ListItemIcon sx={{ color: "error.main" }}>
+              <DeleteOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={t("actions:delete")} />
           </MenuItem>
         )}
       </Menu>
@@ -1489,7 +1730,8 @@ const Actions: FC = () => {
         }}
       >
         <MenuItem
-          onClick={handleOpenEditBusinessModal}
+          onClick={() => handleOpenEditBusinessModal()}
+          disabled={isBusyBusiness}
           sx={{ borderRadius: 1 }}
         >
           <ListItemIcon>
@@ -1502,6 +1744,7 @@ const Actions: FC = () => {
             onClick={() =>
               handleRequestToggleActiveBusiness(targetBusinessAction)
             }
+            disabled={isBusyBusiness}
             sx={{ borderRadius: 1 }}
           >
             <ListItemIcon>
@@ -1525,9 +1768,8 @@ const Actions: FC = () => {
         )}
         {targetBusinessAction && (
           <MenuItem
-            onClick={() =>
-              handleRequestDeleteBusiness(targetBusinessAction)
-            }
+            onClick={() => handleRequestDeleteBusiness(targetBusinessAction)}
+            disabled={isBusyBusiness}
             sx={{ borderRadius: 1, color: "error.main" }}
           >
             <ListItemIcon>
@@ -1544,6 +1786,7 @@ const Actions: FC = () => {
         onClose={handleCloseConfirmToggle}
         onConfirm={handleConfirmToggleActive}
         isLoading={isMutatingSystem}
+        confirmDisabled={isBusySystem}
         title={
           actionToToggle?.isActive
             ? t("actions:confirm_deactivate_title")
@@ -1572,6 +1815,7 @@ const Actions: FC = () => {
         onClose={handleCloseConfirmToggleBusiness}
         onConfirm={handleConfirmToggleActiveBusiness}
         isLoading={isMutatingBusiness}
+        confirmDisabled={isBusyBusiness}
         title={
           businessActionToToggle?.is_active
             ? t("actions:confirm_deactivate_title")
@@ -1600,13 +1844,31 @@ const Actions: FC = () => {
         onClose={handleCloseConfirmDeleteBusiness}
         onConfirm={handleConfirmDeleteBusiness}
         isLoading={isMutatingBusiness}
-        title={t("actions:confirm_delete_title", "¿Eliminar acción de negocio?")}
+        confirmDisabled={isBusyBusiness}
+        title={t(
+          "actions:confirm_delete_title",
+          "¿Eliminar acción de negocio?",
+        )}
         message={t(
           "actions:confirm_delete_message",
           `¿Está seguro de que desea eliminar permanentemente la acción "${businessActionToDelete?.key}"?`,
-          { name: businessActionToDelete?.key }
+          { name: businessActionToDelete?.key },
         )}
         confirmText={t("actions:delete", "Eliminar")}
+        cancelText={t("core:cancel")}
+      />
+
+      <ConfirmDialog
+        open={Boolean(actionToDelete)}
+        onClose={() => setActionToDelete(null)}
+        onConfirm={handleConfirmDeleteAction}
+        isLoading={deleteActionMutation.isPending}
+        confirmDisabled={isBusySystem}
+        title={t("actions:confirm_delete_general_title")}
+        message={t("actions:confirm_delete_general_message", {
+          name: actionToDelete?.name || actionToDelete?.key,
+        })}
+        confirmText={t("actions:delete")}
         cancelText={t("core:cancel")}
       />
 
@@ -1616,7 +1878,7 @@ const Actions: FC = () => {
         onClose={() => setIsActionModalOpen(false)}
         onSubmit={handleSaveAction}
         initialData={selectedActionForEdit}
-        isSubmitting={isMutatingSystem}
+        isSubmitting={isBusySystem}
       />
 
       {/* Business Action Create / Edit Modal */}
@@ -1625,7 +1887,7 @@ const Actions: FC = () => {
         onClose={() => setIsBusinessModalOpen(false)}
         onSubmit={handleSaveBusinessAction}
         initialData={selectedBusinessActionForEdit}
-        isSubmitting={isMutatingBusiness}
+        isSubmitting={isBusyBusiness}
       />
     </Box>
   );

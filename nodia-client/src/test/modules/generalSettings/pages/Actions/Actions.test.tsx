@@ -1,7 +1,7 @@
 import useAuthStore from "../../../../../store/authStore";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { sileo } from "sileo";
@@ -32,7 +32,8 @@ vi.mock(
     createBusinessAction: vi.fn(),
     updateBusinessAction: vi.fn(),
     deleteBusinessAction: vi.fn(),
-  })
+    deleteAction: vi.fn(),
+  }),
 );
 
 const mockActions: Action[] = [
@@ -130,21 +131,22 @@ const createTestQueryClient = () =>
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = createTestQueryClient();
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   );
 };
 
 describe("Actions Page", () => {
+  afterEach(() => vi.restoreAllMocks());
   beforeEach(() => {
     useAuthStore.getState().login({
       token: "test-jwt",
       expiresAt: Date.now() + 900_000,
       user: { id: "42", name: "Test user" },
     });
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     vi.mocked(services.getActions).mockResolvedValue(mockPaginatedResponse);
     vi.mocked(services.getBusinessActions).mockResolvedValue(
-      mockBusinessPaginatedResponse
+      mockBusinessPaginatedResponse,
     );
   });
 
@@ -158,19 +160,21 @@ describe("Actions Page", () => {
 
     // Perspective switcher options
     expect(
-      screen.getByRole("button", { name: /Vista Dividida/i })
+      screen.getByRole("button", { name: /Vista Dividida/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Acciones del Sistema/i })
+      screen.getByRole("button", { name: /Acciones del Sistema/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Acciones de Negocio/i })
+      screen.getByRole("button", { name: "Acciones de Negocio" }),
     ).toBeInTheDocument();
 
     // Headers
     expect(screen.getAllByText("Id").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Nombre").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText("Identificador").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Identificador").length).toBeGreaterThanOrEqual(
+      1,
+    );
     expect(screen.getAllByText("Descripción").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("Activo").length).toBeGreaterThanOrEqual(1);
 
@@ -247,7 +251,7 @@ describe("Actions Page", () => {
     await user.click(newActionBtn);
 
     expect(
-      screen.getByRole("heading", { name: "Nuevo Accionable" })
+      screen.getByRole("heading", { name: "Nuevo Accionable" }),
     ).toBeInTheDocument();
   });
 
@@ -265,7 +269,7 @@ describe("Actions Page", () => {
     await user.click(newBusinessActionBtn);
 
     expect(
-      screen.getAllByText("Nueva Acción de Negocio").length
+      screen.getAllByText("Nueva Acción de Negocio").length,
     ).toBeGreaterThanOrEqual(1);
   });
 
@@ -286,7 +290,7 @@ describe("Actions Page", () => {
     await user.click(updateOption);
 
     expect(
-      screen.getByRole("heading", { name: "Actualizar Accionable" })
+      screen.getByRole("heading", { name: "Actualizar Accionable" }),
     ).toBeInTheDocument();
   });
 
@@ -335,10 +339,10 @@ describe("Actions Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getAllByText("No hay acciones disponibles").length
+        screen.getAllByText("No hay acciones disponibles").length,
       ).toBeGreaterThanOrEqual(1);
       expect(
-        screen.getAllByRole("button", { name: "Crear primera acción" }).length
+        screen.getAllByRole("button", { name: "Crear primera acción" }).length,
       ).toBeGreaterThanOrEqual(1);
     });
   });
@@ -361,9 +365,263 @@ describe("Actions Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Crear Usuarios (users.create)")
+        screen.getByText("Crear Usuarios (users.create)"),
       ).toBeInTheDocument();
       expect(screen.getByText("Ver Usuarios (users.read)")).toBeInTheDocument();
     });
+  });
+
+  const mobile = () =>
+    vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
+      matches: media.includes("max-width:599.95px"),
+      media,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+  it("defaults both lists to active and preserves active when clearing general filters", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+    await screen.findByText("users.create");
+    expect(services.getActions).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 1, q: { is_active_eq: true } }),
+    );
+    expect(services.getBusinessActions).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 1, q: { is_active_eq: true } }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+    );
+    await waitFor(() =>
+      expect(services.getActions).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 1, q: undefined }),
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Limpiar filtros",
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+      ).toBeVisible(),
+    );
+  });
+
+  it("allows inactive and all business actions while preserving the active default", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+    await screen.findByText("orders.create");
+    await user.click(screen.getByRole("button", { name: "Inactivos" }));
+    await waitFor(() =>
+      expect(services.getBusinessActions).toHaveBeenCalledWith(
+        expect.objectContaining({ q: { is_active_eq: false } }),
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: "Todos" }));
+    await waitFor(() =>
+      expect(services.getBusinessActions).toHaveBeenCalledWith(
+        expect.objectContaining({ q: undefined }),
+      ),
+    );
+    expect(screen.getByRole("button", { name: "Todos" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  it("confirms general deletion, allows cancellation, and retains the target after an error for retry", async () => {
+    const user = userEvent.setup();
+    vi.mocked(services.deleteAction)
+      .mockRejectedValueOnce(new Error("Synthetic delete failure"))
+      .mockResolvedValueOnce(undefined);
+    renderWithClient(<Actions />);
+    await screen.findByText("users.create");
+    await user.click(screen.getAllByRole("button", { name: "Acciones" })[1]);
+    await user.click(screen.getByRole("menuitem", { name: "Eliminar" }));
+    let dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveTextContent("asignaciones a roles y traducciones");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    expect(services.deleteAction).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    await user.click(screen.getAllByRole("button", { name: "Acciones" })[1]);
+    await user.click(screen.getByRole("menuitem", { name: "Eliminar" }));
+    dialog = screen.getByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+    await waitFor(() =>
+      expect(sileo.error).toHaveBeenCalledWith(
+        expect.objectContaining({ description: "Synthetic delete failure" }),
+      ),
+    );
+    expect(dialog).toHaveTextContent("Crear Usuarios");
+    expect(
+      within(dialog).getByRole("button", { name: "Eliminar" }),
+    ).toBeEnabled();
+    await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    expect(services.deleteAction).toHaveBeenNthCalledWith(2, mockActions[0].id);
+    expect(sileo.success).toHaveBeenCalledWith(
+      expect.objectContaining({
+        description: "Acción eliminada correctamente",
+      }),
+    );
+  });
+
+  it("renders both mobile lists, exact IDs, missing descriptions and the existing edit forms", async () => {
+    mobile();
+    vi.mocked(services.getActions).mockResolvedValue({
+      ...mockPaginatedResponse,
+      data: [
+        {
+          id: "9007199254740993",
+          key: "synthetic.untranslated",
+          description: null,
+          is_active: true,
+        },
+      ],
+    });
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+    const general = await screen.findByRole("article", {
+      name: "synthetic.untranslated",
+    });
+    const business = await screen.findByRole("article", {
+      name: "Crear Pedido",
+    });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(within(general).getByText("9007199254740993")).toBeVisible();
+    expect(within(general).getByText("-", { exact: true })).toBeVisible();
+    await user.click(
+      within(business).getByRole("button", { name: "Actualizar" }),
+    );
+    expect(screen.getByDisplayValue("orders.create")).toBeVisible();
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Cancelar",
+      }),
+    );
+    await user.click(
+      within(general).getByRole("button", { name: "Actualizar" }),
+    );
+    expect(screen.getByDisplayValue("synthetic.untranslated")).toBeVisible();
+  });
+
+  it("keeps mobile records visible and blocks controls during paginated refetch", async () => {
+    mobile();
+    let resolve!: (value: PaginatedResponse<Action>) => void;
+    vi.mocked(services.getActions).mockImplementation(async (params) =>
+      params?.page === 2
+        ? new Promise((done) => {
+            resolve = done;
+          })
+        : {
+            ...mockPaginatedResponse,
+            meta: { page: 1, limit: 10, total_items: 11, total_pages: 2 },
+          },
+    );
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+    const card = await screen.findByRole("article", { name: "Crear Usuarios" });
+    await user.click(
+      screen.getAllByRole("button", {
+        name: "Página siguiente",
+      })[1],
+    );
+    expect(card).toBeVisible();
+    expect(
+      within(card).getByRole("button", { name: "Actualizar" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("textbox", { name: "Buscar por identificador..." }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Quitar filtro: Solo activos" }),
+    ).toBeDisabled();
+    await act(async () =>
+      resolve({
+        ...mockPaginatedResponse,
+        data: [mockActions[1]],
+        meta: { page: 2, limit: 10, total_items: 11, total_pages: 2 },
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("article", { name: "Crear Usuarios" }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it("returns to the previous page after deleting its last general action", async () => {
+    mobile();
+    let deleted = false;
+    vi.mocked(services.deleteAction).mockImplementation(async () => {
+      deleted = true;
+    });
+    vi.mocked(services.getActions).mockImplementation(async (params) => ({
+      data:
+        params?.page === 2
+          ? deleted
+            ? []
+            : [mockActions[1]]
+          : [mockActions[0]],
+      meta: {
+        page: params?.page ?? 1,
+        limit: 10,
+        total_items: deleted ? 10 : 11,
+        total_pages: deleted ? 1 : 2,
+      },
+    }));
+    const user = userEvent.setup();
+    renderWithClient(<Actions />);
+    await screen.findByRole("article", { name: "Crear Usuarios" });
+    await user.click(
+      screen.getAllByRole("button", {
+        name: "Página siguiente",
+      })[1],
+    );
+    const card = await screen.findByRole("article", { name: "Ver Usuarios" });
+    await user.click(
+      within(card).getByRole("button", { name: "Acciones de Ver Usuarios" }),
+    );
+    await user.click(screen.getByRole("menuitem", { name: "Eliminar" }));
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Eliminar",
+      }),
+    );
+    await screen.findByRole("article", { name: "Crear Usuarios" });
+    expect(
+      screen.getAllByRole("button", {
+        name: "Página anterior",
+      })[1],
+    ).toBeDisabled();
+  });
+
+  it("shows errors without presenting failed mobile queries as empty success", async () => {
+    mobile();
+    vi.mocked(services.getActions).mockRejectedValue(
+      new Error("Synthetic general outage"),
+    );
+    vi.mocked(services.getBusinessActions).mockRejectedValue(
+      new Error("Synthetic business outage"),
+    );
+    renderWithClient(<Actions />);
+    await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(2));
+    expect(
+      screen.queryByText("No hay acciones disponibles"),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Reintentar" })).toHaveLength(
+      2,
+    );
   });
 });

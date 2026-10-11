@@ -160,4 +160,15 @@ export class FinanceCategoryGroupService {
       is_active: true,
     });
   }
+
+  deleteMemberships(manager: EntityManager, userId: string, id: string) {
+    return manager
+      .getRepository(FinanceCategoryGroupMembership)
+      .delete({ user_id: userId, category_group_id: id });
+  }
+  deleteOwned(manager: EntityManager, userId: string, id: string) {
+    return manager
+      .getRepository(FinanceCategoryGroup)
+      .delete({ user_id: userId, id });
+  }
 }

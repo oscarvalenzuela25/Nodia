@@ -15,6 +15,8 @@ export const configModuleEnvs = () => ({
   REDIS_PORT: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
   SECRET_SEED: process.env.SECRET_SEED || '',
+  // Installation bootstrap only; never a fallback identity for normal authentication.
+  BOOTSTRAP_SUPER_ADMIN_EMAIL: process.env.BOOTSTRAP_SUPER_ADMIN_EMAIL || '',
   // Gemini Web microservice (browser session)
   GEMINI_MICROSERVICE_URL:
     process.env.GEMINI_MICROSERVICE_URL || 'http://127.0.0.1:8000',

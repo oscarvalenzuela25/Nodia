@@ -19,17 +19,18 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Switch,
-  FormControlLabel,
   LinearProgress,
   Alert,
   AlertTitle,
-  TablePagination,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import AddModeratorOutlinedIcon from "@mui/icons-material/AddModeratorOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import MobileRecordCard from "../../../../components/MobileRecordCard/MobileRecordCard";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
@@ -37,6 +38,7 @@ import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 
 import Filter from "../../../../components/Filter";
+import ActiveStatusSelect from "../../../../components/Filter/components/ActiveStatusSelect";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import InputSearch from "../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
@@ -46,6 +48,7 @@ import {
   useRoles,
   useCreateRole,
   useUpdateRole,
+  useDeleteRole,
 } from "./infrastructure/useServices";
 import { useActions } from "../Actions";
 import type { RoleItem, RoleFormData, ActionOption, Role } from "./types";
@@ -62,10 +65,16 @@ import {
   ActionsWrapper,
   ActionTag,
   MoreActionsChip,
+  MobileList,
+  AssignmentList,
+  ListPagination,
 } from "./styles";
 
 const Roles: FC = () => {
   const { t, i18n } = useTranslation(["roles", "actions", "core"]);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -74,16 +83,18 @@ const Roles: FC = () => {
   // Filter modal draft state
   const [draftFilterRoleKeys, setDraftFilterRoleKeys] = useState<string[]>([]);
   const [draftFilterActions, setDraftFilterActions] = useState<string[]>([]);
-  const [draftFilterActive, setDraftFilterActive] = useState<boolean>(true);
+  const [draftFilterActive, setDraftFilterActive] = useState<boolean | null>(true);
 
   // Applied filter state
   const [appliedFilterRoleKeys, setAppliedFilterRoleKeys] = useState<string[]>(
-    []
+    [],
   );
-  const [appliedFilterActions, setAppliedFilterActions] = useState<string[]>([]);
+  const [appliedFilterActions, setAppliedFilterActions] = useState<string[]>(
+    [],
+  );
   const [appliedFilterActive, setAppliedFilterActive] = useState<
     boolean | null
-  >(null);
+  >(true);
 
   // Role Create / Edit Modal state
   const [isRoleModalOpen, setIsRoleModalOpen] = useState<boolean>(false);
@@ -100,11 +111,16 @@ const Roles: FC = () => {
   const [isConfirmToggleOpen, setIsConfirmToggleOpen] =
     useState<boolean>(false);
 
+  const [roleToDelete, setRoleToDelete] = useState<RoleItem | null>(null);
+
   // Mutations
   const createRoleMutation = useCreateRole();
   const updateRoleMutation = useUpdateRole();
+  const deleteRoleMutation = useDeleteRole();
   const isMutating =
-    createRoleMutation.isPending || updateRoleMutation.isPending;
+    createRoleMutation.isPending ||
+    updateRoleMutation.isPending ||
+    deleteRoleMutation.isPending;
 
   // Build Ransack query
   const ransackQuery = useMemo(() => {
@@ -115,8 +131,15 @@ const Roles: FC = () => {
     if (appliedFilterActive !== null) {
       q.is_active_eq = appliedFilterActive;
     }
+    if (appliedFilterRoleKeys.length) q.key_in = appliedFilterRoleKeys;
+    if (appliedFilterActions.length) q.actions_key_in = appliedFilterActions;
     return q;
-  }, [searchTerm, appliedFilterActive]);
+  }, [
+    searchTerm,
+    appliedFilterActive,
+    appliedFilterRoleKeys,
+    appliedFilterActions,
+  ]);
 
   // React Query hook for Endpoint 1
   const {
@@ -132,6 +155,8 @@ const Roles: FC = () => {
     includes: true,
     q: Object.keys(ransackQuery).length > 0 ? ransackQuery : undefined,
   });
+
+  const isBusy = isLoading || isFetching || isMutating;
 
   const roles: RoleItem[] = useMemo(() => {
     if (rolesResponse?.data) {
@@ -155,7 +180,7 @@ const Roles: FC = () => {
           nameTranslations,
           translates: r.translates,
           actions: (r.actions ?? []).map((a) =>
-            typeof a === "string" ? a : a.key
+            typeof a === "string" ? a : a.key,
           ),
           isActive: r.is_active ?? true,
         };
@@ -173,7 +198,7 @@ const Roles: FC = () => {
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -203,8 +228,8 @@ const Roles: FC = () => {
         (i18n.exists(`actions:action_names.${act.key}`)
           ? t(`actions:action_names.${act.key}`)
           : i18n.exists(`roles:action_names.${act.key}`)
-          ? t(`roles:action_names.${act.key}`)
-          : null);
+            ? t(`roles:action_names.${act.key}`)
+            : null);
       if (translated) {
         map.set(act.key, translated);
       }
@@ -221,8 +246,8 @@ const Roles: FC = () => {
             (i18n.exists(`actions:action_names.${act.key}`)
               ? t(`actions:action_names.${act.key}`)
               : i18n.exists(`roles:action_names.${act.key}`)
-              ? t(`roles:action_names.${act.key}`)
-              : null);
+                ? t(`roles:action_names.${act.key}`)
+                : null);
           if (translated) {
             map.set(act.key, translated);
           }
@@ -298,7 +323,7 @@ const Roles: FC = () => {
 
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
-    role: RoleItem
+    role: RoleItem,
   ) => {
     setActionMenuAnchor(e.currentTarget);
     setActionRole(role);
@@ -314,19 +339,19 @@ const Roles: FC = () => {
     setIsRoleModalOpen(true);
   };
 
-  const handleOpenEditModal = () => {
-    if (actionRole) {
-      const keyTrans = actionRole.translates?.find((t) => t.key === "key");
+  const handleOpenEditModal = (role = actionRole) => {
+    if (isBusy) return;
+    if (role) {
+      const keyTrans = role.translates?.find((t) => t.key === "key");
       setSelectedRoleForEdit({
-        id: actionRole.id,
-        key: actionRole.key,
-        nameTranslations:
-          actionRole.nameTranslations ?? {
-            es: keyTrans?.es ?? "",
-            en: keyTrans?.en ?? "",
-          },
-        actions: actionRole.actions,
-        isActive: actionRole.isActive,
+        id: role.id,
+        key: role.key,
+        nameTranslations: role.nameTranslations ?? {
+          es: keyTrans?.es ?? "",
+          en: keyTrans?.en ?? "",
+        },
+        actions: role.actions,
+        isActive: role.isActive,
       });
       setIsRoleModalOpen(true);
     }
@@ -334,6 +359,7 @@ const Roles: FC = () => {
   };
 
   const handleSaveRole = async (data: RoleFormData) => {
+    if (isBusy) return;
     const roleId = data.id;
     try {
       if (roleId) {
@@ -373,7 +399,7 @@ const Roles: FC = () => {
   };
 
   const handleConfirmToggleActive = async () => {
-    if (!roleToToggle) return;
+    if (!roleToToggle || isBusy) return;
     try {
       await updateRoleMutation.mutateAsync({
         roleId: roleToToggle.id,
@@ -385,6 +411,22 @@ const Roles: FC = () => {
       setRoleToToggle(null);
     } catch {
       // Error is handled by mutation onError sileo notification
+    }
+  };
+
+  const handleRequestDelete = (role: RoleItem) => {
+    if (isBusy || role.key === "super_admin") return;
+    setRoleToDelete(role);
+    handleCloseActionMenu();
+  };
+  const handleConfirmDelete = async () => {
+    if (!roleToDelete || isBusy || roleToDelete.key === "super_admin") return;
+    try {
+      await deleteRoleMutation.mutateAsync(roleToDelete.id);
+      if (roles.length === 1 && page > 0) setPage(page - 1);
+      setRoleToDelete(null);
+    } catch {
+      // Keep the confirmation open for review and retry; the hook owns feedback.
     }
   };
 
@@ -410,7 +452,7 @@ const Roles: FC = () => {
     setDraftFilterActive(true);
     setAppliedFilterRoleKeys([]);
     setAppliedFilterActions([]);
-    setAppliedFilterActive(null);
+    setAppliedFilterActive(true);
     setPage(0);
   };
 
@@ -422,53 +464,6 @@ const Roles: FC = () => {
     if (appliedFilterActive !== null) count += 1;
     return count;
   }, [appliedFilterRoleKeys, appliedFilterActions, appliedFilterActive]);
-
-  // Filtered roles list
-  const filteredRoles = useMemo(() => {
-    return roles.filter((role) => {
-      const rawKey = role.key.toLowerCase();
-
-      // 1. Search bar by key
-      if (searchTerm.trim()) {
-        const query = searchTerm.toLowerCase().trim();
-        if (!rawKey.includes(query)) {
-          return false;
-        }
-      }
-
-      // 2. Modal filter by Role
-      if (appliedFilterRoleKeys.length > 0) {
-        if (!appliedFilterRoleKeys.includes(role.key)) {
-          return false;
-        }
-      }
-
-      // 3. Modal filter by Actions
-      if (appliedFilterActions.length > 0) {
-        const hasMatchingAction = role.actions.some((action) =>
-          appliedFilterActions.includes(action)
-        );
-        if (!hasMatchingAction) {
-          return false;
-        }
-      }
-
-      // 4. Modal filter by Active
-      if (appliedFilterActive !== null) {
-        if (role.isActive !== appliedFilterActive) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [
-    roles,
-    searchTerm,
-    appliedFilterRoleKeys,
-    appliedFilterActions,
-    appliedFilterActive,
-  ]);
 
   return (
     <Box>
@@ -482,7 +477,16 @@ const Roles: FC = () => {
 
       <FilterRow>
         <Filter
-          onFilter={handleApplyFilters}
+          disabled={isBusy}
+          applyDisabled={
+            isBusy ||
+            isLoadingFilterActions ||
+            isFetchingFilterActions ||
+            isLoadingAllRoles ||
+            isFetchingAllRoles
+          }
+          onOpen={() => setDraftFilterActive(appliedFilterActive)}
+            onFilter={handleApplyFilters}
           onClear={handleClearFilters}
           activeCount={activeFiltersCount}
           title={t("roles:filter_modal_title")}
@@ -494,12 +498,7 @@ const Roles: FC = () => {
             value={draftFilterRoleKeys}
             onChange={setDraftFilterRoleKeys}
             placeholder={t("roles:form.key_placeholder")}
-            disabled={
-              isLoading ||
-              isFetching ||
-              isLoadingAllRoles ||
-              isFetchingAllRoles
-            }
+            disabled={isBusy || isLoadingAllRoles || isFetchingAllRoles}
           />
 
           <SelectMultipleInput
@@ -508,35 +507,16 @@ const Roles: FC = () => {
             value={draftFilterActions}
             onChange={setDraftFilterActions}
             placeholder={t("roles:form.actions_placeholder")}
-            disabled={isLoadingFilterActions || isFetchingFilterActions}
+            disabled={
+              isBusy || isLoadingFilterActions || isFetchingFilterActions
+            }
           />
 
-          <Box
-            sx={(theme) => ({
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              p: 1.5,
-              borderRadius: 1.5,
-              border: `1px solid ${
-                theme.palette.border?.default ?? theme.palette.divider
-              }`,
-            })}
-          >
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={draftFilterActive}
-                  onChange={(e) => setDraftFilterActive(e.target.checked)}
-                  color="primary"
-                  disabled={isLoading || isFetching}
-                />
-              }
-              label={t("roles:form.active")}
-              labelPlacement="start"
-              sx={{ m: 0, width: "100%", justifyContent: "space-between" }}
-            />
-          </Box>
+          <ActiveStatusSelect
+            value={draftFilterActive === null ? "all" : draftFilterActive ? "active" : "inactive"}
+            onChange={(value) => setDraftFilterActive(value === "all" ? null : value === "active")}
+            disabled={isBusy}
+          />
         </Filter>
       </FilterRow>
 
@@ -546,11 +526,12 @@ const Roles: FC = () => {
             const roleLabel = roleLabelsMap.get(roleKey) ?? roleKey;
             return (
               <FilterChips
+                disabled={isBusy}
                 key={`role-${roleKey}`}
                 label={t("roles:filter_chips.role", { value: roleLabel })}
                 onAction={() => {
                   setAppliedFilterRoleKeys((prev) =>
-                    prev.filter((k) => k !== roleKey)
+                    prev.filter((k) => k !== roleKey),
                   );
                   setPage(0);
                 }}
@@ -563,11 +544,12 @@ const Roles: FC = () => {
               t(`roles:action_names.${actionKey}`, actionKey);
             return (
               <FilterChips
+                disabled={isBusy}
                 key={`action-${actionKey}`}
                 label={t("roles:filter_chips.action", { value: actionLabel })}
                 onAction={() => {
                   setAppliedFilterActions((prev) =>
-                    prev.filter((a) => a !== actionKey)
+                    prev.filter((a) => a !== actionKey),
                   );
                   setPage(0);
                 }}
@@ -576,10 +558,11 @@ const Roles: FC = () => {
           })}
           {appliedFilterActive !== null && (
             <FilterChips
+              disabled={isBusy}
               label={
                 appliedFilterActive
                   ? t("roles:filter_chips.active_only")
-                  : t("roles:no")
+                  : t("roles:filter_chips.inactive_only")
               }
               onAction={() => {
                 setAppliedFilterActive(null);
@@ -595,7 +578,12 @@ const Roles: FC = () => {
           <Alert
             severity="error"
             action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
+              <Button
+                color="inherit"
+                size="small"
+                disabled={isBusy}
+                onClick={() => refetch()}
+              >
                 {t("core:retry", "Reintentar")}
               </Button>
             }
@@ -607,7 +595,7 @@ const Roles: FC = () => {
               ? error.message
               : t(
                   "roles:error_state.description",
-                  "No se pudo obtener el listado de roles desde el servidor."
+                  "No se pudo obtener el listado de roles desde el servidor.",
                 )}
           </Alert>
         </Box>
@@ -623,7 +611,7 @@ const Roles: FC = () => {
             }}
             placeholder={t("roles:search_placeholder")}
             fullWidth
-            disabled={isLoading || isMutating}
+            disabled={isBusy}
           />
         </Box>
         <Button
@@ -631,7 +619,7 @@ const Roles: FC = () => {
           color="primary"
           startIcon={<AddModeratorOutlinedIcon />}
           onClick={handleOpenCreateModal}
-          disabled={isLoading || isFetching || isMutating}
+          disabled={isBusy}
           sx={(theme) => ({
             borderRadius: 2,
             color: theme.palette.primary.contrastText,
@@ -641,259 +629,394 @@ const Roles: FC = () => {
         </Button>
       </TableTopBar>
 
-      <Skeleton loading={isLoading} name="roles-table">
-        <StyledTableContainer>
-          {isFetching && !isLoading && (
-            <LinearProgress
-              sx={{
-                height: 3,
-              }}
-            />
-          )}
-        <TableContainer component={Paper} elevation={0}>
-          <Table>
-            <TableHead
-              sx={{
-                bgcolor: "primary.main",
-                "& th": {
-                  color: "primary.contrastText",
-                  fontWeight: "bold",
-                },
-              }}
-            >
-              <TableRow>
-                <TableCell>{t("roles:table.id")}</TableCell>
-                <TableCell>{t("roles:table.name")}</TableCell>
-                <TableCell>{t("roles:table.key")}</TableCell>
-                <TableCell>{t("roles:table.actions")}</TableCell>
-                <TableCell>{t("roles:table.active")}</TableCell>
-                <TableCell align="center">
-                  {t("roles:table.row_actions")}
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {!isLoading && filteredRoles.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    align="center"
-                    sx={{ py: 6, color: "text.secondary" }}
+      <StyledTableContainer>
+        {isFetching && !isLoading && (
+          <LinearProgress
+            sx={{
+              height: 3,
+            }}
+          />
+        )}
+        <Skeleton loading={isLoading} name="roles-list">
+          {isMobile ? (
+            <MobileList>
+              {isLoading ? (
+                <Box sx={{ minHeight: 200 }} />
+              ) : !isError && roles.length === 0 ? (
+                <Box sx={{ textAlign: "center", py: 3 }}>
+                  <SecurityOutlinedIcon color="disabled" fontSize="large" />
+                  <Typography variant="h6">
+                    {t("roles:empty_state.title")}
+                  </Typography>
+                  <Typography color="text.secondary" sx={{ my: 1 }}>
+                    {t("roles:empty_state.description")}
+                  </Typography>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={<AddModeratorOutlinedIcon />}
+                    disabled={isBusy}
+                    onClick={handleOpenCreateModal}
+                    sx={{ minHeight: 44 }}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: 1.5,
-                      }}
-                    >
-                      <SecurityOutlinedIcon
-                        sx={{ fontSize: 48, color: "text.disabled" }}
-                      />
-                      <Typography variant="h6" color="text.secondary">
-                        {t("roles:empty_state.title", "No hay roles disponibles")}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.disabled"
-                        sx={{ maxWidth: 400 }}
-                      >
-                        {t(
-                          "roles:empty_state.description",
-                          "No se encontraron roles actualmente. Comience agregando uno nuevo."
-                        )}
-                      </Typography>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<AddModeratorOutlinedIcon />}
-                        onClick={handleOpenCreateModal}
-                        disabled={isLoading || isFetching || isMutating}
-                        sx={{ mt: 1 }}
-                      >
-                        {t("roles:empty_state.cta", "Crear primer rol")}
-                      </Button>
-                    </Box>
-                  </TableCell>
-                </TableRow>
+                    {t("roles:empty_state.cta")}
+                  </Button>
+                </Box>
               ) : (
-                filteredRoles.map((role) => {
-                  const maxVisibleActions = 2;
-                  const visibleActions = role.actions.slice(0, maxVisibleActions);
-                  const overflowCount = role.actions.length - maxVisibleActions;
-
-                  const allActionsTooltip = (
-                    <Box sx={{ p: 0.5 }}>
-                      <Typography
-                        variant="caption"
-                        sx={{ fontWeight: 700, display: "block", mb: 0.5 }}
-                      >
-                        {t("roles:all_actions_title", {
-                          count: role.actions.length,
-                        })}
-                      </Typography>
-                      <Box
-                        component="ul"
-                        sx={{ m: 0, pl: 2, fontSize: "0.75rem", lineHeight: 1.5 }}
-                      >
-                        {role.actions.map((act) => (
-                          <li key={act}>
-                            {actionCleanNamesMap.get(act) ??
-                              (i18n.exists(`actions:action_names.${act}`)
-                                ? t(`actions:action_names.${act}`)
-                                : i18n.exists(`roles:action_names.${act}`)
-                                ? t(`roles:action_names.${act}`)
-                                : act)}
-                          </li>
-                        ))}
-                      </Box>
-                    </Box>
-                  );
-
-                  return (
-                    <TableRow
-                      key={role.id}
-                      hover
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
+                roles.map((role) => (
+                  <MobileRecordCard
+                    key={role.id}
+                    title={role.name || role.key}
+                    disabled={isBusy}
+                    status={
+                      <Chip
+                        size="small"
+                        label={t(
+                          role.isActive ? "roles:active" : "roles:inactive",
+                        )}
+                        color={role.isActive ? "success" : "default"}
+                      />
+                    }
+                    fields={[
+                      { key: "id", label: t("roles:table.id"), value: role.id },
+                      {
+                        key: "key",
+                        label: t("roles:table.key"),
+                        value: role.key,
+                      },
+                      {
+                        key: "actions",
+                        label: t("roles:table.actions"),
+                        value: role.actions.length ? (
+                          <AssignmentList>
+                            {role.actions.map((key) => (
+                              <ActionTag
+                                key={key}
+                                label={actionCleanNamesMap.get(key) ?? key}
+                                category={key.split(".")[0]}
+                              />
+                            ))}
+                          </AssignmentList>
+                        ) : (
+                          t("roles:empty_value")
+                        ),
+                      },
+                    ]}
+                    primaryAction={{
+                      key: "update",
+                      label: t("roles:actions_menu.update"),
+                      icon: <EditOutlinedIcon fontSize="small" />,
+                      onClick: () => handleOpenEditModal(role),
+                    }}
+                    actions={[
+                      {
+                        key: "copy",
+                        label: t("roles:copy"),
+                        icon: <ContentCopyIcon fontSize="small" />,
+                        onClick: () => handleCopyId(role.id),
+                      },
+                      {
+                        key: "toggle",
+                        label: t(
+                          role.isActive ? "roles:deactivate" : "roles:activate",
+                        ),
+                        icon: role.isActive ? (
+                          <BlockOutlinedIcon fontSize="small" />
+                        ) : (
+                          <CheckCircleOutlineOutlinedIcon fontSize="small" />
+                        ),
+                        onClick: () => handleRequestToggleActive(role),
+                      },
+                      ...(role.key === "super_admin"
+                        ? []
+                        : [
+                            {
+                              key: "delete",
+                              label: t("roles:delete"),
+                              icon: <DeleteOutlinedIcon fontSize="small" />,
+                              color: "error" as const,
+                              onClick: () => handleRequestDelete(role),
+                            },
+                          ]),
+                    ]}
+                  />
+                ))
+              )}
+            </MobileList>
+          ) : (
+            <TableContainer
+              component={Paper}
+              elevation={0}
+              sx={{ overflowX: "auto" }}
+            >
+              <Table>
+                <TableHead
+                  sx={{
+                    bgcolor: "primary.main",
+                    "& th": {
+                      color: "primary.contrastText",
+                      fontWeight: "bold",
+                    },
+                  }}
+                >
+                  <TableRow>
+                    <TableCell>{t("roles:table.id")}</TableCell>
+                    <TableCell>{t("roles:table.name")}</TableCell>
+                    <TableCell>{t("roles:table.key")}</TableCell>
+                    <TableCell>{t("roles:table.actions")}</TableCell>
+                    <TableCell>{t("roles:table.active")}</TableCell>
+                    <TableCell align="center">
+                      {t("roles:table.row_actions")}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {!isLoading && !isError && roles.length === 0 ? (
+                    <TableRow>
                       <TableCell
-                        sx={{
-                          color: "text.secondary",
-                          fontSize: "0.875rem",
-                          fontFamily: "monospace",
-                        }}
+                        colSpan={6}
+                        align="center"
+                        sx={{ py: 6, color: "text.secondary" }}
                       >
                         <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: 1.5,
+                          }}
                         >
-                          {role.id.includes("-")
-                            ? `${role.id.split("-")[0]}...`
-                            : role.id}
-                          <Tooltip
-                            title={t("roles:copy")}
-                            arrow
-                            placement="top"
+                          <SecurityOutlinedIcon
+                            sx={{ fontSize: 48, color: "text.disabled" }}
+                          />
+                          <Typography variant="h6" color="text.secondary">
+                            {t(
+                              "roles:empty_state.title",
+                              "No hay roles disponibles",
+                            )}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.disabled"
+                            sx={{ maxWidth: 400 }}
                           >
-                            <IconButton
-                              size="small"
-                              onClick={() => handleCopyId(role.id)}
-                              aria-label={t("roles:copy")}
-                            >
-                              <ContentCopyIcon
-                                fontSize="small"
-                                sx={{ fontSize: "1rem" }}
-                              />
-                            </IconButton>
-                          </Tooltip>
+                            {t(
+                              "roles:empty_state.description",
+                              "No se encontraron roles actualmente. Comience agregando uno nuevo.",
+                            )}
+                          </Typography>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<AddModeratorOutlinedIcon />}
+                            onClick={handleOpenCreateModal}
+                            disabled={isBusy}
+                            sx={{ mt: 1 }}
+                          >
+                            {t("roles:empty_state.cta", "Crear primer rol")}
+                          </Button>
                         </Box>
                       </TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: "medium" }}
-                        >
-                          {role.name || t("roles:empty_value", "-")}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <KeyBadge>{role.key}</KeyBadge>
-                      </TableCell>
-                      <TableCell>
-                        {role.actions && role.actions.length > 0 ? (
-                          <ActionsWrapper>
-                            {visibleActions.map((actionKey) => {
-                              const label =
-                                actionCleanNamesMap.get(actionKey) ??
-                                (i18n.exists(`actions:action_names.${actionKey}`)
-                                  ? t(`actions:action_names.${actionKey}`)
-                                  : i18n.exists(`roles:action_names.${actionKey}`)
-                                  ? t(`roles:action_names.${actionKey}`)
-                                  : actionKey);
-                              const category = actionKey.split(".")[0];
-                              return (
-                                <ActionTag
-                                   key={actionKey}
-                                  label={label}
-                                  size="small"
-                                  category={category}
-                                />
-                              );
+                    </TableRow>
+                  ) : (
+                    roles.map((role) => {
+                      const maxVisibleActions = 2;
+                      const visibleActions = role.actions.slice(
+                        0,
+                        maxVisibleActions,
+                      );
+                      const overflowCount =
+                        role.actions.length - maxVisibleActions;
+
+                      const allActionsTooltip = (
+                        <Box sx={{ p: 0.5 }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontWeight: 700, display: "block", mb: 0.5 }}
+                          >
+                            {t("roles:all_actions_title", {
+                              count: role.actions.length,
                             })}
-                            {overflowCount > 0 && (
+                          </Typography>
+                          <Box
+                            component="ul"
+                            sx={{
+                              m: 0,
+                              pl: 2,
+                              fontSize: "0.75rem",
+                              lineHeight: 1.5,
+                            }}
+                          >
+                            {role.actions.map((act) => (
+                              <li key={act}>
+                                {actionCleanNamesMap.get(act) ??
+                                  (i18n.exists(`actions:action_names.${act}`)
+                                    ? t(`actions:action_names.${act}`)
+                                    : i18n.exists(`roles:action_names.${act}`)
+                                      ? t(`roles:action_names.${act}`)
+                                      : act)}
+                              </li>
+                            ))}
+                          </Box>
+                        </Box>
+                      );
+
+                      return (
+                        <TableRow
+                          key={role.id}
+                          hover
+                          sx={{
+                            "&:last-child td, &:last-child th": { border: 0 },
+                          }}
+                        >
+                          <TableCell
+                            sx={{
+                              color: "text.secondary",
+                              fontSize: "0.875rem",
+                              fontFamily: "monospace",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              {role.id.includes("-")
+                                ? `${role.id.split("-")[0]}...`
+                                : role.id}
                               <Tooltip
-                                title={allActionsTooltip}
+                                title={t("roles:copy")}
                                 arrow
                                 placement="top"
                               >
-                                <MoreActionsChip
-                                  label={t("roles:more_actions", {
-                                    count: overflowCount,
-                                  })}
-                                  size="small"
-                                />
+                                <span>
+                                  <IconButton
+                                    disabled={isBusy}
+                                    size="small"
+                                    onClick={() => handleCopyId(role.id)}
+                                    aria-label={t("roles:copy")}
+                                  >
+                                    <ContentCopyIcon
+                                      fontSize="small"
+                                      sx={{ fontSize: "1rem" }}
+                                    />
+                                  </IconButton>
+                                </span>
                               </Tooltip>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: "medium" }}
+                            >
+                              {role.name || role.key}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <KeyBadge>{role.key}</KeyBadge>
+                          </TableCell>
+                          <TableCell>
+                            {role.actions && role.actions.length > 0 ? (
+                              <ActionsWrapper>
+                                {visibleActions.map((actionKey) => {
+                                  const label =
+                                    actionCleanNamesMap.get(actionKey) ??
+                                    (i18n.exists(
+                                      `actions:action_names.${actionKey}`,
+                                    )
+                                      ? t(`actions:action_names.${actionKey}`)
+                                      : i18n.exists(
+                                            `roles:action_names.${actionKey}`,
+                                          )
+                                        ? t(`roles:action_names.${actionKey}`)
+                                        : actionKey);
+                                  const category = actionKey.split(".")[0];
+                                  return (
+                                    <ActionTag
+                                      key={actionKey}
+                                      label={label}
+                                      size="small"
+                                      category={category}
+                                    />
+                                  );
+                                })}
+                                {overflowCount > 0 && (
+                                  <Tooltip
+                                    title={allActionsTooltip}
+                                    arrow
+                                    placement="top"
+                                  >
+                                    <MoreActionsChip
+                                      label={t("roles:more_actions", {
+                                        count: overflowCount,
+                                      })}
+                                      size="small"
+                                    />
+                                  </Tooltip>
+                                )}
+                              </ActionsWrapper>
+                            ) : (
+                              t("roles:empty_value")
                             )}
-                          </ActionsWrapper>
-                        ) : (
-                          t("roles:empty_value")
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={
-                            role.isActive
-                              ? t("roles:yes")
-                              : t("roles:no")
-                          }
-                          color={role.isActive ? "success" : "error"}
-                          size="small"
-                          variant={role.isActive ? "filled" : "outlined"}
-                          sx={
-                            role.isActive
-                              ? { color: "success.contrastText" }
-                              : {}
-                          }
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          aria-label={t("roles:table.row_actions")}
-                          disabled={isLoading || isFetching || isMutating}
-                          onClick={(e) => handleOpenActionMenu(e, role)}
-                        >
-                          <MoreVertIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={totalItems}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            disabled={isLoading || isFetching || isMutating}
-            labelRowsPerPage={t("core:pagination.rows_per_page")}
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}–${to} ${t("core:pagination.of")} ${
-                count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
-              }`
-            }
-          />
-        </StyledTableContainer>
-      </Skeleton>
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={
+                                role.isActive
+                                  ? t("roles:yes")
+                                  : t("roles:inactive")
+                              }
+                              color={role.isActive ? "success" : "error"}
+                              size="small"
+                              variant={role.isActive ? "filled" : "outlined"}
+                              sx={
+                                role.isActive
+                                  ? { color: "success.contrastText" }
+                                  : {}
+                              }
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              aria-label={t("roles:table.row_actions")}
+                              disabled={isBusy}
+                              onClick={(e) => handleOpenActionMenu(e, role)}
+                            >
+                              <MoreVertIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Skeleton>
+        <ListPagination
+          getItemAriaLabel={(type) => t(`roles:pagination.${type}`)}
+          component="div"
+          count={totalItems}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          disabled={isBusy}
+          labelRowsPerPage={t("core:pagination.rows_per_page")}
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}–${to} ${t("core:pagination.of")} ${
+              count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
+            }`
+          }
+        />
+      </StyledTableContainer>
 
       {/* Row Actions Menu */}
       <Menu
@@ -923,7 +1046,11 @@ const Roles: FC = () => {
           },
         }}
       >
-        <MenuItem onClick={handleOpenEditModal} sx={{ borderRadius: 1 }}>
+        <MenuItem
+          disabled={isBusy}
+          onClick={() => handleOpenEditModal()}
+          sx={{ borderRadius: 1 }}
+        >
           <ListItemIcon>
             <EditOutlinedIcon fontSize="small" color="primary" />
           </ListItemIcon>
@@ -931,6 +1058,7 @@ const Roles: FC = () => {
         </MenuItem>
         {actionRole && (
           <MenuItem
+            disabled={isBusy}
             onClick={() => handleRequestToggleActive(actionRole)}
             sx={{ borderRadius: 1 }}
           >
@@ -953,16 +1081,30 @@ const Roles: FC = () => {
             />
           </MenuItem>
         )}
+        {actionRole && actionRole.key !== "super_admin" && (
+          <MenuItem
+            disabled={isBusy}
+            onClick={() => handleRequestDelete(actionRole)}
+            sx={{ borderRadius: 1, color: "error.main" }}
+          >
+            <ListItemIcon sx={{ color: "error.main" }}>
+              <DeleteOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={t("roles:delete")} />
+          </MenuItem>
+        )}
       </Menu>
 
       {/* Role Create / Edit Modal */}
       <RoleModal
         open={isRoleModalOpen}
-        onClose={() => setIsRoleModalOpen(false)}
+        onClose={() => {
+          if (!isBusy) setIsRoleModalOpen(false);
+        }}
         onSubmit={handleSaveRole}
         initialData={selectedRoleForEdit}
         availableActions={availableActionOptions}
-        isSubmitting={isMutating}
+        isSubmitting={isBusy}
       />
 
       {/* Confirm Role Active/Inactive Dialog */}
@@ -971,6 +1113,7 @@ const Roles: FC = () => {
         onClose={handleCloseConfirmToggle}
         onConfirm={handleConfirmToggleActive}
         isLoading={isMutating}
+        confirmDisabled={isBusy}
         title={
           roleToToggle?.isActive
             ? t("roles:confirm_deactivate_title")
@@ -985,6 +1128,20 @@ const Roles: FC = () => {
                 name: roleToToggle?.key,
               })
         }
+      />
+      <ConfirmDialog
+        open={Boolean(roleToDelete)}
+        onClose={() => {
+          if (!isMutating) setRoleToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title={t("roles:confirm_delete_title")}
+        message={t("roles:confirm_delete_message", {
+          name: roleToDelete?.name || roleToDelete?.key,
+        })}
+        confirmText={t("roles:delete")}
+        isLoading={deleteRoleMutation.isPending}
+        confirmDisabled={isBusy}
       />
     </Box>
   );

@@ -6,15 +6,10 @@ import InputSearch from "../../../components/inputs/InputSearch";
 import { getModuleIcon } from "../../../store/generalSettings/moduleIcons";
 import { shortcutIdentity } from "../../../store/mobileNavigationStore";
 import type { ShortcutReference } from "../../../store/mobileNavigationStore";
-import type { ShortcutOption } from "../MobileBottomNav/types";
+import type { MobileShortcutDialogProps } from "./types";
 import { ShortcutSheet } from "./styles";
 
-type Props = {
-  slotIndex: number; current: ShortcutReference | null; occupied: string[]; options: ShortcutOption[];
-  busy: boolean; contextError: boolean; loading: boolean; onRetry: () => void;
-  onClose: () => void; onSave: (reference: ShortcutReference | null) => boolean;
-};
-export default function MobileShortcutDialog({ slotIndex, current, occupied, options, busy, contextError, loading, onRetry, onClose, onSave }: Props) {
+export default function MobileShortcutDialog({ slotIndex, current, occupied, options, busy, contextError, loading, onRetry, onClose, onSave }: MobileShortcutDialogProps) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState(current ? shortcutIdentity(current) : "");
   const [search, setSearch] = useState("");

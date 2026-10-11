@@ -1,62 +1,41 @@
-﻿import { render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import LanguageSelector from "../../../../src/components/LanguageSelector";
-
-const changeLanguageMock = vi.fn();
-
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) => {
-      const texts: Record<string, string> = {
-        "layout:toggle_language": "Cambiar idioma",
-        "translate:es": "español",
-        "translate:en": "inglés",
-      };
-      return texts[key] || key;
-    },
-    i18n: {
-      language: "es",
-      changeLanguage: changeLanguageMock,
-    },
-  }),
-}));
+import { describe, it, expect } from "vitest";
+import LanguageSelector from "../../../components/LanguageSelector";
+import i18n from "../../../translate";
 
 describe("LanguageSelector", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("should render the translate icon button", () => {
+  it.each(["es", "en"])("includes the visible language in its accessible name for %s", async (language) => {
+    await act(async () => { await i18n.changeLanguage(language); });
     render(<LanguageSelector />);
-    const button = screen.getByLabelText("Cambiar idioma");
-    expect(button).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: i18n.t("layout:toggle_language_label", { language: language.toUpperCase() }) });
+    expect(button).toHaveTextContent(language.toUpperCase());
+    expect(button).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("should open menu and show languages on click", async () => {
+  it("opens the translated menu and switches to English", async () => {
     const user = userEvent.setup();
     render(<LanguageSelector />);
-    
-    const button = screen.getByLabelText("Cambiar idioma");
+    const button = screen.getByRole("button", { name: "ES · Cambiar idioma" });
     await user.click(button);
-
-    const esOption = await screen.findByText("español");
-    const enOption = await screen.findByText("inglés");
-    
-    expect(esOption).toBeVisible();
-    expect(enOption).toBeVisible();
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    expect(await screen.findByRole("menuitem", { name: /español/i })).toBeVisible();
+    await user.click(screen.getByRole("menuitem", { name: /inglés/i }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "EN · Change language" })).toHaveAttribute("aria-expanded", "false"));
+    expect(i18n.language).toBe("en");
   });
 
-  it("should call changeLanguage when a language is selected", async () => {
+  it("opens by keyboard and returns focus to the selector on Escape", async () => {
     const user = userEvent.setup();
     render(<LanguageSelector />);
-    
-    const button = screen.getByLabelText("Cambiar idioma");
-    await user.click(button);
-
-    const enOption = await screen.findByText("inglés");
-    await user.click(enOption);
-
-    expect(changeLanguageMock).toHaveBeenCalledWith("en");
+    const button = screen.getByRole("button", { name: "ES · Cambiar idioma" });
+    await user.tab();
+    expect(button).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(await screen.findByRole("menu")).toBeVisible();
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+    expect(button).toHaveFocus();
+    expect(button).toHaveAttribute("aria-expanded", "false");
   });
 });

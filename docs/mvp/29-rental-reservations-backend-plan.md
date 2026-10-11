@@ -2,9 +2,13 @@
 
 Continuidad Client: [plan30](30-rental-reservations-client-plan.md) implementado después de esta entrega, con tres carriles e integrador; RC-01..37/39 verificadas localmente: 822 pruebas/144 archivos y navegador→API→PostgreSQL temporal. RC-38 conserva aplicación objetivo y smoke con sesión real pendientes. La evidencia Backend histórica se conserva.
 
-> Estado: en revisión documental — Backend implementado y verificado localmente; aplicación a BD objetivo pendiente
+> Estado: en revisión documental — Backend implementado; migraciones aplicadas en BD local; smoke de sesión real pendiente
 > Fecha: 2026-10-04
 > Dependencias: [entrevista 25](25-rental-reservations-interview.md), [especificación 26](26-rental-reservations-spec.md), [ERD 27](27-rental-reservations-erd.md), [contratos 28](28-rental-reservations-contracts.md), [ADR-012](../architecture/decisions/ADR-012-rental-property-collaboration.md), [ADR-013](../architecture/decisions/ADR-013-rental-integrity-and-idempotency.md)
+
+## Ajuste solicitado — 2026-10-09
+
+El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
 
 ## Alcance y estado real
 
@@ -454,15 +458,31 @@ Locks: casa exclusiva para escrituras y compartida para lecturas scoped; revocac
 
 Los ensayos usan identidad sintética y omiten Google/Redis: no verifican login ni cuotas distribuidas en producción. El EXPLAIN describe datos sintéticos locales, no capacidad del despliegue. Se conserva la limitación de v1: una estadía vencida que nunca se inició requiere un futuro comando explícito de cierre retrospectivo. Nodia no sincroniza disponibilidad ni ejecuta pagos/reembolsos externos.
 
-## Aplicación objetivo — preparada, todavía no ejecutada
+## Aplicación objetivo — runbook general; aplicación local del 2026-10-09 registrada abajo
 
 1. Confirmar el entorno/BD objetivo mediante el proceso operativo existente. Construir el Server y revisar `typeorm migration:show -d dist/config/data-source.js` en ese entorno; verificar baseline y migraciones pendientes. El script `migration:run` aplica **todas** las pendientes, incluidas Finanzas/auth si corresponde; no asumir que solo ejecutará Reservas.
 2. Detener writers y generar un respaldo con pg_dump mediante la conexión operativa del entorno. Restaurarlo en otra BD aislada y verificar datos antes de proceder. El restore de esta entrega solo demuestra el procedimiento con información sintética.
-3. Aplicar el conjunto revisado de migraciones con `npm run migration:run`. La nueva es [1791146000000-CreateRentalReservations.ts](../../nodia-server/src/migrations/1791146000000-CreateRentalReservations.ts); preserva objetos previos y no aporta el baseline completo de una instalación nueva.
-4. Ejecutar `npm run seed:rental`. Verificar Tools/Reservas y traducciones, luego asignar explícitamente el módulo al usuario desde Settings. Pertenencia por casa y asignación del módulo siguen siendo distintas.
+3. Aplicar solo el conjunto revisado. Para un baseline parcial con `users` existente, ejecutar `npm run migration:rental`; verifica esquema, respalda metadatos/historial y aplica exclusivamente las dos migraciones de Reservas, en una transacción. `migration:run` global queda reservado a un historial completo reconciliado. La nueva es [1791146000000-CreateRentalReservations.ts](../../nodia-server/src/migrations/1791146000000-CreateRentalReservations.ts); preserva objetos previos y no aporta el baseline completo de una instalación nueva.
+4. Si ya existe un módulo con path `/tools/reservations`, conservar su key/ID/traducciones/asignaciones y no crear uno con otra key. Solo en instalaciones sin módulo, ejecutar `npm run seed:rental`. Verificar Tools/Reservas y traducciones, luego asignar explícitamente el módulo al usuario desde Settings. Pertenencia por casa y asignación del módulo siguen siendo distintas.
 5. Reiniciar Server con `synchronize=false`, inspeccionar migration history/tablas/FKs y realizar smoke con sesión real: casa propia, colaborador, reserva, pago, confirmación/calendario/recovery. No sembrar datos comerciales inventados ni usar datos sintéticos como registros reales.
 6. Si falla la aplicación, mantener writers detenidos. El down retira las once tablas y **destruye toda la historia de Reservas**; conservar el backup y restaurar datos para una reversión completa. No usar down como solución a una respuesta HTTP incierta: recuperar/reintentar la misma clave.
 
-Estado operacional: migración preparada / probada aislada / **no aplicada objetivo**; seed preparado / probado aislado / **no aplicado objetivo**. Client posterior implementado usando contratos28, OpenAPI y fixtures con evidencia propia en30. Próximo paso operacional: RC-38. No se aprueba automáticamente el lanzamiento ni los documentos en revisión.
+Estado operacional histórico de la entrega 2026-10-04: migración/seed preparados y probados aislados, sin aplicación objetivo en esa fecha. La aplicación local del 2026-10-09 sustituye ese pendiente de DDL; módulo existente preservado sin seed duplicado. Client posterior implementado usando contratos28, OpenAPI y fixtures con evidencia propia en30. Próximo paso operacional: RC-38. No se aprueba automáticamente el lanzamiento ni los documentos en revisión.
 
 Revisión de errores de persistencia: las pérdidas de conexión y rollback no disponible producen una respuesta segura; los detalles del driver no se propagan a logs públicos. Un fallo al devolver la conexión al pool después del commit se registra y conserva el ack ya confirmado. Tres regresiones adicionales de casos de uso cubren estos caminos. Resultado final: 528 pruebas / 94 archivos y 159 pruebas de Reservas / 14 suites; ensayo HTTP final: 282 peticiones, incluidos cuerpo malformado, actor externo con etiqueta superadmin y límite de 1001 drafts sin presentar calendario truncado como completo. Páginas de 1/100 gastos usan 9 statements en ambos casos; páginas de reservas mantienen igual cantidad de consultas, verificable en el reporte.
+
+## Aplicación local y corrección del 500 — 2026-10-09
+
+**Causa confirmada:** no existía ninguna de las once tablas `rental_*`. El caso de uso compilado con la consulta exacta `active=all&page=1&limit=1` devolvió 500 `rental:server_error` antes de aplicar el esquema. El problema no era la paginación.
+
+Aplicación autorizada y selectiva: `CreateRentalReservations1791146000000` y `OptionalRentalPropertyTimes1791540000000`, con transacción completa y `synchronize=false`. El script comprueba `users.id` bigint/PK y rechaza baselines parciales inconsistentes. Respaldo previo de esquema/historial (sin tablas rental ni datos de ese dominio que respaldar): `C:/Users/Oscar/AppData/Local/Nodia/backups/rental-baseline-2026-10-09T15-20-52.512Z.json`. No es un pg_dump completo de la BD. Historial anterior preservado y segunda ejecución sin pendientes/cambios. No se aplicaron migraciones de otros dominios.
+
+BD posterior: once tablas y horarios legacy nullable; módulo ID15/key `reservas`/path `/tools/reservations` ya existente preservado. La lectura anterior buscaba la key del seed `rental_reservations`; su ausencia no prueba ausencia de módulos con otra key. Sin seed/asignaciones ni registros comerciales de prueba en la BD local.
+
+Verificación real: servidor Nest compilado temporal, conectado a la BD configurada, devolvió **HTTP200** y `{data:[],meta:{page:1,limit:1,total_items:0,total_pages:0}}` para el endpoint exacto. Identidad de lectura inyectada y mutaciones bloqueadas: este smoke no verifica JWT/Google/Redis. El servidor del usuario en puerto3000 con watch ya publica en OpenAPI solo `name/max_guests` requeridos para crear y horarios de propiedad nullable; no se reinició su proceso.
+
+Regresiones: **161 pruebas de casos de uso/14 suites** y **282 peticiones HTTP/PostgreSQL16 aislado** sobre44 operaciones, build/lint correctos (dos warnings históricos IA). La integración verifica alta sin zona/horarios, replay concurrente, nullable en respuestas, metadata sin drift, up/down/up, rollback rechazado ante null y restauración de pg_dump sintético. Ensayo adicional de la migración en tabla temporal de conexión conserva valores legacy `17:45/09:30` durante up/down/up y rechaza down con null; transacción revertida, sin modificar alojamientos reales.
+
+RC-38 queda parcialmente resuelto en DDL local; faltan creación/colaboración y sesión real con refresh/Redis. ERD/contratos/planes ajustados y ADR-020 propuesto conservan revisión documental. El JSON externo de Obsidian no se actualizó en esta entrega.
+
+Mantenimiento posterior solicitado del 2026-10-09: JSON de Obsidian reconciliado con horarios legacy nullable y avisos circulares resueltos mediante nota SQL de la FK de retorno; restricción real/DBML conservados. [Evidencia y complemento necesario al exportar SQL](27-rental-reservations-erd.md#diagrama-obsidian-reconciliado-y-avisos-circulares--2026-10-09). Sustituye el pendiente de actualización externa descrito en esta entrega; RC-38 y aprobación documental conservan su estado.

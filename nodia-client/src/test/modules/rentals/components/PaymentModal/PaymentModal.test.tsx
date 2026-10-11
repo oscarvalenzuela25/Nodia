@@ -130,9 +130,7 @@ describe("PaymentModal", () => {
     expect(
       screen.getByRole("button", { name: i18n.t("rental:save") }),
     ).toBeDisabled();
-    const date = screen.getByLabelText(
-      new RegExp(i18n.t("rental:occurred_on")),
-    );
+    const date = screen.getByRole("textbox", { name: new RegExp(i18n.t("rental:occurred_on")) });
     await user.clear(date);
     await user.type(date, "2099-01-01");
     expect(

@@ -28,8 +28,8 @@ const actorId = "manual-mobile-fixture";
 useAuthStore.getState().login({ token: "synthetic-qa-never-sent", expiresAt: Date.now() + 900_000, user: { id: actorId, name: "QA sintético" } });
 const context = { roles: [], actions: [], modules: [{ module_group_key: "qa", translates: [], modules: [
   { key: "reservations", link: "/tools/reservations", icon: "HolidayVillageOutlined", translates: [{ key: "key", es: "Reservas", en: "Reservations" }] },
-  { key: "finances", link: "/finances/personal", icon: "AccountBalanceWalletOutlined", translates: [{ key: "key", es: "Finanzas", en: "Finances" }] },
-  { key: "business", link: "/business", translates: [{ key: "key", es: "Negocios", en: "Business" }] },
+  { key: "finances", link: "/tools/finances-personal", icon: "AccountBalanceWalletOutlined", translates: [{ key: "key", es: "Finanzas", en: "Finances" }] },
+  { key: "business", link: "/tools/business", translates: [{ key: "key", es: "Negocios", en: "Business" }] },
   { key: "users", link: "/settings/users", translates: [{ key: "key", es: "Usuarios", en: "Users" }] },
 ] }] };
 settings.getState().setContext(context);

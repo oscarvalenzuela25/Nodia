@@ -11,6 +11,7 @@
     "Migration up/down/up preserves existing synthetic data.",
     "Eleven entities match migration metadata without synchronize.",
     "Navigation seed is idempotent and does not assign modules to users.",
+    "Accommodations omit timezone and legacy times; rollback refuses to invent missing times.",
     "Failure while persisting the intent and backend termination before commit leave no effect/audit/operation.",
     "Statement cancellation and total transaction deadline return safe failures only after rollback.",
     "1003-row pagination keeps SQL statement count constant; numeric sums, EXPLAIN and pg_dump restoration verified.",
@@ -52,8 +53,8 @@
         "Total Cost": 8.18,
         "Plan Rows": 1,
         "Plan Width": 12,
-        "Actual Startup Time": 0.458,
-        "Actual Total Time": 0.466,
+        "Actual Startup Time": 0.443,
+        "Actual Total Time": 0.451,
         "Actual Rows": 100,
         "Actual Loops": 1,
         "Shared Hit Blocks": 24,
@@ -76,8 +77,8 @@
             "Total Cost": 8.18,
             "Plan Rows": 1,
             "Plan Width": 12,
-            "Actual Startup Time": 0.457,
-            "Actual Total Time": 0.46,
+            "Actual Startup Time": 0.442,
+            "Actual Total Time": 0.446,
             "Actual Rows": 100,
             "Actual Loops": 1,
             "Sort Key": [
@@ -111,8 +112,8 @@
                 "Total Cost": 8.16,
                 "Plan Rows": 1,
                 "Plan Width": 12,
-                "Actual Startup Time": 0.019,
-                "Actual Total Time": 0.167,
+                "Actual Startup Time": 0.015,
+                "Actual Total Time": 0.148,
                 "Actual Rows": 1001,
                 "Actual Loops": 1,
                 "Index Cond": "(property_id = '2'::bigint)",
@@ -146,9 +147,9 @@
         "Temp Read Blocks": 0,
         "Temp Written Blocks": 0
       },
-      "Planning Time": 0.365,
+      "Planning Time": 0.342,
       "Triggers": [],
-      "Execution Time": 0.512
+      "Execution Time": 0.477
     }
   ]
 }

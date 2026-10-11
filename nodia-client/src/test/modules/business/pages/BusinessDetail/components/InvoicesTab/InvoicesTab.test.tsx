@@ -1,6 +1,6 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import InvoicesTab from "../../../../../../../modules/business/pages/BusinessDetail/components/InvoicesTab/InvoicesTab";
@@ -100,6 +100,13 @@ const renderWithClient = (ui: ReactElement) => {
   );
 };
 
+
+const mockMobile = () => vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+  matches: query.includes("599.95"), media: query, onchange: null,
+  addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+}));
+afterEach(() => vi.restoreAllMocks());
+
 describe("InvoicesTab Component", () => {
   const user = userEvent.setup();
 
@@ -147,6 +154,7 @@ describe("InvoicesTab Component", () => {
 
     // Click "Registrar Factura" button
     const newInvoiceBtn = screen.getByTestId("new-invoice-btn");
+    await waitFor(() => expect(newInvoiceBtn).toBeEnabled());
     await user.click(newInvoiceBtn);
 
     // Modal opens
@@ -195,7 +203,7 @@ describe("InvoicesTab Component", () => {
     });
 
     // Verify invoice_status column is not rendered in headers
-    expect(screen.queryByRole("columnheader", { name: "Estado" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Estado de actividad" })).not.toBeInTheDocument();
   });
 
   it("toggles invoice active status using 3-dots menu and ConfirmDialog", async () => {
@@ -275,7 +283,7 @@ describe("InvoicesTab Component", () => {
     });
 
     // 1. Open Filter modal
-    const filterBtn = screen.getByRole("button", { name: /abrir filtros|filtro/i });
+    const filterBtn = screen.getByRole("button", { name: /^abrir filtros/i });
     await user.click(filterBtn);
 
     await waitFor(() => {
@@ -392,7 +400,7 @@ describe("InvoicesTab Component", () => {
     vi.mocked(businessServices.getInvoices).mockImplementation(async (params) => ({ data: [{ ...mockInvoices[0], id: `page-${params?.page ?? 1}`, code: `INVOICE-PAGE-${params?.page ?? 1}` }], meta: { total_items: 151, page: params?.page ?? 1, limit: params?.limit ?? 25, total_pages: 7 } }));
     renderWithClient(<InvoicesTab businessId="biz-123" />);
     expect(await screen.findByText("INVOICE-PAGE-1")).toBeInTheDocument();
-    const next = screen.getByRole("button", { name: /Go to next page/i });
+    const next = screen.getByRole("button", { name: /siguiente|next page/i });
     await waitFor(() => expect(next).toBeEnabled()); await user.click(next);
     expect(await screen.findByText("INVOICE-PAGE-2")).toBeInTheDocument();
     expect(businessServices.getInvoices).toHaveBeenCalledWith(expect.objectContaining({ page: 2, limit: 25 }));
@@ -413,6 +421,25 @@ describe("InvoicesTab Component", () => {
     await user.click(screen.getByRole("button", { name: /Reintentar/i }));
     await waitFor(() => expect(screen.queryByRole("button", { name: /Reintentar/i })).not.toBeInTheDocument());
     expect(screen.getByText("FAC-MANUAL-001")).toBeInTheDocument();
+  });
+
+  it("queries active records by default and restores that default after clearing filters", async () => {
+    renderWithClient(<InvoicesTab businessId="biz-123" />);
+    await waitFor(() => expect(businessServices.getInvoices).toHaveBeenCalledWith(expect.objectContaining({ q: expect.objectContaining({ is_active_eq: true }) })));
+    await user.click(screen.getByRole("button", { name: /^abrir filtros/i }));
+    await user.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+    expect(businessServices.getInvoices).toHaveBeenLastCalledWith(expect.objectContaining({ q: expect.objectContaining({ is_active_eq: true }) }));
+  });
+
+  it("shows mobile invoice cards with the same edit target and active predicate", async () => {
+    mockMobile();
+    renderWithClient(<InvoicesTab businessId="biz-123" />);
+    const card = await screen.findByRole("article", { name: "FAC-MANUAL-001" });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    await user.click(within(card).getByRole("button", { name: /Acciones de/ }));
+    await user.click(screen.getByRole("menuitem", { name: "Actualizar" }));
+    expect(await screen.findByDisplayValue("FAC-MANUAL-001")).toBeInTheDocument();
+    expect(businessServices.getInvoices).toHaveBeenCalledWith(expect.objectContaining({ page: 1, q: expect.objectContaining({ is_active_eq: true }) }));
   });
 
 });

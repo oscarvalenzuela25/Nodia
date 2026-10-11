@@ -19,8 +19,21 @@ export class CreateRentalPropertyUseCase {
     requestKey: string,
   ) {
     const dto = await configurationCommand(CreateRentalPropertyDto, input);
-    const command = {
+    const timezone =
+      dto.timezone === undefined
+        ? (process.env.RENTAL_DEFAULT_TIMEZONE ?? 'America/Santiago')
+        : dto.timezone;
+    // Validate the effective configuration too; an invalid deployment must not
+    // persist a zone that would break every reservation's date calculations.
+    const configured = await configurationCommand(CreateRentalPropertyDto, {
       ...dto,
+      timezone,
+    });
+    const command = {
+      ...configured,
+      timezone,
+      check_in_time: dto.check_in_time ?? null,
+      check_out_time: dto.check_out_time ?? null,
       location: dto.location ?? null,
       default_nightly_rate: dto.default_nightly_rate ?? null,
       default_deposit_percent:
@@ -34,7 +47,9 @@ export class CreateRentalPropertyUseCase {
     return this.transactions.createProperty(
       actorId,
       requestKey,
-      command,
+      // Deployment defaults are resolved only for persistence. Replaying the
+      // same user intent must still work if the internal timezone changes.
+      { ...command, timezone: dto.timezone ?? null },
       (manager, now) =>
         this.service.insert(manager, {
           ...command,

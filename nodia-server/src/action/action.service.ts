@@ -5,7 +5,10 @@ import { Action } from './entities/action.entity.js';
 import { CreateActionDto } from './dto/create-action.dto.js';
 import { UpdateActionDto } from './dto/update-action.dto.js';
 import { GetActionsDto } from './dto/get-actions.dto.js';
-import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import {
+  applyRansack,
+  validateRansackEnvelope,
+} from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetActionsResponse } from './types/action.types.js';
 import { TranslationService } from '../translation/translation.service.js';
@@ -120,16 +123,15 @@ export class ActionService {
     await this.actionRepository.save(action);
 
     if (translates !== undefined) {
-      await this.translationService.updateTranslations('actions', id, translates);
+      await this.translationService.updateTranslations(
+        'actions',
+        id,
+        translates,
+      );
     }
 
     await this.redisService.delByPattern('auth:context:*');
 
     return this.findOne(id);
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} action`;
-  }
 }
-

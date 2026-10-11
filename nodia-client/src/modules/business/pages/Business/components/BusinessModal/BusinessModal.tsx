@@ -1,10 +1,10 @@
+import { getBusinessDescription } from "../../../../infrastructure/businessDescription";
 import type { FC, FormEvent, ChangeEvent } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import BaseModal from "../../../../../../components/BaseModal";
 import TextInput from "../../../../../../components/inputs/TextInput";
-import TranslationInput from "../../../../../../components/inputs/TranslationInput";
 import type { BusinessModalProps } from "./types";
 import type { BusinessFormData } from "../../../../infrastructure/types";
 import {
@@ -27,17 +27,7 @@ const BusinessModalInner: FC<BusinessModalProps> = ({
 
   const [name, setName] = useState<string>(initialData?.name ?? "");
   const [isActive, setIsActive] = useState<boolean>(initialData?.is_active ?? true);
-  const [descriptionTranslations, setDescriptionTranslations] = useState<
-    Record<string, string>
-  >(() => {
-    const descItem = initialData?.translates?.find(
-      (tr) => tr.key === "description" || tr.key === "comment"
-    );
-    return {
-      es: descItem?.es ?? "",
-      en: descItem?.en ?? "",
-    };
-  });
+  const [description, setDescription] = useState(() => getBusinessDescription(initialData));
 
   const isFormValid = name.trim().length >= 2;
 
@@ -45,15 +35,10 @@ const BusinessModalInner: FC<BusinessModalProps> = ({
     e.preventDefault();
     if (!isFormValid || isSubmitting) return;
 
-    const description = {
-      key: "description",
-      es: descriptionTranslations.es?.trim() ?? "",
-      en: descriptionTranslations.en?.trim() ?? "",
-    };
-    // An empty update clears existing descriptions; an empty creation needs
-    // no translation records.
-    const translates = isEditing || description.es || description.en
-      ? [description]
+    // Keep the existing API contract with one description in both UI languages.
+    const text = description.trim();
+    const translates = isEditing || text
+      ? [{ key: "description", es: text, en: text }]
       : [];
 
     const payload: BusinessFormData = {
@@ -129,19 +114,15 @@ const BusinessModalInner: FC<BusinessModalProps> = ({
           disabled={isSubmitting}
         />
 
-        <TranslationInput
+        <TextInput
           id="business-description"
           name="description"
           label={t("business:description_label")}
           placeholder={t("business:description_placeholder")}
-          value={descriptionTranslations.es || descriptionTranslations.en || ""}
-          onChangeKey={(val: string) =>
-            setDescriptionTranslations((prev) => ({ ...prev, es: val }))
-          }
-          translations={descriptionTranslations}
-          onChangeTranslations={setDescriptionTranslations}
-          sectionTitle={t("business:description_label")}
-          sectionSubtitle={t("business:description_placeholder")}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          multiline
+          rows={3}
           disabled={isSubmitting}
         />
       </FormContainer>

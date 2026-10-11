@@ -10,10 +10,13 @@ import RouteContent from "./RouteContent";
 import { lazyWithRetry } from "./lazyRoute";
 import { PERSONAL_FINANCE_ROUTE } from "../modules/finances/constants/routes";
 import { RENTAL_RESERVATIONS_ROUTE } from "../modules/rentals/constants/routes";
+import { BUSINESS_ROUTE } from "../modules/business/constants/routes";
 
 // Lazy-loaded route pages (Code Splitting per route)
 const Home = lazyWithRetry(() => import("../modules/home/pages/Home"));
-const RentalReservations=lazyWithRetry(()=>import("../modules/rentals/pages/RentalReservations"));
+const RentalReservations = lazyWithRetry(
+  () => import("../modules/rentals/pages/RentalReservations"),
+);
 const PersonalFinance = lazyWithRetry(
   () => import("../modules/finances/pages/PersonalFinance"),
 );
@@ -49,9 +52,7 @@ const renderLazyPage = (children: ReactNode) => (
 );
 
 const renderLazyPublic = (children: ReactNode) => (
-  <RouteContent variant="fullscreen">
-    {children}
-  </RouteContent>
+  <RouteContent variant="fullscreen">{children}</RouteContent>
 );
 
 const router = createBrowserRouter([
@@ -61,14 +62,22 @@ const router = createBrowserRouter([
     children: [
       {
         path: RENTAL_RESERVATIONS_ROUTE,
-        element: <GuardStrict modulePath={RENTAL_RESERVATIONS_ROUTE}><BaseLayout>{renderLazyPage(<RentalReservations/>)}</BaseLayout></GuardStrict>,
+        element: (
+          <BaseLayout>
+            <GuardStrict modulePath={RENTAL_RESERVATIONS_ROUTE}>
+              {renderLazyPage(<RentalReservations />)}
+            </GuardStrict>
+          </BaseLayout>
+        ),
       },
       {
         path: PERSONAL_FINANCE_ROUTE,
         element: (
-          <GuardStrict modulePath={PERSONAL_FINANCE_ROUTE}>
-            <BaseLayout>{renderLazyPage(<PersonalFinance />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath={PERSONAL_FINANCE_ROUTE}>
+              {renderLazyPage(<PersonalFinance />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {
@@ -80,59 +89,73 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "business",
+        path: BUSINESS_ROUTE,
         element: (
-          <GuardStrict modulePath="/business">
-            <BaseLayout>{renderLazyPage(<Business />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath={BUSINESS_ROUTE}>
+              {renderLazyPage(<Business />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {
-        path: "business/:id",
+        path: `${BUSINESS_ROUTE}/:id`,
         element: (
-          <GuardStrict modulePath="/business">
-            <BaseLayout>{renderLazyPage(<BusinessDetail />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath={BUSINESS_ROUTE}>
+              {renderLazyPage(<BusinessDetail />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {
         path: "settings/users",
         element: (
-          <GuardStrict modulePath="/settings/users">
-            <BaseLayout>{renderLazyPage(<Users />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath="/settings/users">
+              {renderLazyPage(<Users />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {
         path: "settings/roles",
         element: (
-          <GuardStrict modulePath="/settings/roles">
-            <BaseLayout>{renderLazyPage(<Roles />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath="/settings/roles">
+              {renderLazyPage(<Roles />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {
         path: "settings/actions",
         element: (
-          <GuardStrict modulePath="/settings/actions">
-            <BaseLayout>{renderLazyPage(<Actions />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath="/settings/actions">
+              {renderLazyPage(<Actions />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {
         path: "settings/modules",
         element: (
-          <GuardStrict modulePath="/settings/modules">
-            <BaseLayout>{renderLazyPage(<Modules />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath="/settings/modules">
+              {renderLazyPage(<Modules />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {
         path: "settings/ai-providers",
         element: (
-          <GuardStrict modulePath="/settings/ai-providers">
-            <BaseLayout>{renderLazyPage(<AiProviders />)}</BaseLayout>
-          </GuardStrict>
+          <BaseLayout>
+            <GuardStrict modulePath="/settings/ai-providers">
+              {renderLazyPage(<AiProviders />)}
+            </GuardStrict>
+          </BaseLayout>
         ),
       },
       {

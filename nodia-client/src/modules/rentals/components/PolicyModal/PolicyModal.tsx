@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { Alert, Button, Box, IconButton, Typography } from "@mui/material";
+import { Alert, Button, IconButton, Typography } from "@mui/material";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ import RentalActiveSwitch from "../RentalActiveSwitch";
 import RentalIntentReview from "../RentalIntentReview";
 import { useAdministrationSubmit } from "../PropertyModal/hooks/useAdministrationSubmit";
 import { policySchema, policyPayload, type PolicyForm } from "./schema";
-import { FormContainer, ModalActions } from "./styles";
+import { FormContainer, ModalActions, RuleRow } from "./styles";
 
 export type PolicyModalProps = {
   property: RentalProperty;
@@ -155,15 +155,7 @@ function PolicyFormModal({
         />
         <Typography variant="body2">{t("rental:policy_rules_help")}</Typography>
         {fields.map((row, index) => (
-          <Box
-            key={row.id}
-            sx={{
-              display: "flex",
-              gap: 2,
-              alignItems: "start",
-              flexWrap: { xs: "wrap", sm: "nowrap" },
-            }}
-          >
+          <RuleRow key={row.id}>
             <Controller
               name={`rules.${index}.min_days_before`}
               control={control}
@@ -201,13 +193,14 @@ function PolicyFormModal({
               )}
             />
             <IconButton
+              color="error"
               aria-label={t("rental:remove_rule", { index: index + 1 })}
               disabled={disabled || fields.length <= 1}
               onClick={() => remove(index)}
             >
               <DeleteOutlinedIcon />
             </IconButton>
-          </Box>
+          </RuleRow>
         ))}
         {errors.rules?.message && (
           <Alert severity="error">{t(errors.rules.message)}</Alert>

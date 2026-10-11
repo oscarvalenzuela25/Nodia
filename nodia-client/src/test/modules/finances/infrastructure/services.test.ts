@@ -3,6 +3,7 @@ import { z, ZodError } from "zod";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getFinanceList,
+  deleteFinanceRecord,
   getFinanceOverview,
   getFinanceRecord,
   getFinanceSummary,
@@ -15,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
+  delete: vi.fn(),
   defaults: { baseURL: "/api/v1" },
 }));
 vi.mock("../../../../config/api", () => ({ mainInstance: mocks }));
@@ -32,6 +34,7 @@ beforeEach(() => {
   mocks.get.mockReset();
   mocks.post.mockReset();
   mocks.put.mockReset();
+  mocks.delete.mockReset();
   mocks.defaults.baseURL = "/api/v1";
 });
 
@@ -316,3 +319,16 @@ describe("finance transport and boundary schemas", () => {
     );
   });
 });
+
+it.each(["categories", "category-groups", "movements", "obligations"] as const)(
+  "deletes %s with the exact bigint ID and accepts 204",
+  async (resource) => {
+    mocks.delete.mockResolvedValue({ status: 204, data: "" });
+    await expect(
+      deleteFinanceRecord(resource, "9007199254740993"),
+    ).resolves.toBeUndefined();
+    expect(mocks.delete).toHaveBeenCalledWith(
+      `/finance/${resource}/9007199254740993`,
+    );
+  },
+);

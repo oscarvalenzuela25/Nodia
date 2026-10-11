@@ -23,6 +23,11 @@ export const TopHeaderPanel = styled(Paper)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
   backdropFilter: "blur(8px)",
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(2),
+  },
 }));
 
 export const TopNavigationRow = styled(Box)(({ theme }) => ({
@@ -32,6 +37,16 @@ export const TopNavigationRow = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
   gap: theme.spacing(2),
   width: "100%",
+  [theme.breakpoints.down("sm")]: {
+    alignItems: "stretch",
+    "& > :last-child": {
+      width: "100%",
+      minWidth: 0,
+      flexDirection: "column",
+      alignItems: "stretch",
+    },
+    "& > :last-child .MuiButton-root": { width: "100%", minHeight: 44 },
+  },
 }));
 
 export const TopNavigationBox = TopNavigationRow;
@@ -43,6 +58,11 @@ export const StyledTabs = styled(Tabs)(({ theme }) => ({
     height: 3,
     borderRadius: "3px 3px 0 0",
     backgroundColor: theme.palette.primary.main,
+  },
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiTabs-list": { flexDirection: "column", gap: theme.spacing(0.5) },
+    "& .MuiTabs-indicator": { display: "none" },
   },
 }));
 
@@ -66,6 +86,15 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
     color: theme.palette.text.primary,
     backgroundColor: alpha(theme.palette.primary.main, 0.05),
   },
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    justifyContent: "flex-start",
+    padding: theme.spacing(1, 1.5),
+    "&.Mui-selected": {
+      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+    },
+    "& > .MuiBox-root": { flexWrap: "wrap", minWidth: 0 },
+  },
 }));
 
 export const EmptyModesBox = styled(Box)(({ theme }) => ({
@@ -79,6 +108,7 @@ export const EmptyModesBox = styled(Box)(({ theme }) => ({
   borderRadius: Number(theme.shape.borderRadius) * 1.5,
   border: `1px dashed ${theme.palette.divider}`,
   backgroundColor: alpha(theme.palette.background.paper, 0.5),
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(3, 1.5) },
 }));
 
 export const AgenticStatusCard = styled(Paper)(({ theme }) => ({
@@ -89,6 +119,8 @@ export const AgenticStatusCard = styled(Paper)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1.5),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
 }));
 
 export const DetailContainer = styled(Box)(({ theme }) => ({
@@ -98,12 +130,17 @@ export const DetailContainer = styled(Box)(({ theme }) => ({
   width: "100%",
 }));
 
-
 export const BreadcrumbBox = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
   flexWrap: "wrap",
+  minWidth: 0,
+  "& > .MuiBox-root": { flexWrap: "wrap", minWidth: 0 },
+  [theme.breakpoints.down("sm")]: {
+    gap: theme.spacing(1),
+    "& > button": { width: "100%", minHeight: 44 },
+  },
 }));
 
 export const BackLinkButton = styled(Button)(({ theme }) => ({
@@ -123,6 +160,7 @@ export const BreadcrumbDivider = styled("span")(({ theme }) => ({
   color: theme.palette.divider,
   fontSize: "1rem",
   userSelect: "none",
+  [theme.breakpoints.down("sm")]: { display: "none" },
 }));
 
 export const StatusPill = styled(Box, {
@@ -140,7 +178,7 @@ export const StatusPill = styled(Box, {
     bg = alpha(theme.palette.error.main, 0.12);
     color = theme.palette.error.main;
     borderColor = alpha(theme.palette.error.main, 0.3);
-  } else if (statusType === "unconfigured") {
+  } else if (statusType === "unconfigured" || statusType === "unverified") {
     bg = alpha(theme.palette.text.secondary, 0.12);
     color = theme.palette.text.secondary;
     borderColor = alpha(theme.palette.text.secondary, 0.3);
@@ -161,13 +199,15 @@ export const StatusPill = styled(Box, {
   };
 });
 
-export const StatusDot = styled("span")<{ color?: string }>(({ theme, color }) => ({
-  width: 8,
-  height: 8,
-  borderRadius: "50%",
-  backgroundColor: color || theme.palette.success.main,
-  display: "inline-block",
-}));
+export const StatusDot = styled("span")<{ color?: string }>(
+  ({ theme, color }) => ({
+    width: 8,
+    height: 8,
+    borderRadius: "50%",
+    backgroundColor: color || theme.palette.success.main,
+    display: "inline-block",
+  }),
+);
 
 export const DetailPanel = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4), // 32px standard panel padding
@@ -178,6 +218,17 @@ export const DetailPanel = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(3),
   position: "relative",
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(2),
+    "& .MuiToggleButtonGroup-root": {
+      width: "100%",
+      "& .MuiToggleButton-root": { flex: 1, minHeight: 44 },
+    },
+    "& .MuiButton-root": { minHeight: 44, whiteSpace: "normal" },
+  },
 }));
 
 export const PanelHeader = styled(Box)(({ theme }) => ({
@@ -186,6 +237,7 @@ export const PanelHeader = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
   flexWrap: "wrap",
   gap: theme.spacing(1.5),
+  [theme.breakpoints.down("sm")]: { "& .MuiButton-root": { width: "100%" } },
 }));
 
 export const PanelTitle = styled(Typography)(({ theme }) => ({
@@ -195,6 +247,8 @@ export const PanelTitle = styled(Typography)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { fontSize: "1.125rem" },
 }));
 
 export const PanelSubtitle = styled(Typography)(({ theme }) => ({
@@ -226,14 +280,27 @@ export const ModelCardPaper = styled(Paper, {
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(2),
-  transition: theme.transitions.create(["border-color", "background-color", "box-shadow"], {
-    duration: theme.transitions.duration.shorter,
-  }),
+  transition: theme.transitions.create(
+    ["border-color", "background-color", "box-shadow"],
+    {
+      duration: theme.transitions.duration.shorter,
+    },
+  ),
   "&:hover": {
     borderColor: selected
       ? theme.palette.primary.main
       : alpha(theme.palette.primary.main, 0.4),
     boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
+  },
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(1.5),
+    "& .MuiFormControlLabel-root": {
+      minHeight: 44,
+      justifyContent: "space-between",
+    },
   },
 }));
 
@@ -242,6 +309,17 @@ export const ModelCardHeader = styled(Box)(({ theme }) => ({
   alignItems: "flex-start",
   justifyContent: "space-between",
   gap: theme.spacing(1.5),
+  minWidth: 0,
+  "& > .MuiBox-root": { minWidth: 0 },
+  "& > .MuiBox-root > .MuiBox-root": { minWidth: 0 },
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    "& > .MuiFormControlLabel-root": {
+      width: "100%",
+      justifyContent: "space-between",
+      minHeight: 44,
+    },
+  },
 }));
 
 export const ModelBadge = styled(Box)(({ theme }) => ({
@@ -298,6 +376,8 @@ export const ParametersSection = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(2),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
 }));
 
 export const ParametersGrid = styled(Box)(({ theme }) => ({
@@ -330,27 +410,31 @@ export const ModeSectionGrid = styled(Box)(({ theme }) => ({
 
 export const ModeCardPaper = styled(Paper, {
   shouldForwardProp: (prop) => prop !== "selected" && prop !== "disabled",
-})<{ selected?: boolean; disabled?: boolean }>(({ theme, selected, disabled }) => ({
-  padding: theme.spacing(2.5),
-  borderRadius: Number(theme.shape.borderRadius) * 1.5,
-  border: `2px solid ${
-    selected ? theme.palette.primary.main : theme.palette.divider
-  }`,
-  backgroundColor: selected
-    ? alpha(theme.palette.primary.main, 0.05)
-    : theme.palette.background.paper,
-  cursor: disabled ? "not-allowed" : "pointer",
-  opacity: disabled ? 0.5 : 1,
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing(1.25),
-  transition: theme.transitions.create(["border-color", "background-color"], {
-    duration: theme.transitions.duration.shorter,
+})<{ selected?: boolean; disabled?: boolean }>(
+  ({ theme, selected, disabled }) => ({
+    padding: theme.spacing(2.5),
+    borderRadius: Number(theme.shape.borderRadius) * 1.5,
+    border: `2px solid ${
+      selected ? theme.palette.primary.main : theme.palette.divider
+    }`,
+    backgroundColor: selected
+      ? alpha(theme.palette.primary.main, 0.05)
+      : theme.palette.background.paper,
+    cursor: disabled ? "not-allowed" : "pointer",
+    opacity: disabled ? 0.5 : 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(1.25),
+    transition: theme.transitions.create(["border-color", "background-color"], {
+      duration: theme.transitions.duration.shorter,
+    }),
+    "&:hover": {
+      borderColor: disabled
+        ? theme.palette.divider
+        : theme.palette.primary.main,
+    },
   }),
-  "&:hover": {
-    borderColor: disabled ? theme.palette.divider : theme.palette.primary.main,
-  },
-}));
+);
 
 export const WebSessionBanner = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -362,6 +446,10 @@ export const WebSessionBanner = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   border: `1px solid ${alpha(theme.palette.warning.main, 0.3)}`,
   backgroundColor: alpha(theme.palette.warning.main, 0.08),
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    "& .MuiButton-root": { width: "100%" },
+  },
 }));
 
 export const CloudBridgeBox = styled(Box)(({ theme }) => ({
@@ -377,6 +465,12 @@ export const CloudBridgeBox = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
     alignItems: "flex-start",
+  },
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(2),
+    "& .MuiButton-root": { width: "100%" },
   },
 }));
 
@@ -398,23 +492,25 @@ export const AuthStepsGrid = styled(Box)(({ theme }) => ({
 
 export const AuthStepCard = styled(Box, {
   shouldForwardProp: (prop) => prop !== "active" && prop !== "completed",
-})<{ active?: boolean; completed?: boolean }>(({ theme, active, completed }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing(0.5),
-  padding: theme.spacing(1.5),
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: active
-    ? alpha(theme.palette.primary.main, 0.08)
-    : completed
-    ? alpha(theme.palette.success.main, 0.04)
-    : "transparent",
-  border: active
-    ? `1px solid ${alpha(theme.palette.primary.main, 0.3)}`
-    : completed
-    ? `1px solid ${alpha(theme.palette.success.main, 0.2)}`
-    : `1px solid transparent`,
-}));
+})<{ active?: boolean; completed?: boolean }>(
+  ({ theme, active, completed }) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(0.5),
+    padding: theme.spacing(1.5),
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: active
+      ? alpha(theme.palette.primary.main, 0.08)
+      : completed
+        ? alpha(theme.palette.success.main, 0.04)
+        : "transparent",
+    border: active
+      ? `1px solid ${alpha(theme.palette.primary.main, 0.3)}`
+      : completed
+        ? `1px solid ${alpha(theme.palette.success.main, 0.2)}`
+        : `1px solid transparent`,
+  }),
+);
 
 export const RemoteParamsGrid = styled(Box)(({ theme }) => ({
   display: "grid",
@@ -430,6 +526,8 @@ export const SwitchWrapper = styled(Box)(({ theme }) => ({
   alignItems: "center",
   justifyContent: "space-between",
   padding: theme.spacing(1.5, 2),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1, 1.5) },
   borderRadius: theme.shape.borderRadius,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: alpha(theme.palette.background.default, 0.5),
@@ -438,6 +536,9 @@ export const SwitchWrapper = styled(Box)(({ theme }) => ({
 export const StyledFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   margin: 0,
   width: "100%",
+  minWidth: 0,
+  "& > .MuiBox-root, & .MuiFormControlLabel-label": { minWidth: 0, flex: 1 },
+  "& .MuiSwitch-root": { flexShrink: 0 },
   justifyContent: "space-between",
   "& .MuiFormControlLabel-label": {
     fontWeight: 600,
@@ -581,6 +682,7 @@ export const QuotaGrid = styled(Box)(({ theme }) => ({
   gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
   gap: theme.spacing(2),
   width: "100%",
+  [theme.breakpoints.down("sm")]: { gridTemplateColumns: "minmax(0, 1fr)" },
 }));
 
 export const QuotaCard = styled(Paper)(({ theme }) => ({
@@ -591,6 +693,8 @@ export const QuotaCard = styled(Paper)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1.5),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
 }));
 
 export const QuotaHeader = styled(Box)({
@@ -599,4 +703,3 @@ export const QuotaHeader = styled(Box)({
   justifyContent: "space-between",
   width: "100%",
 });
-

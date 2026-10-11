@@ -21,8 +21,10 @@ it("requires a new review after the ledger changes, retaining edited cancellatio
     onClose: vi.fn(),
   };
   const { rerender } = render(<ReservationCancel {...props} />);
-  const date = screen.getByLabelText(i18n.t("rental:cancelled_at"));
-  fireEvent.change(date, { target: { value: "2026-10-04T18:00:00Z" } });
+  const date = screen.getByRole("textbox", { name: i18n.t("core:date_time_date", { label: i18n.t("rental:cancelled_at") }) });
+  fireEvent.change(date, { target: { value: "2026-10-04" } });
+  const time = screen.getByRole("textbox", { name: i18n.t("core:date_time_time", { label: i18n.t("rental:cancelled_at") }) });
+  fireEvent.change(time, { target: { value: "15:00" } });
   await userEvent.click(
     screen.getByRole("button", { name: i18n.t("rental:preview_cancellation") }),
   );
@@ -35,6 +37,8 @@ it("requires a new review after the ledger changes, retaining edited cancellatio
   ui.record.mockReturnValue(result({ ...current, received_amount: "99999" }));
   rerender(<ReservationCancel {...props} />);
   expect(submit).toBeDisabled();
-  expect(date).toHaveValue("2026-10-04T18:00:00Z");
+  expect(date).toHaveValue("2026-10-04");
+  expect(time).toHaveValue("15:00");
+  expect(ui.preview).toHaveBeenCalledWith(expect.objectContaining({ cancelled_at: "2026-10-04T18:00:00.000Z" }));
   expect(ui.execute).not.toHaveBeenCalled();
 });

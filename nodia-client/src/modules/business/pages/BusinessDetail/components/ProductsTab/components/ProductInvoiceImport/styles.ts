@@ -6,6 +6,8 @@ export const InvoiceSectionPaper = styled(Paper)(({ theme }) => {
 
   return {
     padding: theme.spacing(3),
+    minWidth: 0,
+    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
     borderRadius: 16,
     border: `1px solid ${theme.palette.divider}`,
     boxShadow: isDark
@@ -17,7 +19,7 @@ export const InvoiceSectionPaper = styled(Paper)(({ theme }) => {
 
 export const InvoiceSummaryGrid = styled(Box)(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))",
   gap: theme.spacing(2.5),
   marginTop: theme.spacing(2),
 }));
@@ -78,6 +80,7 @@ export const StyledSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export const ModalActionsContainer = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: { flexDirection: "column-reverse", alignItems: "stretch", "& button": { width: "100%", minHeight: 44 } },
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",

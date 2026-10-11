@@ -21,6 +21,7 @@ import { CreatePersonalFinance1791085000000 } from '../dist/migrations/179108500
 import { FinanceCategoryModule } from '../dist/finance-category/finance-category.module.js';
 import { FinanceCategoryGroupModule } from '../dist/finance-category-group/finance-category-group.module.js';
 import { FinanceMovementModule } from '../dist/finance-movement/finance-movement.module.js';
+import { FinanceLedgerService } from '../dist/finance-obligation/finance-ledger.service.js';
 import { FinanceObligationModule } from '../dist/finance-obligation/finance-obligation.module.js';
 import { FinanceOverviewModule } from '../dist/finance-overview/finance-overview.module.js';
 import { SeedFinanceNavigationUseCase } from '../dist/finance-navigation/use-case/seed-finance-navigation.use-case.js';
@@ -196,7 +197,7 @@ try {
       },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
-    const data = await response.json();
+    const data = response.status === 204 ? null : await response.json();
     assert.equal(
       response.status,
       expected,
@@ -849,6 +850,318 @@ try {
       .build(),
   );
   assert.equal(Object.keys(swagger.paths).length, 11);
+
+  // DELETE contract: all records below are disposable in this fresh database.
+  for (const resource of [
+    'categories',
+    'category-groups',
+    'movements',
+    'obligations',
+  ]) {
+    assert.ok(swagger.paths[`/api/v1/finance/${resource}/{id}`].delete);
+    await http('DELETE', `/${resource}/1`, undefined, 401, null);
+    await http('DELETE', `/${resource}/not-bigint`, undefined, 400);
+    await http('DELETE', `/${resource}/9007199254740993`, undefined, 404);
+  }
+  const dc = await http(
+    'POST',
+    '/categories',
+    { name: 'Delete free', key: 'delete_free' },
+    201,
+  );
+  const linkedCat = await http(
+    'POST',
+    '/categories',
+    { name: 'Delete linked', key: 'delete_linked' },
+    201,
+  );
+  const dg = await http(
+    'POST',
+    '/category-groups',
+    {
+      name: 'Delete group',
+      key: 'delete_group',
+      category_ids: [dc.id, linkedCat.id],
+    },
+    201,
+  );
+  await http('DELETE', `/categories/${dc.id}`, undefined, 404, '2');
+  await http('DELETE', `/category-groups/${dg.id}`, undefined, 404, '2');
+  await http('DELETE', `/categories/${dc.id}`, undefined, 204);
+  assert.equal(
+    (await http('GET', `/category-groups/${dg.id}`)).category_count,
+    1,
+  );
+  const dm = await http(
+    'POST',
+    '/movements',
+    {
+      name: 'Delete movement',
+      amount: '100',
+      type: 'income',
+      status: 'received',
+      category_id: linkedCat.id,
+    },
+    201,
+  );
+  await http('PUT', `/movements/${dm.id}`, { is_active: false });
+  assert.equal(
+    (await http('DELETE', `/categories/${linkedCat.id}`, undefined, 409))
+      .message,
+    'finance:category_has_movements',
+  );
+  await http('DELETE', `/movements/${dm.id}`, undefined, 404, '2');
+  const beforeDelete = (await http('GET', '/overview?active=all')).totals
+    .income_amount;
+  await http('DELETE', `/movements/${dm.id}`, undefined, 204);
+  assert.equal(
+    BigInt((await http('GET', '/overview?active=all')).totals.income_amount),
+    BigInt(beforeDelete) - 100n,
+  );
+  await http('DELETE', `/category-groups/${dg.id}`, undefined, 204);
+  await http('GET', `/categories/${linkedCat.id}`);
+  await http('DELETE', `/categories/${linkedCat.id}`, undefined, 204);
+
+  for (const type of ['loan', 'debt']) {
+    const oc = await http(
+      'POST',
+      '/categories',
+      { name: 'Obligation delete ' + type, key: 'obligation_delete_' + type },
+      201,
+    );
+    const o = await http(
+      'POST',
+      '/obligations',
+      {
+        name: 'Delete ' + type,
+        key: 'delete_' + type,
+        type,
+        amount: '1000',
+        category_id: oc.id,
+      },
+      201,
+    );
+    await http('DELETE', `/obligations/${o.id}`, undefined, 404, '2');
+    assert.equal(
+      (
+        await http(
+          'DELETE',
+          `/movements/${o.initial_movement.id}`,
+          undefined,
+          409,
+        )
+      ).message,
+      'finance:delete_initial_on_obligation',
+    );
+    const p = await http(
+      'POST',
+      '/movements',
+      {
+        name: 'Repayment',
+        type: type === 'loan' ? 'income' : 'expense',
+        status: 'pending',
+        amount: '250',
+        obligation_id: o.id,
+        category_id: oc.id,
+      },
+      201,
+    );
+    for (const status of [
+      'pending',
+      type === 'loan' ? 'received' : 'paid',
+      'cancelled',
+    ]) {
+      await http('PUT', `/movements/${p.id}`, { status, is_active: false });
+      assert.equal(
+        (await http('DELETE', `/obligations/${o.id}`, undefined, 409)).message,
+        'finance:obligation_has_payments',
+      );
+    }
+    await http('DELETE', `/movements/${p.id}`, undefined, 204);
+    const confirmed = await http(
+      'POST',
+      '/movements',
+      {
+        name: 'Confirmed deletion',
+        type: type === 'loan' ? 'income' : 'expense',
+        status: type === 'loan' ? 'received' : 'paid',
+        amount: '250',
+        obligation_id: o.id,
+        category_id: oc.id,
+      },
+      201,
+    );
+    assert.equal(
+      (await http('GET', `/obligations/${o.id}`)).remaining_amount,
+      '750',
+    );
+    await http('DELETE', `/movements/${confirmed.id}`, undefined, 204);
+    assert.equal(
+      (await http('GET', `/obligations/${o.id}`)).remaining_amount,
+      '1000',
+    );
+    await http('DELETE', `/obligations/${o.id}`, undefined, 204);
+    await http('GET', `/movements/${o.initial_movement.id}`, undefined, 404);
+    await http('DELETE', `/obligations/${o.id}`, undefined, 404);
+    await http('DELETE', `/categories/${oc.id}`, undefined, 204);
+  }
+  const rbCat = await http(
+    'POST',
+    '/categories',
+    { name: 'Loan rollback category', key: 'loan_delete_rollback' },
+    201,
+  );
+  const rbOb = await http(
+    'POST',
+    '/obligations',
+    {
+      name: 'Loan rollback',
+      key: 'loan_delete_rollback',
+      type: 'loan',
+      amount: '1000',
+      category_id: rbCat.id,
+    },
+    201,
+  );
+  await db.query(`CREATE FUNCTION reject_obligation_delete() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic final delete failure'; END $$;
+    CREATE TRIGGER reject_obligation_delete BEFORE DELETE ON finance_obligations FOR EACH ROW EXECUTE FUNCTION reject_obligation_delete()`);
+  await http('DELETE', `/obligations/${rbOb.id}`, undefined, 500);
+  assert.equal(
+    (await http('GET', `/movements/${rbOb.initial_movement.id}`)).amount,
+    '1000',
+  );
+  assert.equal(
+    (await http('GET', `/obligations/${rbOb.id}`)).remaining_amount,
+    '1000',
+  );
+  await db.query(
+    'DROP TRIGGER reject_obligation_delete ON finance_obligations; DROP FUNCTION reject_obligation_delete()',
+  );
+  await http('DELETE', `/obligations/${rbOb.id}`, undefined, 204);
+  await http('DELETE', `/categories/${rbCat.id}`, undefined, 204);
+  checks.push(
+    'Deleting confirmed loan/debt repayments increases outstanding from750 to1000; failure on final obligation DELETE restores initial movement and obligation.',
+  );
+
+  // Force both lock acquisition orders using the real persistence method;
+  // the gate pauses only after PostgreSQL has acquired the parent row lock.
+  const ledgerForRace = app.get(FinanceLedgerService);
+  for (const firstMethod of ['DELETE', 'POST']) {
+    const raceCat = await http(
+      'POST',
+      '/categories',
+      { name: 'Delete race ' + firstMethod, key: 'delete_race_' + firstMethod },
+      201,
+    );
+    const raceOb = await http(
+      'POST',
+      '/obligations',
+      {
+        name: 'Delete race ' + firstMethod,
+        key: 'delete_race_' + firstMethod,
+        type: 'loan',
+        amount: '1000',
+        category_id: raceCat.id,
+      },
+      201,
+    );
+    const original = ledgerForRace.obligation.bind(ledgerForRace);
+    let entered, release;
+    const locked = new Promise((resolve) => (entered = resolve));
+    const gate = new Promise((resolve) => (release = resolve));
+    let gated = false;
+    ledgerForRace.obligation = async (...args) => {
+      const row = await original(...args);
+      if (args[2] === raceOb.id && !gated) {
+        gated = true;
+        entered();
+        await gate;
+      }
+      return row;
+    };
+    const requestDelete = () =>
+      fetch(`${base}/obligations/${raceOb.id}`, {
+        method: 'DELETE',
+        headers: { 'x-synthetic-user': '1' },
+      });
+    const requestPayment = () =>
+      fetch(`${base}/movements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-synthetic-user': '1',
+        },
+        body: JSON.stringify({
+          name: 'Race repayment',
+          type: 'income',
+          status: 'received',
+          amount: '250',
+          category_id: raceCat.id,
+          obligation_id: raceOb.id,
+        }),
+      });
+    try {
+      const first =
+        firstMethod === 'DELETE' ? requestDelete() : requestPayment();
+      await locked;
+      const second =
+        firstMethod === 'DELETE' ? requestPayment() : requestDelete();
+      release();
+      const results = await Promise.all([first, second]);
+      assert.deepEqual(
+        results.map((r) => r.status),
+        firstMethod === 'DELETE' ? [204, 404] : [201, 409],
+      );
+      if (firstMethod === 'POST') {
+        assert.equal(
+          (await http('GET', `/obligations/${raceOb.id}`)).remaining_amount,
+          '750',
+        );
+        const payment = await results[0].json();
+        await http('DELETE', `/movements/${payment.id}`, undefined, 204);
+        await http('DELETE', `/obligations/${raceOb.id}`, undefined, 204);
+      }
+    } finally {
+      release();
+      ledgerForRace.obligation = original;
+    }
+    await http('DELETE', `/categories/${raceCat.id}`, undefined, 204);
+  }
+  checks.push(
+    'Real PostgreSQL deletion/repayment race, both forced lock orders: deletion first gives 204/404; repayment first gives 201/409, preserving 750 remaining.',
+  );
+  // Rollback after deleting a membership but before deleting its category.
+  const rollbackCat = await http(
+    'POST',
+    '/categories',
+    { name: 'Rollback category', key: 'rollback_delete' },
+    201,
+  );
+  const rollbackGroup = await http(
+    'POST',
+    '/category-groups',
+    {
+      name: 'Rollback group',
+      key: 'rollback_delete',
+      category_ids: [rollbackCat.id],
+    },
+    201,
+  );
+  await db.query(`CREATE FUNCTION reject_finance_delete() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic delete failure'; END $$;
+    CREATE TRIGGER reject_finance_delete BEFORE DELETE ON finance_categories FOR EACH ROW EXECUTE FUNCTION reject_finance_delete()`);
+  await http('DELETE', `/categories/${rollbackCat.id}`, undefined, 500);
+  assert.equal(
+    (await http('GET', `/category-groups/${rollbackGroup.id}`)).category_count,
+    1,
+  );
+  await db.query(
+    'DROP TRIGGER reject_finance_delete ON finance_categories; DROP FUNCTION reject_finance_delete()',
+  );
+  await http('DELETE', `/category-groups/${rollbackGroup.id}`, undefined, 204);
+  await http('DELETE', `/categories/${rollbackCat.id}`, undefined, 204);
+  checks.push(
+    'DELETE HTTP/DI/DTO/owner bigint: categories with any movement protected; memberships cleaned without losing categories; ordinary movement and loan/debt initial deletion adjust history; all repayment states prevent obligation deletion; injected delete failure rolls back membership cleanup.',
+  );
 
   const dump = docker(
     'exec',

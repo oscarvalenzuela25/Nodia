@@ -53,7 +53,9 @@ export const HeaderInfoContainer = styled(Box)(({ theme }) => ({
   alignItems: "flex-start",
   gap: theme.spacing(2),
   flex: 1,
-  minWidth: 280,
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  [theme.breakpoints.down("sm")]: { gap: theme.spacing(1.5), width: "100%" },
 }));
 
 export const HeaderMetaRow = styled(Box)(({ theme }) => ({
@@ -71,8 +73,10 @@ export const HeaderActions = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
   [theme.breakpoints.down("sm")]: {
     width: "100%",
+    flexDirection: "column",
     "& button": {
-      flex: 1,
+      width: "100%",
+      minHeight: 44,
     },
   },
 }));
@@ -80,6 +84,7 @@ export const HeaderActions = styled(Box)(({ theme }) => ({
 export const TabsWrapper = styled(Box)(({ theme }) => ({
   borderTop: `1px solid ${theme.palette.divider}`,
   padding: theme.spacing(0, 2),
+  [theme.breakpoints.down("sm")]: { paddingBlock: theme.spacing(2) },
   backgroundColor:
     theme.palette.mode === "dark"
       ? "rgba(0, 0, 0, 0.2)"
@@ -88,6 +93,7 @@ export const TabsWrapper = styled(Box)(({ theme }) => ({
 
 export const StyledTabs = styled(MuiTabs)(({ theme }) => ({
   minHeight: 48,
+  [theme.breakpoints.down("sm")]: { "& .MuiTabs-indicator": { display: "none" } },
   "& .MuiTabs-indicator": {
     height: 3,
     borderRadius: "3px 3px 0 0",
@@ -97,6 +103,7 @@ export const StyledTabs = styled(MuiTabs)(({ theme }) => ({
 
 export const StyledTab = styled(MuiTab)(({ theme }) => ({
   minHeight: 48,
+  [theme.breakpoints.down("sm")]: { width: "100%", justifyContent: "flex-start", borderRadius: 8, "&.Mui-selected": { backgroundColor: alpha(theme.palette.primary.main, 0.1) } },
   textTransform: "none",
   fontWeight: 500,
   fontSize: "0.875rem",
@@ -174,6 +181,8 @@ export const KpiCard = styled(Card)(({ theme }) => {
 
   return {
     padding: theme.spacing(2.5),
+    minWidth: 0,
+    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
     borderRadius: 14,
     border: `1px solid ${theme.palette.divider}`,
     boxShadow: "none",
@@ -207,6 +216,7 @@ export const KpiLabel = styled(Typography)(({ theme }) => ({
 
 export const KpiTitle = styled(Typography)(({ theme }) => ({
   fontSize: "1.25rem",
+  [theme.breakpoints.down("sm")]: { fontSize: "1.125rem" },
   fontWeight: 600,
   lineHeight: 1.4,
   color: theme.palette.text.primary,
@@ -240,6 +250,9 @@ export const SectionCard = styled(Card)(({ theme }) => {
 
   return {
     padding: theme.spacing(3),
+    minWidth: 0,
+    overflowWrap: "anywhere",
+    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
     borderRadius: 14,
     border: `1px solid ${theme.palette.divider}`,
     boxShadow: "none",
@@ -248,6 +261,7 @@ export const SectionCard = styled(Card)(({ theme }) => {
 });
 
 export const SectionHeader = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%", minHeight: 44 } },
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -259,6 +273,7 @@ export const SectionHeader = styled(Box)(({ theme }) => ({
 export const SectionTitle = styled(Box)(({ theme }) => ({
   ...theme.typography.h6,
   fontSize: "1.25rem",
+  [theme.breakpoints.down("sm")]: { fontSize: "1.125rem" },
   fontWeight: 600,
   color: theme.palette.text.primary,
   display: "flex",
@@ -309,6 +324,9 @@ export const DropzoneBox = styled(Box)(({ theme }) => {
 
   return {
     padding: theme.spacing(4, 2),
+    minWidth: 0,
+    overflowWrap: "anywhere",
+    [theme.breakpoints.down("sm")]: { padding: theme.spacing(3, 1.5) },
     borderRadius: 12,
     border: `2px dashed ${theme.palette.divider}`,
     backgroundColor: isDark ? "rgba(255, 255, 255, 0.02)" : "#fafafa",

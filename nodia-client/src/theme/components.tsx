@@ -7,9 +7,7 @@ const components: Components = {
   MuiCssBaseline: {
     styleOverrides: (theme) => {
       const isDark = theme.palette.mode === "dark";
-      const thumbColor = isDark
-        ? alpha("#ffffff", 0.2)
-        : alpha("#000000", 0.2);
+      const thumbColor = isDark ? alpha("#ffffff", 0.2) : alpha("#000000", 0.2);
       const thumbHoverColor = isDark
         ? alpha("#ffffff", 0.35)
         : alpha("#000000", 0.35);
@@ -81,6 +79,67 @@ const components: Components = {
       root: {
         minWidth: 650,
       },
+    },
+  },
+  MuiTablePagination: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        [theme.breakpoints.down("sm")]: { overflow: "visible" },
+      }),
+      toolbar: ({ theme, ownerState }) => ({
+        [theme.breakpoints.down("sm")]: {
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          alignItems: "center",
+          columnGap: theme.spacing(1),
+          rowGap: 0,
+          padding: theme.spacing(1.5, 2),
+          // Force the row break while centering each pair independently.
+          // The control order remains label, select, range, actions.
+          "&::after": {
+            content: '""',
+            display:
+              (ownerState.rowsPerPageOptions?.length ?? 2) > 1
+                ? "block"
+                : "none",
+            order: 1,
+            flex: "0 0 100%",
+            height: theme.spacing(0.5),
+          },
+        },
+      }),
+      spacer: ({ theme }) => ({
+        [theme.breakpoints.down("sm")]: { display: "none" },
+      }),
+      selectLabel: ({ theme }) => ({
+        [theme.breakpoints.down("sm")]: {
+          order: 0,
+          margin: 0,
+        },
+      }),
+      selectRoot: ({ theme }) => ({
+        [theme.breakpoints.down("sm")]: {
+          order: 0,
+          margin: 0,
+          minHeight: 44,
+        },
+      }),
+      displayedRows: ({ theme }) => ({
+        [theme.breakpoints.down("sm")]: {
+          order: 2,
+          margin: 0,
+          minWidth: 0,
+          overflowWrap: "anywhere",
+        },
+      }),
+      actions: ({ theme }) => ({
+        [theme.breakpoints.down("sm")]: {
+          order: 2,
+          marginLeft: 0,
+          "& button": { width: 44, height: 44 },
+        },
+      }),
     },
   },
   MuiTableContainer: {

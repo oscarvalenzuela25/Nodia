@@ -1,3 +1,4 @@
+import BusinessPagination from "../../components/BusinessPagination";
 import type { FC, MouseEvent } from "react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,7 +18,6 @@ import {
   Typography,
   ToggleButton,
   ToggleButtonGroup,
-  TablePagination,
 } from "@mui/material";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -46,9 +46,10 @@ import type {
   BusinessFormData,
   GetBusinessesParams,
 } from "../../infrastructure/types";
-import { getTranslatedName } from "../../../../store/generalSettings/helpers";
+import { getBusinessDescription } from "../../infrastructure/businessDescription";
 import { useHasRole } from "../../../../store/generalSettings";
 import useAuthStore from "../../../../store/authStore";
+import { BUSINESS_ROUTE } from "../../constants/routes";
 import { CardsGridSkeleton } from "../../../../components/skeletons";
 import {
   PageHeader,
@@ -82,9 +83,8 @@ const PROVIDER_COLORS = [
 ];
 
 const Business: FC = () => {
-  const { t, i18n } = useTranslation(["business", "core"]);
+  const { t } = useTranslation(["business", "core"]);
   const navigate = useNavigate();
-  const lang = i18n.language || "es";
   const currentUserId = useAuthStore((state) => state.user?.id);
 
   // Super admin switch and pagination state
@@ -400,11 +400,7 @@ const Business: FC = () => {
           <>
             <CardsGrid>
             {businesses.map((business) => {
-              const descriptionText = getTranslatedName(
-                business.translates,
-                "",
-                lang
-              );
+              const descriptionText = getBusinessDescription(business);
               const isOwner =
                 business.user_role === "owner" ||
                 (Boolean(currentUserId) &&
@@ -413,7 +409,7 @@ const Business: FC = () => {
               return (
                 <BusinessCard
                   key={business.id}
-                  onClick={() => navigate(`/business/${business.id}`)}
+                  onClick={() => navigate(`${BUSINESS_ROUTE}/${business.id}`)}
                   sx={{ cursor: "pointer" }}
                 >
                   <CardHeader>
@@ -545,6 +541,11 @@ const Business: FC = () => {
             })}
           </CardsGrid>
 
+
+        </>
+      )}
+      </Skeleton>
+      {businesses.length > 0 && (
           <Box
             sx={{
               display: "flex",
@@ -553,14 +554,9 @@ const Business: FC = () => {
               "& .MuiTablePagination-root": {
                 width: "100%",
               },
-              "& .MuiTablePagination-toolbar": {
-                flexWrap: "wrap",
-                justifyContent: { xs: "center", sm: "flex-end" },
-                px: { xs: 1, sm: 2 },
-              },
             }}
           >
-            <TablePagination
+            <BusinessPagination
               component="div"
               count={totalItems}
               page={page}
@@ -577,9 +573,7 @@ const Business: FC = () => {
               }
             />
           </Box>
-        </>
       )}
-      </Skeleton>
 
       {/* Action Options Menu */}
       <Menu
@@ -596,7 +590,7 @@ const Business: FC = () => {
       >
         <MenuItem
           onClick={() => {
-            if (menuBusiness) navigate(`/business/${menuBusiness.id}`);
+            if (menuBusiness) navigate(`${BUSINESS_ROUTE}/${menuBusiness.id}`);
             handleCloseMenu();
           }}
         >

@@ -13,6 +13,7 @@ import {
 import { formatRentalAmount } from "../../utils/money";
 
 import RentalTable from "../RentalTable";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 import RentalFilters from "../RentalFilters";
 
 import PaymentModal from "../PaymentModal";
@@ -73,6 +74,42 @@ function PaymentHistory({
         {t("rental:immutable_payment_hint")}
       </Typography>
       <RentalTable
+        renderMobileRow={(row, cardBusy, actions) => (
+          <MobileRecordCard
+            title={formatRentalAmount(row.amount, i18n.language)}
+            disabled={cardBusy}
+            actions={actions}
+            primaryAction={actions.find((a) => a.key === "detail")}
+            fields={[
+              {
+                key: "reservation",
+                label: t("rental:reservation"),
+                value: row.reservation_id,
+              },
+              {
+                key: "type",
+                label: t("rental:type"),
+                value: t("rental:" + row.type),
+              },
+              {
+                key: "status",
+                label: t("rental:status"),
+                value: t("rental:" + row.status),
+              },
+              {
+                key: "date",
+                label: t("rental:occurred_on"),
+                value: row.occurred_on,
+              },
+              {
+                key: "reference",
+                label: t("rental:reference"),
+                value: row.reference ?? t("rental:not_recorded"),
+                fullWidth: true,
+              },
+            ]}
+          />
+        )}
         title={t("rental:tabs.payments")}
         rows={list.data?.data ?? []}
         columns={[

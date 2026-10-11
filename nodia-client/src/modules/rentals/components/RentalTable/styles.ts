@@ -16,6 +16,7 @@ export const TableTopBar = styled(Box)(({ theme }) => ({
 }));
 
 export const CreateButton = styled(Button)(({ theme }) => ({
+  minHeight: 44,
   borderRadius:
     typeof theme.shape.borderRadius === "number"
       ? theme.shape.borderRadius * 2
@@ -37,22 +38,7 @@ export const TablePanel = styled(Box)(({ theme }) => ({
 
 export const ResponsivePagination = styled(TablePagination)<{
   component: "div";
-}>(({ theme }) => ({
-  overflow: "hidden",
-  "& .MuiTablePagination-toolbar": {
-    justifyContent: "flex-end",
-  },
-  [theme.breakpoints.down("sm")]: {
-    "& .MuiTablePagination-toolbar": {
-      flexWrap: "wrap",
-      gap: theme.spacing(1),
-      padding: theme.spacing(1),
-    },
-    "& .MuiTablePagination-spacer": { display: "none" },
-    "& .MuiTablePagination-actions": { marginLeft: 0 },
-    "& .MuiTablePagination-select": { marginRight: 0 },
-  },
-}));
+}>({});
 
 export const ScrollContainer = styled(TableContainer)(({ theme }) => {
   const thumb = alpha(

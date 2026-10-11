@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DataSource, EntityManager } from 'typeorm';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalClock } from '../../rental-common/rental-clock.js';
@@ -43,6 +43,7 @@ const creation: CreateRentalPropertyDto = {
   check_in_time: '15:00',
   check_out_time: '11:00',
 };
+afterEach(() => vi.unstubAllEnvs());
 const page = {
   page: 1,
   limit: 10,
@@ -242,6 +243,47 @@ describe('Rental house, collaboration and cancellation application', () => {
     await expect(
       useCase.execute('1', { ...creation, name: 'Otra' }, key),
     ).rejects.toThrow('rental:idempotency_conflict');
+  });
+
+  it('creates an accommodation without property times or a timezone field using validated system configuration', async () => {
+    vi.stubEnv('RENTAL_DEFAULT_TIMEZONE', 'America/Santiago');
+    const useCase = new CreateRentalPropertyUseCase(transactions, properties);
+    const first = await useCase.execute(
+      '1',
+      { name: 'Alojamiento', max_guests: 4 },
+      key,
+    );
+    expect(rows(RentalProperty)[1]).toMatchObject({
+      timezone: 'America/Santiago',
+      check_in_time: null,
+      check_out_time: null,
+    });
+    const projected = await new GetRentalPropertyUseCase(transactions).execute(
+      '1',
+      first.resource_id,
+    );
+    expect(projected).toMatchObject({
+      check_in_time: null,
+      check_out_time: null,
+    });
+    vi.stubEnv('RENTAL_DEFAULT_TIMEZONE', 'Europe/Madrid');
+    expect(
+      await useCase.execute('1', { name: 'Alojamiento', max_guests: 4 }, key),
+    ).toEqual(first);
+    expect(rows(RentalProperty)[1].timezone).toBe('America/Santiago');
+  });
+
+  it('rejects invalid internal timezone configuration before creating any rows', async () => {
+    vi.stubEnv('RENTAL_DEFAULT_TIMEZONE', 'invalid-zone');
+    await expect(
+      new CreateRentalPropertyUseCase(transactions, properties).execute(
+        '1',
+        { name: 'Alojamiento', max_guests: 4 },
+        key,
+      ),
+    ).rejects.toThrow('rental:invalid_input');
+    expect(rows(RentalProperty)).toHaveLength(1);
+    expect(rows(RentalOperation)).toHaveLength(0);
   });
 
   it.each([

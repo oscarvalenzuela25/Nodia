@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, type EntityManager } from 'typeorm';
 import { Translation } from './entities/translation.entity.js';
 import { TranslateItemDto } from './dto/translate-item.dto.js';
 
@@ -28,8 +28,11 @@ export class TranslationService {
     sourceEntity: string,
     sourceId: string,
     translates?: TranslateItemDto[],
+    manager?: EntityManager,
   ): Promise<void> {
     if (!translates || translates.length === 0) return;
+    const repository =
+      manager?.getRepository(Translation) ?? this.translationRepository;
 
     const mapByKeys = new Map<string, TranslateItemDto>();
     for (const item of translates) {
@@ -47,7 +50,7 @@ export class TranslationService {
       for (const { locale, value } of locales) {
         if (value === undefined || value === null) continue;
 
-        const existing = await this.translationRepository.findOne({
+        const existing = await repository.findOne({
           where: {
             source_entity: sourceEntity,
             source_id: String(sourceId),
@@ -59,9 +62,9 @@ export class TranslationService {
         if (existing) {
           existing.value = value;
           existing.is_active = true;
-          await this.translationRepository.save(existing);
+          await repository.save(existing);
         } else {
-          const created = this.translationRepository.create({
+          const created = repository.create({
             source_entity: sourceEntity,
             source_id: String(sourceId),
             source_key: item.key,
@@ -69,7 +72,7 @@ export class TranslationService {
             value,
             is_active: true,
           });
-          await this.translationRepository.save(created);
+          await repository.save(created);
         }
       }
     }
@@ -133,4 +136,3 @@ export class TranslationService {
     });
   }
 }
-

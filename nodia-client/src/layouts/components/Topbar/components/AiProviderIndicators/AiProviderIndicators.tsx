@@ -1,12 +1,12 @@
-import { IconButton, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
 import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useAiProvidersHealth } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/useServices";
-import { enabledModes, modeHealth } from "./modeHealth";
-import { Indicators, StatusBadge } from "./styles";
+import { PROVIDER_MODES, modeHealth } from "./modeHealth";
+import { Indicators, ModeButton, StatusBadge } from "./styles";
 
 const modeIcons = {
   api_key: VpnKeyOutlinedIcon,
@@ -24,21 +24,22 @@ export default function AiProviderIndicators() {
 
   return (
     <Indicators role="group" aria-label={t("ai_indicators.group", { provider: provider.name })} aria-busy={isFetching}>
-      {enabledModes(provider).map((mode) => {
+      {PROVIDER_MODES.map((mode) => {
         const Icon = modeIcons[mode];
         const state = modeHealth(provider, mode, data, isError);
-        const label = t("ai_indicators.label", { provider: provider.name, mode: t(`ai_indicators.${mode}`), status: t(`ai_indicators.${state}`) });
+        const label = t(state === "disabled" ? "ai_indicators.disabled_label" : "ai_indicators.label", { provider: provider.name, mode: t(`ai_indicators.${mode}`), status: t(`ai_indicators.${state}`) });
         return (
           <Tooltip key={mode} title={label}>
             <span>
-              <IconButton aria-label={label} disabled={isFetching} size="small" onClick={() => {
+              <ModeButton aria-label={label} disabled={isFetching || state === "disabled"} size="small" onClick={() => {
                 const params = new URLSearchParams({ provider: provider.id, mode });
                 navigate(`/settings/ai-providers?${params}`);
               }}>
-                <StatusBadge variant="dot" color={state === "healthy" || state === "session_ready" ? "success" : "error"} overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
+                <StatusBadge variant="dot" color={state === "disabled" ? "default" : state === "healthy" || state === "session_ready" ? "success" : "error"} overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }}>
                   <Icon fontSize="small" />
                 </StatusBadge>
-              </IconButton>
+                {t(`ai_indicators.${mode}`)}
+              </ModeButton>
             </span>
           </Tooltip>
         );

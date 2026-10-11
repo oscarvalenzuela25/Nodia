@@ -28,6 +28,7 @@ La corrección del usuario confirma monto inicial propio de la obligación y des
 - finance_obligations.amount es principal inicial; finance_movements.amount es importe de cada flujo. Loan se liquida con income recibidos y debt con expense pagados. Saldo calculado; crear obligación/movimiento inicial coherentes en una transacción.
 - FKs compuestas por propietario y unicidad de pertenencia grupo/categoría.
 - Conservar cancelados; sin campo cancellation_reason obligatorio. No compensar otra vez con inversos si ya se excluye el original.
+- Aclaración explícita2026-10-09: archivar/anular conserva historia; el usuario puede eliminar físicamente registros mediante acción separada y confirmada. Restricciones transaccionales en [ADR-024](ADR-024-personal-finance-deletion.md); préstamos con pagos y categorías con movimientos protegidos, origen eliminado únicamente junto con obligación sin pagos. No cambiar FKs ni introducir cascadas globales.
 - Transacciones y controles de propietario/importe para pagos/anulaciones. Implementación local: lock pesimista de obligación antes de leer liquidación, escrituras READ COMMITTED y lecturas de saldos/overview REPEATABLE READ. Verificado con carreras reales sobre PostgreSQL aislado; sin clasificaciones de dominio adicionales.
 - Solo created_at/updated_at; proponer reportes por creación, sin afirmar fecha real de liquidación.
 

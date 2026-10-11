@@ -1,3 +1,5 @@
+import { InvoiceMobileCard } from "../../../../components/BusinessMobileCards/BusinessMobileCards";
+import { useMediaQuery, useTheme } from "@mui/material";
 import type { FC, MouseEvent } from "react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -71,6 +73,7 @@ export const OverviewTab: FC<Props> = ({
   onOpenNewInvoice,
 }) => {
   const { t, i18n } = useTranslation(["business", "core"]);
+  const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
 
   const { data: productsData, isLoading: isLoadingProducts, isError: productsError, isFetching: productsFetching, refetch: refetchProducts } = useProducts({
     all: true,
@@ -94,12 +97,18 @@ export const OverviewTab: FC<Props> = ({
     },
   });
 
+  const recentQuery = useInvoices({
+    page: 1,
+    limit: 10,
+    q: { business_id_eq: businessId, is_active_eq: true, s: "created_at desc" },
+  });
+
   const isLoadingOverview = isLoadingProducts || isLoadingProviders || isLoadingInvoices;
 
   const products = useMemo(() => productsData?.data ?? [], [productsData?.data]);
   const providers = useMemo(() => providersData?.data ?? [], [providersData?.data]);
   const invoices = useMemo(() => invoicesData?.data ?? [], [invoicesData?.data]);
-  const recentInvoices = useMemo(() => invoices.slice(0, 10), [invoices]);
+  const recentInvoices = useMemo(() => (recentQuery.data?.data ?? []).filter((invoice) => invoice.is_active).slice(0, 10), [recentQuery.data?.data]);
   const productsComplete = !productsError && !!productsData && (productsData.meta?.total_items ?? 0) <= products.length;
   const providersComplete = !providersError && !!providersData && (providersData.meta?.total_items ?? 0) <= providers.length;
   const invoicesComplete = !invoicesError && !!invoicesData && (invoicesData.meta?.total_items ?? 0) <= invoices.length;
@@ -436,8 +445,9 @@ export const OverviewTab: FC<Props> = ({
               </Button>
             </SectionHeader>
 
+            <QueryErrorAlert isError={recentQuery.isError} isFetching={recentQuery.isFetching} onRetry={recentQuery.refetch} />
             <Skeleton
-              loading={isLoadingInvoices}
+              loading={recentQuery.isLoading}
               fallback={
                 <TableSkeleton
                   columns={[
@@ -455,8 +465,10 @@ export const OverviewTab: FC<Props> = ({
                 />
               }
             >
-              {recentInvoices.length > 0 ? (
-                <TableContainer
+              {recentQuery.isError && !recentQuery.data ? <Box /> : recentInvoices.length > 0 ? (
+mobile ? <Box sx={{ display: "grid", gap: 2 }}>
+                  {recentInvoices.map((inv) => <InvoiceMobileCard key={inv.id} invoice={inv} disabled={isFetchingOverview || recentQuery.isFetching} formatDate={formatDate} onPreview={setPreviewInvoice} onCopy={handleCopyPath} />)}
+                </Box> : (                <TableContainer
                   component={Paper}
                   sx={{
                     borderRadius: 3,
@@ -606,7 +618,7 @@ export const OverviewTab: FC<Props> = ({
                       ))}
                     </TableBody>
                   </Table>
-                </TableContainer>
+                </TableContainer>)
               ) : invoicesError ? null : (
                 <Box sx={{ py: 4, textAlign: "center" }}>
                   <Typography variant="body2" color="text.secondary">

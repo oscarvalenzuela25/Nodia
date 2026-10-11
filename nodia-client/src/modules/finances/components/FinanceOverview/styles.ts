@@ -20,6 +20,7 @@ export const MetricGrid = styled(Box)(({ theme }) => ({
 }));
 export const MetricPanel = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(2) },
   border: `1px solid ${theme.palette.divider}`,
   borderRadius:
     typeof theme.shape.borderRadius === "number"
@@ -41,6 +42,12 @@ export const CountsRow = styled(Box)(({ theme }) => ({
   display: "flex",
   flexWrap: "wrap",
   gap: theme.spacing(1),
+  "& .MuiChip-root": { maxWidth: "100%", height: "auto", minHeight: 24 },
+  "& .MuiChip-label": {
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+    paddingBlock: theme.spacing(0.5),
+  },
 }));
 export const PanelHeading = styled(Typography)(({ theme }) => ({
   ...theme.typography.h6,

@@ -33,8 +33,9 @@ export class RentalProperty {
     string | null;
   @Column({ type: 'varchar', length: 64 }) timezone!: string;
   @Column({ type: 'integer' }) max_guests!: number;
-  @Column({ type: 'time' }) check_in_time!: string;
-  @Column({ type: 'time' }) check_out_time!: string;
+  // Preserve historical metadata without assigning arrival/departure times to new stays.
+  @Column({ type: 'time', nullable: true }) check_in_time!: string | null;
+  @Column({ type: 'time', nullable: true }) check_out_time!: string | null;
   @Column({ type: 'bigint', nullable: true }) default_nightly_rate!:
     string | null;
   @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })

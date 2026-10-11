@@ -17,7 +17,9 @@ export const ModalActions = styled("div")(({ theme }) => ({
   gap: theme.spacing(2),
   flexWrap: "wrap",
   justifyContent: "flex-end",
-  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
+  [theme.breakpoints.down("sm")]: {
+    "& > button": { width: "100%", minHeight: 44 },
+  },
 }));
 export const DetailList = styled("section")(({ theme }) => ({
   display: "grid",

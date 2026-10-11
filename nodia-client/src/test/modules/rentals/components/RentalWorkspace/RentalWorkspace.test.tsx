@@ -21,7 +21,7 @@ it("mounts only the visible tab and ignores an invalid tab query", async () => {
     "/tools/reservations?tab=invalid&property=1",
   );
   expect(
-    screen.getByRole("tab", { name: i18n.t("rental:tabs.general") }),
+    screen.getByRole("tab", { name: i18n.t("rental:tabs.calendar") }),
   ).toHaveAttribute("aria-selected", "true");
   expect(ui.list).not.toHaveBeenCalled();
   await userEvent.click(
@@ -36,6 +36,54 @@ it("mounts only the visible tab and ignores an invalid tab query", async () => {
     false,
   );
 });
+it.each(["collaborators", "configuration"] as const)(
+  "keeps %s in the primary tabs and loads it only on selection",
+  async (tab) => {
+    const { router } = renderRoute(
+      <RentalWorkspace property={property} />,
+      "/tools/reservations?property=1",
+    );
+    const tabName = i18n.t(`rental:tabs.${tab}`);
+    const calendarName = i18n.t("rental:tabs.calendar");
+    expect(screen.getByRole("tab", { name: tabName })).toHaveAttribute(
+      "aria-selected",
+      "false",
+    );
+    expect(screen.getByRole("tab", { name: calendarName })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(ui.list).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("tab", { name: tabName }));
+    expect(router.state.location.search).toContain(`tab=${tab}`);
+    expect(router.state.location.search).toContain("property=1");
+    expect(screen.getByRole("tab", { name: tabName })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "aria-labelledby",
+      `rental-tab-${tab}`,
+    );
+    expect(ui.list).toHaveBeenCalledWith(
+      tab === "collaborators" ? "collaborators" : "cancellation-policies",
+      property.id,
+      {
+        page: 1,
+        limit: 10,
+        active: "active",
+      },
+    );
+    await userEvent.click(screen.getByRole("tab", { name: calendarName }));
+    expect(screen.getAllByRole("tab", { name: tabName })).toHaveLength(1);
+    await userEvent.click(
+      screen.getByRole("button", { name: i18n.t("rental:calendar_manage") }),
+    );
+    expect(
+      screen.queryByRole("menuitem", { name: tabName }),
+    ).not.toBeInTheDocument();
+  },
+);
 it.each(["reservations", "blocks"] as const)(
   "preserves the %s editor through a failed detail revalidation",
   async (resource) => {

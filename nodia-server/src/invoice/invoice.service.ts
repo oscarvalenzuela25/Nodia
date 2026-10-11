@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, type EntityManager } from 'typeorm';
 import { Invoice } from './entities/invoice.entity.js';
 import { CreateInvoiceDto } from './dto/create-invoice.dto.js';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto.js';
@@ -99,10 +99,11 @@ export class InvoiceService {
     return invoice;
   }
 
-  async createInvoice(dto: CreateInvoiceDto): Promise<Invoice> {
+  async createInvoice(dto: CreateInvoiceDto, manager?: EntityManager): Promise<Invoice> {
     try {
-      const invoice = this.invoiceRepository.create(dto);
-      return await this.invoiceRepository.save(invoice);
+      const repository = manager?.getRepository(Invoice) ?? this.invoiceRepository;
+      const invoice = repository.create(dto);
+      return await repository.save(invoice);
     } catch (error: any) {
       if (error?.code === '23503') {
         throw new BadRequestException('Referenced business or provider does not exist');

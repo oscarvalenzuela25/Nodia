@@ -1,4 +1,10 @@
 {
+  "active_filter": {
+    "label": "Estado de actividad",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "all": "Todos"
+  },
   "generic_error_title": "Error inesperado",
   "generic_error_message": "La aplicacion encontro un problema.",
   "route_error_title": "Algo salio mal",
@@ -42,7 +48,11 @@
   "pagination": {
     "rows_per_page": "Filas por página:",
     "of": "de",
-    "more_than": "más de"
+    "more_than": "más de",
+    "page_next": "Ir a la página siguiente",
+    "page_previous": "Ir a la página anterior",
+    "page_first": "Ir a la primera página",
+    "page_last": "Ir a la última página"
   },
   "rows_per_page": "Filas por página",
   "displayed_rows": "{{from}}–{{to}} de {{count}}",
@@ -51,5 +61,13 @@
   "deselect_loaded": "Deseleccionar resultados cargados",
   "clear_search": "Limpiar búsqueda",
   "clear_selection": "Limpiar selección",
-  "open_filters": "Abrir filtros"
+  "open_filters": "Abrir filtros",
+  "open_date_calendar": "Elegir fecha: {{label}}",
+  "close_date_calendar": "Cerrar",
+  "open_time_picker": "Elegir hora: {{label}}",
+  "date_time_date": "{{label}} · Fecha",
+  "date_time_time": "{{label}} · Hora",
+  "phone_country": "País / prefijo",
+  "date_label": "Fecha",
+  "time_label": "Hora"
 }

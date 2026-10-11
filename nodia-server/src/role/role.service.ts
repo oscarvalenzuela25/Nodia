@@ -1,11 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, type EntityManager } from 'typeorm';
 import { Role } from './entities/role.entity.js';
 import { RoleAction } from './entities/role-action.entity.js';
 import { Action } from '../action/entities/action.entity.js';
 import { GetRolesDto } from './dto/get-roles.dto.js';
-import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import {
+  applyRansack,
+  validateRansackEnvelope,
+} from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { GetRolesResponse } from './types/role.types.js';
 import { CreateRoleDto } from './dto/create-role.dto.js';
@@ -38,28 +45,50 @@ export class RoleService {
     validateRansackEnvelope(q);
 
     if (includes) {
-      qb.leftJoinAndSelect('role.role_actions', 'role_actions')
-        .leftJoinAndSelect('role_actions.action', 'action');
+      qb.leftJoinAndSelect(
+        'role.role_actions',
+        'role_actions',
+      ).leftJoinAndSelect('role_actions.action', 'action');
     }
 
-    if (q?.actions_id_eq || q?.actions_id_in || q?.actions_key_cont) {
-      if (!includes) {
-        qb.leftJoin('role.role_actions', 'role_actions')
-          .leftJoin('role_actions.action', 'action');
-      }
+    if (
+      q?.actions_id_eq ||
+      q?.actions_id_in?.length ||
+      q?.actions_key_in?.length ||
+      q?.actions_key_cont
+    ) {
+      // Filter the role without narrowing the actions included in its response.
+      const conditions = ['role_filter.role_id = role.id'];
+      const parameters: Record<string, unknown> = {};
       if (q.actions_id_eq) {
-        qb.andWhere('role_actions.action_id = :actionIdEq', { actionIdEq: q.actions_id_eq });
+        conditions.push('role_filter.action_id = :actionIdEq');
+        parameters.actionIdEq = q.actions_id_eq;
       }
-      if (q.actions_id_in) {
-        const inValues = Array.isArray(q.actions_id_in) ? q.actions_id_in : [q.actions_id_in];
-        qb.andWhere('role_actions.action_id IN (:...actionIdIn)', { actionIdIn: inValues });
+      if (q.actions_id_in?.length) {
+        conditions.push('role_filter.action_id IN (:...actionIdIn)');
+        parameters.actionIdIn = q.actions_id_in;
+      }
+      if (q.actions_key_in?.length) {
+        conditions.push('action_filter.key IN (:...actionKeyIn)');
+        parameters.actionKeyIn = q.actions_key_in;
       }
       if (q.actions_key_cont) {
-        qb.andWhere('action.key ILIKE :actionKeyCont', { actionKeyCont: `%${q.actions_key_cont}%` });
+        conditions.push('action_filter.key ILIKE :actionKeyCont');
+        parameters.actionKeyCont = `%${q.actions_key_cont}%`;
       }
+      qb.andWhere(
+        `EXISTS (SELECT 1 FROM role_actions role_filter JOIN actions action_filter ON action_filter.id = role_filter.action_id WHERE ${conditions.join(' AND ')})`,
+        parameters,
+      );
     }
 
-    const { actions_id_eq: _aie, actions_id_in: _aii, actions_key_cont: _akc, ...cleanRoleQ } = q ?? {};
+    const {
+      actions_id_eq: _aie,
+      actions_id_in: _aii,
+      actions_key_cont: _akc,
+      actions_key_in: _aki,
+      ...cleanRoleQ
+    } = q ?? {};
     applyRansack(qb, cleanRoleQ, 'role', RANSACK_POLICIES.role);
 
     const attachActionTranslations = async (
@@ -159,15 +188,23 @@ export class RoleService {
     };
   }
 
-  private async resolveActionIds(actions: string[]): Promise<string[]> {
+  private async resolveActionIds(
+    actions: string[],
+    manager?: EntityManager,
+  ): Promise<string[]> {
     if (!actions || actions.length === 0) return [];
 
     const numericIds = actions.filter((a) => /^\d+$/.test(a));
     const keys = actions.filter((a) => !/^\d+$/.test(a));
 
-    const qb = this.actionRepository.createQueryBuilder('action');
+    const qb = (
+      manager?.getRepository(Action) ?? this.actionRepository
+    ).createQueryBuilder('action');
     if (keys.length > 0 && numericIds.length > 0) {
-      qb.where('action.key IN (:...keys) OR action.id IN (:...numericIds)', { keys, numericIds });
+      qb.where('action.key IN (:...keys) OR action.id IN (:...numericIds)', {
+        keys,
+        numericIds,
+      });
     } else if (keys.length > 0) {
       qb.where('action.key IN (:...keys)', { keys });
     } else if (numericIds.length > 0) {
@@ -260,40 +297,50 @@ export class RoleService {
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
-    const role = await this.roleRepository.findOne({ where: { id } });
-    if (!role) {
-      throw new NotFoundException(`Role with ID "${id}" not found`);
-    }
-
-    const { actions, translates, ...rest } = updateRoleDto;
-    Object.assign(role, rest);
-    await this.roleRepository.save(role);
-
-    if (actions !== undefined) {
-      await this.roleActionRepository.delete({ role_id: id });
-      if (actions.length > 0) {
-        const resolvedIds = await this.resolveActionIds(actions);
-        const roleActions = resolvedIds.map((actionId) =>
-          this.roleActionRepository.create({
-            role_id: id,
-            action_id: actionId,
-            is_active: true,
-          }),
-        );
-        await this.roleActionRepository.save(roleActions);
+    await this.roleRepository.manager.transaction(async (manager) => {
+      const repository = manager.getRepository(Role);
+      const role = await repository.findOne({
+        where: { id },
+        lock: { mode: 'pessimistic_write' },
+      });
+      if (!role) throw new NotFoundException('roles:not_found');
+      // The reserved key must stay reserved, even when this update races a deletion.
+      if (
+        role.key === 'super_admin' &&
+        updateRoleDto.key !== undefined &&
+        updateRoleDto.key !== role.key
+      ) {
+        throw new ForbiddenException('roles:protected_key');
       }
-    }
-
-    if (translates !== undefined) {
-      await this.translationService.updateTranslations('roles', id, translates);
-    }
-
+      const { actions, translates, ...rest } = updateRoleDto;
+      Object.assign(role, rest);
+      await repository.save(role);
+      if (actions !== undefined) {
+        const assignments = manager.getRepository(RoleAction);
+        await assignments.delete({ role_id: id });
+        if (actions.length > 0) {
+          const resolvedIds = await this.resolveActionIds(actions, manager);
+          await assignments.save(
+            resolvedIds.map((actionId) =>
+              assignments.create({
+                role_id: id,
+                action_id: actionId,
+                is_active: true,
+              }),
+            ),
+          );
+        }
+      }
+      if (translates !== undefined) {
+        await this.translationService.updateTranslations(
+          'roles',
+          id,
+          translates,
+          manager,
+        );
+      }
+    });
     await this.redisService.delByPattern('auth:context:*');
-
     return this.findOne(id);
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} role`;
   }
 }

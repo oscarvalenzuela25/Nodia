@@ -103,6 +103,8 @@ Pendientes acordados: reversión sobre el catálogo objetivo si se solicita y mi
 
 ### Hallazgo P1: cancelación sin propiedad del perfil
 
+**Actualización 2026-10-10, revisión VPS:** el código actual protege la parada externa con `if (lease)` y contiene regresión de operación dueña/competidor cancelado. Las 20 pruebas de `execute-codex-invoice.use-case.spec.ts` pasan en esta revisión. El defecto descrito abajo conserva valor histórico y ya no se considera pendiente en código; esta comprobación sintética no cierra login/keyring/inferencia/reinicio reales en Linux ni CG-08/CG-11 completos.
+
 En `nodia-server/src/ai-provider/use-case/execute-codex-invoice.use-case.ts`, el catch externo llama a `runtime.stop(id)` cuando la señal está abortada, aunque `runtime.acquire(id)` haya rechazado por perfil ocupado y esta solicitud nunca haya recibido un lease. Una segunda solicitud cancelada puede terminar la extracción o el login que posee ese perfil.
 
 Reproducción aislada contra el caso de uso compilado: proveedor/modelo/PNG sintéticos, `runtime.get` devuelve un perfil con `busy:true`, `runtime.stop` registra llamadas y el caller entrega una señal previamente abortada. Resultado observado: HTTP 499 / `codex_cancelled` y llamada `stop('42')` sobre el perfil ajeno. No se inició Codex ni se usó una cuenta. Las suites existentes no cubren esta combinación y su éxito no cierra el defecto.

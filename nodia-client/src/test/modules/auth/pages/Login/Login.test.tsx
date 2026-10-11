@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
@@ -9,10 +9,13 @@ import PublicLayout from "../../../../../layouts/PublicLayout";
 import useAuthStore from "../../../../../store/authStore";
 import { loginWithGoogle } from "../../../../../modules/auth/infrastructure/services";
 import { sileo } from "sileo";
+import envs from "../../../../../config/.envs";
+import i18n from "../../../../../translate";
 
 vi.mock("../../../../../modules/auth/infrastructure/services", () => ({ loginWithGoogle: vi.fn(), logoutSession: vi.fn() }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
-vi.mock("@react-oauth/google", () => ({
+vi.mock("@react-oauth/google", async () => ({
+  ...await vi.importActual<typeof import("@react-oauth/google")>("@react-oauth/google"),
   GoogleLogin: ({ onSuccess }: { onSuccess: (response: { credential: string }) => void }) => (
     <button onClick={() => onSuccess({ credential: "google-id-token" })}>Google</button>
   ),
@@ -27,10 +30,71 @@ const renderLogin = () => {
   render(<RouterProvider router={router} />);
   return router;
 };
-beforeEach(() => { vi.clearAllMocks(); useAuthStore.getState().logout(); });
-afterEach(() => useAuthStore.getState().logout());
+const originalClientId = envs.GOOGLE_CLIENT_ID;
+const googleScript = () => document.querySelector<HTMLScriptElement>('script[src^="https://accounts.google.com/gsi/client"]');
+beforeEach(() => {
+  vi.clearAllMocks();
+  envs.GOOGLE_CLIENT_ID = "test-client-id";
+  useAuthStore.getState().logout();
+});
+afterEach(() => {
+  envs.GOOGLE_CLIENT_ID = originalClientId;
+  useAuthStore.getState().logout();
+});
 
 describe("Login", () => {
+  it("loads the real SDK provider only while Login is mounted and removes its script on return", async () => {
+    renderLogin();
+    expect(googleScript()?.src).toBe("https://accounts.google.com/gsi/client?hl=es");
+    await userEvent.click(screen.getByRole("button", { name: /volver al inicio/i }));
+    await screen.findByTestId("home");
+    expect(googleScript()).toBeNull();
+  });
+
+  it("does not request the SDK when the Google client ID is missing", () => {
+    envs.GOOGLE_CLIENT_ID = "";
+    renderLogin();
+    expect(googleScript()).toBeNull();
+    expect(screen.queryByRole("button", { name: "Google" })).not.toBeInTheDocument();
+    expect(screen.getByText(i18n.t("auth:google_unavailable"))).toBeVisible();
+  });
+
+  it("recovers from a script failure with one translated toast and a fresh SDK on retry", async () => {
+    renderLogin();
+    const failedScript = googleScript()!;
+    fireEvent.error(failedScript);
+    expect(sileo.error).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("status")).toHaveTextContent(i18n.t("auth:google_failed"));
+    expect(screen.queryByRole("button", { name: "Google" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(failedScript).not.toBeInTheDocument();
+    expect(googleScript()).not.toBe(failedScript);
+    expect(document.querySelectorAll('script[src^="https://accounts.google.com/gsi/client"]')).toHaveLength(1);
+    fireEvent.load(googleScript()!);
+    expect(screen.getByRole("button", { name: "Google" })).toBeEnabled();
+    expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
+    expect(sileo.error).toHaveBeenCalledTimes(1);
+    expect(loginWithGoogle).not.toHaveBeenCalled();
+  });
+
+  it("recreates the SDK in English without losing an in-flight credential exchange", async () => {
+    let complete!: (value: typeof session) => void;
+    vi.mocked(loginWithGoogle).mockReturnValue(new Promise((resolve) => { complete = resolve; }));
+    renderLogin();
+    const spanishScript = googleScript()!;
+    await userEvent.click(screen.getByRole("button", { name: "Google" }));
+    await act(async () => { await i18n.changeLanguage("en"); });
+    expect(spanishScript).not.toBeInTheDocument();
+    expect(googleScript()?.src).toBe("https://accounts.google.com/gsi/client?hl=en");
+    expect(screen.getByRole("button", { name: /back to home/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Google" }).closest("[inert]")).toBeTruthy();
+    expect(loginWithGoogle).toHaveBeenCalledTimes(1);
+    complete(session);
+    await screen.findByTestId("home");
+    expect(googleScript()).toBeNull();
+    expect(useAuthStore.getState()).toMatchObject(session);
+  });
+
   it("exchanges the Google credential, persists the Nodia JWT and returns home", async () => {
     vi.mocked(loginWithGoogle).mockResolvedValue(session);
     renderLogin();

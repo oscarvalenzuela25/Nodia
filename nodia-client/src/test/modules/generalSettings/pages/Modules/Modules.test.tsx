@@ -1,7 +1,7 @@
 import useAuthStore from "../../../../../store/authStore";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { sileo } from "sileo";
@@ -31,7 +31,9 @@ vi.mock(
     getModuleGroups: vi.fn(),
     createModuleGroup: vi.fn(),
     updateModuleGroup: vi.fn(),
-  })
+    deleteModule: vi.fn(),
+    deleteModuleGroup: vi.fn(),
+  }),
 );
 
 const mockGroups: ModuleGroupEntity[] = [
@@ -135,14 +137,27 @@ const createTestQueryClient = () =>
 const renderWithClient = (ui: ReactElement) => {
   const queryClient = createTestQueryClient();
   return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   );
 };
 
 describe("Modules Page", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
   beforeEach(() => {
-    useAuthStore.getState().login({ token: "test-jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Test user" } });
+    useAuthStore
+      .getState()
+      .login({
+        token: "test-jwt",
+        expiresAt: Date.now() + 900_000,
+        user: { id: "42", name: "Test user" },
+      });
     vi.clearAllMocks();
+    vi.mocked(services.deleteModule).mockReset().mockResolvedValue(undefined);
+    vi.mocked(services.deleteModuleGroup)
+      .mockReset()
+      .mockResolvedValue(undefined);
     vi.mocked(services.getModules).mockResolvedValue(mockModulesPaginated);
     vi.mocked(services.getModuleGroups).mockResolvedValue(mockGroupsPaginated);
   });
@@ -154,9 +169,15 @@ describe("Modules Page", () => {
     expect(screen.getByText("Grupos de Módulos")).toBeInTheDocument();
 
     // Perspective switcher options
-    expect(screen.getByRole("button", { name: /Vista Conjunta/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Solo Módulos/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Solo Grupos/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Vista Conjunta/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Solo Módulos/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Solo Grupos/i }),
+    ).toBeInTheDocument();
 
     await waitFor(() => {
       // Module table headers
@@ -170,8 +191,12 @@ describe("Modules Page", () => {
       // Table data
       expect(screen.getByText("users")).toBeInTheDocument();
       expect(screen.getByText("Usuarios")).toBeInTheDocument();
-      expect(screen.getAllByText("Administración").length).toBeGreaterThanOrEqual(2);
-      expect(screen.getAllByText("administration").length).toBeGreaterThanOrEqual(2);
+      expect(
+        screen.getAllByText("Administración").length,
+      ).toBeGreaterThanOrEqual(2);
+      expect(
+        screen.getAllByText("administration").length,
+      ).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -185,7 +210,9 @@ describe("Modules Page", () => {
     });
 
     // Switch to "Solo Módulos"
-    const modulesOnlyBtn = screen.getByRole("button", { name: /Solo Módulos/i });
+    const modulesOnlyBtn = screen.getByRole("button", {
+      name: /Solo Módulos/i,
+    });
     await user.click(modulesOnlyBtn);
 
     expect(screen.queryByText("Grupos de Módulos")).not.toBeInTheDocument();
@@ -218,7 +245,7 @@ describe("Modules Page", () => {
         page: 1,
         size: 10,
         includes: true,
-        q: undefined,
+        q: { is_active_eq: true },
       });
       expect(services.getModuleGroups).toHaveBeenCalledWith({
         all: true,
@@ -226,7 +253,7 @@ describe("Modules Page", () => {
       expect(services.getModuleGroups).toHaveBeenCalledWith({
         page: 1,
         limit: 5,
-        q: undefined,
+        q: { is_active_eq: true },
       });
     });
   });
@@ -240,7 +267,7 @@ describe("Modules Page", () => {
     });
 
     const searchInput = screen.getByPlaceholderText(
-      "Buscar por identificador..."
+      "Buscar por identificador...",
     );
 
     await user.type(searchInput, "roles");
@@ -251,7 +278,7 @@ describe("Modules Page", () => {
           q: expect.objectContaining({
             key_cont: "roles",
           }),
-        })
+        }),
       );
     });
   });
@@ -263,12 +290,12 @@ describe("Modules Page", () => {
     await waitFor(() => {
       expect(screen.getByText("Grupos de Módulos")).toBeInTheDocument();
       expect(
-        screen.getAllByText("administration").length
+        screen.getAllByText("administration").length,
       ).toBeGreaterThanOrEqual(1);
     });
 
     const searchGroupInput = screen.getByPlaceholderText(
-      /Buscar por nombre o identificador de grupo/i
+      /Buscar por nombre o identificador de grupo/i,
     );
 
     await user.type(searchGroupInput, "admin");
@@ -279,7 +306,7 @@ describe("Modules Page", () => {
           q: expect.objectContaining({
             key_cont: "admin",
           }),
-        })
+        }),
       );
     });
   });
@@ -304,7 +331,7 @@ describe("Modules Page", () => {
     await user.click(newGroupBtn);
 
     expect(
-      screen.getByRole("heading", { name: "Nuevo Grupo de Módulos" })
+      screen.getByRole("heading", { name: "Nuevo Grupo de Módulos" }),
     ).toBeInTheDocument();
 
     const keyInput = screen.getByPlaceholderText(/users, roles, settings/i);
@@ -342,7 +369,7 @@ describe("Modules Page", () => {
     await waitFor(() => {
       expect(screen.getByText("Grupos de Módulos")).toBeInTheDocument();
       expect(
-        screen.getAllByText("administration").length
+        screen.getAllByText("administration").length,
       ).toBeGreaterThanOrEqual(1);
     });
 
@@ -360,7 +387,7 @@ describe("Modules Page", () => {
     await user.click(deactivateOption);
 
     expect(
-      screen.getByRole("heading", { name: "¿Desactivar grupo de módulos?" })
+      screen.getByRole("heading", { name: "¿Desactivar grupo de módulos?" }),
     ).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole("button", { name: "Desactivar" });
@@ -395,7 +422,7 @@ describe("Modules Page", () => {
     await user.click(newModuleBtn);
 
     expect(
-      screen.getByRole("heading", { name: "Nuevo Módulo" })
+      screen.getByRole("heading", { name: "Nuevo Módulo" }),
     ).toBeInTheDocument();
 
     const keyInput = screen.getByPlaceholderText(/users, roles, settings/i);
@@ -407,7 +434,7 @@ describe("Modules Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Administración (administration)")
+        screen.getByText("Administración (administration)"),
       ).toBeInTheDocument();
     });
 
@@ -419,12 +446,12 @@ describe("Modules Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Proveedores de IA \(\/settings\/ai-providers\)/i)
+        screen.getByText(/Proveedores de IA \(\/settings\/ai-providers\)/i),
       ).toBeInTheDocument();
     });
 
     const routeOption = screen.getByText(
-      /Proveedores de IA \(\/settings\/ai-providers\)/i
+      /Proveedores de IA \(\/settings\/ai-providers\)/i,
     );
     await user.click(routeOption);
 
@@ -476,7 +503,7 @@ describe("Modules Page", () => {
     await user.click(deactivateOption);
 
     expect(
-      screen.getByRole("heading", { name: "¿Desactivar módulo?" })
+      screen.getByRole("heading", { name: "¿Desactivar módulo?" }),
     ).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole("button", { name: "Desactivar" });
@@ -534,9 +561,307 @@ describe("Modules Page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Administración (administration)")
+        screen.getByText("Administración (administration)"),
       ).toBeInTheDocument();
       expect(screen.getByText("Reportes (reports)")).toBeInTheDocument();
     });
   });
+
+  it("filters groups by active, inactive and all, preserving search and resetting the page", async () => {
+    const user = userEvent.setup();
+    vi.mocked(services.getModuleGroups).mockResolvedValue({
+      ...mockGroupsPaginated,
+      meta: { page: 1, limit: 5, total_items: 11, total_pages: 3 },
+    });
+    renderWithClient(<Modules />);
+    await screen.findAllByText("administration");
+    expect(screen.getByRole("button", { name: "Activos" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await user.click(
+      screen.getAllByRole("button", { name: "Página siguiente" })[0],
+    );
+    await waitFor(() =>
+      expect(services.getModuleGroups).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 2 }),
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: "Inactivos" }));
+    await waitFor(() =>
+      expect(services.getModuleGroups).toHaveBeenCalledWith({
+        page: 1,
+        limit: 5,
+        q: { is_active_eq: false },
+      }),
+    );
+    await user.type(
+      screen.getByPlaceholderText(/Buscar por nombre o identificador de grupo/),
+      "report",
+    );
+    await waitFor(() =>
+      expect(services.getModuleGroups).toHaveBeenCalledWith(
+        expect.objectContaining({
+          q: { is_active_eq: false, key_cont: "report" },
+        }),
+      ),
+    );
+    await user.click(screen.getByRole("button", { name: "Todos" }));
+    await waitFor(() =>
+      expect(services.getModuleGroups).toHaveBeenCalledWith({
+        page: 1,
+        limit: 5,
+        q: { key_cont: "report" },
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "Todos" }));
+    expect(screen.getByRole("button", { name: "Todos" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  async function requestDeletion(kind: "module" | "group") {
+    const user = userEvent.setup();
+    const row =
+      kind === "module"
+        ? (await screen.findByText("users")).closest("tr")!
+        : (await screen.findAllByText("administration"))[0].closest("tr")!;
+    await user.click(within(row).getByRole("button", { name: "Acciones" }));
+    await user.click(screen.getByRole("menuitem", { name: "Eliminar" }));
+    expect(services.deleteModule).not.toHaveBeenCalled();
+    expect(services.deleteModuleGroup).not.toHaveBeenCalled();
+    return { user, dialog: screen.getByRole("dialog") };
+  }
+  it.each(["module", "group"] as const)(
+    "does not delete a %s when confirmation is cancelled",
+    async (kind) => {
+      renderWithClient(<Modules />);
+      const { user, dialog } = await requestDeletion(kind);
+      expect(within(dialog).getByText(/¿Está seguro/)).toBeInTheDocument();
+      await user.click(
+        within(dialog).getByRole("button", { name: "Cancelar" }),
+      );
+      expect(services.deleteModule).not.toHaveBeenCalled();
+      expect(services.deleteModuleGroup).not.toHaveBeenCalled();
+    },
+  );
+  it.each(["module", "group"] as const)(
+    "deletes a confirmed %s and refreshes its lists",
+    async (kind) => {
+      const service =
+        kind === "module" ? services.deleteModule : services.deleteModuleGroup;
+      vi.mocked(service).mockResolvedValue(undefined);
+      renderWithClient(<Modules />);
+      const { user, dialog } = await requestDeletion(kind);
+      vi.mocked(services.getModules).mockClear();
+      vi.mocked(services.getModuleGroups).mockClear();
+      await user.click(
+        within(dialog).getByRole("button", { name: "Eliminar" }),
+      );
+      await waitFor(() =>
+        expect(service).toHaveBeenCalledWith(kind === "module" ? "m1" : "mg1"),
+      );
+      await waitFor(() =>
+        expect(
+          screen.queryByRole("heading", {
+            name:
+              kind === "module"
+                ? "¿Eliminar módulo?"
+                : "¿Eliminar grupo de módulos?",
+          }),
+        ).not.toBeInTheDocument(),
+      );
+      expect(services.getModules).toHaveBeenCalled();
+      if (kind === "group") expect(services.getModuleGroups).toHaveBeenCalled();
+      expect(sileo.success).toHaveBeenCalledWith(
+        expect.objectContaining({
+          description:
+            kind === "module"
+              ? "Módulo eliminado correctamente"
+              : "Grupo de módulos eliminado correctamente",
+        }),
+      );
+    },
+  );
+  it("retains the module confirmation and target on failure, blocks duplicate submissions and permits retry", async () => {
+    let reject!: (reason: Error) => void;
+    vi.mocked(services.deleteModule)
+      .mockImplementationOnce(
+        () =>
+          new Promise((_, rejectPromise) => {
+            reject = rejectPromise;
+          }),
+      )
+      .mockResolvedValueOnce(undefined);
+    renderWithClient(<Modules />);
+    const { user, dialog } = await requestDeletion("module");
+    await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+    expect(
+      within(dialog).getByRole("button", { name: "Eliminar" }),
+    ).toBeDisabled();
+    expect(
+      within(dialog).getByRole("button", { name: "Cancelar" }),
+    ).toBeDisabled();
+    await act(async () =>
+      reject(
+        Object.assign(new Error("Unavailable"), {
+          response: { data: { message: "Synthetic outage" } },
+        }),
+      ),
+    );
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole("button", { name: "Eliminar" }),
+      ).toBeEnabled(),
+    );
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "Synthetic outage",
+    );
+    expect(within(dialog).getByText(/Usuarios/)).toBeInTheDocument();
+    expect(sileo.error).toHaveBeenCalledWith(
+      expect.objectContaining({ description: "Synthetic outage" }),
+    );
+    await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("heading", { name: "¿Eliminar módulo?" }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(services.deleteModule).toHaveBeenNthCalledWith(2, "m1");
+  });
+  it("explains a group association conflict and retains its confirmation", async () => {
+    vi.mocked(services.deleteModuleGroup).mockRejectedValueOnce(
+      Object.assign(new Error("Conflict"), {
+        response: { data: { message: "modules:groups.delete_has_modules" } },
+      }),
+    );
+    renderWithClient(<Modules />);
+    const { user, dialog } = await requestDeletion("group");
+    await user.click(within(dialog).getByRole("button", { name: "Eliminar" }));
+    await waitFor(() =>
+      expect(within(dialog).getByRole("alert")).toHaveTextContent(
+        "incluidos los inactivos",
+      ),
+    );
+    expect(
+      screen.getByRole("heading", { name: "¿Eliminar grupo de módulos?" }),
+    ).toBeInTheDocument();
+    expect(sileo.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        description:
+          "No se puede eliminar el grupo porque tiene módulos asociados, incluidos los inactivos.",
+      }),
+    );
+  });
+  it("renders mobile cards with the same filters and deletion handlers", async () => {
+    vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
+      matches: media.includes("max-width:599.95px"),
+      media,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    const user = userEvent.setup();
+    vi.mocked(services.deleteModule).mockResolvedValue(undefined);
+    renderWithClient(<Modules />);
+    const card = await screen.findByRole("article", { name: "Usuarios" });
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(within(card).getByText("/settings/users")).toBeInTheDocument();
+    expect(
+      within(card).getByText("Activo", { exact: true }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("article", { name: "Administración" }),
+    ).toBeInTheDocument();
+    await user.click(within(card).getByRole("button", { name: /Acciones/ }));
+    const option = screen.getByRole("menuitem", { name: "Eliminar" });
+    expect(
+      within(option).getByTestId("DeleteOutlinedIcon"),
+    ).toBeInTheDocument();
+    await user.click(option);
+    await user.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Eliminar",
+      }),
+    );
+    await waitFor(() =>
+      expect(services.deleteModule).toHaveBeenCalledWith("m1"),
+    );
+  });
+  it.each(["module", "group"] as const)(
+    "returns to the previous page after deleting its last %s",
+    async (kind) => {
+      let removed = false;
+      if (kind === "module") {
+        vi.mocked(services.getModules).mockImplementation(async (params) => ({
+          data:
+            params?.page === 2
+              ? removed
+                ? []
+                : [mockModules[0]]
+              : mockModules,
+          meta: {
+            page: params?.page ?? 1,
+            limit: 10,
+            total_items: removed ? 10 : 11,
+            total_pages: removed ? 1 : 2,
+          },
+        }));
+        vi.mocked(services.deleteModule).mockImplementation(async () => {
+          removed = true;
+        });
+      } else {
+        vi.mocked(services.getModuleGroups).mockImplementation(
+          async (params) => ({
+            data:
+              params?.page === 2
+                ? removed
+                  ? []
+                  : [mockGroups[0]]
+                : mockGroups,
+            meta: {
+              page: params?.page ?? 1,
+              limit: 5,
+              total_items: removed ? 5 : 6,
+              total_pages: removed ? 1 : 2,
+            },
+          }),
+        );
+        vi.mocked(services.deleteModuleGroup).mockImplementation(async () => {
+          removed = true;
+        });
+      }
+      const user = userEvent.setup();
+      renderWithClient(<Modules />);
+      await screen.findByText("users");
+      await user.click(
+        screen.getAllByRole("button", { name: "Página siguiente" })[
+          kind === "module" ? 1 : 0
+        ],
+      );
+      const fetch =
+        kind === "module" ? services.getModules : services.getModuleGroups;
+      await waitFor(() =>
+        expect(fetch).toHaveBeenLastCalledWith(
+          expect.objectContaining({ page: 2 }),
+        ),
+      );
+      const { dialog } = await requestDeletion(kind);
+      await user.click(
+        within(dialog).getByRole("button", { name: "Eliminar" }),
+      );
+      await waitFor(() =>
+        expect(fetch).toHaveBeenLastCalledWith(
+          expect.objectContaining({ page: 1 }),
+        ),
+      );
+      await waitFor(() =>
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+      );
+    },
+  );
 });

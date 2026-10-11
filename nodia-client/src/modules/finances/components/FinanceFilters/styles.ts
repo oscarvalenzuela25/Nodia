@@ -6,7 +6,7 @@ export const FilterBar = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   alignItems: "flex-start",
   gap: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
+  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%", minHeight: 44 } },
 }));
 
 export const ActiveFilters = styled(Box)(({ theme }) => ({

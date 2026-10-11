@@ -5,6 +5,10 @@ export const SwitchWrapper = styled(Box)(({ theme }) => ({
   alignItems: "center",
   justifyContent: "space-between",
   padding: theme.spacing(1.5, 2),
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1, 1.5),
+    "& .MuiSwitch-root": { minHeight: 44 },
+  },
   borderRadius: theme.shape.borderRadius,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: alpha(theme.palette.background.default, 0.5),
@@ -33,4 +37,8 @@ export const StyledSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export const Form = styled("form")(({ theme }) => ({ display: "flex", flexDirection: "column", gap: theme.spacing(2) }));
+export const Form = styled("form")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(2),
+}));

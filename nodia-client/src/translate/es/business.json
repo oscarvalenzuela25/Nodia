@@ -1,4 +1,6 @@
 {
+  "collaborators_no_results": "No hay colaboradores que coincidan con la búsqueda y el estado seleccionados.",
+  "search_collaborators_placeholder": "Buscar por nombre, correo o cargo…",
   "title": "Negocios",
   "subtitle": "Gestiona tus negocios, sucursales y colaboradores asociados.",
   "new_business": "Nuevo Negocio",

@@ -48,6 +48,10 @@ Categorías y nombres personales no se traducen automáticamente; los textos de 
 
 ## Continuidad
 
-Revisar ERD. Antes de implementar, reconciliar modelo global, navegación, contratos y tickets; concretar idempotencia y verificar constraints/atomicidad/concurrencia en PostgreSQL aislado. Ninguna de esas garantías está probada por el diagrama. No se ejecutó SQL ni se implementó código/migración de Finanzas.
+### Aclaración explícita — 2026-10-09
+
+El usuario solicita tarjetas para toda Finanzas personales en móvil y eliminación de movimientos, préstamos/deudas, categorías libres y grupos de categorías. Confirma bloquear eliminación del préstamo si tiene pagos y permitirla cuando solo tiene su movimiento inicial. Categorías vinculadas a cualquier movimiento se protegen; pertenecer a un grupo no impide eliminar una categoría libre. Eliminar grupo conserva sus categorías. Eliminación física con confirmación y recálculo de saldos según [contrato22](22-personal-finance-contracts.md) y [ADR-024](../architecture/decisions/ADR-024-personal-finance-deletion.md). Sustituye la restricción anterior de solo archivado; no cambia tablas/FKs ni aprueba documentos.
+
+La continuidad siguiente corresponde a la preparación histórica del2026-10-04. Para el estado actual de implementación y sus límites, consultar00/23/24; el diagrama por sí solo no prueba constraints, atomicidad ni concurrencia.
 
 Actualización solicitada ejecutada sobre el diagrama externo y el documento 03. [Contratos 22](22-personal-finance-contracts.md), [26 tareas Server](23-personal-finance-backend-plan.md) y [25 tareas Client](24-personal-finance-client-plan.md) preparados; planes en revisión y tareas pendientes.

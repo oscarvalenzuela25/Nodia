@@ -22,6 +22,10 @@ export const ProviderMetaHeader = styled(Box)(({ theme }) => ({
 }));
 
 export const ModelsScrollContainer = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    minHeight: 180,
+    maxHeight: "min(360px, 40dvh)",
+  },
   minHeight: 400,
   maxHeight: 400,
   overflowY: "auto",
@@ -70,17 +74,15 @@ export const DiscoveredModelCard = styled(Paper, {
   padding: "12px 16px",
   borderRadius: 12,
   border: `1px solid ${
-    selected
-      ? alpha(theme.palette.primary.main, 0.5)
-      : theme.palette.divider
+    selected ? alpha(theme.palette.primary.main, 0.5) : theme.palette.divider
   }`,
   backgroundColor: selected
     ? theme.palette.mode === "dark"
       ? alpha(theme.palette.primary.main, 0.08)
       : alpha(theme.palette.primary.main, 0.04)
     : theme.palette.mode === "dark"
-    ? alpha("#ffffff", 0.02)
-    : alpha("#000000", 0.01),
+      ? alpha("#ffffff", 0.02)
+      : alpha("#000000", 0.01),
   transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
   display: "flex",
   alignItems: "flex-start",
@@ -91,8 +93,8 @@ export const DiscoveredModelCard = styled(Paper, {
     borderColor: selected
       ? theme.palette.primary.main
       : theme.palette.mode === "dark"
-      ? alpha("#ffffff", 0.3)
-      : alpha("#000000", 0.3),
+        ? alpha("#ffffff", 0.3)
+        : alpha("#000000", 0.3),
     transform: "translateY(-1px)",
   },
 }));
@@ -103,6 +105,7 @@ export const ModelInfoBox = styled(Box)(() => ({
   gap: 4,
   flex: 1,
   minWidth: 0,
+  overflowWrap: "anywhere",
 }));
 
 export const BadgesRow = styled(Box)(() => ({
@@ -118,6 +121,10 @@ export const RoleAssignmentBox = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   gap: 16,
   padding: 20,
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1.5),
+    gap: theme.spacing(1.5),
+  },
   borderRadius: 14,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor:
@@ -160,7 +167,12 @@ export const RoleCardHeader = styled(Box)(() => ({
   gap: 8,
 }));
 
-export const ModalActionsContainer = styled(Box)(() => ({
+export const ModalActionsContainer = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column-reverse",
+    alignItems: "stretch",
+    "& .MuiButton-root": { width: "100%", minHeight: 44 },
+  },
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",

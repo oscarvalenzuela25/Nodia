@@ -20,12 +20,11 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Switch,
-  FormControlLabel,
   LinearProgress,
   Alert,
   AlertTitle,
-  TablePagination,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddReactionOutlinedIcon from "@mui/icons-material/AddReactionOutlined";
@@ -38,10 +37,12 @@ import { Skeleton } from "boneyard-js/react";
 import { sileo } from "sileo";
 
 import Filter from "../../../../components/Filter";
+import ActiveStatusSelect from "../../../../components/Filter/components/ActiveStatusSelect";
 import FilterChips from "../../../../components/Filter/components/FilterChips";
 import InputSearch from "../../../../components/inputs/InputSearch";
 import SelectMultipleInput from "../../../../components/inputs/SelectMultipleInput";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 import UserModal from "./components/UserModal";
 import type { UserFormData } from "./components/UserModal";
 import {
@@ -63,10 +64,16 @@ import {
   TableTopBar,
   UserInfo,
   StyledTableContainer,
+  ListPagination,
+  MobileList,
+  AssignmentList,
 } from "./styles";
 
 const Users: FC = () => {
   const { t, i18n } = useTranslation(["users", "modules", "roles", "core"]);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -77,16 +84,18 @@ const Users: FC = () => {
   const [draftFilterEmails, setDraftFilterEmails] = useState<string[]>([]);
   const [draftFilterRoles, setDraftFilterRoles] = useState<string[]>([]);
   const [draftFilterModules, setDraftFilterModules] = useState<string[]>([]);
-  const [draftFilterActive, setDraftFilterActive] = useState<boolean>(true);
+  const [draftFilterActive, setDraftFilterActive] = useState<boolean | null>(true);
 
   // Applied filter state
   const [appliedFilterNames, setAppliedFilterNames] = useState<string[]>([]);
   const [appliedFilterEmails, setAppliedFilterEmails] = useState<string[]>([]);
   const [appliedFilterRoles, setAppliedFilterRoles] = useState<string[]>([]);
-  const [appliedFilterModules, setAppliedFilterModules] = useState<string[]>([]);
-  const [appliedFilterActive, setAppliedFilterActive] = useState<boolean | null>(
-    null
+  const [appliedFilterModules, setAppliedFilterModules] = useState<string[]>(
+    [],
   );
+  const [appliedFilterActive, setAppliedFilterActive] = useState<
+    boolean | null
+  >(true);
 
   // User Create / Edit Modal state
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
@@ -184,9 +193,11 @@ const Users: FC = () => {
   const isMutating =
     createUserMutation.isPending || updateUserMutation.isPending;
 
+  const isBusy = isLoading || isFetching || isMutating;
+
   const users: User[] = useMemo(
     () => usersResponse?.data ?? [],
-    [usersResponse]
+    [usersResponse],
   );
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -194,7 +205,7 @@ const Users: FC = () => {
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -202,7 +213,7 @@ const Users: FC = () => {
 
   const handleOpenActionMenu = (
     e: MouseEvent<HTMLButtonElement>,
-    user: User
+    user: User,
   ) => {
     setActionMenuAnchor(e.currentTarget);
     setActionUser(user);
@@ -218,20 +229,18 @@ const Users: FC = () => {
     setIsUserModalOpen(true);
   };
 
-  const handleOpenEditModal = () => {
-    if (actionUser) {
+  const handleOpenEditModal = (user: User | null = actionUser) => {
+    if (user) {
       setSelectedUserForEdit({
-        id: actionUser.id,
-        name: actionUser.name,
-        email: actionUser.email,
-        roles: actionUser.roles.map((r) =>
-          typeof r === "string" ? r : r.id
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        roles: user.roles.map((r) => (typeof r === "string" ? r : r.id)),
+        modules: (user.modules ?? []).map((m) =>
+          typeof m === "string" ? m : m.id,
         ),
-        modules: (actionUser.modules ?? []).map((m) =>
-          typeof m === "string" ? m : m.id
-        ),
-        isActive: actionUser.is_active,
-        imageUrl: actionUser.image_url ?? null,
+        isActive: user.is_active,
+        imageUrl: user.image_url ?? null,
       });
       setIsUserModalOpen(true);
     }
@@ -281,7 +290,7 @@ const Users: FC = () => {
   };
 
   const handleConfirmToggleActive = async () => {
-    if (!userToToggle) return;
+    if (!userToToggle || isBusy) return;
     try {
       await updateUserMutation.mutateAsync({
         userId: userToToggle.id,
@@ -324,7 +333,7 @@ const Users: FC = () => {
     setAppliedFilterEmails([]);
     setAppliedFilterRoles([]);
     setAppliedFilterModules([]);
-    setAppliedFilterActive(null);
+    setAppliedFilterActive(true);
     setPage(0);
   };
 
@@ -334,8 +343,8 @@ const Users: FC = () => {
       new Set(
         (filterUsersResponse?.data ?? [])
           .map((u) => u.name)
-          .filter(Boolean) as string[]
-      )
+          .filter(Boolean) as string[],
+      ),
     );
   }, [filterUsersResponse]);
 
@@ -344,8 +353,8 @@ const Users: FC = () => {
       new Set(
         (filterUsersResponse?.data ?? [])
           .map((u) => u.email)
-          .filter(Boolean) as string[]
-      )
+          .filter(Boolean) as string[],
+      ),
     );
   }, [filterUsersResponse]);
 
@@ -355,10 +364,10 @@ const Users: FC = () => {
       return formatEntityLabel(role, i18n.language, (key) =>
         i18n.exists(`roles:role_names.${key}`)
           ? t(`roles:role_names.${key}`)
-          : null
+          : null,
       );
     },
-    [i18n, t]
+    [i18n, t],
   );
 
   // Helper to format module display name with translation as Translate (key)
@@ -367,10 +376,10 @@ const Users: FC = () => {
       return formatEntityLabel(mod, i18n.language, (key) =>
         i18n.exists(`modules:module_names.${key}`)
           ? t(`modules:module_names.${key}`)
-          : null
+          : null,
       );
     },
-    [i18n, t]
+    [i18n, t],
   );
 
   // Filter options derived from all roles (without relations)
@@ -418,7 +427,10 @@ const Users: FC = () => {
 
       <FilterRow>
         <Filter
-          onFilter={handleApplyFilters}
+          disabled={isBusy}
+          applyDisabled={isBusy}
+          onOpen={() => setDraftFilterActive(appliedFilterActive)}
+            onFilter={handleApplyFilters}
           onClear={handleClearFilters}
           activeCount={activeFiltersCount}
           title={t("users:filter_modal_title")}
@@ -430,7 +442,7 @@ const Users: FC = () => {
             value={draftFilterNames}
             onChange={setDraftFilterNames}
             placeholder={t("users:form.name_placeholder")}
-            disabled={isLoadingFilterUsers || isFetchingFilterUsers}
+            disabled={isBusy || isLoadingFilterUsers || isFetchingFilterUsers}
           />
 
           <SelectMultipleInput
@@ -439,7 +451,7 @@ const Users: FC = () => {
             value={draftFilterEmails}
             onChange={setDraftFilterEmails}
             placeholder={t("users:form.email_placeholder")}
-            disabled={isLoadingFilterUsers || isFetchingFilterUsers}
+            disabled={isBusy || isLoadingFilterUsers || isFetchingFilterUsers}
           />
 
           <SelectMultipleInput
@@ -448,7 +460,7 @@ const Users: FC = () => {
             value={draftFilterRoles}
             onChange={setDraftFilterRoles}
             placeholder={t("users:form.roles_placeholder")}
-            disabled={isLoadingFilterRoles || isFetchingFilterRoles}
+            disabled={isBusy || isLoadingFilterRoles || isFetchingFilterRoles}
           />
 
           <SelectMultipleInput
@@ -457,35 +469,16 @@ const Users: FC = () => {
             value={draftFilterModules}
             onChange={setDraftFilterModules}
             placeholder={t("users:form.modules_placeholder")}
-            disabled={isLoadingFilterModules || isFetchingFilterModules}
+            disabled={
+              isBusy || isLoadingFilterModules || isFetchingFilterModules
+            }
           />
 
-          <Box
-            sx={(theme) => ({
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              p: 1.5,
-              borderRadius: 1.5,
-              border: `1px solid ${
-                theme.palette.border?.default ?? theme.palette.divider
-              }`,
-            })}
-          >
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={draftFilterActive}
-                  onChange={(e) => setDraftFilterActive(e.target.checked)}
-                  color="primary"
-                  disabled={isLoading || isFetching}
-                />
-              }
-              label={t("users:form.active")}
-              labelPlacement="start"
-              sx={{ m: 0, width: "100%", justifyContent: "space-between" }}
-            />
-          </Box>
+          <ActiveStatusSelect
+            value={draftFilterActive === null ? "all" : draftFilterActive ? "active" : "inactive"}
+            onChange={(value) => setDraftFilterActive(value === "all" ? null : value === "active")}
+            disabled={isBusy}
+          />
         </Filter>
       </FilterRow>
 
@@ -493,6 +486,7 @@ const Users: FC = () => {
         <ActiveFilters>
           {appliedFilterNames.map((name) => (
             <FilterChips
+              disabled={isBusy}
               key={`name-${name}`}
               label={t("users:filter_chips.name", { value: name })}
               onAction={() => {
@@ -503,25 +497,31 @@ const Users: FC = () => {
           ))}
           {appliedFilterEmails.map((email) => (
             <FilterChips
+              disabled={isBusy}
               key={`email-${email}`}
               label={t("users:filter_chips.email", { value: email })}
               onAction={() => {
                 setAppliedFilterEmails((prev) =>
-                  prev.filter((e) => e !== email)
+                  prev.filter((e) => e !== email),
                 );
                 setPage(0);
               }}
             />
           ))}
           {appliedFilterRoles.map((roleId) => {
-            const role = filterRolesResponse?.data?.find((r) => r.id === roleId);
+            const role = filterRolesResponse?.data?.find(
+              (r) => r.id === roleId,
+            );
             const roleLabel = role ? getRoleFilterLabel(role) : roleId;
             return (
               <FilterChips
+                disabled={isBusy}
                 key={`role-${roleId}`}
                 label={t("users:filter_chips.role", { value: roleLabel })}
                 onAction={() => {
-                  setAppliedFilterRoles((prev) => prev.filter((r) => r !== roleId));
+                  setAppliedFilterRoles((prev) =>
+                    prev.filter((r) => r !== roleId),
+                  );
                   setPage(0);
                 }}
               />
@@ -529,16 +529,17 @@ const Users: FC = () => {
           })}
           {appliedFilterModules.map((moduleId) => {
             const mod = filterModulesResponse?.data?.find(
-              (m) => m.id === moduleId
+              (m) => m.id === moduleId,
             );
             const modLabel = mod ? getModuleFilterLabel(mod) : moduleId;
             return (
               <FilterChips
+                disabled={isBusy}
                 key={`module-${moduleId}`}
                 label={t("users:filter_chips.module", { value: modLabel })}
                 onAction={() => {
                   setAppliedFilterModules((prev) =>
-                    prev.filter((m) => m !== moduleId)
+                    prev.filter((m) => m !== moduleId),
                   );
                   setPage(0);
                 }}
@@ -547,6 +548,7 @@ const Users: FC = () => {
           })}
           {appliedFilterActive !== null && (
             <FilterChips
+              disabled={isBusy}
               label={
                 appliedFilterActive
                   ? t("users:filter_chips.active_only")
@@ -566,7 +568,12 @@ const Users: FC = () => {
           <Alert
             severity="error"
             action={
-              <Button color="inherit" size="small" onClick={() => refetch()}>
+              <Button
+                color="inherit"
+                size="small"
+                disabled={isBusy}
+                onClick={() => refetch()}
+              >
                 {t("core:retry", "Reintentar")}
               </Button>
             }
@@ -578,7 +585,7 @@ const Users: FC = () => {
               ? error.message
               : t(
                   "users:error_state.description",
-                  "No se pudo obtener el listado de usuarios desde el servidor."
+                  "No se pudo obtener el listado de usuarios desde el servidor.",
                 )}
           </Alert>
         </Box>
@@ -594,7 +601,7 @@ const Users: FC = () => {
             }}
             placeholder={t("users:search_placeholder")}
             fullWidth
-            disabled={isLoading || isMutating}
+            disabled={isBusy}
           />
         </Box>
         <Button
@@ -602,18 +609,19 @@ const Users: FC = () => {
           color="primary"
           startIcon={<PersonAddAlt1OutlinedIcon />}
           onClick={handleOpenCreateModal}
-          disabled={isLoading || isFetching || isMutating}
+          disabled={isBusy}
           sx={(theme) => ({
             borderRadius: 2,
             color: theme.palette.primary.contrastText,
+            minHeight: { xs: 44, sm: 36 },
           })}
         >
           {t("users:new_user")}
         </Button>
       </TableTopBar>
 
-      <Skeleton loading={isLoading} name="users-table">
-        <StyledTableContainer>
+      <StyledTableContainer>
+        <Skeleton loading={isLoading} name="users-table">
           {isFetching && !isLoading && (
             <LinearProgress
               sx={{
@@ -621,285 +629,444 @@ const Users: FC = () => {
               }}
             />
           )}
-          <TableContainer component={Paper} elevation={0}>
-            <Table>
-              <TableHead
-                sx={{
-                  bgcolor: "primary.main",
-                  "& th": {
-                    color: "primary.contrastText",
-                    fontWeight: "bold",
-                  },
-                }}
-              >
-                <TableRow>
-                  <TableCell>{t("users:table.id")}</TableCell>
-                  <TableCell>{t("users:table.name")}</TableCell>
-                  <TableCell>{t("users:table.email")}</TableCell>
-                  <TableCell>{t("users:table.roles")}</TableCell>
-                  <TableCell>{t("users:table.modules")}</TableCell>
-                  <TableCell>{t("users:table.active")}</TableCell>
-                  <TableCell align="center">
-                    {t("users:table.actions")}
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {!isLoading && users.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      align="center"
-                      sx={{ py: 6, color: "text.secondary" }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: 1.5,
-                        }}
-                      >
-                        <Typography variant="h6" color="text.primary">
-                          {t(
-                            "users:empty_state.title",
-                            "No hay usuarios disponibles"
-                          )}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ maxWidth: 420 }}
-                        >
-                          {t(
-                            "users:empty_state.description",
-                            "No se encontraron usuarios actualmente. Comience agregando uno nuevo."
-                          )}
-                        </Typography>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          color="primary"
-                          startIcon={<PersonAddAlt1OutlinedIcon />}
-                          onClick={handleOpenCreateModal}
-                          disabled={isLoading || isFetching || isMutating}
-                          sx={(theme) => ({
-                            mt: 1,
-                            borderRadius: 2,
-                            color: theme.palette.primary.contrastText,
-                          })}
-                        >
-                          {t(
-                            "users:empty_state.cta",
-                            "Crear primer usuario"
-                          )}
-                        </Button>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  users.map((user) => (
-                    <TableRow
-                      key={user.id}
-                      hover
+          {isMobile ? (
+            <MobileList aria-label={t("users:title")}>
+              {!isLoading && !isError && users.length === 0 && (
+                <Box sx={{ py: 4, textAlign: "center" }}>
+                  <Typography variant="h6">
+                    {t("users:empty_state.title")}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ my: 2 }}
+                  >
+                    {t("users:empty_state.description")}
+                  </Typography>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<PersonAddAlt1OutlinedIcon />}
+                    disabled={isBusy}
+                    onClick={handleOpenCreateModal}
+                    sx={{ minHeight: 44 }}
+                  >
+                    {t("users:empty_state.cta")}
+                  </Button>
+                </Box>
+              )}
+              {users.map((user) => (
+                <MobileRecordCard
+                  key={user.id}
+                  title={user.name || user.email}
+                  disabled={isBusy}
+                  status={
+                    <Box
                       sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mt: 1,
                       }}
                     >
-                      <TableCell
+                      <Avatar
+                        src={user.image_url ?? undefined}
                         sx={{
-                          color: "text.secondary",
+                          width: 32,
+                          height: 32,
                           fontSize: "0.875rem",
-                          fontFamily: "monospace",
+                          bgcolor: "primary.light",
                         }}
+                        aria-hidden="true"
+                      >
+                        {(user.name || user.email).charAt(0)}
+                      </Avatar>
+                      <Chip
+                        size="small"
+                        label={t(
+                          user.is_active
+                            ? "users:status.active"
+                            : "users:status.inactive",
+                        )}
+                        color={user.is_active ? "success" : "default"}
+                      />
+                    </Box>
+                  }
+                  fields={[
+                    {
+                      key: "email",
+                      label: t("users:table.email"),
+                      value: user.email,
+                    },
+                    { key: "id", label: t("users:table.id"), value: user.id },
+                    {
+                      key: "roles",
+                      label: t("users:table.roles"),
+                      value: user.roles?.length ? (
+                        <AssignmentList>
+                          {user.roles.map((role) => {
+                            const resolved =
+                              typeof role === "string"
+                                ? (filterRolesResponse?.data?.find(
+                                    (item) =>
+                                      item.id === role || item.key === role,
+                                  ) ?? role)
+                                : role;
+                            return (
+                              <Chip
+                                key={typeof role === "string" ? role : role.id}
+                                label={getRoleFilterLabel(resolved)}
+                                size="small"
+                                variant="outlined"
+                                color="primary"
+                              />
+                            );
+                          })}
+                        </AssignmentList>
+                      ) : (
+                        t("users:empty_value")
+                      ),
+                    },
+                    {
+                      key: "modules",
+                      label: t("users:table.modules"),
+                      value: user.modules?.length ? (
+                        <AssignmentList>
+                          {user.modules.map((module) => {
+                            const resolved =
+                              typeof module === "string"
+                                ? (filterModulesResponse?.data?.find(
+                                    (item) =>
+                                      item.id === module || item.key === module,
+                                  ) ?? module)
+                                : module;
+                            return (
+                              <Chip
+                                key={
+                                  typeof module === "string"
+                                    ? module
+                                    : module.id
+                                }
+                                label={getModuleFilterLabel(resolved)}
+                                size="small"
+                                variant="outlined"
+                                color="secondary"
+                              />
+                            );
+                          })}
+                        </AssignmentList>
+                      ) : (
+                        t("users:empty_value")
+                      ),
+                    },
+                  ]}
+                  primaryAction={{
+                    key: "update",
+                    label: t("users:actions.update"),
+                    icon: <EditOutlinedIcon />,
+                    onClick: () => handleOpenEditModal(user),
+                  }}
+                  actions={[
+                    {
+                      key: "toggle",
+                      label: t(
+                        user.is_active ? "users:deactivate" : "users:activate",
+                      ),
+                      icon: user.is_active ? (
+                        <BlockOutlinedIcon color="error" />
+                      ) : (
+                        <CheckCircleOutlineOutlinedIcon color="success" />
+                      ),
+                      onClick: () => handleRequestToggleActive(user),
+                    },
+                    {
+                      key: "copy",
+                      label: t("users:copy"),
+                      icon: <ContentCopyIcon />,
+                      onClick: () => handleCopyId(user.id),
+                    },
+                  ]}
+                />
+              ))}
+            </MobileList>
+          ) : (
+            <TableContainer component={Paper} elevation={0}>
+              <Table>
+                <TableHead
+                  sx={{
+                    bgcolor: "primary.main",
+                    "& th": {
+                      color: "primary.contrastText",
+                      fontWeight: "bold",
+                    },
+                  }}
+                >
+                  <TableRow>
+                    <TableCell>{t("users:table.id")}</TableCell>
+                    <TableCell>{t("users:table.name")}</TableCell>
+                    <TableCell>{t("users:table.email")}</TableCell>
+                    <TableCell>{t("users:table.roles")}</TableCell>
+                    <TableCell>{t("users:table.modules")}</TableCell>
+                    <TableCell>{t("users:table.active")}</TableCell>
+                    <TableCell align="center">
+                      {t("users:table.actions")}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {!isLoading && !isError && users.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={7}
+                        align="center"
+                        sx={{ py: 6, color: "text.secondary" }}
                       >
                         <Box
                           sx={{
                             display: "flex",
+                            flexDirection: "column",
                             alignItems: "center",
-                            gap: 1,
+                            gap: 1.5,
                           }}
                         >
-                          {user.id.includes("-")
-                            ? `${user.id.split("-")[0]}...`
-                            : user.id}
-                          <Tooltip
-                            title={t("users:copy")}
-                            arrow
-                            placement="top"
+                          <Typography variant="h6" color="text.primary">
+                            {t(
+                              "users:empty_state.title",
+                              "No hay usuarios disponibles",
+                            )}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ maxWidth: 420 }}
                           >
-                            <IconButton
-                              size="small"
-                              onClick={() => handleCopyId(user.id)}
-                              aria-label={t("users:copy")}
-                            >
-                              <ContentCopyIcon
-                                fontSize="small"
-                                sx={{ fontSize: "1rem" }}
-                              />
-                            </IconButton>
-                          </Tooltip>
+                            {t(
+                              "users:empty_state.description",
+                              "No se encontraron usuarios actualmente. Comience agregando uno nuevo.",
+                            )}
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            color="primary"
+                            startIcon={<PersonAddAlt1OutlinedIcon />}
+                            onClick={handleOpenCreateModal}
+                            disabled={isBusy}
+                            sx={(theme) => ({
+                              mt: 1,
+                              borderRadius: 2,
+                              color: theme.palette.primary.contrastText,
+                            })}
+                          >
+                            {t("users:empty_state.cta", "Crear primer usuario")}
+                          </Button>
                         </Box>
                       </TableCell>
-                      <TableCell>
-                        {user.name ? (
-                          <UserInfo>
-                            <Avatar
-                              src={user.image_url ?? undefined}
+                    </TableRow>
+                  ) : (
+                    users.map((user) => (
+                      <TableRow
+                        key={user.id}
+                        hover
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell
+                          sx={{
+                            color: "text.secondary",
+                            fontSize: "0.875rem",
+                            fontFamily: "monospace",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            {user.id.includes("-")
+                              ? `${user.id.split("-")[0]}...`
+                              : user.id}
+                            <Tooltip
+                              title={t("users:copy")}
+                              arrow
+                              placement="top"
+                            >
+                              <IconButton
+                                size="small"
+                                onClick={() => handleCopyId(user.id)}
+                                disabled={isBusy}
+                                aria-label={t("users:copy")}
+                              >
+                                <ContentCopyIcon
+                                  fontSize="small"
+                                  sx={{ fontSize: "1rem" }}
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </TableCell>
+                        <TableCell>
+                          {user.name ? (
+                            <UserInfo>
+                              <Avatar
+                                src={user.image_url ?? undefined}
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                  fontSize: "0.875rem",
+                                  bgcolor: "primary.light",
+                                }}
+                              >
+                                {user.name.charAt(0)}
+                              </Avatar>
+                              <Typography
+                                variant="body2"
+                                sx={{ fontWeight: "medium" }}
+                              >
+                                {user.name}
+                              </Typography>
+                            </UserInfo>
+                          ) : (
+                            t("users:empty_value")
+                          )}
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          {user.roles && user.roles.length > 0 ? (
+                            <Box
                               sx={{
-                                width: 32,
-                                height: 32,
-                                fontSize: "0.875rem",
-                                bgcolor: "primary.light",
+                                display: "flex",
+                                gap: 0.5,
+                                flexWrap: "wrap",
                               }}
                             >
-                              {user.name.charAt(0)}
-                            </Avatar>
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: "medium" }}
-                            >
-                              {user.name}
-                            </Typography>
-                          </UserInfo>
-                        ) : (
-                          t("users:empty_value")
-                        )}
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        {user.roles && user.roles.length > 0 ? (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              gap: 0.5,
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            {user.roles.map((role) => {
-                              const roleKey =
-                                typeof role === "string" ? role : role.key;
-                              const roleId =
-                                typeof role === "string" ? role : role.id;
-                              const roleObj =
-                                typeof role === "object"
-                                  ? role
-                                  : filterRolesResponse?.data?.find(
-                                      (r) => r.id === role || r.key === role
-                                    );
-                              const roleLabel = getRoleFilterLabel(
-                                roleObj ?? roleKey
-                              );
-                              return (
-                                <Chip
-                                  key={roleId || roleKey}
-                                  label={roleLabel}
-                                  size="small"
-                                  variant="outlined"
-                                  color="primary"
-                                />
-                              );
-                            })}
-                          </Box>
-                        ) : (
-                          t("users:empty_value")
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {user.modules && user.modules.length > 0 ? (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              gap: 0.5,
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            {user.modules.map((mod) => {
-                              const modKey =
-                                typeof mod === "string" ? mod : mod.key;
-                              const modId =
-                                typeof mod === "string" ? mod : mod.id;
-                              const modObj =
-                                typeof mod === "object"
-                                  ? mod
-                                  : filterModulesResponse?.data?.find(
-                                      (m) => m.id === mod || m.key === mod
-                                    );
-                              const modLabel = getModuleFilterLabel(
-                                modObj ?? modKey
-                              );
-                              return (
-                                <Tooltip
-                                  key={modId || modKey}
-                                  title={modLabel !== modKey ? modKey : ""}
-                                  arrow
-                                >
+                              {user.roles.map((role) => {
+                                const roleKey =
+                                  typeof role === "string" ? role : role.key;
+                                const roleId =
+                                  typeof role === "string" ? role : role.id;
+                                const roleObj =
+                                  typeof role === "object"
+                                    ? role
+                                    : filterRolesResponse?.data?.find(
+                                        (r) => r.id === role || r.key === role,
+                                      );
+                                const roleLabel = getRoleFilterLabel(
+                                  roleObj ?? roleKey,
+                                );
+                                return (
                                   <Chip
-                                    label={modLabel}
+                                    key={roleId || roleKey}
+                                    label={roleLabel}
                                     size="small"
                                     variant="outlined"
-                                    color="secondary"
+                                    color="primary"
                                   />
-                                </Tooltip>
-                              );
-                            })}
-                          </Box>
-                        ) : (
-                          t("users:empty_value")
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={
-                            user.is_active
-                              ? t("users:yes")
-                              : t("users:no")
-                          }
-                          color={user.is_active ? "success" : "error"}
-                          size="small"
-                          variant={user.is_active ? "filled" : "outlined"}
-                          sx={
-                            user.is_active
-                              ? { color: "success.contrastText" }
-                              : {}
-                          }
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          aria-label={t("users:table.actions")}
-                          disabled={isLoading || isFetching || isMutating}
-                          onClick={(e) => handleOpenActionMenu(e, user)}
-                        >
-                          <MoreVertIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            component="div"
-            count={usersResponse?.meta?.total_items ?? users.length}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            disabled={isLoading || isFetching || isMutating}
-            labelRowsPerPage={t("core:pagination.rows_per_page")}
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}–${to} ${t("core:pagination.of")} ${
-                count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
-              }`
-            }
-          />
-        </StyledTableContainer>
-      </Skeleton>
+                                );
+                              })}
+                            </Box>
+                          ) : (
+                            t("users:empty_value")
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {user.modules && user.modules.length > 0 ? (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                gap: 0.5,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              {user.modules.map((mod) => {
+                                const modKey =
+                                  typeof mod === "string" ? mod : mod.key;
+                                const modId =
+                                  typeof mod === "string" ? mod : mod.id;
+                                const modObj =
+                                  typeof mod === "object"
+                                    ? mod
+                                    : filterModulesResponse?.data?.find(
+                                        (m) => m.id === mod || m.key === mod,
+                                      );
+                                const modLabel = getModuleFilterLabel(
+                                  modObj ?? modKey,
+                                );
+                                return (
+                                  <Tooltip
+                                    key={modId || modKey}
+                                    title={modLabel !== modKey ? modKey : ""}
+                                    arrow
+                                  >
+                                    <Chip
+                                      label={modLabel}
+                                      size="small"
+                                      variant="outlined"
+                                      color="secondary"
+                                    />
+                                  </Tooltip>
+                                );
+                              })}
+                            </Box>
+                          ) : (
+                            t("users:empty_value")
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={
+                              user.is_active ? t("users:yes") : t("users:no")
+                            }
+                            color={user.is_active ? "success" : "error"}
+                            size="small"
+                            variant={user.is_active ? "filled" : "outlined"}
+                            sx={
+                              user.is_active
+                                ? { color: "success.contrastText" }
+                                : {}
+                            }
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            aria-label={t("users:table.actions")}
+                            disabled={isBusy}
+                            onClick={(e) => handleOpenActionMenu(e, user)}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Skeleton>
+        <ListPagination
+          getItemAriaLabel={(type) => t(`users:pagination.${type}`)}
+          component="div"
+          count={usersResponse?.meta?.total_items ?? users.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          disabled={isBusy}
+          labelRowsPerPage={t("core:pagination.rows_per_page")}
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}–${to} ${t("core:pagination.of")} ${
+              count !== -1 ? count : `${t("core:pagination.more_than")} ${to}`
+            }`
+          }
+        />
+      </StyledTableContainer>
 
       {/* Row Actions Menu */}
       <Menu
@@ -929,7 +1096,11 @@ const Users: FC = () => {
           },
         }}
       >
-        <MenuItem onClick={handleOpenEditModal} sx={{ borderRadius: 1 }}>
+        <MenuItem
+          onClick={() => handleOpenEditModal()}
+          disabled={isBusy}
+          sx={{ borderRadius: 1 }}
+        >
           <ListItemIcon>
             <EditOutlinedIcon fontSize="small" color="primary" />
           </ListItemIcon>
@@ -937,6 +1108,7 @@ const Users: FC = () => {
         </MenuItem>
         {actionUser && (
           <MenuItem
+            disabled={isBusy}
             onClick={() => handleRequestToggleActive(actionUser)}
             sx={{ borderRadius: 1 }}
           >
@@ -976,6 +1148,7 @@ const Users: FC = () => {
         onClose={handleCloseConfirmToggle}
         onConfirm={handleConfirmToggleActive}
         isLoading={isMutating}
+        confirmDisabled={isBusy}
         title={
           userToToggle?.is_active
             ? t("users:confirm_deactivate_title")

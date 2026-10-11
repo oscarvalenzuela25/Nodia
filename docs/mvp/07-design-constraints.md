@@ -1,7 +1,7 @@
 # Restricciones de Diseño — Nodia Parte 1
 
 > Estado: aprobado (base histórica); aplicación y ampliación Finanzas en revisión
-> Última actualización: 2026-10-08
+> Última actualización: 2026-10-09
 > Dependencias: 05-sitemap.md y 06-route-specs.md aprobados
 
 ## Objetivo
@@ -30,7 +30,7 @@ Definir sistema visual, accesibilidad y restricciones de interacción aplicables
 
 ### Ajuste móvil solicitado e implementado — 2026-10-08
 
-Según [35](35-mobile-cards-shortcuts-plan.md), en `xs` (<600 px) los listados adaptados explícitamente pueden usar tarjetas verticales con campos principales y acciones del registro, compartiendo consulta, filtros y paginado del servidor. ReservationTable es el piloto implementado. Las tablas sin adaptar y todas las vistas desde 600 px conservan el patrón de tabla, `minWidth: 650` y scroll transparente. No convertir columnas por heurística ni aplicar esta representación a calendarios/resúmenes sin selección específica.
+Según [35](35-mobile-cards-shortcuts-plan.md), en `xs` (<600 px) los listados adaptados explícitamente pueden usar tarjetas verticales con campos principales y acciones del registro, compartiendo consulta, filtros y paginado del servidor. ReservationTable es el piloto implementado; Modules añade tarjetas para módulos y grupos, Users para usuarios, Actions para acciones generales/de negocio y Roles para roles, por solicitud del 2026-10-09. Nuevos CRUD de registros siguen [DESIGN.md 9.6](../../nodia-client/DESIGN.md), con campos elegidos desde su contrato. Las tablas sin adaptar y todas las vistas desde 600 px conservan el patrón de tabla, `minWidth: 650` y scroll transparente. No convertir columnas por heurística ni aplicar esta representación a calendarios/resúmenes sin selección específica.
 
 BaseLayout autenticado incorpora barra inferior de borde a borde con cuatro accesos locales por persona e Inicio fijo más grande al centro. Candado flotante arriba a la derecha regula edición, sin alterar permisos. Reservar espacio debajo del contenido y de avisos; safe area dentro de barra y selector. Las tarjetas usan campos visibles, estado separado de archivo/inactividad, acción principal de ancho completo y menú secundario. La aprobación visual corresponde a la barra; no extiende aprobación automática a toda la ampliación documental.
 
@@ -38,6 +38,12 @@ BaseLayout autenticado incorpora barra inferior de borde a borde con cuatro acce
 
 - **Nivel de exigencia:** No es prioridad para el MVP.
 - **Enfoque práctico:** Se aprovechará únicamente la accesibilidad gratuita que ya traen los componentes de MUI out-of-the-box, sin realizar pruebas o ajustes específicos de contraste, screen readers o navegación estricta.
+
+## Avisos de autorización bajo el topbar — 2026-10-09
+
+Por solicitud del usuario, el fallo de lectura del contexto en rutas privadas se muestra como un Alert dentro del contenido, después del topbar. El drawer fijo no puede tapar su icono, texto ni acción. Se reutilizan colores y tipografía del tema, textos ES/EN y feedback sileo existente; padding único de PageContent (16/24/32 px), sin margen exterior adicional en el guard y 24 px hasta la vista conservada. La carga de contexto y sus reintentos mantienen el shell. El progreso de revalidación pertenece al contenido, sin barra fija sobre toda la pantalla.
+
+En `xs`, el texto envuelve y «Reintentar» ocupa el ancho disponible en una fila propia, con altura mínima44px; desde `sm`, la acción queda a la derecha. Deshabilitar durante la petición. Con datos previos, conservar la página y bloquear sus controles hasta recuperar autorización; sin datos, no montar ni consultar la página. Son cambios solicitados, sin aprobación automática del resto del documento. Ver [contrato de guards](14-authentication.md#guards-de-navegación-y-modo-demo).
 
 ## Hechos confirmados
 - Se reutiliza la base tecnológica de UI de `nodia-client` (MUI).
@@ -89,3 +95,24 @@ Ver [plan Client](24-personal-finance-client-plan.md) para tareas y evidencia lo
 La ampliación conserva el sistema visual y reglas locales: MUI/Emotion, temas claro/oscuro, inputs/modales reutilizables, i18n ES/EN, toast sileo y formulario conservado ante error. Sin padding exterior duplicado; paneles con separación vertical24px/horizontal16px, acciones principales ancho completo en móvil, tablas minWidth650 y scroll transparente.
 
 Calendario navegable con teclado y alternativa en listado; etiquetas de fechas/estado y leyenda, sin depender solo de colores. Mostrar horas en la zona de la casa y distinguir noches, cobros, devolución pendiente y preparación planificada/real. Confirmaciones explican consecuencias comerciales; no pedir decisiones sobre locks o detalles internos. [26](26-rental-reservations-spec.md) y [28](28-rental-reservations-contracts.md) definen el flujo; [plan Client30](30-rental-reservations-client-plan.md) registra diseño implementado y QA: 390/768/1440 px, claro/oscuro, ES/EN, tabla650px con paginación externa, teclado/foco y preservación de formularios. Navegador→API→PostgreSQL temporal verificado; smoke real pendiente RC-38. No se declara auditoría WCAG completa. Esta aplicación está en revisión.
+
+
+## Ajuste móvil de proveedores IA — 2026-10-09
+
+Por solicitud del usuario, listado y detalle de AiProviders compactan paneles internos a12px en xs y conservan PageContent16px, separación entre paneles24px y theme existente. El detalle omite la cabecera duplicada del listado solo en móvil; mantiene Volver, conexión identificada y acciones. Modos apilados con orientación vertical/teclado, modelos e IDs largos con ajuste de línea, controles de razonamiento/OCR apilados y botones principales44px/ancho completo. API keys usa tarjetas en xs y tabla650px desde sm, misma consulta/página/handlers; máscara, selección exclusiva y papelera con confirmación preservadas. No reducir controles para lograr densidad. Referencia futura: DESIGN9.4/9.6. Sin cambios de proveedores, modelos asignados, cuentas, secretos ni BD; no se aprueba automáticamente este documento.
+
+
+## Aplicación móvil de Negocios — 2026-10-09
+
+Por solicitud del usuario, listado/detalle y cinco pestañas usan el theme y PageContent existentes sin padding exterior adicional. Cabecera, pestañas verticales reales, botones principales y acciones modales se apilan en xs; paneles internos12–16px. Proveedores/productos/facturas/colaboradores/contactos usan tarjetas específicas en xs y tablas650px desde sm, compartiendo estado y handlers. Se conservan mapeos de proveedor, historial del producto, enlaces de contacto y rutas largas. Paginado con controles44px, etiquetas traducidas y fuera del Skeleton; tarjetas y filtros no amplían el viewport. Las comparaciones de importación mantienen tabla/scroll local, con entorno de controles adaptado. Descripción de negocio con un input opcional; icono nativo de fechas currentColor y Activo de factura debajo de Ruta/Archivo. Ver [contrato vigente](../../nodia-client/src/modules/business/CONTRACT.md) y DESIGN9.6/9.7. Documento sin aprobación automática.
+
+
+## Paginado móvil uniforme — 2026-10-09
+
+Solicitud explícita: todos los listados paginados móviles usan primera fila con «Filas por página»/selector y segunda con rango/flechas juntas. Ambas filas se centran independientemente mediante justifyContent center; no compartir columnas que desplacen su contenido. La regla reside en MuiTablePagination del tema compartido, con botones44px y orden de foco conservado; desde sm permanece una fila. Eliminados los overrides móviles por recurso para evitar divergencia entre Modules, Actions, Users, Roles, Negocios, Reservas, Finanzas y API keys. Un tamaño fijo conserva rango/flechas sin inventar selector ni fila vacía. No altera consultas, página, tamaño ni contratos. Referencia futura DESIGN9.6; documento sin aprobación automática.
+
+- Normalización solicitada el 2026-10-09: dentro de Filter, actividad mediante ActiveStatusSelect (SelectSingleInput) con Activo / Inactivo / Todos, Activo inicial y tras Limpiar. Todos incluye ambos sin predicado; reabrir refleja selección aplicada y aplicar/quitar reinicia página. Etiqueta Estado de actividad distingue actividad de estados comerciales. Regla estricta en AGENTS.md; no cambia estados comerciales ni switches de edición, ni aprueba automáticamente documentos.
+
+## Finanzas personales móvil — 2026-10-09
+
+Adaptación explícita de MC-07: tarjetas xs para los cuatro recursos, últimos movimientos y resúmenes General; tablas desde sm con scroll local. Campos monetarios exactos a ancho completo, pares compactos para otros datos; no comprimir cifras largas ni duplicar padding de panel. Selector de sección en xs ofrece todos los destinos y conserva estado/ruta; desktop mantiene tabs. Búsqueda/acciones ancho completo, modales con scroll interno y acciones44px; paginado global de dos filas centradas. Referencias FinanceTable/FinanceRecordCard/PersonalFinance y DESIGN9.6/9.7. Ampliación sin aprobación documental automática; aceptación física pendiente.

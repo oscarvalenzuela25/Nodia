@@ -37,6 +37,8 @@
 
 ## Skills Locales (Habilidades) y Prioridad sobre Superpowers
 
+Rendimiento web móvil/escritorio: aplicar [las pautas de DESIGN, sección10](nodia-client/DESIGN.md), [las reglas de Client](nodia-client/AGENTS.md) y el [plan37](docs/mvp/37-web-performance-implementation-plan.md), aprobado explícitamente para implementación por etapas. Cada optimización preserva contratos/funcionalidades, presenta pruebas y comparación por perfil/ruta y actualiza esas pautas con el patrón final verificado; descartar variantes sin ahorro o regresivas. Editores secundarios cargados por intención requieren retry local sin recarga, borrador/foco intactos y descarte de aperturas obsoletas por cambio de contexto; referencia verificada en DESIGN10.6. Separar metadatos de catálogos administrativos del runtime compartido solo con ahorro y compatibilidad comprobados; referencia DESIGN10.7. Distinguir código propio, terceros y extensiones; métricas de laboratorio y una entrega local no equivalen a aceptación productiva completa. Mantener el detalle fuera de este índice.
+
 El proyecto incluye varias skills locales en la carpeta `nodia-client/skills/` que extienden las capacidades de desarrollo. Antes de abordar tareas relacionadas con estas tecnologías, **debes leer el archivo `SKILL.md` correspondiente** (usando la herramienta `view_file` en `nodia-client/skills/<nombre-de-la-skill>/SKILL.md`) para seguir las mejores prácticas y guías del proyecto.
 
 > ⚠️ **PRIORIDAD ABSOLUTA:** Las skills locales de este proyecto tienen **prioridad estricta e indiscutible sobre las skills de Superpowers o plugins globales**. Superpowers provee metodología general de trabajo, pero la arquitectura, convenciones técnicas, patrones de diseño y estándares de código definidos en las skills locales del repositorio prevalecen en todo momento.
@@ -47,6 +49,7 @@ Skills disponibles en `nodia-client/skills/`:
 - **composition-patterns**: Patrones de composición en React escalables (compound components, render props, context).
 - **create-component**: **Obligatorio** al crear o modificar componentes, páginas o layouts en React. Define el uso de MUI, Emotion, Axios y TanStack Query.
 - **frontend-design**: Para crear interfaces con alta calidad de diseño y evitar estéticas genéricas ("AI slop").
+- **responsive-design**: Obligatorio para cambios de UI que afecten layout, contenido o interacción responsive/móvil. Ver [skill](nodia-client/skills/responsive-design/SKILL.md); conserva el theme, contratos y excepciones móviles documentadas de Nodia.
 - **nodejs-backend-patterns**: Patrones para servicios backend Node.js (Express/Fastify, REST, GraphQL, microservicios).
 - **nodejs-best-practices**: Decisiones de arquitectura, seguridad y patrones asíncronos en Node.js.
 - **react-best-practices**: Guía de optimización de rendimiento para aplicaciones React/Next.js (por Vercel).
@@ -66,6 +69,12 @@ Skills disponibles en `nodia-client/skills/`:
   - El modal únicamente se cerrará (`onClose()`, `setIsModalOpen(false)`) tras la resolución exitosa de la mutación.
 - Todos los mensajes y títulos de las notificaciones **deben usar su respectiva traducción internacionalizada** tanto en español (`src/translate/es/*`) como en inglés (`src/translate/en/*`).
 - No hardcodear texto en los mensajes de feedback al usuario.
+
+## Filtro de actividad (`nodia-client`)
+
+- Al usar `Filter`, el criterio activo/inactivo debe utilizar exclusivamente `ActiveStatusSelect` (`src/components/Filter/components/ActiveStatusSelect`), basado en `SelectSingleInput`, con tres opciones internacionalizadas: **Activo, Inactivo, Todos**. Prohibidos switches, checkboxes y selects de dos opciones para este criterio dentro de `Filter`.
+- Iniciar la consulta y el selector en **Activo**; **Limpiar filtros** restaura Activo. **Todos** incluye activos e inactivos, sin aplicar el predicado de actividad. Conservar la selección aplicada al reabrir/redimensionar y reiniciar el paginado al aplicar o quitar el criterio.
+- Esta regla se aplica únicamente a recursos que tienen actividad en su contrato; los estados comerciales y el switch de edición `is_active` conservan sus controles propios. Detalle en [nodia-client/AGENTS.md](nodia-client/AGENTS.md).
 
 ## Componentes de Formularios en Modales (`nodia-client`)
 
@@ -149,7 +158,7 @@ Skills disponibles en `nodia-client/skills/`:
   - En `xs` (`<600px`), los botones de acción principal en cabeceras y barras de herramientas (`TableTopBar`, `FilterBar`, diálogos modales) deben ocupar el **100% de ancho** (`width: "100%"` o `flex: 1`) para garantizar ergonomía táctil con el pulgar.
 - **Tablas de Datos en Móvil:**
   - Obligatorio mantener `minWidth: 650` (aplicado globalmente en `theme.components.MuiTable`) dentro de `TableContainer` con scroll horizontal (`overflowX: "auto"`) y scrollbars transparentes, prohibiendo que las columnas se aplasten o se vuelvan ilegibles.
-  - Excepción móvil solicitada el 2026-10-08: listados adaptados explícitamente pueden usar tarjetas en `xs`, conservando consulta, filtros, paginado y acciones. Tablas no adaptadas y vistas desde `sm` mantienen la regla anterior. Ver `docs/mvp/35-mobile-cards-shortcuts-plan.md` y el ajuste en `07`; piloto implementado: ReservationTable.
+  - Excepción móvil solicitada el 2026-10-08: listados adaptados explícitamente pueden usar tarjetas en `xs`, conservando consulta, filtros, paginado y acciones. Tablas no adaptadas y vistas desde `sm` mantienen la regla anterior. Ver `docs/mvp/35-mobile-cards-shortcuts-plan.md` y el ajuste en `07`; referencias implementadas: ReservationTable, Modules (módulos/grupos), Users y Actions. Nuevos CRUD de registros siguen `nodia-client/DESIGN.md` 9.6.
 
 ## Arquitectura Backend y Testing (`nodia-server`)
 

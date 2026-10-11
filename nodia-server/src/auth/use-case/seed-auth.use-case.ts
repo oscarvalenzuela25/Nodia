@@ -1,8 +1,10 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { isEmail } from 'class-validator';
 import { DataSource } from 'typeorm';
 import { SeedAuthDto } from '../dto/seed-auth.dto.js';
 import { envs } from '../../config/envs.config.js';
@@ -29,25 +31,89 @@ export class SeedAuthUseCase {
       throw new UnauthorizedException('Invalid secret seed');
     }
 
-    // 2. Verify if a super_admin already exists
-    const superAdminRole = await this.dataSource.getRepository(Role).findOne({
-      where: { key: 'super_admin' },
-    });
+    return this.initialize(dto.super_admin_email, false);
+  }
 
-    if (superAdminRole) {
-      const existingSuperAdmin = await this.dataSource
-        .getRepository(UserRole)
-        .findOne({
-          where: { role_id: superAdminRole.id, is_active: true },
-        });
+  /** Private operational entry point; never exposed as an HTTP route. */
+  async bootstrap() {
+    return this.initialize(envs.BOOTSTRAP_SUPER_ADMIN_EMAIL, true);
+  }
 
-      if (existingSuperAdmin) {
-        throw new ConflictException('A super admin already exists');
-      }
+  private async initialize(email: string, allowExisting: boolean) {
+    const normalizedEmail =
+      typeof email === 'string' ? email.trim().toLowerCase() : '';
+    if (!isEmail(normalizedEmail)) {
+      throw new BadRequestException(
+        'A valid BOOTSTRAP_SUPER_ADMIN_EMAIL is required for Core bootstrap',
+      );
     }
 
-    // 3. Seed database inside a transaction
+    // Serialize bootstrap across CLI/HTTP and processes before checking or creating the role.
     const result = await this.dataSource.transaction(async (manager) => {
+      await manager.query('SELECT pg_advisory_xact_lock(1789257400)');
+      const superAdminRole = await manager.getRepository(Role).findOne({
+        where: { key: 'super_admin' },
+      });
+      if (superAdminRole) {
+        const assignment = await manager.getRepository(UserRole).findOne({
+          where: { role_id: superAdminRole.id },
+        });
+        if (assignment) {
+          const existing = await manager
+            .getRepository(User)
+            .findOne({ where: { id: assignment.user_id } });
+          if (
+            !allowExisting ||
+            !assignment.is_active ||
+            !existing?.is_active ||
+            !superAdminRole.is_active ||
+            existing.email.trim().toLowerCase() !== normalizedEmail
+          ) {
+            throw new ConflictException(
+              'A super admin already exists; changing the bootstrap email cannot replace or promote another account',
+            );
+          }
+          const keys = ['users', 'roles', 'actions', 'modules'];
+          const group = await manager
+            .getRepository(ModuleGroup)
+            .findOne({ where: { key: 'general_settings', is_active: true } });
+          if (!group)
+            throw new ConflictException(
+              'Core access has changed; manage existing permissions explicitly in Settings',
+            );
+          for (const key of keys) {
+            const module = await manager
+              .getRepository(Module)
+              .findOne({ where: { key, is_active: true } });
+            const access =
+              module &&
+              (await manager.getRepository(UserModule).findOne({
+                where: {
+                  user_id: existing.id,
+                  module_id: module.id,
+                  is_active: true,
+                },
+              }));
+            if (
+              !module ||
+              module.module_group_id !== group.id ||
+              module.link !== `/settings/${key}` ||
+              !access
+            ) {
+              throw new ConflictException(
+                'Core access has changed; manage existing permissions explicitly in Settings',
+              );
+            }
+          }
+          return {
+            message: 'Seed completed successfully',
+            super_admin_email: existing.email,
+            role: superAdminRole.key,
+            module_group: group.key,
+            modules: keys,
+          };
+        }
+      }
       // 3.1 Role: super_admin
       let role = superAdminRole;
       if (!role) {
@@ -61,13 +127,18 @@ export class SeedAuthUseCase {
         role = await manager.getRepository(Role).save(role);
       }
 
-      await this.translationService.saveTranslations('roles', role.id, [
-        {
-          key: 'key',
-          es: 'Super Administrador',
-          en: 'Super Administrator',
-        },
-      ]);
+      await this.translationService.updateTranslations(
+        'roles',
+        role.id,
+        [
+          {
+            key: 'key',
+            es: 'Super Administrador',
+            en: 'Super Administrator',
+          },
+        ],
+        manager,
+      );
 
       // 3.2 ModuleGroup: general_settings
       let moduleGroup = await manager.getRepository(ModuleGroup).findOne({
@@ -78,13 +149,17 @@ export class SeedAuthUseCase {
           key: 'general_settings',
           is_active: true,
         });
-        moduleGroup = await manager.getRepository(ModuleGroup).save(moduleGroup);
+        moduleGroup = await manager
+          .getRepository(ModuleGroup)
+          .save(moduleGroup);
       } else if (!moduleGroup.is_active) {
         moduleGroup.is_active = true;
-        moduleGroup = await manager.getRepository(ModuleGroup).save(moduleGroup);
+        moduleGroup = await manager
+          .getRepository(ModuleGroup)
+          .save(moduleGroup);
       }
 
-      await this.translationService.saveTranslations(
+      await this.translationService.updateTranslations(
         'module_groups',
         moduleGroup.id,
         [
@@ -94,6 +169,7 @@ export class SeedAuthUseCase {
             en: 'General Administration',
           },
         ],
+        manager,
       );
 
       // 3.3 Modules
@@ -141,16 +217,16 @@ export class SeedAuthUseCase {
           mod = await manager.getRepository(Module).save(mod);
         }
 
-        await this.translationService.saveTranslations(
+        await this.translationService.updateTranslations(
           'modules',
           mod.id,
           item.translates,
+          manager,
         );
         savedModules.push(mod);
       }
 
       // 3.4 User: super_admin_email
-      const normalizedEmail = dto.super_admin_email.toLowerCase().trim();
       let user = await manager.getRepository(User).findOne({
         where: { email: normalizedEmail },
       });

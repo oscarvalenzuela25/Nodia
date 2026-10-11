@@ -37,7 +37,12 @@ export default function RentalPropertySelect({
         query={{ active: "all" }}
         disabled={busy}
       />
-      <Button variant="outlined" disabled={busy} onClick={onCreate}>
+      <Button
+        variant="contained"
+        sx={{ alignSelf: "end", minHeight: 44 }}
+        disabled={busy}
+        onClick={onCreate}
+      >
         {t("rental:create_property")}
       </Button>
       {query.isError && (
@@ -52,7 +57,7 @@ export default function RentalPropertySelect({
           {t("rental:load_error")}
         </Alert>
       )}
-      {!value && (
+      {!value && !query.isError && (
         <Skeleton loading={query.isLoading}>
           <Typography color="text.secondary">
             {query.data?.meta.total_items === 0

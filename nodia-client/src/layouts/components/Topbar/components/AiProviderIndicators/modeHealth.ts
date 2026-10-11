@@ -1,7 +1,8 @@
 import type { AiProviderHealthItem, AiProvidersHealthResponse } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 
 export type ProviderMode = "api_key" | "token_plan_web" | "token_plan_agentic";
-export type ModeState = "session_ready" | "healthy" | "needs_review" | "unverified";
+export const PROVIDER_MODES = ["api_key", "token_plan_web", "token_plan_agentic"] as const;
+export type ModeState = "session_ready" | "healthy" | "needs_review" | "unverified" | "disabled";
 
 export function enabledModes(provider: AiProviderHealthItem): ProviderMode[] {
   return ([
@@ -12,6 +13,7 @@ export function enabledModes(provider: AiProviderHealthItem): ProviderMode[] {
 }
 
 export function modeHealth(provider: AiProviderHealthItem, mode: ProviderMode, health: AiProvidersHealthResponse, failed: boolean): ModeState {
+  if (!enabledModes(provider).includes(mode)) return "disabled";
   if (failed) return "unverified";
   if (provider.isActive !== true) return "needs_review";
   if (mode === "api_key") {

@@ -4,7 +4,6 @@
     "home": "Ir a Inicio",
     "go": "Ir a {{section}}",
     "editing": "Personaliza tus accesos",
-    "locked": "Tus accesos · bloqueados",
     "lock": "Bloquear edición de accesos",
     "unlock": "Desbloquear edición de accesos",
     "locked_success": "Edición de accesos bloqueada",
@@ -28,11 +27,15 @@
     "empty": "No hay secciones disponibles para agregar.",
     "no_matches": "No hay secciones que coincidan con la búsqueda.",
     "loading": "Comprobando accesos…",
+    "editor_loading": "Abriendo editor de accesos…",
+    "editor_load_error": "No se pudo abrir el editor. Pulsa el acceso para reintentar.",
     "storage_error": "No se pudo leer o guardar la configuración local. Revisa los permisos de almacenamiento del navegador e inténtalo otra vez.",
     "storage_error_short": "Revisar almacenamiento local",
     "permission_error": "No se pudieron comprobar los accesos"
   },
-  "mobile_cards": { "actions": "Acciones de {{name}}" },
+  "mobile_cards": {
+    "actions": "Acciones de {{name}}"
+  },
   "menu_home": "Inicio",
   "menu_general_settings": "Ajustes Generales",
   "menu_users": "Usuarios",
@@ -45,15 +48,18 @@
   "collapse_drawer": "Colapsar menú",
   "toggle_theme": "Cambiar tema",
   "toggle_language": "Cambiar idioma",
+  "toggle_language_label": "{{language}} · Cambiar idioma",
   "ai_indicators": {
     "group": "Estado de IA: {{provider}}",
     "label": "{{provider}} · {{mode}}: {{status}}. Abrir ajustes de este modo",
-    "api_key": "API key",
-    "token_plan_web": "Token Plan Web",
-    "token_plan_agentic": "Token Plan Agentic",
+    "api_key": "API",
+    "token_plan_web": "Web",
+    "token_plan_agentic": "Agéntico",
     "session_ready": "Sesión disponible; no acredita inferencia",
     "healthy": "Estado saludable comprobado",
     "needs_review": "Necesita revisión",
-    "unverified": "Sin verificar; revisar estado"
+    "unverified": "Sin verificar; revisar estado",
+    "disabled": "Deshabilitado",
+    "disabled_label": "{{provider}} · {{mode}}: {{status}}"
   }
 }

@@ -32,11 +32,15 @@ it("has exactly four editable slots and a fixed home; locking removes empty cont
   expect(screen.getAllByRole("link")).toHaveLength(1);
   expect(JSON.parse(localStorage.getItem(mobileStorageKey("a"))!).locked).toBe(true);
   expect(sileo.success).toHaveBeenCalledTimes(1);
+  expect(screen.queryByText(/Tus accesos.*bloqueados|Your shortcuts.*locked/)).not.toBeInTheDocument();
+  expect(screen.queryByText(label("editing"))).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name: label("unlock") }));
+  expect(screen.getByText(label("editing"))).toBeVisible();
 });
 it("adds a current authorized section, excludes duplicate slots, links to the exact route and allows removal", async () => {
   setup();
   await userEvent.click(screen.getAllByRole("button", { name: /Agregar acceso:/ })[0]);
-  await userEvent.click(screen.getByRole("radio", { name: "Reservas" }));
+  await userEvent.click(await screen.findByRole("radio", { name: "Reservas" }));
   await userEvent.click(screen.getByRole("button", { name: i18n.t("core:save") }));
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   await userEvent.click(screen.getAllByRole("button", { name: /Agregar acceso:/ })[0]);
@@ -53,7 +57,7 @@ it("adds a current authorized section, excludes duplicate slots, links to the ex
 it("keeps the modal and selected section after a failed write, allowing retry", async () => {
   setup();
   await userEvent.click(screen.getAllByRole("button", { name: /Agregar acceso:/ })[0]);
-  await userEvent.click(screen.getByRole("radio", { name: "Reservas" }));
+  await userEvent.click(await screen.findByRole("radio", { name: "Reservas" }));
   const write = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("blocked"); });
   await userEvent.click(screen.getByRole("button", { name: i18n.t("core:save") }));
   expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -77,7 +81,7 @@ it("distinguishes permission errors from empty sections and offers retry", async
   context.isError = true;
   setup();
   await userEvent.click(screen.getAllByRole("button", { name: /Agregar acceso:/ })[0]);
-  expect(screen.getByRole("alert")).toHaveTextContent(i18n.t("core:auth_context_error_message"));
+  expect(await screen.findByRole("alert")).toHaveTextContent(i18n.t("core:auth_context_error_message"));
   expect(screen.queryByText(label("empty"))).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("button", { name: i18n.t("core:retry") }));
   expect(context.refetch).toHaveBeenCalledTimes(1);
@@ -87,7 +91,7 @@ it("closes the editor across identity changes and hides navigation while the vir
   vi.stubGlobal("visualViewport", { height: window.innerHeight - 200, addEventListener: vi.fn(), removeEventListener: vi.fn() });
   setup();
   await userEvent.click(screen.getAllByRole("button", { name: /Agregar acceso:/ })[0]);
-  await userEvent.click(screen.getByPlaceholderText(label("search")));
+  await userEvent.click(await screen.findByPlaceholderText(label("search")));
   expect(screen.getByTestId("mobile-bottom-nav")).not.toBeVisible();
   act(() => useAuthStore.getState().login({ token: "synthetic-b", expiresAt: Date.now() + 900_000, user: { id: "b", name: "B" } }));
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

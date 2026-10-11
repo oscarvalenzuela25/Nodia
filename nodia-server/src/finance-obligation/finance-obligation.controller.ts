@@ -1,6 +1,9 @@
+import { DeleteFinanceObligationUseCase } from './use-case/delete-finance-obligation.use-case.js';
 import {
   Body,
   Controller,
+  Delete,
+  HttpCode,
   Get,
   Param,
   Post,
@@ -14,6 +17,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -50,6 +54,7 @@ import {
 @Controller('finance/obligations')
 export class FinanceObligationController {
   constructor(
+    private readonly deleteObligation: DeleteFinanceObligationUseCase,
     private readonly createObligation: CreateFinanceObligationUseCase,
     private readonly updateObligation: UpdateFinanceObligationUseCase,
     private readonly getObligations: GetFinanceObligationsUseCase,
@@ -89,5 +94,15 @@ export class FinanceObligationController {
     @Body() dto: UpdateFinanceObligationDto,
   ) {
     return this.updateObligation.execute(request.auth.user.id, params.id, dto);
+  }
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiOperation({
+    summary:
+      'Delete an owned personal finance record with association safeguards',
+  })
+  @ApiNoContentResponse({ description: 'Record deleted atomically.' })
+  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
+    return this.deleteObligation.execute(request.auth.user.id, params.id);
   }
 }

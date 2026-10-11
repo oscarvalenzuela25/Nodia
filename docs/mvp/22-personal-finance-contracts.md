@@ -33,7 +33,20 @@ Prefijo existente /api/v1. Sin aliases innecesarios. Todas las rutas requieren s
 | Obligaciones | GET /finance/obligations; GET /finance/obligations/:id | POST /finance/obligations | PUT /finance/obligations/:id |
 | General | GET /finance/overview; GET /finance/overview/categories; GET /finance/overview/category-groups | No aplica | No aplica |
 
-No DELETE físico. Cambios de is_active usan PUT parcial con {is_active:boolean} y ConfirmDialog en Client. Cada controlador declara Swagger/DTOs y delega inmediatamente al caso de uso; @Req solo adapta la identidad autenticada.
+Eliminación física explícita autorizada el 2026-10-09; restricciones y consecuencias según ADR-024. Cambios de is_active conservan PUT parcial con {is_active:boolean} y ConfirmDialog en Client. Cada controlador declara Swagger/DTOs y delega inmediatamente al caso de uso; @Req solo adapta la identidad autenticada.
+
+### Eliminación explícita — 2026-10-09
+
+DELETE /finance/movements/:id, /finance/obligations/:id, /finance/categories/:id y /finance/category-groups/:id requieren sesión y propietario propio. Respuesta exitosa204 sin cuerpo; ID inválido400; ausencia o registro ajeno404; vínculo protegido409. No introducir cascadas ORM ni cambiar FKs NO ACTION.
+
+- Movimiento: permitir ordinarios y pagos; bloquear el movimiento inicial (`finance:delete_initial_on_obligation`), que se elimina desde su préstamo/deuda. Un pago confirmado eliminado deja de liquidar la obligación; un movimiento confirmado eliminado deja de aportar a sus agregados.
+- Préstamo/deuda: bloquear cualquier pago existente, incluso pendiente, cancelado o inactivo (`finance:obligation_has_payments`). Cuando solo tiene un movimiento inicial único, eliminar ambos en una transacción. Confirmación explícita del usuario: no borrar pagos implícitamente.
+- Categoría: bloquear cualquier movimiento vinculado, sin filtrar actividad/estado (`finance:category_has_movements`). Si está libre, eliminar sus pertenencias a grupos y la categoría en la misma transacción.
+- Grupo: eliminar pertenencias y grupo juntos; conservar categorías y movimientos.
+- Bloquear la obligación antes del movimiento, con el mismo orden usado al registrar pagos. FKs y transacción resguardan otras asociaciones concurrentes; rollback restaura las escrituras parciales. Conflictos de FK/serialización/deadlock se traducen sin SQL interno.
+- Client: Eliminar con papelera/error.main, confirmación identificando registro y efectos; toast traducido. Error conserva modal/selección. DELETE no se reintenta automáticamente. Si la respuesta se pierde, revisar con GET por ID:404 confirma ausencia, presencia permite reintento manual y fallo de lectura conserva incertidumbre. Invalidar Finanzas únicamente para el principal correspondiente.
+
+Detalles y alternativas en [ADR-024](../architecture/decisions/ADR-024-personal-finance-deletion.md). Verificación con principal sintético y PostgreSQL temporal; no se eliminan datos financieros reales ni se requiere migración.
 
 ### Payloads de creación
 
@@ -91,7 +104,7 @@ Consultas por conjuntos y límites: no SUM de una página en Client, no N+1 por 
 
 ## Navegación propuesta
 
-- Ruta única /finances/personal, constante PERSONAL_FINANCE_ROUTE en nodia-client/src/modules/finances/constants/routes.ts.
+- Ruta única /tools/finances-personal, constante PERSONAL_FINANCE_ROUTE en nodia-client/src/modules/finances/constants/routes.ts.
 - APP_AVAILABLE_ROUTES en src/modules/generalSettings/pages/Modules/constants/routes.ts importa esa constante. Router utiliza el mismo valor con lazyWithRetry, BaseLayout y GuardStrict modulePath.
 - Grupo finances, módulo personal_finance y traducciones de Core se crean/registran de forma idempotente; no asignar el módulo automáticamente a todos los usuarios. Asignación mediante Settings existente.
 - Tabs General (inicial), Movimientos, Préstamos y deudas, Categorías, Grupos de categorías. Se puede conservar tab en query string; no rutas CRUD separadas.

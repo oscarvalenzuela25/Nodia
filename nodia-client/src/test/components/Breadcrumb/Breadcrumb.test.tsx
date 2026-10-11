@@ -11,7 +11,7 @@ describe("Breadcrumb Component", () => {
         <MUIProvider>
           <Breadcrumb
             items={[
-              { label: "Negocios", to: "/business" },
+              { label: "Negocios", to: "/tools/business" },
               { label: "Detalle de Empresa" },
             ]}
           />
@@ -20,7 +20,7 @@ describe("Breadcrumb Component", () => {
     );
 
     const link = screen.getByRole("link", { name: "Negocios" });
-    expect(link).toHaveAttribute("href", "/business");
+    expect(link).toHaveAttribute("href", "/tools/business");
 
     const current = screen.getByText("Detalle de Empresa");
     expect(current).toBeInTheDocument();

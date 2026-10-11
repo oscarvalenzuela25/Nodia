@@ -22,6 +22,29 @@ const props = () => ({
 });
 describe("RentalTable", () => {
   beforeEach(() => vi.clearAllMocks());
+  it("retains paginated cards and disables their actions during background fetching", () => {
+    const p = props();
+    render(
+      <RentalTable
+        {...p}
+        query={{ ...p.query, isFetching: true }}
+        renderCardRow={(row, busy) => (
+          <article>
+            <span>{row.name}</span>
+            <button disabled={busy}>Open card</button>
+          </article>
+        )}
+      />,
+    );
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.getByRole("listitem")).toHaveTextContent("Exact row");
+    expect(screen.getByRole("button", { name: "Open card" })).toBeDisabled();
+    expect(
+      screen.getByText(
+        i18n.t("rental:pagination", { from: 1, to: 1, count: 1 }),
+      ),
+    ).toBeInTheDocument();
+  });
   it("preserves the row during a refetch, and disables actions", () => {
     render(
       <RentalTable

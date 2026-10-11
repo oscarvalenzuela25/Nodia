@@ -70,6 +70,15 @@
   "confirm_activate_title": "Activate user?",
   "confirm_activate_message": "Are you sure you want to activate user {{name}}? The user will regain access to the platform.",
   "confirm_deactivate_title": "Deactivate user?",
-  "confirm_deactivate_message": "Are you sure you want to deactivate user {{name}}? The user will lose access to the platform until reactivated."
+  "confirm_deactivate_message": "Are you sure you want to deactivate user {{name}}? The user will lose access to the platform until reactivated.",
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "pagination": {
+    "next": "Next page",
+    "previous": "Previous page",
+    "first": "First page",
+    "last": "Last page"
+  }
 }
-

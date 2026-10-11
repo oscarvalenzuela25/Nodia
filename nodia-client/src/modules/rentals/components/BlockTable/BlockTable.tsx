@@ -5,6 +5,7 @@ import type { RentalBlock, RentalProperty, RentalQuery } from "../../types";
 import { useRentalList, useRentalBusy } from "../../infrastructure/useServices";
 import { formatRentalInstant } from "../../utils/dates";
 import RentalTable from "../RentalTable";
+import MobileRecordCard from "../../../../components/MobileRecordCard";
 import { Wrapper } from "./styles";
 export type BlockTableProps = {
   property: RentalProperty;
@@ -39,6 +40,41 @@ export default function BlockTable({
         disabled={busy}
       />
       <RentalTable
+        renderMobileRow={(r, cardBusy, actions) => (
+          <MobileRecordCard
+            title={r.reason}
+            disabled={cardBusy}
+            actions={actions}
+            primaryAction={actions[0]}
+            fields={[
+              {
+                key: "start",
+                label: t("rental:starts_at"),
+                value: formatRentalInstant(
+                  r.starts_at,
+                  property.timezone,
+                  i18n.language,
+                ),
+                fullWidth: true,
+              },
+              {
+                key: "end",
+                label: t("rental:ends_at"),
+                value: formatRentalInstant(
+                  r.ends_at,
+                  property.timezone,
+                  i18n.language,
+                ),
+                fullWidth: true,
+              },
+              {
+                key: "active",
+                label: t("rental:active"),
+                value: t(r.is_active ? "rental:active" : "rental:inactive"),
+              },
+            ]}
+          />
+        )}
         title={t("rental:manage_blocks")}
         busy={busy}
         rows={query.data?.data ?? []}

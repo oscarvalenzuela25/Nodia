@@ -102,5 +102,28 @@
   "confirm_delete_title": "Delete business action?",
   "confirm_deactivate_message": "Are you sure you want to deactivate the action \"{{name}}\"?",
   "confirm_activate_message": "Are you sure you want to activate the action \"{{name}}\"?",
-  "confirm_delete_message": "Are you sure you want to permanently delete the action \"{{name}}\"?"
+  "confirm_delete_message": "Are you sure you want to permanently delete the action \"{{name}}\"?",
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "status_filter": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "all": "All"
+  },
+  "pagination": {
+    "next": "Next page",
+    "previous": "Previous page",
+    "first": "First page",
+    "last": "Last page"
+  },
+  "view_mode_label": "Action view",
+  "business_status_filter": "Business action status",
+  "confirm_delete_general_title": "Delete general action?",
+  "confirm_delete_general_message": "Are you sure you want to permanently delete action \"{{name}}\"? Its role assignments and translations will also be removed. This cannot be undone.",
+  "invalid_id": "The action ID is invalid.",
+  "not_found": "The action no longer exists.",
+  "collapse_business": "Collapse business actions",
+  "expand_business": "Expand business actions"
 }

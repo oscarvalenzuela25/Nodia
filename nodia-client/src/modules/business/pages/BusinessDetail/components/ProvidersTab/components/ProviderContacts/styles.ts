@@ -6,7 +6,7 @@ export const ContactToolbar = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
   gap: theme.spacing(2),
   flexWrap: "wrap",
-  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
+  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%", minHeight: 44 } },
 }));
 export const ContactPanel = styled(Paper)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
@@ -15,6 +15,7 @@ export const ContactPanel = styled(Paper)(({ theme }) => ({
       ? theme.shape.borderRadius * 2
       : theme.shape.borderRadius,
   overflow: "hidden",
+  [theme.breakpoints.down("sm")]: { border: "none", background: "transparent", "& .MuiIconButton-root": { width: 44, height: 44 } },
 }));
 export const ContactTableContainer = styled(TableContainer)(({ theme }) => {
   const thumb = alpha(

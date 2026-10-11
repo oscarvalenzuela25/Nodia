@@ -10,7 +10,7 @@ import ThemeSelector from "../ThemeSelector";
 import LanguageSelector from "../../../components/LanguageSelector";
 import { TopbarRoot } from "./styles";
 import AiProviderIndicators from "./components/AiProviderIndicators";
-import { useHasAction, useVisibleModules } from "../../../store/generalSettings/useGeneralSettings";
+import { useHasAction, useHasRole, useVisibleModules } from "../../../store/generalSettings/useGeneralSettings";
 import { hasModuleAccess } from "../../../store/generalSettings/helpers";
 
 type Props = {
@@ -30,6 +30,7 @@ const Topbar: FC<Props> = ({
   const { user, isAuthenticated, isBusy, anchorEl, openMenu, closeMenu, handleLogout } = useProfileMenu();
   const modules = useVisibleModules();
   const canManageAi = useHasAction("ai:manage");
+  const isSuperAdmin = useHasRole("super_admin");
 
   return (
     <TopbarRoot>
@@ -58,7 +59,7 @@ const Topbar: FC<Props> = ({
         <ArrowCircleLeftOutlinedIcon />
       </IconButton>
 
-      {isAuthenticated && canManageAi && hasModuleAccess(modules, "/settings/ai-providers") && <AiProviderIndicators />}
+      {isAuthenticated && (canManageAi || isSuperAdmin) && hasModuleAccess(modules, "/settings/ai-providers") && <AiProviderIndicators />}
       <Stack direction="row" spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: "center", justifyContent: "flex-end", gridRow: 1, gridColumn: { xs: 2, sm: 3 } }}>
         <LanguageSelector />
         <ThemeSelector />

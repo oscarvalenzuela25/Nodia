@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { Box, LinearProgress, Typography } from "@mui/material";
-import { GoogleLogin } from "@react-oauth/google";
+import { useState } from "react";
+import { Box, Button, LinearProgress, Stack, Typography } from "@mui/material";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import envs from "../../../../config/.envs";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import useLogin from "./hooks/useLogin";
@@ -16,7 +17,9 @@ import {
 } from "./styles";
 
 const Login = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [scriptFailed, setScriptFailed] = useState(false);
+  const [scriptAttempt, setScriptAttempt] = useState(0);
   const navigate = useNavigate();
   const { handleSuccess, handleError, isPending } = useLogin();
 
@@ -30,14 +33,43 @@ const Login = () => {
         <Description>{t("auth:login_description")}</Description>
         <Box sx={{ display: "flex", justifyContent: "center" }} inert={isPending} aria-busy={isPending}>
           {envs.GOOGLE_CLIENT_ID ? (
-            <GoogleLogin
-              onSuccess={handleSuccess}
-              onError={handleError}
-              theme="outline"
-              size="large"
-              text="continue_with"
-              shape="pill"
-            />
+            <GoogleOAuthProvider
+              // The SDK loads its locale only on mount; retry/locale remounts just this boundary.
+              key={`${i18n.language}:${scriptAttempt}`}
+              clientId={envs.GOOGLE_CLIENT_ID}
+              locale={i18n.language}
+              onScriptLoadSuccess={() => setScriptFailed(false)}
+              onScriptLoadError={() => {
+                setScriptFailed(true);
+                handleError();
+              }}
+            >
+              {scriptFailed ? (
+                <Stack spacing={2} sx={{ width: "100%" }}>
+                  <Typography role="status">{t("auth:google_failed")}</Typography>
+                  <Button
+                    variant="outlined"
+                    disabled={isPending}
+                    onClick={() => {
+                      setScriptFailed(false);
+                      setScriptAttempt((attempt) => attempt + 1);
+                    }}
+                    sx={{ width: { xs: "100%", sm: "auto" }, minHeight: 44, alignSelf: "center" }}
+                  >
+                    {t("core:retry")}
+                  </Button>
+                </Stack>
+              ) : (
+                <GoogleLogin
+                  onSuccess={handleSuccess}
+                  onError={handleError}
+                  theme="outline"
+                  size="large"
+                  text="continue_with"
+                  shape="pill"
+                />
+              )}
+            </GoogleOAuthProvider>
           ) : <Typography>{t("auth:google_unavailable")}</Typography>}
         </Box>
         {isPending && <LinearProgress aria-label={t("auth:signing_in")} sx={{ mt: 2 }} />}

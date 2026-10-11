@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diseño responsive"
+  short_description: "Diseño mobile-first y QA de interfaces responsive"
+  default_prompt: "Usa $responsive-design para adaptar esta interfaz a móvil y verificar su comportamiento responsive."

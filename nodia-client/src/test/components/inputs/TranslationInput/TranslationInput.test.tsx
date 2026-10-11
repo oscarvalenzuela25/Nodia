@@ -15,7 +15,7 @@ describe("TranslationInput", () => {
         onChangeTranslations={vi.fn()}
         placeholder="ej: super_admin"
         required
-      />
+      />,
     );
 
     expect(screen.getByText("Identificador")).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe("TranslationInput", () => {
         translations={{ es: "", en: "" }}
         onChangeTranslations={vi.fn()}
         placeholder="ej: super_admin"
-      />
+      />,
     );
 
     const keyInput = screen.getByPlaceholderText("ej: super_admin");
@@ -95,15 +95,55 @@ describe("TranslationInput", () => {
         onChangeTranslations={vi.fn()}
         sectionTitle="Traducciones del Nombre"
         defaultExpanded={false}
-      />
+      />,
     );
 
     const toggleBtn = screen.getByRole("button", {
       name: /toggle translations/i,
     });
-    expect(screen.queryByText("Traducciones del Nombre")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Traducciones del Nombre"),
+    ).not.toBeInTheDocument();
 
     await user.click(toggleBtn);
     expect(screen.getByText("Traducciones del Nombre")).toBeInTheDocument();
+  });
+
+  it("keeps a reserved identifier read-only while translations remain editable", async () => {
+    const changeKey = vi.fn(),
+      changeTranslations = vi.fn(),
+      user = userEvent.setup();
+    render(
+      <TranslationInput
+        label="Identificador"
+        value="super_admin"
+        keyReadOnly
+        onChangeKey={changeKey}
+        translations={{ es: "Administrador", en: "Administrator" }}
+        onChangeTranslations={changeTranslations}
+      />,
+    );
+    const key = screen.getByDisplayValue("super_admin");
+    expect(key).toHaveAttribute("readonly");
+    await user.type(key, "renamed");
+    expect(changeKey).not.toHaveBeenCalled();
+    await user.type(screen.getByDisplayValue("Administrador"), " nuevo");
+    expect(changeTranslations).toHaveBeenCalled();
+  });
+  it("disables translation expansion and all text fields while busy", () => {
+    render(
+      <TranslationInput
+        value="editor"
+        disabled
+        onChangeKey={vi.fn()}
+        translations={{ es: "Editor", en: "Editor" }}
+        onChangeTranslations={vi.fn()}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "toggle translations" }),
+    ).toBeDisabled();
+    for (const input of screen.getAllByRole("textbox"))
+      expect(input).toBeDisabled();
   });
 });

@@ -1,4 +1,5 @@
-import { Box, TableContainer } from "@mui/material";
+import { Box, Paper, TablePagination, TableContainer } from "@mui/material";
+import type { PaperProps } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 
 export const Wrapper = styled(Box)(({ theme }) => ({
@@ -7,12 +8,27 @@ export const Wrapper = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
 }));
 export const TableTopBar = styled(Box)(({ theme }) => ({
-  display: "flex", alignItems: "center", justifyContent: "space-between", gap: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: { flexDirection: "column", alignItems: "stretch", "& button": { width: "100%" } },
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: theme.spacing(2),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& button": { width: "100%", minHeight: 44 },
+  },
 }));
 export const TableFrame = styled(Box)(({ theme }) => ({
-  borderRadius: 16, overflow: "hidden", boxShadow: theme.shadows[2],
-  backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`,
+  borderRadius: 16,
+  overflow: "hidden",
+  boxShadow: theme.shadows[2],
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  [theme.breakpoints.down("sm")]: {
+    border: 0,
+    boxShadow: "none",
+    backgroundColor: "transparent",
+  },
 }));
 export const EmptyBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -21,13 +37,17 @@ export const EmptyBox = styled(Box)(({ theme }) => ({
   textAlign: "center",
   padding: theme.spacing(2),
 }));
-export const RowActions = styled(Box)(({ theme }) => ({ display: "flex", gap: theme.spacing(1), alignItems: "center" }));
+export const RowActions = styled(Box)(({ theme }) => ({
+  display: "flex",
+  gap: theme.spacing(1),
+  alignItems: "center",
+}));
 export const Actions = styled(Box)(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(1),
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
-    "& button": { width: "100%" },
+    "& button": { width: "100%", minHeight: 44 },
   },
 }));
 export const ScrollTable = styled(TableContainer)(({ theme }) => {
@@ -64,3 +84,40 @@ export const Form = styled("form")(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(2),
 }));
+
+export const KeyCards = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1.5),
+  minWidth: 0,
+}));
+export const KeyCard = styled(Paper)<PaperProps<"article">>(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(0.75),
+  padding: theme.spacing(1.5),
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: "none",
+}));
+export const KeyHeader = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+  gap: theme.spacing(1),
+  "& .MuiIconButton-root": { minWidth: 44, minHeight: 44 },
+}));
+export const KeySelection = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: theme.spacing(1),
+  minHeight: 44,
+  marginTop: theme.spacing(0.75),
+  paddingTop: theme.spacing(0.75),
+  borderTop: `1px solid ${theme.palette.divider}`,
+  "& .MuiSwitch-root": { minHeight: 44 },
+}));
+export const ListPagination = TablePagination;

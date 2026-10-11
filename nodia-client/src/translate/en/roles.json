@@ -8,7 +8,7 @@
   "update_role_button": "Update Role",
   "filter_modal_title": "Role Filters",
   "filter_modal_subtitle": "Filter the role list by identifier, associated actions, or active status.",
-  "search_placeholder": "Search by name or identifier...",
+  "search_placeholder": "Search by identifier...",
   "form": {
     "active": "Active",
     "key": "Key",
@@ -37,7 +37,8 @@
   "filter_chips": {
     "role": "Role: {{value}}",
     "action": "Action: {{value}}",
-    "active_only": "Active only"
+    "active_only": "Active only",
+    "inactive_only": "Inactive only"
   },
   "role_names": {
     "admin": "Super Administrator",
@@ -78,13 +79,29 @@
     "created_success": "Role created successfully",
     "created_error": "Failed to create role",
     "updated_success": "Role updated successfully",
-    "updated_error": "Failed to update role"
+    "updated_error": "Failed to update role",
+    "deleted_success": "Role deleted successfully",
+    "deleted_error": "The role could not be deleted"
   },
   "deactivate": "Deactivate",
   "activate": "Activate",
   "confirm_deactivate_title": "Deactivate role?",
   "confirm_activate_title": "Activate role?",
   "confirm_deactivate_message": "Are you sure you want to deactivate the role \"{{name}}\"?",
-  "confirm_activate_message": "Are you sure you want to activate the role \"{{name}}\"?"
+  "confirm_activate_message": "Are you sure you want to activate the role \"{{name}}\"?",
+  "active": "Active",
+  "inactive": "Inactive",
+  "delete": "Delete",
+  "confirm_delete_title": "Delete role?",
+  "confirm_delete_message": "The role \"{{name}}\" will be permanently deleted together with its user assignments, actions and translations. This operation cannot be undone.",
+  "invalid_id": "The role ID is invalid.",
+  "not_found": "The role no longer exists.",
+  "protected_role": "The super_admin role cannot be deleted.",
+  "protected_key": "The super_admin role identifier cannot be changed.",
+  "pagination": {
+    "next": "Next page",
+    "previous": "Previous page",
+    "first": "First page",
+    "last": "Last page"
+  }
 }
-
