@@ -1,4 +1,5 @@
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 
 export const Page = styled("main")(({ theme }) => ({
@@ -7,7 +8,9 @@ export const Page = styled("main")(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  padding: theme.spacing(4),
+  padding: theme.spacing(2),
+  [theme.breakpoints.up('sm')]: { padding: theme.spacing(3) },
+  [theme.breakpoints.up('md')]: { padding: theme.spacing(4) },
   backgroundColor: theme.palette.background.default,
   position: "relative",
 }));
@@ -17,7 +20,8 @@ export const Card = styled("div")(({ theme }) => ({
   flexDirection: "column",
   width: "100%",
   maxWidth: 440,
-  padding: theme.spacing(5),
+  padding: theme.spacing(3),
+  [theme.breakpoints.up('sm')]: { padding: theme.spacing(5) },
   backgroundColor: theme.palette.background.paper,
   borderRadius: 16,
   boxShadow: theme.shadows[3],
@@ -57,6 +61,15 @@ export const Description = styled("p")(({ theme }) => ({
   marginBottom: theme.spacing(4),
   color: theme.palette.text.secondary,
 }));
+
+export const GoogleSignInContainer = styled(Box)({
+  display: "flex",
+  justifyContent: "center",
+  "& iframe": {
+    // GIS owns its button theme; mismatched iframe color schemes paint an opaque canvas.
+    colorScheme: "light",
+  },
+});
 
 export const GoogleButton = styled(Button)(({ theme }) => ({
   padding: theme.spacing(1.2),

@@ -323,7 +323,7 @@ describe("ProvidersTab Component", () => {
     });
   });
 
-  it("opens download CSV menu and triggers client-side download for current view", async () => {
+  it("downloads current view from the server with exact visible IDs and contacts", async () => {
     renderWithClient(<ProvidersTab businessId="biz-123" />);
 
     await waitFor(() => {
@@ -337,6 +337,8 @@ describe("ProvidersTab Component", () => {
     expect(currentViewOption).toBeInTheDocument();
 
     await user.click(currentViewOption);
+
+    await waitFor(() => expect(businessServices.exportProvidersCsv).toHaveBeenCalledWith(expect.objectContaining({business_id:'biz-123',ids:['prov-101','prov-102']})));
 
     expect(window.URL.createObjectURL).toHaveBeenCalled();
     expect(sileo.success).toHaveBeenCalledWith(

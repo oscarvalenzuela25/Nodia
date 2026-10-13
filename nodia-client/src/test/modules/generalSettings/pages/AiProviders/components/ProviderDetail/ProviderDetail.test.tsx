@@ -834,7 +834,7 @@ describe("ProviderDetail Component", () => {
     expect(screen.queryByText(/8.*solicitudes/i)).not.toBeInTheDocument();
   });
 
-  it("offers OpenAI API key management without rendering Web or Agentic session controls", async () => {
+  it("preserves OpenAI API key and Codex management without ChatGPT Web controls", async () => {
     vi.mocked(aiServices.getAiProviders).mockResolvedValue({
       data: [
         {
@@ -864,6 +864,9 @@ describe("ProviderDetail Component", () => {
       ).toBeEnabled(),
     );
     expect(screen.getByRole("tab", { name: /API key/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Gestionar cuenta Codex" })).toBeEnabled();
+    expect(screen.queryByText("Sesión ChatGPT Web")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Conectar ChatGPT" })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("tab", { name: /Web|Agentic|Antigravity/ }),
     ).not.toBeInTheDocument();

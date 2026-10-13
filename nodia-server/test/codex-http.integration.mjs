@@ -160,6 +160,8 @@ export async function codexHttpContracts() {
         ...(body ? { body: JSON.stringify(body) } : {}),
       });
     for (const resource of ['ai-provider', 'ai-providers']) {
+      assert.equal((await call(`/${resource}/42/web/session`)).status, 404);
+      assert.equal((await call(`/${resource}/42/web/login`, 'POST')).status, 404);
       const path = `/${resource}/42/session`;
       assert.equal((await fetch(base + path)).status, 401);
       allowed = false;

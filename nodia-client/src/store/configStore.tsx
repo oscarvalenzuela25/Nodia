@@ -28,7 +28,7 @@ const applyThemeWithTransition = (updateFn: () => void) => {
 };
 
 const configStore: StateCreator<ConfigState> = (set, get) => ({
-  themeType: "light",
+  themeType: "dark",
   handleChangeThemeType: (theme) => {
     applyThemeWithTransition(() => {
       set({ themeType: theme });

@@ -1,4 +1,5 @@
 import cookieParser from 'cookie-parser';
+import { providerImportBodyParser } from './provider/provider-import-body-parser.js';
 import { rentalBodyParser } from './rental-common/rental-body-parser.js';
 import { readAuthConfig } from './auth/auth.config.js';
 import { NestFactory } from '@nestjs/core';
@@ -42,6 +43,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api/v1');
   // Installed before Nest's default parser; rental payloads are bounded before parsing.
   app.use('/api/v1/rental', rentalBodyParser);
+  app.use(['/api/v1/providers/import', '/api/v1/provider/import'], providerImportBodyParser);
 
   const authConfig = readAuthConfig(process.env);
   app.use(cookieParser());

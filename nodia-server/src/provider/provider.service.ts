@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { ProviderContact } from '../provider-contact/entities/provider-contact.entity.js';
+import type { ExportProvidersCsvDto } from './dto/export-providers-csv.dto.js';
 import { Provider } from './entities/provider.entity.js';
 import { CreateProviderDto } from './dto/create-provider.dto.js';
 import { BulkCreateProviderDto } from './dto/bulk-create-provider.dto.js';
@@ -78,6 +80,20 @@ export class ProviderService {
       throw new NotFoundException(`Provider with ID "${id}" not found`);
     }
     return provider;
+  }
+
+  async findForExport(dto: ExportProvidersCsvDto) {
+    const qb = this.providerRepository.createQueryBuilder('provider');
+    if (dto.business_id) qb.andWhere('provider.business_id = :businessId', { businessId: dto.business_id });
+    if (dto.ids) qb.andWhere('provider.id IN (:...ids)', { ids: dto.ids });
+    const providers = await qb.orderBy('provider.id', 'ASC').take(1001).getMany();
+    if (providers.length > 1000) throw new BadRequestException('Export supports up to 1000 providers; narrow the view');
+    if (dto.ids && new Set(dto.ids).size !== providers.length) throw new ConflictException('Providers changed; refresh the view before downloading');
+    if (!providers.length) return { providers, contacts: [] as ProviderContact[] };
+    const contacts = await this.providerRepository.manager.getRepository(ProviderContact).find({ where: { provider_id: In(providers.map((p) => p.id)) }, order: { id: 'ASC' }, take: 5001 });
+    if (contacts.length > 5000) throw new BadRequestException('Export supports up to 5000 contacts');
+    const byId = new Map(providers.map((p) => [p.id, p]));
+    return { providers: dto.ids ? dto.ids.map((id) => byId.get(id)!) : providers, contacts };
   }
 
   async create(createProviderDto: CreateProviderDto): Promise<Provider> {

@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { Box, Button, LinearProgress, Stack, Typography } from "@mui/material";
+import { Button, LinearProgress, Stack, Typography } from "@mui/material";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import envs from "../../../../config/.envs";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import useLogin from "./hooks/useLogin";
+import useThemeType from "../../../../hooks/useThemeType";
 import {
   Description,
   Page,
@@ -14,10 +15,12 @@ import {
   LogoContainer,
   LogoTitle,
   BackButton,
+  GoogleSignInContainer,
 } from "./styles";
 
 const Login = () => {
   const { t, i18n } = useTranslation();
+  const { themeType } = useThemeType();
   const [scriptFailed, setScriptFailed] = useState(false);
   const [scriptAttempt, setScriptAttempt] = useState(0);
   const navigate = useNavigate();
@@ -31,7 +34,7 @@ const Login = () => {
         </LogoContainer>
         <Title>{t("auth:login_title")}</Title>
         <Description>{t("auth:login_description")}</Description>
-        <Box sx={{ display: "flex", justifyContent: "center" }} inert={isPending} aria-busy={isPending}>
+        <GoogleSignInContainer inert={isPending} aria-busy={isPending}>
           {envs.GOOGLE_CLIENT_ID ? (
             <GoogleOAuthProvider
               // The SDK loads its locale only on mount; retry/locale remounts just this boundary.
@@ -63,7 +66,7 @@ const Login = () => {
                 <GoogleLogin
                   onSuccess={handleSuccess}
                   onError={handleError}
-                  theme="outline"
+                  theme={themeType === "dark" ? "filled_black" : "outline"}
                   size="large"
                   text="continue_with"
                   shape="pill"
@@ -71,7 +74,7 @@ const Login = () => {
               )}
             </GoogleOAuthProvider>
           ) : <Typography>{t("auth:google_unavailable")}</Typography>}
-        </Box>
+        </GoogleSignInContainer>
         {isPending && <LinearProgress aria-label={t("auth:signing_in")} sx={{ mt: 2 }} />}
         <BackButton
           type="button"

@@ -12,6 +12,8 @@ import { CreateBulkProvidersUseCase } from './use-case/create-bulk-providers.use
 import { UpdateProviderUseCase } from './use-case/update-provider.use-case.js';
 import { UpdateBulkProvidersUseCase } from './use-case/update-bulk-providers.use-case.js';
 import { ExportProvidersCsvUseCase } from './use-case/export-providers-csv.use-case.js';
+import { ImportProvidersUseCase } from './use-case/import-providers.use-case.js';
+import { ImportProvidersDto } from './dto/import-providers.dto.js';
 
 @Controller(['provider', 'providers'])
 export class ProviderController {
@@ -23,6 +25,7 @@ export class ProviderController {
     private readonly updateProviderUseCase: UpdateProviderUseCase,
     private readonly updateBulkProvidersUseCase: UpdateBulkProvidersUseCase,
     private readonly exportProvidersCsvUseCase: ExportProvidersCsvUseCase,
+    private readonly importProvidersUseCase: ImportProvidersUseCase,
   ) {}
 
   @Get()
@@ -33,6 +36,11 @@ export class ProviderController {
   @Post('bulk')
   createBulk(@Body() bulkCreateProviderDto: BulkCreateProviderDto) {
     return this.createBulkProvidersUseCase.execute(bulkCreateProviderDto);
+  }
+
+  @Post('import')
+  importCsv(@Body() dto: ImportProvidersDto) {
+    return this.importProvidersUseCase.execute(dto);
   }
 
   @Put('bulk')

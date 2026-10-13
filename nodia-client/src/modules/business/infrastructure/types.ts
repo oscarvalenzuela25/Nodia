@@ -212,6 +212,16 @@ export interface BulkUpdateProviderItemPayload extends UpdateProviderPayload {
   id: string;
 }
 
+export interface ImportProviderPayload extends CreateProviderPayload {
+  id?: string;
+  contacts?: import('../pages/BusinessDetail/components/ProvidersTab/components/ProviderBulkImport/helpers').ImportedContact[];
+}
+export interface ExportProvidersParams {
+  business_id?: string;
+  lang?: string;
+  ids?: string[];
+}
+
 export interface GetProvidersResponse {
   data: ProviderEntity[];
   meta: PaginationMeta;

@@ -176,10 +176,12 @@ export const bulkUpdateProviders = async (
   return data;
 };
 
-export const exportProvidersCsv = async (params?: {
-  business_id?: string;
-  lang?: string;
-}): Promise<string> => {
+export const importProviders = async (items: import('./types').ImportProviderPayload[]): Promise<{ providers: number; contacts: number }> => {
+  const { data } = await mainInstance.post<{ providers: number; contacts: number }>(apiPath('/providers/import'), { items });
+  return data;
+};
+
+export const exportProvidersCsv = async (params?: import('./types').ExportProvidersParams): Promise<string> => {
   const { data } = await mainInstance.get<string>(
     apiPath("/providers/export-csv"),
     { params, responseType: "text" }

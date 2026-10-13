@@ -11,13 +11,14 @@ import { loginWithGoogle } from "../../../../../modules/auth/infrastructure/serv
 import { sileo } from "sileo";
 import envs from "../../../../../config/.envs";
 import i18n from "../../../../../translate";
+import useThemeStore from "../../../../../store/configStore";
 
 vi.mock("../../../../../modules/auth/infrastructure/services", () => ({ loginWithGoogle: vi.fn(), logoutSession: vi.fn() }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 vi.mock("@react-oauth/google", async () => ({
   ...await vi.importActual<typeof import("@react-oauth/google")>("@react-oauth/google"),
-  GoogleLogin: ({ onSuccess }: { onSuccess: (response: { credential: string }) => void }) => (
-    <button onClick={() => onSuccess({ credential: "google-id-token" })}>Google</button>
+  GoogleLogin: ({ onSuccess, theme }: { onSuccess: (response: { credential: string }) => void; theme: string }) => (
+    <button data-google-theme={theme} onClick={() => onSuccess({ credential: "google-id-token" })}>Google</button>
   ),
   googleLogout: vi.fn(),
 }));
@@ -35,6 +36,7 @@ const googleScript = () => document.querySelector<HTMLScriptElement>('script[src
 beforeEach(() => {
   vi.clearAllMocks();
   envs.GOOGLE_CLIENT_ID = "test-client-id";
+  useThemeStore.setState({ themeType: 'dark' });
   useAuthStore.getState().logout();
 });
 afterEach(() => {
@@ -43,6 +45,18 @@ afterEach(() => {
 });
 
 describe("Login", () => {
+  it("uses the official dark button and changes to outline without reloading the Google SDK", async () => {
+    renderLogin();
+    const script = googleScript();
+    expect(screen.getByRole('button', { name: 'Google' })).toHaveAttribute('data-google-theme', 'filled_black');
+    act(() => useThemeStore.getState().handleChangeThemeType('light'));
+    expect(screen.getByRole('button', { name: 'Google' })).toHaveAttribute('data-google-theme', 'outline');
+    expect(googleScript()).toBe(script);
+    act(() => useThemeStore.getState().handleChangeThemeType('dark'));
+    expect(screen.getByRole('button', { name: 'Google' })).toHaveAttribute('data-google-theme', 'filled_black');
+    expect(loginWithGoogle).not.toHaveBeenCalled();
+  });
+
   it("loads the real SDK provider only while Login is mounted and removes its script on return", async () => {
     renderLogin();
     expect(googleScript()?.src).toBe("https://accounts.google.com/gsi/client?hl=es");

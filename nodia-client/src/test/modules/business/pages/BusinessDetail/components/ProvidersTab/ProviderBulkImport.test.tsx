@@ -21,6 +21,7 @@ vi.mock("sileo", () => ({
 }));
 
 vi.mock("../../../../../../../modules/business/infrastructure/services", () => ({
+  importProviders: vi.fn(),
   bulkCreateProviders: vi.fn(),
   bulkUpdateProviders: vi.fn(),
 }));
@@ -49,8 +50,8 @@ describe("ProviderBulkImport Helpers", () => {
 
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-      expect(result.errors).toContain("Nombre es requerido");
-      expect(result.errors).toContain("Impuesto debe estar entre 0 y 100");
+      expect(result.errors).toContain("business:provider_csv_name_required");
+      expect(result.errors).toContain("business:provider_csv_tax_error");
     });
 
     it("returns error when name is shorter than 2 characters", () => {
@@ -60,7 +61,7 @@ describe("ProviderBulkImport Helpers", () => {
       });
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Nombre debe tener al menos 2 caracteres");
+      expect(result.errors).toContain("business:provider_csv_name_error");
     });
 
     it("returns valid when all fields are correct", () => {
@@ -92,7 +93,7 @@ describe("ProviderBulkImport Helpers", () => {
       // The invalid row MUST be sorted to index 0!
       expect(rows[0].isValid).toBe(false);
       expect(rows[0].name).toBe("");
-      expect(rows[0].errors).toContain("Nombre es requerido");
+      expect(rows[0].errors).toContain("business:provider_csv_name_required");
 
       // Valid rows follow
       expect(rows[1].isValid).toBe(true);
@@ -104,12 +105,12 @@ describe("ProviderBulkImport Helpers", () => {
     it("parses CSV with localized Spanish headers containing DB field in parentheses", () => {
       const csvData = [
         "Nombre (name),Impuesto % (tax),Activo (is_active),Columna Código (field_code),Instrucciones Código (instructions_code),Columna Costo Neto (field_cost_price),Instrucciones Costo Neto (instructions_cost_price),Columna Costo IVA (field_cost_price_tax),Instrucciones Costo IVA (instructions_cost_price_tax),Columna Bultos (field_packages),Instrucciones Bultos (instructions_packages),Columna Unidades por Bulto (field_units_per_package),Instrucciones Unidades por Bulto (instructions_units_per_package),ID (id)",
-        "Embonor S.A.,19,true,CODIGO,,PRECIO_NETO,,PRECIO_BRUTO,,BULTOS,,FACTOR,,uuid-123",
+        "Embonor S.A.,19,true,CODIGO,,PRECIO_NETO,,PRECIO_BRUTO,,BULTOS,,FACTOR,,9007199254740993",
       ].join("\n");
 
       const rows = parseCSV(csvData);
       expect(rows).toHaveLength(1);
-      expect(rows[0].id).toBe("uuid-123");
+      expect(rows[0].id).toBe("9007199254740993");
       expect(rows[0].name).toBe("Embonor S.A.");
       expect(rows[0].tax).toBe(19);
       expect(rows[0].is_active).toBe(true);
@@ -169,7 +170,8 @@ describe("ProviderBulkImport Helpers", () => {
       expect(template).toContain("Impuesto % (tax)");
       expect(template).toContain("Activo (is_active)");
       expect(template).toContain("Columna Código (field_code)");
-      expect(template).toContain("Coca Cola Embonor");
+      expect(template).toContain("(contacts)");
+      expect(template).toContain("(fields_json)");
     });
 
     it("returns a valid CSV template string with headers in English when specified", () => {
@@ -178,7 +180,8 @@ describe("ProviderBulkImport Helpers", () => {
       expect(template).toContain("Tax % (tax)");
       expect(template).toContain("Active (is_active)");
       expect(template).toContain("Code Column (field_code)");
-      expect(template).toContain("Coca Cola Embonor");
+      expect(template).toContain("(contacts)");
+      expect(template).toContain("(fields_json)");
     });
   });
 });
@@ -222,17 +225,7 @@ describe("ProviderBulkImport Component", () => {
   });
 
   it("submits bulk providers when valid rows are uploaded", async () => {
-    vi.mocked(businessServices.bulkCreateProviders).mockResolvedValueOnce([
-      {
-        id: "1",
-        business_id: "biz-123",
-        name: "proveedor nuevo",
-        tax: 19,
-        fields: {},
-        is_active: true,
-        created_at: new Date().toISOString(),
-      },
-    ]);
+    vi.mocked(businessServices.importProviders).mockResolvedValueOnce({ providers: 1, contacts: 0 });
 
     const { container } = renderWithClient(<ProviderBulkImport {...defaultProps} />);
 
@@ -259,8 +252,29 @@ describe("ProviderBulkImport Component", () => {
     await userEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(businessServices.bulkCreateProviders).toHaveBeenCalledTimes(1);
+      expect(businessServices.importProviders).toHaveBeenCalledTimes(1);
       expect(defaultProps.onSuccess).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('preserves mixed provider/contact draft after failure and retries one atomic request', async () => {
+    vi.mocked(businessServices.importProviders).mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce({ providers: 2, contacts: 1 });
+    const { container } = renderWithClient(<ProviderBulkImport {...defaultProps} />);
+    const csv = 'name,tax,is_active,id,contacts\nProveedor Nuevo QA,0,false,,"[{""name"":""María"",""email"":""qa@example.test""}]"\nExistente,19,true,9007199254740993,';
+    await userEvent.upload(container.querySelector('input[type="file"]') as HTMLInputElement, new File([csv],'retry.csv',{type:'text/csv'}));
+    await screen.findByText('Proveedor Nuevo QA');
+    const save = screen.getByRole('button',{name:/crear \/ actualizar proveedores/i});
+    await userEvent.click(save);
+    await waitFor(()=>expect(businessServices.importProviders).toHaveBeenCalledTimes(1));
+    await waitFor(()=>expect(save).toBeEnabled());
+    expect(defaultProps.onSuccess).not.toHaveBeenCalled();
+    expect(screen.getByText('Proveedor Nuevo QA')).toBeInTheDocument();
+    expect(screen.getByText('Existente')).toBeInTheDocument();
+    expect(screen.getByText(/qa@example.test/)).toBeInTheDocument();
+    const sent = vi.mocked(businessServices.importProviders).mock.calls[0][0];
+    expect(sent[0]).toMatchObject({tax:0,is_active:false,contacts:[{name:'María',email:'qa@example.test'}]});
+    await userEvent.click(save);
+    await waitFor(()=>expect(defaultProps.onSuccess).toHaveBeenCalledOnce());
+    expect(vi.mocked(businessServices.importProviders).mock.calls[1][0]).toEqual(sent);
   });
 });

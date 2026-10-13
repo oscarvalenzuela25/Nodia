@@ -58,6 +58,8 @@ Funcionalidad añadida por solicitud del usuario: [Autenticación Gemini Agentic
 |---|---|
 | [33-chatgpt-integration-pending.md](33-chatgpt-integration-pending.md) | OpenAI Codex `token_plan_agentic`: código implementado, migración aplicada en BD local y conexión ID 4 habilitada por solicitud del 2026-10-08; API conserva su predeterminado. Cuenta/PNG/PDF/QA, soporte Windows y P1 de cancelación pendientes. Modelos dinámicos y API conservada; [runbook en features](../features/ai-providers/openai-codex-agentic.md), ADR-018. Conservar el plan hasta aceptar la operación real. |
 
+ChatGPT Web fue descartado; el motivo y resultado de las pruebas se conservan en [ADR-029](../architecture/decisions/ADR-029-chatgpt-web-browser-adapter.md). El siguiente ensayo utiliza [la VM Linux local](vps-local-vm-lab.md) con OpenAI Codex agéntico y API key.
+
 ## Finanzas personales — ampliación y planes
 
 - [Finanzas personales](20-personal-finance-interview.md): decisiones funcionales confirmadas. [ERD propuesto](21-personal-finance-erd.md) y [ADR-011](../architecture/decisions/ADR-011-personal-finance-ledger.md) pendientes de revisión documental del esquema completo; Backend implementado y BD aislada de pruebas verificada, sin modificar la BD configurada.
@@ -89,6 +91,8 @@ Obsidian conserva los objetos anteriores y contiene ahora37 tablas/69 relaciones
 Para añadir microservicios internos, consultar la [guía de seguridad](../architecture/internal-microservice-security.md) y [ADR-008](../architecture/decisions/ADR-008-internal-microservices-only.md). Todos se consumen únicamente desde Nodia Server.
 
 ## Contactos de proveedores
+
+CSV ampliado el 2026-10-11: descarga de página visible o todos con contactos JSON, reimportación atómica y compatible con CSV previos; IDs/versiones conservados. Contrato/evidencia y limpieza local de62 productos/89 logs/15 facturas conservando6 proveedores/2 contactos en [31](31-provider-contacts-proposal.md#csv-de-proveedores-con-contactos--2026-10-11), [ADR-028](../architecture/decisions/ADR-028-provider-csv-round-trip.md) propuesto. QA aislado y respaldo local comprobados; aceptación con sesión real pendiente.
 
 [31-provider-contacts-proposal.md](31-provider-contacts-proposal.md) registra los requisitos, contratos y evidencia de contactos de proveedores, con horario propio por contacto confirmado el 2026-10-05. Server/Client implementados; en detalle de negocio → Proveedores → Contactos. [ADR-014](../architecture/decisions/ADR-014-provider-contacts.md), ERD, rutas y Kanban reconciliados, sin aprobación automática. Tras la incidencia de endpoints, se corrigió Ransack y aplicó únicamente la migración de contactos en BD local configurada con respaldo previo; ambos listados responden 200 en smoke HTTP de solo lectura. Suites: 566 Server / 841 Client; integración aislada y QA responsive correctos. Sesión real, otros entornos y despliegue pendientes.
 

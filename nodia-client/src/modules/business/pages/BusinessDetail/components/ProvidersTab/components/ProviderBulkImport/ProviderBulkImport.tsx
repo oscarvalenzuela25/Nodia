@@ -1,3 +1,4 @@
+import { sileo } from 'sileo';
 import BusinessWorkflow from "../../../../../../components/BusinessWorkflow";
 import type { FC, ChangeEvent, DragEvent } from "react";
 import { useState, useMemo, useRef, useEffect } from "react";
@@ -36,19 +37,16 @@ import {
   ModalActionsContainer,
 } from "../ProviderModal/styles";
 import {
-  useBulkCreateProviders,
-  useBulkUpdateProviders,
+  useImportProviders,
 } from "../../../../../../infrastructure/useServices";
-import type {
-  CreateProviderPayload,
-  BulkUpdateProviderItemPayload,
-} from "../../../../../../infrastructure/types";
 import { DropzoneBox, ValidBadge, ErrorBadge } from "../../../../styles";
 import {
   type ProvisionalProviderRow,
   validateRow,
   parseCSV,
   generateTemplateCSV,
+  buildImportPayload,
+  downloadCSVFile,
 } from "./helpers";
 
 interface Props {
@@ -71,6 +69,11 @@ export const ProviderBulkImport: FC<Props> = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<ProvisionalProviderRow>>({});
 
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [isReading, setIsReading] = useState(false);
+  const readGeneration = useRef(0);
+  useEffect(() => () => { readGeneration.current++; }, []);
+
   // Prevent browser default behavior of opening dropped files in tab
   useEffect(() => {
     const preventBrowserFileDrop = (e: globalThis.DragEvent) => {
@@ -84,34 +87,47 @@ export const ProviderBulkImport: FC<Props> = ({
     };
   }, []);
 
-  const bulkCreateMutation = useBulkCreateProviders();
-  const bulkUpdateMutation = useBulkUpdateProviders();
-  const isBusy = bulkCreateMutation.isPending || bulkUpdateMutation.isPending;
+  const importMutation = useImportProviders();
+  const isBusy = importMutation.isPending || isReading;
 
-  const hasErrors = useMemo(() => rows.some((r) => !r.isValid), [rows]);
+  const hasErrors = useMemo(() => Boolean(fileError) || rows.some((r) => !r.isValid), [rows, fileError]);
 
   const handleDownloadTemplate = () => {
     const csvContent = generateTemplateCSV(i18n.language);
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
     const filename = i18n.language?.startsWith("en")
       ? "provider_template_nodia.csv"
       : "plantilla_proveedores_nodia.csv";
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadCSVFile(csvContent, filename);
+    sileo.success({ title: t('business:download_success_title') });
   };
 
   const processFile = (file: File) => {
+    if (importMutation.isPending) return;
+    const generation = ++readGeneration.current;
+    setFileError(null);
+    if (file.size > 2 * 1024 * 1024) {
+      setFileError('business:provider_csv_size_error');
+      sileo.error({ title: t('business:provider_csv_size_error') });
+      return;
+    }
     setFileName(file.name);
+    setIsReading(true);
     const reader = new FileReader();
     reader.onload = (event) => {
-      const text = event.target?.result as string;
-      const parsedRows = parseCSV(text);
-      setRows(parsedRows);
+      if (generation !== readGeneration.current) return;
+      try {
+        const parsedRows = parseCSV(String(event.target?.result ?? ''));
+        if (!parsedRows.length) throw new Error('business:provider_csv_empty_error');
+        setRows(parsedRows);
+      } catch (error) {
+        const key = error instanceof Error && error.message.startsWith('business:') ? error.message : 'business:provider_csv_format_error';
+        setRows([]); setFileError(key); sileo.error({ title: t(key) });
+      } finally { setIsReading(false); }
+    };
+    reader.onerror = () => {
+      if (generation !== readGeneration.current) return;
+      setIsReading(false); setFileError('business:provider_csv_format_error');
+      sileo.error({ title: t('business:provider_csv_format_error') });
     };
     reader.readAsText(file);
   };
@@ -204,60 +220,10 @@ export const ProviderBulkImport: FC<Props> = ({
   const handleSubmitAll = async () => {
     if (rows.length === 0 || hasErrors || isBusy) return;
 
-    const newItems: CreateProviderPayload[] = [];
-    const updateItems: BulkUpdateProviderItemPayload[] = [];
-
-    const buildFieldsObject = (r: ProvisionalProviderRow) => {
-      const fields: Record<string, { value: string; instructions: string }> = {};
-      const mappingKeys = [
-        "code",
-        "cost_price",
-        "cost_price_tax",
-        "packages",
-        "units_per_package",
-      ] as const;
-
-      for (const k of mappingKeys) {
-        const item = r[k];
-        if (item && item.value?.trim()) {
-          fields[k] = {
-            value: item.value.trim(),
-            instructions: item.instructions?.trim() || "",
-          };
-        }
-      }
-      return fields;
-    };
-
-    rows.forEach((r) => {
-      const fields = buildFieldsObject(r);
-      if (r.id) {
-        updateItems.push({
-          id: r.id,
-          name: r.name,
-          tax: r.tax,
-          fields,
-          is_active: r.is_active,
-        });
-      } else {
-        newItems.push({
-          business_id: businessId,
-          name: r.name,
-          tax: r.tax,
-          fields,
-          is_active: r.is_active,
-        });
-      }
-    });
-
-    if (newItems.length > 0) {
-      await bulkCreateMutation.mutateAsync(newItems);
-    }
-    if (updateItems.length > 0) {
-      await bulkUpdateMutation.mutateAsync(updateItems);
-    }
-
-    onSuccess();
+    try {
+      await importMutation.mutateAsync(buildImportPayload(rows, businessId));
+      onSuccess();
+    } catch { /* Keep the draft; the mutation hook owns HTTP feedback. */ }
   };
 
   return (
@@ -275,6 +241,7 @@ export const ProviderBulkImport: FC<Props> = ({
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={onCancel}
+          disabled={isBusy}
           sx={{ borderRadius: 2 }}
         >
           {t("business:back_to_providers")}
@@ -283,6 +250,7 @@ export const ProviderBulkImport: FC<Props> = ({
           variant="outlined"
           startIcon={<FileDownloadOutlinedIcon />}
           onClick={handleDownloadTemplate}
+          disabled={isBusy}
           sx={{ borderRadius: 2 }}
         >
           {t("business:download_template_btn")}
@@ -303,16 +271,26 @@ export const ProviderBulkImport: FC<Props> = ({
         </Typography>
       </Alert>
 
+      <Alert severity="info">{t('business:provider_csv_contacts_help')}</Alert>
+      {fileError && <Alert severity="error">{t(fileError)}</Alert>}
+      {importMutation.isError && <Alert severity="error">{t('business:provider_csv_import_error')}</Alert>}
+
       {/* Dropzone */}
       <input
         type="file"
+        disabled={isBusy}
         ref={fileInputRef}
         onChange={handleFileChange}
         accept=".csv,text/csv"
         style={{ display: "none" }}
       />
       <DropzoneBox
-        onClick={() => fileInputRef.current?.click()}
+        role="button"
+        tabIndex={isBusy ? -1 : 0}
+        aria-disabled={isBusy}
+        aria-label={t('business:dropzone_prompt')}
+        onKeyDown={(event) => { if (!isBusy && ['Enter', ' '].includes(event.key)) { event.preventDefault(); fileInputRef.current?.click(); } }}
+        onClick={() => { if (!isBusy) fileInputRef.current?.click(); }}
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -387,7 +365,7 @@ export const ProviderBulkImport: FC<Props> = ({
             }}
           >
             <TableContainer sx={{ maxHeight: 600 }}>
-              <Table stickyHeader>
+              <Table stickyHeader sx={{ minWidth: 1400, '& th': { whiteSpace: 'nowrap' }, '& td': { overflowWrap: 'normal' } }}>
                 <TableHead>
                   <TableRow>
                     <TableCell width={50} align="center" />
@@ -395,6 +373,7 @@ export const ProviderBulkImport: FC<Props> = ({
                       {t("business:provisional_table_type")}
                     </TableCell>
                     <TableCell>{t("business:provider_name")}</TableCell>
+                    <TableCell>{t('business:provider_csv_contacts_label')}</TableCell>
                     <TableCell align="center" width={110}>
                       {t("business:provider_tax")}
                     </TableCell>
@@ -440,7 +419,7 @@ export const ProviderBulkImport: FC<Props> = ({
                             row.isValid
                               ? t("business:row_valid_tooltip")
                               : t("business:row_error_tooltip", {
-                                  errors: row.errors.join(", "),
+                                  errors: row.errors.map((error) => t(error)).join(", "),
                                 })
                           }
                         >
@@ -462,7 +441,7 @@ export const ProviderBulkImport: FC<Props> = ({
                           label={
                             row.id
                               ? t("business:provisional_table_type_update")
-                              : t("business:provisional_table_type_new")
+                              : t('business:provider_csv_type_upsert')
                           }
                           color={row.id ? "secondary" : "primary"}
                           variant="outlined"
@@ -471,7 +450,8 @@ export const ProviderBulkImport: FC<Props> = ({
                       </TableCell>
 
                       {/* Name */}
-                      <TableCell sx={{ fontWeight: 600 }}>{row.name}</TableCell>
+                      <TableCell sx={{ fontWeight: 600, minWidth: 180 }}>{row.name}</TableCell>
+                      <TableCell sx={{ maxWidth: 260, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{row.contactsJson || t('business:provider_csv_contacts_unchanged')}</TableCell>
 
                       {/* Tax */}
                       <TableCell align="center">
@@ -602,6 +582,11 @@ export const ProviderBulkImport: FC<Props> = ({
             }
           />
 
+          <TextInput label={t('business:provider_csv_contacts_label')} multiline minRows={4}
+            value={editFormData.contactsJson ?? ''}
+            onChange={(event) => setEditFormData((previous) => ({ ...previous, contactsJson: event.target.value }))}
+            helperText={t('business:provider_csv_contacts_help')} />
+
           <SwitchWrapper>
             <StyledFormControlLabel
               control={
@@ -615,11 +600,7 @@ export const ProviderBulkImport: FC<Props> = ({
                   }
                 />
               }
-              label={
-                editFormData.is_active
-                  ? t("business:status_active")
-                  : t("business:status_inactive")
-              }
+              label={t('business:status_active')}
               labelPlacement="start"
             />
           </SwitchWrapper>

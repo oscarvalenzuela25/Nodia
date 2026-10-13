@@ -7,6 +7,8 @@
 
 ## Objetivo y punto de partida
 
+**Decisión vigente del 2026-10-12:** el usuario descarta ChatGPT Web; [ADR-029](../architecture/decisions/ADR-029-chatgpt-web-browser-adapter.md) resume el motivo y las pruebas. Continuar únicamente Codex agéntico y API key para OpenAI; probar su despliegue Linux en una VM local antes del VPS real.
+
 Permitir utilizar la suscripción de la cuenta ChatGPT/Codex mediante el canal `token_plan_agentic` del proveedor existente `openai`. Conservar sus API keys y los contratos de análisis, verificación, salud y modelos que consume el frontend.
 
 La solicitud actual sustituye la prioridad anterior de comenzar por inferencia directa: esta entrega propone Codex Agentic. `token_plan_web` de OpenAI queda fuera de alcance y deshabilitado. La investigación de Responses con autorización del plan se conserva más abajo como antecedente, sin crear otra cuota ni otro canal en esta entrega.

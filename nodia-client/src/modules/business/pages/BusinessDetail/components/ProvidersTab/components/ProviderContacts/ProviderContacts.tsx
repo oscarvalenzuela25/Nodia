@@ -313,15 +313,17 @@ export default function ProviderContacts({
           {t("provider_contacts:subtitle")}
         </Typography>
       </Box>
-      <InputSearch
-        value={search}
-        onChange={(value) => {
-          setSearch(value);
-          setPage(0);
-        }}
-        disabled={busy}
-        placeholder={t("provider_contacts:search")}
-      />
+      <Box sx={{ width: { xs: "100%", sm: 320 }, maxWidth: "100%" }}>
+        <InputSearch
+          value={search}
+          onChange={(value) => {
+            setSearch(value);
+            setPage(0);
+          }}
+          disabled={busy}
+          placeholder={t("provider_contacts:search")}
+        />
+      </Box>
       {query.isError && (
         <Alert
           severity="error"

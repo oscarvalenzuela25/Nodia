@@ -10,6 +10,7 @@
 - **Plataforma**: Nodia — SaaS B2B empresarial y modular para gestión de negocios, colaboradores, productos y configuraciones generales.
 - **Tono Visual**: Moderno, minimalista, de alta precisión técnica ("High-density Developer & Enterprise Tooling"). Sin estética genérica ("No AI slop"), tipografía cuidada, contrastes calibrados y micro-interacciones sutiles con retroalimentación visual inmediata.
 - **Enfoque de Tema**: **Dual (Modo Oscuro dominante / Modo Claro accesible)**. Diseñado con prioridad estética para el modo oscuro con superficies profundas (`#000000` base, `#1a212b` superficies/tarjetas) y acentos en índigo/lavanda y verde/teal.
+- **Tema inicial** (solicitud del 2026-10-11): oscuro/negro cuando no hay preferencia guardada, independientemente del tema del sistema. El selector existente alterna a claro y viceversa; la elección persiste en el navegador y se respeta al recargar, incluidas preferencias claras anteriores.
 
 ---
 
@@ -502,6 +503,8 @@ Pautas de proceso solicitadas el2026-10-10 tras informes autenticados de Inicio.
 - Al cerrar cada etapa, actualizar esta pauta con solución final, componentes de referencia, tests/evidencia y límites móvil/desktop; AGENTS conserva el índice y las obligaciones. Registrar también resultados sin mejora y pendientes, sin marcar propuestas como implementadas o aprobadas.
 
 ### 10.5 Patrones verificados — Google y semántica (2026-10-10)
+
+- **Botón GIS y tema (2026-10-11):** [Login](src/modules/auth/pages/Login/Login.tsx) usa variante oficial `filled_black` en oscuro y `outline` en claro. [GoogleSignInContainer](src/modules/auth/pages/Login/styles.ts) aplica `color-scheme: light` solo al iframe GIS: evita el canvas blanco que Chromium pinta cuando el esquema heredado oscuro difiere del documento transparente externo. No modificar el contenido del iframe, recortarlo ni ocultar su foco. Cambio de tema no remonta el provider ni pierde el intercambio pendiente. Padding de página16/24/32px y tarjeta24px en xs/40px desde sm conserva espacio para el botón. SDK/iframe reales ES/EN, claro/oscuro y320/599/600/1280px comprobados;58 regresiones de auth/guards/sesión, build/tipado/lint correctos. No se ejecutó login ni se intercambiaron credenciales durante este QA; otros motores/cuenta personalizada siguen pendientes. [Opciones oficiales](https://developers.google.com/identity/gsi/web/reference/js-reference#theme).
 
 - **SDK acotado:** referencia [Login](src/modules/auth/pages/Login/Login.tsx) y [App](src/App.tsx). Key del provider por idioma/intento para el SDK instalado; el estado de intercambio de credencial queda fuera de esa frontera. Error traducido + toast único + reintento,44px y ancho completo en xs. Sin client ID no solicitar GIS; al volver a Inicio limpiar el script. `googleLogout` sigue disponible en infraestructura compartida: no confundir su pequeño módulo con una descarga externa GIS.
 - **Pruebas del acceso:** [Login.test](src/test/modules/auth/pages/Login/Login.test.tsx) usa el provider real y credenciales/transporte sintéticos; [App.test](src/test/App.test.tsx) recorre Inicio→Login→Inicio→Login y comprueba la frontera del script. Conservar tests existentes de auth/session/guards/Topbar, sin eximir restauración o permisos por rendimiento.

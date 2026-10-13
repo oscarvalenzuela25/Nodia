@@ -56,7 +56,6 @@ import ProviderModal, {
 } from "./components/ProviderModal";
 import { ProviderBulkImport } from "./components/ProviderBulkImport";
 import {
-  exportProvidersToCSV,
   downloadCSVFile,
 } from "./components/ProviderBulkImport/helpers";
 import { StatusDot } from "../../styles";
@@ -125,10 +124,10 @@ export const ProvidersTab: FC<Props> = ({
     isLoading ||
     isFetching ||
     createMutation.isPending ||
-    updateMutation.isPending;
+    updateMutation.isPending || exportMutation.isPending;
   const isExporting = exportMutation.isPending;
 
-  const handleDownloadCurrentView = () => {
+  const handleDownloadCurrentView = async () => {
     setDownloadMenuAnchorEl(null);
     if (providers.length === 0) {
       sileo.warning({
@@ -136,14 +135,18 @@ export const ProvidersTab: FC<Props> = ({
       });
       return;
     }
-    const csvContent = exportProvidersToCSV(providers, i18n.language);
-    const filename = i18n.language?.startsWith("en")
-      ? "providers_view.csv"
-      : "proveedores_vista.csv";
-    downloadCSVFile(csvContent, filename);
-    sileo.success({
-      title: t("business:download_success_title"),
-    });
+    try {
+      const csvContent = await exportMutation.mutateAsync({
+        business_id: businessId,
+        lang: i18n.language,
+        ids: providers.map((p) => p.id),
+      });
+      const filename = i18n.language?.startsWith("en")
+        ? "providers_view.csv"
+        : "proveedores_vista.csv";
+      downloadCSVFile(csvContent, filename);
+      sileo.success({ title: t("business:download_success_title") });
+    } catch { /* Feedback belongs to the export hook. */ }
   };
 
   const handleDownloadAll = async () => {
@@ -234,6 +237,7 @@ export const ProvidersTab: FC<Props> = ({
   if (isBulkMode) {
     return (
       <ProviderBulkImport
+        key={businessId}
         businessId={businessId}
         onCancel={() => setIsBulkMode(false)}
         onSuccess={() => {

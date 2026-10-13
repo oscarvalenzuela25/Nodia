@@ -16,6 +16,7 @@ Definir sistema visual, accesibilidad y restricciones de interacción aplicables
 ## 2. Tematización (Theming)
 
 - **Modos soportados:** El sistema soportará explícitamente tanto **Modo Claro (Light Theme)** como **Modo Oscuro (Dark Theme)**.
+- **Predeterminado solicitado el 2026-10-11:** oscuro/negro sin preferencia guardada. El selector permite cambiar a claro y volver a oscuro; se conserva la elección guardada en ese navegador al recargar, incluidas preferencias anteriores. No depende del tema del sistema.
 - **Design Tokens:** Los colores exactos para MUI se extraerán y generarán a partir de un tema proporcionado posteriormente.
 
 ## 3. Tipografía

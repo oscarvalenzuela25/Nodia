@@ -19,6 +19,8 @@
 
 ## Cuándo está activa una sesión y cuándo se permite HTTP
 
+Ajuste visual solicitado el 2026-10-11: botón oficial Google `filled_black` en oscuro/`outline` en claro y esquema `light` limitado a su iframe para eliminar el rectángulo blanco reproducido en Chromium. Botón y texto contenidos a320px mediante padding responsive de la página/tarjeta. SDK real verificado en ES/EN, claro/oscuro y320/599/600/1280px;58 regresiones de auth/sesión/guards, build/tipado/lint correctos. Cambio de tema conserva SDK/estado pendiente; no se ejecutó login real ni se alteraron credenciales, permisos o sesión. Referencia de diseño10.5; captura externa google-login-fixed.jpg. Documento conserva revisión.
+
 Requisito confirmado por el usuario: sin sesión no se ejecutan consultas de datos; todos los endpoints de negocio exigen Bearer. El login y las operaciones necesarias para comprobar, renovar y cerrar la sesión son excepciones de control de autenticación.
 
 En el cliente, `sessionStatus` vive solo en memoria: `anonymous`, `restoring`, `authenticated` o `unavailable`. Persistir un token no persiste la condición de autenticado. `useAuth().isSessionActive` exige estado `authenticated`, token presente, `expiresAt` futuro y ninguna renovación en curso.

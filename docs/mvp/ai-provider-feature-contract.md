@@ -1,5 +1,7 @@
 # Contrato funcional de conexiones IA y regresiones
 
+Decisión explícita 2026-10-12: OpenAI conserva API key y Codex agéntico; su integración token_plan_web fue descartada y retirada por solicitud del usuario. Se conservan los campos y contratos Web que utiliza Gemini. La decisión y evidencia se resumen en [ADR-029](../architecture/decisions/ADR-029-chatgpt-web-browser-adapter.md). [Ensayo VM local](vps-local-vm-lab.md).
+
 Fecha: 2026-10-06. Estado documental: en revisión; requisitos pedidos explícitamente por el usuario e implementados, sin aprobación automática del documento. Complementa los documentos 15/16 y ADR-015. Una modificación que retire un requisito exige una nueva decisión explícita y actualizar sus pruebas; no eliminar funcionalidades por interpretar una política histórica.
 
 ## Indicadores del topbar — 2026-10-08

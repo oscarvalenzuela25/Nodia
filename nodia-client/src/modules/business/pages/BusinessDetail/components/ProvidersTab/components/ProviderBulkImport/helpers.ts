@@ -1,3 +1,20 @@
+import { z } from 'zod';
+import { contactValuesSchema } from '../ProviderContacts/types';
+import { readCsvRecords } from './csvRecords';
+
+const bigintId = z.string().regex(/^[1-9]\d{0,18}$/).refine((value) => BigInt(value) <= 9223372036854775807n);
+export const importContactSchema = contactValuesSchema.extend({
+  phone: contactValuesSchema.shape.phone.default([]),
+  email: contactValuesSchema.shape.email.default(null),
+  schedule: contactValuesSchema.shape.schedule.default({}),
+  description: contactValuesSchema.shape.description.default(null),
+  is_active: contactValuesSchema.shape.is_active.default(true),
+  id: bigintId.optional(),
+  version: z.number().int().min(1).max(2147483646).optional(),
+}).strict().refine((contact) => !contact.id || contact.version !== undefined);
+export const importContactsSchema = z.array(importContactSchema).max(100);
+export type ImportedContact = z.infer<typeof importContactSchema>;
+
 export interface FieldMappingData {
   value: string;
   instructions: string;
@@ -15,6 +32,8 @@ export interface ProvisionalProviderRow {
   units_per_package: FieldMappingData;
   errors: string[];
   isValid: boolean;
+  contactsJson?: string;
+  extraFields?: Record<string, unknown>;
 }
 
 export const FIELD_ALIASES: Record<string, string[]> = {
@@ -122,6 +141,9 @@ export const FIELD_ALIASES: Record<string, string[]> = {
     "units per package instructions",
   ],
   id: ["id", "uuid", "provider_id", "id_proveedor"],
+  contacts: ['contacts', 'contactos', 'contacts json', 'contactos json'],
+  fields_json: ['fields_json'],
+  csv_version: ['csv_version'],
 };
 
 export const STANDARD_COLUMN_ORDER = [
@@ -180,7 +202,8 @@ export const parseBoolean = (val: string | undefined): boolean => {
   if (val === undefined || val === null || val === "") return true;
   const v = val.toString().toLowerCase().trim();
   if (["false", "falso", "0", "no", "inactivo"].includes(v)) return false;
-  return true;
+  if (['true', 'verdadero', '1', 'si', 'sí', 'yes', 'activo', 'active'].includes(v)) return true;
+  throw new Error('business:provider_csv_boolean_error');
 };
 
 export const validateRow = (
@@ -189,32 +212,29 @@ export const validateRow = (
   const errors: string[] = [];
 
   if (!row.name || !row.name.trim()) {
-    errors.push("Nombre es requerido");
+    errors.push('business:provider_csv_name_required');
   } else if (row.name.trim().length < 2) {
-    errors.push("Nombre debe tener al menos 2 caracteres");
+    errors.push('business:provider_csv_name_error');
   }
 
-  if (row.tax !== undefined && (isNaN(row.tax) || row.tax < 0 || row.tax > 100)) {
-    errors.push("Impuesto debe estar entre 0 y 100");
+  if (row.tax !== undefined && (!Number.isInteger(row.tax) || row.tax < 0 || row.tax > 100)) {
+    errors.push('business:provider_csv_tax_error');
+  }
+
+  if (row.name && row.name.length > 255) errors.push('business:provider_csv_name_error');
+  if (row.id && !bigintId.safeParse(row.id).success) errors.push('business:provider_csv_id_error');
+  if (row.contactsJson?.trim()) {
+    try { importContactsSchema.parse(JSON.parse(row.contactsJson)); }
+    catch { errors.push('business:provider_csv_contacts_error'); }
   }
 
   return { errors, isValid: errors.length === 0 };
 };
 
 export const parseCSV = (csvText: string): ProvisionalProviderRow[] => {
-  const lines = csvText
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
-
-  if (lines.length < 2) return [];
-
-  // Parse header
-  const headerLine = lines[0];
-  const separator = headerLine.includes(";") ? ";" : ",";
-  const rawHeaders = headerLine
-    .split(separator)
-    .map((h) => h.trim());
+  const records = readCsvRecords(csvText);
+  if (records.length < 2) return [];
+  const rawHeaders = records[0];
 
   // Check how many headers match aliases directly (without positional fallback)
   const mappedByName = rawHeaders.map((h) => {
@@ -230,31 +250,41 @@ export const parseCSV = (csvText: string): ProvisionalProviderRow[] => {
     return null;
   });
 
-  // If a header didn't match by name, fallback to positional order if available
+  // Preserve unknown headers without silently mapping them to unrelated columns.
   const headers = rawHeaders.map((h, idx) => {
     if (mappedByName[idx]) return mappedByName[idx]!;
-    return normalizeHeader(h, idx);
+    return normalizeHeader(h);
   });
+  if (!headers.includes('name') || new Set(headers).size !== headers.length) throw new Error('business:provider_csv_header_error');
 
   const rows: ProvisionalProviderRow[] = [];
 
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i];
-    const values = line.split(separator).map((v) => v.trim().replace(/^["']|["']$/g, ""));
+  for (let i = 1; i < records.length; i++) {
+    const values = records[i];
+    if (values.length > headers.length) throw new Error('business:provider_csv_format_error');
 
     const rawData: Record<string, string> = {};
     headers.forEach((h, idx) => {
       rawData[h] = values[idx] || "";
     });
+    if (rawData.csv_version && rawData.csv_version !== '2') throw new Error('business:provider_csv_format_error');
+    if (rawData.csv_version === '2') for (const key of headers) if (/^'(?:[=+\-@\t\r']|\s+[=+\-@])/.test(rawData[key])) rawData[key] = rawData[key].slice(1);
+    let extraFields: Record<string, unknown> | undefined;
+    if (rawData.fields_json) {
+      try { extraFields = z.record(z.string(), z.unknown()).parse(JSON.parse(rawData.fields_json)); }
+      catch { throw new Error('business:provider_csv_mapping_error'); }
+    }
 
     const parsedTaxNum = rawData["tax"] ? parseNumber(rawData["tax"]) : 19;
-    const finalTax = isNaN(parsedTaxNum) ? 19 : parsedTaxNum;
+    const finalTax = parsedTaxNum;
 
     const parsed: Partial<ProvisionalProviderRow> = {
       id: rawData["id"] ? rawData["id"] : undefined,
       name: rawData["name"] ?? "",
       tax: finalTax,
       is_active: parseBoolean(rawData["is_active"]),
+      contactsJson: rawData.contacts || undefined,
+      extraFields,
       code: {
         value: rawData["field_code"] ?? "",
         instructions: rawData["instructions_code"] ?? "",
@@ -291,6 +321,8 @@ export const parseCSV = (csvText: string): ProvisionalProviderRow[] => {
       units_per_package: parsed.units_per_package ?? { value: "", instructions: "" },
       errors,
       isValid,
+      contactsJson: parsed.contactsJson,
+      extraFields,
     });
   }
 
@@ -298,22 +330,28 @@ export const parseCSV = (csvText: string): ProvisionalProviderRow[] => {
   return rows.sort((a, b) => (a.isValid === b.isValid ? 0 : a.isValid ? 1 : -1));
 };
 
-export const generateTemplateCSV = (lang: string = "es"): string => {
-  const isEn = lang.startsWith("en");
+export function buildImportPayload(rows: ProvisionalProviderRow[], businessId: string): import('../../../../../../infrastructure/types').ImportProviderPayload[] {
+  return rows.map((row) => {
+    const fields = { ...row.extraFields };
+    for (const key of ['code', 'cost_price', 'cost_price_tax', 'packages', 'units_per_package'] as const) {
+      const mapping = row[key];
+      const previous = fields[key];
+      const value = typeof previous === 'string' ? previous : previous && typeof previous === 'object' && 'value' in previous && typeof previous.value === 'string' ? previous.value : '';
+      const instructions = previous && typeof previous === 'object' && 'instructions' in previous && typeof previous.instructions === 'string' ? previous.instructions : '';
+      if (previous !== undefined && value === mapping.value && instructions === mapping.instructions) continue;
+      if (mapping.value || mapping.instructions) fields[key] = { ...mapping };
+      else delete fields[key];
+    }
+    return {
+      business_id: businessId, ...(row.id ? { id: row.id } : {}), name: row.name, tax: row.tax, is_active: row.is_active, fields,
+      ...(row.contactsJson?.trim() ? { contacts: importContactsSchema.parse(JSON.parse(row.contactsJson)) } : {}),
+    };
+  });
+}
 
-  if (isEn) {
-    return (
-      "Name (name),Tax % (tax),Active (is_active),Code Column (field_code),Code Instructions (instructions_code),Net Cost Column (field_cost_price),Net Cost Instructions (instructions_cost_price),Tax Cost Column (field_cost_price_tax),Tax Cost Instructions (instructions_cost_price_tax),Packages Column (field_packages),Packages Instructions (instructions_packages),Units Per Package Column (field_units_per_package),Units Per Package Instructions (instructions_units_per_package),ID (id)\n" +
-      "Coca Cola Embonor,19,true,COD_ARTICULO,,PRECIO_NETO,,PRECIO_BRUTO,,BULTOS,,UNID_EMPAQUE,\n" +
-      "Nestle Chile,19,true,SKU,In column description,VALOR_NETO,,TOTAL_UNITARIO,,CAJAS,,FACTOR,12345\n"
-    );
-  }
-
-  return (
-    "Nombre (name),Impuesto % (tax),Activo (is_active),Columna Código (field_code),Instrucciones Código (instructions_code),Columna Costo Neto (field_cost_price),Instrucciones Costo Neto (instructions_cost_price),Columna Costo IVA (field_cost_price_tax),Instrucciones Costo IVA (instructions_cost_price_tax),Columna Bultos (field_packages),Instrucciones Bultos (instructions_packages),Columna Unidades por Bulto (field_units_per_package),Instrucciones Unidades por Bulto (instructions_units_per_package),ID (id)\n" +
-    "Coca Cola Embonor,19,true,COD_ARTICULO,,PRECIO_NETO,,PRECIO_BRUTO,,BULTOS,,UNID_EMPAQUE,\n" +
-    "Nestle Chile,19,true,SKU,En columna descripcion,VALOR_NETO,,TOTAL_UNITARIO,,CAJAS,,FACTOR,12345\n"
-  );
+export const generateTemplateCSV = (lang: string = 'es'): string => {
+  const suffix = lang.startsWith('en') ? ',Contacts JSON (contacts),Extra Mapping JSON (fields_json),CSV Version (csv_version)' : ',Contactos JSON (contacts),Mapeo adicional JSON (fields_json),Versión CSV (csv_version)';
+  return providerCsvHeader(lang) + suffix + '\n';
 };
 
 export const escapeCsvValue = (val: unknown): string => {
@@ -325,56 +363,11 @@ export const escapeCsvValue = (val: unknown): string => {
   return str;
 };
 
-export const exportProvidersToCSV = (
-  providers: import("../../../../../../infrastructure/types").ProviderEntity[],
-  lang: string = "es"
-): string => {
-  const isEn = lang.startsWith("en");
-  const header = isEn
+const providerCsvHeader = (lang: string): string => {
+  const isEn = lang.startsWith('en');
+  return isEn
     ? "Name (name),Tax % (tax),Active (is_active),Code Column (field_code),Code Instructions (instructions_code),Net Cost Column (field_cost_price),Net Cost Instructions (instructions_cost_price),Tax Cost Column (field_cost_price_tax),Tax Cost Instructions (instructions_cost_price_tax),Packages Column (field_packages),Packages Instructions (instructions_packages),Units Per Package Column (field_units_per_package),Units Per Package Instructions (instructions_units_per_package),ID (id)"
     : "Nombre (name),Impuesto % (tax),Activo (is_active),Columna Código (field_code),Instrucciones Código (instructions_code),Columna Costo Neto (field_cost_price),Instrucciones Costo Neto (instructions_cost_price),Columna Costo IVA (field_cost_price_tax),Instrucciones Costo IVA (instructions_cost_price_tax),Columna Bultos (field_packages),Instrucciones Bultos (instructions_packages),Columna Unidades por Bulto (field_units_per_package),Instrucciones Unidades por Bulto (instructions_units_per_package),ID (id)";
-
-  const extractField = (raw: unknown): { value: string; instructions: string } => {
-    if (!raw) return { value: "", instructions: "" };
-    if (typeof raw === "string") return { value: raw, instructions: "" };
-    if (typeof raw === "object" && raw !== null) {
-      const obj = raw as Record<string, unknown>;
-      return {
-        value: typeof obj.value === "string" ? obj.value : "",
-        instructions: typeof obj.instructions === "string" ? obj.instructions : "",
-      };
-    }
-    return { value: "", instructions: "" };
-  };
-
-  const lines = [header];
-  for (const p of providers) {
-    const fields = p.fields || {};
-    const codeField = extractField(fields.code);
-    const costPriceField = extractField(fields.cost_price);
-    const costPriceTaxField = extractField(fields.cost_price_tax);
-    const packagesField = extractField(fields.packages);
-    const unitsPerPackageField = extractField(fields.units_per_package);
-
-    const row = [
-      escapeCsvValue(p.name),
-      escapeCsvValue(p.tax ?? 19),
-      escapeCsvValue(p.is_active),
-      escapeCsvValue(codeField.value),
-      escapeCsvValue(codeField.instructions),
-      escapeCsvValue(costPriceField.value),
-      escapeCsvValue(costPriceField.instructions),
-      escapeCsvValue(costPriceTaxField.value),
-      escapeCsvValue(costPriceTaxField.instructions),
-      escapeCsvValue(packagesField.value),
-      escapeCsvValue(packagesField.instructions),
-      escapeCsvValue(unitsPerPackageField.value),
-      escapeCsvValue(unitsPerPackageField.instructions),
-      escapeCsvValue(p.id),
-    ].join(",");
-    lines.push(row);
-  }
-  return lines.join("\n");
 };
 
 export const downloadCSVFile = (content: string, filename: string): void => {

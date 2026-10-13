@@ -204,6 +204,15 @@ describe('AnalyzeInvoiceUseCase API routing', () => {
     expect(api.execute).not.toHaveBeenCalled();
     expect(gemini.extractInvoiceData).not.toHaveBeenCalled();
   });
+  it('rejects historical OpenAI Web configuration without executing API or Gemini', async () => {
+    const { api, gemini, providers, useCase } = setup();
+    providers.findProviderById.mockResolvedValue({
+      id: '42', catalog: { key: 'openai' }, default_mode: 'token_plan_web', use_api_key: true,
+    });
+    await expect(useCase.execute(file, { ...dto, mode: 'token_plan_web' })).rejects.toThrow('OpenAI no admite el canal Web.');
+    expect(api.execute).not.toHaveBeenCalled();
+    expect(gemini.extractInvoiceData).not.toHaveBeenCalled();
+  });
 });
 
 describe('AnalyzeInvoiceUseCase', () => {

@@ -1,5 +1,5 @@
 import useAuth from "../../../hooks/useAuth";
-import { claimHttpErrorNotification } from "../../../config/httpFeedback";
+import { claimHttpErrorNotification, getHttpErrorMessage } from "../../../config/httpFeedback";
 import type { AxiosError } from "axios";
 import {
   keepPreviousData,
@@ -35,6 +35,7 @@ import {
   queryProductLogs,
   exportProductsCsv,
   exportProvidersCsv,
+  importProviders,
 } from "./services";
 import type {
   AssignCollaboratorsPayload,
@@ -637,16 +638,34 @@ export const useExportProductsCsv = () => {
   });
 };
 
+export const useImportProviders = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: importProviders,
+    onSuccess: (data) => {
+      sileo.success({ title: i18n.t('business:provider_csv_import_success', { count: data.providers, contacts: data.contacts }) });
+      void queryClient.invalidateQueries({ queryKey: providerKeys.all });
+      void queryClient.invalidateQueries({ queryKey: businessKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ['provider-contacts'] });
+    },
+    onError: (error: AxiosError<{ message?: string }>) => {
+      if (!claimHttpErrorNotification(error)) return;
+      sileo.error({ title: i18n.t('core:server_error_toast'), description: getHttpErrorMessage(error) });
+    },
+  });
+};
+
 export const useExportProvidersCsv = () => {
   return useMutation({
-    mutationFn: (params?: { business_id?: string; lang?: string }) =>
+    mutationFn: (params?: import('./types').ExportProvidersParams) =>
       exportProvidersCsv(params),
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
+      if (!claimHttpErrorNotification(error)) return;
       const serverMessage =
         error.response?.data?.message || error.response?.data?.error;
       sileo.error({
         title: i18n.t("business:download_error"),
-        description: serverMessage,
+        description: serverMessage || i18n.t('core:server_error_toast'),
       });
     },
   });
