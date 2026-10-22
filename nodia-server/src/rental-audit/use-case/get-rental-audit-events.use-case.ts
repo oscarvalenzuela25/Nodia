@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { validateRentalDto } from '../../rental-common/rental-validation.js';
@@ -15,14 +16,14 @@ export class GetRentalAuditEventsUseCase {
     private readonly audit: RentalAuditService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: RentalAuditQueryDto,
   ) {
     const query = await validateRentalDto(RentalAuditQueryDto, input);
     validateRentalQuery(query, 'audit');
     validateInstantPeriod(query.from_at, query.to_at);
-    return this.transactions.read(actorId, propertyId, async ({ manager }) => {
+    return this.transactions.read(actor, propertyId, async ({ manager }) => {
       const [rows, total] = await this.audit.page(manager, propertyId, query);
       return pageResult(
         rows.map((row) => ({

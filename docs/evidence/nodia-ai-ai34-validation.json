@@ -1,0 +1,161 @@
+{
+  "stage": "AI-34",
+  "status": "passed",
+  "scope": "technical_laboratory_closure_not_document_approval_or_production_acceptance",
+  "observed_at_utc": "2026-10-18T20:38:37.048Z",
+  "clock_source": "local_authoring_host; remote evidence retains VM timestamps, no cross-host clock synchronization claimed",
+  "verification_layers": {
+    "server": {
+      "tests": 3540,
+      "files": 219
+    },
+    "client": {
+      "tests": 1716,
+      "files": 223
+    },
+    "python_linux": {
+      "tests": 420,
+      "skipped": 0
+    },
+    "python_windows": {
+      "total": 420,
+      "passed": 418,
+      "skipped": 2,
+      "failed": 0,
+      "notes": "Two historical Windows symlink platform skips; final Linux candidate must run all 420.",
+      "log_sha256": "28ff3a40756a4dc46cdabb7ed551504e5fde860c842881ec3c0e034226b28271"
+    },
+    "sql": {
+      "checks": 36,
+      "database": "disposable_real_postgresql",
+      "adapter": "synthetic",
+      "business_effects": 0
+    },
+    "ui": {
+      "combinations": 50,
+      "source": "isolated_synthetic_browser_fixture",
+      "mutations": 0
+    },
+    "gemini": {
+      "requests": 9,
+      "compactions": 2,
+      "continuity_answers": 2,
+      "mcp_read_probes": 1,
+      "acceptance_complete": true,
+      "scope": "compiled_builders_and_real_adapter_canary; SQL_worker_and_snapshot_persistence_separate",
+      "operational_sql_writes": 0
+    }
+  },
+  "runtime": {
+    "node_files": 931,
+    "native_source_files": 99,
+    "native_image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+    "migrations": 28,
+    "nodia_ai_tables": 21,
+    "nodia_ai_columns": 289,
+    "snapshot_columns": 9,
+    "configured_chat_preserved": true,
+    "final_health": "docs/evidence/nodia-ai-ai34-final-health.json"
+  },
+  "knowledge": {
+    "sources": 57,
+    "excluded": 30,
+    "published_documents": 27,
+    "published_fragments": 27,
+    "capabilities": 67,
+    "release": "72e2d9823d559968836eb36a0a48c7a9afa268f02ba549cb7be9ad930f646896",
+    "new_mcp_publication": false
+  },
+  "global_test_fixture_typing": {
+    "status": "failed_outside_changed_scope",
+    "errors": 192,
+    "files": 48,
+    "changed_ai34_scope_errors": 0,
+    "historical_baseline_claimed": false,
+    "production_typecheck": "passed_by_production_build",
+    "log_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+  },
+  "limitations": [
+    "Literal citations, complete new-message coverage and monotonic previous memory do not prove exhaustive semantic recall.",
+    "One compaction per run and a bounded summary can still require a smaller request or a new chat; originals remain intact.",
+    "The byte budget covers initial prompts and MCP responses controlled by Nodia, not private SDK reasoning or model token windows.",
+    "Real canaries expose no business writes; product-wide and production acceptance remain AI-36..38.",
+    "Native attachment format verification is not renewed by text or MCP-only canaries after restart.",
+    "Successful MCP terminal INFO was not retained by this runtime; final used byte count is unknown, not synthesized from offline or failed runs.",
+    "Global server test-fixture TypeScript remains failing outside changed AI-34 scope; production compilation and runtime suites pass."
+  ],
+  "evidence": {
+    "units": {
+      "path": "docs/evidence/nodia-ai-ai34-unit-validation.json",
+      "sha256": "306e58766bdd07d7d71410c2ab002a6b3f39d84d623ca96793e76ca39672da1e"
+    },
+    "sql": {
+      "path": "docs/evidence/nodia-ai-ai34-sql-validation.json",
+      "sha256": "6d0033b210bb69512b2de46e933d0736553b8699ae08c33aa8a3f34d73f574b0"
+    },
+    "budgets": {
+      "path": "docs/evidence/nodia-ai-ai34-adapter-budgets.json",
+      "sha256": "c390ca76978fa4eb96332d5022819e8f5fedf88c3f040c116269dcb39d880b25"
+    },
+    "native": {
+      "path": "docs/evidence/nodia-ai-ai34-native-offline.json",
+      "sha256": "4838c5b99a843753bd3489c31d65cd20422b39a398b4e644b9c73fd9e9c13e1e"
+    },
+    "nativeParity": {
+      "path": "docs/evidence/nodia-ai-ai34-native-active-parity.json",
+      "sha256": "0997aedb0ede11ca3f50b190f9b5e4b29a803425b0acaa3bf46c031dfa826d09"
+    },
+    "ui": {
+      "path": "docs/evidence/nodia-ai-ai34-ui-validation.json",
+      "sha256": "4dba0095d79d98de66941316935608386096349fe8c3935e6a6807fa803f59c3"
+    },
+    "activation": {
+      "path": "docs/evidence/nodia-ai-ai34-runtime-activation.json",
+      "sha256": "6f116e9af7bca2c9f270e8c6be6d1f20838c9240969807a2472b832d1d489c00"
+    },
+    "live": {
+      "path": "docs/evidence/nodia-ai-ai34-live-validation.json",
+      "sha256": "a8edb541bb13cbfbb80f11b9f7fa2b7d8c70e862d56adb81464f6be2c2b61bc4"
+    },
+    "health": {
+      "path": "docs/evidence/nodia-ai-ai34-final-health.json",
+      "sha256": "3e314079fb5d6f64c15465f58bfb241a0d82535e759caf84cc69f80ee6e41021"
+    },
+    "catalog": {
+      "path": "docs/evidence/nodia-ai-ai34-catalog-delta.json",
+      "sha256": "11a56ed39ff0307dc9cba610f807a72bc147d88784b2981e00d921399aa800ea"
+    },
+    "lineage": {
+      "path": "docs/evidence/nodia-ai-ai34-knowledge-lineage.json",
+      "sha256": "ee9345fbebd3d458fe9fc9237349c7ed35a50e6baf910656917f9e9deee1c65a"
+    },
+    "modalities": {
+      "path": "docs/evidence/nodia-ai-ai34-modality-observation.json",
+      "sha256": "0595560eaad2ce05e30eee138f4bc90006fac16b78f431faea6a855d36c6ca96"
+    },
+    "successfulMcpDiagnostic": {
+      "path": "docs/evidence/nodia-ai-ai34-mcp-compat-diagnostic.json",
+      "sha256": "dd124fac4f86758aaa9beab27597040e21dca3b8e16d563ef711538459af8e45"
+    },
+    "docLinks": {
+      "path": "docs/evidence/nodia-ai-ai34-doc-links.json",
+      "sha256": "4b5250db345240674c667171047808a8cdf542341c58f7570a7826970941d4ad"
+    },
+    "diagnosticActivation": {
+      "path": "docs/evidence/nodia-ai-ai34-native-diagnostics-activation.json",
+      "sha256": "741681d147285c3d2860040feb7ce3c5332a18cd966ae5efde17125911b4d13e"
+    },
+    "roleActivation": {
+      "path": "docs/evidence/nodia-ai-ai34-native-role-activation.json",
+      "sha256": "9f0d6622fcc710ad166fc369a13997c2fe5900270b422373c434c09ef1086393"
+    },
+    "metadataRefresh": {
+      "path": "docs/evidence/nodia-ai-ai34-metadata-refresh.json",
+      "sha256": "882e668f2ed7ed178cd59269149e0a428a727c6fcc019f658086c51aa620d290"
+    },
+    "mcpActivation": {
+      "path": "docs/evidence/nodia-ai-ai34-native-mcp-activation.json",
+      "sha256": "82b33bc0ebccf66b01d2b5efe7e87c43244e7067381b6c118790feaf6bdac913"
+    }
+  }
+}

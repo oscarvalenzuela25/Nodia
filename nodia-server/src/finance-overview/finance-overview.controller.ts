@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { Controller, Get, Query, Req } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -42,7 +43,10 @@ export class FinanceOverviewController {
     @Req() request: AuthRequest,
     @Query() query: FinanceOverviewQueryDto,
   ) {
-    return this.getOverview.execute(request.auth.user.id, query);
+    return this.getOverview.execute(
+      { ...actorReference(request.auth), ownerId: query.owner_id },
+      query,
+    );
   }
 
   @Get('categories')
@@ -55,7 +59,10 @@ export class FinanceOverviewController {
     @Req() request: AuthRequest,
     @Query() query: FinanceSummaryQueryDto,
   ) {
-    return this.getCategories.execute(request.auth.user.id, query);
+    return this.getCategories.execute(
+      { ...actorReference(request.auth), ownerId: query.owner_id },
+      query,
+    );
   }
 
   @Get('category-groups')
@@ -65,6 +72,9 @@ export class FinanceOverviewController {
       'Paged group totals including zero activity; overlapping groups are not additive.',
   })
   groups(@Req() request: AuthRequest, @Query() query: FinanceSummaryQueryDto) {
-    return this.getGroups.execute(request.auth.user.id, query);
+    return this.getGroups.execute(
+      { ...actorReference(request.auth), ownerId: query.owner_id },
+      query,
+    );
   }
 }

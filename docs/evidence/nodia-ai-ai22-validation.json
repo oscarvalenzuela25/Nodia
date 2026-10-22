@@ -1,0 +1,175 @@
+{
+  "task": "AI-22",
+  "status": "native_operations_implemented_and_verified_private_lab_file_acceptance_and_mcp_publication_pending",
+  "verified_at_utc": "2026-10-17T15:42:16.141261+00:00",
+  "scope": "fourteen_single_native_business_operations_exact_human_confirmation_atomic_receipts_and_recovery",
+  "implementation": {
+    "business_operations": 14,
+    "families": {
+      "businesses_and_collaborators": 3,
+      "products": 2,
+      "product_logs": 2,
+      "providers": 2,
+      "provider_contacts": 3,
+      "invoices": 2
+    },
+    "financial_operations_preserved": 12,
+    "single_step_per_proposal": true,
+    "new_receipt": "BusinessEffectReceipt",
+    "native_writers_reused": true,
+    "legacy_bulk_integrity_hardened": true,
+    "bulk_mcp_published": false,
+    "public_raw_templates_rejected": true,
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_migrations": 0
+  },
+  "server": {
+    "full_suite": {
+      "tests": 2204,
+      "files": 187,
+      "passed": true,
+      "log": ".tmp/ai22-server-release-tests.log",
+      "max_workers": 4,
+      "duration_seconds": 87.01
+    },
+    "build": {
+      "passed": true,
+      "log": ".tmp/ai22-build-release.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": ".tmp/ai22-server-release-lint.log"
+    }
+  },
+  "client": {
+    "full_suite": {
+      "tests": 1396,
+      "files": 201,
+      "passed": true,
+      "log": "nodia-client/.tmp/ai22-client-full.log",
+      "max_workers": 2,
+      "duration_seconds": 421.03
+    },
+    "build_and_typecheck": {
+      "passed": true,
+      "log": "nodia-client/.tmp/ai22-client-build.log"
+    },
+    "lint": {
+      "errors": 0,
+      "log": "nodia-client/.tmp/ai22-client-lint.log"
+    }
+  },
+  "postgresql": {
+    "new_checks": 57,
+    "regression_numbered_checks": 157,
+    "total_numbered_checks": 214,
+    "additional_uncounted_suites": 2,
+    "concurrency_races": 5,
+    "evidence": [
+      {
+        "file": "docs/evidence/nodia-ai-ai22-postgres-integration.json",
+        "checks": 57,
+        "passed": true
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai22-financial-effect-regression.json",
+        "checks": 32,
+        "passed": true
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai22-worker-regression.json",
+        "checks": 36,
+        "passed": true
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai22-finance-regression.json",
+        "checks": 47,
+        "passed": true
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai22-artifacts-regression.json",
+        "checks": 24,
+        "passed": true
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai22-invoice-upload-regression.json",
+        "checks": 18,
+        "passed": true
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai22-invoice-access-regression.json",
+        "checks": null,
+        "passed": true
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai22-contacts-regression.json",
+        "checks": null,
+        "passed": true
+      }
+    ],
+    "data": "synthetic_disposable_postgresql_16",
+    "configured_business_database_used": false,
+    "real_ai_inferences": 0,
+    "real_r2": false,
+    "temporary_test_containers_remaining": 0,
+    "remaining_containers_observed": [
+      "nodia-gemini-microservice",
+      "nodia-lab-postgres-1",
+      "nodia-lab-redis-1"
+    ]
+  },
+  "ui": {
+    "evidence": "docs/evidence/nodia-ai-ai22-ui-validation.json",
+    "transport": "isolated_synthetic",
+    "real_tab_5174_preserved": true,
+    "qa_5194_stopped": true
+  },
+  "deployment": {
+    "activation": "docs/evidence/nodia-ai-ai22-lab-activation.json",
+    "runtime": "docs/evidence/nodia-ai-ai22-lab-runtime.json",
+    "dist_equality": "docs/evidence/nodia-ai-ai22-deployed-equality.json",
+    "archive_sha256": "06bc266d1a249cf00e7984699938ca2d0e069900ec775dd0d3457135171d37c1",
+    "archive_files": 848,
+    "dist_files_verified": 814,
+    "knowledge_release_id": "67df82be991496f45536f62528c283b3342975e2351124512d6f232ed442d825",
+    "units": {
+      "api": "active",
+      "worker": "active"
+    },
+    "executor_registrations": 26,
+    "financial_executors": 12,
+    "business_executors": 14,
+    "configured_business_writes": 0
+  },
+  "knowledge": {
+    "sources": 46,
+    "excluded_drafts": 19,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "business_write_prepare_published": false,
+    "approved_business_feature_bodies_unchanged": true,
+    "final_check_log": ".tmp/ai22-knowledge-final.log"
+  },
+  "pending": [
+    "invoice_binary_download_r2_real",
+    "mcp_business_prepare_publication_and_real_gemini_acceptance",
+    "new_chat_attachment_upload_promotion_and_attached_invoice_transfer_AI32"
+  ],
+  "observations": [
+    "Earlier SQL runs identified and fixed absent-before preview semantics and stale hydrated TypeORM relation overwrites.",
+    "Final review found legacy bulk relation bypasses; fixed in native writers and verified with batch rollback and concurrent SQL before final archive.",
+    "Whole server suite rerun after all production changes; final file counts above exclude earlier intermediate suites."
+  ],
+  "document_approval": "not_automatic",
+  "offline_contracts": {
+    "passed": true,
+    "common_definitions": 134,
+    "domain_definitions": 184,
+    "structural_fixtures": 320,
+    "current_source_checksums": 625,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json",
+    "runtime_acceptance_proven_by_static_validation": false
+  }
+}

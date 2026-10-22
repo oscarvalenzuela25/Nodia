@@ -18,7 +18,6 @@ export class ActionFilterDto implements RansackFilter<Action> {
   @IsString()
   description_cont?: string;
 
-
   @IsOptional()
   @Transform(({ value }) => {
     if (value === 'true' || value === true) return true;

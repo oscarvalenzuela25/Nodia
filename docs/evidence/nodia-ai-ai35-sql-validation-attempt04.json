@@ -1,0 +1,2141 @@
+{
+  "task": "AI-35",
+  "status": "passed",
+  "scope": "compiled_use_cases_disposable_postgresql16_synthetic_content",
+  "checks": 47,
+  "passed": [
+    "title search is case insensitive and preserves Unicode",
+    "owner text is searchable",
+    "assistant text is searchable",
+    "SQL wildcard and escape metacharacters stay literal",
+    "SQL-looking text does not alter the query",
+    "image interpretation text is excluded from search",
+    "pdf interpretation text is excluded from search",
+    "audio interpretation text is excluded from search",
+    "a user message authored by somebody other than the chat owner is excluded",
+    "module-restricted message text is absent without current assignment",
+    "a current destination module assignment enables its text",
+    "revocation removes search matches immediately on the next page request",
+    "malformed source manifest is excluded without SQL failure: extra_key",
+    "malformed source manifest is excluded without SQL failure: wrong_version",
+    "malformed source manifest is excluded without SQL failure: string_routes",
+    "malformed source manifest is excluded without SQL failure: object_routes",
+    "malformed source manifest is excluded without SQL failure: null_routes",
+    "malformed source manifest is excluded without SQL failure: non_string_route",
+    "malformed source manifest is excluded without SQL failure: overlong_routes",
+    "ordinary search excludes foreign titles and messages",
+    "ordinary all scope is rejected",
+    "super_admin still defaults to own conversations",
+    "explicit super_admin foreign search remains read-only",
+    "foreign inspection is audited without message content",
+    "expired title and body disappear before a scheduler purge",
+    "expiring title and body disappear before a scheduler purge",
+    "rename, pin and archive share one optimistic revision",
+    "archived false filter excludes archived matches",
+    "explicit archived and pinned filters include the changed chat",
+    "organization never renews retention",
+    "stale organization revision is rejected",
+    "super_admin inspection does not impersonate the owner for organization",
+    "expired chat organization is rejected",
+    "cursor pagination preserves microseconds and UUID ties without duplicates",
+    "an impossible calendar date is rejected before PostgreSQL casting",
+    "a cursor is bound to search and organization filters",
+    "a cursor cannot be reused by a different actor",
+    "current session revocation is checked before cursor results",
+    "the AI35 migration installs its text index in public",
+    "the available pg_trgm extension is trusted",
+    "down removes only its index and retains the shared extension",
+    "a nonsuperuser with database CREATE can install trusted pg_trgm",
+    "a shared extension in another schema is rejected without moving it",
+    "text search candidate index reduces rare body search median by at least half",
+    "indexed search returns the real expected body match",
+    "a populated index rollback preserves every message part",
+    "a populated index can be installed again with the shared extension intact"
+  ],
+  "database": {
+    "migrations": 29,
+    "nodia_ai_tables": 21,
+    "nodia_ai_columns": 289
+  },
+  "volume": {
+    "conversations": 20023,
+    "messages": 200017,
+    "parts": 200017,
+    "text_bytes": "84000324"
+  },
+  "measurements": {
+    "method": "5 warm EXPLAIN ANALYZE BUFFERS samples, planner defaults, actual compiled list query",
+    "before_index": {
+      "RareBodyBenchmark": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1202.174,
+          1218.644,
+          1171.965,
+          1117.466,
+          1135.231
+        ],
+        "median_execution_ms": 1171.965,
+        "planning_ms": 0.781,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 1,
+          "loops": 1,
+          "shared_hit_blocks": 802438,
+          "shared_read_blocks": 2505,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 1,
+              "loops": 1,
+              "shared_hit_blocks": 802438,
+              "shared_read_blocks": 2505,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 1,
+                  "loops": 1,
+                  "shared_hit_blocks": 802437,
+                  "shared_read_blocks": 2505,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 1,
+                      "loops": 1,
+                      "shared_hit_blocks": 802437,
+                      "shared_read_blocks": 2505,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 1,
+                          "loops": 1,
+                          "shared_hit_blocks": 801791,
+                          "shared_read_blocks": 2505,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 1,
+                              "loops": 1,
+                              "shared_hit_blocks": 801788,
+                              "shared_read_blocks": 2505,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 1752,
+                                  "shared_read_blocks": 2505
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 0,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 1,
+                              "loops": 1,
+                              "shared_hit_blocks": 3,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "RareTitleBenchmark": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1120.697,
+          1113.688,
+          1150.771,
+          1150.199,
+          1119.4
+        ],
+        "median_execution_ms": 1120.697,
+        "planning_ms": 0.808,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 1,
+          "loops": 1,
+          "shared_hit_blocks": 802543,
+          "shared_read_blocks": 2397,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 1,
+              "loops": 1,
+              "shared_hit_blocks": 802543,
+              "shared_read_blocks": 2397,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 1,
+                  "loops": 1,
+                  "shared_hit_blocks": 802542,
+                  "shared_read_blocks": 2397,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 1,
+                      "loops": 1,
+                      "shared_hit_blocks": 802542,
+                      "shared_read_blocks": 2397,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 801896,
+                          "shared_read_blocks": 2397,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 801896,
+                              "shared_read_blocks": 2397,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 1860,
+                                  "shared_read_blocks": 2397
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 0,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "AbsentBenchmarkPhrase": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1137.427,
+          1151.129,
+          1179.927,
+          1204.96,
+          1178.548
+        ],
+        "median_execution_ms": 1178.548,
+        "planning_ms": 0.771,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 0,
+          "loops": 1,
+          "shared_hit_blocks": 802453,
+          "shared_read_blocks": 2486,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 0,
+              "loops": 1,
+              "shared_hit_blocks": 802453,
+              "shared_read_blocks": 2486,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 0,
+                  "loops": 1,
+                  "shared_hit_blocks": 802453,
+                  "shared_read_blocks": 2486,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 0,
+                      "loops": 1,
+                      "shared_hit_blocks": 802453,
+                      "shared_read_blocks": 2486,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 801807,
+                          "shared_read_blocks": 2486,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 801807,
+                              "shared_read_blocks": 2486,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 1771,
+                                  "shared_read_blocks": 2486
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 0,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "Synthetic": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1313.933,
+          1453.045,
+          1371.092,
+          1367.23,
+          1365.62
+        ],
+        "median_execution_ms": 1367.23,
+        "planning_ms": 0.808,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 26,
+          "loops": 1,
+          "shared_hit_blocks": 1402490,
+          "shared_read_blocks": 2475,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 26,
+              "loops": 1,
+              "shared_hit_blocks": 1402490,
+              "shared_read_blocks": 2475,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 26,
+                  "loops": 1,
+                  "shared_hit_blocks": 1402464,
+                  "shared_read_blocks": 2475,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 10014,
+                      "loops": 1,
+                      "shared_hit_blocks": 1402464,
+                      "shared_read_blocks": 2475,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 100000,
+                          "loops": 1,
+                          "shared_hit_blocks": 1401818,
+                          "shared_read_blocks": 2475,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 200000,
+                              "loops": 1,
+                              "shared_hit_blocks": 801818,
+                              "shared_read_blocks": 2475,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 1782,
+                                  "shared_read_blocks": 2475
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 1,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 200000,
+                              "shared_hit_blocks": 600000,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "searchable message body": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1375.789,
+          1421.045,
+          1324.094,
+          1332.595,
+          1336.941
+        ],
+        "median_execution_ms": 1336.941,
+        "planning_ms": 0.784,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 26,
+          "loops": 1,
+          "shared_hit_blocks": 1402517,
+          "shared_read_blocks": 2448,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 26,
+              "loops": 1,
+              "shared_hit_blocks": 1402517,
+              "shared_read_blocks": 2448,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 26,
+                  "loops": 1,
+                  "shared_hit_blocks": 1402491,
+                  "shared_read_blocks": 2448,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 10000,
+                      "loops": 1,
+                      "shared_hit_blocks": 1402491,
+                      "shared_read_blocks": 2448,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 100000,
+                          "loops": 1,
+                          "shared_hit_blocks": 1401845,
+                          "shared_read_blocks": 2448,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 200000,
+                              "loops": 1,
+                              "shared_hit_blocks": 801845,
+                              "shared_read_blocks": 2448,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 1809,
+                                  "shared_read_blocks": 2448
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 1,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 200000,
+                              "shared_hit_blocks": 600000,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "xy": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1202.953,
+          1159.062,
+          1135.916,
+          1112.041,
+          1075.393
+        ],
+        "median_execution_ms": 1135.916,
+        "planning_ms": 0.763,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 0,
+          "loops": 1,
+          "shared_hit_blocks": 802491,
+          "shared_read_blocks": 2448,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 0,
+              "loops": 1,
+              "shared_hit_blocks": 802491,
+              "shared_read_blocks": 2448,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 0,
+                  "loops": 1,
+                  "shared_hit_blocks": 802491,
+                  "shared_read_blocks": 2448,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 0,
+                      "loops": 1,
+                      "shared_hit_blocks": 802491,
+                      "shared_read_blocks": 2448,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 801845,
+                          "shared_read_blocks": 2448,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 801845,
+                              "shared_read_blocks": 2448,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 1809,
+                                  "shared_read_blocks": 2448
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 0,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "after_index": {
+      "RareBodyBenchmark": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          7.852,
+          7.701,
+          7.573,
+          7.974,
+          7.972
+        ],
+        "median_execution_ms": 7.852,
+        "planning_ms": 0.777,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 1,
+          "loops": 1,
+          "shared_hit_blocks": 679,
+          "shared_read_blocks": 0,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 1,
+              "loops": 1,
+              "shared_hit_blocks": 679,
+              "shared_read_blocks": 0,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 1,
+                  "loops": 1,
+                  "shared_hit_blocks": 678,
+                  "shared_read_blocks": 0,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 1,
+                      "loops": 1,
+                      "shared_hit_blocks": 678,
+                      "shared_read_blocks": 0,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 1,
+                          "loops": 1,
+                          "shared_hit_blocks": 32,
+                          "shared_read_blocks": 0,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 1,
+                              "loops": 1,
+                              "shared_hit_blocks": 28,
+                              "shared_read_blocks": 0,
+                              "plans": [
+                                {
+                                  "node": "Bitmap Heap Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": null,
+                                  "rows": 1,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 25,
+                                  "shared_read_blocks": 0,
+                                  "plans": [
+                                    {
+                                      "node": "Bitmap Index Scan",
+                                      "relation": null,
+                                      "index": "ix_nodia_ai_message_parts_text_search",
+                                      "rows": 1,
+                                      "loops": 1,
+                                      "shared_hit_blocks": 24,
+                                      "shared_read_blocks": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_conversations",
+                                  "index": "nodia_ai_conversations_pkey",
+                                  "rows": 1,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 3,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_messages",
+                              "index": "nodia_ai_messages_conversation_id_author_id_client_message__key",
+                              "rows": 7,
+                              "loops": 1,
+                              "shared_hit_blocks": 4,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "RareTitleBenchmark": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          9.297,
+          6.999,
+          6.978,
+          6.948,
+          6.999
+        ],
+        "median_execution_ms": 6.999,
+        "planning_ms": 0.775,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 1,
+          "loops": 1,
+          "shared_hit_blocks": 666,
+          "shared_read_blocks": 0,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 1,
+              "loops": 1,
+              "shared_hit_blocks": 666,
+              "shared_read_blocks": 0,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 1,
+                  "loops": 1,
+                  "shared_hit_blocks": 665,
+                  "shared_read_blocks": 0,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 1,
+                      "loops": 1,
+                      "shared_hit_blocks": 665,
+                      "shared_read_blocks": 0,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 19,
+                          "shared_read_blocks": 0,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 19,
+                              "shared_read_blocks": 0,
+                              "plans": [
+                                {
+                                  "node": "Bitmap Heap Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": null,
+                                  "rows": 0,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 19,
+                                  "shared_read_blocks": 0,
+                                  "plans": [
+                                    {
+                                      "node": "Bitmap Index Scan",
+                                      "relation": null,
+                                      "index": "ix_nodia_ai_message_parts_text_search",
+                                      "rows": 0,
+                                      "loops": 1,
+                                      "shared_hit_blocks": 19,
+                                      "shared_read_blocks": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_conversations",
+                                  "index": "nodia_ai_conversations_pkey",
+                                  "rows": 0,
+                                  "loops": 0,
+                                  "shared_hit_blocks": 0,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_messages",
+                              "index": "nodia_ai_messages_conversation_id_author_id_client_message__key",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "AbsentBenchmarkPhrase": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          7.016,
+          7.072,
+          6.996,
+          7.053,
+          6.982
+        ],
+        "median_execution_ms": 7.016,
+        "planning_ms": 0.76,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 0,
+          "loops": 1,
+          "shared_hit_blocks": 666,
+          "shared_read_blocks": 0,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 0,
+              "loops": 1,
+              "shared_hit_blocks": 666,
+              "shared_read_blocks": 0,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 0,
+                  "loops": 1,
+                  "shared_hit_blocks": 666,
+                  "shared_read_blocks": 0,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 0,
+                      "loops": 1,
+                      "shared_hit_blocks": 666,
+                      "shared_read_blocks": 0,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 20,
+                          "shared_read_blocks": 0,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 20,
+                              "shared_read_blocks": 0,
+                              "plans": [
+                                {
+                                  "node": "Bitmap Heap Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": null,
+                                  "rows": 0,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 20,
+                                  "shared_read_blocks": 0,
+                                  "plans": [
+                                    {
+                                      "node": "Bitmap Index Scan",
+                                      "relation": null,
+                                      "index": "ix_nodia_ai_message_parts_text_search",
+                                      "rows": 0,
+                                      "loops": 1,
+                                      "shared_hit_blocks": 20,
+                                      "shared_read_blocks": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_conversations",
+                                  "index": "nodia_ai_conversations_pkey",
+                                  "rows": 0,
+                                  "loops": 0,
+                                  "shared_hit_blocks": 0,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_messages",
+                              "index": "nodia_ai_messages_conversation_id_author_id_client_message__key",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "Synthetic": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1359.782,
+          1415.924,
+          1349.046,
+          1433.02,
+          1371.647
+        ],
+        "median_execution_ms": 1371.647,
+        "planning_ms": 1.026,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 26,
+          "loops": 1,
+          "shared_hit_blocks": 1400873,
+          "shared_read_blocks": 4092,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 26,
+              "loops": 1,
+              "shared_hit_blocks": 1400873,
+              "shared_read_blocks": 4092,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 26,
+                  "loops": 1,
+                  "shared_hit_blocks": 1400847,
+                  "shared_read_blocks": 4092,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 10014,
+                      "loops": 1,
+                      "shared_hit_blocks": 1400847,
+                      "shared_read_blocks": 4092,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 100000,
+                          "loops": 1,
+                          "shared_hit_blocks": 1400201,
+                          "shared_read_blocks": 4092,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 200000,
+                              "loops": 1,
+                              "shared_hit_blocks": 800201,
+                              "shared_read_blocks": 4092,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 165,
+                                  "shared_read_blocks": 4092
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 1,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 200000,
+                              "shared_hit_blocks": 600000,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "searchable message body": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1585.626,
+          1452.66,
+          1355.557,
+          1427.986,
+          1483.633
+        ],
+        "median_execution_ms": 1452.66,
+        "planning_ms": 0.848,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 26,
+          "loops": 1,
+          "shared_hit_blocks": 1400969,
+          "shared_read_blocks": 3996,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 26,
+              "loops": 1,
+              "shared_hit_blocks": 1400969,
+              "shared_read_blocks": 3996,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 26,
+                  "loops": 1,
+                  "shared_hit_blocks": 1400943,
+                  "shared_read_blocks": 3996,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 10000,
+                      "loops": 1,
+                      "shared_hit_blocks": 1400943,
+                      "shared_read_blocks": 3996,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 100000,
+                          "loops": 1,
+                          "shared_hit_blocks": 1400297,
+                          "shared_read_blocks": 3996,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 200000,
+                              "loops": 1,
+                              "shared_hit_blocks": 800297,
+                              "shared_read_blocks": 3996,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 261,
+                                  "shared_read_blocks": 3996
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 1,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 200000,
+                              "shared_hit_blocks": 600000,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "xy": {
+        "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+        "samples": [
+          1204.116,
+          1094.729,
+          1093.751,
+          1092.11,
+          1189.938
+        ],
+        "median_execution_ms": 1094.729,
+        "planning_ms": 0.803,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 0,
+          "loops": 1,
+          "shared_hit_blocks": 801135,
+          "shared_read_blocks": 3804,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 0,
+              "loops": 1,
+              "shared_hit_blocks": 801135,
+              "shared_read_blocks": 3804,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 0,
+                  "loops": 1,
+                  "shared_hit_blocks": 801135,
+                  "shared_read_blocks": 3804,
+                  "plans": [
+                    {
+                      "node": "Seq Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": null,
+                      "rows": 0,
+                      "loops": 1,
+                      "shared_hit_blocks": 801135,
+                      "shared_read_blocks": 3804,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 800489,
+                          "shared_read_blocks": 3804,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 800489,
+                              "shared_read_blocks": 3804,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 453,
+                                  "shared_read_blocks": 3804
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 0,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "correlated_after_index": {
+      "RareBodyBenchmark": {
+        "query_sha256": "c5d0e168e8974e4a24e6b5afd3b5bf60b8fb0b8c517024791befea2bc0069ac9",
+        "samples": [
+          561.086,
+          541.6,
+          734.85,
+          692.657,
+          696.895
+        ],
+        "median_execution_ms": 692.657,
+        "planning_ms": 1.611,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 1,
+          "loops": 1,
+          "shared_hit_blocks": 10103,
+          "shared_read_blocks": 0,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 1,
+              "loops": 1,
+              "shared_hit_blocks": 10103,
+              "shared_read_blocks": 0,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 1,
+                  "loops": 1,
+                  "shared_hit_blocks": 10102,
+                  "shared_read_blocks": 0,
+                  "plans": [
+                    {
+                      "node": "Index Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": "nodia_ai_conversations_owner_id_client_request_id_key",
+                      "rows": 1,
+                      "loops": 1,
+                      "shared_hit_blocks": 10102,
+                      "shared_read_blocks": 0,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 1,
+                          "loops": 1,
+                          "shared_hit_blocks": 32,
+                          "shared_read_blocks": 0,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 1,
+                              "loops": 1,
+                              "shared_hit_blocks": 28,
+                              "shared_read_blocks": 0,
+                              "plans": [
+                                {
+                                  "node": "Bitmap Heap Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": null,
+                                  "rows": 1,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 25,
+                                  "shared_read_blocks": 0,
+                                  "plans": [
+                                    {
+                                      "node": "Bitmap Index Scan",
+                                      "relation": null,
+                                      "index": "ix_nodia_ai_message_parts_text_search",
+                                      "rows": 1,
+                                      "loops": 1,
+                                      "shared_hit_blocks": 24,
+                                      "shared_read_blocks": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_conversations",
+                                  "index": "nodia_ai_conversations_pkey",
+                                  "rows": 1,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 3,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_messages",
+                              "index": "nodia_ai_messages_conversation_id_author_id_client_message__key",
+                              "rows": 7,
+                              "loops": 1,
+                              "shared_hit_blocks": 4,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "RareTitleBenchmark": {
+        "query_sha256": "c5d0e168e8974e4a24e6b5afd3b5bf60b8fb0b8c517024791befea2bc0069ac9",
+        "samples": [
+          813.425,
+          595.96,
+          553.69,
+          606.513,
+          679.468
+        ],
+        "median_execution_ms": 606.513,
+        "planning_ms": 4.337,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 1,
+          "loops": 1,
+          "shared_hit_blocks": 10091,
+          "shared_read_blocks": 0,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 1,
+              "loops": 1,
+              "shared_hit_blocks": 10091,
+              "shared_read_blocks": 0,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 1,
+                  "loops": 1,
+                  "shared_hit_blocks": 10089,
+                  "shared_read_blocks": 0,
+                  "plans": [
+                    {
+                      "node": "Index Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": "nodia_ai_conversations_owner_id_client_request_id_key",
+                      "rows": 1,
+                      "loops": 1,
+                      "shared_hit_blocks": 10089,
+                      "shared_read_blocks": 0,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 19,
+                          "shared_read_blocks": 0,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 19,
+                              "shared_read_blocks": 0,
+                              "plans": [
+                                {
+                                  "node": "Bitmap Heap Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": null,
+                                  "rows": 0,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 19,
+                                  "shared_read_blocks": 0,
+                                  "plans": [
+                                    {
+                                      "node": "Bitmap Index Scan",
+                                      "relation": null,
+                                      "index": "ix_nodia_ai_message_parts_text_search",
+                                      "rows": 0,
+                                      "loops": 1,
+                                      "shared_hit_blocks": 19,
+                                      "shared_read_blocks": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_conversations",
+                                  "index": "nodia_ai_conversations_pkey",
+                                  "rows": 0,
+                                  "loops": 0,
+                                  "shared_hit_blocks": 0,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_messages",
+                              "index": "nodia_ai_messages_conversation_id_author_id_client_message__key",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "AbsentBenchmarkPhrase": {
+        "query_sha256": "c5d0e168e8974e4a24e6b5afd3b5bf60b8fb0b8c517024791befea2bc0069ac9",
+        "samples": [
+          727.56,
+          750.366,
+          789.872,
+          787.963,
+          741.881
+        ],
+        "median_execution_ms": 750.366,
+        "planning_ms": 1.901,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 0,
+          "loops": 1,
+          "shared_hit_blocks": 10090,
+          "shared_read_blocks": 0,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 0,
+              "loops": 1,
+              "shared_hit_blocks": 10090,
+              "shared_read_blocks": 0,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 0,
+                  "loops": 1,
+                  "shared_hit_blocks": 10090,
+                  "shared_read_blocks": 0,
+                  "plans": [
+                    {
+                      "node": "Index Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": "nodia_ai_conversations_owner_id_client_request_id_key",
+                      "rows": 0,
+                      "loops": 1,
+                      "shared_hit_blocks": 10090,
+                      "shared_read_blocks": 0,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 20,
+                          "shared_read_blocks": 0,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 20,
+                              "shared_read_blocks": 0,
+                              "plans": [
+                                {
+                                  "node": "Bitmap Heap Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": null,
+                                  "rows": 0,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 20,
+                                  "shared_read_blocks": 0,
+                                  "plans": [
+                                    {
+                                      "node": "Bitmap Index Scan",
+                                      "relation": null,
+                                      "index": "ix_nodia_ai_message_parts_text_search",
+                                      "rows": 0,
+                                      "loops": 1,
+                                      "shared_hit_blocks": 20,
+                                      "shared_read_blocks": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_conversations",
+                                  "index": "nodia_ai_conversations_pkey",
+                                  "rows": 0,
+                                  "loops": 0,
+                                  "shared_hit_blocks": 0,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_messages",
+                              "index": "nodia_ai_messages_conversation_id_author_id_client_message__key",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "Synthetic": {
+        "query_sha256": "c5d0e168e8974e4a24e6b5afd3b5bf60b8fb0b8c517024791befea2bc0069ac9",
+        "samples": [
+          4872.547,
+          4654.527,
+          4253.5,
+          4389.158,
+          4407.721
+        ],
+        "median_execution_ms": 4407.721,
+        "planning_ms": 1.667,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 26,
+          "loops": 1,
+          "shared_hit_blocks": 1410896,
+          "shared_read_blocks": 3519,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 26,
+              "loops": 1,
+              "shared_hit_blocks": 1410896,
+              "shared_read_blocks": 3519,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 26,
+                  "loops": 1,
+                  "shared_hit_blocks": 1410844,
+                  "shared_read_blocks": 3519,
+                  "plans": [
+                    {
+                      "node": "Index Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": "nodia_ai_conversations_owner_id_client_request_id_key",
+                      "rows": 10014,
+                      "loops": 1,
+                      "shared_hit_blocks": 1410844,
+                      "shared_read_blocks": 3519,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 100000,
+                          "loops": 1,
+                          "shared_hit_blocks": 1400774,
+                          "shared_read_blocks": 3519,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 200000,
+                              "loops": 1,
+                              "shared_hit_blocks": 800774,
+                              "shared_read_blocks": 3519,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 738,
+                                  "shared_read_blocks": 3519
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 1,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 200000,
+                              "shared_hit_blocks": 600000,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "searchable message body": {
+        "query_sha256": "c5d0e168e8974e4a24e6b5afd3b5bf60b8fb0b8c517024791befea2bc0069ac9",
+        "samples": [
+          4541.533,
+          4327.584,
+          4519.907,
+          4445.526,
+          4445.367
+        ],
+        "median_execution_ms": 4445.526,
+        "planning_ms": 1.681,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 26,
+          "loops": 1,
+          "shared_hit_blocks": 1411056,
+          "shared_read_blocks": 3359,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 26,
+              "loops": 1,
+              "shared_hit_blocks": 1411056,
+              "shared_read_blocks": 3359,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 26,
+                  "loops": 1,
+                  "shared_hit_blocks": 1411004,
+                  "shared_read_blocks": 3359,
+                  "plans": [
+                    {
+                      "node": "Index Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": "nodia_ai_conversations_owner_id_client_request_id_key",
+                      "rows": 10000,
+                      "loops": 1,
+                      "shared_hit_blocks": 1411004,
+                      "shared_read_blocks": 3359,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 100000,
+                          "loops": 1,
+                          "shared_hit_blocks": 1400934,
+                          "shared_read_blocks": 3359,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 200000,
+                              "loops": 1,
+                              "shared_hit_blocks": 800934,
+                              "shared_read_blocks": 3359,
+                              "plans": [
+                                {
+                                  "node": "Seq Scan",
+                                  "relation": "nodia_ai_messages",
+                                  "index": null,
+                                  "rows": 200009,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 898,
+                                  "shared_read_blocks": 3359
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": "nodia_ai_message_parts_pkey",
+                                  "rows": 1,
+                                  "loops": 200009,
+                                  "shared_hit_blocks": 800036,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_conversations",
+                              "index": "nodia_ai_conversations_pkey",
+                              "rows": 0,
+                              "loops": 200000,
+                              "shared_hit_blocks": 600000,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "xy": {
+        "query_sha256": "c5d0e168e8974e4a24e6b5afd3b5bf60b8fb0b8c517024791befea2bc0069ac9",
+        "samples": [
+          2277.215,
+          2265.598,
+          2327.735,
+          2403.287,
+          2046.386
+        ],
+        "median_execution_ms": 2277.215,
+        "planning_ms": 2.305,
+        "plan": {
+          "node": "Limit",
+          "relation": null,
+          "index": null,
+          "rows": 0,
+          "loops": 1,
+          "shared_hit_blocks": 22591,
+          "shared_read_blocks": 1665,
+          "plans": [
+            {
+              "node": "LockRows",
+              "relation": null,
+              "index": null,
+              "rows": 0,
+              "loops": 1,
+              "shared_hit_blocks": 22591,
+              "shared_read_blocks": 1665,
+              "plans": [
+                {
+                  "node": "Sort",
+                  "relation": null,
+                  "index": null,
+                  "rows": 0,
+                  "loops": 1,
+                  "shared_hit_blocks": 22591,
+                  "shared_read_blocks": 1665,
+                  "plans": [
+                    {
+                      "node": "Index Scan",
+                      "relation": "nodia_ai_conversations",
+                      "index": "nodia_ai_conversations_owner_id_client_request_id_key",
+                      "rows": 0,
+                      "loops": 1,
+                      "shared_hit_blocks": 22591,
+                      "shared_read_blocks": 1665,
+                      "plans": [
+                        {
+                          "node": "Nested Loop",
+                          "relation": null,
+                          "index": null,
+                          "rows": 0,
+                          "loops": 1,
+                          "shared_hit_blocks": 12521,
+                          "shared_read_blocks": 1665,
+                          "plans": [
+                            {
+                              "node": "Nested Loop",
+                              "relation": null,
+                              "index": null,
+                              "rows": 0,
+                              "loops": 1,
+                              "shared_hit_blocks": 12521,
+                              "shared_read_blocks": 1665,
+                              "plans": [
+                                {
+                                  "node": "Bitmap Heap Scan",
+                                  "relation": "nodia_ai_message_parts",
+                                  "index": null,
+                                  "rows": 0,
+                                  "loops": 1,
+                                  "shared_hit_blocks": 12521,
+                                  "shared_read_blocks": 1665,
+                                  "plans": [
+                                    {
+                                      "node": "Bitmap Index Scan",
+                                      "relation": null,
+                                      "index": "ix_nodia_ai_message_parts_text_search",
+                                      "rows": 200014,
+                                      "loops": 1,
+                                      "shared_hit_blocks": 20,
+                                      "shared_read_blocks": 1665
+                                    }
+                                  ]
+                                },
+                                {
+                                  "node": "Index Scan",
+                                  "relation": "nodia_ai_conversations",
+                                  "index": "nodia_ai_conversations_pkey",
+                                  "rows": 0,
+                                  "loops": 0,
+                                  "shared_hit_blocks": 0,
+                                  "shared_read_blocks": 0
+                                }
+                              ]
+                            },
+                            {
+                              "node": "Index Scan",
+                              "relation": "nodia_ai_messages",
+                              "index": "nodia_ai_messages_conversation_id_author_id_client_message__key",
+                              "rows": 0,
+                              "loops": 0,
+                              "shared_hit_blocks": 0,
+                              "shared_read_blocks": 0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "summary": {
+      "RareBodyBenchmark": {
+        "before_ms": 1171.965,
+        "after_ms": 7.852,
+        "ratio": 0.006699858784178709
+      },
+      "RareTitleBenchmark": {
+        "before_ms": 1120.697,
+        "after_ms": 6.999,
+        "ratio": 0.006245220608246476
+      },
+      "AbsentBenchmarkPhrase": {
+        "before_ms": 1178.548,
+        "after_ms": 7.016,
+        "ratio": 0.0059530880371440114
+      },
+      "Synthetic": {
+        "before_ms": 1367.23,
+        "after_ms": 1371.647,
+        "ratio": 1.003230619573883
+      },
+      "searchable message body": {
+        "before_ms": 1336.941,
+        "after_ms": 1452.66,
+        "ratio": 1.08655505366355
+      },
+      "xy": {
+        "before_ms": 1135.916,
+        "after_ms": 1094.729,
+        "ratio": 0.9637411569165326
+      }
+    },
+    "candidate_index": {
+      "name": "ix_nodia_ai_message_parts_text_search",
+      "kind": "partial_gin_pg_trgm_on_text",
+      "bytes": "13795328"
+    }
+  },
+  "configured_database_touched": false,
+  "providers_called": false,
+  "r2_called": false,
+  "services_restarted": false,
+  "cleanup": {
+    "disposable_postgresql_removed": true
+  },
+  "limitations": [
+    "Synthetic laboratory corpus and warm-cache timings; no production percentiles or cold-disk guarantee.",
+    "Queries shorter than three characters have fewer useful trigrams and remain bounded by existing statement timeout.",
+    "Cursor order reflects current metadata; concurrent rename/pin/archive can move a chat between pages."
+  ],
+  "source_harness_sha256": "432ad77eb3ca87b666f6db7c22eff764735fc899be04f5757bd167273f976a85",
+  "compiled_stage_manifest_sha256": "b63561f3707653edb1a469c332bc5bd58a11fa0410b3f4ed2c20bf43019c82aa",
+  "compiled_stage_parity": {
+    "task": "AI-35",
+    "scope": "disposable_compiled_sql_stage_parity",
+    "status": "passed",
+    "files_verified": 2732,
+    "dist_files_verified": 2730,
+    "drift_count": 0,
+    "local_manifest_sha256": "b63561f3707653edb1a469c332bc5bd58a11fa0410b3f4ed2c20bf43019c82aa"
+  },
+  "dependency_parity": {
+    "task": "AI-35",
+    "scope": "compiled_sql_dependency_parity",
+    "status": "passed",
+    "versions": {
+      "@nestjs/common": {
+        "sql_stage": "12.0.1",
+        "runtime": "12.0.1"
+      },
+      "@nestjs/core": {
+        "sql_stage": "12.0.1",
+        "runtime": "12.0.1"
+      },
+      "@nestjs/testing": {
+        "sql_stage": "12.0.1",
+        "runtime": null
+      },
+      "@nestjs/typeorm": {
+        "sql_stage": "12.0.1",
+        "runtime": "12.0.1"
+      },
+      "typeorm": {
+        "sql_stage": "1.1.1",
+        "runtime": "1.1.1"
+      },
+      "pg": {
+        "sql_stage": "8.23.0",
+        "runtime": "8.23.0"
+      },
+      "class-validator": {
+        "sql_stage": "0.15.1",
+        "runtime": "0.15.1"
+      },
+      "class-transformer": {
+        "sql_stage": "0.5.1",
+        "runtime": "0.5.1"
+      }
+    }
+  }
+}

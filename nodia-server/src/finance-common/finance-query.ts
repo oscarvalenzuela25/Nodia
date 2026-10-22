@@ -55,6 +55,7 @@ export function validateFinanceQuery(
 ): void {
   if (!query || typeof query !== 'object' || Array.isArray(query)) invalid();
   const allowed = [
+    'owner_id',
     'page',
     'limit',
     'active',

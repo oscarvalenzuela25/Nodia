@@ -16,5 +16,6 @@ import { UpdateProviderContactUseCase } from './use-case/update-provider-contact
     GetProviderContactsUseCase,
     UpdateProviderContactUseCase,
   ],
+  exports: [CreateProviderContactUseCase, UpdateProviderContactUseCase],
 })
 export class ProviderContactModule {}

@@ -1,0 +1,13 @@
+{
+  "stage": "AI-32-R02",
+  "status": "readiness_deadline_exceeded_rolled_back",
+  "readiness_window_seconds": 10,
+  "new_runtime_left_active": false,
+  "previous_runtime_restored": true,
+  "previous_api_worker_gemini_active_after_rollback": true,
+  "new_provider_generations": 0,
+  "business_writes": 0,
+  "new_migrations": 0,
+  "observed_diagnostic": "Candidate boot began; readiness not reached within 10s. No startup exception observed. Restored previous API needed approximately 11s from systemd start to Nest started. Exact candidate startup duration unknown because it was stopped at the deadline.",
+  "corrective_action": "Deployment readiness budget raised to 45 seconds; no application timeout or provider retry changed."
+}

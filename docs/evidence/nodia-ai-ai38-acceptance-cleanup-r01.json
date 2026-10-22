@@ -1,0 +1,20 @@
+{
+  "stage": "AI-38",
+  "scope": "owned_isolated_acceptance_cleanup",
+  "context": {
+    "environment_id": "ai38-isolated-ui-api-sql",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "checked_at_vm_utc": "2026-10-20T16:55:06.317316+00:00",
+  "backend_sha256": "62ea6af6100b636ed8d9a756a7b473e55d1257d9a2a86764bce60e1f80120809",
+  "owned_backend_processes_terminated": 1,
+  "owned_containers_before": [
+    "template_ai38_2106168_3ff7841f"
+  ],
+  "owned_containers_after": [],
+  "node_process_closed": true,
+  "disposable_database_removed": true,
+  "operational_services_touched": false,
+  "provider_requests": 0,
+  "candidate_files_modified": false
+}

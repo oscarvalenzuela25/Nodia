@@ -1,0 +1,55 @@
+{
+  "stage": "AI-29-R01",
+  "scope": "disposable_postgresql_real_private_gemini_login_and_model_discovery",
+  "authentication_acceptance_requested": true,
+  "observed_at_utc": "2026-10-18T00:49:14.124Z",
+  "checks": 14,
+  "passed": [
+    "token_plan_web: cancel-before-start obtains native terminal fence",
+    "token_plan_web: delayed start cannot bypass native cancellation",
+    "connection_login/token_plan_web: exact HTTP confirmation and SQL worker pause",
+    "token_plan_web: real native cancellation is reconciled in SQL",
+    "connection_login/token_plan_web: exact HTTP confirmation and SQL worker pause",
+    "token_plan_web: lost initial native response stays uncertain",
+    "token_plan_web: recovery observes the same request without redispatch",
+    "token_plan_web: existing real account completes authentication",
+    "token_plan_web: observed success produces only minimal SQL receipt",
+    "sync_models/token_plan_web: exact HTTP confirmation and SQL worker pause",
+    "token_plan_web: real discovery commits metadata and receipt atomically",
+    "token_plan_web: discovery does not invent a selected model",
+    "durable SQL records exclude credential and challenge fields",
+    "response-loss injection exercised every requested real engine"
+  ],
+  "reports": [
+    {
+      "mode": "token_plan_web",
+      "authentication_observed": true,
+      "discovered_model_count": 4
+    }
+  ],
+  "native_http": {
+    "start": 3,
+    "status": 14,
+    "cancel": 2,
+    "discovery": 1
+  },
+  "dropped_initial_responses": 1,
+  "native_container_restarts": 0,
+  "provider_transport_mocked": false,
+  "inference_requested": false,
+  "existing_account_logout": false,
+  "configured_database_written": false,
+  "credentials_or_challenges_recorded": false,
+  "status": "passed",
+  "process_exit_code": 0,
+  "cleanup_completed_without_reported_failure": true,
+  "source_log": ".tmp/ai29-r01-gemini-real-web-login-final.log",
+  "source_log_sha256": "5cd4405536548efc55126bafa633549ced993d03e6d42b4c10e5403854132e7e",
+  "process_completion_source": "Parent execution result: session 41696 completed with exit code 0; report emitted before successful final cleanup.",
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai29-gemini-real.integration.mjs",
+      "sha256": "76f9542454aef36bcf70b5be235b5059d4cb5c00b70185894363427319c42c02"
+    }
+  ]
+}

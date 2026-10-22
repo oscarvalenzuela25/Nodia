@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, type EntityManager } from 'typeorm';
 import { Provider } from '../provider/entities/provider.entity.js';
 import { ProviderContact } from './entities/provider-contact.entity.js';
 import type { ContactValues } from './types/provider-contact.types.js';
@@ -14,13 +14,21 @@ export class ProviderContactService {
     @InjectRepository(Provider)
     private readonly providers: Repository<Provider>,
   ) {}
-  providerExists(providerId: string) {
-    return this.providers.existsBy({ id: providerId });
+  providerExists(providerId: string, manager?: EntityManager) {
+    return (manager?.getRepository(Provider) ?? this.providers).existsBy({
+      id: providerId,
+    });
   }
-  async list(providerId: string, { page, limit, search }: ContactListDto) {
+  async list(
+    providerId: string,
+    { page, limit, search }: ContactListDto,
+    isActive?: boolean,
+  ) {
     const qb = this.contacts
       .createQueryBuilder('contact')
       .where('contact.provider_id = :providerId', { providerId });
+    if (isActive !== undefined)
+      qb.andWhere('contact.is_active = :isActive', { isActive });
     if (search?.trim())
       qb.andWhere("contact.name ILIKE :search ESCAPE '!'", {
         search: `%${search.trim().replace(/[!%_]/g, '!$&')}%`,
@@ -40,16 +48,20 @@ export class ProviderContactService {
       },
     };
   }
-  find(providerId: string, id: string) {
-    return this.contacts.findOneBy({ provider_id: providerId, id });
+  find(providerId: string, id: string, manager?: EntityManager) {
+    return (manager?.getRepository(ProviderContact) ?? this.contacts).findOneBy(
+      { provider_id: providerId, id },
+    );
   }
   async createOnce(
     providerId: string,
     key: string,
     hash: string,
     values: ContactValues,
+    manager?: EntityManager,
   ) {
-    await this.contacts
+    const repository = manager?.getRepository(ProviderContact) ?? this.contacts;
+    await repository
       .createQueryBuilder()
       .insert()
       .values({
@@ -60,7 +72,7 @@ export class ProviderContactService {
       })
       .orIgnore()
       .execute();
-    return this.contacts
+    return repository
       .createQueryBuilder('contact')
       .addSelect('contact.creation_hash')
       .where(
@@ -74,8 +86,11 @@ export class ProviderContactService {
     id: string,
     version: number,
     values: ContactValues,
+    manager?: EntityManager,
   ) {
-    const result = await this.contacts
+    const result = await (
+      manager?.getRepository(ProviderContact) ?? this.contacts
+    )
       .createQueryBuilder()
       .update()
       .set({

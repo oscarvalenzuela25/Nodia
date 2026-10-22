@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, type EntityManager } from 'typeorm';
 import { CreateInvoiceDto } from '../dto/create-invoice.dto.js';
 import { InvoiceService } from '../invoice.service.js';
 import { StorageService } from '../../common/storage/storage.service.js';
@@ -19,12 +19,22 @@ export class CreateInvoiceUseCase {
     private readonly recovery: RecoverInvoiceUploadsUseCase,
   ) {}
 
-  async execute(dto: CreateInvoiceDto, file?: Express.Multer.File) {
+  async execute(dto: CreateInvoiceDto, file?: Express.Multer.File, manager?: EntityManager) {
+    if (manager && !manager.queryRunner?.isTransactionActive)
+      throw new ConflictException('Invoice effect requires an active transaction');
+    // External storage never runs while the conversational effect transaction
+    // holds its authority and execution fences. A later attachment protocol
+    // must stage the object before entering this boundary.
+    if (manager && file)
+      throw new ConflictException('Invoice upload requires a separate storage phase');
     if (!file) {
-      return this.invoiceService.createInvoice({
+      const input = {
         ...dto,
         path_storage: dto.path_storage || '',
-      });
+      };
+      return manager
+        ? this.invoiceService.createInvoice(input, manager)
+        : this.invoiceService.createInvoice(input);
     }
 
     const extension = validateInvoiceFile(file);

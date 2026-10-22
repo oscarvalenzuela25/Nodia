@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Header, Param, Post, Put, Query, Req } from '@nestjs/common';
+import { actorReference } from '../authorization/authority-transaction.js';
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { SubmitGeminiAgenticCodeDto } from './dto/submit-gemini-agentic-code.dto.js';
 import { ManageGeminiAgenticLoginUseCase } from './use-case/manage-gemini-agentic-login.use-case.js';
 import { CreateAiProviderDto } from './dto/create-ai-provider.dto.js';
@@ -24,6 +35,7 @@ import type { AuthRequest } from '../auth/types/auth.types.js';
 import type { GeminiExecutionEngine } from '../common/ai/ai.types.js';
 import { ManageCodexSessionUseCase } from './use-case/manage-codex-session.use-case.js';
 import { CodexSessionDto } from './dto/codex-session.dto.js';
+import { GeminiLoginInputDto } from './dto/gemini-login-input.dto.js';
 
 @RequireAction('ai:manage')
 @Controller(['ai-provider', 'ai-providers'])
@@ -53,7 +65,11 @@ export class AiProviderController {
 
   @Post(':id/session/login')
   @Header('Cache-Control', 'no-store')
-  startCodexLogin(@Param('id') id: string, @Body() _dto: CodexSessionDto, @Req() request: AuthRequest) {
+  startCodexLogin(
+    @Param('id') id: string,
+    @Body() _dto: CodexSessionDto,
+    @Req() request: AuthRequest,
+  ) {
     return this.manageCodexSessionUseCase.start(id, request.auth.user.id);
   }
 
@@ -65,14 +81,30 @@ export class AiProviderController {
 
   @Get(':id/session/login/:jobId')
   @Header('Cache-Control', 'no-store')
-  codexLoginStatus(@Param('id') id: string, @Param('jobId') jobId: string, @Req() request: AuthRequest) {
-    return this.manageCodexSessionUseCase.status(id, jobId, request.auth.user.id);
+  codexLoginStatus(
+    @Param('id') id: string,
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+  ) {
+    return this.manageCodexSessionUseCase.status(
+      id,
+      jobId,
+      request.auth.user.id,
+    );
   }
 
   @Post(':id/session/login/:jobId/cancel')
   @Header('Cache-Control', 'no-store')
-  cancelCodexLogin(@Param('id') id: string, @Param('jobId') jobId: string, @Req() request: AuthRequest) {
-    return this.manageCodexSessionUseCase.cancel(id, jobId, request.auth.user.id);
+  cancelCodexLogin(
+    @Param('id') id: string,
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+  ) {
+    return this.manageCodexSessionUseCase.cancel(
+      id,
+      jobId,
+      request.auth.user.id,
+    );
   }
 
   @Post(':id/session/logout')
@@ -87,8 +119,15 @@ export class AiProviderController {
   }
 
   @Post('gemini-login/start')
+  @Header('Cache-Control', 'no-store')
   startGeminiLogin(@Req() request: AuthRequest) {
     return this.manageGeminiLoginUseCase.start(request.auth.user.id);
+  }
+
+  @Post('gemini-session/logout')
+  @Header('Cache-Control', 'no-store')
+  disconnectGeminiWeb(@Req() request: AuthRequest) {
+    return this.manageGeminiLoginUseCase.disconnect(request.auth.user.id);
   }
 
   @Post('gemini-agentic-login/start')
@@ -105,31 +144,81 @@ export class AiProviderController {
 
   @Get('gemini-agentic-login/:jobId')
   @Header('Cache-Control', 'no-store')
-  getGeminiAgenticLogin(@Param('jobId') jobId: string, @Req() request: AuthRequest) {
-    return this.manageGeminiAgenticLoginUseCase.status(jobId, request.auth.user.id);
+  getGeminiAgenticLogin(
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+  ) {
+    return this.manageGeminiAgenticLoginUseCase.status(
+      jobId,
+      request.auth.user.id,
+    );
   }
 
   @Post('gemini-agentic-login/:jobId/code')
   @Header('Cache-Control', 'no-store')
-  submitGeminiAgenticCode(@Param('jobId') jobId: string, @Body() dto: SubmitGeminiAgenticCodeDto,
-    @Req() request: AuthRequest) {
-    return this.manageGeminiAgenticLoginUseCase.submit(jobId, request.auth.user.id, dto);
+  submitGeminiAgenticCode(
+    @Param('jobId') jobId: string,
+    @Body() dto: SubmitGeminiAgenticCodeDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.manageGeminiAgenticLoginUseCase.submit(
+      jobId,
+      request.auth.user.id,
+      dto,
+    );
   }
 
   @Post('gemini-agentic-login/:jobId/cancel')
   @Header('Cache-Control', 'no-store')
-  cancelGeminiAgenticLogin(@Param('jobId') jobId: string, @Req() request: AuthRequest) {
-    return this.manageGeminiAgenticLoginUseCase.cancel(jobId, request.auth.user.id);
+  cancelGeminiAgenticLogin(
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+  ) {
+    return this.manageGeminiAgenticLoginUseCase.cancel(
+      jobId,
+      request.auth.user.id,
+    );
   }
 
   @Get('gemini-login/:jobId')
-  getGeminiLoginStatus(@Param('jobId') jobId: string) {
-    return this.manageGeminiLoginUseCase.status(jobId);
+  @Header('Cache-Control', 'no-store')
+  getGeminiLoginStatus(
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+  ) {
+    return this.manageGeminiLoginUseCase.status(jobId, request.auth.user.id);
   }
 
   @Post('gemini-login/:jobId/cancel')
-  cancelGeminiLogin(@Param('jobId') jobId: string, @Req() request: AuthRequest) {
+  @Header('Cache-Control', 'no-store')
+  cancelGeminiLogin(
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+  ) {
     return this.manageGeminiLoginUseCase.cancel(jobId, request.auth.user.id);
+  }
+
+  @Get('gemini-login/:jobId/frame')
+  @Header('Cache-Control', 'no-store')
+  getGeminiLoginFrame(
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+  ) {
+    return this.manageGeminiLoginUseCase.frame(jobId, request.auth.user.id);
+  }
+
+  @Post('gemini-login/:jobId/input')
+  @Header('Cache-Control', 'no-store')
+  sendGeminiLoginInput(
+    @Param('jobId') jobId: string,
+    @Req() request: AuthRequest,
+    @Body() dto: GeminiLoginInputDto,
+  ) {
+    return this.manageGeminiLoginUseCase.input(
+      jobId,
+      request.auth.user.id,
+      dto,
+    );
   }
 
   @Get(['catalog', 'provider-catalogs'])
@@ -138,16 +227,27 @@ export class AiProviderController {
   }
 
   @Post(['catalog', 'provider-catalogs'])
-  createCatalog(@Body() createDto: CreateAiProviderCatalogDto) {
-    return this.createAiProviderCatalogUseCase.execute(createDto);
+  createCatalog(
+    @Body() createDto: CreateAiProviderCatalogDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createAiProviderCatalogUseCase.execute(
+      createDto,
+      actorReference(request.auth),
+    );
   }
 
   @Put(['catalog/:id', 'provider-catalogs/:id'])
   updateCatalog(
     @Param('id') id: string,
     @Body() updateDto: UpdateAiProviderCatalogDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.updateAiProviderCatalogUseCase.execute(id, updateDto);
+    return this.updateAiProviderCatalogUseCase.execute(
+      id,
+      updateDto,
+      actorReference(request.auth),
+    );
   }
 
   @Get(['supported', 'supported-providers'])
@@ -171,8 +271,11 @@ export class AiProviderController {
   }
 
   @Post()
-  create(@Body() createDto: CreateAiProviderDto) {
-    return this.createAiProviderUseCase.execute(createDto);
+  create(@Body() createDto: CreateAiProviderDto, @Req() request: AuthRequest) {
+    return this.createAiProviderUseCase.execute(
+      createDto,
+      actorReference(request.auth),
+    );
   }
 
   @Post(':id/sync-models')
@@ -191,7 +294,15 @@ export class AiProviderController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateDto: UpdateAiProviderDto) {
-    return this.updateAiProviderUseCase.execute(id, updateDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateAiProviderDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateAiProviderUseCase.execute(
+      id,
+      updateDto,
+      actorReference(request.auth),
+    );
   }
 }

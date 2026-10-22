@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R02",
+  "scope": "derived_non_generative_metadata_diagnostics_not_MCP_acceptance",
+  "native_start_requests": 0,
+  "provider_inference_requests": 0,
+  "source_artifacts": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-diagnostic-report.json",
+      "sha256": "d76848e08993a0b16196fbab7f72f7c157271ec1612c29cc32a4fb7dd643c59e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-HTTP-observation.json",
+      "sha256": "ded36947cab55041d402ad10b2f64ea4017a024a01e78021d11bb21c8d5984a5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-post-SQL-quiet.json",
+      "sha256": "f6a7395204816e86607529d2227616eb7b5f71087c3f721824c6118188f2bd46"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-post-native-quiet.json",
+      "sha256": "dcc526974c69df648cf79534e996e273821b2c5b6b1db16bfc7db9aef86103a2"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-control01-report.json",
+      "sha256": "a269023c04d0e6d7fb9133dbfee3bf0a1db846d42054ed9601fb896d780ad38c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-report.json",
+      "sha256": "8c70fa63fa7569c99ffe5352a7cf1153c714f41bda1047547830edbedd8dacff"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-command-report.json",
+      "sha256": "de5c22f97dcec1e105699dbc5604b3d0fa2b00041ee127821e3e55e2b40a9791"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-post-SQL-quiet.json",
+      "sha256": "2c8e80d48bf0a3e744a3aded630a39614a9eedcc775011ff84f94727f1891a90"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-post-native-quiet.json",
+      "sha256": "5a1790c4acf0148e5ce998cdc4ae774fac19e1d3221e0459da6f9b6bbc6111a7"
+    }
+  ],
+  "derivation": {
+    "native_start_count_basis": "Supervised HTTP diagnostic reports native_MCP_start_requests=0 and provider_inference_requests=0; isolated CLI diagnostic runs only the exact /model metadata command, with observed_num_turns=0 and observed_total_tokens=0. The precondition failure reports command_requests=0. These are metadata commands, not accepted MCP starts.",
+    "source_clocks": "VM timestamps retained per source; no ordering against the workstation clock is inferred.",
+    "precondition_failure_preserved": {
+      "source": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-control01-report.json",
+        "sha256": "a269023c04d0e6d7fb9133dbfee3bf0a1db846d42054ed9601fb896d780ad38c"
+      },
+      "raw_status": "running",
+      "command_requests": 0,
+      "interpretation": "Precondition failed before CLI dispatch; original incomplete running label preserved, not treated as successful diagnostic."
+    },
+    "HTTP_metadata": {
+      "available": false,
+      "reason": "agentic_timeout",
+      "supports_mcp": false,
+      "scope": "One HTTP observation; not superseded by successful isolated model metadata command."
+    },
+    "isolated_model_command": {
+      "elapsed_ms": 3708.4605949930847,
+      "exact_model_match": true,
+      "command_data_validated": true,
+      "observed_num_turns": 0,
+      "observed_total_tokens": 0,
+      "stdout_bytes": 377,
+      "scope": "Successful exclusive non-generative metadata command; does not prove production metadata recovery, inference, or MCP support."
+    }
+  },
+  "MCP_acceptance": false,
+  "capability_acceptance": false,
+  "configured_SQL_business_writes": 0
+}

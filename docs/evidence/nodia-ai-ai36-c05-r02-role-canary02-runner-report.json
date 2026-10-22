@@ -1,0 +1,23 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "one_conditional_original_MCP_canary_same_successful_metadata_epoch",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T20:08:57.306392+00:00",
+  "source_sha256": "3579d25b10570895be364383c511c76dc1c00b833bf8320851b2330f3b131eda",
+  "metadata03_sha256": "22df70e1d14397b49e3a936ff3416c239df8bb2880d2775635dd7b1b57965f57",
+  "epoch": {
+    "image": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+    "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+    "started_at": "2026-10-19T20:05:13.415129549Z"
+  },
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "maximum_native_start_requests": 1,
+  "automatic_inference_retries": 0,
+  "services_restarted": false,
+  "business_effects": 0,
+  "canary_exit_code": 0,
+  "canary_report_sha256": "3040ded98df29d08f0e91008e173f4d970179fc6606bb651895d91fa18a95acd",
+  "canary_status": "passed",
+  "finished_at_utc": "2026-10-19T20:09:37.836977+00:00"
+}

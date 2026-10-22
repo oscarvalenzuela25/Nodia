@@ -1,0 +1,21 @@
+{
+  "stage": "AI-32-R02",
+  "scope": "harness_identity_projection_revision",
+  "provider_generations_requested_by_this_note": 0,
+  "initial_harness": {
+    "path": ".tmp/ai32-r02-native-probe-initial.py",
+    "sha256": "0c0d1d4d5e8a8478863ac632f36039e3f17c2eb4ad3b478f545e6a4a42030450",
+    "attempt_paths": [
+      "docs/evidence/nodia-ai-ai32-r02-web-audio-wav-es.json",
+      "docs/evidence/nodia-ai-ai32-r02-web-audio-webm-es.json"
+    ]
+  },
+  "current_harness": {
+    "path": "docs/evidence/scripts/nodia-ai-ai32-r02-native-probe.py",
+    "sha256": "8d91f4cc9f4064caeb0da7dc88a32d65265f4b8fad29f5ab79fa178a3007eb68"
+  },
+  "change": "Exact MIME evidence additionally requires a strict unique format list and matching resource/session in the post-canary observation. Later attempts pin the harness SHA and observed identity.",
+  "historical_attempts_rewritten": false,
+  "initial_success_is_not_current_evidence": "The first WAV passed in its recorded session; a later closed unknown attempt changed the session. Only separately revalidated final-session canaries can remain current.",
+  "raw_provider_content_stored": false
+}

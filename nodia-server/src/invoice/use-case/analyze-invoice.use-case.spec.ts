@@ -823,6 +823,28 @@ describe('AnalyzeInvoiceUseCase saved thinking options', () => {
     await useCase.execute(file, dto);
     expect(gemini.extractInvoiceData).toHaveBeenCalledWith(file.buffer, file.mimetype, undefined, 19, 'opaque-live-id', undefined, 'agentic');
   });
+  it.each(['low', 'medium', 'high'])('forwards configured Web %s without the historical boolean', async (level) => {
+    const { useCase, gemini } = setup('token_plan_web', { enable_extended_thinking: true,
+      thinking_levels: { 'opaque-live-id': level }, thinking_level: 'high' });
+    await useCase.execute(file, dto);
+    expect(gemini.extractInvoiceData).toHaveBeenCalledWith(file.buffer, file.mimetype, undefined, 19,
+      'opaque-live-id', undefined, 'web', level);
+  });
+  it('respects Web override, explicit clearing, and rejects invalid persisted values or mixed options', async () => {
+    const { useCase, gemini } = setup('token_plan_web', { enable_extended_thinking: true,
+      thinking_levels: { 'opaque-live-id': 'high' }, thinking_level: 'high' });
+    await useCase.execute(file, { ...dto, thinking_level: 'low' });
+    expect(gemini.extractInvoiceData.mock.lastCall?.slice(5)).toEqual([undefined, 'web', 'low']);
+    const cleared = setup('token_plan_web', { enable_extended_thinking: true, thinking_levels: { 'opaque-live-id': null }, thinking_level: 'high' });
+    await cleared.useCase.execute(file, dto);
+    expect(cleared.gemini.extractInvoiceData.mock.lastCall?.slice(5)).toEqual([undefined, 'web']);
+    for (const options of [{ thinking_level: 'invalid' }, { thinking_levels: [] }, { thinking_levels: { 'opaque-live-id': false } }]) {
+      const invalid = setup('token_plan_web', options);
+      await expect(invalid.useCase.execute(file, dto)).rejects.toBeInstanceOf(BadRequestException);
+      expect(invalid.gemini.extractInvoiceData).not.toHaveBeenCalled();
+    }
+    await expect(useCase.execute(file, { ...dto, extended_thinking: false })).rejects.toBeInstanceOf(BadRequestException);
+  });
 });
 
 

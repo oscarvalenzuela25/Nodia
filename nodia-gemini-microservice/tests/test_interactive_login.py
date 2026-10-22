@@ -14,15 +14,15 @@ class InteractiveLoginManagerTest(unittest.IsolatedAsyncioTestCase):
             await release.wait()
             return True
 
-        first = manager.start(login)
+        first = manager.start(login, "7")
         self.assertIsNotNone(first)
-        self.assertIsNone(manager.start(login))
-        self.assertEqual(manager.status(first["id"])["state"], "running")
-        self.assertIsNone(manager.status("unknown"))
+        self.assertIsNone(manager.start(login, "7"))
+        self.assertEqual(manager.status(first["id"], "7")["state"], "running")
+        self.assertIsNone(manager.status("unknown", "7"))
 
         release.set()
         await manager._task
-        self.assertEqual(manager.status(first["id"])["state"], "succeeded")
+        self.assertEqual(manager.status(first["id"], "7")["state"], "succeeded")
         await manager.close()
 
     async def test_cancel_stops_active_job(self):
@@ -32,8 +32,8 @@ class InteractiveLoginManagerTest(unittest.IsolatedAsyncioTestCase):
             await asyncio.Event().wait()
             return True
 
-        job = manager.start(login)
-        self.assertIsNone(manager.cancel("unknown"))
-        self.assertEqual(manager.cancel(job["id"])["state"], "cancelled")
+        job = manager.start(login, "7")
+        self.assertIsNone(manager.cancel("unknown", "7"))
+        self.assertEqual(manager.cancel(job["id"], "7")["state"], "cancelled")
         await manager.close()
-        self.assertEqual(manager.status(job["id"])["state"], "cancelled")
+        self.assertEqual(manager.status(job["id"], "7")["state"], "cancelled")

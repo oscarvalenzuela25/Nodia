@@ -1,0 +1,269 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "374de421303d5ef545192b578eae05830155864659ceb91b0a28407d1ca0b131",
+  "source_completed_at_utc": "2026-10-19T18:49:22.915Z",
+  "provider_generations": 2,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:45:11.340Z",
+        "monotonic_ms": 8985.055746
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:45:16.484Z",
+        "monotonic_ms": 14128.490673
+      },
+      "elapsed_ms": 5143.434927
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:45:16.808Z",
+        "monotonic_ms": 14452.27489
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:45:16.814Z",
+        "monotonic_ms": 14458.681549
+      },
+      "elapsed_ms": 6.406659000000218
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:45:16.879Z",
+        "monotonic_ms": 14523.13575
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:45:25.819Z",
+        "monotonic_ms": 23463.366234
+      },
+      "elapsed_ms": 8940.230484000002
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:45:25.931Z",
+        "monotonic_ms": 23575.137175
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:45:25.936Z",
+        "monotonic_ms": 23580.426824
+      },
+      "elapsed_ms": 5.289648999998462
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "5e789255-f6c8-43b5-975d-578c84cd4251",
+      "started": {
+        "at_utc": "2026-10-19T18:45:25.965Z",
+        "monotonic_ms": 23609.590496
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-19T18:47:25.985Z",
+      "finished": {
+        "at_utc": "2026-10-19T18:45:25.985Z",
+        "monotonic_ms": 23629.756883
+      },
+      "elapsed_ms": 20.166386999997485
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "5e789255-f6c8-43b5-975d-578c84cd4251",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T18:45:25.987Z",
+        "monotonic_ms": 23631.241397
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:47:11.981Z",
+        "monotonic_ms": 129625.694408
+      },
+      "elapsed_ms": 105994.45301099999
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:47:12.364Z",
+        "monotonic_ms": 130008.137558
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:47:23.315Z",
+        "monotonic_ms": 140959.990202
+      },
+      "elapsed_ms": 10951.852643999984
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:47:23.443Z",
+        "monotonic_ms": 141087.762787
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:47:23.450Z",
+        "monotonic_ms": 141094.200647
+      },
+      "elapsed_ms": 6.437859999976354
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "5b572106-9672-4f8b-bf51-11af08297a61",
+      "started": {
+        "at_utc": "2026-10-19T18:47:23.526Z",
+        "monotonic_ms": 141170.502055
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-19T18:49:23.541Z",
+      "finished": {
+        "at_utc": "2026-10-19T18:47:23.541Z",
+        "monotonic_ms": 141185.153091
+      },
+      "elapsed_ms": 14.651035999995656
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "5b572106-9672-4f8b-bf51-11af08297a61",
+      "phase": "execution",
+      "started": {
+        "at_utc": "2026-10-19T18:47:23.542Z",
+        "monotonic_ms": 141186.977608
+      },
+      "status": "rejected",
+      "error_code": "mcp_result_unknown",
+      "finished": {
+        "at_utc": "2026-10-19T18:49:22.672Z",
+        "monotonic_ms": 260316.24434
+      },
+      "elapsed_ms": 119129.26673200002
+    }
+  ],
+  "generations": [
+    {
+      "turn": "independent_preferences",
+      "run_id": "91993d84-ff25-45bf-87aa-dd0ad99cae8b",
+      "run_state": "unknown",
+      "attempt_id": "5e789255-f6c8-43b5-975d-578c84cd4251",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T18:45:25.988Z",
+      "accepted_start_at_utc": "2026-10-19T18:45:26.019Z",
+      "native_start_request_ms": 30.598484999998618,
+      "execute_elapsed_ms": 105994.60081199999,
+      "terminal_proof_received": true,
+      "terminal_proof_sha256": "fbaf57cca9dfd0325fad80d69df440acbc94398d10c0d826045bc09f02f27142",
+      "terminal_proof_outcome": "completed",
+      "process_closed": true,
+      "callbacks": [
+        {
+          "name": "nodia_capabilities_select",
+          "call_id": "31586045-09ce-43f4-afc6-46f05f55b317",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T18:46:55.057Z",
+          "completed_at_utc": "2026-10-19T18:46:55.239Z",
+          "start_to_callback_request_ms": 89068.740259,
+          "handler_elapsed_ms": 182.29419300000882,
+          "result_accepted_at_utc": "2026-10-19T18:46:55.252Z",
+          "result_submit_elapsed_ms": 12.035711999997147,
+          "result_accepted_to_terminal_ms": 16729.365129000013,
+          "result_accepted_to_execute_exit_ms": 16729.197327
+        }
+      ],
+      "native_ACK": {
+        "attempt_id": "5e789255-f6c8-43b5-975d-578c84cd4251",
+        "terminal_proof_sha256": "fbaf57cca9dfd0325fad80d69df440acbc94398d10c0d826045bc09f02f27142",
+        "acknowledged_at_utc": "2026-10-19T18:47:12.014Z"
+      },
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 7,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 1,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 2
+          }
+        ],
+        "signature": "24810d48f2976073b0335562e89ab1c062e29bb8a572771431551b8f2c641a23",
+        "at_utc": "2026-10-19T18:47:11.981Z",
+        "monotonic_ms": 129625.287604
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1024,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1024,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    },
+    {
+      "turn": "independent_preferences",
+      "run_id": "91993d84-ff25-45bf-87aa-dd0ad99cae8b",
+      "run_state": "unknown",
+      "attempt_id": "5b572106-9672-4f8b-bf51-11af08297a61",
+      "phase": "execution",
+      "started_at_utc": "2026-10-19T18:47:23.544Z",
+      "accepted_start_at_utc": "2026-10-19T18:47:23.554Z",
+      "native_start_request_ms": 10.895500999991782,
+      "execute_elapsed_ms": 119129.86623700001,
+      "terminal_proof_received": false,
+      "terminal_proof_sha256": null,
+      "terminal_proof_outcome": null,
+      "process_closed": null,
+      "callbacks": [],
+      "native_ACK": {
+        "attempt_id": "5b572106-9672-4f8b-bf51-11af08297a61",
+        "terminal_proof_sha256": "7c669d3f4845d70461b42eda5b1ca0330be3ab3bef704b176b7ea600ba78020c",
+        "acknowledged_at_utc": "2026-10-19T18:49:22.714Z"
+      },
+      "latest_poll": {
+        "state": "unknown",
+        "rpc_messages": 0,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 0,
+        "event_kinds": {
+          "other": 1
+        },
+        "event_identities": [
+          {
+            "kind": "other",
+            "seq": 1
+          }
+        ],
+        "signature": "94037acb9f6a9c93cbd12170eb1ce1dec24d4a46bf226f8818cdc9ffc06245a9",
+        "at_utc": "2026-10-19T18:49:22.670Z",
+        "monotonic_ms": 260314.08772
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1154,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1154,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

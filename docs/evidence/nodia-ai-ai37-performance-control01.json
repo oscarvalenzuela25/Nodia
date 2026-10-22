@@ -1,0 +1,1 @@
+{"scope": "staging_permissions", "status": "failed_before_sql", "postgres_started": false, "provider_calls": 0, "cause": "staging parent owned by root; corrected explicit directory owner before running"}

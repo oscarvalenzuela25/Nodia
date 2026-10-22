@@ -96,12 +96,14 @@ export class ApiProviderService {
     }
   }
 
-  async listModels(key: string, secret: string) {
+  async listModels(key: string, secret: string, signal?: AbortSignal) {
     if (key === 'openai') {
       const response = await this.request(
         'https://api.openai.com/v1/models',
         secret,
         false,
+        undefined,
+        signal,
       );
       if (!Array.isArray(response.data) || response.data.length > 10000)
         throw new BadGatewayException('Catálogo OpenAI inválido.');
@@ -128,6 +130,8 @@ export class ApiProviderService {
         `https://generativelanguage.googleapis.com/v1beta/models?${params}`,
         secret,
         true,
+        undefined,
+        signal,
       );
       if (!Array.isArray(response.models))
         throw new BadGatewayException('Catálogo Gemini API inválido.');

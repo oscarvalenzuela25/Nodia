@@ -1,0 +1,124 @@
+{
+  "stage": "AI-36-C05-R05",
+  "scope": "immutable_outer_metadata_timeout_reason_fix_build_and_offline_Linux_QA",
+  "started_at_utc": "2026-10-19T21:08:41.468455+00:00",
+  "status": "passed",
+  "baseline_container": {
+    "container_id": "9fc4646f13fca9f673443424045de295744db4b56835950cc43d7d6a403d3b4d",
+    "image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T21:01:16.890774731Z"
+  },
+  "archive_sha256": "f816bab84123d25fcad94725c4eb2a658a3a55e7da87f65a4ab1bc3884a459f1",
+  "manifest_sha256": "e0d51ad28f0d038229c2791a3f4f7298c42a7acf3c525fe2778d4a797265c17c",
+  "image_source_hashes": {
+    "agentic_service.py": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200"
+  },
+  "public_test_files": 44,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "candidate_activated": false,
+  "test_sources_mount_only": true,
+  "operational_environment_or_profile_mounts": false,
+  "network": "none",
+  "root_filesystem_read_only": true,
+  "excluded_C03_test_file": {
+    "path": "test_invoice_mcp_contract.py",
+    "sha256": "c4ff2aebc8ec12b10a2f8d0abb63628230d080df1e0d06799b24ef8258b1ce35",
+    "methods": 15,
+    "reason": "C03_invoice_MCP_contract_absent_from_approved_base_and_candidate_image"
+  },
+  "expected_applicable_tests": 452,
+  "source_runner_sha256": "36a57c9ed8e3c8c0d365bf031e63c3d5ad928dc993d52b9a8a863754a6b2dc59",
+  "build_exit_code": 0,
+  "candidate_image_id": "sha256:1a483f3f72de21374e9ba2546dba2df5e07e5a5e7bd4a159a5ee6ca7a444a3fb",
+  "runtime_image_config_unchanged": true,
+  "added_image_layers": 1,
+  "public_source_delta": {
+    "agentic_service.py": {
+      "old_sha256": "5ef14b9491d689df4080e2b8ab7c7fba31d2e951d68d7040dcac91b60f24f48e",
+      "new_sha256": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200"
+    }
+  },
+  "public_source_files_compared": 47,
+  "production_dependency_comparison": {
+    "native_context_budget.py": {
+      "local_sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+      "candidate_sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+      "equal": true
+    },
+    "nodia_ai_chat.py": {
+      "local_sha256": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c",
+      "candidate_sha256": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c",
+      "equal": true
+    },
+    "agentic_cli.py": {
+      "local_sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff",
+      "candidate_sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff",
+      "equal": true
+    },
+    "native_mcp_stdio.py": {
+      "local_sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+      "candidate_sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+      "equal": true
+    },
+    "agentic_progress.py": {
+      "local_sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+      "candidate_sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+      "equal": true
+    },
+    "native_attachments.py": {
+      "local_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+      "candidate_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+      "equal": true
+    },
+    "native_attempts.py": {
+      "local_sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+      "candidate_sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+      "equal": true
+    },
+    "profile_admission.py": {
+      "local_sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+      "candidate_sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+      "equal": true
+    },
+    "run_tests.py": {
+      "local_sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+      "candidate_sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+      "equal": true
+    },
+    "native_execution_agents.py": {
+      "local_sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+      "candidate_sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+      "equal": true
+    },
+    "native_mcp_sessions.py": {
+      "local_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+      "candidate_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+      "equal": true
+    },
+    "native_cli_diagnostics.py": {
+      "local_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+      "candidate_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+      "equal": true
+    },
+    "agentic_service.py": {
+      "local_sha256": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200",
+      "candidate_sha256": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200",
+      "equal": true
+    }
+  },
+  "exact_public_source_diff_sha256": "6233d0928db7f9053a8a2048ce20fcc8756a1f62fed4f1e421931af9dee059c8",
+  "MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "QA_exit_code": 0,
+  "Linux_tests_total": 452,
+  "Linux_test_seconds": 8.002,
+  "Linux_skips": 0,
+  "QA_logs": {
+    "qa-stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa-stderr.log": "d7c9fde898c03096f4d4963075dd7236ab5423248fae253825bd634225afd890",
+    "build-stdout.log": "6981decc7afea7efb06397859ef43bb2ffc91a1a69dcf1a8b36e8908b1f15983",
+    "build-stderr.log": "ec34a09e033b515c85951f12dbaa17dc3090601dd78ed912c6b4548ce882034a"
+  },
+  "operational_container_unchanged": true,
+  "finished_at_utc": "2026-10-19T21:08:54.495030+00:00"
+}

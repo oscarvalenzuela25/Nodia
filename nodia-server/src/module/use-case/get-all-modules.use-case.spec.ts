@@ -50,9 +50,7 @@ describe('GetAllModulesUseCase', () => {
           created_at: new Date(),
           updated_at: new Date(),
           module_users: [],
-          translates: [
-            { key: 'key', es: 'Usuarios', en: 'Users' },
-          ],
+          translates: [{ key: 'key', es: 'Usuarios', en: 'Users' }],
         } as any,
       ],
       meta: {

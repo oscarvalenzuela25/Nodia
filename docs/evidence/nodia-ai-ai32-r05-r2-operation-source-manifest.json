@@ -1,0 +1,65 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "operational_source_freeze",
+  "status": "frozen",
+  "source_changes_by_this_subagent": 0,
+  "provider_generations_by_this_subagent": 0,
+  "further_vm_actions_planned": false,
+  "scripts": [
+    {
+      "path": ".tmp/ai32-r05-r2-canary-final.mjs",
+      "sha256": "c2e9c25f78b6cbbc6c0195292422cec5af5bdf23b5e8965f4bd159062ee977f9",
+      "bytes": 5434
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-canary.mjs",
+      "sha256": "ee404cf71665f9408d4164db82993a8ca05356ca684f8567153bd3fd02281e41",
+      "bytes": 4666
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-chat-final-projection.mjs",
+      "sha256": "7895c03d401479d40063840221ff7c09e5710abf46dd9bbf6013f6b12dccfd01",
+      "bytes": 6281
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-chat-projection.mjs",
+      "sha256": "05fdb0e4d6f93dd1de9ac078c024aa265832c7cf33a7134086b59e4abc01ec45",
+      "bytes": 5516
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-configure.mjs",
+      "sha256": "30373d5137ae3522b0cde38f036b41cb325ff9d9ba8d62f7538bed4f4de6e408",
+      "bytes": 7142
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-env-presence.mjs",
+      "sha256": "fc4952e166dfbd0f4fad697b8788827a7d494cd02e1a852c43909b9b1d865685",
+      "bytes": 2289
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-final-health.py",
+      "sha256": "81ee8e284c4202ff1d37a2bb804899c5265f30968c30ed28791da6ef6f767402",
+      "bytes": 3908
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-node-observation.mjs",
+      "sha256": "ec3d63ca3f42b63c6d7445787110de4ce66a2986a0aa8cf434daa154c091443f",
+      "bytes": 8333
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-storage-deploy.py",
+      "sha256": "6d8874424d516306ddd45bd52e69a7e1e88156d59f32de8f670698c521731bcb",
+      "bytes": 6231
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-transfer.mjs",
+      "sha256": "f422dbbcdc89e2a4d5a0a2301e0ea9cc02ed8f3ccba4e3b5dc6f87a8c334bf0e",
+      "bytes": 1725
+    },
+    {
+      "path": ".tmp/ai32-r05-r2-vm-health.py",
+      "sha256": "6fab671f5b6742de29db3976ec62df33c0966c369d97ffea27398167b5d3acee",
+      "bytes": 1147
+    }
+  ]
+}

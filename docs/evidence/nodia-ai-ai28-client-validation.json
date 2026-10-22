@@ -1,0 +1,97 @@
+{
+  "stage": "AI-28",
+  "scope": "client_unit_and_synthetic_transport_no_database_or_provider",
+  "status": "passed",
+  "verified_at_utc": "2026-10-17T19:12:57.517049+00:00",
+  "full_suite": {
+    "tests": 1589,
+    "files": 205,
+    "workers": 2,
+    "duration_seconds": 454.81,
+    "exit_code": 0
+  },
+  "focused": {
+    "tests": 241,
+    "files": 3,
+    "workers": 2,
+    "duration_seconds": 28.08,
+    "exit_code": 0
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exit_code": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exit_code": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "vite_seconds": 12.97,
+    "exit_code": 0,
+    "historical_large_chunk_warning": true
+  },
+  "checks": [
+    "Four closed registered provider configuration operations and two receipt resources localized in ES/EN; no DELETE or credential editor",
+    "Connection labels include exact string bigint ID and link to the actual instance; catalog links to existing settings overview",
+    "Read-only catalog, defaults, affected connections and unknown availability shown without fabricated operational capability",
+    "Mode-specific persisted model paths remain isolated, with explicit null clearing; no model fallback",
+    "Three provider errors and Core translation removal rejection use ES/EN feedback and preserve the pending editor without announcing an effect",
+    "Nullable default mode is admitted from saved metadata; invalid enum values continue to be rejected",
+    "Provider strings respect UTF-8 byte limits, incomplete empty model values require explicit null, and rejected corrections preserve inputs and localized feedback",
+    "Completed effects invalidate administrative configuration and actor chat caches without changing persisted selection, granting authority, or fetching API keys",
+    "Queued admission does not invent a completed provider effect or available model",
+    "Reasoning preferences show selected-model override, general level and historical boolean separately; configuration is not proof of support"
+  ],
+  "document_validation": {
+    "status": "passed",
+    "markdown_files": 3,
+    "local_links": 34,
+    "broken_links": [],
+    "source_and_frontmatter_checks": "passed",
+    "approval": "unchanged_null",
+    "new_tools_published": 0,
+    "locales": {
+      "es": {
+        "operation_labels": 4,
+        "resources": 2,
+        "fields": 48,
+        "mode_paths": 12
+      },
+      "en": {
+        "operation_labels": 4,
+        "resources": 2,
+        "fields": 48,
+        "mode_paths": 12
+      }
+    }
+  },
+  "ui_evidence": "docs/evidence/nodia-ai-ai28-ui-validation.json",
+  "sources": [
+    {
+      "path": "nodia-client/.tmp/ai28-client-focused-final.log",
+      "sha256": "4f0a7e4ecf6b7eb966d4051f14a8796c2d492524b49c8a0615c43afaa6d92fc4"
+    },
+    {
+      "path": "nodia-client/.tmp/ai28-client-full-final.log",
+      "sha256": "ad087e4339696bd7b099279f6ca7fe164b5b2bfe3cd8b7773ef9859cf5674709"
+    },
+    {
+      "path": "nodia-client/.tmp/ai28-client-typecheck-final.log",
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865"
+    },
+    {
+      "path": "nodia-client/.tmp/ai28-client-lint-final.log",
+      "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+    },
+    {
+      "path": "nodia-client/.tmp/ai28-client-build-final.log",
+      "sha256": "c9a6bbcd9ec3f59c5c7866a3621768ecf3b2b76df5b54829eb0fbd28d66039e3"
+    }
+  ],
+  "limitations": [
+    "Synthetic transport and jsdom do not certify SQL atomicity, backend authorization or provider inference",
+    "No account, model selection, secret, VM configuration or production business record was changed by Client tests",
+    "Browser evidence is maintained separately; no physical-device or production performance acceptance claimed"
+  ]
+}

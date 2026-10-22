@@ -1,0 +1,10 @@
+{
+  "stage": "AI-29",
+  "tested_archive_sha256": "a09fe2df4829b5d1b33c5cfb366c742def6b9272d944ed9e0a2319de7dc899ba",
+  "final_archive_sha256": "a09fe2df4829b5d1b33c5cfb366c742def6b9272d944ed9e0a2319de7dc899ba",
+  "production_dist_identical": true,
+  "dist_files_checked": 868,
+  "changed_package_files": [],
+  "reason": "The final archive, human-flow harness and production dist are exactly the ones accepted by all AI-29 and regression SQL suites.",
+  "final_harness_sha256": "765a48394244e7a29da14d1e288432603957b920bb6d2d7f1666a8a07fb99cd8"
+}

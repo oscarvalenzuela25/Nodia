@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   BadRequestException,
   ConflictException,
@@ -22,11 +23,12 @@ export class CreateRentalPaymentUseCase {
   ) {}
 
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: CreateRentalPaymentDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(CreateRentalPaymentDto, input);
     const command = {
       ...dto,
@@ -36,7 +38,7 @@ export class CreateRentalPaymentUseCase {
     };
     return this.tx.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'payment.create',

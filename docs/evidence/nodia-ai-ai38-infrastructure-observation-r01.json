@@ -1,0 +1,996 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "scope": "bounded_VM_metadata_not_retention_backup_acceptance",
+  "status": "observed_infrastructure_gates_not_proven",
+  "observed_at_VM_utc": "2026-10-20T19:47:00.041345+00:00",
+  "systemd_selected_units": {
+    "dpkg-db-backup.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "/usr/lib/systemd/system/dpkg-db-backup.service",
+      "UnitFileState": "static",
+      "metadata_query_exit_code": 0
+    },
+    "logrotate.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "/usr/lib/systemd/system/logrotate.service",
+      "UnitFileState": "static",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-ai-worker.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "/etc/systemd/system/nodia-ai-worker.service",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-api.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "/etc/systemd/system/nodia-api.service",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-bus.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/nodia-bus.service",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-gemini-bus.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/nodia-gemini-bus.service",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-gemini-display.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "/etc/systemd/system/nodia-gemini-display.service",
+      "UnitFileState": "disabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-gemini-keyring.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/nodia-gemini-keyring.service",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-gemini-lab.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "exited",
+      "FragmentPath": "/etc/systemd/system/nodia-gemini-lab.service",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-gemini-viewer.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "/etc/systemd/system/nodia-gemini-viewer.service",
+      "UnitFileState": "disabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-gemini-vnc.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "/etc/systemd/system/nodia-gemini-vnc.service",
+      "UnitFileState": "disabled",
+      "metadata_query_exit_code": 0
+    },
+    "nodia-keyring.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/nodia-keyring.service",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "systemd-journald.service": {
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/usr/lib/systemd/system/systemd-journald.service",
+      "UnitFileState": "static",
+      "metadata_query_exit_code": 0
+    },
+    "systemd-journald@.service": {
+      "template_without_instance_not_queried": true
+    },
+    "dpkg-db-backup.timer": {
+      "NextElapseUSecRealtime": "Wed 2026-10-21 00:00:00 -03",
+      "LastTriggerUSec": "Tue 2026-10-20 00:00:07 -03",
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "waiting",
+      "FragmentPath": "/usr/lib/systemd/system/dpkg-db-backup.timer",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    },
+    "logrotate.timer": {
+      "NextElapseUSecRealtime": "Wed 2026-10-21 00:00:00 -03",
+      "LastTriggerUSec": "Tue 2026-10-20 00:00:07 -03",
+      "Result": "success",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "waiting",
+      "FragmentPath": "/usr/lib/systemd/system/logrotate.timer",
+      "UnitFileState": "enabled",
+      "metadata_query_exit_code": 0
+    }
+  },
+  "known_directory_metadata": [
+    {
+      "path": "/var/backups/nodia",
+      "exists": true,
+      "contents_read": false,
+      "kind": "directory",
+      "mode": "0o700",
+      "uid": 0,
+      "gid": 0,
+      "byte_count": 4096,
+      "modified_at_utc": "2026-10-19T00:34:42.528220+00:00",
+      "immediate_entries": [
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-19T00:34:42.529220+00:00",
+          "name": "ai36-runtime-20261019T003442Z-1539062"
+        }
+      ],
+      "listing_scope": "immediate_children_only_no_recursive_search"
+    },
+    {
+      "path": "/opt/nodia/verification-backups",
+      "exists": true,
+      "contents_read": false,
+      "kind": "directory",
+      "mode": "0o755",
+      "uid": 0,
+      "gid": 0,
+      "byte_count": 4096,
+      "modified_at_utc": "2026-10-18T23:01:32.826255+00:00",
+      "immediate_entries": [
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T01:04:08.948715+00:00",
+          "name": "ai11-ai12-1792112648"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T01:22:21.296908+00:00",
+          "name": "ai11-ai12-1792113741"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T01:26:24.855205+00:00",
+          "name": "ai11-ai12-1792113984"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T02:56:17.889473+00:00",
+          "name": "ai11-ai12-1792119377"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T18:35:11.292498+00:00",
+          "name": "ai11-ai12-1792175711"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T19:10:32.642317+00:00",
+          "name": "ai11-ai12-1792177832"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T19:38:25.128575+00:00",
+          "name": "ai11-ai12-1792179505"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T19:55:29.880161+00:00",
+          "name": "ai11-ai12-1792180529"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T20:29:34.550105+00:00",
+          "name": "ai11-ai12-1792182574"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T22:31:48.483666+00:00",
+          "name": "ai11-ai12-1792276308"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T00:57:04.558203+00:00",
+          "name": "ai11-ai12-1792285024"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T20:02:14.046750+00:00",
+          "name": "ai15-activation-20261016T195927Z"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T18:36:26.789340+00:00",
+          "name": "ai15-before-publication-20261016T183626Z"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T18:36:38.547471+00:00",
+          "name": "ai15-before-publication-20261016T183638Z"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T19:59:28.019734+00:00",
+          "name": "ai15-before-publication-20261016T195927Z"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T20:09:31.400964+00:00",
+          "name": "ai15-metadata-5b27"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T21:08:49.546708+00:00",
+          "name": "ai15-server-metadata-fix-1792184929"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T20:53:28.236622+00:00",
+          "name": "ai15-server-timeout-diagnostic-1792184008"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T23:08:39.464983+00:00",
+          "name": "ai16-before-observation-1792192118"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T23:46:14.497305+00:00",
+          "name": "ai17-before-proposals-1792194373"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T23:48:18.422450+00:00",
+          "name": "ai17-before-proposals-1792194498"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-16T23:56:58.694524+00:00",
+          "name": "ai17-before-proposals-1792195018"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T04:39:45.136417+00:00",
+          "name": "ai18-before-confirmation-1792211984"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T05:02:48.110265+00:00",
+          "name": "ai19-before-financial-effect-1792213367"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T05:31:05.032709+00:00",
+          "name": "ai20-before-execution-worker-1792215064"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T05:55:14.018851+00:00",
+          "name": "ai21-before-financial-operations-1792216513"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T15:34:47.352670+00:00",
+          "name": "ai22-before-business-operations-1792251286"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T15:46:09.417430+00:00",
+          "name": "ai22-before-business-operations-1792251968"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T16:25:23.790470+00:00",
+          "name": "ai23-before-dependent-workflows-1792254323"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T17:08:39.857733+00:00",
+          "name": "ai24-before-dependent-workflows-1792256919"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T17:46:31.423271+00:00",
+          "name": "ai25-before-reservation-lifecycle-1792259190"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T18:09:43.822126+00:00",
+          "name": "ai26-before-rental-money-operations-1792260583"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T18:38:07.488879+00:00",
+          "name": "ai27-before-core-administration-1792262286"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T19:16:38.079888+00:00",
+          "name": "ai28-before-provider-configuration-1792264597"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T21:44:26.874253+00:00",
+          "name": "ai29-before-secure-human-flows-1792273466"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T22:33:26.750917+00:00",
+          "name": "ai29-r01-before-durable-login-1792276406"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-17T22:31:48.418665+00:00",
+          "name": "ai29-r01-before-gemini-1792276308"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T00:57:04.667204+00:00",
+          "name": "ai29-r01-before-gemini-1792285024"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T01:24:59.742286+00:00",
+          "name": "ai30-before-restricted-reports-1792286699"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T02:02:07.567582+00:00",
+          "name": "ai31-before-cross-reports-1792288926"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T02:59:11.562582+00:00",
+          "name": "ai32-before-attachments-1792292350"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T02:31:18.573393+00:00",
+          "name": "ai32-before-gemini-1792290678"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T02:36:52.744919+00:00",
+          "name": "ai32-before-gemini-1792291012"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T02:42:00.300084+00:00",
+          "name": "ai32-before-gemini-1792291320"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T03:11:42.775448+00:00",
+          "name": "ai32-r01-before-gemini-1792293102"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T03:16:03.998628+00:00",
+          "name": "ai32-r01-before-gemini-1792293363"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T03:17:42.378097+00:00",
+          "name": "ai32-r01-before-gemini-1792293462"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T03:26:45.506328+00:00",
+          "name": "ai32-r01-before-gemini-1792294005"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T03:37:05.708776+00:00",
+          "name": "ai32-r01-before-gemini-1792294625"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T03:43:35.570901+00:00",
+          "name": "ai32-r01-before-gemini-1792295015"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T04:12:08.098526+00:00",
+          "name": "ai32-r02-before-code-1792296716"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T04:13:25.888514+00:00",
+          "name": "ai32-r02-before-code-1792296805"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T04:13:40.224696+00:00",
+          "name": "ai32-r02-before-gemini-1792296820"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T04:45:44.921411+00:00",
+          "name": "ai32-r03-before-gemini-1792298744"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T05:09:08.280125+00:00",
+          "name": "ai32-r04-before-gemini-1792300148"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T16:21:12.852772+00:00",
+          "name": "ai32-r05-r2-1792340472853"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T16:27:06.052576+00:00",
+          "name": "ai32-r05-storage-1792340826052"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T16:28:04.435345+00:00",
+          "name": "ai32-r05-storage-1792340884434"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T18:48:58.708026+00:00",
+          "name": "ai33-1792349337883"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T19:54:26.074518+00:00",
+          "name": "ai34-1792353265109"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T20:41:34.025213+00:00",
+          "name": "ai34-metadata-1792356094025"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T20:09:35.034745+00:00",
+          "name": "ai34-native-diagnostics-1792354175035"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T20:36:39.235141+00:00",
+          "name": "ai34-native-mcp-1792355799234"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T20:25:46.531758+00:00",
+          "name": "ai34-native-role-1792355146531"
+        },
+        {
+          "exists": true,
+          "contents_read": false,
+          "kind": "directory",
+          "mode": "0o700",
+          "uid": 0,
+          "gid": 0,
+          "byte_count": 4096,
+          "modified_at_utc": "2026-10-18T23:01:34.173256+00:00",
+          "name": "ai35-1792364492826"
+        }
+      ],
+      "listing_scope": "immediate_children_only_no_recursive_search"
+    },
+    {
+      "path": "/etc/nodia",
+      "exists": false,
+      "contents_read": false
+    }
+  ],
+  "known_artifact_metadata": [
+    {
+      "path": "/opt/nodia/verification-backups/ai33-1792349337883",
+      "exists": true,
+      "contents_read": false,
+      "kind": "directory",
+      "mode": "0o700",
+      "uid": 0,
+      "gid": 0,
+      "byte_count": 4096,
+      "modified_at_utc": "2026-10-18T18:48:58.708026+00:00"
+    },
+    {
+      "path": "/opt/nodia/verification-backups/ai33-1792349337883/configured-db-before.dump",
+      "exists": true,
+      "contents_read": false,
+      "kind": "file",
+      "mode": "0o600",
+      "uid": 0,
+      "gid": 0,
+      "byte_count": 296521,
+      "modified_at_utc": "2026-10-18T18:48:58.591025+00:00"
+    },
+    {
+      "path": "/var/backups/nodia/nodia-inicial.dump",
+      "exists": false,
+      "contents_read": false
+    },
+    {
+      "path": "/opt/nodia/releases/nodia-server-ai15-20261016/scripts/prepare-nodia-ai-restore.mjs",
+      "exists": false,
+      "contents_read": false
+    },
+    {
+      "path": "/opt/nodia/verification/ai38-node-candidate01/nodia-server/scripts/prepare-nodia-ai-restore.mjs",
+      "exists": true,
+      "contents_read": false,
+      "kind": "file",
+      "mode": "0o600",
+      "uid": 0,
+      "gid": 0,
+      "byte_count": 4099,
+      "modified_at_utc": "2026-10-20T16:48:02.959889+00:00"
+    }
+  ],
+  "host_executable_locations": {
+    "pg_dump": null,
+    "pg_restore": null,
+    "age": null,
+    "gpg": "/usr/bin/gpg",
+    "openssl": "/usr/bin/openssl",
+    "restic": null,
+    "borg": null,
+    "pgbackrest": null,
+    "wal-g": null,
+    "rclone": null,
+    "systemctl": "/usr/bin/systemctl",
+    "docker": "/usr/bin/docker"
+  },
+  "native_epoch": {
+    "container_id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "running": true,
+    "started_at": "2026-10-20T19:14:35.412657745Z"
+  },
+  "gates": {
+    "encrypted_rotated_backups": "not_proven_by_this_observation",
+    "trusted_continuous_deletion_journal": "not_proven_by_this_observation",
+    "all_reconstructible_versions_inventory": "not_proven_by_this_observation",
+    "external_operational_quarantine_restore": "not_proven_by_this_observation"
+  },
+  "limits": {
+    "filesystem_search": "three_known_roots_immediate_children_and_five_explicit_paths",
+    "cron_hypervisor_host_backup_external_services_searched": false,
+    "absence_is_not_global_nonexistence_proof": true,
+    "dump_profile_env_object_contents_read": false,
+    "binary_execution": false,
+    "database_queries": 0,
+    "provider_requests": 0,
+    "R2_requests": 0,
+    "services_restarted": false,
+    "data_writes": 0,
+    "remote_files_written": false
+  }
+}

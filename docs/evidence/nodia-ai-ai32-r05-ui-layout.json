@@ -1,0 +1,223 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "real_app_responsive_geometry_three_local_drafts",
+  "checks": [
+    {
+      "availableWidth": 310,
+      "card": {
+        "bottom": 2105.96875,
+        "clientHeight": 1784,
+        "height": 1785.96875,
+        "overflowY": "visible",
+        "scrollHeight": 1784
+      },
+      "documentWidth": 310,
+      "files": [
+        {
+          "name": "ai32-r05-synthetic.png",
+          "present": true
+        },
+        {
+          "name": "ai32-r05-synthetic.pdf",
+          "present": true
+        },
+        {
+          "name": "voice.webm",
+          "present": true
+        }
+      ],
+      "form": {
+        "bottom": 2104.96875,
+        "clientHeight": 1388,
+        "height": 1389.375,
+        "overflowY": "auto",
+        "scrollHeight": 1388
+      },
+      "panel": {
+        "bottom": 1841.1875,
+        "clientHeight": 972,
+        "height": 971.578125,
+        "overflowY": "visible",
+        "scrollHeight": 972
+      },
+      "viewport": {
+        "height": 760,
+        "width": 320
+      }
+    },
+    {
+      "availableWidth": 589,
+      "card": {
+        "bottom": 1906.140625,
+        "clientHeight": 1584,
+        "height": 1586.140625,
+        "overflowY": "visible",
+        "scrollHeight": 1584
+      },
+      "documentWidth": 589,
+      "files": [
+        {
+          "name": "ai32-r05-synthetic.png",
+          "present": true
+        },
+        {
+          "name": "ai32-r05-synthetic.pdf",
+          "present": true
+        },
+        {
+          "name": "voice.webm",
+          "present": true
+        }
+      ],
+      "form": {
+        "bottom": 1905.140625,
+        "clientHeight": 1189,
+        "height": 1189.546875,
+        "overflowY": "auto",
+        "scrollHeight": 1189
+      },
+      "panel": {
+        "bottom": 1721.203125,
+        "clientHeight": 852,
+        "height": 851.59375,
+        "overflowY": "visible",
+        "scrollHeight": 852
+      },
+      "viewport": {
+        "height": 760,
+        "width": 599
+      }
+    },
+    {
+      "availableWidth": 590,
+      "card": {
+        "bottom": 746,
+        "clientHeight": 598,
+        "height": 600,
+        "overflowY": "visible",
+        "scrollHeight": 598
+      },
+      "documentWidth": 590,
+      "files": [
+        {
+          "name": "ai32-r05-synthetic.png",
+          "present": true
+        },
+        {
+          "name": "ai32-r05-synthetic.pdf",
+          "present": true
+        },
+        {
+          "name": "voice.webm",
+          "present": true
+        }
+      ],
+      "form": {
+        "bottom": 745,
+        "clientHeight": 260,
+        "height": 261,
+        "overflowY": "auto",
+        "scrollHeight": 1020
+      },
+      "panel": {
+        "bottom": 1301.625,
+        "clientHeight": 664,
+        "height": 663.609375,
+        "overflowY": "visible",
+        "scrollHeight": 664
+      },
+      "viewport": {
+        "height": 760,
+        "width": 600
+      }
+    },
+    {
+      "availableWidth": 890,
+      "card": {
+        "bottom": 728,
+        "clientHeight": 598,
+        "height": 600,
+        "overflowY": "visible",
+        "scrollHeight": 598
+      },
+      "documentWidth": 890,
+      "files": [
+        {
+          "name": "ai32-r05-synthetic.png",
+          "present": true
+        },
+        {
+          "name": "ai32-r05-synthetic.pdf",
+          "present": true
+        },
+        {
+          "name": "voice.webm",
+          "present": true
+        }
+      ],
+      "form": {
+        "bottom": 727,
+        "clientHeight": 260,
+        "height": 261,
+        "overflowY": "auto",
+        "scrollHeight": 1020
+      },
+      "panel": {
+        "bottom": 1283.625,
+        "clientHeight": 664,
+        "height": 663.609375,
+        "overflowY": "visible",
+        "scrollHeight": 664
+      },
+      "viewport": {
+        "height": 760,
+        "width": 900
+      }
+    },
+    {
+      "availableWidth": 1430,
+      "card": {
+        "bottom": 728,
+        "clientHeight": 598,
+        "height": 600,
+        "overflowY": "visible",
+        "scrollHeight": 598
+      },
+      "documentWidth": 1430,
+      "files": [
+        {
+          "name": "ai32-r05-synthetic.png",
+          "present": true
+        },
+        {
+          "name": "ai32-r05-synthetic.pdf",
+          "present": true
+        },
+        {
+          "name": "voice.webm",
+          "present": true
+        }
+      ],
+      "form": {
+        "bottom": 727,
+        "clientHeight": 260,
+        "height": 261,
+        "overflowY": "auto",
+        "scrollHeight": 921
+      },
+      "panel": {
+        "bottom": 1223.6875,
+        "clientHeight": 604,
+        "height": 603.671875,
+        "overflowY": "visible",
+        "scrollHeight": 604
+      },
+      "viewport": {
+        "height": 760,
+        "width": 1440
+      }
+    }
+  ],
+  "physical_microphone_user_confirmed": true,
+  "virtual_microphone_used": false
+}

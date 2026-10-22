@@ -1,0 +1,22 @@
+[Unit]
+Description=Nodia encrypted PostgreSQL backup (external recovery catalog)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=nodia
+Group=nodia
+UMask=0077
+EnvironmentFile=/etc/nodia-ai-recovery/backup-runner.env
+ExecStartPre=-/usr/local/bin/node ${NODIA_AI_JOURNAL_SCRIPT} reconcile ${NODIA_AI_RECOVERY_CONFIG} ${NODIA_AI_BACKUP_CONFIG}
+ExecStart=/usr/local/bin/node ${NODIA_AI_BACKUP_SCRIPT} backup ${NODIA_AI_BACKUP_CONFIG}
+TimeoutStartSec=3700
+KillMode=control-group
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/nodia-ai-recovery/spool
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+

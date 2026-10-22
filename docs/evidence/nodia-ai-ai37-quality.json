@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "stage": "AI-37",
+  "status": "passed_with_unchanged_historical_fixture_type_diagnostics",
+  "scope": "offline_and_disposable_compiled_candidate_not_operational_adoption",
+  "build": {
+    "command": "npm run build",
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai37-build04.log",
+      "sha256": "08ba103f8a7f5d7dcd9a4102bd9bfd62a3d3ce90572e5b03615900b2b69d3715"
+    }
+  },
+  "unit_tests": {
+    "command": "npx vitest run --reporter=json --outputFile=../.tmp/ai37-vitest-full05.json",
+    "exit_code": 0,
+    "tests": 4274,
+    "passed": 4274,
+    "files": 237,
+    "report": {
+      "path": ".tmp/ai37-vitest-full05.json",
+      "sha256": "cb85f724a95051817d7dcfd13a17f58f8de4c93223e8395ce9e293d995ca20c7"
+    },
+    "log": {
+      "path": ".tmp/ai37-vitest-full05.log",
+      "sha256": "8a07c0c95124b1510e910529da4224a0c5c4c1ea3cacff214063069bb1c131f4"
+    }
+  },
+  "preserved_failed_global_attempt": {
+    "report": {
+      "path": ".tmp/ai37-vitest-full04.json",
+      "sha256": "baf0ada82c6481d2788d38729a5566591255e0fd41ef0a831be6ae3f66a204af"
+    },
+    "passed": 4273,
+    "failed": 1,
+    "test": "ComposeNodiaAiPublishedFamiliesUseCase: compiles the empty publication module",
+    "duration_ms": 5390.373,
+    "reported_error": "STACK_TRACE_ERROR",
+    "cause": null,
+    "focused_followup": {
+      "path": ".tmp/ai37-publication-focused-after04.log",
+      "sha256": "436fc30a640d7386289334f341990249b31c13065404e75a072968f89cb07cee"
+    },
+    "focused_tests_passed": 11,
+    "source_or_timeout_changed_before_final_rerun": false
+  },
+  "production_types": {
+    "verified_by_official_build": true
+  },
+  "fixture_types": {
+    "command": "npx tsc --noEmit --incremental false --pretty false -p tsconfig.json",
+    "exit_code": 2,
+    "diagnostics": 192,
+    "baseline": {
+      "path": ".tmp/ai36-c05-high-deadline-fixture-types.log",
+      "sha256": "11b2024594a62215d4e8f6b0e726735c7fa4a8dd887a6a4e41c8724dfe641051"
+    },
+    "current": {
+      "path": ".tmp/ai37-fixture-types04.log",
+      "sha256": "cbeef1a9d1f5e547773d34459cb9e2e8c1bff278820d9da548b1602101a9160b"
+    },
+    "same_diagnostic_multiset_ignoring_line_column_only": true,
+    "new_diagnostics": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exit_code": 0,
+    "historical_warnings": 3,
+    "log": {
+      "path": ".tmp/ai37-lint04.log",
+      "sha256": "9b0f5eec3b6d1e8aa9a2855044fc288ac40d960d276d5b24230a32a5f3e08a50"
+    }
+  },
+  "startup": {
+    "target": "Linux_VM_candidate04",
+    "checks": 4,
+    "socket_and_fetch_attempt_counters_zero": true,
+    "report": {
+      "path": ".tmp/ai37-startup04-linux.json",
+      "sha256": "7f433de32c7fab109836ec90423d271e7edf53ba25b8c87b56caea92e7f4315a"
+    },
+    "harness": {
+      "path": "nodia-server/test/nodia-ai-ai37-startup.integration.mjs",
+      "sha256": "9bd3c7e62e1ed8119277d7167b178425d6f5e33475a2acfa8ffbe35d753b1913"
+    },
+    "earlier_windows_timeout_preserved": {
+      "path": ".tmp/ai37-startup01.json",
+      "sha256": "dcbc46c58332b0722e49465921254fef62f73285d38cf5b084eb6288793fed5c"
+    },
+    "earlier_windows_control_passed": {
+      "path": ".tmp/ai37-startup02.json",
+      "sha256": "7f433de32c7fab109836ec90423d271e7edf53ba25b8c87b56caea92e7f4315a"
+    },
+    "earlier_control_limit": "Earlier control inspected stderr; final Linux04 also persists socket/fetch counters even when a dependency catches its error."
+  },
+  "candidate": {
+    "manifest": {
+      "path": ".tmp/ai37-node-candidate04/nodia-server/manifest.json",
+      "sha256": "56ddf27f290bfb0c11f5575a6dbfcb03c41d5f3c0d7f9fae4f8af0be8e38dea6"
+    },
+    "archive": {
+      "path": ".tmp/ai37-node-candidate04.tar.gz",
+      "sha256": "1c6ff284be163c591b32b9bf04b4cb547baca2f04986ec00200ba3d3e25ed4da"
+    },
+    "compiled_outputs": 2827,
+    "runtime_assets": 979,
+    "production_source_files": 924,
+    "all_manifest_files_and_current_production_sources_match": true,
+    "deployment": false
+  },
+  "candidate_runtime_delta_from_R05_local_build": {
+    "baseline_assets": 971,
+    "final_assets": 979,
+    "added": [
+      "nodia-server/dist/nodia-ai-operations/nodia-ai-operations.module.js",
+      "nodia-server/dist/nodia-ai-operations/nodia-ai-operations.service.js",
+      "nodia-server/dist/nodia-ai-operations/types/operations.types.js",
+      "nodia-server/dist/nodia-ai-operations/use-case/observe-nodia-ai-operations.use-case.js",
+      "nodia-server/dist/nodia-ai-operations/use-case/report-nodia-ai-operations.use-case.js",
+      "nodia-server/dist/nodia-ai-recovery/use-case/prepare-nodia-ai-restore.use-case.js",
+      "nodia-server/dist/nodia-ai-recovery/use-case/validate-nodia-ai-restore.use-case.js",
+      "nodia-server/dist/nodia-ai-runtime/use-case/assert-nodia-ai-operation-mode.use-case.js"
+    ],
+    "changed": [
+      "nodia-server/dist/main.js",
+      "nodia-server/dist/nodia-ai-confirmation/use-case/control-nodia-ai-execution.use-case.js",
+      "nodia-server/dist/nodia-ai-conversation/nodia-ai-conversation.service.js",
+      "nodia-server/dist/nodia-ai-conversation/use-case/conversation-admission.fixture.js",
+      "nodia-server/dist/nodia-ai-conversation/use-case/expire-nodia-ai-conversations.use-case.js",
+      "nodia-server/dist/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.js",
+      "nodia-server/dist/nodia-ai-execution/nodia-ai-execution.service.js",
+      "nodia-server/dist/nodia-ai-execution/use-case/claim-nodia-ai-execution.use-case.js",
+      "nodia-server/dist/nodia-ai-execution/use-case/recover-nodia-ai-executions.use-case.js",
+      "nodia-server/dist/nodia-ai-runtime/nodia-ai-runtime.service.js",
+      "nodia-server/dist/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.js",
+      "nodia-server/dist/nodia-ai-runtime/use-case/claim-nodia-ai-job.use-case.js",
+      "nodia-server/dist/nodia-ai-runtime/use-case/cleanup-nodia-ai-runtime-proofs.use-case.js",
+      "nodia-server/dist/nodia-ai-runtime/use-case/reconcile-nodia-ai-runtime.use-case.js",
+      "nodia-server/dist/nodia-ai-runtime/use-case/recover-nodia-ai-jobs.use-case.js",
+      "nodia-server/dist/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.js",
+      "nodia-server/dist/nodia-ai-secure-flow/use-case/manage-nodia-ai-secure-flow.use-case.js",
+      "nodia-server/dist/nodia-ai-secure-flow/use-case/recover-nodia-ai-secure-flows.use-case.js",
+      "nodia-server/dist/nodia-ai-worker.js",
+      "nodia-server/dist/nodia-ai-worker.module.js"
+    ],
+    "removed": [],
+    "migrations_changed": false,
+    "operational_Node_baseline_is_separate": 932
+  },
+  "performance_measurement_binding": {
+    "executed_candidate": "02",
+    "final_candidate": "04",
+    "all_reported_source_pins_match_final_candidate_or_current_harness": true,
+    "report": {
+      "path": "docs/evidence/nodia-ai-ai37-performance.json",
+      "sha256": "342cce281c950b9fad88c1d2104a7696bfdef2a81d8c3d355b6a74e4c785a177"
+    },
+    "limitation": "Measured dependency hashes agree; this does not claim that the old benchmark executed on candidate04."
+  },
+  "boundaries": {
+    "provider_inferences": 0,
+    "provider_metadata_requests": 0,
+    "operational_SQL_writes": 0,
+    "production_adoption": false,
+    "AI36_C05_acceptance_unchanged": "4/7",
+    "indices_added": 0,
+    "tables_added": 0,
+    "migrations_added": 0
+  }
+}

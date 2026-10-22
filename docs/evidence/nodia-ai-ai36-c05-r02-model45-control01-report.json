@@ -1,0 +1,24 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "oneoff_model45_same_original_image_profile_and_environment",
+  "status": "running",
+  "started_at_utc": "2026-10-19T20:01:35.063973+00:00",
+  "host_supervision_seconds": 60,
+  "CLI_timeout_seconds": 45,
+  "command_requests": 0,
+  "provider_inference_requests": 0,
+  "additional_version_commands": 0,
+  "Node_runtime_modified": false,
+  "source_sha256": "296d9d161472011c14c5ab8f4f363bc91b50772cfac2c4e88d372969cdfed033",
+  "tool_sha256": "9769631a1705d3484fc065ee02358b2467450f894e8d5df834cefe9b099c6f10",
+  "baseline_sha256": "af5512ee1d2b8ff4e07a66b5156bf8a474e4af0d0145cbe3ea80b31a783d25dc",
+  "oneoff_absent_before_main_restore": true,
+  "services_after": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "restored_image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "finished_at_utc": "2026-10-19T20:02:06.945904+00:00"
+}

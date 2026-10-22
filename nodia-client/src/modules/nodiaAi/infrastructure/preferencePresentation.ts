@@ -1,0 +1,2 @@
+export const isPreferenceTool = (tool: string) => ["nodia_preferences_prepare_create", "nodia_preferences_prepare_update", "nodia_preferences_prepare_delete"].includes(tool);
+export const preferenceFieldLabels: Readonly<Record<string, string>> = Object.fromEntries(["scope_key", "key", "value", "value_label", "scope_label", "business_id", "revision"].map(key => [key, `nodiaAi:proposal.preference_fields.${key}`]));

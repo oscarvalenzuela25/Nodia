@@ -1,0 +1,12 @@
+{
+  "stage": "AI-26",
+  "tested_archive_sha256": "985059cc1f77d40d78d60b30d732132383982f7df7cfff974a9e6c10c4cefe45",
+  "final_archive_sha256": "2c23a8589f05f7d5799d11a15bbb245cce842dd4db997741f788f8c76495ea7a",
+  "production_dist_identical": true,
+  "dist_files_checked": 837,
+  "changed_package_files": [
+    "test/nodia-ai-ai26.integration.mjs"
+  ],
+  "reason": "Only the disposable SQL harness changed to drain a queued concurrent execution before asserting final states; production dist is identical.",
+  "final_harness_sha256": "e7a3dd323c4d465d99644e4f56efb647c4b0cf193b58dd0f41efc55fe9d9f98f"
+}

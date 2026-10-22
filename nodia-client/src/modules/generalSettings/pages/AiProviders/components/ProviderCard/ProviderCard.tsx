@@ -1,4 +1,4 @@
-import { getObservedWebQuota, getWebQuotaLabelKey } from "../../infrastructure/observations";
+import { getObservedWebQuota, getWebQuotaLabelKey, getObservedSessionStatus } from "../../infrastructure/observations";
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Typography, Box, LinearProgress, Chip, Tooltip } from "@mui/material";
@@ -123,8 +123,8 @@ const ProviderCard: FC<ProviderCardProps> = ({
   };
 
   const getStatusDotColor = () => {
-    if (provider.status === "healthy") return "#10b981";
-    if (provider.status === "expired" || provider.status === "degraded") return "#f59e0b";
+    if (headerStatus === "healthy") return "#10b981";
+    if (headerStatus === "expired" || headerStatus === "degraded") return "#f59e0b";
     return "#64748b";
   };
 
@@ -133,6 +133,23 @@ const ProviderCard: FC<ProviderCardProps> = ({
     provider.use_token_plan_web ||
     provider.use_token_plan_agentic
   );
+  const hasTokenPlanChannel = Boolean(
+    (provider.use_token_plan_web ?? isWebMode) ||
+    (provider.use_token_plan_agentic ?? (provider.mode === "token_plan_agentic"))
+  );
+  const subscriptionStatuses = [
+    ...(provider.use_token_plan_web ? [getObservedSessionStatus(geminiEnginesData?.web)] : []),
+    ...(provider.use_token_plan_agentic ? [getObservedSessionStatus(isGemini ? geminiEnginesData?.agentic : provider.codexSession)] : []),
+  ];
+  const apiDefaultWithSubscription = provider.isActive && hasTokenPlanChannel
+    && (provider.default_mode ?? provider.mode) === "api_key";
+  const headerStatus = apiDefaultWithSubscription
+    ? subscriptionStatuses.length > 0 && subscriptionStatuses.every(status => status === "healthy") ? "healthy"
+      : subscriptionStatuses.some(status => status === "degraded" || status === "healthy") ? "degraded"
+        : subscriptionStatuses.includes("expired") ? "expired" : "unverified"
+    : provider.status;
+  const headerStatusLabel = apiDefaultWithSubscription
+    ? t(`ai_providers:detail.status_${headerStatus}`) : provider.statusBadge;
 
   if (!provider.hasConnection || !hasAnyConfiguredChannel) {
     return (
@@ -163,10 +180,10 @@ const ProviderCard: FC<ProviderCardProps> = ({
               </TagRow>
             </TitleBox>
           </ProviderInfo>
-          <StatusPill statusType="unconfigured">
+          {hasTokenPlanChannel && <StatusPill statusType="unconfigured">
             <StatusDot color="#64748b" />
             {t("ai_providers:cards.status_unconfigured", "SIN CONFIGURAR")}
-          </StatusPill>
+          </StatusPill>}
         </CardHeader>
 
         <Box sx={{ py: 3, textAlign: "center" }}>
@@ -267,10 +284,10 @@ const ProviderCard: FC<ProviderCardProps> = ({
           </TitleBox>
         </ProviderInfo>
 
-        <StatusPill statusType={provider.status}>
+        {hasTokenPlanChannel && <StatusPill statusType={headerStatus}>
           <StatusDot color={getStatusDotColor()} />
-          {provider.statusBadge}
-        </StatusPill>
+          {headerStatusLabel}
+        </StatusPill>}
       </CardHeader>
 
       {/* STATS METRICS GRID */}

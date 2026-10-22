@@ -1,0 +1,28 @@
+{
+  "stage": "AI-34",
+  "scope": "compiled_compaction_disposable_postgresql",
+  "attempt": "attempt07",
+  "started_at_utc": "2026-10-18T19:35:50.233764+00:00",
+  "completed_at_utc": "2026-10-18T19:35:57.668406+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ae3aa08fddda41b0bebe40347f115914f82ec2510d1cc75158b94e0327e2b904",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "assertion_result": {
+    "stage": "AI-34",
+    "completed_checks": 15,
+    "last_checks": [
+      "original history remains intact and compaction never renews retention",
+      "completed compacting turn is never replayed",
+      "subsequent turn reuses the validated snapshot without another compaction",
+      "history larger than the canonical byte ceiling completes from one bounded compaction window and the remaining tail"
+    ]
+  },
+  "error_category": "AssertionError",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "dba7a46b5a0ca9bf7d4b06fa34c179ab87c5c52894f6e09210650ee8deb86cf1"
+}

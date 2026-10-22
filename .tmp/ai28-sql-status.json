@@ -1,0 +1,130 @@
+[
+  {
+    "stage": "27",
+    "file": "test/nodia-ai-ai27.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:04:07.300760+00:00",
+    "elapsed_seconds": 14.76,
+    "log": ".tmp/ai28-sql-regression-27.log"
+  },
+  {
+    "stage": "26",
+    "file": "test/nodia-ai-ai26.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:04:22.064749+00:00",
+    "elapsed_seconds": 18.07,
+    "log": ".tmp/ai28-sql-regression-26.log"
+  },
+  {
+    "stage": "25",
+    "file": "test/nodia-ai-ai25.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:04:40.137005+00:00",
+    "elapsed_seconds": 20.03,
+    "log": ".tmp/ai28-sql-regression-25.log"
+  },
+  {
+    "stage": "24",
+    "file": "test/nodia-ai-ai24.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:05:00.172341+00:00",
+    "elapsed_seconds": 15.52,
+    "log": ".tmp/ai28-sql-regression-24.log"
+  },
+  {
+    "stage": "23",
+    "file": "test/nodia-ai-ai23.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:05:15.688874+00:00",
+    "elapsed_seconds": 24.04,
+    "log": ".tmp/ai28-sql-regression-23.log"
+  },
+  {
+    "stage": "22",
+    "file": "test/nodia-ai-ai22.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:05:39.733696+00:00",
+    "elapsed_seconds": 22.34,
+    "log": ".tmp/ai28-sql-regression-22.log"
+  },
+  {
+    "stage": "20",
+    "file": "test/nodia-ai-ai20.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:06:02.069851+00:00",
+    "elapsed_seconds": 22.87,
+    "log": ".tmp/ai28-sql-regression-20.log"
+  },
+  {
+    "stage": "18",
+    "file": "test/nodia-ai-ai18.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:06:24.937048+00:00",
+    "elapsed_seconds": 12.0,
+    "log": ".tmp/ai28-sql-regression-18.log"
+  },
+  {
+    "stage": "08",
+    "file": "test/nodia-ai-ai08.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:06:36.933117+00:00",
+    "elapsed_seconds": 4.35,
+    "log": ".tmp/ai28-sql-regression-08.log"
+  },
+  {
+    "stage": "rental",
+    "file": "test/rental.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:06:41.287539+00:00",
+    "elapsed_seconds": 23.34,
+    "log": ".tmp/ai28-sql-regression-rental.log"
+  },
+  {
+    "stage": "modules",
+    "file": "test/module-catalog.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:07:04.629513+00:00",
+    "elapsed_seconds": 3.67,
+    "log": ".tmp/ai28-sql-regression-modules.log"
+  },
+  {
+    "stage": "actions",
+    "file": "test/action-catalog.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:07:08.302290+00:00",
+    "elapsed_seconds": 3.37,
+    "log": ".tmp/ai28-sql-regression-actions.log"
+  },
+  {
+    "stage": "roles",
+    "file": "test/role-catalog.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:07:11.674661+00:00",
+    "elapsed_seconds": 3.68,
+    "log": ".tmp/ai28-sql-regression-roles.log"
+  },
+  {
+    "stage": "api",
+    "file": "test/ai-api.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:07:15.358589+00:00",
+    "elapsed_seconds": 3.4,
+    "log": ".tmp/ai28-sql-regression-api.log"
+  },
+  {
+    "stage": "agentic",
+    "file": "test/agentic-cli.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:07:18.755360+00:00",
+    "elapsed_seconds": 1.16,
+    "log": ".tmp/ai28-sql-regression-agentic.log"
+  },
+  {
+    "stage": "main",
+    "file": "test/nodia-ai-ai28.integration.mjs",
+    "exit_code": 0,
+    "started_utc": "2026-10-17T19:07:56.227939+00:00",
+    "elapsed_seconds": 10.49,
+    "log": ".tmp/ai28-sql-main.log"
+  }
+]

@@ -2,6 +2,10 @@ import { IsBoolean, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateAiProviderCatalogDto {
   @IsOptional()
+  @IsBoolean()
+  is_active?: boolean;
+
+  @IsOptional()
   @IsString()
   @MaxLength(128)
   name?: string;

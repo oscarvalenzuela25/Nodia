@@ -1,0 +1,96 @@
+{
+  "stage": "AI-33",
+  "checked_on": "2026-10-18T18:37:27.554Z",
+  "scope": "Local Windows unit, production compile and runtime integration; no provider or business data writes",
+  "context_runtime_focused": {
+    "status": "passed",
+    "tests": 98,
+    "files": 4,
+    "failed": 0,
+    "report": {
+      "path": ".tmp/ai33-root-post-race.json",
+      "sha256": "6fe257ea30df99509303e1dae3c4c759f211475412ac85cf5681a139e738e2ff"
+    }
+  },
+  "checks": {
+    "accepted_preferences_separate_json_data": true,
+    "manifest_references_without_values": true,
+    "changed_after_observation_stops_dispatch": true,
+    "changed_after_profile_reservation_stops_dispatch": true,
+    "validator_inside_durable_arming_before_budget": true,
+    "known_pre_dispatch_error_not_replayed": true,
+    "production_tsc_no_emit": "passed",
+    "scoped_oxlint_10_files": "passed",
+    "cancel_or_deadline_while_arming_preserves_unknown": true,
+    "late_arming_does_not_resume_provider": true,
+    "generic_or_nonlocal_typed_rejection_is_not_proof_of_rollback": true
+  },
+  "build": {
+    "status": "passed",
+    "post_race_fix_log": ".tmp/ai33-server-build-final.log",
+    "sha256": "398246c11422af04fcadeb89d8e3b3036b19625ff881e76df2e8706a239a3f40"
+  },
+  "source_pins": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+      "sha256": "aaa199e463327128429ce86500ebebd21f58609ec1ce175cec5c58a2c1576b6f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "sha256": "ab16ce3b4bd73844c5b4b2beff47ac5ad9388d373bbc3afbec16c0c204760c68"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/nodia-ai-processing.module.ts",
+      "sha256": "7adaf8cc8c92c6bea65fb0cd2fcfd2dfb0a63fe4e9926b9dd644ea8f66efebd0"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/types/worker.types.ts",
+      "sha256": "1f0b697a41b6767cf08b85950f5637f46556e2a53d09bb0df91845dfb1e74f5b"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.ts",
+      "sha256": "865c19481997e0172a4964b6af51316f001ba46a43a409c770ad56f9c963b92f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+      "sha256": "3c0a39d4372cc602010c59069fb44706883a0b03775e6e02583fd8064d3bc484"
+    }
+  ],
+  "preserved_failures": [
+    {
+      "path": ".tmp/ai33-root-unit-attempt01.json",
+      "tests": 94,
+      "passed": 93,
+      "failed": 1,
+      "reason": "Existing exact mocked armDispatch expectation lacked the new local transaction validator argument; corrected before focused final run."
+    },
+    {
+      "kind": "independent_review",
+      "reason": "Post-await dispatched flag introduced a cancellation race while arming SQL was pending. Restored conservative pre-await state, exact local-validator error provenance, post-await cancellation guard; four additional regressions pass."
+    }
+  ],
+  "limitations": [
+    "Full 3400-test suite predates receipt-validator and pending-arm cancellation fixes. Final affected suites:290 backend tests and98 context/runtime tests. Compiled SQL execution is recorded separately.",
+    "No new Gemini inference, native preference MCP tool publication, R2 operation or production acceptance is claimed."
+  ],
+  "full_server_before_receipt_and_race_fix": {
+    "status": "passed",
+    "tests": 3400,
+    "files": 216,
+    "failed": 0,
+    "report": {
+      "path": ".tmp/ai33-server-unit-all.json",
+      "sha256": "234a966a769e9cf4173c1c661b5c4f89e4d8d9b0ed7990ce5443a9d553ac11e4"
+    }
+  },
+  "context_runtime_before_race_fix": {
+    "status": "passed",
+    "tests": 94,
+    "files": 4,
+    "failed": 0,
+    "report": {
+      "path": ".tmp/ai33-root-unit.json",
+      "sha256": "24a02c25f7dc8dadb4f82394797c57f60fcd1bbca88896af5ca9007ab2ffadb1"
+    }
+  }
+}

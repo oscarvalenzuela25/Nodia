@@ -1,0 +1,19 @@
+{
+  "stage": "AI-23",
+  "scope": "read_only_configured_private_lab",
+  "observed_at_utc": "2026-10-17T16:25:35.268Z",
+  "migrations": 25,
+  "tables": 18,
+  "columns": 241,
+  "challenges": 0,
+  "executions": 0,
+  "execution_steps": 0,
+  "pending_jobs": 0,
+  "open_attempts": 0,
+  "held_or_unknown_slots": 0,
+  "knowledge_release": "67df82be991496f45536f62528c283b3342975e2351124512d6f232ed442d825",
+  "published_capabilities": 67,
+  "published_fragments": 27,
+  "production_executor_registrations": 26,
+  "native_business_execution_enabled": true
+}

@@ -1,0 +1,1172 @@
+{
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://nodia.local/schemas/write-reservations/1",
+    "$defs": {
+      "RentalId": {
+        "type": "string",
+        "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6]|9223372036854775807)$",
+        "maxLength": 19
+      },
+      "PositiveMoney": {
+        "$ref": "#/$defs/RentalId"
+      },
+      "Money": {
+        "type": "string",
+        "pattern": "^(?:0|(?:[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6]|9223372036854775807))$",
+        "maxLength": 19
+      },
+      "Percent": {
+        "type": "string",
+        "pattern": "^(?:(?:0|[1-9][0-9]?)(?:\\.[0-9]{1,2})?|100(?:\\.0{1,2})?)$",
+        "maxLength": 6
+      },
+      "CivilDate": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^(?:19[0-9]{2}|[2-9][0-9]{3})-[0-9]{2}-[0-9]{2}$",
+        "maxLength": 10
+      },
+      "LocalTime": {
+        "type": "string",
+        "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$",
+        "maxLength": 5
+      },
+      "Instant": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^(?:19[0-9]{2}|[2-9][0-9]{3})-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,3})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$",
+        "maxLength": 29
+      },
+      "Timezone": {
+        "type": "string",
+        "pattern": "^(?:[A-Za-z_]+(?:/[A-Za-z_+\\-0-9]+)+|UTC|GMT)$",
+        "maxLength": 64,
+        "description": "Zona validada por Intl en el backend; su sintaxis no acredita disponibilidad."
+      },
+      "PlatformPolicy": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 5000,
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "additionalProperties": false,
+        "required": ["reference", "description"]
+      },
+      "CancellationRule": {
+        "type": "object",
+        "properties": {
+          "min_days_before": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 36500
+          },
+          "refund_percent": {
+            "$ref": "#/$defs/Percent"
+          }
+        },
+        "additionalProperties": false,
+        "required": ["min_days_before", "refund_percent"]
+      },
+      "CancellationRules": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/$defs/CancellationRule"
+        }
+      },
+      "PropertyCreate": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "timezone": {
+            "$ref": "#/$defs/Timezone"
+          },
+          "max_guests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "check_in_time": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/LocalTime"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "check_out_time": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/LocalTime"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "default_nightly_rate": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/PositiveMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "default_deposit_percent": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Percent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "minimum_turnover_minutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10080
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PropertyUpdate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "timezone": {
+            "$ref": "#/$defs/Timezone"
+          },
+          "max_guests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "check_in_time": {
+            "$ref": "#/$defs/LocalTime"
+          },
+          "check_out_time": {
+            "$ref": "#/$defs/LocalTime"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "default_nightly_rate": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/PositiveMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "default_deposit_percent": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Percent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "minimum_turnover_minutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10080
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "default_cancellation_policy_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RentalId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "CollaboratorCreate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "user_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CollaboratorUpdate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CancellationPolicyCreate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "rules": {
+            "$ref": "#/$defs/CancellationRules"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CancellationPolicyUpdate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "rules": {
+            "$ref": "#/$defs/CancellationRules"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReservationCreate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "guest_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "guest_contact": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "guests_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["whatsapp", "airbnb", "facebook", "other"]
+          },
+          "external_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "check_in_on": {
+            "$ref": "#/$defs/CivilDate"
+          },
+          "check_out_on": {
+            "$ref": "#/$defs/CivilDate"
+          },
+          "check_in_time": {
+            "$ref": "#/$defs/LocalTime"
+          },
+          "check_out_time": {
+            "$ref": "#/$defs/LocalTime"
+          },
+          "nightly_rate": {
+            "$ref": "#/$defs/PositiveMoney"
+          },
+          "cleaning_fee": {
+            "$ref": "#/$defs/Money"
+          },
+          "discount_amount": {
+            "$ref": "#/$defs/Money"
+          },
+          "commission_amount": {
+            "$ref": "#/$defs/Money"
+          },
+          "deposit_amount": {
+            "$ref": "#/$defs/Money"
+          },
+          "deposit_due_at": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "balance_due_at": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cancellation_policy_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RentalId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReservationUpdate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "guest_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "guest_contact": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "guests_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["whatsapp", "airbnb", "facebook", "other"]
+          },
+          "external_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "check_in_on": {
+            "$ref": "#/$defs/CivilDate"
+          },
+          "check_out_on": {
+            "$ref": "#/$defs/CivilDate"
+          },
+          "check_in_time": {
+            "$ref": "#/$defs/LocalTime"
+          },
+          "check_out_time": {
+            "$ref": "#/$defs/LocalTime"
+          },
+          "nightly_rate": {
+            "$ref": "#/$defs/PositiveMoney"
+          },
+          "cleaning_fee": {
+            "$ref": "#/$defs/Money"
+          },
+          "discount_amount": {
+            "$ref": "#/$defs/Money"
+          },
+          "commission_amount": {
+            "$ref": "#/$defs/Money"
+          },
+          "deposit_amount": {
+            "$ref": "#/$defs/Money"
+          },
+          "deposit_due_at": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "balance_due_at": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cancellation_policy_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RentalId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReservationConfirm": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "same_day_approvals": {
+            "type": "array",
+            "maxItems": 100,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/RentalId"
+            }
+          },
+          "platform_policy": {
+            "$ref": "#/$defs/PlatformPolicy"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReservationStart": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReservationComplete": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReservationCancel": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "cancelled_at": {
+            "$ref": "#/$defs/Instant"
+          },
+          "refund_amount": {
+            "$ref": "#/$defs/Money"
+          },
+          "resolution_note": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentCreate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "reservation_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["payment", "refund"]
+          },
+          "amount": {
+            "$ref": "#/$defs/PositiveMoney"
+          },
+          "occurred_on": {
+            "$ref": "#/$defs/CivilDate"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "platform_policy": {
+            "$ref": "#/$defs/PlatformPolicy"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentVoid": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExpenseCreate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "amount": {
+            "$ref": "#/$defs/PositiveMoney"
+          },
+          "incurred_on": {
+            "$ref": "#/$defs/CivilDate"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "paid"]
+          },
+          "paid_on": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/CivilDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reservation_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RentalId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExpenseUpdate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "amount": {
+            "$ref": "#/$defs/PositiveMoney"
+          },
+          "incurred_on": {
+            "$ref": "#/$defs/CivilDate"
+          },
+          "reservation_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/RentalId"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExpensePay": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "paid_on": {
+            "$ref": "#/$defs/CivilDate"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExpenseVoid": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BlockCreate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "starts_at": {
+            "$ref": "#/$defs/Instant"
+          },
+          "ends_at": {
+            "$ref": "#/$defs/Instant"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BlockUpdate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "starts_at": {
+            "$ref": "#/$defs/Instant"
+          },
+          "ends_at": {
+            "$ref": "#/$defs/Instant"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TurnoverUpdate": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "linen_ready": {
+            "type": ["boolean", "null"]
+          },
+          "cleaning_status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "completed"]
+          },
+          "planned_ready_at": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ready_at": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Instant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "TurnoverApproveSameDay": {
+        "type": "object",
+        "properties": {
+          "property_id": {
+            "$ref": "#/$defs/RentalId"
+          },
+          "id": {
+            "$ref": "#/$defs/RentalId"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "tools": [
+    {
+      "tool_name": "nodia_rental_properties_prepare_create",
+      "input_definition": "PropertyCreate",
+      "resource_key": "rental_properties",
+      "description": "Propone crear una casa; el propietario se resuelve con la identidad autorizada si se omite. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_properties_prepare_update",
+      "input_definition": "PropertyUpdate",
+      "resource_key": "rental_properties",
+      "description": "Propone editar la casa y su configuración; no cambia su propietario. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_collaborators_prepare_create",
+      "input_definition": "CollaboratorCreate",
+      "resource_key": "rental_collaborators",
+      "description": "Propone dar acceso a una casa a un usuario existente. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_collaborators_prepare_update",
+      "input_definition": "CollaboratorUpdate",
+      "resource_key": "rental_collaborators",
+      "description": "Propone editar el cargo o la actividad de un colaborador existente. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_cancellation_policies_prepare_create",
+      "input_definition": "CancellationPolicyCreate",
+      "resource_key": "rental_cancellation_policies",
+      "description": "Propone crear una política de cancelación y sus reglas; archivar conserva el historial. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_cancellation_policies_prepare_update",
+      "input_definition": "CancellationPolicyUpdate",
+      "resource_key": "rental_cancellation_policies",
+      "description": "Propone editar una política de cancelación y sus reglas; archivar conserva el historial. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_create",
+      "input_definition": "ReservationCreate",
+      "resource_key": "rental_reservations",
+      "description": "Propone crear una reserva en borrador sin registrar pagos. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_update",
+      "input_definition": "ReservationUpdate",
+      "resource_key": "rental_reservations",
+      "description": "Propone editar una reserva según las restricciones de su fase comercial. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_confirm",
+      "input_definition": "ReservationConfirm",
+      "resource_key": "rental_reservations",
+      "description": "Propone confirmar una reserva existente tras revalidar disponibilidad, depósito y preparación; no registra pagos. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_start",
+      "input_definition": "ReservationStart",
+      "resource_key": "rental_reservations",
+      "description": "Propone iniciar una estancia ya confirmada cuando fecha y preparación lo permiten. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_complete",
+      "input_definition": "ReservationComplete",
+      "resource_key": "rental_reservations",
+      "description": "Propone completar una estancia en curso después de su término. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_cancel",
+      "input_definition": "ReservationCancel",
+      "resource_key": "rental_reservations",
+      "description": "Propone cancelar una reserva y calcular su devolución pendiente; no paga ni acepta importes de control derivados del backend. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_payments_prepare_create",
+      "input_definition": "PaymentCreate",
+      "resource_key": "rental_payments",
+      "description": "Propone registrar un pago o devolución explícitos de una reserva; conserva cantidades enteras como texto. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_payments_prepare_void",
+      "input_definition": "PaymentVoid",
+      "resource_key": "rental_payments",
+      "description": "Propone anular un movimiento de dinero conservando su registro y razón; no lo elimina físicamente. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_create",
+      "input_definition": "ExpenseCreate",
+      "resource_key": "rental_expenses",
+      "description": "Propone registrar un gasto de una casa con estado pendiente o pagado explícito. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_update",
+      "input_definition": "ExpenseUpdate",
+      "resource_key": "rental_expenses",
+      "description": "Propone editar un gasto existente; el pago tiene su operación propia. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_pay",
+      "input_definition": "ExpensePay",
+      "resource_key": "rental_expenses",
+      "description": "Propone marcar un gasto existente como pagado en la fecha indicada. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_void",
+      "input_definition": "ExpenseVoid",
+      "resource_key": "rental_expenses",
+      "description": "Propone anular un gasto conservando el historial y su razón. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_blocks_prepare_create",
+      "input_definition": "BlockCreate",
+      "resource_key": "rental_blocks",
+      "description": "Propone bloquear un intervalo de una casa; el backend revalida los conflictos. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_blocks_prepare_update",
+      "input_definition": "BlockUpdate",
+      "resource_key": "rental_blocks",
+      "description": "Propone editar o desactivar un bloqueo existente conservando su historial. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_turnovers_prepare_update",
+      "input_definition": "TurnoverUpdate",
+      "resource_key": "rental_turnovers",
+      "description": "Propone actualizar ropa, limpieza y preparación de una estancia. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_rental_turnovers_prepare_approve_same_day",
+      "input_definition": "TurnoverApproveSameDay",
+      "resource_key": "rental_turnovers",
+      "description": "Propone aprobar una transición del mismo día sólo cuando satisface las reglas nativas de preparación. Prepara un borrador revisable; no ejecuta cambios. Los campos omitidos se solicitan mediante aclaración y toda ejecución requiere confirmación humana de la propuesta exacta."
+    }
+  ]
+}

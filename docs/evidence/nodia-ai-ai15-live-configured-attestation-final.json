@@ -1,0 +1,43 @@
+{
+  "task": "AI-15",
+  "scope": "exact_configured_connection_mcp_attestation",
+  "configured_database_read_only": true,
+  "configured_database_modified": false,
+  "configured_selection_modified": false,
+  "available_before": true,
+  "supports_mcp_before": false,
+  "real_provider_dispatch_requests": 1,
+  "maximum_provider_dispatch_requests": 1,
+  "diagnostic_nonce_verified": false,
+  "native_terminal_proof_acknowledged": true,
+  "inference_replayed": false,
+  "status": "failed",
+  "error_code": "mcp_result_unknown",
+  "native_pending_identity": false,
+  "native_terminal_diagnostic": {
+    "callbacks": 0,
+    "cli": {
+      "denied_count": 0,
+      "document_read_completed": false,
+      "events": 2,
+      "initialized": true,
+      "invalid_lines": 0,
+      "last_event_age_ms": 114146,
+      "last_tool": "none",
+      "result_seen": false,
+      "stage": "prompt_received",
+      "stderr_bytes": 0,
+      "stdout_bytes": 1786,
+      "terminal_status": "absent",
+      "tool_steps": 0
+    },
+    "elapsed_ms": 119040,
+    "exception_type": "TimeoutError",
+    "exit_code": null,
+    "gate_verified": false,
+    "hook": null,
+    "phase": "running_cli",
+    "rpc_messages": 6,
+    "state": "unknown"
+  }
+}

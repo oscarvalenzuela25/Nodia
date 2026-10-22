@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "environment": {
+    "environment_id": "ai38-isolated-ui-api-sql",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "observations": [
+    {
+      "gate_id": "package_integrity",
+      "status": "unknown",
+      "scope": "artifact",
+      "reason": "The matching immutable bytes were checked for linux_lab; this isolated acceptance uses the same package but does not independently certify lock-based dependency installation or a complete delivery preflight for this environment.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-delivery-preflight-r01.json",
+          "sha256": "331242abafcd8ee1f7a9a1bab2d5ce14eb372c25c8c9943afab47546179b4bb6"
+        }
+      ]
+    },
+    {
+      "gate_id": "isolated_UI_API_SQL",
+      "status": "passed",
+      "scope": "isolated",
+      "reason": "R06 executes 20 checks through actual NodiaAI/preview/Finance components, Axios HTTP, Nest and disposable PostgreSQL. Auth transport/Redis are declared synthetic; no provider, configured database or cloud storage is used. R02 confirms owned API/database cleanup. The native Claim/Execute use cases run through a closed test bridge; no standalone worker-process lifecycle is verified.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+          "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb",
+          "context_pointer": "/context"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-cleanup-r02.json",
+          "sha256": "c407d6709c008d191f510c90bce5369aad33441685f32ff6dd24bfbda4a414c6",
+          "context_pointer": "/context"
+        }
+      ]
+    },
+    {
+      "gate_id": "authority_and_revocation",
+      "status": "passed",
+      "scope": "isolated",
+      "reason": "Actual HTTP enforces unrelated-user denial, omniscient inspection without confirming another owner intention, destination-module revocation/redaction and restoration. Editing creates a new exact preview revision; the human button confirms that revision and a wrong hash is denied before effects. Authentication transport is synthetic.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+          "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb",
+          "context_pointer": "/context"
+        }
+      ]
+    },
+    {
+      "gate_id": "leave_return_and_effects",
+      "status": "passed",
+      "scope": "isolated",
+      "reason": "After native ClaimNodiaAiExecutionUseCase and ExecuteNodiaAiLocalExecutionUseCase run through the closed test bridge while UI observation is absent, returning restores the immutable receipt and persisted message without replay; the actual Finance page lists the expense. Cancellation keeps one effect and no second effect. This does not verify a standalone worker process.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+          "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb",
+          "context_pointer": "/context"
+        }
+      ]
+    },
+    {
+      "gate_id": "product_context_evolution",
+      "status": "unknown",
+      "scope": "isolated",
+      "reason": "R06 explicitly does not verify a new product publication. AI36 current compiled SQL passes 24 checks including synthetic incompatible-admission rejection; initial AI34 fails due to an obsolete empty-publication fixture and R02 passes 36 long-context checks after an explicit empty-family fixture profile. These layers do not prove the full admitted-old-release to newly published product next-turn flow or hot reload.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+          "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-regression-r01.json",
+          "sha256": "49b727b2b2e38fad9fef36b86be2492e05bf334bf95cf907cee292d9ccadd247"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-context-r02.json",
+          "sha256": "cce249e1cdc7ea21825c6e0a5df0f9bfc181d7870c5e50fceac5658af25e0301"
+        }
+      ]
+    },
+    {
+      "gate_id": "provider_text_and_routing",
+      "status": "unknown",
+      "scope": "live_environment",
+      "reason": "No real provider runs in the isolated UI/API/SQL chain. Non-generative operational metadata and the failed separate candidate-adapter canary cannot establish Web conversation or opt-in Web-to-Agentic completion here.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+          "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-modalities-r01.json",
+          "sha256": "50c6330ba615cdec74436af97fb2bbd5fffc47c11101be1163c57e897bccb970"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-mcp-canary-r01.json",
+          "sha256": "14878a88a783f14f4e3e6b6789c0eaaacb56c6fed12c3ecd688da47849768485"
+        }
+      ]
+    },
+    {
+      "gate_id": "provider_modalities",
+      "status": "unknown",
+      "scope": "live_environment",
+      "reason": "R06 performs no native file/audio inference. The operational adapter currently returns empty verified modality/media-type lists; AI32 historical successes do not transfer to this package/environment.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+          "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-modalities-r01.json",
+          "sha256": "50c6330ba615cdec74436af97fb2bbd5fffc47c11101be1163c57e897bccb970"
+        }
+      ]
+    },
+    {
+      "gate_id": "published_domain_acceptance",
+      "status": "unknown",
+      "scope": "live_environment",
+      "reason": "The native financial preview/effect path is verified with synthetic authenticated transport, not natural-language/MCP preparation. AI36 remains accumulated 4/7; the real candidate-adapter nonce canary failed and adopts no candidate.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+          "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-mcp-canary-r01.json",
+          "sha256": "14878a88a783f14f4e3e6b6789c0eaaacb56c6fed12c3ecd688da47849768485"
+        }
+      ]
+    },
+    {
+      "gate_id": "deployment_and_rollback",
+      "status": "unknown",
+      "scope": "infrastructure",
+      "reason": "An owned isolated API/database was run and removed; operational services were not adopted or rolled back by this chain. VM-minus-Windows clock skew is documented separately and is not evidence of a canary cause.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-cleanup-r02.json",
+          "sha256": "c407d6709c008d191f510c90bce5369aad33441685f32ff6dd24bfbda4a414c6"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-delivery-inventory-r03.json",
+          "sha256": "5daa50d82646ee643af3a3abd11c96a6c0f16e9efddfcf1b15f09aec031827d5"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-delivery-clock-r02.json",
+          "sha256": "98714c5c3fbfc45f688902f4b824b85a987104fefa9b591c639fc725acec2a79"
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai38-windows-clock-r01.json",
+          "sha256": "199375bd91920852440220811d7437f7c82874c339986873cd4037465f86d18c"
+        }
+      ]
+    },
+    {
+      "gate_id": "retention_backup_restore",
+      "status": "unknown",
+      "scope": "infrastructure",
+      "reason": "Disposable SQL tests and successful removal of the test database do not verify this target infrastructure encrypted/rotated backups, continuous trusted deletion journal, all object versions or reconciled external restore.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai38-acceptance-cleanup-r02.json",
+          "sha256": "c407d6709c008d191f510c90bce5369aad33441685f32ff6dd24bfbda4a414c6"
+        }
+      ]
+    }
+  ],
+  "historical_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
+      "sha256": "25f3ee4a8a82f778522c55ff88922905acc6a22d40f2e74617ba6791baf236c4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-validation.json",
+      "sha256": "6837001444fc6230c6f8b35dc7a4dc11868b485d0b70d392292ac17c55fd625d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-documentation-finalization.json",
+      "sha256": "66b47a546cc640237f491f9d0232569d0590f0144773061a99d469f015f8d281"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-operational-state.json",
+      "sha256": "beaced2473754a857b16129f9be5a0bf01d1b4f0a22e8dedcbb6c48e0536a30d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+      "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-cleanup-r02.json",
+      "sha256": "c407d6709c008d191f510c90bce5369aad33441685f32ff6dd24bfbda4a414c6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-regression-r01.json",
+      "sha256": "49b727b2b2e38fad9fef36b86be2492e05bf334bf95cf907cee292d9ccadd247"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-context-r02.json",
+      "sha256": "cce249e1cdc7ea21825c6e0a5df0f9bfc181d7870c5e50fceac5658af25e0301"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-preflight-r01.json",
+      "sha256": "331242abafcd8ee1f7a9a1bab2d5ce14eb372c25c8c9943afab47546179b4bb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-inventory-r03.json",
+      "sha256": "5daa50d82646ee643af3a3abd11c96a6c0f16e9efddfcf1b15f09aec031827d5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-native-closure-r01.json",
+      "sha256": "a07b5a788bbbee0aa9bfb870d3f7c507490d5aa0fca2b5db4c759539023e928c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-clock-r01.json",
+      "sha256": "4e183d59ffa49561d048b6914bb832ec7ed3a82ce3a38b6b2c92837b0780953b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-windows-clock-r01.json",
+      "sha256": "199375bd91920852440220811d7437f7c82874c339986873cd4037465f86d18c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-r01.json",
+      "sha256": "50c6330ba615cdec74436af97fb2bbd5fffc47c11101be1163c57e897bccb970"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-mcp-canary-r01.json",
+      "sha256": "14878a88a783f14f4e3e6b6789c0eaaacb56c6fed12c3ecd688da47849768485"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-clock-r02.json",
+      "sha256": "98714c5c3fbfc45f688902f4b824b85a987104fefa9b591c639fc725acec2a79"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-gates-isolated-r02-input.json",
+      "sha256": "af17c5d921cd73f7beda9d90cd3c13e6f049e24fcae640293b88faa685f1b83c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-gates-isolated-r02.json",
+      "sha256": "fb8e6ced9ca102ae323677972f1f20c6371ecb36a33fe2cd63e4188fa61944d3"
+    }
+  ],
+  "excluded_modes": [
+    "api_key",
+    "openai_codex_agentic"
+  ],
+  "knowledge_provenance_note": "The AI-37 addendum records a source_hash-only change, with identical approved content, capability contracts, bindings and fragments. A fresh build/package pin is required; no new knowledge approval or capability publication follows from that source-only hash change. Subsequent source changes must be classified from their actual diff."
+}

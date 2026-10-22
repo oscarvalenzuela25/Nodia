@@ -1,0 +1,21 @@
+{
+  "stage": "AI-38",
+  "scope": "owned_backup_early_purge_attempt_before_mutation",
+  "status": "failed_closed_no_mutations",
+  "source_sha256": "923add43cfc47e09b38e1c201847ab79b1b209c232feecf3deffb2874706ffc7",
+  "backup_receipt_sha256": "047cae81afc40bc6810f44b8ebef063b6bd32d5adf945b457a8f40e577f993a7",
+  "rollback_receipt_sha256": "778bc33b2193e9d9c370b58ecbaf97ab38de8b20ec31528fbfbf528a77317cd8",
+  "failure_class": "AssertionError",
+  "failure_guard": "expiry_template_exact_bytes",
+  "failure_cause_confirmed": "helper_expected_unused_PurePosixPath_import_not_present_in_frozen_backup_template",
+  "remote_actual_matches_frozen_backup_R03_template": true,
+  "remote_actual_template_sha256": "d6b58603f59382404a4efad495b163ba81691317325edc0076f647fbccf141e4",
+  "purge_report_created": false,
+  "cipher_retained": true,
+  "key_retained": true,
+  "expiry_units_not_modified": true,
+  "configured_SQL_writes": 0,
+  "original_database_restored": false,
+  "provider_requests": 0,
+  "reported_at_utc": "2026-10-20T21:10:37.575622+00:00"
+}

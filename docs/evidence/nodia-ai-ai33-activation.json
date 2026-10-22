@@ -1,0 +1,102 @@
+{
+  "stage": "AI-33",
+  "scope": "additive_compiled_preferences_M4_lab_activation",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T18:48:57Z",
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "r2_object_operations": 0,
+  "configuration_modified": false,
+  "gemini_restarted": false,
+  "migration": {
+    "stage": "AI-33",
+    "scope": "configured_database_exact_M4_additive_migration",
+    "status": "passed",
+    "provider_generations": 0,
+    "storage_operations": 0,
+    "credential_values_exported": false,
+    "existing_domain_data_modified": false,
+    "database_backup_created": true,
+    "database_backup_tool": "cached_postgres16_ephemeral_pg_dump",
+    "database_backup_bytes": 296521,
+    "database_backup_sha256": "94108e9fb2d886f0841cea837625d2f7efbdec090e978a07966ef509cb880030",
+    "migrations_before": 26,
+    "migrations_after": 27,
+    "applied": [
+      "CreateNodiaAiPreferences1792900000000"
+    ],
+    "schema": {
+      "tables": 20,
+      "columns": 279,
+      "preference_columns": 12,
+      "preferences": 0
+    },
+    "prior_migration_history_preserved": true
+  },
+  "compiled_files_verified": 923,
+  "previous_compiled_files_verified": 909,
+  "changed_paths": [
+    "dist/app.module.js",
+    "dist/nodia-ai-confirmation/nodia-ai-confirmation.module.js",
+    "dist/nodia-ai-confirmation/use-case/validate-nodia-ai-confirmation.use-case.js",
+    "dist/nodia-ai-context/config/knowledge-pin.json",
+    "dist/nodia-ai-context/nodia-ai-processing.module.js",
+    "dist/nodia-ai-context/use-case/build-nodia-ai-context.use-case.js",
+    "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js",
+    "dist/nodia-ai-execution/use-case/execute-nodia-ai-local-execution.use-case.js",
+    "dist/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.js",
+    "dist/nodia-ai-proposal/nodia-ai-proposal.module.js",
+    "dist/nodia-ai-proposal/types/local-operation.types.js",
+    "dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.js",
+    "dist/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.js",
+    "dist/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.js",
+    "dist/nodia-ai-tools/config/common-schema.json",
+    "dist/nodia-ai/knowledge/manifest.json"
+  ],
+  "added_output_paths": [
+    "dist/migrations/1792900000000-CreateNodiaAiPreferences.js",
+    "dist/nodia-ai-preference/dto/nodia-ai-preference.dto.js",
+    "dist/nodia-ai-preference/entities/nodia-ai-preference.entity.js",
+    "dist/nodia-ai-preference/nodia-ai-preference-operations.module.js",
+    "dist/nodia-ai-preference/nodia-ai-preference.controller.js",
+    "dist/nodia-ai-preference/nodia-ai-preference.module.js",
+    "dist/nodia-ai-preference/nodia-ai-preference.service.js",
+    "dist/nodia-ai-preference/types/preference.types.js",
+    "dist/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.js",
+    "dist/nodia-ai-preference/use-case/get-nodia-ai-preference-catalog.use-case.js",
+    "dist/nodia-ai-preference/use-case/get-nodia-ai-preference-options.use-case.js",
+    "dist/nodia-ai-preference/use-case/list-nodia-ai-preferences.use-case.js",
+    "dist/nodia-ai-preference/use-case/nodia-ai-preference-reader.use-case.js",
+    "dist/nodia-ai-preference/use-case/prepare-nodia-ai-preference.use-case.js"
+  ],
+  "unchanged_existing_compiled_files": 893,
+  "compiled_manifest_sha256": "ba5ad634dd748267d52d004cd0d1c415f861547324a155d5ad9f86ecf4deb6ed",
+  "backup_directory": "/opt/nodia/verification-backups/ai33-1792349337883",
+  "api_and_worker_restarted": true,
+  "gemini_container_identity_preserved": true,
+  "nginx_identity_preserved": true,
+  "server_environment_unchanged": true,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 26
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 27
+  },
+  "native_runtime_artifact_counts": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "configured_chat_preserved": true,
+  "configured_chat_metadata_sha256": "46a9dd312147858f853bc6581056bd9b3d0ccfcc4c48041a78383eec73b9cf0d",
+  "completed_at_utc": "2026-10-18T18:49:03Z"
+}

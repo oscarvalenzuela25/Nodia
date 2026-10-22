@@ -1,0 +1,63 @@
+{
+  "stage": "AI-32-R06",
+  "scope": "real_compiled_retention_and_r2_janitor_isolated_database",
+  "status": "failed",
+  "observed_at_utc": "2026-10-18T16:52:46.927Z",
+  "configured_database_used": false,
+  "configured_database_modified": false,
+  "provider_generations": 0,
+  "production_services_restarted": false,
+  "signed_urls_generated": false,
+  "object_listing_requested": false,
+  "raw_text_keys_credentials_exported": false,
+  "synthetic_objects_budget": 2,
+  "checks": [
+    "disposable database identity and26 actual migrations verified",
+    "sandbox contains no prior conversations",
+    "actual validated runtime policy retains90 day owner message basis",
+    "owned PNG1 actual upload and HTTP inspector ready",
+    "owned PNG1 real R2 GET digest matches",
+    "owned PNG2 actual upload and HTTP inspector ready",
+    "owned PNG2 real R2 GET digest matches"
+  ],
+  "snapshots": [
+    {
+      "label": "empty_baseline",
+      "chats": 0,
+      "attachments": 0,
+      "messages": 0,
+      "parts": 0,
+      "jobs": []
+    }
+  ],
+  "cloud_operations": [
+    {
+      "command": "PutObjectCommand",
+      "phase": "owned_uploads",
+      "http_status": 200
+    },
+    {
+      "command": "GetObjectCommand",
+      "phase": "owned_uploads",
+      "http_status": 200
+    },
+    {
+      "command": "PutObjectCommand",
+      "phase": "owned_uploads",
+      "http_status": 200
+    },
+    {
+      "command": "GetObjectCommand",
+      "phase": "owned_uploads",
+      "http_status": 200
+    }
+  ],
+  "sdk_max_attempts": {
+    "native": 3,
+    "nodia_ai_put": 1
+  },
+  "safe_failure_phase": "owned_uploads",
+  "safe_failure_code": null,
+  "private_witnesses_retained": true,
+  "completed_at_utc": "2026-10-18T16:52:50.202Z"
+}

@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalReservationService } from '../rental-reservation.service.js';
@@ -8,8 +9,8 @@ export class GetRentalReservationUseCase {
     private readonly transactions: RentalTransactionService,
     private readonly reservations: RentalReservationService,
   ) {}
-  execute(actorId: string, propertyId: string, id: string) {
-    return this.transactions.read(actorId, propertyId, async (ctx) => {
+  async execute(actor: ActorReference, propertyId: string, id: string) {
+    return this.transactions.read(actor, propertyId, async (ctx) => {
       const row = await this.reservations.find(ctx.manager, propertyId, id);
       const sums = await this.reservations.summaries(ctx.manager, propertyId, [
         id,

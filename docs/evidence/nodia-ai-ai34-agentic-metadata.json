@@ -1,0 +1,106 @@
+{
+  "stage": "AI-34",
+  "scope": "read_only_non_generative_agentic_status_catalog_quota",
+  "status": "observed",
+  "observed_at_utc": "2026-10-18T20:06:31.128Z",
+  "configured_selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "observations": [
+    {
+      "endpoint": "/agentic/status",
+      "http_status": 200,
+      "elapsed_ms": 8157,
+      "available": true,
+      "has_active_session": true,
+      "reason": null,
+      "reported_model": null,
+      "configured_model_in_catalog": true,
+      "catalog_count": 6,
+      "configured_catalog_entry": {
+        "id": "gemini-3.8-flash-high",
+        "name": "Gemini 3.8 Flash (High)"
+      },
+      "quota_source": "agentic_cli",
+      "quota_observed_at": 1792353991.118092,
+      "quota": [
+        {
+          "id": "gemini-weekly",
+          "remaining_fraction": 0.988088846206665,
+          "usage_percentage": 1.191115379333496,
+          "reset_at": "2026-10-23T23:09:51Z",
+          "window": "weekly",
+          "group": "Gemini Models",
+          "name": "Weekly Limit Remaining",
+          "remaining": null,
+          "total": null
+        },
+        {
+          "id": "gemini-5h",
+          "remaining_fraction": 1,
+          "usage_percentage": 0,
+          "reset_at": "2026-10-19T00:57:23Z",
+          "window": "5h",
+          "group": "Gemini Models",
+          "name": "Five Hour Limit Remaining",
+          "remaining": null,
+          "total": null
+        },
+        {
+          "id": "3p-weekly",
+          "remaining_fraction": 1,
+          "usage_percentage": 0,
+          "reset_at": "2026-10-25T20:06:27Z",
+          "window": "weekly",
+          "group": "Claude and GPT models",
+          "name": "Weekly Limit Remaining",
+          "remaining": null,
+          "total": null
+        },
+        {
+          "id": "3p-5h",
+          "remaining_fraction": 1,
+          "usage_percentage": 0,
+          "reset_at": "2026-10-19T01:06:27Z",
+          "window": "5h",
+          "group": "Claude and GPT models",
+          "name": "Five Hour Limit Remaining",
+          "remaining": null,
+          "total": null
+        }
+      ]
+    },
+    {
+      "endpoint": "/agentic/models",
+      "http_status": 200,
+      "elapsed_ms": 3,
+      "available": true,
+      "authenticated": true,
+      "reason": null,
+      "catalog_count": 6,
+      "configured_model_in_catalog": true,
+      "configured_catalog_entry": {
+        "id": "gemini-3.8-flash-high",
+        "name": "Gemini 3.8 Flash (High)"
+      },
+      "quota": null
+    },
+    {
+      "endpoint": "/agentic/ready",
+      "http_status": 200,
+      "elapsed_ms": 1,
+      "readiness_status": "ok",
+      "quota": null
+    }
+  ],
+  "provider_generations": 0,
+  "provider_metadata_requests": 3,
+  "services_restarted": false,
+  "settings_changed": false,
+  "limitations": [
+    "Authentication and catalog availability do not prove inference; quota buckets may not identify the exact selected model; missing values remain null"
+  ]
+}

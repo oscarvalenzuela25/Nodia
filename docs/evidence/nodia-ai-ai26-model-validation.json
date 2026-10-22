@@ -1,0 +1,30 @@
+{
+  "stage": "AI-26",
+  "tables": 23,
+  "columns": 298,
+  "foreign_keys": 62,
+  "source_hashes": 8,
+  "new_schema_objects": 0,
+  "local_rental_operations_metadata": {
+    "implementedIn": "AI-26",
+    "nativeOperations": 10,
+    "resources": [
+      "rental_payments",
+      "rental_expenses",
+      "rental_blocks",
+      "rental_turnovers"
+    ],
+    "newTables": 0,
+    "newColumns": 0,
+    "newMigrations": 0,
+    "physicalDelete": false,
+    "nativeFamilyCoverage": {
+      "endpointOperations": 44,
+      "publishedReadPorts": 21,
+      "internalWritePorts": 22,
+      "nativeRecoveryCoordinator": 1
+    },
+    "sourceDocument": "docs/mvp/72-nodia-ai-ai26-rental-money-occupancy-preparation.md",
+    "note": "Native payment/refund, expenses, blocks and turnover records remain in their domain tables. Reuse intent/revision and atomic receipt storage; no new money ledger, hold table or generic recovery key tool."
+  }
+}

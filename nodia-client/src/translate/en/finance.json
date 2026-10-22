@@ -161,5 +161,7 @@
   "category_has_movements": "This category is linked to movements and cannot be deleted.",
   "obligation_has_payments": "This loan or debt has repayments and cannot be deleted.",
   "delete_initial_on_obligation": "Delete the initial movement through its loan or debt, only when it has no repayments.",
-  "section": "Section"
+  "section": "Section",
+  "scope_denied": "You do not have access to that user’s finances.",
+  "owner_not_found": "The data owner does not exist."
 }

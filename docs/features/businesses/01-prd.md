@@ -4,6 +4,8 @@
 > Fecha de creación: 2026-09-15
 > Módulo: `businesses`
 
+Contexto funcional NodiaAI: [ficha de producto](../../nodia-ai/knowledge/businesses/README.md) y sus7 funcionalidades, contrastadas en[AI-05](../../mvp/51-nodia-ai-ai05-product-knowledge.md). Este PRD inicial conserva su estado de borrador; las fichas distinguen decisiones posteriores de acceso en19, contratos/backend vigentes y propuestas no implementadas. No publicación de herramientas por este enlace.
+
 ---
 
 ## 1. Resumen Ejecutivo

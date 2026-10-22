@@ -2,6 +2,7 @@ import type { AiApiKeyEntity, CreateAiApiKeyPayload, UpdateAiApiKeyPayload, GetA
 import { mainInstance } from "../../../../../config/api";
 import { currentGeminiAgenticLoginSchema, geminiAgenticLoginSchema } from "./agenticLogin";
 import { codexSessionSchema } from "./codexSession";
+import { geminiWebLoginSchema, geminiWebLogoutSchema, geminiLoginFrameSchema, type GeminiLoginInput } from "./webLogin";
 import type {
   GetSelectableModelsParams,
   ProviderSelectableModelsResult,
@@ -50,21 +51,36 @@ export const startGeminiLogin = async (): Promise<GeminiLoginJob> => {
   const { data } = await mainInstance.post<GeminiLoginJob>(
     getEndpoint("/ai-providers/gemini-login/start")
   );
-  return data;
+  return geminiWebLoginSchema.parse(data);
+};
+
+export const disconnectGeminiWeb = async () => {
+  const { data } = await mainInstance.post<unknown>(getEndpoint("/ai-providers/gemini-session/logout"), undefined, { timeout: 20_000 });
+  return geminiWebLogoutSchema.parse(data);
 };
 
 export const getGeminiLoginStatus = async (jobId: string): Promise<GeminiLoginJob> => {
   const { data } = await mainInstance.get<GeminiLoginJob>(
     getEndpoint(`/ai-providers/gemini-login/${jobId}`)
   );
-  return data;
+  return geminiWebLoginSchema.parse(data);
 };
 
 export const cancelGeminiLogin = async (jobId: string): Promise<GeminiLoginJob> => {
   const { data } = await mainInstance.post<GeminiLoginJob>(
     getEndpoint(`/ai-providers/gemini-login/${jobId}/cancel`)
   );
-  return data;
+  return geminiWebLoginSchema.parse(data);
+};
+
+export const getGeminiLoginFrame = async (id: string, signal?: AbortSignal) => {
+  const { data } = await mainInstance.get<unknown>(getEndpoint(`/ai-providers/gemini-login/${id}/frame`), { signal, timeout: 7000 });
+  return geminiLoginFrameSchema.parse(data);
+};
+
+export const sendGeminiLoginInput = async ({ id, input }: { id: string; input: GeminiLoginInput }) => {
+  const { data } = await mainInstance.post<unknown>(getEndpoint(`/ai-providers/gemini-login/${id}/input`), input, { timeout: 7000 });
+  return geminiWebLoginSchema.parse(data);
 };
 
 export const getAiProviderCatalog = async (): Promise<AiProviderCatalogEntity[]> => {
@@ -126,7 +142,10 @@ export const updateAiProvider = async (
 
 export const getAiProvidersHealth = async (): Promise<AiProvidersHealthResponse> => {
   const { data } = await mainInstance.get<AiProvidersHealthResponse>(
-    getEndpoint("/ai-providers/health")
+    getEndpoint("/ai-providers/health"),
+    // Codex account + quota checks may take 30 s; Gemini status has a 15 s
+    // server deadline. The aggregate runs them concurrently.
+    { timeout: 45000 }
   );
   return { ...data, providers: data.providers.map((p) => p.codexSession === undefined ? p : { ...p, codexSession: codexSessionSchema.parse(p.codexSession) }) };
 };

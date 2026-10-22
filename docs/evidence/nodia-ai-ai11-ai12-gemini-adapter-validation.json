@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    "AI-11",
+    "AI-12"
+  ],
+  "observed_at": "2026-10-16T02:53:50.232987+00:00",
+  "scope": "offline_private_gemini_adapter_native_mcp_and_reconciliation_cases",
+  "configured_business_database_modified": false,
+  "provider_inference_invocations": 0,
+  "business_tools_published": 0,
+  "live_account_reverified": false,
+  "python": {
+    "version": "3.13.1",
+    "runner": "nodia-gemini-microservice/.venv/Scripts/python.exe run_tests.py",
+    "cwd": "nodia-gemini-microservice",
+    "total": 235,
+    "passed": 233,
+    "skipped": 2,
+    "failures": 0,
+    "errors": 0,
+    "new_profile_chat_http_cases": 22,
+    "isolation": "runner installs synthetic roots, prevents live browser and external network before discovery",
+    "pip_check": "No broken requirements found.",
+    "new_native_terminal_and_mcp_cases": 17,
+    "windows": {
+      "total": 235,
+      "passed": 233,
+      "skipped": 2,
+      "failures": 0,
+      "errors": 0,
+      "isolation": "synthetic test roots and blocked network; historical symlink privilege skips"
+    },
+    "linux": {
+      "total": 235,
+      "passed": 235,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "environment": "parent-operated final deployed image",
+      "network": "none",
+      "account_mounts": false,
+      "source": "parent integration operator verified isolated container run"
+    }
+  },
+  "server_scoped": {
+    "files": 2,
+    "passed": 55,
+    "adapter_cases": 42,
+    "native_reconciliation_cases": 13,
+    "command": "npx vitest run src/nodia-ai-adapter --reporter=dot",
+    "lint": "zero diagnostics for owned adapter paths",
+    "typescript": "tsc -p tsconfig.build.json --noEmit passed after freeze",
+    "note": "Synthetic unit boundaries only. Context/worker/PostgreSQL/live acceptance belong to separate root integration evidence."
+  },
+  "checks": [
+    "exact mode and connection ID without API fallback",
+    "configuration hash includes actual PostgreSQL Date and mode fields",
+    "live exact model/options observation; no model-name inference",
+    "closed private authentication and JSON envelope",
+    "Web answer/delegation only; no MCP tools",
+    "Agentic reply requires observed safe hook receipt",
+    "canonical conversation history; foreign owner parts not fetched",
+    "newly assigned modules cannot expand frozen run grant",
+    "private observation token binds actor, session, chat, revision, selection and freshness",
+    "reserve then fence arm before one provider dispatch",
+    "one dispatch per attempt; uncertain responses never replay",
+    "shared profile gate covers OCR, chat, login, discovery, refresh and logout",
+    "same physical profile excludes alternate connection/mode; distinct profiles independent",
+    "login cancellation before task start releases only after done callback",
+    "unknown marker persists process restart and blocks old consumers",
+    "stage fence loss before dispatch prevents provider call",
+    "response byte bounds and fatal UTF-8 decode",
+    "no sensitive provider error output in private response",
+    "Agentic plain conversation has empty MCP; registered MCP uses closed native hook policy",
+    "supervised stdio child invokes read and prepare fixture callbacks without network, account or business database",
+    "private MCP start/events/results never accepts a callback URL",
+    "RPC and callback budgets plus strict JSON size, depth, duplicate keys and non-finite rejection",
+    "Web rejects all MCP descriptors; unknown tool names and duplicate call identities fail closed",
+    "callback failure or protocol mismatch cancels and awaits native process without replay",
+    "MCP availability requires explicit successful real CLI probe and hook proof; fake runners cannot attest",
+    "MCP verification binds profile/session/model/effort/configuration/protocol and is memory-only",
+    "native minimal terminal proof is emitted outside model JSON only after process cleanup",
+    "exact native reconcile cannot clear armed/crashed, foreign, active newer or legacy unknown operations",
+    "native proof acknowledgement removes receipt and transient MCP job only after SQL-owned acceptance",
+    "safe terminal diagnostics export only bounded structural categories; synthetic prompt/token/path/native error content is absent",
+    "explicit trusted MCP catalog in prompt preserves exact registry gate; rejection sidecar exports only fixed categories without arguments or keys",
+    "Every tools/call consumes native tool capacity before envelope validation, including denied and replayed requests; thirteenth request terminates stdio without another callback",
+    "Private polling reports monotonic unforwarded_tool_requests as native total minus emitted Server callbacks; malformed, decreasing, missing or over-budget progress fails closed",
+    "Node adapter reports hidden tool request progress separately from visible callbacks, bounds their combined total and cancels protocol violations without retry",
+    "Server reserves the hidden progress delta and visible callback requests durably against the same run budget; downstream rejection does not roll back consumption or duplicate effects"
+  ],
+  "runtime_limits": {
+    "private_json_body_bytes": 300000,
+    "canonical_context_utf8_bytes": 262144,
+    "assistant_text_utf8_bytes": 32768,
+    "provider_timeout_seconds_maximum": 120,
+    "in_process_attempt_receipts_maximum": 10000,
+    "python_workers": 1,
+    "private_mcp_start_body_bytes": 400000,
+    "mcp_rpc_messages": 128,
+    "mcp_callbacks": 12,
+    "mcp_message_bytes": 65536,
+    "mcp_tool_requests": 12
+  },
+  "limits": [
+    "This report covers isolated tests only; parent-owned explicit real Gemini acceptance is recorded separately.",
+    "No business tools are published. AI12 technical knowledge callbacks do not implement business CRUD; AI14 remains required.",
+    "A valid session or model catalog never verifies MCP; supports_mcp stays false until a successful explicit exact real probe.",
+    "The profile mutex has one process owner; manual CLI/auth.py and multi-replica shared profiles require operational exclusion.",
+    "A native crash before a terminal proof and legacy identity-free unknown markers require operator intervention; no absence-of-PID or TTL unlock.",
+    "Power-loss recovery and deployment load were not tested by this isolated suite."
+  ],
+  "source_checksums": [
+    {
+      "path": "nodia-gemini-microservice/profile_admission.py",
+      "sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_attempts.py",
+      "sha256": "42d2aa5d446f981d1c810a818c0ccb8c24e37a77fc1d9f4159914c553dcc934f"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_stdio.py",
+      "sha256": "4957d0f1733dd9324d055054caace244357826054006f8743af1ec5f10da89e2"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+      "sha256": "0419e04b12a73d08a2d9bef011a7552a4fb8f34c4d01409914cfbe8057983538"
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "sha256": "0adb921674989772d3729e85788bc532291c07b75977c720f53b0719d3d83f1c"
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_tool_gate.py",
+      "sha256": "6b8cf92bd464ee20aca966fd8934d2fcfc515891ac5a9fc35a47307f18f3abbc"
+    },
+    {
+      "path": "nodia-gemini-microservice/main.py",
+      "sha256": "7c17abf12c28f74f6f37079f07e3e00eb6a0f53a79d62165272e4425332bc4f6"
+    },
+    {
+      "path": "nodia-gemini-microservice/request_guard.py",
+      "sha256": "e2d261187fa1ef22095cb1f89ef53ee77cfa53117df6da5eaa813ed4b30153ce"
+    },
+    {
+      "path": "nodia-gemini-microservice/gemini_service.py",
+      "sha256": "e743d153a4983766722f7b6999afc13d767b038f6315060abc663710dd2c7f07"
+    },
+    {
+      "path": "nodia-gemini-microservice/agentic_service.py",
+      "sha256": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e"
+    },
+    {
+      "path": "nodia-gemini-microservice/interactive_login.py",
+      "sha256": "2d3d4eaac993e2b57fa401569d02df2ef6cf98856040022eac579b0584583295"
+    },
+    {
+      "path": "nodia-gemini-microservice/agentic_login.py",
+      "sha256": "f5396d68d2dbd3c07c7d9ac31fc4167772e49143b1beb89c435007dbdcf3b7c5"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_nodia_ai_chat.py",
+      "sha256": "6eb66b3d6fb42e82a4a24b09e505b56c20798d5aa828c0f4024327fbc460b309"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_native_attempts.py",
+      "sha256": "7096d4e554e57e63d165469a6d1252929923b9eb580ce749f83980e6d8f105dc"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_native_mcp.py",
+      "sha256": "23068acba2acedcf728d2d09af6bb50250c0223b75e273c20e0a17287a1d1ea6"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/types/nodia-ai-adapter.types.ts",
+      "sha256": "ec4ddee086f7fd088242a3a616098c16215c9de0c6760fbbb76d97fae8e59019"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/native-terminal-proof.ts",
+      "sha256": "6e6222791b304b2970bfd6c6a4bcda29a5f5f82998232b568decc24f681f07a3"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/nodia-ai-adapter.service.ts",
+      "sha256": "4eca1a2631afd1c65357b8f6a08f08afea8517a52b0924c38ee37d3814baf948"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/nodia-ai-adapter.module.ts",
+      "sha256": "cc6b42ff734d8520e40860d58684c31cdcefdb600f084e03db368856ce86ddb9"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.ts",
+      "sha256": "8c73bffdcc3169ca2408e78c5ff9730c569213c53ffd4e4ca734f62fd07b2ca7"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.spec.ts",
+      "sha256": "60aa6bb6db7c26abd3527ef1447075a2a03f999a88e6d7e2c6c51bbe1254798a"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/reconcile-gemini-nodia-ai-runtime.use-case.ts",
+      "sha256": "e5a2990702243e356e4fb44103acb069ae0459c8d6d0f478bf8fe7b950cbaed3"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/reconcile-gemini-nodia-ai-runtime.use-case.spec.ts",
+      "sha256": "a5a42a1ebac816f81f8148528e3b99148387656deb283bc8e414735e48214895"
+    }
+  ],
+  "historical_environment_attempt": {
+    "hyper_v": "Get-VM/Get-VMNetworkAdapter rejected by host authorization",
+    "ssh": "strict known-host check configured; last documented private IP port22 connection timed out after5s",
+    "services_started": false,
+    "credentials_or_business_data_read": false,
+    "note": "Earlier offline turn only; not a claim about the subsequently authorized and started parent-operated VM."
+  }
+}

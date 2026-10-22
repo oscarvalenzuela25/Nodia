@@ -1,0 +1,21 @@
+{
+  "verification_stage": "AI-22",
+  "verified_at": "2026-10-17T15:41:19.960212+00:00",
+  "status": "passed",
+  "checks": null,
+  "reason_count_unavailable": "The native fixture reports pass without a numbered check count.",
+  "summary": "PASS: PostgreSQL migration up/down/up, compiled Nest DI/DTO/HTTP, provider association, pagination/search, concurrent creation, lost-response replay, edit races, deactivation and FK restriction.",
+  "compilation": {
+    "archive_sha256": "06bc266d1a249cf00e7984699938ca2d0e069900ec775dd0d3457135171d37c1",
+    "archive_files": 848,
+    "knowledge_release_id": "67df82be991496f45536f62528c283b3342975e2351124512d6f232ed442d825",
+    "configured_database_used": false,
+    "real_gemini_inference": false,
+    "real_r2": false,
+    "new_mcp_writes_published": false
+  },
+  "test_source": {
+    "path": "nodia-server/test/provider-contacts.integration.mjs",
+    "sha256": "3243590ac8cdb4b929be9fec0be20acaeaa7daa3aa6afb6ab3b2426a488e179e"
+  }
+}

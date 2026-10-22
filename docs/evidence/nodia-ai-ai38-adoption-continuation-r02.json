@@ -1,0 +1,13 @@
+{
+  "stage": "AI-38",
+  "status": "explicit_R01_to_R02_continuation",
+  "original_source_sha256": "10df76eabd6c068a6e3ae033333c6807e082d4c34b5dcc6deb0b614eaf487749",
+  "continuation_source_sha256": "5ba19dc450c2dc443f27a42a5f338fbe69178d33c6e00426417f577e969c4bba",
+  "prior_prepare_sha256": "ef50f771cedc3d81f02b35c9a0b60a74db299905cfa617d7de452d2c4219312f",
+  "prior_failed_quiesce_sha256": "db39c7cf4abcff90337e0e8e064d4624a7a057058583c6b7727b231114f4ffa1",
+  "prepare_and_private_descriptors_copied_byte_exact": true,
+  "prepare_reexecuted": false,
+  "failure_scope": "immediate_HTTP_observation_after_graceful_nginx_reload_not_API_stop_or_provider",
+  "provider_requests": 0,
+  "failed_report_overwritten": false
+}

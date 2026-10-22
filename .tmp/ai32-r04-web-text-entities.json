@@ -1,0 +1,126 @@
+{
+  "stage": "AI-32-R04",
+  "scope": "real_gemini_web_text_control_no_attachments",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T05:15:48Z",
+  "harness_sha256": "b2f51d851e56f7b6b1556e7b07b3aa917d4fd4857538cee3adea5beb281ec27d",
+  "native_harness_sha256": "f7fa25655014fc3dd41266c602287e71e812007ac2b27ed021d590a8c7b4d14a",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "attachment_modalities_proved": false,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "literal_entities_control": true,
+  "probe": {
+    "engine": "web",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null,
+    "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+    "reference": {
+      "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+      "operation_ref": "b2410559-2a0f-433a-979b-3e46e66d2830"
+    },
+    "attempt_id": "b2410559-2a0f-433a-979b-3e46e66d2830",
+    "expected_answer_sha256": "08c3d664226232cd8e8babbb9ad9449fe51e4d2e3c7c9350068f58e64f1b0dc5",
+    "native_acknowledged": true,
+    "semantic_control_matches": true,
+    "http_status": 200,
+    "answer_sha256": "08c3d664226232cd8e8babbb9ad9449fe51e4d2e3c7c9350068f58e64f1b0dc5",
+    "elapsed_seconds": 18.75,
+    "native_outcome": "completed",
+    "same_session_available_after": true
+  },
+  "observation_after": {
+    "available": true,
+    "reason": null,
+    "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+    "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+    "http_status": 200
+  },
+  "diagnostics": [
+    {
+      "engine": null,
+      "attempt_id": "b2410559-2a0f-433a-979b-3e46e66d2830",
+      "phase": null,
+      "error_type": null,
+      "failure_category": null,
+      "elapsed_ms": null,
+      "event": "web_success",
+      "reply_format": {},
+      "generation": {
+        "http_status": 200,
+        "upstream_eof_seen": true,
+        "upstream_eof_elapsed_ms": 18450,
+        "candidate_outputs": 5,
+        "recovery_calls": 0,
+        "client_close_calls": 0,
+        "byte_chunks": 12,
+        "body_bytes": 29136,
+        "text_outputs": 5,
+        "structured_text": {
+          "applied": true,
+          "last_equal": true,
+          "candidate_checks": 5,
+          "protected_ampersands_total": 12,
+          "unprotected_html_would_change_outputs": 4,
+          "last_source": {
+            "text_bytes": 97,
+            "sha256": "7c41e0a1c3af0941512e79ae7d3d9cd062e189899f6db05e49933fdb7fc693d2",
+            "json_parseable": true
+          },
+          "last_output": {
+            "text_bytes": 97,
+            "sha256": "7c41e0a1c3af0941512e79ae7d3d9cd062e189899f6db05e49933fdb7fc693d2",
+            "json_parseable": true
+          },
+          "preparser_equal_to_source": true,
+          "last_preparser": {
+            "selection_source": "primary",
+            "card_prefix_detected": false,
+            "card_payload_available": null,
+            "selected_payload": {
+              "text_bytes": 97,
+              "sha256": "7c41e0a1c3af0941512e79ae7d3d9cd062e189899f6db05e49933fdb7fc693d2",
+              "json_parseable": true,
+              "top_level_kind": "object",
+              "diagnostic_limit_exceeded": false,
+              "syntax": null
+            }
+          }
+        },
+        "body_pacing": {
+          "first_chunk_elapsed_ms": 1690,
+          "last_chunk_elapsed_ms": 18449,
+          "max_inter_chunk_gap_ms": 15756
+        },
+        "uploads": {
+          "requests": 0,
+          "roundtrips_completed": 0,
+          "failed": 0,
+          "cancelled": 0,
+          "sink_errors": 0,
+          "metadata_errors": 0,
+          "records": []
+        },
+        "audio_transport": {
+          "scoped": false,
+          "applied": false,
+          "input_files": null,
+          "audio_files": null,
+          "audio_media_types": [],
+          "descriptor_version": null
+        }
+      }
+    }
+  ],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T05:16:07Z"
+}

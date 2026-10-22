@@ -1,0 +1,66 @@
+{
+  "schema": "ai38-attachment-nginx-observer-v1",
+  "action": "end",
+  "status": "bounded_metadata_observed_not_Google_or_UI_acceptance",
+  "began_at_utc": "2026-10-20T23:04:25.629427+00:00",
+  "finished_at_utc": "2026-10-20T23:06:48.930048+00:00",
+  "device": 2050,
+  "inode": 3673396,
+  "offset_begin": 113125,
+  "offset_end": 115376,
+  "bounded_bytes": 2251,
+  "subsequent_bytes_excluded": 0,
+  "acceptance_conversation_sha256": "7338b707973851b744a392a1b492d2583d465219a1251089af8290cd335b4e3b",
+  "cursor_sha256": "456edc01ffbb7b2a067627d53b0eeb11cab1b4c7e4fd3b0e9e96a82dc8b0966b",
+  "matched_lines": 5,
+  "ignored_lines": 2,
+  "unparseable_lines": 0,
+  "first_matched_request_utc": "2026-10-20T23:04:33+00:00",
+  "last_matched_request_utc": "2026-10-20T23:06:34+00:00",
+  "counts": [
+    {
+      "endpoint": "attachment_capabilities",
+      "method": "GET",
+      "status": 200,
+      "count": 2
+    },
+    {
+      "endpoint": "attachment_reservation",
+      "method": "POST",
+      "status": 201,
+      "count": 1
+    },
+    {
+      "endpoint": "owned_attachment_content",
+      "method": "PUT",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "endpoint": "owned_attachment_metadata_or_discard",
+      "method": "DELETE",
+      "status": 200,
+      "count": 1
+    }
+  ],
+  "start_anchor_verified": true,
+  "start_anchor_bytes": 4096,
+  "copytruncate_regrowth_with_identical_anchor_not_excluded": true,
+  "raw_log_saved": false,
+  "credentials_emitted": false,
+  "provider_requests": 0,
+  "limits": [
+    "nginx_status_is_not_provider_or_business_acceptance",
+    "refresh_or_login_may_write_legitimate_session_state",
+    "requests_are_not_attributed_to_a_unique_browser_without_a_separate_exclusive_UI_window",
+    "no_query_body_referer_user_agent_or_identity_is_preserved",
+    "no_service_changes_or_rotated_log_search",
+    "reserve_POST_cannot_be_attributed_to_chat_from_combined_log_without_exclusive_UI_window"
+  ],
+  "frozen_base_sha256": "baa090cf977de918bec1d53026a192bee9a48bd810e1ae3e80f25a3cd5ada589",
+  "source_sha256": "8a8d48280e33d4e831bd1a7c7476ba2d248c94ef2adb3b86b246189e1598adc7",
+  "known_attachment_ids": [
+    "6a140189-de1f-4fb4-946a-9995a4448d86"
+  ],
+  "body_or_query_or_tokens_read": false
+}

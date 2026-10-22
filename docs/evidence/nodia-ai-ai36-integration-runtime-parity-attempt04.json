@@ -1,0 +1,29 @@
+{
+  "stage": "AI-36",
+  "scope": "read_only_executed_candidate_runtime_parity",
+  "status": "passed",
+  "attempt": "attempt04",
+  "staging_compiled_outputs": 2730,
+  "runtime_files": 932,
+  "runtime_javascript_json_and_knowledge_fragments_verified": 928,
+  "runtime_non_executable_maps_and_declarations_excluded": [
+    "dist/common/storage/storage.service.d.ts",
+    "dist/common/storage/storage.service.js.map",
+    "dist/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.d.ts",
+    "dist/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.js.map"
+  ],
+  "mismatches": [],
+  "manifest_sha256": "f634066c5b798b3630ede6f373d483b237976c75eae5dd7729017591d0c7f812",
+  "integration_test_sha256": "9aca7b664772eea55031302f7d1cd3f37dbc950d9a2ccc3c1064e69522bc7bf6",
+  "disposable_containers_remaining": 0,
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "services_restarted": false
+}

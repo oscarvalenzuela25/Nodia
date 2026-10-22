@@ -1,0 +1,466 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "paired_effort_synthetic_MCP_diagnostic_not_business_acceptance",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T18:00:22.666Z",
+  "maximum_native_start_requests": 2,
+  "native_start_requests": 2,
+  "accepted_native_starts": 2,
+  "automatic_inference_retries": 0,
+  "synthetic_provider_transport": true,
+  "real_provider_generations": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "business_tools": 0,
+  "business_effects": 0,
+  "services_restarted": false,
+  "storage_operations": 0,
+  "credentials_logged": false,
+  "semantic_acceptance": false,
+  "probes": [
+    {
+      "label": "high",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "synthetic-compare-model",
+        "effort_id": "high"
+      },
+      "attempt_id": "6058c4f6-91df-497c-ab63-baa22854799d",
+      "status": "passed",
+      "transport": {
+        "observe": {
+          "requests": 2,
+          "responses": 2,
+          "failures": 0,
+          "total_ms": 0.7423999999991793,
+          "minimum_ms": 0.26850000000013097,
+          "maximum_ms": 0.4738999999990483,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.786Z",
+            "monotonic_ms": 12200.5213
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.786Z",
+            "monotonic_ms": 12200.7898
+          }
+        },
+        "measure-context": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.2716999999993277,
+          "minimum_ms": 0.2716999999993277,
+          "maximum_ms": 0.2716999999993277,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.671Z",
+            "monotonic_ms": 12085.9526
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.672Z",
+            "monotonic_ms": 12086.2243
+          }
+        },
+        "start": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.38040000000000873,
+          "minimum_ms": 0.38040000000000873,
+          "maximum_ms": 0.38040000000000873,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.673Z",
+            "monotonic_ms": 12087.6439
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.673Z",
+            "monotonic_ms": 12088.0243
+          }
+        },
+        "events": {
+          "requests": 2,
+          "responses": 2,
+          "failures": 0,
+          "total_ms": 0.9479000000010274,
+          "minimum_ms": 0.39580000000023574,
+          "maximum_ms": 0.5521000000007916,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.783Z",
+            "monotonic_ms": 12197.3506
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.783Z",
+            "monotonic_ms": 12197.9027
+          }
+        },
+        "results": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.3361000000004424,
+          "minimum_ms": 0.3361000000004424,
+          "maximum_ms": 0.3361000000004424,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.675Z",
+            "monotonic_ms": 12089.7717
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.676Z",
+            "monotonic_ms": 12090.1078
+          }
+        },
+        "attest": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.3809000000001106,
+          "minimum_ms": 0.3809000000001106,
+          "maximum_ms": 0.3809000000001106,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.784Z",
+            "monotonic_ms": 12198.3734
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.784Z",
+            "monotonic_ms": 12198.7543
+          }
+        },
+        "acknowledge": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.36419999999998254,
+          "minimum_ms": 0.36419999999998254,
+          "maximum_ms": 0.36419999999998254,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.785Z",
+            "monotonic_ms": 12199.4062
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.785Z",
+            "monotonic_ms": 12199.7704
+          }
+        }
+      },
+      "callback_count": 1,
+      "accepted_native_starts": 1,
+      "real_provider_generations": 0,
+      "observation": {
+        "supports_mcp_before": false,
+        "configuration_generation": "6bb707b76c8202b4ed1d249c46fd0cb1720f2a9e41b96af2836fb48c5e696c9f",
+        "resource_key_sha256": "0a8de744722bcf6cfb8cc1c9a1d0df473626062e2dbaa8b4b99b83411bcc6a0c",
+        "session_generation_sha256": "fbbbb6de2aa74c3c9570d2d8db1de31eadb66113c96034a7adb21243754d7683"
+      },
+      "measurement": {
+        "measurementContractVersion": "nodia-ai-context-budget/1",
+        "measurementScope": "initial_native_prompt",
+        "measurementKind": "exact",
+        "canonicalUtf8Bytes": 275,
+        "catalogUtf8Bytes": 224,
+        "overheadUtf8Bytes": 1000,
+        "totalUtf8Bytes": 1499,
+        "maxUtf8Bytes": 262144,
+        "modelContextTokens": null,
+        "firstMcpListingUpperBoundUtf8Bytes": 1224
+      },
+      "execute_started": {
+        "at_utc": "2026-10-19T18:00:22.672Z",
+        "monotonic_ms": 12086.8558
+      },
+      "stable_native_start_payload_sha256": "4ec184a62ad103f499530a3f8636b41b77ec94a00f6543c62a07dca087f43f81",
+      "native_start_payload_sha256": "8edb53511831fa06a98995264a1c86ee3c89dea728ada6035573ff333ee44d60",
+      "native_start": {
+        "started": {
+          "at_utc": "2026-10-19T18:00:22.673Z",
+          "monotonic_ms": 12087.6439
+        },
+        "accepted": {
+          "at_utc": "2026-10-19T18:00:22.673Z",
+          "monotonic_ms": 12088.0243
+        },
+        "timeout_seconds": 120
+      },
+      "protocol_rpc_messages": 7,
+      "callback": {
+        "call_id": "6099ce01-34fb-4d9d-94fe-9daa48f0c271",
+        "name": "nodia_fixture_effort_compare",
+        "observed": {
+          "at_utc": "2026-10-19T18:00:22.675Z",
+          "monotonic_ms": 12089.5085
+        }
+      },
+      "result_submission": {
+        "started": {
+          "at_utc": "2026-10-19T18:00:22.675Z",
+          "monotonic_ms": 12089.7717
+        },
+        "finished": {
+          "at_utc": "2026-10-19T18:00:22.676Z",
+          "monotonic_ms": 12090.1078
+        },
+        "accepted": true,
+        "call_id": "6099ce01-34fb-4d9d-94fe-9daa48f0c271"
+      },
+      "attestation": {
+        "verified": true,
+        "observed": {
+          "at_utc": "2026-10-19T18:00:22.784Z",
+          "monotonic_ms": 12198.7543
+        }
+      },
+      "execute_finished": {
+        "at_utc": "2026-10-19T18:00:22.785Z",
+        "monotonic_ms": 12199.1073
+      },
+      "terminal_proof": {
+        "attempt_id": "6058c4f6-91df-497c-ab63-baa22854799d",
+        "terminal_proof_sha256": "c09db63f78d3a1ec5f92efdd50d03e9f012f9ddd89c589d494b6baca34148e1d",
+        "outcome": "completed",
+        "process_closed": true
+      },
+      "ACK": {
+        "attempt_id": "6058c4f6-91df-497c-ab63-baa22854799d",
+        "terminal_proof_sha256": "c09db63f78d3a1ec5f92efdd50d03e9f012f9ddd89c589d494b6baca34148e1d",
+        "acknowledged": true,
+        "observed": {
+          "at_utc": "2026-10-19T18:00:22.785Z",
+          "monotonic_ms": 12199.7704
+        }
+      },
+      "execute_elapsed_ms": 112.2515000000003
+    },
+    {
+      "label": "low",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "synthetic-compare-model",
+        "effort_id": "low"
+      },
+      "attempt_id": "d217c8da-478f-4a2f-bae5-a791978f8352",
+      "status": "passed",
+      "transport": {
+        "observe": {
+          "requests": 2,
+          "responses": 2,
+          "failures": 0,
+          "total_ms": 0.6057999999993626,
+          "minimum_ms": 0.2736000000004424,
+          "maximum_ms": 0.33219999999892025,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.907Z",
+            "monotonic_ms": 12321.9073
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.908Z",
+            "monotonic_ms": 12322.2395
+          }
+        },
+        "measure-context": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.27450000000135333,
+          "minimum_ms": 0.27450000000135333,
+          "maximum_ms": 0.27450000000135333,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.789Z",
+            "monotonic_ms": 12203.2748
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.789Z",
+            "monotonic_ms": 12203.5493
+          }
+        },
+        "start": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.3863000000001193,
+          "minimum_ms": 0.3863000000001193,
+          "maximum_ms": 0.3863000000001193,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.790Z",
+            "monotonic_ms": 12204.4585
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.790Z",
+            "monotonic_ms": 12204.8448
+          }
+        },
+        "events": {
+          "requests": 2,
+          "responses": 2,
+          "failures": 0,
+          "total_ms": 0.9016000000010536,
+          "minimum_ms": 0.2933000000011816,
+          "maximum_ms": 0.6082999999998719,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.905Z",
+            "monotonic_ms": 12319.1791
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.905Z",
+            "monotonic_ms": 12319.7874
+          }
+        },
+        "results": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.26270000000113214,
+          "minimum_ms": 0.26270000000113214,
+          "maximum_ms": 0.26270000000113214,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.792Z",
+            "monotonic_ms": 12206.3864
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.792Z",
+            "monotonic_ms": 12206.6491
+          }
+        },
+        "attest": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.3061999999990803,
+          "minimum_ms": 0.3061999999990803,
+          "maximum_ms": 0.3061999999990803,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.906Z",
+            "monotonic_ms": 12320.2152
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.906Z",
+            "monotonic_ms": 12320.5214
+          }
+        },
+        "acknowledge": {
+          "requests": 1,
+          "responses": 1,
+          "failures": 0,
+          "total_ms": 0.34759999999914726,
+          "minimum_ms": 0.34759999999914726,
+          "maximum_ms": 0.34759999999914726,
+          "last_started": {
+            "at_utc": "2026-10-19T18:00:22.906Z",
+            "monotonic_ms": 12320.9223
+          },
+          "last_finished": {
+            "at_utc": "2026-10-19T18:00:22.907Z",
+            "monotonic_ms": 12321.2699
+          }
+        }
+      },
+      "callback_count": 1,
+      "accepted_native_starts": 1,
+      "real_provider_generations": 0,
+      "observation": {
+        "supports_mcp_before": false,
+        "configuration_generation": "6bb707b76c8202b4ed1d249c46fd0cb1720f2a9e41b96af2836fb48c5e696c9f",
+        "resource_key_sha256": "0a8de744722bcf6cfb8cc1c9a1d0df473626062e2dbaa8b4b99b83411bcc6a0c",
+        "session_generation_sha256": "fbbbb6de2aa74c3c9570d2d8db1de31eadb66113c96034a7adb21243754d7683"
+      },
+      "measurement": {
+        "measurementContractVersion": "nodia-ai-context-budget/1",
+        "measurementScope": "initial_native_prompt",
+        "measurementKind": "exact",
+        "canonicalUtf8Bytes": 275,
+        "catalogUtf8Bytes": 224,
+        "overheadUtf8Bytes": 1000,
+        "totalUtf8Bytes": 1499,
+        "maxUtf8Bytes": 262144,
+        "modelContextTokens": null,
+        "firstMcpListingUpperBoundUtf8Bytes": 1224
+      },
+      "execute_started": {
+        "at_utc": "2026-10-19T18:00:22.790Z",
+        "monotonic_ms": 12204.0887
+      },
+      "stable_native_start_payload_sha256": "4ec184a62ad103f499530a3f8636b41b77ec94a00f6543c62a07dca087f43f81",
+      "native_start_payload_sha256": "28d02bb236108ab80d56fe19fb217b5c82ab57459c55c9565d70853cf31f5578",
+      "native_start": {
+        "started": {
+          "at_utc": "2026-10-19T18:00:22.790Z",
+          "monotonic_ms": 12204.4585
+        },
+        "accepted": {
+          "at_utc": "2026-10-19T18:00:22.790Z",
+          "monotonic_ms": 12204.8448
+        },
+        "timeout_seconds": 120
+      },
+      "protocol_rpc_messages": 7,
+      "callback": {
+        "call_id": "1efadc49-cbd2-46f2-8519-c9667bb26d96",
+        "name": "nodia_fixture_effort_compare",
+        "observed": {
+          "at_utc": "2026-10-19T18:00:22.791Z",
+          "monotonic_ms": 12206.0346
+        }
+      },
+      "result_submission": {
+        "started": {
+          "at_utc": "2026-10-19T18:00:22.792Z",
+          "monotonic_ms": 12206.3864
+        },
+        "finished": {
+          "at_utc": "2026-10-19T18:00:22.792Z",
+          "monotonic_ms": 12206.6491
+        },
+        "accepted": true,
+        "call_id": "1efadc49-cbd2-46f2-8519-c9667bb26d96"
+      },
+      "attestation": {
+        "verified": true,
+        "observed": {
+          "at_utc": "2026-10-19T18:00:22.906Z",
+          "monotonic_ms": 12320.5214
+        }
+      },
+      "execute_finished": {
+        "at_utc": "2026-10-19T18:00:22.906Z",
+        "monotonic_ms": 12320.794
+      },
+      "terminal_proof": {
+        "attempt_id": "d217c8da-478f-4a2f-bae5-a791978f8352",
+        "terminal_proof_sha256": "a6d3f08f5dce297758ea577b03a909e33cf1c244d51d18a903c4500029d6b2fb",
+        "outcome": "completed",
+        "process_closed": true
+      },
+      "ACK": {
+        "attempt_id": "d217c8da-478f-4a2f-bae5-a791978f8352",
+        "terminal_proof_sha256": "a6d3f08f5dce297758ea577b03a909e33cf1c244d51d18a903c4500029d6b2fb",
+        "acknowledged": true,
+        "observed": {
+          "at_utc": "2026-10-19T18:00:22.907Z",
+          "monotonic_ms": 12321.2699
+        }
+      },
+      "execute_elapsed_ms": 116.70529999999962
+    }
+  ],
+  "checks": [
+    "high_current_selection_available",
+    "high_complete_context_fits",
+    "high_nonce_callback_completed_attested_and_ACKed",
+    "high_exact_effort_MCP_proof_current",
+    "high_native_identity_and_configuration_unchanged",
+    "low_current_selection_available",
+    "low_complete_context_fits",
+    "low_nonce_callback_completed_attested_and_ACKed",
+    "low_exact_effort_MCP_proof_current",
+    "low_native_identity_and_configuration_unchanged",
+    "exactly_two_distinct_independent_starts",
+    "identical_prompt_tools_result_and_timeout_except_attempt_and_effort"
+  ],
+  "input_sha256": null,
+  "source_sha256": "b454c7f762ac72a877683a8daf99bc8de3f55bf5c9dd49ce54e573c4215b77ff",
+  "canonical_prompt_sha256": "33293e56a8551412e8fc7561f02d6f4fdf14f5de06b657a801358d1cde72217c",
+  "tools_sha256": "3eea98f34df8a50fc1122589c0acdbff0837f205d49aec2d5e8a6562be7f2cc4",
+  "synthetic_callback_result_sha256": "d46c5ab3b37c8798c6ada394367d6d49387ad748104747d80cc78ddc5c5e140a",
+  "public_mode_configuration_sha256": "56f99f794df519232f6c19b43cc0865415ebe5af50128213cde3675f8f41494d",
+  "unresolved_native_state": false,
+  "finished_at_utc": "2026-10-19T18:00:22.909Z"
+}

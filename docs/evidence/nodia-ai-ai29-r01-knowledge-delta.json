@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "stage": "AI-29-R01",
+  "previous_release": "bbe14af35a6152129b05418ad440b685e88dc354079bd5696c9607bf5a6e7b93",
+  "release": "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+  "previous_registry_sha256": "ffaac5beefa3738855fc07364c109cc8d72ff5749e15a2d618fd17235c80cca3",
+  "registry_sha256": "283491671d39fa45b9b5b762fd2f87f5773257a667eab6b95ddf76a5ff9634ed",
+  "changed_manifest_fields": [
+    "registry_sha256",
+    "capability_contracts",
+    "release_id"
+  ],
+  "document_source_hash_changes": [],
+  "capability_implementation_source_hash_changes": [
+    {
+      "capability_id": "nodia_ai_providers_codex_session",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    },
+    {
+      "capability_id": "nodia_ai_providers_health",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    },
+    {
+      "capability_id": "nodia_ai_providers_models",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    },
+    {
+      "capability_id": "nodia_invoices_eligible_invoice_connections",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    }
+  ],
+  "registry_implementation_source_hash_changes": [
+    {
+      "capability_id": "nodia_ai_providers_codex_session",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    },
+    {
+      "capability_id": "nodia_ai_providers_health",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    },
+    {
+      "capability_id": "nodia_ai_providers_models",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    },
+    {
+      "capability_id": "nodia_invoices_eligible_invoice_connections",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca",
+      "after_sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    }
+  ],
+  "published_document_bytes_unchanged": true,
+  "published_fragments_unchanged": true,
+  "public_contracts_unchanged": true,
+  "new_published_content": false,
+  "reason": "Durable Codex login/runtime ownership updates only the existing implementation provenance of four published reads; approved Markdown, fragments, schemas, routes, bindings and published identities remain unchanged. Gemini/Python durable login sources are not registered knowledge inputs.",
+  "sources": 53,
+  "excluded": 26,
+  "published_capabilities": 67,
+  "published_fragments": 27
+}

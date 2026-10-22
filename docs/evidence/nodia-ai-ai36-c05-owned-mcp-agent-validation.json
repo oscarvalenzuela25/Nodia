@@ -1,0 +1,30 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "local_owned_MCP_agent_and_policy_binding_isolated_Windows_validation",
+  "status": "passed",
+  "Windows_tests_total": 445,
+  "Windows_tests_passed": 443,
+  "historical_skips": 2,
+  "compiled_sources": 5,
+  "sources": {
+    "nodia-gemini-microservice/native_execution_agents.py": "634ff3981e81e2bc0b4b14da6d783a5049fee0a76d17f378119b86cd3ae08e87",
+    "nodia-gemini-microservice/native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "nodia-gemini-microservice/tests/test_native_context_budget.py": "88945eee73a6ef46f0c9911a137b51d7782c5dbabf70e3b195e6b9f456636cbd",
+    "nodia-gemini-microservice/tests/test_native_mcp.py": "0155eb7e0b075c0addb41a724ecc2a93a8cb672f60f2d70e2e0bd8c17b789561",
+    "nodia-gemini-microservice/tests/test_agentic_native_attachments.py": "62fcb7142adcc2d48a93d13557fa94418579a0ece4887be0d29e2ff5e983387a"
+  },
+  "test_log": ".tmp/ai36-c05-owned-mcp-agent-python-windows.log",
+  "test_log_sha256": "e6104c7bc18ed5d48d78508d733129d264d52ca74400d59ef9255b74a7f23230",
+  "source_delta_evidence": "docs/evidence/nodia-ai-ai36-c05-owned-mcp-agent-source-delta.json",
+  "production_files_changed": 2,
+  "JSON_or_HTTP_contract_changes": 0,
+  "shared_Web_chat_contract_version_changed": false,
+  "private_MCP_probe_key_binds_owned_role_policy": true,
+  "old_MCP_proofs_ineligible": true,
+  "independent_hook_and_stdio_denials_preserved": true,
+  "role_bytes_in_native_measurement_and_actual_controlled_context": true,
+  "provider_requests": 0,
+  "real_CLI_executions": 0,
+  "deployments": 0,
+  "CLI_support_and_hypothesis_cause_still_unverified": true
+}

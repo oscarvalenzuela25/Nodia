@@ -1,0 +1,1384 @@
+{
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://nodia.local/schemas/write-finance-business/1",
+    "$defs": {
+      "WritePositiveBigint": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 19,
+        "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6]|9223372036854775807)$"
+      },
+      "WriteUuid": {
+        "type": "string",
+        "format": "uuid",
+        "pattern": "^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|[fF]{8}-[fF]{4}-[fF]{4}-[fF]{4}-[fF]{12})$"
+      },
+      "WriteUuidV4": {
+        "type": "string",
+        "format": "uuid",
+        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+      },
+      "WriteText": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "pattern": "\\S"
+      },
+      "WriteInteger": {
+        "type": "integer",
+        "minimum": -2147483648,
+        "maximum": 2147483647
+      },
+      "WriteStock": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 2147483647
+      },
+      "WriteJsonValue": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "object"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/WriteJsonObjectMember"
+                },
+                "minItems": 0,
+                "maxItems": 128
+              }
+            },
+            "required": [
+              "kind",
+              "fields"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "array"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/WriteJsonValue"
+                },
+                "minItems": 0,
+                "maxItems": 128
+              }
+            },
+            "required": [
+              "kind",
+              "items"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "string"
+              },
+              "value": {
+                "type": "string",
+                "minLength": 0
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "number"
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "boolean"
+              },
+              "value": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "kind",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "null"
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "WriteJsonObject": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "object"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteJsonObjectMember"
+            },
+            "minItems": 0,
+            "maxItems": 128
+          }
+        },
+        "required": [
+          "kind",
+          "fields"
+        ],
+        "additionalProperties": false
+      },
+      "WriteJsonObjectMember": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 0
+          },
+          "value": {
+            "$ref": "#/$defs/WriteJsonValue"
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "WriteTranslation": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "es": {
+            "type": "string",
+            "minLength": 0
+          },
+          "en": {
+            "type": "string",
+            "minLength": 0
+          }
+        },
+        "required": [
+          "key",
+          "es",
+          "en"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "key": {
+                  "enum": [
+                    "description",
+                    "comment"
+                  ]
+                }
+              },
+              "required": [
+                "key"
+              ]
+            },
+            "then": {},
+            "else": {
+              "properties": {
+                "es": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "en": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        ]
+      },
+      "WriteCollaborator": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "action_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WritePositiveBigint"
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "user_id",
+          "action_ids"
+        ],
+        "additionalProperties": false
+      },
+      "WriteContactPhone": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{6,14}$"
+          }
+        },
+        "required": [
+          "number"
+        ],
+        "additionalProperties": false
+      },
+      "WriteContactTimeRange": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "additionalProperties": false
+      },
+      "WriteContactSchedule": {
+        "type": "object",
+        "properties": {
+          "monday": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactTimeRange"
+            },
+            "minItems": 0,
+            "maxItems": 1
+          },
+          "tuesday": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactTimeRange"
+            },
+            "minItems": 0,
+            "maxItems": 1
+          },
+          "wednesday": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactTimeRange"
+            },
+            "minItems": 0,
+            "maxItems": 1
+          },
+          "thursday": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactTimeRange"
+            },
+            "minItems": 0,
+            "maxItems": 1
+          },
+          "friday": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactTimeRange"
+            },
+            "minItems": 0,
+            "maxItems": 1
+          },
+          "saturday": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactTimeRange"
+            },
+            "minItems": 0,
+            "maxItems": 1
+          },
+          "sunday": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactTimeRange"
+            },
+            "minItems": 0,
+            "maxItems": 1
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financecategoriespreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "key": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financecategoriesprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "key": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financecategoriespreparedeletePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financecategorygroupspreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "key": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "category_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WritePositiveBigint"
+            },
+            "minItems": 0,
+            "maxItems": 100,
+            "uniqueItems": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financecategorygroupsprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "key": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "category_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WritePositiveBigint"
+            },
+            "minItems": 0,
+            "maxItems": 100,
+            "uniqueItems": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financecategorygroupspreparedeletePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financemovementspreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "amount": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "type": {
+            "enum": [
+              "income",
+              "expense"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "received",
+              "paid",
+              "cancelled"
+            ]
+          },
+          "category_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "obligation_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/WritePositiveBigint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financemovementsprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "amount": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "type": {
+            "enum": [
+              "income",
+              "expense"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "received",
+              "paid",
+              "cancelled"
+            ]
+          },
+          "category_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financemovementspreparedeletePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financeobligationspreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "key": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "amount": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "type": {
+            "enum": [
+              "loan",
+              "debt"
+            ]
+          },
+          "category_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financeobligationsprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "key": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "amount": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "financeobligationspreparedeletePartial": {
+        "type": "object",
+        "properties": {
+          "owner_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "businessespreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "pattern": "\\S"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteTranslation"
+            },
+            "minItems": 0,
+            "maxItems": 128
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "businessesprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "pattern": "\\S"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteTranslation"
+            },
+            "minItems": 0,
+            "maxItems": 128
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "businessespreparesetcollaboratorsPartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteCollaborator"
+            },
+            "minItems": 1,
+            "maxItems": 128
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "productspreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "code": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "cost_price": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "cost_price_tax": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "profit_percentage": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "sale_price": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "stock": {
+            "$ref": "#/$defs/WriteStock"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/WritePositiveBigint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "productsprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "command": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "$ref": "#/$defs/WriteText"
+              },
+              "name": {
+                "$ref": "#/$defs/WriteText"
+              },
+              "cost_price": {
+                "$ref": "#/$defs/WriteInteger"
+              },
+              "cost_price_tax": {
+                "$ref": "#/$defs/WriteInteger"
+              },
+              "profit_percentage": {
+                "$ref": "#/$defs/WriteInteger"
+              },
+              "sale_price": {
+                "$ref": "#/$defs/WriteInteger"
+              },
+              "stock": {
+                "$ref": "#/$defs/WriteStock"
+              },
+              "business_id": {
+                "$ref": "#/$defs/WriteUuid"
+              },
+              "provider_id": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/WritePositiveBigint"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "is_active": {
+                "type": "boolean"
+              }
+            },
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "productlogspreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "code": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "cost_price": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "cost_price_tax": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "profit_percentage": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "sale_price": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "stock": {
+            "$ref": "#/$defs/WriteStock"
+          },
+          "product_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "productlogsprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "code": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "cost_price": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "cost_price_tax": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "profit_percentage": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "sale_price": {
+            "$ref": "#/$defs/WriteInteger"
+          },
+          "stock": {
+            "$ref": "#/$defs/WriteStock"
+          },
+          "product_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "providerspreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "pattern": "\\S"
+          },
+          "tax": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "fields": {
+            "$ref": "#/$defs/WriteJsonObject"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "providersprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255,
+            "pattern": "\\S"
+          },
+          "tax": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "fields": {
+            "$ref": "#/$defs/WriteJsonObject"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "destination_business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "providercontactspreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "provider_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "phone": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactPhone"
+            },
+            "minItems": 0,
+            "maxItems": 10,
+            "uniqueItems": true
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "format": "email",
+                "maxLength": 254
+              }
+            ]
+          },
+          "schedule": {
+            "$ref": "#/$defs/WriteContactSchedule"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "providercontactsprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "provider_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "name": {
+            "$ref": "#/$defs/WriteText"
+          },
+          "phone": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/WriteContactPhone"
+            },
+            "minItems": 0,
+            "maxItems": 10,
+            "uniqueItems": true
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "format": "email",
+                "maxLength": 254
+              }
+            ]
+          },
+          "schedule": {
+            "$ref": "#/$defs/WriteContactSchedule"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "providercontactspreparesetactivePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "provider_id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "invoicespreparecreatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/WritePositiveBigint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "total_amount": {
+            "$ref": "#/$defs/WriteStock"
+          },
+          "data": {
+            "$ref": "#/$defs/WriteJsonObject"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "attachment_id": {
+            "$ref": "#/$defs/WriteUuidV4"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "invoicesprepareupdatePartial": {
+        "type": "object",
+        "properties": {
+          "business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "id": {
+            "$ref": "#/$defs/WritePositiveBigint"
+          },
+          "destination_business_id": {
+            "$ref": "#/$defs/WriteUuid"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/WritePositiveBigint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "total_amount": {
+            "$ref": "#/$defs/WriteStock"
+          },
+          "data": {
+            "$ref": "#/$defs/WriteJsonObject"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "attachment_id": {
+            "$ref": "#/$defs/WriteUuidV4"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  },
+  "tools": [
+    {
+      "tool_name": "nodia_finance_categories_prepare_create",
+      "input_definition": "financecategoriespreparecreatePartial",
+      "resource_key": "finance_categories",
+      "description": "Prepara la creación de una categoría financiera para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_categories_prepare_update",
+      "input_definition": "financecategoriesprepareupdatePartial",
+      "resource_key": "finance_categories",
+      "description": "Prepara la edición de una categoría financiera para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_categories_prepare_delete",
+      "input_definition": "financecategoriespreparedeletePartial",
+      "resource_key": "finance_categories",
+      "description": "Prepara la eliminación de una categoría financiera para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_category_groups_prepare_create",
+      "input_definition": "financecategorygroupspreparecreatePartial",
+      "resource_key": "finance_category_groups",
+      "description": "Prepara la creación de un grupo de categorías financieras para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_category_groups_prepare_update",
+      "input_definition": "financecategorygroupsprepareupdatePartial",
+      "resource_key": "finance_category_groups",
+      "description": "Prepara la edición de un grupo de categorías financieras para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_category_groups_prepare_delete",
+      "input_definition": "financecategorygroupspreparedeletePartial",
+      "resource_key": "finance_category_groups",
+      "description": "Prepara la eliminación de un grupo de categorías financieras para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_movements_prepare_create",
+      "input_definition": "financemovementspreparecreatePartial",
+      "resource_key": "finance_movements",
+      "description": "Prepara la creación de un movimiento financiero para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_movements_prepare_update",
+      "input_definition": "financemovementsprepareupdatePartial",
+      "resource_key": "finance_movements",
+      "description": "Prepara la edición de un movimiento financiero para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_movements_prepare_delete",
+      "input_definition": "financemovementspreparedeletePartial",
+      "resource_key": "finance_movements",
+      "description": "Prepara la eliminación de un movimiento financiero conforme a las invariantes del libro para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_obligations_prepare_create",
+      "input_definition": "financeobligationspreparecreatePartial",
+      "resource_key": "finance_obligations",
+      "description": "Prepara la creación de un préstamo o deuda para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_obligations_prepare_update",
+      "input_definition": "financeobligationsprepareupdatePartial",
+      "resource_key": "finance_obligations",
+      "description": "Prepara la edición de un préstamo o deuda sin cambiar su dirección ni categoría para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_finance_obligations_prepare_delete",
+      "input_definition": "financeobligationspreparedeletePartial",
+      "resource_key": "finance_obligations",
+      "description": "Prepara la eliminación de un préstamo o deuda conforme a las invariantes del libro para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_businesses_prepare_create",
+      "input_definition": "businessespreparecreatePartial",
+      "resource_key": "businesses",
+      "description": "Prepara la creación de un negocio con sus traducciones para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_businesses_prepare_update",
+      "input_definition": "businessesprepareupdatePartial",
+      "resource_key": "businesses",
+      "description": "Prepara la edición de un negocio y sus traducciones para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_businesses_prepare_set_collaborators",
+      "input_definition": "businessespreparesetcollaboratorsPartial",
+      "resource_key": "businesses",
+      "description": "Prepara el reemplazo de colaboradores y acciones de un negocio para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_products_prepare_create",
+      "input_definition": "productspreparecreatePartial",
+      "resource_key": "products",
+      "description": "Prepara la creación de un producto y su fotografía derivada para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_products_prepare_update",
+      "input_definition": "productsprepareupdatePartial",
+      "resource_key": "products",
+      "description": "Prepara la edición de un producto; business_id identifica el negocio de origen y command.business_id el destino para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_product_logs_prepare_create",
+      "input_definition": "productlogspreparecreatePartial",
+      "resource_key": "product_logs",
+      "description": "Prepara la creación de una fotografía de producto para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_product_logs_prepare_update",
+      "input_definition": "productlogsprepareupdatePartial",
+      "resource_key": "product_logs",
+      "description": "Prepara la edición de una fotografía de producto para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_providers_prepare_create",
+      "input_definition": "providerspreparecreatePartial",
+      "resource_key": "providers",
+      "description": "Prepara la creación de un proveedor; fields usa JSON tipado y cerrado para revisión y confirmación humana; no ejecuta cambios.",
+      "json_fields": [
+        "fields"
+      ]
+    },
+    {
+      "tool_name": "nodia_providers_prepare_update",
+      "input_definition": "providersprepareupdatePartial",
+      "resource_key": "providers",
+      "description": "Prepara la edición o traslado de un proveedor; fields usa JSON tipado y cerrado para revisión y confirmación humana; no ejecuta cambios.",
+      "json_fields": [
+        "fields"
+      ]
+    },
+    {
+      "tool_name": "nodia_provider_contacts_prepare_create",
+      "input_definition": "providercontactspreparecreatePartial",
+      "resource_key": "provider_contacts",
+      "description": "Prepara la creación de un contacto de proveedor para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_provider_contacts_prepare_update",
+      "input_definition": "providercontactsprepareupdatePartial",
+      "resource_key": "provider_contacts",
+      "description": "Prepara el reemplazo de valores de un contacto de proveedor para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_provider_contacts_prepare_set_active",
+      "input_definition": "providercontactspreparesetactivePartial",
+      "resource_key": "provider_contacts",
+      "description": "Prepara el cambio de actividad de un contacto de proveedor para revisión y confirmación humana; no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_invoices_prepare_create",
+      "input_definition": "invoicespreparecreatePartial",
+      "resource_key": "invoices",
+      "description": "Prepara la creación de una factura; data usa JSON tipado y cerrado y attachment_id referencia un adjunto revisado para revisión y confirmación humana; no ejecuta cambios.",
+      "json_fields": [
+        "data"
+      ]
+    },
+    {
+      "tool_name": "nodia_invoices_prepare_update",
+      "input_definition": "invoicesprepareupdatePartial",
+      "resource_key": "invoices",
+      "description": "Prepara la edición o traslado de una factura; data usa JSON tipado y cerrado y attachment_id referencia un adjunto revisado para revisión y confirmación humana; no ejecuta cambios.",
+      "json_fields": [
+        "data"
+      ]
+    }
+  ]
+}

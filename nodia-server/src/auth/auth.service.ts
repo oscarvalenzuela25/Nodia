@@ -1,3 +1,4 @@
+import { lockAuthority } from '../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, IsNull, MoreThan } from 'typeorm';
 import { User } from '../user/entities/user.entity.js';
@@ -8,7 +9,10 @@ export class AuthService {
   constructor(private readonly dataSource: DataSource) {}
 
   transaction<T>(work: (manager: EntityManager) => Promise<T>): Promise<T> {
-    return this.dataSource.transaction(work);
+    return this.dataSource.transaction(async (manager) => {
+      await lockAuthority(manager, true);
+      return work(manager);
+    });
   }
 
   findLoginUser(email: string, manager: EntityManager): Promise<User | null> {
@@ -65,11 +69,13 @@ export class AuthService {
   }
 
   async revokeSession(publicId: string, userId: string): Promise<void> {
-    await this.dataSource
-      .getRepository(AuthSession)
-      .update(
-        { public_id: publicId, user_id: userId, revoked_at: IsNull() },
-        { revoked_at: new Date() },
-      );
+    await this.transaction((manager) =>
+      manager
+        .getRepository(AuthSession)
+        .update(
+          { public_id: publicId, user_id: userId, revoked_at: IsNull() },
+          { revoked_at: new Date() },
+        ),
+    );
   }
 }

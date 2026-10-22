@@ -1,0 +1,25 @@
+{
+  "stage": "AI-32-R06",
+  "scope": "invoice_executed_sources_and_cleanup_receipt",
+  "executed_attempt": {
+    "path": "docs/evidence/scripts/nodia-ai-ai32-r06-invoice-real-attempt01.mjs",
+    "sha256": "255cff530b8916b98726a791fee05195a7362b63c83b452e45ad76fda0d87982",
+    "functional_checks_passed": 16,
+    "teardown_failed": true
+  },
+  "cleanup_only": {
+    "path": "docs/evidence/scripts/nodia-ai-ai32-r06-invoice-cleanup.mjs",
+    "sha256": "4b5c61d8ebf50726c3e1579291a6207cad767b76c32560bd5df72dadae7d9a5c",
+    "executed": true,
+    "put_calls": 0
+  },
+  "reusable_corrected": {
+    "path": "docs/evidence/scripts/nodia-ai-ai32-r06-invoice-real.mjs",
+    "sha256": "e8ea662a01f5265bfe56350963a3202694b86f3ce20ecd0df10c97813da44b03",
+    "full_run_executed": false
+  },
+  "objects_created": 8,
+  "objects_confirmed_absent": 8,
+  "configured_database_modified": false,
+  "provider_generations": 0
+}

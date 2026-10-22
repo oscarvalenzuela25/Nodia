@@ -1,3 +1,5 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, expect, it, vi } from 'vitest';
 import { CreateFinanceObligationUseCase } from './create-finance-obligation.use-case.js';
 import { UpdateFinanceObligationUseCase } from './update-finance-obligation.use-case.js';
@@ -35,7 +37,7 @@ describe('Personal finance ledger use cases', () => {
     const result = await new UpdateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', '5', dto);
+    ).execute(actorFixture('1'), '5', dto);
     expect(result.is_active).toBe(false);
     expect(result.amount).toBe('20000');
     expect(result.type).toBe('income');
@@ -49,7 +51,7 @@ describe('Personal finance ledger use cases', () => {
     dto.amount = '120000';
     const result = await new UpdateFinanceObligationUseCase(
       f.ledgerService,
-    ).execute('1', '3', dto);
+    ).execute(actorFixture('1'), '3', dto);
     expect(result.amount).toBe('120000');
     expect(result.type).toBe('loan');
     expect(result.name).toBe('Loan');
@@ -65,7 +67,7 @@ describe('Personal finance ledger use cases', () => {
     const result = await new UpdateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', '5', { type: 'expense', status: 'paid' });
+    ).execute(actorFixture('1'), '5', { type: 'expense', status: 'paid' });
     expect(result.type).toBe('expense');
     expect(result.status).toBe('paid');
   });
@@ -75,7 +77,7 @@ describe('Personal finance ledger use cases', () => {
       const f = ledgerFixture();
       const result = await new CreateFinanceObligationUseCase(
         f.ledgerService,
-      ).execute('1', { ...obligationDto, type });
+      ).execute(actorFixture('1'), { ...obligationDto, type });
       expect(result.amount).toBe('100000');
       expect(result.remaining_amount).toBe('100000');
       expect(result.initial_movement.type).toBe(
@@ -97,7 +99,7 @@ describe('Personal finance ledger use cases', () => {
     );
     await expect(
       new CreateFinanceObligationUseCase(f.ledgerService).execute(
-        '1',
+        actorFixture('1'),
         obligationDto,
       ),
     ).rejects.toThrow('synthetic write failure');
@@ -110,7 +112,7 @@ describe('Personal finance ledger use cases', () => {
       if (kind === 'inactive') f.category.is_active = false;
       await expect(
         new CreateFinanceObligationUseCase(f.ledgerService).execute(
-          kind === 'foreign' ? '9' : '1',
+          actorFixture(kind === 'foreign' ? '9' : '1'),
           obligationDto,
         ),
       ).rejects.toThrow(
@@ -124,7 +126,10 @@ describe('Personal finance ledger use cases', () => {
     const f = ledgerFixture();
     const result = await new CreateFinanceObligationUseCase(
       f.ledgerService,
-    ).execute('1', { ...obligationDto, amount: '9223372036854775807' });
+    ).execute(actorFixture('1'), {
+      ...obligationDto,
+      amount: '9223372036854775807',
+    });
     expect(result.amount).toBe('9223372036854775807');
     expect(result.remaining_amount).toBe('9223372036854775807');
   });
@@ -134,7 +139,7 @@ describe('Personal finance ledger use cases', () => {
     const result = await new CreateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', { ...paymentDto, obligation_id: null });
+    ).execute(actorFixture('1'), { ...paymentDto, obligation_id: null });
     expect(result.obligation).toBeNull();
     expect(f.ledger.obligation).not.toHaveBeenCalled();
     expect(f.ledger.confirmedPaid).not.toHaveBeenCalled();
@@ -149,7 +154,7 @@ describe('Personal finance ledger use cases', () => {
       new CreateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', { ...paymentDto, type, status }),
+      ).execute(actorFixture('1'), { ...paymentDto, type, status }),
     ).rejects.toThrow('finance:invalid_movement_state');
     expect(f.ledger.transaction).not.toHaveBeenCalled();
   });
@@ -160,7 +165,11 @@ describe('Personal finance ledger use cases', () => {
       new CreateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', { ...paymentDto, type: 'expense', status: 'paid' }),
+      ).execute(actorFixture('1'), {
+        ...paymentDto,
+        type: 'expense',
+        status: 'paid',
+      }),
     ).rejects.toThrow('finance:invalid_repayment_direction');
     expect(f.ledger.saveMovement).not.toHaveBeenCalled();
   });
@@ -175,7 +184,7 @@ describe('Personal finance ledger use cases', () => {
         new CreateFinanceMovementUseCase(
           f.ledgerService,
           f.movementService,
-        ).execute(kind === 'foreign' ? '9' : '1', paymentDto),
+        ).execute(actorFixture(kind === 'foreign' ? '9' : '1'), paymentDto),
       ).rejects.toThrow(
         kind === 'foreign'
           ? 'finance:not_found'
@@ -194,7 +203,7 @@ describe('Personal finance ledger use cases', () => {
       new CreateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', { ...paymentDto, amount: '80001' }),
+      ).execute(actorFixture('1'), { ...paymentDto, amount: '80001' }),
     ).rejects.toThrow('finance:overpayment');
     expect(f.ledger.saveMovement).not.toHaveBeenCalled();
   });
@@ -204,7 +213,7 @@ describe('Personal finance ledger use cases', () => {
     await new CreateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', { ...paymentDto, amount: '80000' });
+    ).execute(actorFixture('1'), { ...paymentDto, amount: '80000' });
     expect(f.origin.amount).toBe('100000');
     expect(f.ledger.saveObligation).not.toHaveBeenCalled();
   });
@@ -214,7 +223,11 @@ describe('Personal finance ledger use cases', () => {
     await new CreateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', { ...paymentDto, status: 'pending', amount: '100001' });
+    ).execute(actorFixture('1'), {
+      ...paymentDto,
+      status: 'pending',
+      amount: '100001',
+    });
     expect(f.ledger.saveMovement).toHaveBeenCalledTimes(1);
   });
 
@@ -226,7 +239,7 @@ describe('Personal finance ledger use cases', () => {
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', '5', { status: 'received' }),
+      ).execute(actorFixture('1'), '5', { status: 'received' }),
     ).rejects.toThrow('finance:overpayment');
   });
 
@@ -235,7 +248,7 @@ describe('Personal finance ledger use cases', () => {
     await new UpdateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', '5', { amount: '40000' });
+    ).execute(actorFixture('1'), '5', { amount: '40000' });
     expect(f.calls).toEqual([
       'movement-read',
       'obligation',
@@ -250,10 +263,12 @@ describe('Personal finance ledger use cases', () => {
     await new UpdateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', '5', { is_active: false });
+    ).execute(actorFixture('1'), '5', { is_active: false });
     const result = await new UpdateFinanceObligationUseCase(
       f.ledgerService,
-    ).execute('1', '3', { name: 'Archived payment remains valid' });
+    ).execute(actorFixture('1'), '3', {
+      name: 'Archived payment remains valid',
+    });
     expect(result.remaining_amount).toBe('80000');
     expect(result.paid_amount).toBe('20000');
   });
@@ -263,10 +278,10 @@ describe('Personal finance ledger use cases', () => {
     await new UpdateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', '5', { status: 'cancelled' });
+    ).execute(actorFixture('1'), '5', { status: 'cancelled' });
     const result = await new UpdateFinanceObligationUseCase(
       f.ledgerService,
-    ).execute('1', '3', { name: 'Cancellation' });
+    ).execute(actorFixture('1'), '3', { name: 'Cancellation' });
     expect(result.remaining_amount).toBe('100000');
     expect(f.records.size).toBe(2);
   });
@@ -280,7 +295,7 @@ describe('Personal finance ledger use cases', () => {
         new UpdateFinanceMovementUseCase(
           f.ledgerService,
           f.movementService,
-        ).execute('1', '5', { status }),
+        ).execute(actorFixture('1'), '5', { status }),
       ).rejects.toThrow('finance:invalid_status_transition');
     },
   );
@@ -291,7 +306,7 @@ describe('Personal finance ledger use cases', () => {
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', '5', { status: 'pending' }),
+      ).execute(actorFixture('1'), '5', { status: 'pending' }),
     ).rejects.toThrow('finance:invalid_status_transition');
   });
 
@@ -302,7 +317,7 @@ describe('Personal finance ledger use cases', () => {
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', '5', { type: 'expense' }),
+      ).execute(actorFixture('1'), '5', { type: 'expense' }),
     ).rejects.toThrow('finance:immutable_linked_direction');
   });
 
@@ -312,7 +327,7 @@ describe('Personal finance ledger use cases', () => {
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', '4', { amount: '200000' }),
+      ).execute(actorFixture('1'), '4', { amount: '200000' }),
     ).rejects.toThrow('finance:edit_principal_on_obligation');
   });
 
@@ -322,7 +337,7 @@ describe('Personal finance ledger use cases', () => {
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', '4', { status: 'cancelled' }),
+      ).execute(actorFixture('1'), '4', { status: 'cancelled' }),
     ).rejects.toThrow('finance:initial_has_payments');
   });
 
@@ -332,16 +347,16 @@ describe('Personal finance ledger use cases', () => {
     await new UpdateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', '4', { status: 'cancelled' });
+    ).execute(actorFixture('1'), '4', { status: 'cancelled' });
     const result = await new UpdateFinanceObligationUseCase(
       f.ledgerService,
-    ).execute('1', '3', { name: 'Cancelled' });
+    ).execute(actorFixture('1'), '3', { name: 'Cancelled' });
     expect(result.remaining_amount).toBeNull();
     await expect(
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', '5', { status: 'received' }),
+      ).execute(actorFixture('1'), '5', { status: 'received' }),
     ).rejects.toThrow('finance:cancelled_obligation');
   });
 
@@ -352,7 +367,7 @@ describe('Personal finance ledger use cases', () => {
     const result = await new UpdateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', '5', { name: 'Corrected name' });
+    ).execute(actorFixture('1'), '5', { name: 'Corrected name' });
     expect(result.name).toBe('Corrected name');
     expect(f.ledger.category).not.toHaveBeenCalled();
   });
@@ -363,7 +378,7 @@ describe('Personal finance ledger use cases', () => {
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', '5', { category_id: '9' }),
+      ).execute(actorFixture('1'), '5', { category_id: '9' }),
     ).rejects.toThrow('finance:not_found');
     expect(f.ledger.saveMovement).not.toHaveBeenCalled();
   });
@@ -372,7 +387,7 @@ describe('Personal finance ledger use cases', () => {
     const f = ledgerFixture();
     const result = await new UpdateFinanceObligationUseCase(
       f.ledgerService,
-    ).execute('1', '3', { amount: '120000' });
+    ).execute(actorFixture('1'), '3', { amount: '120000' });
     expect(result.amount).toBe('120000');
     expect(result.initial_movement.amount).toBe('120000');
     expect(result.remaining_amount).toBe('100000');
@@ -385,9 +400,13 @@ describe('Personal finance ledger use cases', () => {
     const f = ledgerFixture();
     f.payment.is_active = false;
     await expect(
-      new UpdateFinanceObligationUseCase(f.ledgerService).execute('1', '3', {
-        amount: '19999',
-      }),
+      new UpdateFinanceObligationUseCase(f.ledgerService).execute(
+        actorFixture('1'),
+        '3',
+        {
+          amount: '19999',
+        },
+      ),
     ).rejects.toThrow('finance:principal_below_payments');
     expect(f.ledger.saveObligation).not.toHaveBeenCalled();
     expect(f.ledger.saveMovement).not.toHaveBeenCalled();
@@ -397,7 +416,7 @@ describe('Personal finance ledger use cases', () => {
     const f = ledgerFixture();
     const result = await new UpdateFinanceObligationUseCase(
       f.ledgerService,
-    ).execute('1', '3', { amount: '20000' });
+    ).execute(actorFixture('1'), '3', { amount: '20000' });
     expect(result.remaining_amount).toBe('0');
   });
 
@@ -407,12 +426,16 @@ describe('Personal finance ledger use cases', () => {
       new UpdateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('9', '5', { name: 'Hijacked' }),
+      ).execute(actorFixture('9'), '5', { name: 'Hijacked' }),
     ).rejects.toThrow('finance:not_found');
     await expect(
-      new UpdateFinanceObligationUseCase(f.ledgerService).execute('9', '3', {
-        name: 'Hijacked',
-      }),
+      new UpdateFinanceObligationUseCase(f.ledgerService).execute(
+        actorFixture('9'),
+        '3',
+        {
+          name: 'Hijacked',
+        },
+      ),
     ).rejects.toThrow('finance:not_found');
     expect(f.ledger.saveMovement).not.toHaveBeenCalled();
     expect(f.ledger.saveObligation).not.toHaveBeenCalled();
@@ -421,12 +444,16 @@ describe('Personal finance ledger use cases', () => {
   it('foreign movement lookup returns uniform not found', async () => {
     const f = ledgerFixture();
     await expect(
-      new GetFinanceMovementByIdUseCase(f.movementService).execute('9', '5'),
+      new GetFinanceMovementByIdUseCase(f.movementService).execute(
+        actorFixture('9'),
+        '5',
+      ),
     ).rejects.toThrow('finance:not_found');
   });
 
   it('foreign obligation lookup does not load repayment history', async () => {
     const service = {
+      withScope: financeScopeFixture({} as EntityManager),
       snapshot: vi.fn(async <T>(work: (manager: EntityManager) => Promise<T>) =>
         work({} as EntityManager),
       ),
@@ -436,7 +463,7 @@ describe('Personal finance ledger use cases', () => {
     await expect(
       new GetFinanceObligationByIdUseCase(
         service as unknown as FinanceObligationService,
-      ).execute('9', '3'),
+      ).execute(actorFixture('9'), '3'),
     ).rejects.toThrow('finance:not_found');
     expect(service.settlement).not.toHaveBeenCalled();
   });
@@ -444,20 +471,19 @@ describe('Personal finance ledger use cases', () => {
   it('reads principal and settlement within the same snapshot manager', async () => {
     const f = ledgerFixture();
     const service = {
+      withScope: financeScopeFixture(f.manager),
       snapshot: vi.fn(async <T>(work: (manager: EntityManager) => Promise<T>) =>
         work(f.manager),
       ),
       findOne: vi.fn().mockResolvedValue(f.obligation),
-      settlement: vi
-        .fn()
-        .mockResolvedValue({
-          initial: [f.origin],
-          payments: [{ obligation_id: '3', amount: '40000' }],
-        }),
+      settlement: vi.fn().mockResolvedValue({
+        initial: [f.origin],
+        payments: [{ obligation_id: '3', amount: '40000' }],
+      }),
     };
     const result = await new GetFinanceObligationByIdUseCase(
       service as unknown as FinanceObligationService,
-    ).execute('1', '3');
+    ).execute(actorFixture('1'), '3');
     expect(result.remaining_amount).toBe('60000');
     expect(service.findOne).toHaveBeenCalledWith('1', '3', f.manager);
     expect(service.settlement).toHaveBeenCalledWith(
@@ -483,12 +509,12 @@ describe('Personal finance ledger use cases', () => {
       new CreateFinanceMovementUseCase(
         f.ledgerService,
         f.movementService,
-      ).execute('1', { ...dto, amount: '80001' }),
+      ).execute(actorFixture('1'), { ...dto, amount: '80001' }),
     ).rejects.toThrow('finance:overpayment');
     const result = await new CreateFinanceMovementUseCase(
       f.ledgerService,
       f.movementService,
-    ).execute('1', { ...dto, amount: '80000' });
+    ).execute(actorFixture('1'), { ...dto, amount: '80000' });
     expect(result.type).toBe('expense');
     expect(result.status).toBe('paid');
   });
@@ -497,7 +523,7 @@ describe('Personal finance ledger use cases', () => {
     const f = ledgerFixture();
     const result = await new GetFinanceMovementByIdUseCase(
       f.movementService,
-    ).execute('1', '5');
+    ).execute(actorFixture('1'), '5');
     expect(result).not.toHaveProperty('user');
     expect(result.category).toEqual({
       id: '2',

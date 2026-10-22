@@ -1,0 +1,102 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "GO12_single_owner_immutable_native_image_activation",
+  "status": "failed_requires_operator_review_no_automatic_native_retry",
+  "started_at_utc": "2026-10-19T19:09:24.016519+00:00",
+  "original_image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "candidate_image_id": "sha256:3f004c6c170ea79d16a544a788a5189f3afc17d3d68d465cb5092c3099cd0404",
+  "provider_generations": 0,
+  "Node_runtime_files_modified": 0,
+  "configured_selection_modified": false,
+  "private_original_descriptor_preserved": true,
+  "private_original_unit_preserved": true,
+  "original_bind_mounts": [
+    {
+      "destination": "/app/.env",
+      "read_write": false,
+      "type": "bind"
+    },
+    {
+      "destination": "/app/browser_profile",
+      "read_write": true,
+      "type": "bind"
+    },
+    {
+      "destination": "/app/session_state",
+      "read_write": true,
+      "type": "bind"
+    },
+    {
+      "destination": "/app/config/web_reasoning_profiles.json",
+      "read_write": false,
+      "type": "bind"
+    },
+    {
+      "destination": "/home/nodia/agentic_profile",
+      "read_write": true,
+      "type": "bind"
+    },
+    {
+      "destination": "/run/user/10001",
+      "read_write": false,
+      "type": "bind"
+    }
+  ],
+  "original_bind_source_hashes": {
+    "/app/.env": "054c150c9feace6b6c7836b650b42220ed9f02cd9e17c10d8769bb0bca1cd2c1",
+    "/app/browser_profile": "47352faae73dba99fa610e8a4e51072a868523d10d1e00f50919aa15d64d1001",
+    "/app/session_state": "df92478c1c4cd518e179b7372d0428f80dea184a1fdda50c94b647908e6c8576",
+    "/app/config/web_reasoning_profiles.json": "98595776ca7cbd03d888ae8f81ba2f2f120f856ade9f909989c6ddcaa71efb2c",
+    "/home/nodia/agentic_profile": "5031cefb37fff2bb35c150fb5aa141157ac9df451ad3442af4c8a8982eeed0dd",
+    "/run/user/10001": "5a8774a40e46729d6b694ea45974d27d13e3bec032ae436934073c1eccb2645a"
+  },
+  "original_environment_paths_only": [
+    "/opt/nodia/nodia-gemini-microservice/.env"
+  ],
+  "original_container_id": "c3cdfb9ca3ab71eff4735c344ae0c0d83400b497eb104af21496b593b1bad8af",
+  "service_states_before": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active"
+  },
+  "steps": [
+    "API_and_worker_paused",
+    "original_unique_Gemini_owner_stopped",
+    "candidate_unique_Gemini_owner_started"
+  ],
+  "quiet_after_consumers_paused": {
+    "SQL": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-19T19:09:24.230Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    },
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-19T19:09:24Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    }
+  },
+  "systemd_override_sha256": "da460c3998e11e7684e36134d471b7eb7856115eda30b27f36c1096ecaa9d416",
+  "compose_override_sha256": "b3d58ae3c866b99d966ac6d2870c785499e5e05caddac57604614f2ec5972acc",
+  "finished_at_utc": "2026-10-19T19:09:55.830094+00:00"
+}

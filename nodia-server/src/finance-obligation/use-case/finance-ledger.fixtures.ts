@@ -1,3 +1,4 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
 import { vi } from 'vitest';
 import type { EntityManager } from 'typeorm';
 import type { FinanceCategory } from '../../finance-category/entities/finance-category.entity.js';
@@ -59,6 +60,7 @@ export function ledgerFixture() {
   let nextId = 6;
   const calls: string[] = [];
   const ledger = {
+    withScope: financeScopeFixture(manager),
     transaction: vi.fn(async <T>(work: (tx: EntityManager) => Promise<T>) =>
       work(manager),
     ),
@@ -124,6 +126,7 @@ export function ledgerFixture() {
     ),
   };
   const movements = {
+    withScope: financeScopeFixture(manager),
     findOne: vi.fn(async (userId: string, id: string) => {
       const row = records.get(id);
       return row?.user_id === userId ? row : null;

@@ -1,0 +1,26 @@
+[Unit]
+Description=NodiaAI standalone worker laboratory
+Requires=docker.service nodia-keyring.service
+After=network-online.target docker.service nodia-keyring.service nodia-api.service
+Wants=network-online.target
+[Service]
+Type=simple
+User=nodia
+Group=nodia
+WorkingDirectory=/opt/nodia/releases/nodia-server-ai15-20261016
+Environment=HOME=/var/lib/nodia
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/nodia-ai-worker/bus
+Environment=XDG_RUNTIME_DIR=/run/nodia-ai-worker
+RuntimeDirectory=nodia-ai-worker
+RuntimeDirectoryMode=0700
+BindReadOnlyPaths=/run/user/10000/bus:/run/nodia-ai-worker/bus
+ExecStart=/usr/local/bin/node dist/nodia-ai-worker.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=45
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+[Install]
+WantedBy=multi-user.target

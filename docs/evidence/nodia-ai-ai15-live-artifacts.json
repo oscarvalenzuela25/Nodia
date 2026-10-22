@@ -1,0 +1,91 @@
+{
+  "task": "AI-15",
+  "phase": "artifacts",
+  "status": "passed",
+  "checks": 12,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader",
+    "real Gemini turn completes through the durable worker",
+    "real Agentic emits three private artifact references through native tools",
+    "nodia_products_export_csv reference preserves private current-on-download semantics",
+    "nodia_products_export_csv authenticated human download regenerates native CSV content",
+    "nodia_providers_export_csv reference preserves private current-on-download semantics",
+    "nodia_providers_export_csv authenticated human download regenerates native CSV content",
+    "nodia_invoices_file reference preserves private current-on-download semantics",
+    "invoice download reports actual storage unavailability without exposing credentials",
+    "all real native runtime slots released after acknowledgement"
+  ],
+  "turns": [
+    {
+      "state": "completed",
+      "error_code": null,
+      "dispatches": 1,
+      "delegations": 0,
+      "tool_calls": 3,
+      "rpc_messages": 9,
+      "receipt_tools": [
+        {
+          "name": "nodia_products_export_csv",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_providers_export_csv",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_invoices_file",
+          "state": "completed"
+        }
+      ]
+    }
+  ],
+  "downloads": [
+    {
+      "tool": "nodia_products_export_csv",
+      "bytes": 245,
+      "unauthenticated_status": 401,
+      "authenticated_status": 200,
+      "no_store": true,
+      "synthetic_nonce_verified": true
+    },
+    {
+      "tool": "nodia_providers_export_csv",
+      "bytes": 658,
+      "unauthenticated_status": 401,
+      "authenticated_status": 200,
+      "no_store": true,
+      "synthetic_nonce_verified": true
+    },
+    {
+      "tool": "nodia_invoices_file",
+      "reference_verified": true,
+      "content_downloaded": false,
+      "unauthenticated_status": 401,
+      "authenticated_status": 503,
+      "reason": "storage_not_configured; no object or content fabricated"
+    }
+  ],
+  "external_observations": [],
+  "dispatches": [
+    {
+      "mode": "token_plan_agentic",
+      "tools": 72
+    }
+  ],
+  "adapter_dispatch_requests": 1,
+  "maximum_adapter_dispatch_requests": 1,
+  "candidate_release_id": "6ed2552585b9d302f49b38a872f804114d425468477f2de19eb886929591b6d0",
+  "domain_capabilities": 67,
+  "mcp_catalog_tools": 72,
+  "real_gemini_inference": true,
+  "adapter_mocked": false,
+  "product_readers_mocked": false,
+  "synthetic_sql_database": true,
+  "synthetic_http_identity": true,
+  "configured_business_database_modified": false,
+  "configured_provider_selection_modified": false,
+  "storage_objects_created": 0,
+  "invoice_content_download_verified": false
+}

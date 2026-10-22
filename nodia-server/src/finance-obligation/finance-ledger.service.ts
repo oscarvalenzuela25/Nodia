@@ -1,3 +1,7 @@
+import {
+  runFinanceScope,
+  type FinanceActor,
+} from '../authorization/authority-transaction.js';
 import { ConflictException, Injectable } from '@nestjs/common';
 import {
   DataSource,
@@ -12,11 +16,24 @@ import { FinanceObligation } from './entities/finance-obligation.entity.js';
 /** Persistence only. Every writer uses the same obligation row lock before reading settlement. */
 @Injectable()
 export class FinanceLedgerService {
+  withScope<T>(
+    actor: FinanceActor,
+    work: (scope: {
+      manager: EntityManager;
+      ownerId: string;
+      actorId: string;
+    }) => Promise<T>,
+  ): Promise<T> {
+    return runFinanceScope(this.dataSource, actor, work, 'READ COMMITTED');
+  }
   constructor(private readonly dataSource: DataSource) {}
 
   async transaction<T>(
     work: (manager: EntityManager) => Promise<T>,
+    existingManager?: EntityManager,
   ): Promise<T> {
+    if (existingManager) return work(existingManager);
+
     try {
       return await this.dataSource.transaction(work);
     } catch (error: unknown) {

@@ -1,0 +1,97 @@
+{
+  "task": "AI-15",
+  "phase": "web-routing",
+  "status": "failed",
+  "checks": 7,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader",
+    "real Gemini turn completes through the durable worker",
+    "Web remains conversational with no MCP or delegation",
+    "real Gemini turn completes through the durable worker",
+    "Web delegates to the opted-in exact Agentic connection for a native SQL read"
+  ],
+  "turns": [
+    {
+      "state": "completed",
+      "error_code": null,
+      "dispatches": 1,
+      "delegations": 0,
+      "tool_calls": 0,
+      "rpc_messages": 0,
+      "receipt_tools": []
+    },
+    {
+      "state": "completed",
+      "error_code": null,
+      "dispatches": 2,
+      "delegations": 1,
+      "tool_calls": 1,
+      "rpc_messages": 7,
+      "receipt_tools": [
+        {
+          "name": "nodia_products_list",
+          "state": "completed"
+        }
+      ]
+    },
+    {
+      "state": "unknown",
+      "error_code": "nodia_ai:outcome_unknown",
+      "dispatches": 1,
+      "delegations": 0,
+      "tool_calls": 0,
+      "rpc_messages": 0,
+      "receipt_tools": []
+    }
+  ],
+  "dispatches": [
+    {
+      "mode": "token_plan_web",
+      "tools": 0
+    },
+    {
+      "mode": "token_plan_web",
+      "tools": 0
+    },
+    {
+      "mode": "token_plan_agentic",
+      "tools": 72
+    },
+    {
+      "mode": "token_plan_web",
+      "tools": 0
+    }
+  ],
+  "external_observations": [],
+  "adapter_dispatch_requests": 4,
+  "maximum_adapter_dispatch_requests": 4,
+  "candidate_release_id": "6ed2552585b9d302f49b38a872f804114d425468477f2de19eb886929591b6d0",
+  "inference_replayed": false,
+  "configured_business_database_modified": false,
+  "cleanup": {
+    "completed": true,
+    "pending": {
+      "jobs": 0,
+      "attempts": 0,
+      "runtime_slots": 0,
+      "diagnostic_requests": 0,
+      "diagnostic_proofs": 0
+    },
+    "disposable_database_removed": true,
+    "inference_replayed": false
+  },
+  "native_http_observation": {
+    "source": "Real VM container access log; only POST /nodia-ai/web/turn statuses extracted",
+    "statuses": [
+      200,
+      200,
+      502
+    ],
+    "specific_exception_class": null,
+    "last_dispatch_elapsed_ms": null,
+    "native_terminal_outcome_captured": null,
+    "interpretation": "The private Web adapter returned 502 after dispatch. It collapses post-dispatch failures; timeout, authentication and parsing causes are not distinguished by this retained evidence."
+  }
+}

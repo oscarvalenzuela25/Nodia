@@ -1,3 +1,6 @@
+import { Req } from '@nestjs/common';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
 import {
   Controller,
   Get,
@@ -31,8 +34,11 @@ export class RoleController {
   ) {}
 
   @Post()
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.createRoleUseCase.execute(createRoleDto);
+  create(@Body() createRoleDto: CreateRoleDto, @Req() request: AuthRequest) {
+    return this.createRoleUseCase.execute(
+      createRoleDto,
+      actorReference(request.auth),
+    );
   }
 
   @Get()
@@ -46,18 +52,37 @@ export class RoleController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.updateRoleUseCase.execute(id, updateRoleDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateRoleDto: UpdateRoleDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateRoleUseCase.execute(
+      id,
+      updateRoleDto,
+      actorReference(request.auth),
+    );
   }
 
   @Patch(':id')
-  updatePatch(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.updateRoleUseCase.execute(id, updateRoleDto);
+  updatePatch(
+    @Param('id') id: string,
+    @Body() updateRoleDto: UpdateRoleDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateRoleUseCase.execute(
+      id,
+      updateRoleDto,
+      actorReference(request.auth),
+    );
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param() params: RoleIdDto) {
-    return this.deleteRoleUseCase.execute(params.id);
+  remove(@Param() params: RoleIdDto, @Req() request: AuthRequest) {
+    return this.deleteRoleUseCase.execute(
+      params.id,
+      actorReference(request.auth),
+    );
   }
 }

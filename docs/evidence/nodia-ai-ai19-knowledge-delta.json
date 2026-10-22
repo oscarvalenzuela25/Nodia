@@ -1,0 +1,14 @@
+{
+  "stage": "AI-19",
+  "previous_release": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+  "release": "057a331b12f05ae08f9f9b9a565d5349d17b7a2375e8852981f19c29d992a20e",
+  "changed_manifest_fields": [
+    "registry_sha256",
+    "release_id"
+  ],
+  "published_documents_unchanged": true,
+  "published_fragments_unchanged": true,
+  "capability_contracts_unchanged": true,
+  "reason": "One explicitly indexed draft/unregistered authoring document changes the registry digest; published content, bindings and contracts are identical",
+  "new_published_content": false
+}

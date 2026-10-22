@@ -1,0 +1,44 @@
+{
+  "stage": "AI-36",
+  "scope": "two_javascript_files_scoped_lab_activation",
+  "attempt": "attempt05",
+  "backup_directory": "/var/backups/nodia/ai36-runtime-20261019T003442Z-1539062",
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "storage_operations": 0,
+  "configured_database_writes": 0,
+  "migrations_run": 0,
+  "native_restarted": false,
+  "publication_changed": false,
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "http": {
+    "api": 200,
+    "native": 200,
+    "proxy": 200
+  },
+  "sql_quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 29
+  },
+  "configured_chat_preserved": true,
+  "native_container_unchanged": true,
+  "compiled_files_verified": 932,
+  "changed_paths": [
+    "dist/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.js",
+    "dist/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.js"
+  ],
+  "status": "passed",
+  "services_restarted": [
+    "nodia-api",
+    "nodia-ai-worker"
+  ],
+  "compiled_manifest_sha256": "855b54900449eabbbeb0ffa6c135a341c91979d49cea17cf8c70fe12dfc9d176",
+  "completed_at_utc": "2026-10-19T00:34:47.504741+00:00"
+}

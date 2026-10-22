@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "scope": "public_pinned_ELF_static_data_only_no_execution",
+  "observed_at_utc": "2026-10-19T20:40:53.662108+00:00",
+  "pin_path": "docs/evidence/nodia-ai-ai36-c05-cli-1.4.2-package-pin.json",
+  "pin_sha256": "a726498c6f65fb92ef20941db9f773f6f36c928f5973197d3ee2b97389b3186c",
+  "manifest_version": "1.4.2",
+  "binary_sha512": "f63dd18d9aee3742055452c6eefbc22740ac4cb7bd7ad4c6b5cac2cccbd69d0548058ef5a3f7105d57146f7ce0a3ae07ef9dd89cde84dcac2cba64edc6f8dbdc",
+  "source_script_sha256": "a551a64f757324a7ded5a9a1fb1a53b9b6bb4b3f9e3a0acad5565bbf9c0e5544",
+  "flags_literal_inventory": [
+    {
+      "literal": "--input-format",
+      "first_offset": 91983917
+    },
+    {
+      "literal": "--output-format",
+      "first_offset": 91983944
+    },
+    {
+      "literal": "--json-schema",
+      "first_offset": 91654667
+    },
+    {
+      "literal": "--disable-slash-commands",
+      "first_offset": 92349968
+    },
+    {
+      "literal": "--sandbox",
+      "first_offset": 91378184
+    },
+    {
+      "literal": "--print-timeout",
+      "first_offset": 98721758
+    },
+    {
+      "literal": "--log-file",
+      "first_offset": -1
+    },
+    {
+      "literal": "--agent",
+      "first_offset": 92326836
+    },
+    {
+      "literal": "--model",
+      "first_offset": 89934229
+    },
+    {
+      "literal": "--effort",
+      "first_offset": 89934237
+    }
+  ],
+  "agent_yaml_tag_inventory": [
+    {
+      "literal": "yaml:\"mainAgent,omitempty\"",
+      "first_offset": 172841331
+    },
+    {
+      "literal": "yaml:\"subagent,omitempty\"",
+      "first_offset": 172758826
+    },
+    {
+      "literal": "yaml:\"inheritMcp,omitempty\"",
+      "first_offset": 172928499
+    },
+    {
+      "literal": "yaml:\"tools,omitempty\"",
+      "first_offset": 172519448
+    },
+    {
+      "literal": "yaml:\"hooks,omitempty\"",
+      "first_offset": 172519538
+    },
+    {
+      "literal": "yaml:\"commandExecutionPolicy,omitempty\"",
+      "first_offset": 173916113
+    },
+    {
+      "literal": "yaml:\"excludeDefaultComponents,omitempty\"",
+      "first_offset": 174007522
+    },
+    {
+      "literal": "yaml:\"inheritCustomizations,omitempty\"",
+      "first_offset": 173811359
+    }
+  ],
+  "static_scope_limit": "Presence of flags/tags/types does not establish accepted syntax, effective permissions, wire representation, schema compatibility or inference availability.",
+  "embedded_release_sections": [
+    {
+      "version": "1.4.2",
+      "heading_offset": null,
+      "section_bytes": null,
+      "section_sha256": null
+    },
+    {
+      "version": "1.4.1",
+      "heading_offset": 98677772,
+      "section_bytes": 3643,
+      "section_sha256": "ed45e1d7eab5ebaf3b7db4bcd485aaf2eec79239692b8c2d94aa7bd776c6fc8b"
+    },
+    {
+      "version": "1.4.0",
+      "heading_offset": 98681416,
+      "section_bytes": 2667,
+      "section_sha256": "14e7b6a6291408db77e859f371123fcad37d3644ad858fb94f25c52b289c2a3a"
+    },
+    {
+      "version": "1.3.6",
+      "heading_offset": 98684084,
+      "section_bytes": 3221,
+      "section_sha256": "604639d041e0cfcdedcf0bb7daeab896b34367aaea786ca76d23f8cb50083456"
+    },
+    {
+      "version": "1.3.5",
+      "heading_offset": 98687306,
+      "section_bytes": 2121,
+      "section_sha256": "78989f8a60156dac7c1e67f9268eaed62358b3a085fe3153de4c3c53fff534fe"
+    },
+    {
+      "version": "1.3.4",
+      "heading_offset": 98689428,
+      "section_bytes": 3117,
+      "section_sha256": "b7289afa1cc2264173505291206a58c128d39df9ceaea06b1a84dc277bfe26ed"
+    },
+    {
+      "version": "1.3.3",
+      "heading_offset": 98692546,
+      "section_bytes": 4200,
+      "section_sha256": "484f2d91af268bac2ca0d00d968739957c03d078118a16cee5b2b64c27757600"
+    },
+    {
+      "version": "1.3.2",
+      "heading_offset": 98696747,
+      "section_bytes": 2670,
+      "section_sha256": "b418b79b1d5df2f438632f97140abae41fda13a3aff687d2f06aff45af315b93"
+    },
+    {
+      "version": "1.3.1",
+      "heading_offset": 98699418,
+      "section_bytes": 3957,
+      "section_sha256": "0c470a133f2217ae7344a84634121977c2eca048b6acb06131c9b3b9c1ceebe0"
+    }
+  ],
+  "release_heading_limit": "No ## 1.4.2 heading found; latest embedded heading is 1.4.1. The HTTPS manifest advertises 1.4.2. Actual --version is a separate offline control.",
+  "dispatcher_type_clue": {
+    "arguments_type_literal": "Arguments encoding/json/jsontext.Value",
+    "type_offset": 36391119,
+    "converter_symbol_offset": 36391291,
+    "interpretation": "Public Go type metadata near CallMcpToolConverter. Actual hook/MCP JSON representation remains unverified, so no wire conversion is inferred."
+  },
+  "release_findings_paraphrased": [
+    {
+      "version": "1.3.3",
+      "finding": "Introduces antigravity/alwaysLoad tool metadata for direct availability. Current Nodia tools do not add that vendor extension; do not change publication as part of this candidate."
+    },
+    {
+      "version": "1.3.4",
+      "finding": "Caps waits between internal retries at 30s instead of up to four minutes; unknown headless agents now fail; base models without effort obtain defaults. Keep explicit exact model/effort and unknown-agent rejection."
+    },
+    {
+      "version": "1.3.6",
+      "finding": "Stalled model requests retry after five minutes without data; this threshold exceeds the unchanged Nodia 120s deadline. Markdown description parsing and headless subagent questions also change."
+    },
+    {
+      "version": "1.4.1",
+      "finding": "Adds automatic retries for socket disconnects, marks exited MCP servers as errors and removes closed sessions, and corrects structured tool output token accounting. Plugin frontmatter validation is expanded."
+    }
+  ],
+  "official_references": [
+    "https://www.antigravity.google/docs/changelog/",
+    "https://www.antigravity.google/docs/cli/headless/",
+    "https://www.antigravity.google/docs/cli/reference/"
+  ],
+  "runtime_retry_disable_flag_verified": false,
+  "causal_limit": "No observed 119s failure is attributed to retries. Nodia/harness resend count zero does not count unknown internal vendor requests. A candidate success alone cannot establish causality.",
+  "candidate_gates": [
+    "Exact SHA512 and isolated Linux --version/help before any profile use.",
+    "Explicit versioned transport gates; preserve 1.3.1 historical default, exact hash/version checks, High selection, deadlines, hooks and budgets.",
+    "Candidate attachments and OCR remain fail-closed; old attachment proofs cannot certify a new CLI.",
+    "One owner, new process/session and fresh frozen MCP canary; validate init.agent/model, actual tool wire, completed process-closed proof and exact ACK.",
+    "No concurrent profile copies; persistent profile/cache migration and image rollback compatibility are unknown and require controlled preservation under the sole operator."
+  ],
+  "actions": {
+    "binary_executions": 0,
+    "network_requests": 0,
+    "VM_operations": 0,
+    "profile_access": 0,
+    "configuration_changes": 0
+  }
+}

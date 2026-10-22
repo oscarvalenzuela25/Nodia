@@ -1,0 +1,51 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "status": "fixtures_generated",
+  "synthetic_only": true,
+  "provider_generations": 0,
+  "network_requests": 0,
+  "file_limit_bytes": 20971520,
+  "pdf_structure": "one_page_no_compression_no_actions_unreferenced_padding_stream_inside_xref",
+  "pdf_expected_text": "Nodia AI-38 synthetic attachment. No personal or commercial data.",
+  "audio_expected_duration_seconds": 1,
+  "audio_contains_speech": false,
+  "files": [
+    {
+      "file_name": "ai38-boundary-exact20MiB.pdf",
+      "relative_path": ".tmp/ai38-attachment-fixtures-r01/ai38-boundary-exact20MiB.pdf",
+      "byte_count": 20971520,
+      "sha256": "14a57764f731612d59a5c43beee356428f4428a59f473bc414801d4d86ed595e",
+      "kind": "pdf",
+      "media_type": "application/pdf",
+      "within_file_limit": true
+    },
+    {
+      "file_name": "ai38-boundary-over20MiB.pdf",
+      "relative_path": ".tmp/ai38-attachment-fixtures-r01/ai38-boundary-over20MiB.pdf",
+      "byte_count": 20971521,
+      "sha256": "1cee35ddb020872b76b34598b1b1bfc6a71bf245d30a1e8bf02f710165a32bdd",
+      "kind": "pdf",
+      "media_type": "application/pdf",
+      "within_file_limit": false
+    },
+    {
+      "file_name": "ai38-small-synthetic.png",
+      "relative_path": ".tmp/ai38-attachment-fixtures-r01/ai38-small-synthetic.png",
+      "byte_count": 69,
+      "sha256": "973bd932dd5d4b16546af684fabb647fdde1333c3abea8d10257905b6266c020",
+      "kind": "image",
+      "media_type": "image/png",
+      "within_file_limit": true
+    },
+    {
+      "file_name": "ai38-synthetic-silence.wav",
+      "relative_path": ".tmp/ai38-attachment-fixtures-r01/ai38-synthetic-silence.wav",
+      "byte_count": 16044,
+      "sha256": "56d4af65701c26df20bd4021eda95b6e830348ce3a746086079fe89285548dc9",
+      "kind": "audio",
+      "media_type": "audio/wav",
+      "within_file_limit": true
+    }
+  ],
+  "parser_acceptance": "pending_actual_isolated_inspector"
+}

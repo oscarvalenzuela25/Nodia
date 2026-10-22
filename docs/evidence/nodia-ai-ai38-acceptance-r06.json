@@ -1,0 +1,685 @@
+{
+  "stage": "AI-38",
+  "status": "passed",
+  "scope": "isolated_production_ui_http_sql",
+  "context": {
+    "environment_id": "ai38-isolated-ui-api-sql",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "checked_at": "2026-10-20T16:50:02.536Z",
+  "checks": 20,
+  "results": [
+    "owner preview is rendered by the production component through real HTTP without effects",
+    "opening preview issues no business mutation or confirmation",
+    "server rejects a mismatched preview hash without a financial effect",
+    "unrelated user receives real denial and the UI removes command content",
+    "super_admin can inspect another owner preview but cannot confirm that owner intention",
+    "editing the production review creates a distinct exact revision over HTTP without a domain effect",
+    "human button admits one queued execution bound to the edited revision and no inline effect",
+    "native worker commits the queued effect and atomic receipt while UI observation is absent",
+    "returning to review restores the receipt without repeating confirmation",
+    "the expense is visible in the actual Finance page from its native HTTP list",
+    "returning to the actual chat recovers the persisted owner message without generation",
+    "cancelling through the production button cancels the queued intent without a second effect",
+    "a cancelled execution cannot be claimed by the native worker",
+    "current destination-module revocation hides persisted proposal data over actual HTTP",
+    "revocation also redacts the persisted message in the actual chat",
+    "restored access reveals the same persisted message without replaying either execution",
+    "native Finance content remains visible across mobile/tablet/desktop and both languages/themes",
+    "the original atomic receipt survives cancellation revocation and navigation unchanged",
+    "neither provider storage nor the configured database is used by the isolated chain",
+    "all UI requests stay on the fixture origin without JavaScript errors"
+  ],
+  "profiles": [
+    {
+      "width": 390,
+      "lang": "es",
+      "theme": "dark",
+      "expense_visible": true,
+      "document_overflow": false
+    },
+    {
+      "width": 600,
+      "lang": "en",
+      "theme": "light",
+      "expense_visible": true,
+      "document_overflow": false
+    },
+    {
+      "width": 1440,
+      "lang": "es",
+      "theme": "light",
+      "expense_visible": true,
+      "document_overflow": false
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/confirmation-challenge",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/confirm",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/operations/59672e1e-c526-4970-a558-16efd7d037b5",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/operations/59672e1e-c526-4970-a558-16efd7d037b5",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/finance/movements",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69/confirmation-challenge",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69/confirm",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/operations/dfe199bf-7dd3-43df-8078-ec638dc05d38",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/operations/dfe199bf-7dd3-43df-8078-ec638dc05d38/cancel",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/finance/movements",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/finance/movements",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/finance/movements",
+      "status": 200
+    }
+  ],
+  "page_errors": [],
+  "external_requests_blocked": [],
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai38-acceptance.integration.mjs",
+      "sha256": "62ea6af6100b636ed8d9a756a7b473e55d1257d9a2a86764bce60e1f80120809"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai-ai38/main.tsx",
+      "sha256": "54096bb2fec382ff2f111643b8b6a75f93920a23139e46b0adb5964081d41d7e"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai-ai38/index.html",
+      "sha256": "c9be06773cfff1d089fe5fedc66fea39958e31754c45fff81f42be0f0a62e512"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-acceptance-ui.mjs",
+      "sha256": "8796f6aba571fd9dddc03f63670de9acbe0adb0c106ddb698c94c1be05e8ae7a"
+    }
+  ],
+  "final_snapshot": {
+    "finance_count": 1,
+    "movements": [
+      {
+        "id": "1",
+        "name": "Synthetic AI38 visible expense",
+        "amount": "21000"
+      }
+    ],
+    "executions": [
+      {
+        "id": "59672e1e-c526-4970-a558-16efd7d037b5",
+        "state": "completed",
+        "revision": 3
+      },
+      {
+        "id": "dfe199bf-7dd3-43df-8078-ec638dc05d38",
+        "state": "cancelled",
+        "revision": 2
+      }
+    ],
+    "receipts": [
+      {
+        "execution_id": "59672e1e-c526-4970-a558-16efd7d037b5",
+        "position": 1,
+        "state": "completed",
+        "minimal_receipt": {
+          "resource_id": "1",
+          "resource_key": "finance_movements",
+          "schema_version": 1,
+          "subject_user_id": "1"
+        }
+      },
+      {
+        "execution_id": "dfe199bf-7dd3-43df-8078-ec638dc05d38",
+        "position": 1,
+        "state": "cancelled",
+        "minimal_receipt": null
+      }
+    ],
+    "pending_jobs": 0,
+    "provider_calls": 0,
+    "storage_calls": 0
+  },
+  "api_report": {
+    "stage": "AI-38",
+    "scope": "isolated_real_ui_http_sql_synthetic_auth_and_redis",
+    "context": {
+      "environment_id": "ai38-isolated-ui-api-sql",
+      "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+    },
+    "checks": [
+      "clean installation applies the 29 existing migrations",
+      "native preparation creates an exact preview and no financial effect"
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/confirmation-challenge",
+        "status": 409
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 404
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 404
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 404
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 404
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+        "status": 200
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/confirmation-challenge",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/confirm",
+        "status": 202
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/operations/59672e1e-c526-4970-a558-16efd7d037b5",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/787032f7-c872-42c5-ab21-229e91196227/review-metadata",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/operations/59672e1e-c526-4970-a558-16efd7d037b5",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/finance/movements",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe/messages",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69/review-metadata",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69/confirmation-challenge",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69/confirm",
+        "status": 202
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/operations/dfe199bf-7dd3-43df-8078-ec638dc05d38",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/nodia-ai/operations/dfe199bf-7dd3-43df-8078-ec638dc05d38/cancel",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/proposals/b9abebbe-cd9e-416c-b654-8e7f13e35f69",
+        "status": 403
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe/messages",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/nodia-ai/conversations/2e3e038c-c12b-4148-92b1-2124b009eabe/messages",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/finance/movements",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/finance/movements",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/finance/movements",
+        "status": 200
+      }
+    ],
+    "finance_count": 1,
+    "movements": [
+      {
+        "id": "1",
+        "name": "Synthetic AI38 visible expense",
+        "amount": "21000"
+      }
+    ],
+    "executions": [
+      {
+        "id": "59672e1e-c526-4970-a558-16efd7d037b5",
+        "state": "completed",
+        "revision": 3
+      },
+      {
+        "id": "dfe199bf-7dd3-43df-8078-ec638dc05d38",
+        "state": "cancelled",
+        "revision": 2
+      }
+    ],
+    "receipts": [
+      {
+        "execution_id": "59672e1e-c526-4970-a558-16efd7d037b5",
+        "position": 1,
+        "state": "completed",
+        "minimal_receipt": {
+          "resource_id": "1",
+          "resource_key": "finance_movements",
+          "schema_version": 1,
+          "subject_user_id": "1"
+        }
+      },
+      {
+        "execution_id": "dfe199bf-7dd3-43df-8078-ec638dc05d38",
+        "position": 1,
+        "state": "cancelled",
+        "minimal_receipt": null
+      }
+    ],
+    "pending_jobs": 0,
+    "provider_calls": 0,
+    "storage_calls": 0,
+    "configured_database_used": false,
+    "provider_inference": false,
+    "storage_used": false,
+    "production_acceptance": false
+  },
+  "failure": null,
+  "boundaries": {
+    "synthetic_authenticated_transport": true,
+    "synthetic_redis": true,
+    "preparation_via_internal_native_port": true,
+    "natural_language_or_mcp_preparation_verified": false,
+    "real_provider_inferences": 0,
+    "configured_database_writes": 0,
+    "storage_operations": 0,
+    "live_environment_acceptance": false,
+    "product_context_evolution_verified": false,
+    "api_paid_mode_verified": false,
+    "cleanup_verified_separately": true
+  }
+}

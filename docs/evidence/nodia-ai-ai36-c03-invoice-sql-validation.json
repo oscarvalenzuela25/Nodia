@@ -1,0 +1,177 @@
+{
+  "stage": "AI-36-C03",
+  "status": "passed",
+  "scope": "candidate_mcp_invoice_analysis_active_generation_disposable_sql",
+  "checks": 39,
+  "http_requests": 5,
+  "check_names": [
+    "one closed candidate analyzer is built without repository publication",
+    "synthetic active Agentic dispatch receives exact frozen PNG bytes",
+    "prepare commits a durable owned analysis anchor and native guide",
+    "complete retains zero and null from extraction without changing domain records",
+    "same callback ID replays exact receipt without another normalization",
+    "same callback ID with different extraction conflicts",
+    "new callback ID cannot complete a previously consumed analysis anchor",
+    "analysis creates no invoice product draft proposal or execution",
+    "current module revocation blocks prior analysis replay",
+    "human GET recovers terminal analysis even after run deadline without another normalization",
+    "another chat owner cannot inspect the saved extraction",
+    "terminal GET rechecks current module and exact connection authority",
+    "two analysis phases share one existing provider dispatch",
+    "frozen PDF original reaches same Agentic generation",
+    "PDF prepare and completion persist only review-required analysis",
+    "closed MCP input rejects URL model actor SQL and secrets before pure-port work",
+    "supplier must belong to the specified business",
+    "closed extraction rejects negative amount before normalization",
+    "source content hash mutation fences completion",
+    "source object generation mutation fences completion",
+    "source retention epoch mutation fences completion",
+    "reviewed text never impersonates an original in the current generation",
+    "audio is not an invoice source even when its exact format is verified",
+    "another chat attachment never becomes current-message original",
+    "unknown current-message attachment is rejected",
+    "unprepared analysis ID cannot be completed",
+    "supplier relation revocation during normalization blocks publication",
+    "malformed normalizer response never publishes successful extraction",
+    "an attachment from an earlier message is not the current generation source",
+    "current connection revocation blocks completion before pure normalization",
+    "catalog mode revocation blocks completed receipt replay",
+    "concurrent duplicate completion admits one normalization and one durable extraction",
+    "incomplete external receipt cannot be replayed after lost acknowledgement",
+    "lost acknowledgement never automatically repeats pure normalization",
+    "native invoice limit rejects a source larger than ten MiB",
+    "omitted supplier preserves unknown tax and null extraction values",
+    "all rejection and replay scenarios leave domain and proposal tables unchanged",
+    "public receipts contain neither private storage keys nor document base64",
+    "pure normalization does not create another native dispatch or slot"
+  ],
+  "migrations": 29,
+  "c01_regression": {
+    "status": "passed",
+    "checks": 22,
+    "http_requests": 8,
+    "same_compiled_execution": true
+  },
+  "c02_regression": {
+    "status": "passed",
+    "checks": 31,
+    "http_requests": 25,
+    "same_compiled_execution": true
+  },
+  "candidate_tools": 1,
+  "synthetic_published_tools": 1,
+  "compiled_outputs_verified": 2769,
+  "compiled_execution_files": 954,
+  "compiled_execution_manifest_sha256": "02cdeb7ab7527ac3675554c017d5391f4a19ea4974d9ba73779a07dc03d3f704",
+  "source_sha256": "adff2914db5a474e9ebdba03c3269824eebe6e1acf5f8f3e38f923dac8afb357",
+  "manifest_sha256": "b95150f4e3248253fa60c0065267b86198cd6c3ab2bbafab15ffe42c68395340",
+  "synthetic_provider_dispatches": 17,
+  "synthetic_pure_preparations": 12,
+  "synthetic_pure_normalizations": 8,
+  "synthetic_storage_reads": 15,
+  "actual_provider_generations": 0,
+  "native_profile_calls": 0,
+  "configured_database_used": false,
+  "storage": "synthetic_private_port_no_R2",
+  "parser": "synthetic_pure_contract_port_real_Python_rules_checked_separately",
+  "services_restarted": false,
+  "production_publication": false,
+  "candidate_deployed": false,
+  "disposable_containers_remaining": 0,
+  "compiled_outputs_identical_across_attempts": true,
+  "fixture_failure_classification": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-attempt01-failure.json",
+  "attempts": [
+    {
+      "attempt": "attempt01",
+      "status": "failed",
+      "source_sha256": "e969fe595ed6387c462e05c2ababc49a19cd44a5051b411d4358aa91c43f2314",
+      "manifest_sha256": "56d4ff17ebb66f551aa26a91a00eaafb961ad0f7ab585c7d548efe1876d2eebf",
+      "archive_sha256": "6f27f6b700d50aeb46854caee74efc8bd457dfa5ecf3a33492ebdbea9dd962ca",
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-attempt01.json"
+    },
+    {
+      "attempt": "attempt02",
+      "status": "passed",
+      "source_sha256": "adff2914db5a474e9ebdba03c3269824eebe6e1acf5f8f3e38f923dac8afb357",
+      "manifest_sha256": "b95150f4e3248253fa60c0065267b86198cd6c3ab2bbafab15ffe42c68395340",
+      "archive_sha256": "2c361a6f46294e4dc6a80d8dafd9ba1e040f2cd437a4686921bc5c0e9a9b30e0",
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-attempt02.json"
+    }
+  ],
+  "layers": {
+    "sql": "Actual compiled Nest/TypeORM, all current migrations, PostgreSQL 16 disposable fixture ai3603",
+    "callback": "Actual admission, frozen context, native-byte attestation, MCP gateway, candidate registration and durable receipt",
+    "extraction": "Explicit synthetic Agentic transport receives exact frozen PNG/PDF bytes and returns fixture extraction",
+    "normalizer": "Explicit synthetic pure contract port; no equivalence claimed to native parser or actual invoice understanding",
+    "lifecycle": "No invoice, product, draft, proposal or execution effect; immutable public result and current authority on recovery",
+    "regressions": "Actual C01 and C02 harnesses execute against the identical compiled outputs in separate disposable containers"
+  },
+  "limits": {
+    "mcp_wire_json_depth": 16,
+    "native_typed_json_decoded_depth": 8,
+    "json_collection_items": 128,
+    "tool_arguments_utf8_bytes": 65536,
+    "tool_result_utf8_bytes": 65536,
+    "assembled_context_utf8_bytes": 262144
+  },
+  "not_verified": [
+    "production publication or deployment",
+    "Gemini account inference/document understanding",
+    "real R2",
+    "native Python normalizer over live internal HTTP in this SQL harness"
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai36-invoice-analysis.integration.mjs",
+      "sha256": "adff2914db5a474e9ebdba03c3269824eebe6e1acf5f8f3e38f923dac8afb357"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai36-write-preparation.integration.mjs",
+      "sha256": "b0bdaaf47608e8414e4adc47529dfef88b9f28a2bb6463117c1be2969ee48113"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai36-secure-preparation.integration.mjs",
+      "sha256": "e55168cb4a73f0a0ae764481ecd61df592cc6154691dc0f69441615fd3b5c4fc"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c03-invoice-sql-stage.cjs",
+      "sha256": "b6bae191a41c1dbab16bdc344501173542994f49fb42535c510cfe5d6c7ce2c3"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c03-invoice-sql-remote.py",
+      "sha256": "96dae5dea3c05a77653ee23f858c8cd4bc766f0f302dbf2977a0c40a45e59f37"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c03-invoice-sql-health.py",
+      "sha256": "72891ac287b17defee06daad196e1edf777dc88180e05c869cd6b8e5bd0aa076"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c03-invoice-sql-evidence.cjs",
+      "sha256": "a4a2849307cde7ee7b8cb7a4a432802769f0c1f0b79026fa9c368a24632d29be"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-manifest.json",
+      "sha256": "b95150f4e3248253fa60c0065267b86198cd6c3ab2bbafab15ffe42c68395340"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-attempt01-manifest.json",
+      "sha256": "56d4ff17ebb66f551aa26a91a00eaafb961ad0f7ab585c7d548efe1876d2eebf"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-attempt01-failure.json",
+      "sha256": "3f2ea0fb67197c568ae1c3d10ad73318b224a469c369562bc09df50b18b84099"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-health.json",
+      "sha256": "902279cc4135ed4f1e3ac6bb2bf538c70c001b72617ef18b6eb492bf2e3bf05b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-attempt01.json",
+      "sha256": "66d38955477107a506ee90c2edc15a6a1f6d36b32357abf1cbab866252492ff0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c03-invoice-sql-attempt02.json",
+      "sha256": "34496adaeb16cdd6c43b51a1402e9dfa6d3e6d46c08e4686b97abfb89a729074"
+    }
+  ]
+}

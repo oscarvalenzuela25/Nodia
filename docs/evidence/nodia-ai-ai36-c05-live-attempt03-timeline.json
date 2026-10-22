@@ -1,0 +1,265 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "db9e96df0af62c4be1fb2e691fa1402471002b3879be52930339eb400c8d9de9",
+  "source_completed_at_utc": "2026-10-19T17:24:58.106Z",
+  "provider_generations": 2,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T17:21:18.296Z",
+        "monotonic_ms": 9547.82229
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:21:32.074Z",
+        "monotonic_ms": 23325.044329
+      },
+      "elapsed_ms": 13777.222039
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T17:21:32.420Z",
+        "monotonic_ms": 23671.433377
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:21:32.426Z",
+        "monotonic_ms": 23677.66094
+      },
+      "elapsed_ms": 6.227563000000373
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T17:21:32.490Z",
+        "monotonic_ms": 23741.816697
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:21:36.791Z",
+        "monotonic_ms": 28042.367799
+      },
+      "elapsed_ms": 4300.551102000001
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T17:21:36.902Z",
+        "monotonic_ms": 28153.05653
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:21:36.907Z",
+        "monotonic_ms": 28158.431585
+      },
+      "elapsed_ms": 5.375054999996792
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "2441ecc9-88e7-40cf-bfc5-9adc27c29f68",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T17:21:36.959Z",
+        "monotonic_ms": 28210.649519
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:23:00.926Z",
+        "monotonic_ms": 112176.970799
+      },
+      "elapsed_ms": 83966.32128
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T17:23:01.356Z",
+        "monotonic_ms": 112607.716256
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:23:09.490Z",
+        "monotonic_ms": 120741.554513
+      },
+      "elapsed_ms": 8133.838256999996
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T17:23:09.658Z",
+        "monotonic_ms": 120909.73077
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:23:09.663Z",
+        "monotonic_ms": 120914.678419
+      },
+      "elapsed_ms": 4.947649000008823
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "0b9e0eee-e0b0-4875-a009-35be15796a8e",
+      "phase": "execution",
+      "started": {
+        "at_utc": "2026-10-19T17:23:09.723Z",
+        "monotonic_ms": 120974.66271
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:24:57.788Z",
+        "monotonic_ms": 229039.461666
+      },
+      "elapsed_ms": 108064.79895599998
+    }
+  ],
+  "generations": [
+    {
+      "turn": "financial_preview",
+      "run_id": "d9a4fcf9-d5ca-42da-ad70-de5105569860",
+      "run_state": "completed",
+      "attempt_id": "2441ecc9-88e7-40cf-bfc5-9adc27c29f68",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T17:21:36.961Z",
+      "accepted_start_at_utc": "2026-10-19T17:21:36.971Z",
+      "native_start_request_ms": 10.303105999999389,
+      "execute_elapsed_ms": 83966.544482,
+      "terminal_proof_received": true,
+      "terminal_proof_sha256": "34d608a78b558bdfafa06757212b9f5ab8a7811976ecc04e1088e85b0f36bccf",
+      "terminal_proof_outcome": "completed",
+      "process_closed": true,
+      "callbacks": [
+        {
+          "name": "nodia_capabilities_select",
+          "call_id": "d25fb493-f4ab-46a7-b7a1-52a9f0882246",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T17:22:47.326Z",
+          "completed_at_utc": "2026-10-19T17:22:47.500Z",
+          "start_to_callback_request_ms": 70365.30190800001,
+          "handler_elapsed_ms": 174.14522900000156,
+          "result_accepted_at_utc": "2026-10-19T17:22:47.504Z",
+          "result_submit_elapsed_ms": 2.9652289999939967,
+          "result_accepted_to_terminal_ms": 13421.762692000004,
+          "result_accepted_to_execute_exit_ms": 13421.520189000003
+        }
+      ],
+      "native_ACK": {
+        "attempt_id": "2441ecc9-88e7-40cf-bfc5-9adc27c29f68",
+        "terminal_proof_sha256": "34d608a78b558bdfafa06757212b9f5ab8a7811976ecc04e1088e85b0f36bccf",
+        "acknowledged_at_utc": "2026-10-19T17:23:00.964Z"
+      },
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 7,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 1,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 2
+          }
+        ],
+        "signature": "24810d48f2976073b0335562e89ab1c062e29bb8a572771431551b8f2c641a23",
+        "at_utc": "2026-10-19T17:23:00.925Z",
+        "monotonic_ms": 112176.599696
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 811,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 811,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    },
+    {
+      "turn": "financial_preview",
+      "run_id": "d9a4fcf9-d5ca-42da-ad70-de5105569860",
+      "run_state": "completed",
+      "attempt_id": "0b9e0eee-e0b0-4875-a009-35be15796a8e",
+      "phase": "execution",
+      "started_at_utc": "2026-10-19T17:23:09.724Z",
+      "accepted_start_at_utc": "2026-10-19T17:23:09.734Z",
+      "native_start_request_ms": 9.71229600001243,
+      "execute_elapsed_ms": 108065.441463,
+      "terminal_proof_received": true,
+      "terminal_proof_sha256": "826d72389063d0c74d174f2a711d24e7dc4f6fe29f62d5d215c963c3b20c7d2c",
+      "terminal_proof_outcome": "completed",
+      "process_closed": true,
+      "callbacks": [
+        {
+          "name": "nodia_finance_movements_prepare_create",
+          "call_id": "dfc8ae49-e570-4362-a7a7-d80190721801",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T17:24:30.232Z",
+          "completed_at_utc": "2026-10-19T17:24:30.313Z",
+          "start_to_callback_request_ms": 80507.785911,
+          "handler_elapsed_ms": 80.87767400001758,
+          "result_accepted_at_utc": "2026-10-19T17:24:30.317Z",
+          "result_submit_elapsed_ms": 3.132530000002589,
+          "result_accepted_to_terminal_ms": 27471.338124,
+          "result_accepted_to_execute_exit_ms": 27471.170323
+        },
+        {
+          "name": "nodia_proposals_get",
+          "call_id": "a13d4498-245d-4991-a476-d8bee5e9cc8a",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T17:24:38.915Z",
+          "completed_at_utc": "2026-10-19T17:24:38.964Z",
+          "start_to_callback_request_ms": 89190.70307900001,
+          "handler_elapsed_ms": 49.182869999989634,
+          "result_accepted_at_utc": "2026-10-19T17:24:38.968Z",
+          "result_submit_elapsed_ms": 3.073529999994207,
+          "result_accepted_to_terminal_ms": 18820.224260999996,
+          "result_accepted_to_execute_exit_ms": 18820.056459999993
+        }
+      ],
+      "native_ACK": {
+        "attempt_id": "0b9e0eee-e0b0-4875-a009-35be15796a8e",
+        "terminal_proof_sha256": "826d72389063d0c74d174f2a711d24e7dc4f6fe29f62d5d215c963c3b20c7d2c",
+        "acknowledged_at_utc": "2026-10-19T17:24:57.822Z"
+      },
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 8,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 2,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 3
+          }
+        ],
+        "signature": "39de10c9dcca1b1b016b94b5ae4bf682df34231547f5b0be22bcc0f49f49bb42",
+        "at_utc": "2026-10-19T17:24:57.788Z",
+        "monotonic_ms": 229039.068462
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1044,
+        "mcp/results": 2,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1044,
+        "mcp/results": 2,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

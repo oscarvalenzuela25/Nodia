@@ -1,0 +1,75 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "owned_log_observer_isolated_filesystem_and_control_protocol_not_provider_acceptance",
+  "observed_at_utc": "2026-10-19T17:44:17.018547+00:00",
+  "helper": {
+    "path": "docs/evidence/scripts/nodia-ai-ai36-c05-live-owned-log-observer.py",
+    "sha256": "7b5962f6c8e8f7f5e41763714c7d91e77e457c28e17cac43b747f0b2b0420c30"
+  },
+  "tests": {
+    "path": "docs/evidence/scripts/test_nodia_ai_ai36_c05_live_owned_log_observer.py",
+    "sha256": "e6f5ce345a649e5ffb72a07fd6af3756471c490595c2d2464a56c948d4dfd3ec"
+  },
+  "classifier": {
+    "path": "nodia-gemini-microservice/native_cli_diagnostics.py",
+    "sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "windows": {
+    "tests": 15,
+    "passed": 11,
+    "skipped": 4,
+    "failures": 0,
+    "scope": "POSIX-specific controls require Linux",
+    "log": {
+      "path": ".tmp/ai36-c05-r01-owned-observer-windows.log",
+      "sha256": "dfbdfec51b7895d1cd7e9c686e58cfad9509bd4f58b094c38e8f18f0928b7e8b"
+    }
+  },
+  "linux": {
+    "tests": 15,
+    "passed": 15,
+    "skipped": 0,
+    "failures": 0,
+    "duration_seconds": 0.07,
+    "runtime": "VM host python3 -I -B; dedicated temporary fixture tree, no application import",
+    "log": {
+      "path": ".tmp/ai36-c05-r01-owned-observer-linux.log",
+      "sha256": "709fcbaf4b79f29dce2e3a29c1a9813cdf5e4f8db3e865bf49b5677dbebc4b22"
+    }
+  },
+  "checks": [
+    "baseline_zero",
+    "one_exact_four_field_marker",
+    "fresh_directory_and_marker",
+    "single_owner_and_uid",
+    "one_new_directory",
+    "exact_public_policy",
+    "fixed_inodes_before_after",
+    "real_linux_O_NOFOLLOW",
+    "replacement_race",
+    "ABA_pinned_FD_content",
+    "symlink_rejection",
+    "bounded_large_log",
+    "closed_output_and_private_content_exclusion",
+    "closed_config",
+    "stdin_STOP_owned_process_exit"
+  ],
+  "provider_requests": 0,
+  "application_imports": 0,
+  "runtime_mutations": 0,
+  "services_restarted": false,
+  "production_deployment": false,
+  "limitations": [
+    "Filesystem controls do not establish a native terminal proof.",
+    "Observer classifications remain textual indicators, not verified provider errors or causal evidence.",
+    "Application-image code and profile/session/modal caches remain unchanged."
+  ],
+  "auxiliary_cleanup": {
+    "status": "blocked_by_automatic_approval_review",
+    "target": "C:\\Users\\Oscar\\AppData\\Local\\Temp\\nodia-observer-offline-n81xuqk5",
+    "reason": "blocked by policy",
+    "scope": "failed-test temporary fixture containing synthetic data only",
+    "retried_by_another_path": false,
+    "blocks_primary_verification": false
+  }
+}

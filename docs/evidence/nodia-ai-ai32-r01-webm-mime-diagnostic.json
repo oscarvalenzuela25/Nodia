@@ -1,0 +1,10 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "installed_linux_mimetypes_used_by_pinned_sdk_upload",
+  "observations": {
+    "synthetic.webm": "video/webm",
+    "synthetic.weba": null
+  },
+  "provider_calls": 0,
+  "raw_provider_response_read": false
+}

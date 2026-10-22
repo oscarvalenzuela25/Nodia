@@ -1,0 +1,229 @@
+{
+  "stage": "AI-16",
+  "date": "2026-10-16",
+  "status": "implemented_verified_private_local_lab",
+  "document_approval": false,
+  "production_acceptance": false,
+  "implementation": {
+    "journal": "existing_M1_transactional_outbox",
+    "events": [
+      "run_accepted",
+      "run_changed",
+      "tool_completed",
+      "message_sealed"
+    ],
+    "delivery": "durable_bounded_polling",
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_indexes": 1,
+    "observer_cursors": "actor_session_chat_run_epoch_and_visibility_per_device",
+    "results": "exact_registered_schema_and_separate_closed_metadata_current_authority",
+    "history": "batched_message_run_refs_and_intent_loaded_activity",
+    "navigation": "verified_business_detail_property_context_or_actual_module"
+  },
+  "validation": {
+    "server": {
+      "last_full_suite": {
+        "tests": 1571,
+        "files": 159,
+        "passed": true,
+        "note": "Before final UUID historical regression/spec and terminal-reserve derivation; affected final paths reverified below"
+      },
+      "final_affected_suite": {
+        "tests": 332,
+        "files": 20,
+        "passed": true
+      },
+      "final_build": true,
+      "production_typecheck": true,
+      "lint": {
+        "errors": 0,
+        "existing_warnings": 3
+      }
+    },
+    "client": {
+      "last_full_suite": {
+        "tests": 1266,
+        "files": 198,
+        "passed": true,
+        "note": "Before final bounded UUID/presentation corrections"
+      },
+      "final_affected_suite": {
+        "tests": 67,
+        "files": 7,
+        "passed": true
+      },
+      "final_caption_component": {
+        "tests": 4,
+        "passed": true
+      },
+      "final_build": true,
+      "typecheck": true,
+      "lint_errors": 0
+    },
+    "postgres": {
+      "event_checks": 19,
+      "observation_http_checks": 29,
+      "total": 48,
+      "synthetic_only": true,
+      "old_helper_regression_reproduced_and_fixed": true,
+      "fixture_containers_remaining": 0
+    },
+    "contracts": {
+      "definitions": 127,
+      "domain_definitions": 184,
+      "structural_fixtures": 256,
+      "closed_domain_contracts": 134,
+      "coordination_routes": 30,
+      "current_ast_handlers": 195,
+      "source_hashes": 488,
+      "passed": true
+    },
+    "knowledge": {
+      "compiler_regression_checks": 53,
+      "publication_capabilities": 67,
+      "fragments": 27,
+      "excluded": 17,
+      "sources": 44,
+      "release_id": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+      "unchanged": true
+    },
+    "design": {
+      "tables_planned": 23,
+      "M1_tables": 11,
+      "M1_columns": 151,
+      "negative_design_fixtures": 16,
+      "passed": true
+    }
+  },
+  "browser": {
+    "controller": "cua_repl",
+    "synthetic": {
+      "desktop": "ES/dark",
+      "mobile": "EN/light in real iframe CSS viewport390x800; not a physical device",
+      "checks": [
+        "initial events and on-demand metadata",
+        "real zero preserved",
+        "source/date and historical warning",
+        "draft retained across observation",
+        "actual allowlisted link destination",
+        "date and warning separated after visual repair"
+      ]
+    },
+    "real": {
+      "run_id": "68cca213-69b5-457e-b1db-7852a25a5aba",
+      "connection": "persisted configured Gemini Agentic selection, unchanged",
+      "completed": true,
+      "events": 7,
+      "tool_calls": 1,
+      "mcp_rpc_messages": 7,
+      "provider_dispatches": 1,
+      "sql_comparison": true,
+      "exit_and_return_during_execution": true,
+      "return_after_navigation_no_replay": true,
+      "navigation_target_verified": "/tools/business",
+      "historical_pre_AI16_run_shows_empty_without_fabricated_events": true,
+      "keyboard_link_focus": true,
+      "business_writes": 0
+    }
+  },
+  "lab": {
+    "backup": true,
+    "added_migration": "IndexNodiaAiRunEvents1792300000000",
+    "migration_ledger": 21,
+    "services": "VM/API/worker/Gemini/PostgreSQL/Redis/existing localhost5174 and private tunnel3100 remain on",
+    "isolated_QA_server_5194": "stopped",
+    "gemini_restarted": false,
+    "dependencies_credentials_provider_config_unchanged": true,
+    "archive_sha256": "aff5fadec871bbff517ef032a4d6fb13e687de99f1d6c62ac61a559747927db1"
+  },
+  "limitations": [
+    "SSE and token deltas are not implemented; current adapters produce final answers",
+    "Per-domain resource checks have native isolation; no atomic cross-domain snapshot is promised",
+    "Permission revalidation is bounded by12 receipts but can use two transactions per registered receipt during active observation",
+    "Pre-AI16 runs have snapshots and empty journals; no historical events are reconstructed",
+    "Some domains only have module/context navigation; no fabricated record detail path",
+    "AI-15 R2 binary and full external/routing acceptance gates remain independent",
+    "Human cancellation HTTP remains declared but unimplemented; internal worker cancellation/reconciliation is observed",
+    "No new write capabilities, proposals, confirmations or general reports are enabled",
+    "Browser mobile validation used an iframe viewport in Chromium; physical device, virtual keyboard and public VPS acceptance remain separate"
+  ],
+  "next": "AI-17 drafts and immutable proposal revisions",
+  "artifacts": [
+    {
+      "file": "docs/mvp/62-nodia-ai-ai16-observation-navigation.md",
+      "bytes": 9392,
+      "sha256": "b53e464324774ebb4279e5750da9b1ff03979792be51eb1c9dbc37f267c27de4"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "bytes": 99696,
+      "sha256": "8277ecd6f6d491db77d34d11afedb8eef5681f382c04852ddc0cb32db4e427be"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-coordination-api.json",
+      "bytes": 12238,
+      "sha256": "12444931a721577c235292af201ef84021df12762c7ee21cc1d6d92299343e93"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-run/event-journal.ts",
+      "bytes": 8442,
+      "sha256": "a35600127b752f8f821d8b3038697461743a8b91de82605ffbbf706273419b74"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-observation/use-case/observe-nodia-ai-run.use-case.ts",
+      "bytes": 10188,
+      "sha256": "65e1d90b06ae012f9ef65b87dd79c9b1e0e0de98db6adf50b2c4b09995637788"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-observation/use-case/get-nodia-ai-tool-result.use-case.ts",
+      "bytes": 9212,
+      "sha256": "fe7b7c0d60b5dc8a423be8e8c653e1a51c9adf719dba47f9042c174917f7bd75"
+    },
+    {
+      "file": "nodia-server/src/migrations/1792300000000-IndexNodiaAiRunEvents.ts",
+      "bytes": 566,
+      "sha256": "dfd09ebb9f7af878cd534a52d47f06c13c10402c55327ebb14159eb5427a7af4"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/infrastructure/useObservation.ts",
+      "bytes": 6621,
+      "sha256": "9db0695cb6ea271ab3bd1519bf1e868eb768a1e0d5da3ac099a3604f728a3fe6"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ExecutionObservation/ExecutionObservation.tsx",
+      "bytes": 6738,
+      "sha256": "599d1924e31f272a1c7a3605fd34aa487f0c1ce2996f9b43ddf16dfa0a5ef3db"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai16-events-postgres.json",
+      "bytes": 4986,
+      "sha256": "eea626f9df872b90733a9c2fa66b8b37910a5fa59d6d6987ea348631322f75d4"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai16-observation-postgres.json",
+      "bytes": 3865,
+      "sha256": "35b4afe0fbf26709d04acaf3edff0b2144889c454c52f5db8143215a123fb099"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai16-live-ui-sql.json",
+      "bytes": 2074,
+      "sha256": "8f788bead71391eca1a07906388d5a831e8fc39892e2684d89c8bfc733588f01"
+    },
+    {
+      "file": "outputs/nodia-ai-ai16-desktop-es-dark.png",
+      "bytes": 58002,
+      "sha256": "88d720d4356341d24fcabb7a137bbb378073bbe2f4432b8ec833323dea2c1cf2"
+    },
+    {
+      "file": "outputs/nodia-ai-ai16-mobile-en-light.png",
+      "bytes": 45243,
+      "sha256": "9bb75099906d5a951f5fb7ecd05fc5fd95ee4f408a689f549367e7779d3257ae"
+    },
+    {
+      "file": "outputs/nodia-ai-ai16-real-mcp-result.png",
+      "bytes": 34219,
+      "sha256": "c50b8f11d5ab1258c3f75ba2beb9b5a3ece7726f9eadabaf49df6cb7ae3cb350"
+    }
+  ]
+}

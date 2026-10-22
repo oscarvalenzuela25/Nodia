@@ -6,6 +6,12 @@ import {
 import { StringDecoder } from 'node:string_decoder';
 import { EventEmitter } from 'node:events';
 import {
+  codexProcessIdentity,
+  stopCodexGroup,
+  assertCodexGroupEmpty,
+  type CodexProcessIdentity,
+} from './codex-process-ownership.js';
+import {
   CODEX_SETTINGS,
   CODEX_PROVIDER,
   codexError,
@@ -30,13 +36,24 @@ export class CodexRpc extends EventEmitter {
   get ownedPid() {
     return this.child.pid ?? null;
   }
+  releaseStartGate() {
+    const gate = this.child.stdio[3];
+    if (gate && 'end' in gate) gate.end('nodia-start\n');
+  }
   get alive() {
     return !this.closed;
   }
   private readonly exited: Promise<void>;
   private readonly memoryTimer: NodeJS.Timeout;
   private measuring = false;
-  constructor(executable: string, cwd: string, profile: string, home: string) {
+  private readonly processIdentity: Promise<CodexProcessIdentity | null>;
+  constructor(
+    executable: string,
+    cwd: string,
+    profile: string,
+    home: string,
+    gated = false,
+  ) {
     super();
     const args = [
       'app-server',
@@ -47,21 +64,49 @@ export class CodexRpc extends EventEmitter {
         `${key}=${toml(value)}`,
       ]),
     ];
-    this.child = spawn(executable, args, {
-      cwd,
-      shell: false,
-      detached: process.platform !== 'win32',
-      env: {
-        CODEX_HOME: profile,
-        HOME: home,
-        PATH: '/usr/bin:/bin',
-        LANG: 'en_US.UTF-8',
-        ...(process.platform === 'win32' && process.env.SystemRoot
-          ? { SystemRoot: process.env.SystemRoot }
-          : {}),
+    const gate = process.platform === 'linux' && gated;
+    this.child = spawn(
+      gate ? '/bin/sh' : executable,
+      gate
+        ? [
+            '-c',
+            'IFS= read -r permit <&3 && [ "$permit" = nodia-start ] && exec 3<&- && exec "$@"',
+            'nodia-codex-gate',
+            executable,
+            ...args,
+          ]
+        : args,
+      {
+        cwd,
+        shell: false,
+        detached: process.platform !== 'win32',
+        env: {
+          CODEX_HOME: profile,
+          HOME: home,
+          PATH: '/usr/bin:/bin',
+          LANG: 'en_US.UTF-8',
+          // Linux service accounts need their private session bus to use the OS
+          // keyring. Keep the allowlist explicit; never inherit API credentials.
+          ...(process.platform === 'linux' &&
+          process.env.DBUS_SESSION_BUS_ADDRESS
+            ? { DBUS_SESSION_BUS_ADDRESS: process.env.DBUS_SESSION_BUS_ADDRESS }
+            : {}),
+          ...(process.platform === 'linux' && process.env.XDG_RUNTIME_DIR
+            ? { XDG_RUNTIME_DIR: process.env.XDG_RUNTIME_DIR }
+            : {}),
+          ...(process.platform === 'win32' && process.env.SystemRoot
+            ? { SystemRoot: process.env.SystemRoot }
+            : {}),
+        },
+        stdio: gate
+          ? ['pipe', 'pipe', 'pipe', 'pipe']
+          : ['pipe', 'pipe', 'pipe'],
       },
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
+    );
+    this.processIdentity =
+      process.platform === 'linux' && this.child.pid
+        ? codexProcessIdentity(this.child.pid).catch(() => null)
+        : Promise.resolve(null);
     this.exited = new Promise((resolve) =>
       this.child.once('close', () => {
         this.fail();
@@ -92,7 +137,7 @@ export class CodexRpc extends EventEmitter {
           const rss = output.trim();
           if (error || !/^\d+$/.test(rss) || Number(rss) > 512 * 1024) {
             this.fail(codexError('codex_resource_limit'));
-            void this.close();
+            void this.close().catch(() => undefined);
           }
         },
       );
@@ -113,7 +158,7 @@ export class CodexRpc extends EventEmitter {
           throw codexError('codex_protocol_invalid');
       } catch {
         this.fail(codexError('codex_protocol_invalid', 502));
-        void this.close();
+        void this.close().catch(() => undefined);
       }
     });
   }
@@ -213,6 +258,26 @@ export class CodexRpc extends EventEmitter {
   }
   async close() {
     this.fail();
+    if (process.platform === 'linux' && this.child.pid) {
+      const identity = await this.processIdentity;
+      if (identity) await stopCodexGroup(identity);
+      else await assertCodexGroupEmpty(this.child.pid);
+      let timer: NodeJS.Timeout | undefined;
+      try {
+        await Promise.race([
+          this.exited,
+          new Promise<never>((_, reject) => {
+            timer = setTimeout(
+              () => reject(codexError('codex_login_unknown', 409)),
+              5000,
+            );
+          }),
+        ]);
+      } finally {
+        clearTimeout(timer);
+      }
+      return;
+    }
     const signal = (name: NodeJS.Signals) => {
       try {
         if (process.platform !== 'win32' && this.child.pid)

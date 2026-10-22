@@ -1,0 +1,46 @@
+{
+  "task": "AI-15",
+  "scope": "native_gemini_observations_without_generation",
+  "provider_inferences": 0,
+  "configured_database_modified": false,
+  "native_requests": [
+    {
+      "path": "/engines/status",
+      "status": 200,
+      "elapsed_ms": 6330
+    },
+    {
+      "path": "/web/models",
+      "status": 200,
+      "elapsed_ms": 4454
+    },
+    {
+      "path": "/agentic/models",
+      "status": 200,
+      "elapsed_ms": 2
+    }
+  ],
+  "engines": {
+    "web": {
+      "available": false,
+      "authenticated": false,
+      "model_count": null
+    },
+    "agentic": {
+      "available": true,
+      "authenticated": true,
+      "model_count": 6
+    }
+  },
+  "web": {
+    "available": null,
+    "authenticated": true,
+    "model_count": 4
+  },
+  "agentic": {
+    "available": true,
+    "authenticated": true,
+    "model_count": 6
+  },
+  "configured_url_trailing_slash_removed_in_driver": true
+}

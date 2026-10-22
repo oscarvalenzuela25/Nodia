@@ -1,0 +1,20 @@
+{
+  "schema": "ai38-attachment-nginx-observer-v1",
+  "action": "begin",
+  "status": "cursor_created_no_UI_acceptance",
+  "began_at_utc": "2026-10-20T23:04:25.629427+00:00",
+  "device": 2050,
+  "inode": 3673396,
+  "offset": 113125,
+  "acceptance_conversation_sha256": "7338b707973851b744a392a1b492d2583d465219a1251089af8290cd335b4e3b",
+  "start_anchor_bytes": 4096,
+  "cursor_sha256": "456edc01ffbb7b2a067627d53b0eeb11cab1b4c7e4fd3b0e9e96a82dc8b0966b",
+  "raw_log_saved": false,
+  "frozen_base_sha256": "baa090cf977de918bec1d53026a192bee9a48bd810e1ae3e80f25a3cd5ada589",
+  "source_sha256": "8a8d48280e33d4e831bd1a7c7476ba2d248c94ef2adb3b86b246189e1598adc7",
+  "known_attachment_ids": [],
+  "body_or_query_or_tokens_read": false,
+  "limits": [
+    "reserve_POST_cannot_be_attributed_to_chat_from_combined_log_without_exclusive_UI_window"
+  ]
+}

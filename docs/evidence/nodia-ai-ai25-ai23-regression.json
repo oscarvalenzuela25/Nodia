@@ -1,0 +1,91 @@
+{
+  "observed_at_utc": "2026-10-17T17:39:39.689343+00:00",
+  "stage_directory": "/opt/nodia/verification/ai25-20261017",
+  "compiled_production_archive_sha256": "d36ac0b2a9aeb99d93027cf25c1895db2745fbc7d371c5024e8896559e6d720e",
+  "knowledge_pin_sha256": "fe96f76311b45096287f600108c242477146150653c4720687a11f6de230834f",
+  "scope": "Synthetic disposable PostgreSQL only; no configured database mutation, provider inference, MCP write publication or Gemini acceptance.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "status": "passed",
+  "command": "node test/nodia-ai-ai23.integration.mjs",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai23.integration.mjs",
+      "sha256": "bc9c3eea009703b99698f83369c70aff5b705d5661ef0aae6cda24c10fbf8ad8"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai23-worker.fixture.mjs",
+      "sha256": "414944cb013baa7fec1a7ef8030f8c4c69434603b4ddefefe7e05d885d4e06ab"
+    }
+  ],
+  "result": {
+    "stage": "AI-23",
+    "status": "passed",
+    "checks": 47,
+    "results": [
+      "AI23 migration down and up restore exactly both new nullable columns on an empty workflow journal",
+      "future supplier preview has a registered preceding ID binding without a fabricated ID",
+      "workflow supersedes its individual proposal atomically",
+      "claimed drafts and an old human challenge cannot admit the individual intention again",
+      "first local commit preserves supplier receipt and leaves only the contact queued",
+      "typed first-bind commits actual supplier identity before its native contact effect",
+      "PostgreSQL rejects rewriting a committed first-bind payload",
+      "PostgreSQL rejects rewriting the hash of an existing first-bind witness",
+      "schema rollback refuses to discard live first-bind payloads",
+      "human material review remaps all dependency step identities under a new exact hash",
+      "reviewed dependent workflow executes the updated source and one contact",
+      "stable sequential execution of 2 independent native operations",
+      "stable sequential execution of 3 independent native operations",
+      "stable sequential execution of 4 independent native operations",
+      "stable sequential execution of 5 independent native operations",
+      "stable sequential execution of 6 independent native operations",
+      "stable sequential execution of 7 independent native operations",
+      "stable sequential execution of 8 independent native operations",
+      "rejects duplicate drafts before claiming any draft",
+      "rejects self reference before claiming any draft",
+      "rejects future reference before claiming any draft",
+      "rejects cross chat reference before claiming any draft",
+      "rejects cross chat draft before claiming any draft",
+      "rejects unregistered output before claiming any draft",
+      "rejects unregistered target before claiming any draft",
+      "rejects duplicate binding target before claiming any draft",
+      "rejects unregistered coordinator catalog before claiming any draft",
+      "invalid dependency attempts leave both original drafts unchanged",
+      "concurrent individual confirmation and workflow claim have one winner and one supplier",
+      "SQL contact insert failure keeps the supplier committed and exposes resumable partial state",
+      "duplicate resume keeps native request key supplier ID and immutable first-bind while committing one contact",
+      "material pending correction creates a new proposal and exact hash linked to previous execution",
+      "continuation execution retains the same immutable prior execution lineage as its confirmed proposal",
+      "new human confirmation executes only corrected pending contact and leaves old supplier unchanged",
+      "cancellation between commits keeps supplier receipt and prevents all remaining effects",
+      "material supplier change before first-bind rejects pending contact without guessing or replay",
+      "non-resumable material failure can cancel its pending suffix while preserving the committed supplier receipt",
+      "new material confirmation after supplier change refreshes its snapshot and creates only the remaining contact against the verified supplier ID",
+      "one coordinator release preserves native financial and business contract hashes and receipts",
+      "real worker death after first commit keeps supplier and queues only second step",
+      "death after durable first-bind and before native contact effect permits exact explicit recovery",
+      "process recovery reuses first-bind payload hash and native intent key without another supplier",
+      "lost second-effect commit acknowledgement recovers both receipts without replay",
+      "chat expiry purges completed original and continuation journals while keeping their native supplier and corrected contact",
+      "expiry clears content-bearing first-bind payloads even for a running step before its native effect",
+      "expired first-bound execution is reconciled and erased without replaying supplier or contact",
+      "all workflow verification avoided provider inference"
+    ],
+    "provider_calls": 0,
+    "disposable_postgresql": true,
+    "human_confirmation_http_contract": true,
+    "synthetic_authenticated_fixture": true,
+    "actual_provider": false,
+    "mcp_publication": false
+  }
+}

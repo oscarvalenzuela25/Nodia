@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import {
@@ -15,8 +16,8 @@ export class GetRentalTurnoverUseCase {
     private readonly transactions: RentalTransactionService,
     private readonly turnovers: RentalTurnoverService,
   ) {}
-  execute(actorId: string, propertyId: string, id: string) {
-    return this.transactions.read(actorId, propertyId, async (ctx) => {
+  async execute(actor: ActorReference, propertyId: string, id: string) {
+    return this.transactions.read(actor, propertyId, async (ctx) => {
       const row = await this.turnovers.find(ctx.manager, propertyId, id);
       const incoming = calendarStay(
         await this.turnovers.incoming(

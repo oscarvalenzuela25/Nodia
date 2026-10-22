@@ -31,6 +31,8 @@ Se implementa la opción B para Gemini. `.env` sirve como credencial inicial o c
 
 ## Referencias
 
+- Evolución autorizada el 2026-10-13: [ADR-030](ADR-030-gemini-web-login-viewer.md) añade un visor HTTP para iniciar sesión desde Nodia cuando el navegador se ejecuta en VM/VPS, sin cambiar el almacenamiento privado ni introducir fallback.
+
 - `nodia-gemini-microservice/README.md`
 - `nodia-server/src/common/ai/gemini.service.ts`
 - Evolución propuesta el 2026-09-25: [ADR-006](ADR-006-ai-provider-configuration.md) incorpora un modo Gemini API elegido manualmente en BD. No cambia el hecho de que el adaptador Gemini Web actual no hace fallback automático a la API.

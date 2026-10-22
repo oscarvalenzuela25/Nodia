@@ -1,24 +1,25 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CreateRoleUseCase } from './create-role.use-case.js';
-import type { RoleService } from '../role.service.js';
+import type { SaveRoleUseCase } from './save-role.use-case.js';
 import type { CreateRoleDto } from '../dto/create-role.dto.js';
 
 describe('CreateRoleUseCase', () => {
   let useCase: CreateRoleUseCase;
-  let roleServiceMock: Partial<RoleService>;
+  let roleServiceMock: Partial<SaveRoleUseCase>;
 
   beforeEach(() => {
     roleServiceMock = {
-      create: vi.fn(),
+      execute: vi.fn(),
     };
-    useCase = new CreateRoleUseCase(roleServiceMock as RoleService);
+    useCase = new CreateRoleUseCase(roleServiceMock as SaveRoleUseCase);
   });
 
   it('should be defined', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should call roleService.create with the provided dto and return the created role', async () => {
+  it('should call roleService.execute with the provided dto and return the created role', async () => {
     const dto: CreateRoleDto = {
       key: 'manager',
       is_active: true,
@@ -33,16 +34,20 @@ describe('CreateRoleUseCase', () => {
       actions: [],
     };
 
-    vi.mocked(roleServiceMock.create!).mockResolvedValue(createdRole as any);
+    vi.mocked(roleServiceMock.execute!).mockResolvedValue(createdRole as any);
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(dto, actorFixture('1'));
 
-    expect(roleServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(roleServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(roleServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.execute).toHaveBeenCalledWith(
+      undefined,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(createdRole);
   });
 
-  it('should call roleService.create with actions array and return role with actions', async () => {
+  it('should call roleService.execute with actions array and return role with actions', async () => {
     const dto: CreateRoleDto = {
       key: 'admin',
       is_active: true,
@@ -56,27 +61,29 @@ describe('CreateRoleUseCase', () => {
       created_at: new Date(),
       updated_at: new Date(),
       actions: [
-        { id: '10', key: 'users.create', is_active: true },
+        { id: '10', key: 'users.execute', is_active: true },
         { id: '20', key: 'users.read', is_active: true },
       ],
     };
 
-    vi.mocked(roleServiceMock.create!).mockResolvedValue(createdRole as any);
+    vi.mocked(roleServiceMock.execute!).mockResolvedValue(createdRole as any);
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(dto, actorFixture('1'));
 
-    expect(roleServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(roleServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(roleServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.execute).toHaveBeenCalledWith(
+      undefined,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(createdRole);
   });
 
-  it('should call roleService.create with translates and return role with translates', async () => {
+  it('should call roleService.execute with translates and return role with translates', async () => {
     const dto: CreateRoleDto = {
       key: 'supervisor',
       is_active: true,
-      translates: [
-        { key: 'key', es: 'Supervisor', en: 'Supervisor' },
-      ],
+      translates: [{ key: 'key', es: 'Supervisor', en: 'Supervisor' }],
     };
 
     const createdRole = {
@@ -86,18 +93,19 @@ describe('CreateRoleUseCase', () => {
       created_at: new Date(),
       updated_at: new Date(),
       actions: [],
-      translates: [
-        { key: 'key', es: 'Supervisor', en: 'Supervisor' },
-      ],
+      translates: [{ key: 'key', es: 'Supervisor', en: 'Supervisor' }],
     };
 
-    vi.mocked(roleServiceMock.create!).mockResolvedValue(createdRole as any);
+    vi.mocked(roleServiceMock.execute!).mockResolvedValue(createdRole as any);
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(dto, actorFixture('1'));
 
-    expect(roleServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(roleServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(roleServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.execute).toHaveBeenCalledWith(
+      undefined,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(createdRole);
   });
 });
-

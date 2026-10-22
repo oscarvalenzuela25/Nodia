@@ -14,6 +14,10 @@ Guia de contexto para agentes IA que trabajen en este repositorio.
 - Antes de entregar, probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica. Entregar evidencia de los checks ejecutados, indicando con precisión qué se comprobó realmente y qué sigue pendiente (distinguiendo lo implementado de dependencias de Server, Gemini o staging). Un cambio de UI no demuestra autorización HTTP, atomicidad ni operación real del proveedor.
 - Conservar las reglas de Nodia y la prioridad de sus skills locales frente a metodología de Superpowers/plugins globales. Esta skill complementa las convenciones existentes; no autoriza cambiar stack, ampliar el alcance ni imponer nuevas aprobaciones.
 
+## Contexto de productos para NodiaAI
+
+Al especificar o ampliar funciones de producto, aplicar el [estándar de contexto NodiaAI](../docs/nodia-ai/knowledge/README.md) y la regla de [AGENTS raíz](../AGENTS.md). Mantener las fichas al cambiar comportamiento/interpretación de datos y contrastar contratos con Server. Para ajustes exclusivamente visuales, registrar la evaluación de impacto indicada en el estándar sin inventar herramientas nuevas.
+
 ## Contexto General
 
 - Proyecto: frontend template con React + TypeScript + Vite.

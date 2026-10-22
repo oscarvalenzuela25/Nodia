@@ -1,0 +1,141 @@
+{
+  "stage": "AI-13",
+  "date": "2026-10-16",
+  "status": "implemented_verified_local_not_deployed_to_configured_api",
+  "authorization": "User requested AI-13 implementation and parallel subagents; no business writes or provider inference in this stage.",
+  "client": {
+    "full_suite": {
+      "command": "npm run test -- --maxWorkers=4",
+      "passed": 1248,
+      "files": 196,
+      "duration_seconds": 246.86
+    },
+    "final_focused": {
+      "command": "npm run test -- src/test/modules/nodiaAi src/test/routes/NodiaAIRoute.test.tsx",
+      "passed": 49,
+      "files": 5
+    },
+    "typecheck": "passed (also executed by final build)",
+    "lint": "passed, no errors or warnings",
+    "build": "passed; existing chunk-size and plugin timing notices remain"
+  },
+  "server": {
+    "full_suite": {
+      "command": "npm run test -- --maxWorkers=4",
+      "passed": 1266,
+      "files": 144
+    },
+    "focused_use_cases": {
+      "passed": 34,
+      "files": 3
+    },
+    "integration": {
+      "command": "npm run test:nodia-ai:page",
+      "scope": "compiled Nest HTTP, disposable PostgreSQL, synthetic adapter",
+      "checks": 21,
+      "passed": 21
+    },
+    "build": "passed",
+    "lint": "no errors; three pre-existing warnings"
+  },
+  "contracts": {
+    "command": "npm run test:nodia-ai:contracts",
+    "compiled_schemas": 125,
+    "structural_fixtures": 222,
+    "source_hashes": 269,
+    "modules": 45,
+    "controllers": 36,
+    "handlers": 187,
+    "http_routes": 306,
+    "coordination_routes": 28,
+    "coordination_implemented": 10
+  },
+  "knowledge": {
+    "command": "npm run knowledge:check",
+    "sources": 43,
+    "excluded_drafts": 43,
+    "published_documents": 0,
+    "published_fragments": 0,
+    "release_id": "262f513ec28106d304a1c5da13e1ad1b7111b49fa67e0942faa4f841de51d90a",
+    "approval": "unchanged, null"
+  },
+  "browser": {
+    "report": "docs/evidence/nodia-ai-ai13-browser-qa.json",
+    "scope": "real page/drawer/theme/PageContent/router/query with synthetic Axios adapter",
+    "responsive_cases": 28,
+    "additional_scenarios": 7,
+    "engine": "Chrome 155.0.8059.80",
+    "page_errors": 0,
+    "actual_network_api_requests": 0,
+    "xs_reading_region_css_px": 360,
+    "xs_cases": 12,
+    "synthetic_preview": "http://127.0.0.1:5194/src/test/manual/nodia-ai/index.html?lang=es&theme=dark"
+  },
+  "regressions": [
+    "URL restoration performs reads without message replay",
+    "exact dynamic instance/mode/model/effort eligibility; no model fallback",
+    "Web opt-in routing only to verified Agentic on same connection; API deferred",
+    "immutable conversation and actor/session bound to each mutation across browser navigation",
+    "configuration sequence stops when active chat changes",
+    "uncertain admission preserves original UUID and payload across browser history navigation",
+    "known revision conflict preserves draft and refreshes revision",
+    "selection saved then routing failed preserves committed selection and retries only routing",
+    "202 proof seeds admitted run before status refetch; later seal appears without extra POST",
+    "unknown blocks new submissions; manual status recovery does not replay generation",
+    "latest bounded messages with reverse cursor, bigint precision and permission checks",
+    "refetch failures keep data, local retry, editable draft and translated feedback",
+    "catalog non-generative, secret-free, module-only authorization with post-observation reauthorization",
+    "catalog response byte/page limits explicit; no silently truncated models"
+  ],
+  "deferred": [
+    "public events/deltas in AI-16 (current_run polling implemented)",
+    "business tools and capability registry AI-14+",
+    "new release deployment/migrations against configured lab API",
+    "Gemini inference from the new UI and full authenticated shell end-to-end acceptance",
+    "physical phone/virtual keyboard and other browser engines",
+    "attachments/voice/API/memory/compaction and remaining planned stages"
+  ],
+  "service_state": {
+    "qa": "127.0.0.1:5194 listening, synthetic only",
+    "existing_client": "127.0.0.1:5174 listening",
+    "existing_tunnel": "127.0.0.1:3100 listening",
+    "vm_changes": "none in AI-13"
+  },
+  "source_files": [
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx",
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/styles.ts",
+    "nodia-client/src/modules/nodiaAi/infrastructure/types.ts",
+    "nodia-client/src/modules/nodiaAi/infrastructure/schemas.ts",
+    "nodia-client/src/modules/nodiaAi/infrastructure/services.ts",
+    "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts",
+    "nodia-client/src/translate/es/nodiaAi.json",
+    "nodia-client/src/translate/en/nodiaAi.json",
+    "nodia-server/src/nodia-ai-conversation/nodia-ai-connections.controller.ts",
+    "nodia-server/src/nodia-ai-conversation/nodia-ai-connections.service.ts",
+    "nodia-server/src/nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case.ts",
+    "nodia-server/src/nodia-ai-conversation/use-case/observe-nodia-ai-eligibility.use-case.ts",
+    "nodia-server/src/nodia-ai-conversation/use-case/list-nodia-ai-messages.use-case.ts",
+    "nodia-server/test/nodia-ai-ai13.integration.mjs"
+  ],
+  "verified_at_host_utc": "2026-10-16T03:36:57.2743599Z",
+  "source_sha256": {
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx": "5a60001e9d979f28170d180790c0d62904d82a8208016e30e85d80c2ef38d6eb",
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/styles.ts": "2d58f6e2796fce068d22f189b2e25f10d57811da69ce555add4e784c98240299",
+    "nodia-server/src/nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case.ts": "8af9dc26bcf2dcf27f8fd1e2a43e14b5c3995d9eab3406e002948a84732d2e4b",
+    "nodia-server/src/nodia-ai-conversation/use-case/observe-nodia-ai-eligibility.use-case.ts": "962ad282f0ab0c4e0360cfbe9090a9d172bb564c41a5b8efaa938781d113b6ac",
+    "nodia-server/src/nodia-ai-conversation/nodia-ai-connections.service.ts": "47d3dfa0058c140f3d875c71671ce5352e3e323219056e88f4e67b2c1471e18f",
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx": "5c6f78bd7282fe6e9023a0e455433b41f5603394675eb346e6dde17a1de5fb60",
+    "nodia-client/src/translate/en/nodiaAi.json": "407e24aa00e7fb347a128423675c2cb3c817660a80d71c695d0d6796a49c829e",
+    "nodia-server/src/nodia-ai-conversation/nodia-ai-connections.controller.ts": "b5409941900d841229065f618cc854857fae3ef14392ce956c66d8b969f26eb8",
+    "nodia-server/src/nodia-ai-conversation/use-case/list-nodia-ai-messages.use-case.ts": "d959dbef060b7fee3a25f14a1277e67429c98cd33e7d6e2f1c90495448b9fa3d",
+    "nodia-server/test/nodia-ai-ai13.integration.mjs": "6b50883a1b5b65a83321bf8b781297c58be75d790d5cfd4f468f8b7317f27e52",
+    "nodia-client/src/translate/es/nodiaAi.json": "fc4bc2ddc95520ce25361a8896d35671f6a9a3401c8949cdad6b00788c16c68e",
+    "nodia-client/src/modules/nodiaAi/infrastructure/services.ts": "12f6483ee9d1979dd5bf1837ad4388b6c836726048f025e47b7106efe06ecf58",
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts": "5ec808ba5a7914f0b0c2f85c178ee98278b2215ab0dc47af7b22c6ccbd8a37a5",
+    "nodia-client/src/modules/nodiaAi/infrastructure/types.ts": "2ffcedf843a3d0e5fe860a5c1006ece9160a83acfab56ea116245107a0e01caf",
+    "nodia-client/src/modules/nodiaAi/infrastructure/schemas.ts": "9e5db7368e33998ab73f3a96717d23e8078919f40ab4803d21779e13f45a3574",
+    "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts": "bb41fee05158fd393bd1af7b66e05998442d7493c2144e049c96c6b49aa52318"
+  }
+}

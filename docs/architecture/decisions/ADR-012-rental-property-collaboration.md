@@ -5,6 +5,8 @@
 
 ## Contexto
 
+Actualización de producto del 2026-10-14: durante la [entrevista NodiaAI](../../mvp/38-nodia-ai-research-and-v1-plan.md), el usuario autorizó expresamente acceso transversal de `super_admin` a lecturas y operaciones de Reservas. Se cumple así la condición de decisión explícita exigida históricamente abajo. Casa sigue siendo ámbito de asociación y colaboración para los demás usuarios; propiedad e integridad no cambian. [Contrato28](../../mvp/28-rental-reservations-contracts.md) reabre acceso con implementación pendiente; evidencia previa no acredita el privilegio nuevo. El estado del ADR completo se conserva.
+
 El usuario confirmó una herramienta de reservas para una casa completa, cobro por noches en CLP, pagos y gastos, con colaboradores agregados por el propietario para administrar como en Business. Cambiar más adelante el propietario de todos los registros desde usuario individual a casa compartida implicaría migrar relaciones, consultas, autorización y caché.
 
 Business utiliza `businesses` y `business_collaborators`, con propietario, usuario, `position`, `action_ids` y estado. Su experiencia es una referencia; no se ha solicitado convertir una casa en Business ni extender a Reservas el acceso global confirmado para productos/facturas/archivos. Finanzas personales pertenece a usuarios y tiene reglas distintas de fechas/estados; reutilizar sus movimientos como datos compartidos de Reservas mezclaría ámbitos y reconocimiento de caja.

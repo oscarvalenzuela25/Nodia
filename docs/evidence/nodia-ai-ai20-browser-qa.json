@@ -1,0 +1,38 @@
+{
+  "stage": "AI-20",
+  "scope": "synthetic_transport_browser_not_database_or_Gemini",
+  "verified_at_utc": "2026-10-17T05:20:43.306Z",
+  "desktop": {
+    "height": 892,
+    "scrollWidth": 1050,
+    "width": 1050,
+    "language": "es",
+    "theme": "dark",
+    "resume_explicit": true,
+    "receipt_bigint": "9007199254740993",
+    "refresh_read_only": true,
+    "keyboard_tab_to_composer": true
+  },
+  "mobile": {
+    "width": 390,
+    "height": 844,
+    "language": "en",
+    "theme": "light",
+    "scrollWidth": 380,
+    "cancel_explicit": true,
+    "terminal_status": "cancelled",
+    "no_receipt": true,
+    "viewport_restored": true
+  },
+  "errors_after_final_fix": [],
+  "initial_finding": "Disabled TanStack observer lacked queryFn; fixed with shared detail transport and rechecked",
+  "screenshots": [
+    "docs/evidence/nodia-ai-ai20/desktop-es-completed.png",
+    "docs/evidence/nodia-ai-ai20/mobile-en-cancelled.png"
+  ],
+  "limitations": [
+    "Synthetic HTTP transport only",
+    "No physical phone or third-party inference",
+    "Native financial effect verified separately in SQL integration"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "stage": "AI-36",
+  "scope": "pure_native_context_measurement_synthetic_catalog",
+  "status": "passed",
+  "native_image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "payload_sha256": "33cc0f5678767eb1090e2f4f1f616d24fd615472ca99e65983aa2d0ab62926d5",
+  "payload_source_remote": "/opt/nodia/verification/ai36-regressions-attempt03/nodia-server/.tmp/ai36-full-catalog-context.json",
+  "payload_source_local": ".tmp/ai36-native-budget-synthetic-input.json",
+  "source_sha256": "33cc0f5678767eb1090e2f4f1f616d24fd615472ca99e65983aa2d0ab62926d5",
+  "extractor_script_path": "docs/evidence/scripts/nodia-ai-ai36-integration-native-budget.py",
+  "extractor_script_sha256": "66c99959ac25c9a6ded58a63e86a8a2b06c25cffc86d98986817aa73f0f9abc4",
+  "measurement": {
+    "measurement_contract_version": "nodia-ai-context-budget/1",
+    "measurement_scope": "initial_native_prompt",
+    "measurement_kind": "exact",
+    "canonical_utf8_bytes": 2455,
+    "catalog_utf8_bytes": 106829,
+    "overhead_utf8_bytes": 490,
+    "total_utf8_bytes": 109774,
+    "max_utf8_bytes": 262144,
+    "model_context_tokens": null,
+    "first_mcp_listing_upper_bound_utf8_bytes": 109953
+  },
+  "tool_count": 74,
+  "initial_and_first_listing_utf8_bytes": 219727,
+  "within_budget": true,
+  "network": "none",
+  "read_only_filesystem": true,
+  "live_native_container_used": false,
+  "profiles_or_credentials_mounted": false,
+  "provider_generations": 0,
+  "provider_metadata_requests": 0
+}

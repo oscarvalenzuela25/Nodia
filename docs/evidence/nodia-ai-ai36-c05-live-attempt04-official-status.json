@@ -1,0 +1,45 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "official_agentic_status_non_generative_safe_projection",
+  "observed_at_utc": "2026-10-19T17:36:58.686Z",
+  "http_status": 200,
+  "elapsed_ms": 5949.056438,
+  "available": true,
+  "has_active_session": true,
+  "reason": null,
+  "quota_source": "agentic_cli",
+  "quota_observed_at": "2026-10-19T17:36:58.680Z",
+  "quota_buckets": [
+    {
+      "bucket_id_sha256": "327aac494b3e6137acc457eae01267a01823b4290d3e447e84bc80492395d52d",
+      "remaining_fraction": 0.9716536998748779,
+      "reset_at": "2026-10-23T23:09:51.000Z",
+      "applies_to_selected_model": null
+    },
+    {
+      "bucket_id_sha256": "bc6fc1a63fd006fe43018ba71486735d785d10bffcf11dc0314a8134de3738f3",
+      "remaining_fraction": 0.9851544499397278,
+      "reset_at": "2026-10-19T22:21:41.000Z",
+      "applies_to_selected_model": null
+    },
+    {
+      "bucket_id_sha256": "6c3abe97319bc4ceb7755c465d0687b93e7df173b2a827f928fa6d6aad33d784",
+      "remaining_fraction": 1,
+      "reset_at": "2026-10-26T17:36:56.000Z",
+      "applies_to_selected_model": null
+    },
+    {
+      "bucket_id_sha256": "a9b2ea36ffafab8fbe2b5214501eb2fe2286057e70ebccddf2bfec89a80d30c9",
+      "remaining_fraction": 1,
+      "reset_at": "2026-10-19T22:36:56.000Z",
+      "applies_to_selected_model": null
+    }
+  ],
+  "model_bucket_mapping": "not_provided_by_this_status_contract",
+  "provider_generations": 0,
+  "native_metadata_requests": 1,
+  "raw_private_body_included": false,
+  "services_restarted": false,
+  "configured_SQL_writes": 0,
+  "source_sha256": "63f3315fcd98ccb2f065f5802daee4108868b284abb4241fa37b6a122819e039"
+}

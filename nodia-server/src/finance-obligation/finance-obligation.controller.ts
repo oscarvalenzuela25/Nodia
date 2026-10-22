@@ -1,3 +1,5 @@
+import { actorReference } from '../authorization/authority-transaction.js';
+import { FinanceOwnerQueryDto } from '../finance-common/dto/finance-owner-query.dto.js';
 import { DeleteFinanceObligationUseCase } from './use-case/delete-finance-obligation.use-case.js';
 import {
   Body,
@@ -66,21 +68,38 @@ export class FinanceObligationController {
     summary: 'List personal loans and debts with exact remaining balances',
   })
   list(@Req() request: AuthRequest, @Query() query: FinanceQueryDto) {
-    return this.getObligations.execute(request.auth.user.id, query);
+    return this.getObligations.execute(
+      { ...actorReference(request.auth), ownerId: query.owner_id },
+      query,
+    );
   }
   @Get(':id')
   @ApiOkResponse({ schema: FINANCE_OBLIGATION_SCHEMA })
   @ApiOperation({ summary: 'Get an owned obligation and its initial movement' })
-  findOne(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.getObligation.execute(request.auth.user.id, params.id);
+  findOne(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.getObligation.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
   @Post()
   @ApiCreatedResponse({ schema: FINANCE_OBLIGATION_SCHEMA })
   @ApiOperation({
     summary: 'Atomically create a loan or debt and its initial movement',
   })
-  create(@Req() request: AuthRequest, @Body() dto: CreateFinanceObligationDto) {
-    return this.createObligation.execute(request.auth.user.id, dto);
+  create(
+    @Req() request: AuthRequest,
+    @Body() dto: CreateFinanceObligationDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.createObligation.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      dto,
+    );
   }
   @Put(':id')
   @ApiOkResponse({ schema: FINANCE_OBLIGATION_SCHEMA })
@@ -92,8 +111,13 @@ export class FinanceObligationController {
     @Req() request: AuthRequest,
     @Param() params: FinanceIdDto,
     @Body() dto: UpdateFinanceObligationDto,
+    @Query() owner: FinanceOwnerQueryDto,
   ) {
-    return this.updateObligation.execute(request.auth.user.id, params.id, dto);
+    return this.updateObligation.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+      dto,
+    );
   }
   @Delete(':id')
   @HttpCode(204)
@@ -102,7 +126,14 @@ export class FinanceObligationController {
       'Delete an owned personal finance record with association safeguards',
   })
   @ApiNoContentResponse({ description: 'Record deleted atomically.' })
-  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.deleteObligation.execute(request.auth.user.id, params.id);
+  remove(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.deleteObligation.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
 }

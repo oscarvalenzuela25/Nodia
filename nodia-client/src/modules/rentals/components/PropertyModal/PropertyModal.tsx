@@ -1,3 +1,6 @@
+import UserScopeSelect from "../../../../components/UserScopeSelect";
+import useAuthStore from "../../../../store/authStore";
+import useGeneralSettingsStore from "../../../../store/generalSettings/generalSettingsStore";
 import { useId } from "react";
 import { Alert, Button } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
@@ -37,6 +40,10 @@ function PropertyFormModal({
 }: PropertyModalProps) {
   const { t } = useTranslation();
   const formId = useId();
+  const actorId = useAuthStore((state) => state.user?.id);
+  const isSuperAdmin = useGeneralSettingsStore((state) =>
+    state.roles.includes("super_admin"),
+  );
   const mutation = useRentalMutation(initialData?.id);
   const globalBusy = useRentalBusy(initialData?.id);
   const authorized =
@@ -49,6 +56,7 @@ function PropertyFormModal({
     resolver: zodResolver(propertySchema),
     mode: "onChange",
     defaultValues: {
+      owner_id: initialData ? undefined : isSuperAdmin ? actorId : undefined,
       name: initialData?.name ?? "",
       location: initialData?.location ?? "",
       max_guests: initialData ? String(initialData.max_guests) : "",
@@ -141,6 +149,20 @@ function PropertyFormModal({
           if (!disabled) return submit(values);
         })}
       >
+        {!initialData && isSuperAdmin && (
+          <Controller
+            name="owner_id"
+            control={control}
+            render={({ field }) => (
+              <UserScopeSelect
+                activeOnly
+                value={field.value ?? actorId ?? ""}
+                onChange={field.onChange}
+                disabled={disabled}
+              />
+            )}
+          />
+        )}
         {(
           [
             "name",

@@ -1,0 +1,9 @@
+{
+  "stage": "AI-34",
+  "status": "launch_failed_before_inference",
+  "generation_requests": 0,
+  "operational_sql_writes": 0,
+  "failure_category": "runtime_dependencies_inaccessible_to_operator_user",
+  "resolution": "Run the unchanged harness as the existing nodia service user with sudo -n -u nodia.",
+  "harness_sha256": "b8fd34c5d92f2171042151ebe44be3f539b2c298691893d4de942b93b4c4f8a1"
+}

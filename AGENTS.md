@@ -16,12 +16,20 @@
 
 ## Continuidad
 
+- Paralelismo autorizado por el usuario (2026-10-15): usar subagentes cuando haya subtareas independientes que permitan avanzar en paralelo. Asignar ámbitos de archivos claros, coordinar cambios compartidos y realizar una integración y verificación final comunes.
+
 - Retomar desde el primer paso incompleto o bloqueado del checklist.
 - Leer los documentos dependientes antes de proponer cambios.
 - Registrar información nueva en el documento correspondiente; no dejar decisiones importantes solo en el chat.
 - Diferenciar hechos confirmados, inferencias y pendientes.
 - No marcar un documento como aprobado sin confirmación explícita del usuario.
 - Si cambia una decisión anterior, revisar y desmarcar los documentos posteriores afectados.
+
+## Contexto funcional para NodiaAI
+
+- Al crear la especificación de un producto/feature o ampliar sus reglas, crear o actualizar sus fichas en `docs/nodia-ai/knowledge/` siguiendo el [estándar y checklist](docs/nodia-ai/knowledge/README.md) y sus plantillas de [producto](docs/nodia-ai/knowledge/_templates/product.md) y [funcionalidad](docs/nodia-ai/knowledge/_templates/feature.md). Enlazar especificación, fichas e índices; esta documentación forma parte de la entrega.
+- Al implementar o modificar contratos/comportamiento, mantener las fichas coherentes con las fuentes aprobadas y el backend. Distinguir aprobación documental, implementación e integración real. Registrar la evaluación de impacto para cambios exclusivamente visuales conforme al estándar.
+- El Markdown explica capacidades; no habilita herramientas ni permisos. Aplicar [catálogo40](docs/mvp/40-nodia-ai-tool-catalog-v1.md), [contratos41](docs/mvp/41-nodia-ai-v1-contracts.md), [arquitectura43](docs/mvp/43-nodia-ai-execution-architecture.md), [política50](docs/mvp/50-nodia-ai-ai04-runtime-policy.md) y [publicación52](docs/mvp/52-nodia-ai-ai06-knowledge-publication-contract.md): frontmatter único, paths explícitos y build validado; no publicar borradores, secretos ni capacidades supuestas.
 
 ## Límite previo al desarrollo
 
@@ -173,7 +181,7 @@ Skills disponibles en `nodia-client/skills/`:
 - Catálogo objetivo: `gemini` permite API, Web y Agentic; `openai` permite API y Codex Agentic, con Web deshabilitado. Migración Codex aplicada en la BD local configurada y Agentic activado en la conexión OpenAI ID 4 por solicitud explícita del 2026-10-08; API conserva su predeterminado. Cuenta/inferencia y soporte Windows siguen pendientes. Los flags `can_use_*` definen modos configurables, no disponibilidad de ejecución. Ver `docs/features/ai-providers/openai-codex-agentic.md` y ADR-018.
 - Gemini Web y Antigravity conservan sus sesiones independientes. Agentic sigue indisponible hasta comprobar un adaptador real; nunca sustituirlo silenciosamente por Web/API.
 - Guardar claves cifradas en `ai_api_keys`, vinculadas a la instancia. Nunca en frontend, campos JSON, logs, fixtures reales o repositorio. El cliente recibe únicamente etiquetas y máscaras.
-- No cambiar automáticamente de proveedor ni modo. Rotación de claves solo dentro de la misma instancia API, si está habilitada y ante errores de credencial/cuota; no reintentar inferencias con resultado incierto.
+- No cambiar automáticamente de proveedor ni modo salvo la delegación opt-in del nuevo chat NodiaAI confirmada el2026-10-14 en[política48](docs/mvp/48-nodia-ai-mode-routing-policy.md): Web conversacional puede alternar a Agentic verificado de la misma conexión cuando el usuario habilite su switch; API queda para después, sin cambio por error ni confirmación de escrituras implícita. Runtime/contratos pendientes. OCR y consumidores existentes conservan la prohibición. Rotación de claves solo dentro de la misma instancia API, si está habilitada y ante errores de credencial/cuota; no reintentar inferencias con resultado incierto.
 - Modelos por descubrimiento/configuración, sin listas cerradas o versiones por defecto. No inventar cuotas, modalidades ni capacidad por el nombre. Una clave guardada o catálogo accesible no prueba inferencia exitosa.
 
 ## Prohibición Total de Modelos Estáticos y Fallbacks Hardcodeados (Cero Hardcoding de Modelos de IA)

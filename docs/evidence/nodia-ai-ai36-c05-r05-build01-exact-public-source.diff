@@ -1,0 +1,14 @@
+--- base/agentic_service.py
++++ candidate/agentic_service.py
+@@ -114,7 +114,10 @@
+         except (OSError, ServiceError, TimeoutError) as error:
+             self._snapshot = None
+             self._observed = 0
+-            return self._empty_status(error.code if isinstance(error, ServiceError) else "agentic_unavailable")
++            reason = (error.code if isinstance(error, ServiceError)
++                      else "agentic_timeout" if isinstance(error, TimeoutError)
++                      else "agentic_unavailable")
++            return self._empty_status(reason)
+         finally:
+             logger.info("Agentic session/catalog check finished; duration_ms={} verified={}",
+                         round((time.monotonic() - started) * 1000), self._snapshot is not None)

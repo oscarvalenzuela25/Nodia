@@ -1,4 +1,5 @@
 import type { EntityManager } from 'typeorm';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import type { RentalProperty } from '../../rental-property/entities/rental-property.entity.js';
 
 export type RentalResourceType =
@@ -39,9 +40,10 @@ export interface RentalContext {
   actorId: string;
   now: Date;
   owner: boolean;
+  isSuperAdmin: boolean;
 }
 export interface RentalMutationOptions {
-  actorId: string;
+  actor: ActorReference;
   propertyId: string;
   requestKey: string;
   operation: RentalOperation;

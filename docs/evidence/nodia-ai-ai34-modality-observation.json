@@ -1,0 +1,39 @@
+{
+  "stage": "AI-34",
+  "scope": "post_canary_non_generative_current_modality_observation",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T20:42:25.174Z",
+  "observations": [
+    {
+      "mode": "token_plan_web",
+      "connection_id": "2",
+      "model_id": "56fdd199312815e2",
+      "available": true,
+      "supports_mcp": false,
+      "observed_at": "2026-10-18T20:42:16.973Z",
+      "verified_modalities": [],
+      "verified_attachment_media_types": [],
+      "modality_cache_state": "no_current_verified_formats",
+      "attachment_inference_repeated": false
+    },
+    {
+      "mode": "token_plan_agentic",
+      "connection_id": "2",
+      "model_id": "gemini-3.8-flash-high",
+      "available": true,
+      "supports_mcp": true,
+      "observed_at": "2026-10-18T20:42:16.986Z",
+      "verified_modalities": [],
+      "verified_attachment_media_types": [],
+      "modality_cache_state": "no_current_verified_formats",
+      "attachment_inference_repeated": false
+    }
+  ],
+  "configured_database_writes": 0,
+  "provider_generations": 0,
+  "provider_metadata_requests": 2,
+  "storage_operations": 0,
+  "limitations": [
+    "No image/PDF/audio inference was repeated; missing or empty proofs cannot be interpreted as available attachment support"
+  ]
+}

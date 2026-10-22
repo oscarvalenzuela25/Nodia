@@ -1,0 +1,69 @@
+{
+  "task": "AI-10, AI-11, AI-12",
+  "status": "ai10_verified_local_ai11_ai12_partial_live_runtime_pending",
+  "checked_on": "2026-10-15",
+  "configured_database_modified": false,
+  "real_provider_inference": false,
+  "document_approval": false,
+  "new_migrations_in_this_delivery": 0,
+  "frontend_changed_in_this_delivery": false,
+  "build": "passed",
+  "production_typecheck": "passed_via_nest_build",
+  "server_unit_tests": {
+    "passed": 1166,
+    "files": 137,
+    "previous_ai09_passed": 977,
+    "added_cases": 189,
+    "added_files": 15
+  },
+  "focused_new_modules": {"passed": 254, "files": 19},
+  "final_context_budget_followup": {"passed": 58, "files": 4,
+    "scope": "After final helper changes: reject fragment sets before reading over budget, bound shared knowledge cache, and freeze admission from metadata without reading fragment files inside SQL. Final production build also passes."},
+  "global_test_typecheck": {
+    "command": "npx tsc --noEmit",
+    "passed": false,
+    "remaining_errors": 30,
+    "new_nodia_ai_module_errors": 0,
+    "scope": "Existing test suites outside the new NodiaAI modules have type errors; production compilation and executable tests pass. New worker mock typing errors found by this check were fixed and rerun."
+  },
+  "lint": {"passed": true, "new_module_warnings": 0, "existing_ai_provider_unused_import_warnings": 2},
+  "integration": [
+    {"task": "AI-10", "checks": 49, "scope": "compiled_Nest_HTTP_and_disposable_PostgreSQL16", "external_provider": "synthetic_preparer", "evidence": "docs/evidence/nodia-ai-ai10-postgres-integration.json"},
+    {"task": "AI-11", "checks": 39, "scope": "compiled_use_cases_PostgreSQL16_and_two_Node_processes", "external_provider": "synthetic", "evidence": "docs/evidence/nodia-ai-ai11-postgres-integration.json"},
+    {"task": "AI-12", "checks": 20, "scope": "compiled_real_admission_context_inference_seal_and_worker_autoLoadEntities", "external_provider": "synthetic_adapter", "evidence": "docs/evidence/nodia-ai-ai12-postgres-integration.json"}
+  ],
+  "regression_integrations": {"ai07_checks": 28, "ai08_checks": 39, "ai09_checks": 70, "configured_database_touched": false},
+  "gemini": {
+    "python_total": 218, "passed": 216, "skipped_existing_windows_symlink_cases": 2,
+    "new_cases": 22, "pip_check": "passed",
+    "evidence": "docs/evidence/nodia-ai-ai11-ai12-gemini-adapter-validation.json"
+  },
+  "contracts": {"schemas": 121, "structural_fixtures": 212, "source_hashes": 254,
+    "reachable_api_modules": 45, "controllers": 35, "handlers": 184, "http_routes": 303,
+    "implemented_coordination_routes": 7, "pending_coordination_routes": 20,
+    "published_business_tools": 0},
+  "knowledge": {"sources": 43, "excluded_drafts": 43,
+    "release_id": "262f513ec28106d304a1c5da13e1ad1b7111b49fa67e0942faa4f841de51d90a",
+    "runtime_registration": "empty_until_AI14", "compiler_checks": 52},
+  "runtime_policy": {"negative_fixtures": 38, "boundary_checks": 6, "product_publication_gates_still_pending": 8},
+  "services": {
+    "disposable_postgres_containers_removed": true,
+    "docker_desktop": "started_only_for_isolated_checks_then_stopped_to_restore_initial_state",
+    "production_worker_started": false,
+    "gemini_vm_started": false
+  },
+  "cleanup": {
+    "empty_directories_remaining": ["nodia-server/nodia-server/src", "nodia-server/nodia-server"],
+    "automatic_review": "Rejected removal of the empty temporary directories with blocked by policy; no retry or workaround. No files or Git changes inside."
+  },
+  "published_capabilities": 0,
+  "published_knowledge_documents": 0,
+  "limitations": [
+    "Gemini VM inaccessible: Hyper-V local authorization denied and SSH timed out at last known address.",
+    "External provider is explicitly synthetic in PostgreSQL pipeline tests.",
+    "MCP product tools, routing switch, chat UI, attachments, compaction and deployment gates remain pending.",
+    "Native profile unknown reconciliation and live concurrent OCR/login/discovery/chat shutdown are not accepted by synthetic tests.",
+    "Text storage quota summation is bounded by retained data but needs performance measurement near100/500MiB before production.",
+    "Global typing of existing test suites remains failing separately from the successful production build."
+  ]
+}

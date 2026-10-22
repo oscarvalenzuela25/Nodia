@@ -1,0 +1,25 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_synthetic_cleanup_receipt_negative_controls",
+  "status": "passed",
+  "fixture_only": true,
+  "helper_sha256": "2b9e082e7652c075f8e7e0ef2a457fc759dfa9ad54509256d79776e5af4d9524",
+  "valid_fixture_accepted": true,
+  "negative_count": 10,
+  "rejected": [
+    "backup failed",
+    "unencrypted",
+    "restore unproven",
+    "wrong phase",
+    "nonexact descriptors",
+    "native pending",
+    "SQL pending",
+    "database restored",
+    "general traffic",
+    "service inactive"
+  ],
+  "external_processes": 0,
+  "configured_database_access": false,
+  "VM_mutations": false,
+  "provider_requests": 0
+}

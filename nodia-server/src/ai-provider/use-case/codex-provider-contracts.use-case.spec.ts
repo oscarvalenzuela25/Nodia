@@ -58,7 +58,7 @@ const setup = () => {
   const providers = {
     findProviderById: vi.fn(async () => provider),
     findAllProviders: vi.fn(async () => ({ data: [provider] })),
-    updateProviderFields: vi.fn(),
+    mergeDiscoveredModels: vi.fn(),
     getActiveApiKeySecret: vi.fn(),
   };
   const gemini = { getDualEngineStatus: vi.fn(), getModelsAndQuota: vi.fn() };
@@ -91,10 +91,11 @@ describe('Codex provider use-case contracts', () => {
     ).execute('42', { mode: 'token_plan_agentic' });
     expect(result.currentSelectedModel).toBeNull();
     expect(result.tokenPlan).toBeNull();
-    expect(x.providers.updateProviderFields).toHaveBeenCalledWith('42', {
-      api_key: x.provider.fields.api_key,
-      token_plan_agentic: { available_models: [x.model] },
-    });
+    expect(x.providers.mergeDiscoveredModels).toHaveBeenCalledWith(
+      '42',
+      'token_plan_agentic',
+      [x.model],
+    );
     expect(x.gemini.getModelsAndQuota).not.toHaveBeenCalled();
   });
   it('leaves saved configuration untouched on an empty/failed catalogue', async () => {
@@ -105,7 +106,7 @@ describe('Codex provider use-case contracts', () => {
         mode: 'token_plan_agentic',
       }),
     ).rejects.toMatchObject({ status: 400 });
-    expect(x.providers.updateProviderFields).not.toHaveBeenCalled();
+    expect(x.providers.mergeDiscoveredModels).not.toHaveBeenCalled();
   });
   it('returns live arbitrary efforts without inferring a capability from the model name', async () => {
     const x = setup();
@@ -160,12 +161,24 @@ describe('Codex provider use-case contracts', () => {
       expect(x.gemini.getModelsAndQuota).not.toHaveBeenCalled();
     },
   );
-  it.each([true, false])('does not activate Codex when the selected API channel is unavailable (enabled=%s)', async (enabled) => {
-    const x = setup(); x.provider.default_mode = 'api_key'; x.provider.use_api_key = enabled;
-    const result = await new VerifyIaProvidersUseCase(x.g, x.p, undefined, x.c).execute();
-    expect(result[0].can_use_model).toBe(false); expect(result[0].active_mode).toBeNull();
-    expect(x.codex.observe).not.toHaveBeenCalled(); expect(x.codex.listModels).not.toHaveBeenCalled();
-  });
+  it.each([true, false])(
+    'does not activate Codex when the selected API channel is unavailable (enabled=%s)',
+    async (enabled) => {
+      const x = setup();
+      x.provider.default_mode = 'api_key';
+      x.provider.use_api_key = enabled;
+      const result = await new VerifyIaProvidersUseCase(
+        x.g,
+        x.p,
+        undefined,
+        x.c,
+      ).execute();
+      expect(result[0].can_use_model).toBe(false);
+      expect(result[0].active_mode).toBeNull();
+      expect(x.codex.observe).not.toHaveBeenCalled();
+      expect(x.codex.listModels).not.toHaveBeenCalled();
+    },
+  );
   it('verifies an exact configured model with observed vision and an advertised effort', async () => {
     const x = setup();
     const result = await new VerifyIaProvidersUseCase(

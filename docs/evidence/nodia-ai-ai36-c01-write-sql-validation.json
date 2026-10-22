@@ -1,0 +1,63 @@
+{
+  "stage": "AI-36-C01",
+  "scope": "candidate_mcp_write_contracts_native_preparation_human_confirmation",
+  "status": "passed",
+  "checks": 22,
+  "postgresql_migrations": 29,
+  "http_requests": 8,
+  "compiled_outputs_verified": 2748,
+  "compiled_execution_files": 946,
+  "compiled_execution_manifest_sha256": "1f87410668209e545da8b27aefa4ae3cdab6c147942038d588095681fb7e46d7",
+  "manifest_sha256": "dd4f995cd348f1c838ec075ba2a7f2112bbf3bab66d9eef2ca100a82ab2aa2c8",
+  "source_sha256": "b0bdaaf47608e8414e4adc47529dfef88b9f28a2bb6463117c1be2969ee48113",
+  "limits": {
+    "mcp_wire_json_depth": 16,
+    "native_typed_json_decoded_depth": 8,
+    "json_collection_items": 128,
+    "tool_arguments_utf8_bytes": 65536,
+    "tool_result_utf8_bytes": 65536,
+    "assembled_context_utf8_bytes": 262144
+  },
+  "candidate_tools": 73,
+  "synthetic_published_tools": 2,
+  "verified_native_domain_effects_in_disposable_database": [
+    "finance_movements.create",
+    "providers.create"
+  ],
+  "synthetic_provider_dispatches": 3,
+  "actual_provider_generations": 0,
+  "configured_database_used": false,
+  "storage_operations": 0,
+  "services_restarted": false,
+  "production_publication": false,
+  "candidate_deployed": false,
+  "disposable_containers_remaining": 0,
+  "sql_retries": 0,
+  "health_fixture_retries": 1,
+  "health_fixture_failure_preserved": true,
+  "layers": {
+    "mcp_callback": "actual compiled ExecuteNodiaAiToolUseCase",
+    "native_preparation": "actual compiled PrepareNodiaAiProposalUseCase and native Finance/Supplier preparers",
+    "authorization": "actual SQL authority and module assignment checks",
+    "confirmation": "separate human-channel HTTP challenge and exact proposal confirmation",
+    "execution": "actual native transaction and atomic receipt",
+    "provider": "synthetic adapter, no account or inference",
+    "publication": "private synthetic two-tool manifest only"
+  },
+  "limits_of_evidence": [
+    "Only two native writing flows are executed end-to-end here; all 73 candidate contracts are enumerated and compiled.",
+    "No production MCP publication, new provider acceptance, UI acceptance or deployment is credited.",
+    "Typed JSON is subject to both the MCP wire depth 16 and decoded native depth 8 ceilings; maximum native payloads are not all representable on the wire.",
+    "The historical operating runtime is health-checked but is not claimed to equal this undeployed candidate."
+  ],
+  "evidence_sha256": {
+    "nodia-server/test/nodia-ai-ai36-write-preparation.integration.mjs": "b0bdaaf47608e8414e4adc47529dfef88b9f28a2bb6463117c1be2969ee48113",
+    "docs/evidence/scripts/nodia-ai-ai36-c01-write-sql-stage.cjs": "454084b030384e2c8a19161eb1383180b4756ba6bbebb37ff83282f6c88d0849",
+    "docs/evidence/scripts/nodia-ai-ai36-c01-write-sql-remote.py": "30e4f0d9c23c17f06729fe005c01718247ef400e392bb8ccf0713df390c1bfdc",
+    "docs/evidence/scripts/nodia-ai-ai36-c01-write-sql-health.py": "59839440d43de4597a2e4ab8ef7eee372dc65ab564313c4d100702550b96a8a0",
+    "docs/evidence/nodia-ai-ai36-c01-write-sql-manifest.json": "dd4f995cd348f1c838ec075ba2a7f2112bbf3bab66d9eef2ca100a82ab2aa2c8",
+    "docs/evidence/nodia-ai-ai36-c01-write-sql-attempt01.json": "1b89618eaf5bd2383a59ad3cb7f7bb399d2aaf87e095c7040c32d43a94b5da3b",
+    "docs/evidence/nodia-ai-ai36-c01-write-sql-health-attempt01.json": "be903a9ce6112ef776b7eb734bb8828c67c12120f20f69f6018d84329b753852",
+    "docs/evidence/nodia-ai-ai36-c01-write-sql-health.json": "5644cd0fc0bd893a4992e4a53c68988620bc08eb6de71aecf23f10b1cda9ca79"
+  }
+}

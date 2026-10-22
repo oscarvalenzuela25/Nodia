@@ -1,0 +1,10 @@
+{
+  "scope": "execute_exact_previously_reviewed_29_dump_manifest",
+  "authorization": "Sí, autorizo eliminar esos 29 archivos históricos según el plan, conservando las carpetas, las evidencias y los backups cifrados actuales. Verifica después que la limpieza quedó completa.",
+  "source": "explicit_user_message_in_current_turn",
+  "plan_sha256": "dd9421d7339e13408c972f3fbd4424bae2253eb85141789fe01081fc9433526b",
+  "execution_source_sha256": "94c1e2540208952571fb1f464d6df9a8aaf09f3ca6467a89ba48d632f9c24a1e",
+  "operator_keys_present_with_protected_ACL": true,
+  "operator_key_payload_read": false,
+  "backup_schema_or_document_approval_granted": false
+}

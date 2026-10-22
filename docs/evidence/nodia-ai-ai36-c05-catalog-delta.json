@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05",
+  "before_inventory_sha256": "0d76be46e63e7baa5ff650b1364f9237d79bf69ee6e016fd7f81f145d71ae706",
+  "after_inventory_sha256": "be81b8cd9359b1d6d6486fc90c65a8e1e2a0d853abebac6a6c826c2e2ce2bbfc",
+  "before_coordination_sha256": "5a65eb30269300e270b70f5c4cce5f00a4f3bfa0e9cebc53bb0a462000383011",
+  "after_coordination_sha256": "03689d264816fcf7848e69a1509b9b69699422292b70a10e6c0be5a498f89f8d",
+  "historical_stage_metadata_sha256": "eb7183d71dd4322a5bf89fcc969633aba58eead12becb8d10234ebf6e81a70ae",
+  "before_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 89,
+    "publicOperations": 5,
+    "staticallyComposedModules": 84,
+    "conditionalModules": 5
+  },
+  "after_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 89,
+    "publicOperations": 5,
+    "staticallyComposedModules": 84,
+    "conditionalModules": 5
+  },
+  "before_source_count": 866,
+  "after_source_count": 869,
+  "source_hash_changes": [
+    {
+      "file": "nodia-server/src/nodia-ai-context/nodia-ai-context.module.ts",
+      "before_sha256": "92778437a080fd7846bedd232dd97dabdd97c2a2869250db3804b60327f1524a",
+      "after_sha256": "7a0c4354fa23ccc5c9464c5bca9a5a4b5e8f3adf2e2a8910015e2f7923cab801",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+      "before_sha256": "9daa7ba05b23776604e6e8c3d43d81b55462639ae322e3f0fb844ec6e1643c77",
+      "after_sha256": "866cc8dfae0f0d8f4eb3c0cfb7ac432e43d441438b256de0758cadf0ed1d4b2c",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts",
+      "before_sha256": "ab91b2dec615f134feb6f5b3f60c15784aab8163c187a3642afdaa279081791e",
+      "after_sha256": "acfe41ddaf0b957733645e94d7b790dd870be89249df6597ad8f8d3ef5be094d",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "before_sha256": "78716684dea43aa473b60cf07d9b2258f6c50f80bff02c3b3000fd1212848311",
+      "after_sha256": "bebdb288b1ceb14fef874d55e1f7bb50d4aa7ae17505943da874a5087980fd20",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/types/nodia-ai-admission.types.ts",
+      "before_sha256": "0e8f22f710696e7f3ccb02bdc97ff67f4953cd74519dd0e902ca441e8e60b610",
+      "after_sha256": "f14c57fb896982f8dbf8961e89e1fcc69b93ea33487d75bce91a09a935377588",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+      "before_sha256": "6241a93bc7a896d1688d802506216a69c8d448d2be992ebcbb45be8406a3d312",
+      "after_sha256": "7f669552898ab493a933a079bd95d4b6aad9f1caaf8b6211cc8d2cc7e3c451c1",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/types/tool-selection.types.ts",
+      "before_sha256": null,
+      "after_sha256": "84e039af1e619a1f961ea20e57d4c0a1bd41930d541ad3975eda7cf7cc2fcead",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/use-case/discover-nodia-ai-tools.use-case.ts",
+      "before_sha256": "7bdf461763344b724359fee93131581c287f7e9e6f8b15976cd1c7707801b1e7",
+      "after_sha256": "2f70c21b22365b459653fac6eef55edd319d0f6e392f846e0df593a2060e4f5c",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.ts",
+      "before_sha256": "c7a862f502122160529740e0b984c0c4d52e5906c5f4aab3455630285a676b2b",
+      "after_sha256": "91e1e396e45d131b6aa5d15d1e7de082a1296c64eb1ca3081c2a1a049d661dde",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/use-case/nodia-ai-tool-selection-flow.use-case.ts",
+      "before_sha256": null,
+      "after_sha256": "deff370383b57f5490c36728a090c4804c877693dcbf5a34273c036eff75ee9f",
+      "provenance": "AI-36-C05"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/use-case/select-nodia-ai-turn-tools.use-case.ts",
+      "before_sha256": null,
+      "after_sha256": "f2e78b459bbd2e67771539554544c3c26558d1f0fb7aca90a06d15fdc3d53eb8",
+      "provenance": "AI-36-C05"
+    }
+  ],
+  "new_controller": null,
+  "new_handlers": [],
+  "unchanged_prior_handler_operations": 217,
+  "domain_handler_coverage_unchanged": 177,
+  "coordination_routes": 41,
+  "database_migration_count": 29,
+  "preserved_shared_schema_hashes": {
+    "docs/mvp/nodia-ai-v1-common-contracts.schema.json": "b8b029300f93b5cf316e6d34526cd6ae2a7c0c5f090bb0c7296fb3b117aacad0",
+    "nodia-server/src/nodia-ai-tools/config/common-schema.json": "b8b029300f93b5cf316e6d34526cd6ae2a7c0c5f090bb0c7296fb3b117aacad0",
+    "nodia-server/src/nodia-ai-products/contracts/write-finance-business.json": "209cd1b6826ec39198e914c1e8aedbd556138ab9db5ec239160eb6c5d3e18969",
+    "nodia-server/src/nodia-ai-products/contracts/write-reservations.json": "ea4e2ccf7acccaffd8a005e335c718e76bb3134eb651b59f0c410f981009870e",
+    "nodia-server/src/nodia-ai-products/contracts/write-core-provider.json": "94c89608eb0854ae1397df316a95001a25819a1c66da296a1932f9abc0d47739",
+    "nodia-server/src/nodia-ai-products/contracts/secure-flows.json": "79e7a608795f5a31feac75daa0a22e6d6ebc776c476f2e5b10c46a231455c82c",
+    "nodia-server/src/nodia-ai-products/contracts/common-reads.json": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+    "nodia-server/src/nodia-ai-products/contracts/common-preparation.json": "bbc8a57ec61ee342a55f3f56dd3f49e732c17b372c5aaf806d63555cd776099a"
+  },
+  "http_request_dto_additions": [],
+  "runtime_verified": false,
+  "database_applied": false,
+  "provider_generations": 0,
+  "limitations": [
+    "AST and source provenance only; no operational database write, real inference, deployment or document approval",
+    "Every previous public/app route, domain handler coverage and historical stage fact is preserved; seven global MCP bindings and one discovery helper add no HTTP route or database schema",
+    "The public MessageCreateRequest DTO/schema and historical MCP schema bytes are preserved. Profiles are backend-only; automatic discovery needs no additional HTTP field"
+  ]
+}

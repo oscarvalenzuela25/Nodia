@@ -1,0 +1,144 @@
+{
+  "stage": "AI-34",
+  "scope": "real_gemini_agentic_compaction_continuity_mcp_instrumented_canary",
+  "status": "failed",
+  "observed_at_utc": "2026-10-18T20:26:51.858Z",
+  "maximum_generations": 3,
+  "generation_requests": 3,
+  "operational_sql_writes": 0,
+  "user_chats_created": 0,
+  "business_tools_exposed": 0,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "model_context_tokens": null,
+  "knowledge_release": "c2d7a6299d5306dacdb094015d1b7dacf6bda126fffea416d4769fb822032980",
+  "knowledge_capability_metadata_source": "built_manifest_projection_not_an_independent_tool_registry_test",
+  "sql_worker_and_snapshot_persistence_acceptance": "separate_isolated_integration",
+  "checks": [
+    "configured runtime is quiet before synthetic provider work",
+    "agentic: exact current selection is eligible",
+    "agentic: each synthetic original respects the current human-message byte ceiling",
+    "agentic: long extraction request fits the measured complete native prompt",
+    "agentic: extraction preserves synthetic facts with its exact citation",
+    "agentic: extraction preserves synthetic decisions with its exact citation",
+    "agentic: extraction preserves synthetic questions with its exact citation",
+    "agentic: extraction preserves synthetic entities with its exact citation",
+    "agentic: extraction preserves synthetic requirements with its exact citation",
+    "agentic: extraction reduces bytes while preserving the checked facts",
+    "agentic: rehydrated context uses the snapshot and a small current tail",
+    "agentic: continuation retrieves amount and date only from cited memory",
+    "agentic: continuation preserves the pending question, confirmation decision and entity",
+    "two Agentic compaction and continuity generations finished and terminal proofs were acknowledged",
+    "agentic MCP: complete initial prompt plus first listing upper bound fits"
+  ],
+  "probes": [
+    {
+      "engine": "agentic",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "compaction": {
+        "source_hash": "7d67c2d3c259a79bf643e595a804a8fd53a79627df15f92aeab17fc457ce7002",
+        "canonical_utf8_bytes": 151720,
+        "measurement": {
+          "measurementContractVersion": "nodia-ai-context-budget/1",
+          "measurementScope": "initial_native_prompt",
+          "measurementKind": "exact",
+          "canonicalUtf8Bytes": 151720,
+          "catalogUtf8Bytes": 0,
+          "overheadUtf8Bytes": 1031,
+          "totalUtf8Bytes": 152751,
+          "maxUtf8Bytes": 262144,
+          "modelContextTokens": null,
+          "firstMcpListingUpperBoundUtf8Bytes": 0
+        },
+        "summary_utf8_bytes": 656,
+        "summary_sha256": "2b2c39e45b4f95569267f07a0a83760c1a98b6c8e7909d75d8d7826087a565f9",
+        "checked_categories": [
+          "facts",
+          "decisions",
+          "questions",
+          "entities",
+          "requirements"
+        ],
+        "semantic_quality_scope": "five_synthetic_cited_requirements_not_a_universal_losslessness_proof"
+      },
+      "continuity": {
+        "measurement": {
+          "measurementContractVersion": "nodia-ai-context-budget/1",
+          "measurementScope": "initial_native_prompt",
+          "measurementKind": "exact",
+          "canonicalUtf8Bytes": 2786,
+          "catalogUtf8Bytes": 0,
+          "overheadUtf8Bytes": 1031,
+          "totalUtf8Bytes": 3817,
+          "maxUtf8Bytes": 262144,
+          "modelContextTokens": null,
+          "firstMcpListingUpperBoundUtf8Bytes": 0
+        },
+        "context_sha256": "bb8ebd0143e8695f029e4ee6c12b54a487822d9802bd3b32963f827e8065a84f",
+        "raw_history_resent": false,
+        "accepted_preference_values_injected": 0,
+        "recovery_references": 0,
+        "amount_and_date_retrieved": true,
+        "pending_question_and_decision_retrieved": true,
+        "no_tools_exposed": true
+      },
+      "terminal_proofs_acknowledged": 2,
+      "attempts": [
+        {
+          "attempt_id": "23b04470-4ae0-4890-91fe-71618b1e5569",
+          "stage": "compaction",
+          "started_at_utc": "2026-10-18T20:27:00.324Z",
+          "terminal_proof_acknowledged": true,
+          "finished_at_utc": "2026-10-18T20:28:26.973Z"
+        },
+        {
+          "attempt_id": "1b81fa26-3f18-49a1-83e2-532c3bac003f",
+          "stage": "continuity",
+          "started_at_utc": "2026-10-18T20:28:26.981Z",
+          "terminal_proof_acknowledged": true,
+          "finished_at_utc": "2026-10-18T20:29:02.180Z"
+        }
+      ]
+    }
+  ],
+  "mcp_probe": {
+    "scope": "real_agentic_synthetic_read_callback_not_business_sql",
+    "attempt_id": "cc39038f-4ff3-4b26-a16f-30ea5467c93e",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "measurement": {
+      "measurementContractVersion": "nodia-ai-context-budget/1",
+      "measurementScope": "initial_native_prompt",
+      "measurementKind": "exact",
+      "canonicalUtf8Bytes": 315,
+      "catalogUtf8Bytes": 238,
+      "overheadUtf8Bytes": 951,
+      "totalUtf8Bytes": 1504,
+      "maxUtf8Bytes": 262144,
+      "modelContextTokens": null,
+      "firstMcpListingUpperBoundUtf8Bytes": 3362
+    },
+    "started_at_utc": "2026-10-18T20:29:02.184Z",
+    "tool_callback_count": 0,
+    "protocol_rpc_messages": 6,
+    "unforwarded_tool_requests": 0,
+    "terminal_proof_acknowledged": false,
+    "controlled_context_ledger": "collect_safe_native_terminal_diagnostic_by_attempt_id"
+  },
+  "failure_category": "mcp_result_unknown",
+  "uncertain_attempt_reconciliation": {
+    "outcome": "abandoned_unknown",
+    "process_closed": true,
+    "acknowledged": true
+  },
+  "finished_at_utc": "2026-10-18T20:29:05.936Z"
+}

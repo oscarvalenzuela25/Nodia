@@ -1,0 +1,1 @@
+{"source": "Closed native nodia_ai_chat_failure projection", "provider_generations": 0, "profile_files_read": false, "raw_logs_retained": false, "records": [{"engine": "web", "phase": "generation", "exception_type": "TimeoutError", "elapsed_ms": 119003}]}

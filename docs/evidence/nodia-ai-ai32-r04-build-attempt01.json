@@ -1,0 +1,20 @@
+{
+  "stage": "AI-32-R04",
+  "scope": "candidate_staging_build_and_offline_tests",
+  "status": "failed_offline_test",
+  "candidate_image": "sha256:ef652d478b03e94e8d255d13baadac835a4be85581e2bb86dc873bbc2a2d9281",
+  "native_source_files": 92,
+  "native_manifest_sha256": "135ab3fe2a3a571469d1834e89ec1ebeabb2a9409042012ba150da88789b54aa",
+  "linux_test_log": "nodia-server/.tmp/ai32-r04-linux-tests-attempt01.log",
+  "linux_test_log_sha256": "f36430cf45d7944422d48364757bde371a5ec7e35ddc73a7ef04b0e5259f3f7e",
+  "linux_tests_executed": 385,
+  "linux_test_failures": 1,
+  "linux_test_exit_code": 1,
+  "failure_category": "wav_sdk_mime_platform_fixture_assumption",
+  "observed_upload_mime": "audio/x-wav",
+  "test_expected_mime": "audio/wav",
+  "active_container_restarted": false,
+  "active_image_retagged": false,
+  "provider_generations": 0,
+  "credential_files_copied": false
+}

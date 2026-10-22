@@ -11,6 +11,7 @@ import {
   codexError,
   codexObject,
   CodexOperationException,
+  CODEX_READ_ONLY_POLICY,
 } from '../../common/ai/codex/codex-contract.js';
 import { codexDocument } from '../../common/ai/codex/codex-document.js';
 import {
@@ -255,15 +256,7 @@ export class ExecuteCodexInvoiceUseCase {
               ...(thinking ? { effort: thinking } : {}),
               summary: 'none',
               approvalPolicy: 'never',
-              sandboxPolicy: {
-                type: 'readOnly',
-                access: {
-                  type: 'restricted',
-                  includePlatformDefaults: true,
-                  readableRoots: [],
-                },
-                networkAccess: false,
-              },
+              sandboxPolicy: CODEX_READ_ONLY_POLICY,
               outputSchema: API_INVOICE_SCHEMA,
             },
             15000,

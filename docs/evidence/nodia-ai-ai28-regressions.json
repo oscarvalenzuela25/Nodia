@@ -1,0 +1,908 @@
+{
+  "generated_at_utc": "2026-10-17T19:09:18.969862+00:00",
+  "stage_directory": "/opt/nodia/verification/ai28-20261017",
+  "compiled_production_archive_sha256": "bbfa8c065a77cffa1bc0f8f70d89263054cae259bb49f1419c32f465470234ea",
+  "compiled_dist_files_verified": 851,
+  "knowledge_pin_sha256": "fcbb7f79c771ee1a85c02e7d80f21180441f04b85b44bcac33e838c8d22d4ee6",
+  "scope": "Synthetic disposable PostgreSQL, local HTTP and compiled worker processes. No configured database reads/writes, production provider/session use, external inference or MCP write publication. Agentic CLI regression uses a loopback HTTP fixture only.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "checks": 407,
+  "main_checks": 25,
+  "combined_checks": 432,
+  "additional_uncounted_passing_suites": [
+    "api",
+    "agentic"
+  ],
+  "native_http_requests": 389,
+  "native_sources_copied_separately_from_archive": [
+    "nodia-server/test/rental.integration.mjs",
+    "nodia-server/test/module-catalog.integration.mjs",
+    "nodia-server/test/action-catalog.integration.mjs",
+    "nodia-server/test/role-catalog.integration.mjs",
+    "nodia-server/test/nodia-ai-ai08.integration.mjs",
+    "nodia-server/test/ai-api.integration.mjs",
+    "nodia-server/test/agentic-cli.integration.mjs"
+  ],
+  "native_normative_contract": {
+    "path": "docs/mvp/28-rental-reservations-contracts.md",
+    "sha256": "9b9b4b387fd595f9f234240ca01cd4230124a499c0dd7637e099f70a18989bbf"
+  },
+  "regressions": [
+    {
+      "stage": "27",
+      "command": "node test/nodia-ai-ai27.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:04:07.300760+00:00",
+      "duration_seconds": 14.76,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai27.integration.mjs",
+          "sha256": "02d5d5b119a0fe9a2a456168d8410c8fd8af67cb0fd089a652ea318c33925294"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai27-worker.fixture.mjs",
+          "sha256": "70ec39b7fda0714f2d6c50ad530ec4c4c68017996f7766d499dcc51245f2ac03"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "d85f89626b0d79ace434148f6258add0eb607acac72283c60ce20897b06f40b4",
+      "checks": 36,
+      "result": {
+        "stage": "AI-27",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_seventeen_core_operations_no_provider",
+        "checks": 36,
+        "exercised_operations": [
+          "actions/create",
+          "actions/delete",
+          "actions/update",
+          "business_actions/create",
+          "business_actions/delete",
+          "business_actions/update",
+          "module_groups/create",
+          "module_groups/delete",
+          "module_groups/update",
+          "modules/create",
+          "modules/delete",
+          "modules/update",
+          "roles/create",
+          "roles/delete",
+          "roles/update",
+          "users/create",
+          "users/update"
+        ],
+        "passed": [
+          "group creation and editing persist native translations atomically",
+          "module identity is immutable while destination metadata and activity remain editable",
+          "action null description and explicit inactive state are preserved",
+          "role action associations are exact deduplicated and atomic",
+          "business-action partial edit cannot reactivate an inactive row",
+          "business-action create upsert previews existing identity without applying new-record defaults",
+          "business-action DELETE deactivates and keeps row translations and historical receipt",
+          "user email normalization associations and activity use the native writer",
+          "user create upsert preserves existing inactive state and exact identity",
+          "role create upsert preserves existing inactive state and action assignments",
+          "role deletion removes native associations translations and leaves recoverable receipt",
+          "action module and group deletion preserve completed historical receipts after records disappear",
+          "all seventeen native administration operations execute with exact receipt recovery",
+          "compiled Core execution takes one exclusive authority frontier before its first read without lock upgrade or native timeout reset",
+          "reserved super-admin identity and the last active super-admin reject unsafe previews",
+          "unknown user role action and module group associations reject before native mutation",
+          "closed schemas reject internal identity fields and imprecise catalog IDs",
+          "material native user edits invalidate an exact confirmed snapshot",
+          "numeric action keys cannot alias or replace canonical action IDs in the native writer",
+          "association labels and activity are material even when the intended IDs are unchanged",
+          "group deletion retains the native child-module invariant",
+          "two concurrently confirmed last-admin changes serialize and retain exactly one active super-admin",
+          "native concurrent writers preserve NI-13 under the same exclusive frontier",
+          "destination module revocation before execution blocks the admitted Core mutation",
+          "session revocation before execution prevents a confirmed administrative write",
+          "exclusive effect waiting behind an uncommitted native revocation reads the subsequent authority snapshot",
+          "self access-loss preview includes affected users and removed destination assignments",
+          "a confirmed self-removal commits exactly and its receipt survives loss and restoration of access",
+          "receipt failure rolls back user fields roles and module replacements atomically",
+          "receipt failure rolls back native role metadata and translations with no independent commit",
+          "native inherited Core writer rejects an active manager without exclusive proof",
+          "real child death after claim leaves no administrative mutation and permits explicit recovery",
+          "duplicate human resume commits one Core catalog row and its exact receipt",
+          "lost Core COMMIT response recovers historical receipt without replaying native creation",
+          "administrative effects never invoke providers or inference slots",
+          "execution attempts and leases finish without orphaned jobs"
+        ]
+      }
+    },
+    {
+      "stage": "26",
+      "command": "node test/nodia-ai-ai26.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:04:22.064749+00:00",
+      "duration_seconds": 18.07,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai26.integration.mjs",
+          "sha256": "e7a3dd323c4d465d99644e4f56efb647c4b0cf193b58dd0f41efc55fe9d9f98f"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai26-worker.fixture.mjs",
+          "sha256": "2c1d4a18593c9c49c59931ae24af5e9248369c3c0c08603a0838a9011737d80f"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "eb6eb10d80236e000806337c9b527d9a63fe1c399edd3989669c07cfa81a3e18",
+      "checks": 44,
+      "result": {
+        "stage": "AI-26",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_ten_money_block_turnover_operations_no_provider",
+        "checks": 44,
+        "exercised_operations": [
+          "rental_blocks/create",
+          "rental_blocks/update",
+          "rental_expenses/create",
+          "rental_expenses/pay",
+          "rental_expenses/update",
+          "rental_expenses/void",
+          "rental_payments/create",
+          "rental_payments/void",
+          "rental_turnovers/approve_same_day",
+          "rental_turnovers/update"
+        ],
+        "passed": [
+          "real required monetary block and expense fields are clarified without fabricating amounts states or dates",
+          "payment creation commits exact house cash and captures policy without creating a Finance movement",
+          "voiding draft payment retains monetary history and frozen policy while removing cash contribution",
+          "payment void cannot underfund the agreed deposit after direct confirmation",
+          "a real native payment after preview invalidates exact payment preconditions without timestamp assumptions",
+          "money contracts reject overpayment future dates zero and foreign associations",
+          "partial refunds reduce approved liability without changing original receipts or retained amount",
+          "voided refund remains in history and restores remaining refund liability",
+          "cumulative refunds cannot exceed approved cancellation and cancelled payments cannot be voided",
+          "expense creates pending exact amount with normalized nullable notes and no automatic payment",
+          "expense edit and pay use native association and explicit payment date",
+          "paid amount remains immutable while metadata corrections and void retain history",
+          "voided expense cannot pay again and associations zero or future money dates fail closed",
+          "paid expense creation preserves amounts above JavaScript safe integer exactly",
+          "a confirmed block reason change preserves unrelated concurrent notes without spurious reconfirmation",
+          "active whole-house block is visible to real availability and rejects overlapping blocks",
+          "deactivating a block releases dates while preserving its record",
+          "native confirmed occupancy between admission and execution defeats a stale block without overlapping calendar",
+          "concurrent admitted overlapping block writers serialize on the house and commit exactly one",
+          "preparation accepts unknown linen separately from false and normalizes blank notes",
+          "false linen blocks approval and future actual readiness is rejected without changing cleaning facts",
+          "future same-day plan approval remains stable across clock time and does not fabricate cleaning or readiness",
+          "a block cannot silently invalidate an explicitly approved same-day transition",
+          "changing a material plan clears previous approval",
+          "block preview discloses the exact preparation records its native writer will reset",
+          "failed block receipt restores native preparation invalidation block journal and audit atomically",
+          "block effect resets native actual preparation without inventing approval",
+          "late but real readiness is recordable and remains distinct from punctual planned readiness",
+          "same-timestamp material preparation edits invalidate an earlier preview",
+          "turnover associations and server-owned approval fields cannot be forged",
+          "archived house blocks new calendar use but keeps real expense and existing reservation settlement",
+          "super administrator writes under actual actor identity and does not impersonate foreign owner",
+          "native journal recovery belongs only to original actor while SA can observe foreign execution receipt",
+          "SA observation does not grant confirming or resuming another actors proposal execution",
+          "a module-authorized collaborator retains actual native authorship",
+          "destination module revocation before execution prevents expense writer",
+          "session revocation before execution cannot apply confirmed expense update",
+          "payment receipt failure rolls back native monetary effect policy journal and audit atomically",
+          "real child death after claim leaves no native effect and permits explicit recovery",
+          "duplicate human resume commits a single expense edit receipt and native journal",
+          "lost pay COMMIT response recovers exact receipt without duplicating expense cash or journal",
+          "all ten monetary calendar and preparation operations execute via compiled native writers",
+          "local effects never invoke provider or acquire inference slots",
+          "execution attempts and leases finish without orphaned jobs"
+        ]
+      }
+    },
+    {
+      "stage": "25",
+      "command": "node test/nodia-ai-ai25.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:04:40.137005+00:00",
+      "duration_seconds": 20.03,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai25.integration.mjs",
+          "sha256": "042b52eae21634a8aaeecb4d148bf5ce2f122421d928d59bbd235020a3889e29"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai25-worker.fixture.mjs",
+          "sha256": "0ac4a07acf14b636807d0a4f8bbc6a66ef2d91f1a29f22f0df6629fb267651b3"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "c0c2e337a7d58a64976065c1a842bc0c777f33877af5ba08411c5892a2858f42",
+      "checks": 39,
+      "result": {
+        "stage": "AI-25",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_six_native_booking_lifecycle_mutations_no_provider",
+        "checks": 39,
+        "exercised_operations": [
+          "rental_reservations/cancel",
+          "rental_reservations/complete",
+          "rental_reservations/confirm",
+          "rental_reservations/create",
+          "rental_reservations/start",
+          "rental_reservations/update"
+        ],
+        "passed": [
+          "availability is an observation without hold reservation payment or native journal",
+          "missing required booking fields yield clarification instead of fabricating hours price or deposit",
+          "create commits only a draft and nullable preparation with exact agreement but no money or occupancy",
+          "native replay normalizes explicit defaults and does not duplicate reservation turnover or journal",
+          "draft interval update recomputes agreement and resets preparation using actual actor identity",
+          "a direct booking cannot confirm without a received positive agreed deposit",
+          "first monetary record freezes agreement while harmless guest metadata remains editable",
+          "preparing confirmation neither occupies dates nor changes the native state",
+          "confirmation preserves the paid policy snapshot despite current policy edits and records no extra payment",
+          "an archived confirmed booking still occupies its interval",
+          "conflicting drafts and real payments are allowed but confirmation rejects occupancy",
+          "cancellation preview proposes refund on frozen policy without cancellation journal or refund row",
+          "cancel commits approved frozen refund and monetary ledger hash without paying a refund or collecting remaining balance",
+          "native cancellation replay canonicalizes equivalent instants and preserves its original response and journal",
+          "cancelled occupancy is released while original history and receipt stay available",
+          "cancelled bookings do not reopen and cancellation cannot invent a future effective notice",
+          "a changed payment ledger invalidates exact cancellation even when refund amount is unchanged at zero",
+          "material same timestamp agreement changes invalidate confirmation without relying on updated_at",
+          "failed cancellation receipt restores native phase snapshots money journal and audit atomically",
+          "platform confirmation requires explicit external conditions and no fabricated settlement payment",
+          "platform cancellation records an explicit external resolution and creates no refund payment",
+          "same day turnover availability distinguishes a valid plan from explicit approval",
+          "explicit exact confirmation approves affected same day turnover without fabricating completed cleaning",
+          "new native occupancy after human admission prevents overlapping confirmation at execution",
+          "an inserted preceding guest refreshes and explicitly approves the already confirmed future transition",
+          "a changed real preparation after confirmation prevents start dispatch",
+          "start uses actual preparation and completion waits for checkout even in an archived house",
+          "archived houses reject new agreements and confirmation while retaining cancellation and historical settlement",
+          "a permitted collaborator creates under real authorship without impersonating owner",
+          "super administrator preserves actual authorship on foreign owner resources",
+          "destination module revocation before execution blocks the native writer",
+          "session revocation before execution cannot apply a confirmed update",
+          "receipt failure rolls back draft turnover native operation and audit in the same transaction",
+          "real child process death after claim leaves no booking effect and allows explicit resume",
+          "duplicate human resume commits one native agreement edit and receipt",
+          "lost cancellation COMMIT response recovers its exact receipt without duplicate journal or effects",
+          "all six commercial reservation operations execute through compiled native writers",
+          "local effects never invoke a provider or acquire inference slots",
+          "execution attempts and leases finish without orphans"
+        ]
+      }
+    },
+    {
+      "stage": "24",
+      "command": "node test/nodia-ai-ai24.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:05:00.172341+00:00",
+      "duration_seconds": 15.52,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai24.integration.mjs",
+          "sha256": "efea534a68431859e4ef4e333c3ebf9c3464a642bbfdc485ccda3b26a475a066"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai24-worker.fixture.mjs",
+          "sha256": "9b42510924295293a9f5d0cf81770fc2d696a47c5abe27bef15464476619e0e2"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "21a3c693e559b95b6e84b986cf0fc8a91e086feae80fe638ffbfaac8488c0fc7",
+      "checks": 36,
+      "result": {
+        "stage": "AI-24",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_six_native_rental_configuration_mutations_no_provider",
+        "checks": 36,
+        "exercised_operations": [
+          "rental_cancellation_policies/create",
+          "rental_cancellation_policies/update",
+          "rental_collaborators/create",
+          "rental_collaborators/update",
+          "rental_properties/create",
+          "rental_properties/update"
+        ],
+        "passed": [
+          "property creation preserves exact bigint money zero percent null optional fields and actor ownership",
+          "property update preserves omitted capacity and explicit null without changing its owner",
+          "collaborator create and update preserve identity and support explicit null and revocation",
+          "active collaborators cannot edit configuration or create policies even with destination access",
+          "an inaccessible house yields uniform not found for ordinary actors",
+          "super administrator edits a foreign house with real authorship and no implicit ownership transfer",
+          "only explicit super administrator owner selection can create for another user",
+          "owner mutation and duplicate or owner collaborator creation remain forbidden",
+          "policy create stores all rules atomically with canonical order and decimal percentages",
+          "native idempotency replays canonical rule order and decimal equivalents without duplicate header or rules",
+          "complete rule replacement reuses a retained threshold removes superseded rules and normalizes values",
+          "omitted rules keep existing IDs and values byte for byte",
+          "default policies must be active and belong to their exact house",
+          "policy preparation rejects empty incomplete duplicate and invalid percentage rule sets",
+          "missing required fields produce a clarification without a runnable proposal",
+          "a human challenge cannot confirm a different proposal hash",
+          "material human review keeps the native request key and requires the exact new revision",
+          "a same timestamp material property change invalidates confirmation",
+          "a same timestamp material rule change after admission blocks native dispatch",
+          "ordinary users require the destination module even when they own the house",
+          "destination module revocation after confirmation is rechecked before the writer",
+          "session revocation after confirmation cannot write as the former user",
+          "updating live policy rules never changes a monetary reservation snapshot",
+          "configuration preparation preserves timezone history and the capacity of current confirmed agreements",
+          "archiving a house preserves historical occupancy money policy snapshots and native read access",
+          "rental history exposes no physical delete endpoint",
+          "archived houses permit collaborator removal and require house reactivation before restoring access",
+          "a receipt failure rolls back policy header rules native journal and audit in the same SQL transaction",
+          "a later rule insert failure restores the previous policy header and every threshold without a journal or receipt",
+          "real worker death after claim leaves no rental effect and permits explicit resume",
+          "duplicate human resume produces one native property update journal and receipt",
+          "lost COMMIT response reconciles an immutable rental receipt without replaying the native journal",
+          "known-input operations across houses execute sequentially with independent native receipts",
+          "all six rental configuration operations execute against compiled native writers",
+          "local rental effects never invoke a provider or acquire inference runtime slots",
+          "rental execution attempts and job leases finish without orphans"
+        ]
+      }
+    },
+    {
+      "stage": "23",
+      "command": "node test/nodia-ai-ai23.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:05:15.688874+00:00",
+      "duration_seconds": 24.04,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai23.integration.mjs",
+          "sha256": "bc9c3eea009703b99698f83369c70aff5b705d5661ef0aae6cda24c10fbf8ad8"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai23-worker.fixture.mjs",
+          "sha256": "414944cb013baa7fec1a7ef8030f8c4c69434603b4ddefefe7e05d885d4e06ab"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "3c745596d16c8ecccb900d16c0db1f6dfcf02781400058c55eccc84edcba6fe6",
+      "checks": 47,
+      "result": {
+        "stage": "AI-23",
+        "status": "passed",
+        "checks": 47,
+        "results": [
+          "AI23 migration down and up restore exactly both new nullable columns on an empty workflow journal",
+          "future supplier preview has a registered preceding ID binding without a fabricated ID",
+          "workflow supersedes its individual proposal atomically",
+          "claimed drafts and an old human challenge cannot admit the individual intention again",
+          "first local commit preserves supplier receipt and leaves only the contact queued",
+          "typed first-bind commits actual supplier identity before its native contact effect",
+          "PostgreSQL rejects rewriting a committed first-bind payload",
+          "PostgreSQL rejects rewriting the hash of an existing first-bind witness",
+          "schema rollback refuses to discard live first-bind payloads",
+          "human material review remaps all dependency step identities under a new exact hash",
+          "reviewed dependent workflow executes the updated source and one contact",
+          "stable sequential execution of 2 independent native operations",
+          "stable sequential execution of 3 independent native operations",
+          "stable sequential execution of 4 independent native operations",
+          "stable sequential execution of 5 independent native operations",
+          "stable sequential execution of 6 independent native operations",
+          "stable sequential execution of 7 independent native operations",
+          "stable sequential execution of 8 independent native operations",
+          "rejects duplicate drafts before claiming any draft",
+          "rejects self reference before claiming any draft",
+          "rejects future reference before claiming any draft",
+          "rejects cross chat reference before claiming any draft",
+          "rejects cross chat draft before claiming any draft",
+          "rejects unregistered output before claiming any draft",
+          "rejects unregistered target before claiming any draft",
+          "rejects duplicate binding target before claiming any draft",
+          "rejects unregistered coordinator catalog before claiming any draft",
+          "invalid dependency attempts leave both original drafts unchanged",
+          "concurrent individual confirmation and workflow claim have one winner and one supplier",
+          "SQL contact insert failure keeps the supplier committed and exposes resumable partial state",
+          "duplicate resume keeps native request key supplier ID and immutable first-bind while committing one contact",
+          "material pending correction creates a new proposal and exact hash linked to previous execution",
+          "continuation execution retains the same immutable prior execution lineage as its confirmed proposal",
+          "new human confirmation executes only corrected pending contact and leaves old supplier unchanged",
+          "cancellation between commits keeps supplier receipt and prevents all remaining effects",
+          "material supplier change before first-bind rejects pending contact without guessing or replay",
+          "non-resumable material failure can cancel its pending suffix while preserving the committed supplier receipt",
+          "new material confirmation after supplier change refreshes its snapshot and creates only the remaining contact against the verified supplier ID",
+          "one coordinator release preserves native financial and business contract hashes and receipts",
+          "real worker death after first commit keeps supplier and queues only second step",
+          "death after durable first-bind and before native contact effect permits exact explicit recovery",
+          "process recovery reuses first-bind payload hash and native intent key without another supplier",
+          "lost second-effect commit acknowledgement recovers both receipts without replay",
+          "chat expiry purges completed original and continuation journals while keeping their native supplier and corrected contact",
+          "expiry clears content-bearing first-bind payloads even for a running step before its native effect",
+          "expired first-bound execution is reconciled and erased without replaying supplier or contact",
+          "all workflow verification avoided provider inference"
+        ],
+        "provider_calls": 0,
+        "disposable_postgresql": true,
+        "human_confirmation_http_contract": true,
+        "synthetic_authenticated_fixture": true,
+        "actual_provider": false,
+        "mcp_publication": false
+      }
+    },
+    {
+      "stage": "22",
+      "command": "node test/nodia-ai-ai22.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:05:39.733696+00:00",
+      "duration_seconds": 22.34,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai22.integration.mjs",
+          "sha256": "3f88592bf192159396c71235864df4cb14c6fe7f13c8e98db987d444cf2f3b53"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai22-worker.fixture.mjs",
+          "sha256": "e3361d6ddcdcae514a106ab12f2f173525b262988ce7f5f4d1742afbdf17986e"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "98281d6177fe0510a96bcb0c2c80e2dd61440f2907bde3eadbf86721b7c75b3e",
+      "checks": 57,
+      "result": {
+        "stage": "AI-22",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_all_fourteen_native_business_mutations_no_provider_no_r2",
+        "checks": 57,
+        "exercised_operations": [
+          "businesses/create",
+          "businesses/set_collaborators",
+          "businesses/update",
+          "invoices/create",
+          "invoices/update",
+          "product_logs/create",
+          "product_logs/update",
+          "products/create",
+          "products/update",
+          "provider_contacts/create",
+          "provider_contacts/set_active",
+          "provider_contacts/update",
+          "providers/create",
+          "providers/update"
+        ],
+        "passed": [
+          "business create commits translations and derived description flag with one native receipt",
+          "business update preserves native empty translation-list upsert semantics while updating the derived flag",
+          "explicit empty translation values clear both languages without deleting their stable keys",
+          "collaborator assignment preserves native owner and creates the requested permissions",
+          "empty collaborator actions deactivate the specified collaborator while preserving omitted collaborators",
+          "ordinary actor cannot change a business owned by another user",
+          "provider creation preserves zero false JSON and native lowercase normalization",
+          "provider partial update preserves omitted tax fields and archived state despite DTO create initializers",
+          "contact creation preserves personal casing native values version and omits internal request keys",
+          "native request key replay recovers the AI-created contact and rejects a changed payload",
+          "complete contact replacement explicitly clears optional values and increments version once",
+          "contact status uses native CAS and preserves the other values",
+          "native identical immediate status replay does not increment contact version again",
+          "native changed stale contact payload cannot overwrite the confirmed state",
+          "contact parent scope and backend-owned keys cannot be supplied by model arguments",
+          "product creation commits one native product and matching history snapshot atomically",
+          "product update appends one complete native snapshot while preserving omitted state",
+          "independent history create and update do not mutate the live product",
+          "SQL invoice creation preserves zero false null and cannot invent an object path",
+          "invoice metadata update preserves omitted provider inactive state and zero total",
+          "invoice commands reject arbitrary storage keys and permissive legacy numeric coercion",
+          "all fourteen individual business operations commit exact native receipts",
+          "AI preparation and native provider update both reject transfers leaving linked products or invoices behind",
+          "legacy provider bulk transfer cannot bypass references and rejected batches preserve every selected provider",
+          "legacy bulk product creation rejects incompatible supplier scopes before writing products or logs",
+          "legacy bulk product update rejects mismatched supplier and duplicate targets without partial changes",
+          "native bulk product log failure rolls back every product and appended history row",
+          "human invoice review reparses stored commands preserving explicit integer zero",
+          "human contact review preserves the backend intent key across proposal revisions and creates one native contact",
+          "explicit null clears native product and invoice provider associations without stale ORM relations restoring them",
+          "provider transfer receipt binds the destination while native contacts remain with their parent",
+          "a provider transfer changes contact operation scope and invalidates the former parent business",
+          "same timestamp material product changes invalidate confirmation",
+          "material changes after admission reject old commands before a native effect",
+          "same timestamp supplier changes invalidate a frozen contact proposal",
+          "native global supplier access remains allowed with the target module while business ownership stays unchanged",
+          "super admin can manage a foreign business without transferring its owner",
+          "ordinary actors require the destination business module as well as NodiaAI",
+          "receipt failure rolls back the native product and its appended history together",
+          "real worker death before supplier UPDATE leaves no native effect and permits explicit resume",
+          "resumed supplier UPDATE commits once after duplicate human resume",
+          "lost invoice UPDATE commit acknowledgement reconciles its immutable native receipt",
+          "human cancellation fences a stale business worker before writing",
+          "native HTTP status and confirmed worker share contact CAS without duplicate version increments",
+          "a newly linked native product invalidates the frozen provider-transfer proof before confirmation",
+          "a newly linked native invoice after admission blocks the worker transfer without a receipt or resume",
+          "native product creation and confirmed supplier transfer serialize on the supplier and preserve business associations",
+          "native invoice creation and confirmed supplier transfer serialize on the supplier and preserve business associations",
+          "native bulk product create serializes with confirmed supplier transfer",
+          "native bulk product update serializes with confirmed supplier transfer",
+          "native bulk supplier transfer cannot bypass a confirmed product creation in flight",
+          "valid native bulk supplier transfers remain atomic and preserve requested response order",
+          "standalone compiled worker resolves all native metadata and commits a new business effect",
+          "standalone worker drains with its committed receipt preserved",
+          "all six business resource families remain readable through their native endpoints",
+          "all local business operations avoid AI provider calls and runtime slots",
+          "execution attempts and delivery leases terminate without orphans"
+        ]
+      }
+    },
+    {
+      "stage": "20",
+      "command": "node test/nodia-ai-ai20.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:06:02.069851+00:00",
+      "duration_seconds": 22.87,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai20.integration.mjs",
+          "sha256": "2d03a0ccf8ebc71b3e3da57812d0383b2208151ae6197a079c6fb500ad6e6917"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai20-worker.fixture.mjs",
+          "sha256": "4b444df8cef0d3bc1001f08bf174550dad6ffa4ba82c57370f327fd46be13c2a"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "06726b8b8e07c7e5e2c0d055f34c0af9fb2ca2246082e6c8733ed8633d1bc15d",
+      "checks": 36,
+      "result": {
+        "stage": "AI-20",
+        "scope": "compiled_http_standalone_worker_disposable_postgresql_process_crashes_local_native_finance_no_provider",
+        "checks": 36,
+        "passed": [
+          "production registration admits the verified one-step financial command without fixture overrides",
+          "two SQL claimants acquire exactly one execution lease",
+          "claim records one running step and durable attempt without a domain effect",
+          "claimed native effect receipt terminal state and attempt commit together",
+          "replaying a completed claimed identity returns its receipt without repeating native create",
+          "SQL freezes completed receipts command bindings and terminal execution states",
+          "cancel before claim stops the queued command and releases its chat without an effect",
+          "duplicate cancellation is terminal observation without an effect",
+          "cancelling a claimed local command fences the stale claimant before native create",
+          "process death after claim recovers a definite local rollback and offers explicit resume",
+          "expired claimant cannot create an effect after recovery fenced its attempt",
+          "human resume and response-lost replay preserve original execution source native key and command identity",
+          "resumed execution with a new fence commits exactly one original effect",
+          "lost COMMIT acknowledgement is reconciled from its durable receipt without another native effect",
+          "cancel after committed effect reports completed and preserves the created record",
+          "abrupt process death after COMMIT preserves the terminal receipt and cannot reopen the native effect",
+          "process death after native INSERT before COMMIT leaves neither movement nor receipt and is recoverable",
+          "explicit recovery after interrupted effect creates one movement with original identity",
+          "cancellation waits for the in-flight local transaction rather than reporting a false rollback",
+          "concurrent cancel after native COMMIT preserves the exact effect and completed receipt",
+          "material precondition changes produce a known failure requiring a new proposal",
+          "resume never refreshes a changed material snapshot or creates another financial effect",
+          "module revocation after admission prevents dispatch of the pending effect",
+          "permission failure releases the local worker with no false completed receipt",
+          "revoked confirmation session prevents effects while a new valid session can inspect the same failed execution",
+          "explicit resume renews authority under the new session without changing the original effect identity",
+          "foreign users and omniscient administrators cannot cancel a chat owned by another actor",
+          "expiry deletes chat payload while a claimed local execution retains only bounded reconciliation identity",
+          "SQL reconciliation removes the expired local journal after proving its transaction rolled back",
+          "an expired retained execution never reconstructs a command or dispatches another effect",
+          "conversation snapshot exposes the admitted execution before leaving its observation",
+          "production standalone worker claims and commits an admitted financial effect without provider access",
+          "standalone worker drains and its completed effect survives process shutdown and observation",
+          "reopening chat restores the original execution link and the effect is readable through native Finance API",
+          "local confirmed execution never acquires provider runtime slots or invokes model inference",
+          "all SQL claims are terminal with no abandoned open attempt"
+        ]
+      }
+    },
+    {
+      "stage": "18",
+      "command": "node test/nodia-ai-ai18.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:06:24.937048+00:00",
+      "duration_seconds": 12.0,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai18.integration.mjs",
+          "sha256": "27f9568d0612dc208af2769f275a80027c0a2da3ba7589aea6d8e77e865c8ee1"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ],
+      "log_sha256": "5b0337fbf4f699cb91653b9b829a9ca63ddeb048c868ee89d51410f32f73cb49",
+      "checks": 37,
+      "result": {
+        "stage": "AI-18",
+        "scope": "compiled_http_disposable_postgresql_native_preparation_synthetic_execution_admission_no_provider_no_domain_effect",
+        "checks": 37,
+        "passed": [
+          "production review reports unavailable execution without pretending approval can run",
+          "explicit empty executor registry rejects challenge and confirmation without creating work",
+          "AI-18 migration installs all three consumed tables",
+          "human review metadata binds typed editable fields to exact revision and hash",
+          "administrator inspection exposes read-only metadata without approval or edit controls",
+          "challenge is bound to the exact public proposal identity and hash",
+          "database stores only token digest and authenticated session",
+          "challenge expiry obeys 120 seconds and does not exceed proposal lifetime",
+          "foreign ordinary users and omniscient administrator cannot confirm as owner",
+          "same-session token rotates in place while other-device challenge remains independent",
+          "strict human wire rejects unknown fields, coerced revision, malformed token and duplicate JSON keys",
+          "double click admits exactly one execution and returns its identity twice",
+          "lost HTTP response retry recovers admitted work without consuming another challenge",
+          "another device discovers the existing execution after distinct-request conflict",
+          "one atomic confirmation freezes origin, exact approval hash and stable step identity",
+          "grant and typed job refer only to confirmed identity without provider credentials",
+          "human admission commits exactly one execution event without model run or challenge material",
+          "execution event dedup preserves exact target payload and scope while rejecting approval material",
+          "shared journal reserves four terminal slots and rolls back allocation with failed transaction",
+          "confirmed proposal retains exact content and exposes its admitted execution",
+          "reopening the chat observes the admitted execution without resubmitting confirmation",
+          "current-authority operation observation reports queued work without fictional business success",
+          "request identity cannot be rebound to another hash or proposal",
+          "challenge confirmation retry and inspection never renew owner-message retention",
+          "simultaneous different device requests admit one origin and reject the competitor",
+          "old revision and token cannot approve changed content",
+          "expired challenge cannot create execution",
+          "revoked destination module denies fresh admission and prior-result replay immediately",
+          "session revocation blocks result recovery while another current session retains observation",
+          "changed native precondition rejects admission without recomputing approved content",
+          "real per-owner waiting admission limit rejects excess work without consuming approval",
+          "outbox failure rolls back execution steps grant job challenge consumption and proposal state",
+          "same exact user approval remains usable after transactional rollback",
+          "SQL cannot rewrite approval identity, per-step identity or omit execution grant hash",
+          "SQL cannot append a step from another proposal to the confirmed operation",
+          "expired unstarted execution is purged with its challenge grant job steps and events",
+          "all admission and observation cases leave the business sentinel untouched and call no provider"
+        ]
+      }
+    },
+    {
+      "stage": "08",
+      "command": "node test/nodia-ai-ai08.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:06:36.933117+00:00",
+      "duration_seconds": 4.35,
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai08.integration.mjs",
+          "sha256": "1a1717851da2561d355599e5b56c7bd4c40ed0589f5f488adc5e975d1881016f"
+        }
+      ],
+      "log_sha256": "fff662daa733468aeef8b31d2a52d8d6266e80a414e5e1f9c61ee2af50cb50d7",
+      "checks": 39,
+      "result": {
+        "task": "AI-08",
+        "scope": "compiled_http_and_domain_ports_disposable_postgresql16",
+        "checks": 39,
+        "passed": [
+          "admin create preserves recipient ownership",
+          "ordinary recipient spoofing denied",
+          "admin without recipient stays in own scope",
+          "admin detail reads explicit recipient",
+          "edit never transfers historical owner",
+          "owner cannot be changed through an update payload",
+          "admin movement belongs to recipient",
+          "cross-owner category association remains rejected",
+          "summary aggregates requested owner only",
+          "admin own summary does not inherit recipient",
+          "admin preserves catalog deletion safeguards",
+          "admin house create separates owner and audit actor",
+          "ordinary unrelated house still hidden",
+          "ordinary cannot create house for another owner",
+          "admin discovers foreign house",
+          "admin update preserves owner and writes real actor",
+          "house ownership is immutable",
+          "rental journal attributes admin effect",
+          "reserved role cannot be disabled",
+          "reserved role key cannot be changed",
+          "reserved role cannot be deleted",
+          "module key immutable in REST update",
+          "module alias shares key protection",
+          "failed associations roll back the preceding user update",
+          "role revocation blocks behind an admitted effect",
+          "revoked admin cannot perform the next foreign effect",
+          "rental transversal access also disappears after role revocation",
+          "waiting repeatable-read query observes preceding revocation",
+          "snapshot port rejects an inherited weaker isolation",
+          "snapshot port preserves repeatable-read isolation in its parent",
+          "NodiaAI port commits under the same actor and transaction",
+          "outer failure rolls back the domain port effect",
+          "worker module revocation fails before invoking its port",
+          "concurrent deactivations preserve one active super administrator",
+          "last-admin association removal rejects the entire update",
+          "create-upsert cannot bypass last-admin protection",
+          "revoked session rejected inside the shared finance boundary",
+          "revoked session rejected inside rental boundary",
+          "revoked session rejected inside administrative write boundary"
+        ],
+        "configuredDatabaseTouched": false,
+        "providersCalled": false
+      }
+    },
+    {
+      "stage": "rental",
+      "command": "node test/rental.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:06:41.287539+00:00",
+      "duration_seconds": 23.34,
+      "inputs": [
+        {
+          "path": "nodia-server/test/rental.integration.mjs",
+          "sha256": "53d2879819bdfac1515dcbe62de0406776624d8cff755d28b14e5d8fe98289fb"
+        },
+        {
+          "path": "nodia-server/test/fixtures/authority.integration.mjs",
+          "sha256": "4fdcb9fb81ab5a0994e18f6b94c5d6a4e17f049d339755b48825341635f12b27"
+        }
+      ],
+      "log_sha256": "1122896fa8281ad3ee5dfeaeda8f3e1b8401f1254a6f4ceeded7b156da0653c2",
+      "checks": 14,
+      "result": {
+        "requests": 282,
+        "checks": [
+          "Migration up/down/up preserves existing synthetic data.",
+          "Eleven entities match migration metadata without synchronize.",
+          "Navigation seed is idempotent and does not assign modules to users.",
+          "Accommodations omit timezone and legacy times; rollback refuses to invent missing times.",
+          "Failure while persisting the intent and backend termination before commit leave no effect/audit/operation.",
+          "Statement cancellation and total transaction deadline return safe failures only after rollback.",
+          "1003-row pagination keeps SQL statement count constant; numeric sums, EXPLAIN and pg_dump restoration verified.",
+          "Turnover approvals invalidate after plan/neighbor changes; actual readiness gates start; controlled clock verifies complete.",
+          "SQL faults roll back effects/history; composite FKs, UNIQUE and CHECK reject invalid rows; aggregate CLP exceeds bigint exactly.",
+          "A PostgreSQL lock barrier verifies membership again after committed revocation.",
+          "HTTP workflow: authority, drafts, payments, snapshots, confirmation, cancellation, refund budget, expenses and Airbnb net cash.",
+          "Concurrent same-key house/payment writes, overlapping confirmations and reservation-block races preserve invariants.",
+          "Every successful HTTP operation matches its response schema; all 42 house routes reject outsiders, revoked members and anonymous callers.",
+          "Compiled ESM/Nest dependency injection and 44 Swagger operations match the contract."
+        ]
+      }
+    },
+    {
+      "stage": "modules",
+      "command": "node test/module-catalog.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:07:04.629513+00:00",
+      "duration_seconds": 3.67,
+      "inputs": [
+        {
+          "path": "nodia-server/test/module-catalog.integration.mjs",
+          "sha256": "daf251cfd1927a6782f7828c47ff765c155320bf633e0a4839c436c95c4534dd"
+        },
+        {
+          "path": "nodia-server/test/fixtures/authority.integration.mjs",
+          "sha256": "4fdcb9fb81ab5a0994e18f6b94c5d6a4e17f049d339755b48825341635f12b27"
+        }
+      ],
+      "log_sha256": "7f95db76f0daa46c10e48ce2b95e5667fffc693e5f5e11bc3443dbfe9fe51685",
+      "checks": 7,
+      "result": {
+        "result": "passed",
+        "requests": 46,
+        "invalidations": 5,
+        "checks": [
+          "aliases and auth boundary",
+          "bigint IDs",
+          "active filters",
+          "active and inactive group associations",
+          "assignment and translation cleanup",
+          "transaction rollback",
+          "both concurrent association orders"
+        ]
+      }
+    },
+    {
+      "stage": "actions",
+      "command": "node test/action-catalog.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:07:08.302290+00:00",
+      "duration_seconds": 3.37,
+      "inputs": [
+        {
+          "path": "nodia-server/test/action-catalog.integration.mjs",
+          "sha256": "89ab7c5fd1dd729c42f70a9551fcc45d058263348211d74ed4cd22e5f1c0f48d"
+        },
+        {
+          "path": "nodia-server/test/fixtures/authority.integration.mjs",
+          "sha256": "4fdcb9fb81ab5a0994e18f6b94c5d6a4e17f049d339755b48825341635f12b27"
+        }
+      ],
+      "log_sha256": "e8fa5c71a8bbe198504a0fcbf651a05514a719f050e1125b57c81052db06b1d3",
+      "checks": 7,
+      "result": {
+        "result": "passed",
+        "requests": 26,
+        "invalidations": 4,
+        "checks": [
+          "compiled DI and aliases",
+          "synthetic auth boundary",
+          "exact bigint IDs",
+          "both active filters",
+          "assignment and translation cleanup",
+          "rollback",
+          "both concurrent association orders"
+        ]
+      }
+    },
+    {
+      "stage": "roles",
+      "command": "node test/role-catalog.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:07:11.674661+00:00",
+      "duration_seconds": 3.68,
+      "inputs": [
+        {
+          "path": "nodia-server/test/role-catalog.integration.mjs",
+          "sha256": "471ec0db219d1929ac1ba145b58f9ac89cc92953fee8a55eb6e352ed19743f56"
+        },
+        {
+          "path": "nodia-server/test/fixtures/authority.integration.mjs",
+          "sha256": "4fdcb9fb81ab5a0994e18f6b94c5d6a4e17f049d339755b48825341635f12b27"
+        }
+      ],
+      "log_sha256": "1fbb48935770a6e5503cfbb6fbc1858804d5c416f88981b322478c503a6cf0cb",
+      "checks": 8,
+      "result": {
+        "result": "passed",
+        "requests": 35,
+        "invalidations": 7,
+        "checks": [
+          "compiled aliases and synthetic auth",
+          "reserved role active/inactive",
+          "rename protection",
+          "exact bigint",
+          "server filters without narrowing assignments",
+          "selective cleanup",
+          "delete and update rollback",
+          "both FK race orders for users and actions"
+        ]
+      }
+    },
+    {
+      "stage": "api",
+      "command": "node test/ai-api.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:07:15.358589+00:00",
+      "duration_seconds": 3.4,
+      "inputs": [
+        {
+          "path": "nodia-server/test/ai-api.integration.mjs",
+          "sha256": "af9501776932e1381429f9de49dd4946cb42cd6b6645890a8ea7b076901c14f8"
+        }
+      ],
+      "log_sha256": "2dab44195c09311e3033ce7a0bcaa94cfabd5c85565c7b9de24e5b71d5ce07ef",
+      "checks": null,
+      "result_text": "Isolated PostgreSQL: catalog rerun/down preserves rows; catalog modes enforced; encrypted keys, duplicate rollback and concurrent selection verified."
+    },
+    {
+      "stage": "agentic",
+      "command": "node test/agentic-cli.integration.mjs",
+      "exit_code": 0,
+      "started_at_utc_windows_host": "2026-10-17T19:07:18.755360+00:00",
+      "duration_seconds": 1.16,
+      "inputs": [
+        {
+          "path": "nodia-server/test/agentic-cli.integration.mjs",
+          "sha256": "b2bad47cb78cc9c2c9ca49a63d581c76502c05f6c97a5728a4a8f63bcf5934a8"
+        }
+      ],
+      "log_sha256": "949616c712c573fd33a9974cbeeed49d699d2719f2cda104b3e98e074b1070a7",
+      "checks": null,
+      "result_text": "Agentic HTTP integration passed (isolated fixtures): aliases, auth, health, status, models, scoped sync, verify and analysis; Web offline; no production writes."
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "stage": "AI-33",
+  "scope": "frozen_compiled_SQL_disposable_staging_integrity",
+  "status": "passed",
+  "compiled_files": 2703,
+  "manifest_sha256": "216be1620a63812cbbadb564e03bcb4cf33431bde71ddb671c8ef1dc1cd708ab",
+  "test_sha256": "38c1ae313dda53c61a0849cb499262b526be28152bde71820fc2a25cbbb2d7ef",
+  "dependency_versions": {
+    "@nestjs/common": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1",
+      "same_when_present": true
+    },
+    "@nestjs/core": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1",
+      "same_when_present": true
+    },
+    "@nestjs/testing": {
+      "staging": "12.0.1",
+      "activated_runtime": null,
+      "same_when_present": true
+    },
+    "@nestjs/typeorm": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1",
+      "same_when_present": true
+    },
+    "typeorm": {
+      "staging": "1.1.1",
+      "activated_runtime": "1.1.1",
+      "same_when_present": true
+    },
+    "pg": {
+      "staging": "8.23.0",
+      "activated_runtime": "8.23.0",
+      "same_when_present": true
+    },
+    "@aws-sdk/client-s3": {
+      "staging": "3.1136.0",
+      "activated_runtime": "3.1136.0",
+      "same_when_present": true
+    }
+  },
+  "version_observation": "VM stage verification for final attempt05; testing package absent from production by design",
+  "configured_environment_copied": false,
+  "production_deployed_by_staging": false,
+  "provider_generations": 0,
+  "storage_operations": 0
+}

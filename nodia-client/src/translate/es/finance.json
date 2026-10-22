@@ -161,5 +161,7 @@
   "category_has_movements": "La categoría está vinculada a movimientos y no se puede eliminar.",
   "obligation_has_payments": "El préstamo o deuda tiene pagos asociados y no se puede eliminar.",
   "delete_initial_on_obligation": "El movimiento inicial se elimina desde el préstamo o deuda, únicamente si no tiene pagos.",
-  "section": "Sección"
+  "section": "Sección",
+  "scope_denied": "No tienes acceso a las finanzas de ese usuario.",
+  "owner_not_found": "El usuario propietario no existe."
 }

@@ -3,6 +3,40 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "assets": [
+      {
+        "include": "nodia-ai-tools/config/tool-selection*.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai-attachment/config/*.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai-reports/config/*.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai-products/contracts/*.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai-conversation/config/conversation-policy.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai-runtime/config/runtime-policy.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai-context/config/*.json",
+        "watchAssets": true
+      },
+      {
+        "include": "nodia-ai/knowledge/**/*",
+        "watchAssets": true
+      }
+    ]
   }
 }

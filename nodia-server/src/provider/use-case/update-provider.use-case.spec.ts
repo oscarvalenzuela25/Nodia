@@ -1,3 +1,4 @@
+import type { EntityManager } from 'typeorm';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UpdateProviderUseCase } from './update-provider.use-case.js';
 import type { ProviderService } from '../provider.service.js';
@@ -45,5 +46,74 @@ describe('UpdateProviderUseCase', () => {
       is_active: false,
     });
     expect(result).toEqual(updated);
+  });
+  it.each(['product_count', 'invoice_count'])(
+    'blocks transfer with incompatible %s while retaining the provider',
+    async (key) => {
+      const query = vi.fn(async () => [
+        { product_count: '0', invoice_count: '0', [key]: '1' },
+      ]);
+      const manager = {
+        query,
+        queryRunner: { isTransactionActive: true },
+      } as unknown as EntityManager;
+      const service = {
+        transaction: vi.fn(async (_manager, work) => work(manager)),
+        scopes: vi.fn(async () => [
+          { id: '1', business_id: '11111111-1111-4111-8111-111111111111' },
+        ]),
+        lockBusinesses: vi.fn(),
+        lockProvider: vi.fn(async () => ({
+          id: '1',
+          business_id: '11111111-1111-4111-8111-111111111111',
+        })),
+        update: vi.fn(),
+      };
+      const uc = new UpdateProviderUseCase(
+        service as unknown as ProviderService,
+      );
+      await expect(
+        uc.execute(
+          '1',
+          { business_id: '22222222-2222-4222-8222-222222222222' },
+          manager,
+        ),
+      ).rejects.toThrow('Provider cannot move');
+      expect(service.update).not.toHaveBeenCalled();
+    },
+  );
+  it('moves an unattached provider using the same manager after checking references under its lock', async () => {
+    const query = vi.fn(async () => [
+      { product_count: '0', invoice_count: '0' },
+    ]);
+    const manager = {
+      query,
+      queryRunner: { isTransactionActive: true },
+    } as unknown as EntityManager;
+    const service = {
+      transaction: vi.fn(async (transaction, work) => work(transaction)),
+      scopes: vi.fn(async () => [
+        { id: '1', business_id: '11111111-1111-4111-8111-111111111111' },
+      ]),
+      lockBusinesses: vi.fn(),
+      lockProvider: vi.fn(async () => ({
+        id: '1',
+        business_id: '11111111-1111-4111-8111-111111111111',
+      })),
+      update: vi.fn(async (id, dto) => ({ id, ...dto })),
+    };
+    const uc = new UpdateProviderUseCase(service as unknown as ProviderService),
+      destination = '22222222-2222-4222-8222-222222222222';
+    expect(
+      await uc.execute('1', { business_id: destination }, manager),
+    ).toMatchObject({ id: '1', business_id: destination });
+    expect(service.update).toHaveBeenCalledWith(
+      '1',
+      { business_id: destination },
+      manager,
+    );
+    expect(service.lockProvider.mock.invocationCallOrder[0]).toBeLessThan(
+      query.mock.invocationCallOrder[0],
+    );
   });
 });

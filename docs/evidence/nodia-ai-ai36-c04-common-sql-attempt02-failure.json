@@ -1,0 +1,14 @@
+{
+  "stage": "AI-36-C04",
+  "attempt": "attempt02",
+  "classification": "synthetic_fixture_frozen_grant_revocation_expectation",
+  "production_change_required": false,
+  "configured_database_used": false,
+  "actual_provider_generations": 0,
+  "disposable_containers_remaining": 0,
+  "stderr_sha256": "637762dd74392596de991f4a5a0d3d5a44aa85fb7819563f255aa21ba1509131",
+  "reason": "Fixture attempted another callback after revoking a module present in the current frozen grant. The checkpoint correctly reauthorizes the full grant and refuses all callbacks.",
+  "correction": "Retain the denial assertion, restore the original run grant and complete it. A separate run is admitted without the destination module to verify unavailable own preference metadata and denied preference writes.",
+  "compiled_outputs_unchanged_for_correction": true,
+  "fixture_validation_preserved": true
+}

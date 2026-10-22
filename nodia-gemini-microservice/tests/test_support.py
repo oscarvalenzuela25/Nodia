@@ -16,6 +16,7 @@ _root = Path(_directory)
 _isolation.enter_context(patch.dict(os.environ, {
     "GEMINI_SECURE_1PSID": "", "GEMINI_SECURE_1PSIDTS": "", "GEMINI_MODEL": "",
     "GEMINI_COOKIE_PATH": str(_root / "sdk-cache"),
+    "GEMINI_WEB_REASONING_PROFILES_PATH": "",
     "ANTIGRAVITY_CLI_PATH": "",
 }))
 _original_connect = socket.socket.connect
@@ -54,7 +55,8 @@ RESULT = {"code": "INV-1", "total_amount": 1200,
 
 def fake_web():
     return SimpleNamespace(
-        init_client=AsyncMock(), close=AsyncMock(), is_initialized=False, client=None,
+        init_client=AsyncMock(), close=AsyncMock(), assert_login_allowed=lambda: None,
+        disconnect=AsyncMock(), is_initialized=False, client=None,
         get_status=AsyncMock(return_value={"initialized": False, "has_cookies": False,
             "has_browser_profile": False, "model": None, "model_display": None, "tier": "UNKNOWN"}),
         get_quota_summary=AsyncMock(return_value={"source": "web", "observed_at": None,

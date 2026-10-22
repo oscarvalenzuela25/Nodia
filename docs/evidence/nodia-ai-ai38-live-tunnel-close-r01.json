@@ -1,0 +1,10 @@
+{
+  "schema": "ai38-live-tunnel-close-v1",
+  "status": "passed",
+  "process_id": 30428,
+  "identity_verified_before_stop": true,
+  "only_own_ssh_stopped": true,
+  "local_5174_listeners_after": 0,
+  "VM_services_stopped": false,
+  "browser_test_tab_closed": true
+}

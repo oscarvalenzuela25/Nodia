@@ -1,0 +1,37 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "GO13_one_metadata_refresh_then_unconsumed_single_canary",
+  "status": "preflight_unavailable_no_native_start",
+  "started_at_utc": "2026-10-19T19:21:32.162378+00:00",
+  "native_start_requests": 0,
+  "accepted_native_starts": 0,
+  "maximum_native_start_requests": 1,
+  "source_runner_sha256": "d281b058211a36ebe08055b24880dd1a1015c746230c368f68f7ba1febc419ab",
+  "inference_retry": false,
+  "previous_preflight_failed_before_any_native_start": true,
+  "metadata_requests": 1,
+  "observation": {
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "available": false,
+    "reason": "agentic_unavailable",
+    "supports_mcp": false,
+    "elapsed_ms": 12064.849246,
+    "observed_at_utc": "2026-10-19T19:21:32.504Z",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "session_generation_sha256": "12725b26006737b4b18038f662ae65b8471a0873f2deb7f7bcd0370119b0c75d",
+    "verified_modalities": [],
+    "verified_attachment_media_types": []
+  },
+  "public_resource_snapshot": {
+    "CPUPerc": "0.21%",
+    "MemUsage": "66.75MiB / 2GiB",
+    "MemPerc": "3.26%",
+    "PIDs": "5"
+  },
+  "finished_at_utc": "2026-10-19T19:21:45.580752+00:00"
+}

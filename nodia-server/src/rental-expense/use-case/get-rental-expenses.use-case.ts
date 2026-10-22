@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   BadRequestException,
   Injectable,
@@ -24,14 +25,14 @@ export class GetRentalExpensesUseCase {
     private readonly expenses: RentalExpenseService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: RentalExpenseQueryDto,
   ) {
     const query = await validateRentalDto(RentalExpenseQueryDto, input);
     validateRentalQuery(query, 'expenses');
     validateCivilPeriod(query.from_on, query.to_on);
-    return this.tx.read(actorId, propertyId, async ({ manager }) => {
+    return this.tx.read(actor, propertyId, async ({ manager }) => {
       const [rows, total] = await this.expenses.list(
         manager,
         propertyId,
@@ -48,9 +49,9 @@ export class GetRentalExpenseUseCase {
     private readonly tx: RentalTransactionService,
     private readonly expenses: RentalExpenseService,
   ) {}
-  async execute(actorId: string, propertyId: string, id: string) {
+  async execute(actor: ActorReference, propertyId: string, id: string) {
     if (!isRentalId(id)) throw new BadRequestException('rental:invalid_input');
-    return this.tx.read(actorId, propertyId, async ({ manager }) => {
+    return this.tx.read(actor, propertyId, async ({ manager }) => {
       const row = await this.expenses.find(manager, propertyId, id);
       if (!row) throw new NotFoundException('rental:not_found');
       return projectRentalExpense(row);

@@ -9,6 +9,7 @@ import { sileo } from "sileo";
 import { useQueryClient } from "@tanstack/react-query";
 import { notifyHttpError } from "../../../../../../config/httpFeedback";
 import BaseModal from "../../../../../../components/BaseModal";
+import GeminiLoginViewer from "../GeminiLoginViewer";
 import {
   useCancelGeminiLogin,
   useGeminiLoginStatus,
@@ -25,12 +26,15 @@ const RemoteLoginModal: FC<RemoteLoginModalProps> = ({ open, onClose, onSuccess 
   const { t } = useTranslation(["ai_providers", "core"]);
   const queryClient = useQueryClient();
   const [jobId, setJobId] = useState<string | null>(null);
+  const [operationError, setOperationError] = useState<string | null>(null);
   const notifiedResult = useRef<string | null>(null);
   const startLogin = useStartGeminiLogin();
   const cancelLogin = useCancelGeminiLogin();
   const loginStatus = useGeminiLoginStatus(jobId, open);
+  const jobUnavailable = isAxiosError(loginStatus.error) && loginStatus.error.response?.status === 404;
   const isRunning =
     jobId !== null &&
+    !jobUnavailable &&
     !["succeeded", "failed", "cancelled"].includes(
       loginStatus.data?.state ?? "running"
     );
@@ -82,15 +86,16 @@ const RemoteLoginModal: FC<RemoteLoginModalProps> = ({ open, onClose, onSuccess 
     const serverMessage = isAxiosError<{ message?: string }>(error)
       ? error.response?.data?.message
       : undefined;
+    const description = typeof serverMessage === "string" ? serverMessage : t("core:server_error_toast");
+    setOperationError(description);
     sileo.error({
       title: t("ai_providers:modal_login.error_title"),
-      description: typeof serverMessage === "string"
-        ? serverMessage
-        : t("core:server_error_toast"),
+      description,
     });
   };
 
   const handleStart = async () => {
+    setOperationError(null);
     try {
       const job = await startLogin.mutateAsync();
       notifiedResult.current = null;
@@ -115,6 +120,7 @@ const RemoteLoginModal: FC<RemoteLoginModalProps> = ({ open, onClose, onSuccess 
       }
     }
     setJobId(null);
+    setOperationError(null);
     onClose();
   };
 
@@ -129,7 +135,7 @@ const RemoteLoginModal: FC<RemoteLoginModalProps> = ({ open, onClose, onSuccess 
       >
         {t(isRunning ? "ai_providers:modal_login.cancel" : "ai_providers:modal_login.close")}
       </Button>
-      {import.meta.env.DEV && (
+      {(
         <Button
           variant="contained"
           startIcon={startLogin.isPending ? <CircularProgress size={16} color="inherit" /> : <OpenInNewOutlinedIcon />}
@@ -147,7 +153,7 @@ const RemoteLoginModal: FC<RemoteLoginModalProps> = ({ open, onClose, onSuccess 
       open={open}
       onClose={isActionBlocked ? () => {} : handleClose}
       title={t("ai_providers:modal_login.title")}
-      size="sm"
+      size="lg"
       actions={modalActions}
       showCloseButton={!isActionBlocked}
     >
@@ -178,22 +184,23 @@ const RemoteLoginModal: FC<RemoteLoginModalProps> = ({ open, onClose, onSuccess 
         </Box>
 
         <Alert severity="info" sx={{ borderRadius: 1.5 }}>
-          {t(import.meta.env.DEV
-            ? "ai_providers:modal_login.local_description"
-            : "ai_providers:modal_login.unavailable")}
+          {t("ai_providers:modal_login.local_description")}
         </Alert>
 
         <Typography variant="body2" color="text.secondary">
-          {t(import.meta.env.DEV
-            ? "ai_providers:modal_login.local_instruction"
-            : "ai_providers:modal_login.operator_instruction")}
+          {t("ai_providers:modal_login.local_instruction")}
         </Typography>
         {isRunning && <Typography role="status">{t("ai_providers:modal_login.status_pending")}</Typography>}
+        {operationError && <Alert severity="error">{operationError}</Alert>}
+        {open && jobId && isRunning && <GeminiLoginViewer key={jobId} id={jobId} />}
         {loginStatus.data?.state === "failed" && (
           <Alert severity="error">{t("ai_providers:modal_login.error_desc")}</Alert>
         )}
         {loginStatus.isError && (
-          <Alert severity="error">{t("core:server_error_toast")}</Alert>
+          <Alert severity="error" action={!jobUnavailable && <Button color="inherit" disabled={isActionBlocked}
+            onClick={() => void loginStatus.refetch()}>{t("ai_providers:modal_login.refresh_viewer")}</Button>}>
+            {t("core:server_error_toast")}
+          </Alert>
         )}
       </Box>
     </BaseModal>

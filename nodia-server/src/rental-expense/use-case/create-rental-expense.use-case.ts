@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { validateRentalDto } from '../../rental-common/rental-validation.js';
@@ -15,11 +16,12 @@ export class CreateRentalExpenseUseCase {
     private readonly expenses: RentalExpenseService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: CreateRentalExpenseDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(CreateRentalExpenseDto, input);
     const command = {
       ...dto,
@@ -30,7 +32,7 @@ export class CreateRentalExpenseUseCase {
     };
     return this.tx.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'expense.create',

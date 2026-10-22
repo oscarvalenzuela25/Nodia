@@ -66,7 +66,7 @@ Requisito confirmado el 2026-09-12: separar la navegación estricta de la navega
 
 | Guard | Regla | Uso actual |
 |---|---|---|
-| `GuardStrict` | Sesión validada y módulo asignado para el destino indicado en `modulePath` | `/tools/reservations`, `/tools/finances-personal`, `/tools/business` y `/:id`, `/settings/users`, `/settings/roles`, `/settings/actions`, `/settings/modules`, `/settings/ai-providers` |
+| `GuardStrict` | Sesión validada y módulo asignado para el destino indicado en `modulePath` | `/tools/nodia-ai`, `/tools/reservations`, `/tools/finances-personal`, `/tools/business` y `/:id`, `/settings/users`, `/settings/roles`, `/settings/actions`, `/settings/modules`, `/settings/ai-providers` |
 | `Guard` | Permite visitantes en modo demo y usuarios con sesión validada | `/` y futuros módulos públicos |
 | `NoGuard` | Pantalla exclusiva para visitantes; una sesión autenticada redirige a `/` | `/login` |
 

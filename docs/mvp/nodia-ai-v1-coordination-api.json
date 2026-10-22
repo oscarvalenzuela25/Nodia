@@ -1,0 +1,547 @@
+{
+  "contractVersion": "v1-ai01",
+  "status": "partially_implemented_local",
+  "sourceDocument": "docs/mvp/46-nodia-ai-ai01-contract-baseline.md",
+  "schemaLibrary": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+  "dates": {
+    "definition": "2026-10-14",
+    "ai09": "2026-10-15",
+    "ai10": "2026-10-15",
+    "ai12": "2026-10-15",
+    "ai13": "2026-10-16",
+    "ai14": "2026-10-16",
+    "ai15": "2026-10-16",
+    "ai16": "2026-10-16",
+    "ai17": "2026-10-16",
+    "ai18": "2026-10-17",
+    "ai20": "2026-10-17",
+    "AI-32": "2026-10-17",
+    "AI-33": "2026-10-18",
+    "AI-34": "2026-10-18",
+    "AI-35": "2026-10-18",
+    "AI-36-C01": "2026-10-18",
+    "AI-36-C02": "2026-10-18",
+    "AI-36-C03": "2026-10-18",
+    "AI-36-C04": "2026-10-18",
+    "AI-36-C05": "2026-10-18"
+  },
+  "errorContract": "ApiErrorResponse",
+  "pathContracts": {
+    "id": "ProtocolId",
+    "name": "registered_capability_name",
+    "reference": "ProtocolId"
+  },
+  "queryEncoding": "Schemas describe normalized query. Canonical booleans/integers and cursor envelope validated in HTTP DTOs; no implicit coercion.",
+  "noModelConfirmation": true,
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/conversations",
+      "channel": "app",
+      "inputContract": "ConversationCreateRequest",
+      "outputContract": "ConversationSummary",
+      "implemented": true,
+      "implementationPhase": "AI-10",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations",
+      "channel": "app",
+      "inputContract": "ConversationListQuery",
+      "outputContract": "ConversationPage",
+      "implemented": true,
+      "implementationPhase": "AI-10",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/:id",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": "ConversationDetail",
+      "implemented": true,
+      "implementationPhase": "AI-10",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/nodia-ai/conversations/:id",
+      "channel": "app",
+      "inputContract": "ConversationUpdateRequest",
+      "outputContract": "ConversationSummary",
+      "implemented": true,
+      "implementationPhase": "AI-10",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/conversations/:id/messages",
+      "channel": "app",
+      "inputContract": "MessageListQuery",
+      "outputContract": "MessagePage",
+      "implemented": true,
+      "implementationPhase": "AI-10",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/conversations/:id/messages",
+      "channel": "app",
+      "inputContract": "MessageCreateRequest",
+      "outputContract": "MessageAccepted",
+      "implemented": true,
+      "successStatus": 202,
+      "implementationPhase": "AI-10",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools",
+      "implementationLimitations": [
+        "text_only_until_AI-32"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/nodia-ai/conversations/:id/selection",
+      "channel": "app",
+      "inputContract": "SelectionUpdateRequest",
+      "outputContract": "ConversationSummary",
+      "implemented": true,
+      "implementationPhase": "AI-10",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/nodia-ai/conversations/:id/routing",
+      "channel": "app",
+      "inputContract": "RoutingUpdateRequest",
+      "outputContract": "ConversationSummary",
+      "implemented": true,
+      "requires": "current_owner_session_positive_conversation_and_routing_revisions_exact_same_connection_agentic_target_reacceptance",
+      "reason": "Typed opt-in preference; publication requires AI-10/12 eligibility and dispatch checks; API is excluded as routing target",
+      "implementationPhase": "AI-12",
+      "implementationScope": "local_backend_verified; no deployed UI or business MCP tools"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/runs/:id",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": "RunSummary",
+      "implemented": true,
+      "implementationPhase": "AI-16",
+      "implementationScope": "durable_read_only_observation_current_authority"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/runs/:id/events",
+      "channel": "app",
+      "inputContract": "EventListQuery",
+      "outputContract": "EventPage",
+      "implemented": true,
+      "sseFrameContract": "PublicEvent",
+      "sseLastEventId": "event.cursor",
+      "semantics": "Read-only observation; does not admit/replay work",
+      "implementationPhase": "AI-16",
+      "implementationScope": "durable_read_only_observation_current_authority",
+      "delivery": "durable_bounded_polling",
+      "sseImplemented": false,
+      "cursorSemantics": "next_cursor is last scanned checkpoint even when filtered/empty; has_more drains backlog; visibility change resets; actor/session/run mismatch rejects"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/runs/:id/cancel",
+      "channel": "app",
+      "inputContract": "CancelRunRequest",
+      "outputContract": "RunCancellationResult",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/capabilities",
+      "channel": "app",
+      "inputContract": "CatalogSearchInput",
+      "outputContract": "CatalogSearchResult",
+      "implemented": true,
+      "implementationPhase": "AI-14",
+      "implementationScope": "authorized_registry_discovery_only; published domain capability set remains empty"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/capabilities/:name",
+      "channel": "app",
+      "inputContract": "CatalogDescribeInput",
+      "outputContract": "CapabilityDescriptor",
+      "implemented": true,
+      "pathManagedFields": [
+        "tool_name"
+      ],
+      "queryManagedFields": [
+        "catalog_version"
+      ],
+      "implementationPhase": "AI-14",
+      "implementationScope": "authorized_registry_discovery_only; published domain capability set remains empty"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/capabilities/:name/schema",
+      "channel": "app",
+      "inputContract": "CatalogDescribeInput",
+      "outputContract": "CapabilitySchemas",
+      "implemented": true,
+      "pathManagedFields": [
+        "tool_name"
+      ],
+      "queryManagedFields": [
+        "catalog_version"
+      ],
+      "requires": "resolved_strict_registered_input_output_schemas",
+      "implementationPhase": "AI-14",
+      "implementationScope": "authorized_registry_discovery_only; published domain capability set remains empty"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/connections",
+      "channel": "app",
+      "inputContract": "ChatConnectionListQuery",
+      "outputContract": "ChatConnectionPage",
+      "implemented": true,
+      "implementationPhase": "AI-13",
+      "implementationScope": "authorized_configuration_catalog; execution remains unknown until exact non-generative eligibility observation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/:id",
+      "channel": "app",
+      "inputContract": "ProposalVersionQuery",
+      "outputContract": "PublicProposal",
+      "implemented": true,
+      "implementationPhase": "AI-17",
+      "implementationScope": "M2 native preparation and immutable revisions; human GET/PATCH/cancel only; no MCP prepare publication, confirmation or business execution"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/nodia-ai/proposals/:id",
+      "channel": "human",
+      "inputContract": "ProposalUpdateRequest",
+      "outputContract": "PublicProposal",
+      "implemented": true,
+      "implementationPhase": "AI-17",
+      "implementationScope": "M2 native preparation and immutable revisions; human GET/PATCH/cancel only; no MCP prepare publication, confirmation or business execution"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/proposals/:id/confirmation-challenge",
+      "channel": "human",
+      "inputContract": "ConfirmationChallengeRequest",
+      "outputContract": "ConfirmationChallengeResponse",
+      "implemented": true,
+      "implementationPhase": "AI-18",
+      "implementationScope": "Human exact-revision confirmation and atomic admission; production execution registry empty until native executor verified"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/proposals/:id/confirm",
+      "channel": "human",
+      "inputContract": "ConfirmationRequest",
+      "outputContract": "ExecutionAccepted",
+      "implemented": true,
+      "successStatus": 202,
+      "implementationPhase": "AI-18",
+      "implementationScope": "Human exact-revision confirmation and atomic admission; production execution registry empty until native executor verified"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/proposals/:id/cancel",
+      "channel": "human",
+      "inputContract": "ProposalCancelRequest",
+      "outputContract": "PublicProposal",
+      "implemented": true,
+      "implementationPhase": "AI-17",
+      "implementationScope": "M2 native preparation and immutable revisions; human GET/PATCH/cancel only; no MCP prepare publication, confirmation or business execution"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/operations/:id",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": "ExecutionStatus",
+      "implemented": true,
+      "implementationPhase": "AI-20",
+      "implementationScope": "Single local financial effect with fenced worker, atomic receipt, SQL recovery and human-only cancel/resume; no MCP preparer publication"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/operations/:id/resume",
+      "channel": "human",
+      "inputContract": "ResumeExecutionRequest",
+      "outputContract": "ExecutionAccepted",
+      "implemented": true,
+      "successStatus": 202,
+      "implementationPhase": "AI-20",
+      "implementationScope": "Single local financial effect with fenced worker, atomic receipt, SQL recovery and human-only cancel/resume; no MCP preparer publication"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/operations/:id/cancel",
+      "channel": "human",
+      "inputContract": "ExecutionCancelRequest",
+      "outputContract": "ExecutionCancellationResult",
+      "implemented": true,
+      "implementationPhase": "AI-20",
+      "implementationScope": "Single local financial effect with fenced worker, atomic receipt, SQL recovery and human-only cancel/resume; no MCP preparer publication"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/attachments",
+      "channel": "human",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "implementationPhase": "AI-32",
+      "outputResolution": "registered_attachment_output_schema",
+      "implementationSchema": "nodia-server/src/nodia-ai-attachment/config/attachment-contract.schema.json",
+      "inputDefinition": "CreateIntent",
+      "outputDefinition": "UploadIntent",
+      "requires": "current_session_and_conversation_authority",
+      "encoding": "application/json",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/attachments/:id",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "implementationPhase": "AI-32",
+      "outputResolution": "registered_attachment_output_schema",
+      "implementationSchema": "nodia-server/src/nodia-ai-attachment/config/attachment-contract.schema.json",
+      "inputDefinition": null,
+      "outputDefinition": "Metadata",
+      "requires": "current_session_and_conversation_authority",
+      "encoding": "application/json",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/preferences",
+      "channel": "app",
+      "inputContract": "PreferencePageQuery",
+      "outputContract": "PreferencePage",
+      "implemented": true,
+      "implementationPhase": "AI-33",
+      "implementationScope": "local_typed_owner_preference_coordination; writes_require_separate_exact_human_confirmation",
+      "cacheControl": "no-store"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/tool-calls/:id/result",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "outputResolution": "registered_tool_output_schema",
+      "requires": "current_authority_and_known_exact_tool_contract",
+      "reason": "Result reference resolves through strict domain/common schema, never generic unvalidated result JSON",
+      "implementationPhase": "AI-16",
+      "implementationScope": "durable_read_only_observation_current_authority"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/connections/:id/eligibility",
+      "channel": "app",
+      "inputContract": "ChatEligibilityQuery",
+      "outputContract": "ChatEligibility",
+      "implemented": true,
+      "implementationPhase": "AI-13",
+      "implementationScope": "authorized_exact_selection_non_generative_observation; no MCP probing or business tools",
+      "pathContracts": {
+        "id": "BigintId"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/artifacts/:reference",
+      "channel": "human",
+      "inputContract": null,
+      "outputContract": null,
+      "outputResolution": "private_artifact_stream",
+      "implemented": true,
+      "implementationPhase": "AI-15",
+      "implementationScope": "authenticated_private_binary_download; current_on_download; exact chat/session/module/native authority revalidated before returning bytes; no URLs or CSV contents in MCP results",
+      "successContentTypes": [
+        "text/csv; charset=utf-8",
+        "application/pdf",
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+      ],
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/tool-calls/:id/observation",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": "ToolObservation",
+      "implemented": true,
+      "implementationPhase": "AI-16",
+      "requires": "current_conversation_and_exact_registered_tool_resource_authority",
+      "semantics": "Closed source/time/summary/navigation only; does not execute handler or refresh historical result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/:id/review-metadata",
+      "channel": "app",
+      "inputContract": "ProposalVersionQuery",
+      "outputContract": "ProposalReviewMetadata",
+      "implemented": true,
+      "implementationPhase": "AI-18",
+      "implementationScope": "Current authority and registered scalar editors; confirmation gated by verified execution admission"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/operations/:id/secure-flow",
+      "channel": "human",
+      "inputContract": null,
+      "outputContract": null,
+      "outputResolution": "private_secure_human_transport",
+      "implemented": true,
+      "implementationPhase": "AI-29",
+      "implementationScope": "Exact owner/session/revision/TTL; private human flow projection or action result; never registered as MCP tool; DTO and action-specific validation in ManageNodiaAiSecureFlowUseCase",
+      "cacheControl": "no-store",
+      "implementationSources": [
+        "nodia-server/src/nodia-ai-secure-flow/dto/nodia-ai-secure-flow.dto.ts",
+        "nodia-server/src/nodia-ai-secure-flow/use-case/manage-nodia-ai-secure-flow.use-case.ts"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/operations/:id/secure-flow/:reference/:action",
+      "channel": "human",
+      "inputContract": null,
+      "outputContract": null,
+      "outputResolution": "private_secure_human_transport",
+      "implemented": true,
+      "implementationPhase": "AI-29",
+      "implementationScope": "Exact owner/session/revision/TTL; private human flow projection or action result; never registered as MCP tool; DTO and action-specific validation in ManageNodiaAiSecureFlowUseCase",
+      "cacheControl": "no-store",
+      "implementationSources": [
+        "nodia-server/src/nodia-ai-secure-flow/dto/nodia-ai-secure-flow.dto.ts",
+        "nodia-server/src/nodia-ai-secure-flow/use-case/manage-nodia-ai-secure-flow.use-case.ts"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/attachments/capabilities",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "implementationPhase": "AI-32",
+      "outputResolution": "registered_attachment_output_schema",
+      "implementationSchema": "nodia-server/src/nodia-ai-attachment/config/attachment-contract.schema.json",
+      "inputDefinition": null,
+      "outputDefinition": "Capabilities",
+      "requires": "current_session_and_conversation_authority",
+      "encoding": "application/json",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/nodia-ai/attachments/:id/content",
+      "channel": "human",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "implementationPhase": "AI-32",
+      "outputResolution": "registered_attachment_output_schema",
+      "implementationSchema": "nodia-server/src/nodia-ai-attachment/config/attachment-contract.schema.json",
+      "inputDefinition": null,
+      "outputDefinition": "Metadata",
+      "requires": "current_session_and_conversation_authority",
+      "encoding": "application/octet-stream",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/attachments/:id/content",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "implementationPhase": "AI-32",
+      "outputResolution": "private_attachment_stream",
+      "implementationSchema": "nodia-server/src/nodia-ai-attachment/config/attachment-contract.schema.json",
+      "inputDefinition": null,
+      "outputDefinition": null,
+      "requires": "current_session_and_conversation_authority",
+      "encoding": "application/json",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/nodia-ai/attachments/:id/interpretation",
+      "channel": "human",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "implementationPhase": "AI-32",
+      "outputResolution": "registered_attachment_output_schema",
+      "implementationSchema": "nodia-server/src/nodia-ai-attachment/config/attachment-contract.schema.json",
+      "inputDefinition": "ReviewInput",
+      "outputDefinition": "Metadata",
+      "requires": "current_session_and_conversation_authority",
+      "encoding": "application/json",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/nodia-ai/attachments/:id",
+      "channel": "human",
+      "inputContract": null,
+      "outputContract": null,
+      "implemented": true,
+      "implementationPhase": "AI-32",
+      "outputResolution": "registered_attachment_output_schema",
+      "implementationSchema": "nodia-server/src/nodia-ai-attachment/config/attachment-contract.schema.json",
+      "inputDefinition": null,
+      "outputDefinition": "DiscardResult",
+      "requires": "current_session_and_conversation_authority",
+      "encoding": "application/json",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/preferences/catalog",
+      "channel": "app",
+      "inputContract": null,
+      "outputContract": "PreferenceCatalog",
+      "implemented": true,
+      "implementationPhase": "AI-33",
+      "implementationScope": "local_typed_owner_preference_coordination; writes_require_separate_exact_human_confirmation",
+      "cacheControl": "no-store"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/preferences/options",
+      "channel": "app",
+      "inputContract": "PreferenceOptionsQuery",
+      "outputContract": "PreferenceOptionsPage",
+      "implemented": true,
+      "implementationPhase": "AI-33",
+      "implementationScope": "local_typed_owner_preference_coordination; writes_require_separate_exact_human_confirmation",
+      "cacheControl": "no-store"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/nodia-ai/preferences/prepare",
+      "channel": "app",
+      "inputContract": "PreferencePrepareRequest",
+      "outputContract": "PreparationResult",
+      "implemented": true,
+      "implementationPhase": "AI-33",
+      "implementationScope": "local_typed_owner_preference_coordination; writes_require_separate_exact_human_confirmation",
+      "cacheControl": "no-store"
+    }
+  ]
+}

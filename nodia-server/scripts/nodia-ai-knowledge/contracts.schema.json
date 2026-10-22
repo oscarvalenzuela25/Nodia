@@ -1,0 +1,650 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/schemas/knowledge-publication/1",
+  "title": "NodiaAI knowledge authoring, backend bindings and compiled release contracts",
+  "$defs": {
+    "Key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "maxLength": 128
+    },
+    "DocumentId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)?$",
+      "maxLength": 255
+    },
+    "Revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "RepoPath": {
+      "type": "string",
+      "pattern": "^(?:docs|nodia-server|nodia-client)/[A-Za-z0-9_./-]+$",
+      "maxLength": 512
+    },
+    "ModuleRoute": {
+      "type": "string",
+      "pattern": "^/(?:settings|tools)/[a-z][a-z0-9_-]*$",
+      "maxLength": 128
+    },
+    "CapabilityId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "maxLength": 128
+    },
+    "FileHash": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/RepoPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ]
+    },
+    "Source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/RepoPath"
+        },
+        "kind": {
+          "enum": [
+            "specification",
+            "implementation",
+            "evidence"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "kind"
+      ]
+    },
+    "Approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/RepoPath"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "reference",
+        "revision",
+        "content_sha256"
+      ]
+    },
+    "Metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "product_id": {
+          "$ref": "#/$defs/Key"
+        },
+        "kind": {
+          "enum": [
+            "product",
+            "feature"
+          ]
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "document_status": {
+          "enum": [
+            "draft",
+            "in_review",
+            "approved",
+            "retired"
+          ]
+        },
+        "implementation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "planned",
+                "partial",
+                "implemented",
+                "retired"
+              ]
+            },
+            "notes": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "status",
+            "notes"
+          ]
+        },
+        "integration_status": {
+          "enum": [
+            "unregistered",
+            "registered",
+            "verified",
+            "published",
+            "retired",
+            "not_applicable"
+          ]
+        },
+        "maintainer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "\\S"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Source"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "checked_on": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidence_paths": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RepoPath"
+              },
+              "minItems": 0,
+              "maxItems": 32,
+              "uniqueItems": true
+            },
+            "notes": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "checked_on",
+            "evidence_paths",
+            "notes"
+          ]
+        },
+        "approval": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/Approval"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "document_id",
+        "product_id",
+        "kind",
+        "revision",
+        "document_status",
+        "implementation",
+        "integration_status",
+        "maintainer",
+        "sources",
+        "verification",
+        "approval"
+      ]
+    },
+    "SchemaRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/RepoPath"
+        },
+        "definition": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+          "maxLength": 128
+        },
+        "sha256": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "path",
+        "definition",
+        "sha256"
+      ]
+    },
+    "Capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "$ref": "#/$defs/CapabilityId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "publication": {
+          "const": "published"
+        },
+        "kind": {
+          "enum": [
+            "read",
+            "prepare_change",
+            "read_artifact",
+            "analyze_attachment",
+            "prepare_secure_flow",
+            "prepare_workflow",
+            "prepare_preference_change"
+          ]
+        },
+        "required_module_routes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModuleRoute"
+          },
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "implementation_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FileHash"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "input_schema": {
+          "$ref": "#/$defs/SchemaRef"
+        },
+        "output_schema": {
+          "$ref": "#/$defs/SchemaRef"
+        },
+        "evidence_paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RepoPath"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "capability_id",
+        "revision",
+        "publication",
+        "kind",
+        "required_module_routes",
+        "implementation_sources",
+        "input_schema",
+        "output_schema",
+        "evidence_paths"
+      ]
+    },
+    "Requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "$ref": "#/$defs/CapabilityId"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "input_schema_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "output_schema_sha256": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "capability_id",
+        "revision",
+        "input_schema_sha256",
+        "output_schema_sha256"
+      ]
+    },
+    "Binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "fragment_id": {
+          "$ref": "#/$defs/Key"
+        },
+        "purpose": {
+          "enum": [
+            "product_summary",
+            "feature_explanation",
+            "report_semantics"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Requirement"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "required_module_routes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModuleRoute"
+          },
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "document_id",
+        "fragment_id",
+        "purpose",
+        "sections",
+        "requires",
+        "required_module_routes"
+      ]
+    },
+    "Registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "catalog_release": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "\\S"
+        },
+        "context_module_route": {
+          "anyOf": [
+            {
+              "const": "/tools/nodia-ai"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RepoPath"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Binding"
+          },
+          "minItems": 0,
+          "maxItems": 2000,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "catalog_release",
+        "context_module_route",
+        "source_paths",
+        "capabilities",
+        "bindings"
+      ]
+    },
+    "DocumentDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "source_path": {
+          "$ref": "#/$defs/RepoPath"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "content_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "source_hashes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FileHash"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "document_id",
+        "source_path",
+        "revision",
+        "content_sha256",
+        "source_hashes"
+      ]
+    },
+    "FragmentDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/DocumentId"
+        },
+        "fragment_id": {
+          "$ref": "#/$defs/Key"
+        },
+        "purpose": {
+          "enum": [
+            "product_summary",
+            "feature_explanation",
+            "report_semantics"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "asset_path": {
+          "type": "string",
+          "pattern": "^fragments/[a-f0-9]{64}\\.md$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 262144
+        },
+        "required_module_routes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModuleRoute"
+          },
+          "minItems": 1,
+          "maxItems": 17,
+          "uniqueItems": true
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Requirement"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "document_id",
+        "fragment_id",
+        "purpose",
+        "sections",
+        "asset_path",
+        "sha256",
+        "byte_length",
+        "required_module_routes",
+        "requires"
+      ]
+    },
+    "ReleaseManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "release_id": {
+          "$ref": "#/$defs/Hash"
+        },
+        "registry_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "contract_schema_sha256": {
+          "$ref": "#/$defs/Hash"
+        },
+        "catalog_release": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "\\S"
+        },
+        "context_module_route": {
+          "anyOf": [
+            {
+              "const": "/tools/nodia-ai"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "documents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DocumentDescriptor"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        },
+        "fragments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FragmentDescriptor"
+          },
+          "minItems": 0,
+          "maxItems": 2000,
+          "uniqueItems": true
+        },
+        "capability_contracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "minItems": 0,
+          "maxItems": 1000,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "release_id",
+        "registry_sha256",
+        "contract_schema_sha256",
+        "catalog_release",
+        "context_module_route",
+        "documents",
+        "fragments",
+        "capability_contracts"
+      ]
+    }
+  }
+}

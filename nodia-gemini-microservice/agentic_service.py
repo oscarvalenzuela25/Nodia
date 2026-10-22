@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import time
 from pathlib import Path
+from uuid import uuid4
 from typing import Any
 from collections.abc import Callable
 from loguru import logger
@@ -21,6 +22,7 @@ from service_errors import InvalidExtraction, ServiceError
 class AntigravityAgentService:
     def __init__(self, runner: CliRunner | None = None):
         self.runner = runner
+        self.session_generation = uuid4().hex
         self._available = False
         self._reason: str | None = "session_adapter_unverified"
         self._snapshot: dict[str, Any] | None = None
@@ -36,6 +38,7 @@ class AntigravityAgentService:
             raise ServiceError("agentic_busy", "Agentic está ocupado. Espere antes de iniciar sesión.", 409)
         await self._analysis_lock.acquire()
         self._authenticating = True
+        self.session_generation = uuid4().hex
         try:
             if self._refresh is not None:
                 self._refresh.cancel()
@@ -91,14 +94,9 @@ class AntigravityAgentService:
     async def _observe(self, timeout: float = 12) -> dict[str, Any]:
         started = time.monotonic()
         try:
-            quota_result, model_result = await asyncio.gather(
-                self.runner.run(["-p", "/usage", "--output-format", "json", "--print-timeout", f"{timeout}s"], timeout=timeout),
-                self.runner.run(["models"], timeout=timeout),
-                return_exceptions=True,
-            )
-            for result in (quota_result, model_result):
-                if isinstance(result, BaseException):
-                    raise result
+            async with asyncio.timeout(timeout):
+                quota_result = await self.runner.run(["-p", "/usage", "--output-format", "json", "--print-timeout", f"{timeout}s"], timeout=timeout)
+                model_result = await self.runner.run(["models"], timeout=timeout)
             if quota_result[1] != 0 or model_result[1] != 0:
                 raise ServiceError("agentic_session_required", "Inicie sesión en Antigravity CLI.")
             report = command_data(quota_result[0], "usage")
@@ -113,10 +111,13 @@ class AntigravityAgentService:
             self._snapshot = info
             self._observed = time.monotonic()
             return copy.deepcopy(info)
-        except (OSError, ServiceError) as error:
+        except (OSError, ServiceError, TimeoutError) as error:
             self._snapshot = None
             self._observed = 0
-            return self._empty_status(error.code if isinstance(error, ServiceError) else "agentic_unavailable")
+            reason = (error.code if isinstance(error, ServiceError)
+                      else "agentic_timeout" if isinstance(error, TimeoutError)
+                      else "agentic_unavailable")
+            return self._empty_status(reason)
         finally:
             logger.info("Agentic session/catalog check finished; duration_ms={} verified={}",
                         round((time.monotonic() - started) * 1000), self._snapshot is not None)
@@ -137,6 +138,9 @@ class AntigravityAgentService:
             # receive explicit state; cancellation of the caller still propagates.
             if self._authenticating and not asyncio.current_task().cancelling():
                 return self._empty_status("agentic_login_in_progress")
+            if self._refresh is not None and not self._refresh.done():
+                self._refresh.cancel()
+                await asyncio.gather(self._refresh, return_exceptions=True)
             raise
 
     async def analyze_invoice(self, file_path: Path, provider_fields: dict | None = None,
@@ -145,6 +149,8 @@ class AntigravityAgentService:
                               thinking_level: str | None = None, progress_callback: Callable[[str], None] | None = None) -> dict[str, Any]:
         if not self._available:
             raise ServiceError("agentic_unavailable", "Antigravity CLI no está disponible.")
+        if getattr(getattr(self.runner, "config", None), "version", None) != "1.3.1":
+            raise ServiceError("agentic_cli_incompatible", "La versión del CLI no está verificada para analizar facturas.", 409)
         if extended_thinking or thinking_level not in (None, "low", "medium", "high"):
             raise ServiceError("agentic_invalid_option", "Opciones agénticas incompatibles.", 422)
         if self._analysis_lock.locked():

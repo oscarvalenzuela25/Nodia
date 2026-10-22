@@ -1,0 +1,45 @@
+{
+  "stage": "AI-36",
+  "status": "prepared_not_activated",
+  "attempt": "attempt05",
+  "created_at_utc": "2026-10-19T00:30:19.627412+00:00",
+  "paths": [
+    "dist/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.js",
+    "dist/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.js"
+  ],
+  "sql_quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 29
+  },
+  "native": {
+    "container_id": "c3cdfb9ca3ab71eff4735c344ae0c0d83400b497eb104af21496b593b1bad8af",
+    "image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+    "artifact_counts": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0
+    }
+  },
+  "health": {
+    "units": {
+      "nodia-api": "active",
+      "nodia-ai-worker": "active",
+      "nodia-gemini-lab": "active",
+      "nginx": "active"
+    },
+    "http": {
+      "api": 200,
+      "native": 200,
+      "proxy": 200
+    }
+  },
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "configured_database_writes": 0,
+  "services_restarted": false
+}

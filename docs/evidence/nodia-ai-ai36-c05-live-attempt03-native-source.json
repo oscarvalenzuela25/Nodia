@@ -1,0 +1,24 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "read_only_native_image_and_fixed_source_hashes",
+  "observed_at_utc": "2026-10-19T17:26:24.706687+00:00",
+  "container": {
+    "id": "c3cdfb9ca3ab71eff4735c344ae0c0d83400b497eb104af21496b593b1bad8af",
+    "image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+    "started_at": "2026-10-18T20:36:40.116324795Z"
+  },
+  "source_files_sha256": {
+    "native_mcp_sessions.py": "b658fa4d2e0f4fc014346c4f6e8343a5b83ad9eaa406663f1bb36b93a0c54222",
+    "native_mcp_stdio.py": "0f3fa1a2e4b88d5aaba7a01ac0a35a20bb11ffb039870c26c8b7fbd12d24d999",
+    "agentic_tool_gate.py": "d4fbbd7462ba5771a43166635112af8db95d20941fcf1deb702c4f0b921eb9bd",
+    "agentic_progress.py": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+    "native_cli_diagnostics.py": "68565bf87e0c37828703b3b3abf82a787158073213ac0bf155494213f6d6e691",
+    "agentic_cli.py": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08"
+  },
+  "source_version": null,
+  "source_version_reason": "No verified version identifier read; immutable image and file hashes identify this implementation.",
+  "sessions_or_profiles_read": false,
+  "provider_requests": 0,
+  "services_restarted": false,
+  "extractor_sha256": "f9b3a5c2b3c58082fbb8258b6f6d142fae5b5a35d927cee5782bf0087b42ead4"
+}

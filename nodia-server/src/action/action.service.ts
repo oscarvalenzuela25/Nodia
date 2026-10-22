@@ -1,18 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Action } from './entities/action.entity.js';
-import { CreateActionDto } from './dto/create-action.dto.js';
-import { UpdateActionDto } from './dto/update-action.dto.js';
-import { GetActionsDto } from './dto/get-actions.dto.js';
+import { Repository, type EntityManager } from 'typeorm';
+import { RedisService } from '../common/redis/redis.service.js';
 import {
   applyRansack,
   validateRansackEnvelope,
 } from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
-import { GetActionsResponse } from './types/action.types.js';
 import { TranslationService } from '../translation/translation.service.js';
-import { RedisService } from '../common/redis/redis.service.js';
+import { GetActionsDto } from './dto/get-actions.dto.js';
+import { Action } from './entities/action.entity.js';
+import { GetActionsResponse } from './types/action.types.js';
 
 @Injectable()
 export class ActionService {
@@ -20,25 +18,28 @@ export class ActionService {
     @InjectRepository(Action)
     private readonly actionRepository: Repository<Action>,
     private readonly translationService: TranslationService,
-    private readonly redisService: RedisService,
+    _redisService: RedisService,
   ) {}
 
-  async findAll({
-    page = 1,
-    limit = 10,
-    all = false,
-    q,
-  }: GetActionsDto): Promise<GetActionsResponse> {
-    const qb = this.actionRepository.createQueryBuilder('action');
+  async findAll(
+    { page = 1, limit = 10, all = false, q }: GetActionsDto,
+    manager?: EntityManager,
+  ): Promise<GetActionsResponse> {
+    const qb = (
+      manager?.getRepository(Action) ?? this.actionRepository
+    ).createQueryBuilder('action');
     validateRansackEnvelope(q);
 
     applyRansack(qb, q, 'action', RANSACK_POLICIES.action);
+    if (manager && !/^id\s/i.test(String(q?.s ?? '')))
+      qb.addOrderBy('action.id', 'ASC');
 
     if (all) {
       const rawData = await qb.getMany();
       const data = await this.translationService.attachTranslations(
         'actions',
         rawData,
+        manager,
       );
       return {
         data: data as any,
@@ -59,6 +60,7 @@ export class ActionService {
     const data = await this.translationService.attachTranslations(
       'actions',
       rawData,
+      manager,
     );
     const total_pages = Math.ceil(total_items / limit);
 
@@ -73,8 +75,10 @@ export class ActionService {
     };
   }
 
-  async findOne(id: string): Promise<Action> {
-    const action = await this.actionRepository.findOne({
+  async findOne(id: string, manager?: EntityManager): Promise<Action> {
+    const action = await (
+      manager?.getRepository(Action) ?? this.actionRepository
+    ).findOne({
       where: { id },
     });
     if (!action) {
@@ -84,54 +88,7 @@ export class ActionService {
     return this.translationService.attachTranslationsToOne(
       'actions',
       action,
+      manager,
     ) as any;
-  }
-
-  async create(createActionDto: CreateActionDto): Promise<Action> {
-    const existing = await this.actionRepository.findOne({
-      where: { key: createActionDto.key },
-    });
-    if (existing) {
-      return this.update(existing.id, createActionDto);
-    }
-
-    const { translates, ...actionData } = createActionDto;
-    const action = this.actionRepository.create(actionData);
-    const savedAction = await this.actionRepository.save(action);
-
-    if (translates && translates.length > 0) {
-      await this.translationService.saveTranslations(
-        'actions',
-        savedAction.id,
-        translates,
-      );
-    }
-
-    await this.redisService.delByPattern('auth:context:*');
-
-    return this.findOne(savedAction.id);
-  }
-
-  async update(id: string, updateActionDto: UpdateActionDto): Promise<Action> {
-    const action = await this.actionRepository.findOne({ where: { id } });
-    if (!action) {
-      throw new NotFoundException(`Action with ID "${id}" not found`);
-    }
-
-    const { translates, ...rest } = updateActionDto;
-    Object.assign(action, rest);
-    await this.actionRepository.save(action);
-
-    if (translates !== undefined) {
-      await this.translationService.updateTranslations(
-        'actions',
-        id,
-        translates,
-      );
-    }
-
-    await this.redisService.delByPattern('auth:context:*');
-
-    return this.findOne(id);
   }
 }

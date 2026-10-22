@@ -1,0 +1,17 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "offline_external_runner_version_diff_and_python_syntax_only",
+  "status": "passed",
+  "previous_source_sha256": "259a6a2b037c0d818f74b3ccc4e8a5f1c7a4b95851e0c7b202d6045e79e5c5b9",
+  "source_sha256": "2f58a7850a014716781d0a315e245deded6ece6c3a428f2344a0843ce1743b4a",
+  "only_changes": [
+    "outer_process_timeout_seconds_900_to_1500",
+    "explicit_runner_contract_version_and_timeout_receipt_metadata"
+  ],
+  "per_generation_provider_seconds_unchanged": 120,
+  "per_run_deadline_seconds_unchanged": 600,
+  "maximum_cohort_generations_unchanged": 8,
+  "native_generations": 0,
+  "configured_SQL_writes": 0,
+  "runtime_application_changes": 0
+}

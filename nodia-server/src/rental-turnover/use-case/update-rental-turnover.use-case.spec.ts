@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect } from 'vitest';
 import { bookingFixture } from '../../rental-reservation/use-case/rental-booking.fixture.js';
 import { RentalTurnoverService } from '../rental-turnover.service.js';
@@ -26,7 +27,7 @@ describe('Actual preparation rules through turnover use cases', () => {
     const result = await new ApproveSameDayRentalTurnoverUseCase(
       f.transactions,
       new RentalTurnoverService(),
-    ).execute('1', '1', '20', {}, key);
+    ).execute(actorFixture('1'), '1', '20', {}, key);
     expect(result.status).toBe('pending');
     expect(f.rows('RentalTurnover')[0]).toMatchObject({
       same_day_approved_at: f.now,
@@ -42,7 +43,7 @@ describe('Actual preparation rules through turnover use cases', () => {
       new ApproveSameDayRentalTurnoverUseCase(
         f.transactions,
         new RentalTurnoverService(),
-      ).execute('1', '1', '20', {}, key),
+      ).execute(actorFixture('1'), '1', '20', {}, key),
     ).rejects.toThrow('rental:turnover_required');
   });
   it.each(['2026-10-20T14:30:00Z', '2026-10-20T18:01:00Z'])(
@@ -53,7 +54,7 @@ describe('Actual preparation rules through turnover use cases', () => {
         new UpdateRentalTurnoverUseCase(
           f.transactions,
           new RentalTurnoverService(),
-        ).execute('1', '1', '20', { planned_ready_at }, key),
+        ).execute(actorFixture('1'), '1', '20', { planned_ready_at }, key),
       ).rejects.toThrow('rental:invalid_turnover_plan');
     },
   );
@@ -73,7 +74,7 @@ describe('Actual preparation rules through turnover use cases', () => {
         new UpdateRentalTurnoverUseCase(
           f.transactions,
           new RentalTurnoverService(),
-        ).execute('1', '1', '20', dto as never, key),
+        ).execute(actorFixture('1'), '1', '20', dto as never, key),
       ).rejects.toThrow('rental:invalid_turnover_ready');
     },
   );
@@ -84,7 +85,7 @@ describe('Actual preparation rules through turnover use cases', () => {
       f.transactions,
       new RentalTurnoverService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       '20',
       {
@@ -106,7 +107,7 @@ describe('Actual preparation rules through turnover use cases', () => {
       f.transactions,
       new RentalTurnoverService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       '20',
       { planned_ready_at: '2026-10-20T17:30:00Z' },
@@ -126,7 +127,13 @@ describe('Actual preparation rules through turnover use cases', () => {
     await new UpdateRentalTurnoverUseCase(
       f.transactions,
       new RentalTurnoverService(),
-    ).execute('1', '1', '20', { notes: 'Revisar preparación' }, key);
+    ).execute(
+      actorFixture('1'),
+      '1',
+      '20',
+      { notes: 'Revisar preparación' },
+      key,
+    );
     expect(f.rows('RentalTurnover')[0]).toMatchObject({
       previous_reservation_id: '9',
       cleaning_status: 'pending',
@@ -145,7 +152,7 @@ describe('Actual preparation rules through turnover use cases', () => {
     await new UpdateRentalTurnoverUseCase(
       f.transactions,
       new RentalTurnoverService(),
-    ).execute('1', '1', '20', { notes: 'Observación' }, key);
+    ).execute(actorFixture('1'), '1', '20', { notes: 'Observación' }, key);
     expect(f.rows('RentalTurnover')[0].same_day_approved_at).toEqual(f.now);
     expect(f.rows('RentalTurnover')[0].ready_at).not.toBeNull();
   });
@@ -157,7 +164,7 @@ describe('Actual preparation rules through turnover use cases', () => {
     );
     await expect(
       update.execute(
-        '1',
+        actorFixture('1'),
         '1',
         '20',
         { previous_reservation_id: '999' } as never,
@@ -166,7 +173,7 @@ describe('Actual preparation rules through turnover use cases', () => {
     ).rejects.toThrow('rental:invalid_input');
     await expect(
       update.execute(
-        '1',
+        actorFixture('1'),
         '1',
         '20',
         { same_day_approved_at: f.now.toISOString() } as never,
@@ -182,7 +189,7 @@ describe('Actual preparation rules through turnover use cases', () => {
       new ApproveSameDayRentalTurnoverUseCase(
         f.transactions,
         new RentalTurnoverService(),
-      ).execute('1', '1', '20', {}, key),
+      ).execute(actorFixture('1'), '1', '20', {}, key),
     ).rejects.toThrow('rental:turnover_required');
   });
   it('scope-constrained lookup does not associate preparations from another house', async () => {
@@ -192,7 +199,7 @@ describe('Actual preparation rules through turnover use cases', () => {
       new UpdateRentalTurnoverUseCase(
         f.transactions,
         new RentalTurnoverService(),
-      ).execute('1', '1', '20', { notes: 'Corrección' }, key),
+      ).execute(actorFixture('1'), '1', '20', { notes: 'Corrección' }, key),
     ).rejects.toThrow('rental:not_found');
   });
 });

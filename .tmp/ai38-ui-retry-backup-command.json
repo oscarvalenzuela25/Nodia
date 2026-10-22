@@ -1,0 +1,186 @@
+{
+  "stage": "AI-38",
+  "scope": "local_original_database_encrypted_backup_and_unserved_isolated_restore",
+  "status": "passed",
+  "source_sha256": "d722a53f47f952de205a5b3d1beea4bc7d47539350d72f9767bb7271f77b42f6",
+  "configured_database_backup": true,
+  "configured_database_writes": 0,
+  "disposable_restore_verified": true,
+  "original_database_restored": false,
+  "restored_content_served": false,
+  "provider_requests": 0,
+  "storage_operations": 0,
+  "encryption": {
+    "format": "openpgp",
+    "cipher": "AES256",
+    "integrity": "MDC"
+  },
+  "retention_hours": 24,
+  "maximum_retention_hours": 168,
+  "external_rotation_journal_or_production_restore_verified": false,
+  "release_authorized": false,
+  "started_at_utc": "2026-10-20T22:46:57.425499+00:00",
+  "execution_stage": "completed",
+  "expiry_timer_persistent": true,
+  "backup_expires_at_utc": "2026-10-21T22:46:57.425556+00:00",
+  "source_snapshot_finished_at_utc": "2026-10-20T22:46:59.280755+00:00",
+  "encrypted_backup_sha256": "fa52486517a5028be9c26d1692d98db11b5077d00bcd82d81c6e395a741192dd",
+  "encrypted_backup_bytes": 56148,
+  "restore_network_none_no_ports_tmpfs": true,
+  "final_TCP_database_ready": true,
+  "metadata_comparison": {
+    "mismatched_keys": [
+      "columns",
+      "constraints"
+    ],
+    "source_digests": {
+      "tables": "0d595f4eb95cd535fcda4769d6ce76d3f6e59e4a3ec7d2ba9600c621e87af0a4",
+      "columns": "46d6fc083714d12f666d3fdba5edc32e7a846b75f60829e926c0bcad88409aaf",
+      "indexes": "66e311934ed3d8c5b6e5a12f75aa952c0e8f701a093789c30b4a0272b6c53213",
+      "constraints": "108061cc368fe99a06c23bf991e0bdaf20dc406549b90f525e7e393b48f73cb8",
+      "migrations": "57f8d87d2459e64dbb16c8e6b6ca928a12940d526387c8fa4b33837a38fdddb1",
+      "database_locale": "edd3bf04a29bc9a5751d9d8b0f14c8215d1401a54e24e488be3f6fa1c6f0ce48",
+      "guard": "3179c6a29319dbe4d0a795702b7717802c615c76e0eb07e5a9d80378331b5e43"
+    },
+    "restored_digests": {
+      "tables": "0d595f4eb95cd535fcda4769d6ce76d3f6e59e4a3ec7d2ba9600c621e87af0a4",
+      "columns": "7c5ea4d0132561076bf55181ebb4bc62da050e389b01ea5d50a2df5af1f47619",
+      "indexes": "66e311934ed3d8c5b6e5a12f75aa952c0e8f701a093789c30b4a0272b6c53213",
+      "constraints": "f04af3adc84d7bf08ed4ca37675e9b52f4f58ad63bd64e302d16d8d0a31ae85b",
+      "migrations": "57f8d87d2459e64dbb16c8e6b6ca928a12940d526387c8fa4b33837a38fdddb1",
+      "database_locale": "edd3bf04a29bc9a5751d9d8b0f14c8215d1401a54e24e488be3f6fa1c6f0ce48",
+      "guard": "3179c6a29319dbe4d0a795702b7717802c615c76e0eb07e5a9d80378331b5e43"
+    },
+    "source_table_count": 62,
+    "restored_table_count": 62,
+    "row_count_mismatches": 0
+  },
+  "schema_comparison_policy": "visible_column_order_extended_types_and_exact_native_CHECK_reparse_v1",
+  "constraint_parser_proof": {
+    "literal_constraints_exact": 456,
+    "CHECKs_reparsed": 13,
+    "all_constraint_definitions_preserved_after_native_parser": true,
+    "all_weakened_TRUE_counterexamples_rejected": true,
+    "checks": [
+      {
+        "table": "ai_providers",
+        "constraint": "chk_ai_providers_default_mode",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "d382d1b614fc4e9430c6d77c8abd0a54a39eb9d1644748eb0b5428b319a13b1b"
+      },
+      {
+        "table": "finance_movements",
+        "constraint": "ck_finance_movements_status",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "93b211c2211cdc8998fed7e7a3f1598832039ebbf9e26edd1563f04e80257905"
+      },
+      {
+        "table": "finance_movements",
+        "constraint": "ck_finance_movements_type",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "907f23d51d8aa5e33edd1b41db69247f9643a8e3f4d8b36b0be0644999ca9805"
+      },
+      {
+        "table": "finance_obligations",
+        "constraint": "ck_finance_obligations_type",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "f25b4f30863cbd93bf9776182bb6d78945b463bcff35e2934d507bcb0ee60a1e"
+      },
+      {
+        "table": "nodia_ai_attachments",
+        "constraint": "nodia_ai_attachments_file_name_check",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "3bcc1f0df92ad2dd562bf4d731b1efeb6fe4fa9d789038a6e5bd295bd1ed92ff"
+      },
+      {
+        "table": "nodia_ai_context_snapshots",
+        "constraint": "nodia_ai_context_snapshots_builder_contract_version_check",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "27d9a2f6594e162eddd16c0025da7eef33a990ff9a5644244f6b6c88bace0922"
+      },
+      {
+        "table": "nodia_ai_conversations",
+        "constraint": "nodia_ai_conversations_title_check",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "6e2ffc10b1eb1c9856ddd9b2972be300a742fd8617b017446c396500198a1c82"
+      },
+      {
+        "table": "rental_expenses",
+        "constraint": "ck_rental_expenses_status",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "314523f3888dbf71e15acebc91998d77f907035f4dd11382b2689de048788225"
+      },
+      {
+        "table": "rental_payments",
+        "constraint": "ck_rental_payments_status",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "faddd405fc70224a15fe3117e2b0a1a989bfdc580eaa596a8e0717e3b90b210d"
+      },
+      {
+        "table": "rental_payments",
+        "constraint": "ck_rental_payments_type",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "4eb5625cf07a433fb97219c25c3d7e067f5ae87ab2b7e47a03da393b1093b8ec"
+      },
+      {
+        "table": "rental_reservations",
+        "constraint": "ck_rental_reservations_channel",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "82c73f5d037bf46ed155a7e0d950c57dc09c24d863c88f9b4523dbbf4233253a"
+      },
+      {
+        "table": "rental_reservations",
+        "constraint": "ck_rental_reservations_status",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "95ff2ba1891c2bcf5427306acca02b22a397a93c8aa0b8888375325035c70fd2"
+      },
+      {
+        "table": "rental_turnovers",
+        "constraint": "ck_rental_turnovers_cleaning_status",
+        "parser_exact_match": true,
+        "weakened_TRUE_rejected": true,
+        "reparsed_sha256": "03d8fb82999fa0bb136160515bd18452bf010d8e0f3821db753b5d70343eb599"
+      }
+    ]
+  },
+  "logical_schema_equal": true,
+  "database_locale_equal": true,
+  "physical_attribute_holes_not_required_for_logical_restore": true,
+  "migration_count": 29,
+  "public_table_count": 62,
+  "schema_and_ledger_sha256": "6d54e53010ecd6e110c373dfe83a0fd84f936618aa1240c21d6afda931682d52",
+  "table_counts_sha256": "d0f283c09de02fef094cc42c5a715fabc2ceb65e3379d40b801fae78feb30686",
+  "migration_ledger_sha256": "57f8d87d2459e64dbb16c8e6b6ca928a12940d526387c8fa4b33837a38fdddb1",
+  "guard_state": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0,
+    "active_executions": 0
+  },
+  "backup_retained_for_closed_drill": true,
+  "passphrase_retained_privately": true,
+  "child_exit_codes": {
+    "source": 0,
+    "dump": 0,
+    "encrypt": 0,
+    "decrypt": 0,
+    "restore": 0,
+    "target": 0
+  },
+  "owned_containers_remaining": 0,
+  "expiry_timer_active_after": true,
+  "elapsed_seconds": 4.25,
+  "finished_at_utc": "2026-10-20T22:47:01.675768+00:00"
+}

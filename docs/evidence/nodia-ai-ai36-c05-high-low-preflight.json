@@ -1,0 +1,60 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "non_generative_high_low_exact_model_preflight",
+  "status": "failed",
+  "started_at_utc": "2026-10-19T18:07:16.418Z",
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "storage_operations": 0,
+  "source_sha256": "6aa0ed36440c67566efb3f8320b351b8846f6577b45d004f4f7cb248e6204466",
+  "compare_input": {
+    "schema_version": 1,
+    "high_selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high",
+      "auto_delegate_to_agentic": false
+    },
+    "low_selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "low",
+      "auto_delegate_to_agentic": false
+    },
+    "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b"
+  },
+  "observations": [
+    {
+      "effort_id": "high",
+      "elapsed_ms": 11413.842843,
+      "available": true,
+      "supports_mcp": true,
+      "reason": null,
+      "source": "gemini_live_session_and_catalog",
+      "observed_at_utc": "2026-10-19T18:07:16.562Z",
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+      "session_generation_sha256": "9f3dd503d957975b11239d8f39db505d55acfc37a159d7ab1a1580b8b666b08f",
+      "adapter_contract_version": "nodia-ai-gemini-chat/1"
+    },
+    {
+      "effort_id": "low",
+      "elapsed_ms": 3885.7081320000016,
+      "available": false,
+      "supports_mcp": false,
+      "reason": "model_option_mismatch",
+      "source": "gemini_live_session_and_catalog",
+      "observed_at_utc": "2026-10-19T18:07:27.954Z",
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+      "session_generation_sha256": "9f3dd503d957975b11239d8f39db505d55acfc37a159d7ab1a1580b8b666b08f",
+      "adapter_contract_version": "nodia-ai-gemini-chat/1"
+    }
+  ],
+  "native_metadata_requests": 2,
+  "safe_failure_code": "preflight_assertion_or_invalid_observation",
+  "finished_at_utc": "2026-10-19T18:07:31.837Z"
+}

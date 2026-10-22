@@ -1,0 +1,817 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:nodia:ai:common-reads:v1",
+  "$comment": "AI36-C04 candidate only. Native public schemas with explicit MCP bounds; no publication or availability claim.",
+  "$defs": {
+    "ProposalGetInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "proposal_id": {
+          "$ref": "#/$defs/ProtocolId"
+        }
+      },
+      "required": ["proposal_id"]
+    },
+    "ProtocolId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "New public protocol reference, not the domain entity primary key"
+    },
+    "PublicProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "proposal_id": {
+          "$ref": "#/$defs/ProtocolId"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "catalog_version": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "ready",
+            "confirmed",
+            "superseded",
+            "cancelled",
+            "expired",
+            "invalidated"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/PublicStep"
+          },
+          "maxItems": 128
+        },
+        "execution_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProtocolId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "proposal_id",
+        "revision",
+        "hash",
+        "catalog_version",
+        "state",
+        "steps",
+        "execution_id",
+        "created_at",
+        "expires_at"
+      ]
+    },
+    "Hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque version of structural tool contracts; not an availability observation",
+      "maxLength": 128
+    },
+    "PublicStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "step_id": {
+          "$ref": "#/$defs/ProtocolId"
+        },
+        "tool_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["domain_change", "secure_flow", "preference_change"]
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntityRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope": {
+          "$ref": "#/$defs/PublicScope"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ChangedField"
+          },
+          "maxItems": 1288
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProtocolId"
+          },
+          "uniqueItems": true,
+          "maxItems": 1288
+        },
+        "effect_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "precondition_summary": {
+          "type": "string"
+        },
+        "output_bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "target_field_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "from_step_id": {
+                "$ref": "#/$defs/ProtocolId"
+              },
+              "output_key": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["target_field_key", "from_step_id", "output_key"]
+          },
+          "maxItems": 1288
+        }
+      },
+      "required": [
+        "step_id",
+        "tool_name",
+        "kind",
+        "target",
+        "scope",
+        "changes",
+        "depends_on",
+        "effect_key",
+        "output_bindings"
+      ]
+    },
+    "EntityRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/BigintId"
+            },
+            {
+              "$ref": "#/$defs/DomainUuid"
+            }
+          ]
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "required": ["resource_key", "id"]
+    },
+    "BigintId": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,18}$",
+      "description": "Canonical positive decimal; runtime BigInt validation must enforce PostgreSQL max 9223372036854775807"
+    },
+    "DomainUuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID resource identity; actual resource decides representation"
+    },
+    "PublicScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject_user_id": {
+          "$ref": "#/$defs/BigintId"
+        },
+        "property_id": {
+          "$ref": "#/$defs/BigintId"
+        },
+        "business_id": {
+          "$ref": "#/$defs/DomainUuid"
+        },
+        "provider_id": {
+          "$ref": "#/$defs/BigintId"
+        }
+      },
+      "required": []
+    },
+    "ChangedField": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "field_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "before": {
+          "$ref": "#/$defs/ReviewValue"
+        },
+        "after": {
+          "$ref": "#/$defs/ReviewValue"
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "user",
+            "accepted_preference",
+            "database",
+            "contract_default",
+            "future_step"
+          ]
+        },
+        "before_present": {
+          "type": "boolean"
+        },
+        "after_present": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "field_key",
+        "before",
+        "after",
+        "origin",
+        "before_present",
+        "after_present"
+      ]
+    },
+    "ReviewValue": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Scalar"
+        },
+        {
+          "$ref": "#/$defs/ReviewArray"
+        },
+        {
+          "$ref": "#/$defs/ReviewObject"
+        }
+      ],
+      "description": "Scalars retain original representation. Structured projections/edits use tagged arrays/ordered field entries; registered domain fields and value schemas are validated by Server."
+    },
+    "Scalar": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ReviewArray": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "array"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "$ref": "#/$defs/ReviewValue"
+          },
+          "maxItems": 1288
+        }
+      },
+      "required": ["kind", "items"]
+    },
+    "ReviewObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "object"
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "$ref": "#/$defs/OrderedField"
+          },
+          "maxItems": 1288
+        }
+      },
+      "required": ["kind", "fields"]
+    },
+    "OrderedField": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "field_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "$ref": "#/$defs/ReviewValue"
+        }
+      },
+      "required": ["field_key", "value"]
+    },
+    "OperationGetInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "execution_id": {
+          "$ref": "#/$defs/ProtocolId"
+        }
+      },
+      "required": ["execution_id"]
+    },
+    "ExecutionStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "execution_id": {
+          "$ref": "#/$defs/ProtocolId"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "running",
+            "waiting_for_user",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancel_requested",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StepStatus"
+          },
+          "maxItems": 128
+        },
+        "can_resume": {
+          "type": "boolean"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "execution_id",
+        "revision",
+        "state",
+        "steps",
+        "can_resume",
+        "observed_at"
+      ]
+    },
+    "StepStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "step_id": {
+          "$ref": "#/$defs/ProtocolId"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "blocked",
+            "ready",
+            "running",
+            "waiting_for_user",
+            "completed",
+            "failed",
+            "unknown",
+            "skipped",
+            "cancelled"
+          ]
+        },
+        "result_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EntityRef"
+          },
+          "maxItems": 1288
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ApiError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["step_id", "state", "result_refs", "error"]
+    },
+    "ApiError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "safe_message": {
+          "type": "string"
+        },
+        "field_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FieldError"
+          },
+          "maxItems": 1288
+        },
+        "retry_action": {
+          "type": "string",
+          "enum": ["none", "recover_status", "manual_after_review"]
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/ProtocolId"
+        }
+      },
+      "required": [
+        "code",
+        "message_key",
+        "field_errors",
+        "retry_action",
+        "correlation_id"
+      ]
+    },
+    "FieldError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "field_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message_key": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["field_key", "code", "message_key"]
+    },
+    "AttachmentDescribeInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attachment_id": {
+          "$ref": "#/$defs/ProtocolId"
+        }
+      },
+      "required": ["attachment_id"]
+    },
+    "AttachmentMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "attachment_id": {
+          "$ref": "#/$defs/ProtocolId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["image", "pdf", "audio"]
+        },
+        "state": {
+          "type": "string",
+          "enum": ["uploading", "ready", "rejected", "expired"]
+        },
+        "media_type": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "byte_count": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "page_count": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duration_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "attachment_id",
+        "kind",
+        "state",
+        "media_type",
+        "byte_count",
+        "page_count",
+        "duration_seconds"
+      ]
+    },
+    "PreferenceListInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scope_key": {
+          "$ref": "#/$defs/PreferenceScopeKey"
+        },
+        "cursor": {
+          "$ref": "#/$defs/Cursor"
+        },
+        "page_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      "required": []
+    },
+    "PreferenceScopeKey": {
+      "enum": ["finance", "business", "rental"]
+    },
+    "Cursor": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "description": "Opaque cursor controlled by Server, validated against route, scope, sort and filters. Admission length is bounded by AI-04 policy.",
+      "maxLength": 2048
+    },
+    "PreferencePage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PreferenceItem"
+          },
+          "maxItems": 50
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["items", "next_cursor"]
+    },
+    "PreferenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preference_id": {
+          "$ref": "#/$defs/ProtocolId"
+        },
+        "scope_key": {
+          "$ref": "#/$defs/PreferenceScopeKey"
+        },
+        "scope": {
+          "$ref": "#/$defs/PreferenceScope"
+        },
+        "key": {
+          "$ref": "#/$defs/PreferenceKey"
+        },
+        "value": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "value_label": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "scope_label": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "available": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "preference_id",
+        "scope_key",
+        "scope",
+        "key",
+        "value",
+        "revision",
+        "value_label",
+        "scope_label",
+        "available"
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "scope_key": {
+              "const": "finance"
+            },
+            "key": {
+              "enum": ["expense_category_id", "income_category_id"]
+            },
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {},
+              "required": []
+            },
+            "value": {
+              "$ref": "#/$defs/BigintId"
+            }
+          },
+          "required": ["scope_key", "key", "scope", "value"]
+        },
+        {
+          "properties": {
+            "scope_key": {
+              "const": "business"
+            },
+            "key": {
+              "const": "business_id"
+            },
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {},
+              "required": []
+            },
+            "value": {
+              "$ref": "#/$defs/DomainUuid"
+            }
+          },
+          "required": ["scope_key", "key", "scope", "value"]
+        },
+        {
+          "properties": {
+            "scope_key": {
+              "const": "business"
+            },
+            "key": {
+              "const": "supplier_id"
+            },
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "business_id": {
+                  "$ref": "#/$defs/DomainUuid"
+                }
+              },
+              "required": ["business_id"]
+            },
+            "value": {
+              "$ref": "#/$defs/BigintId"
+            }
+          },
+          "required": ["scope_key", "key", "scope", "value"]
+        },
+        {
+          "properties": {
+            "scope_key": {
+              "const": "rental"
+            },
+            "key": {
+              "const": "property_id"
+            },
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {},
+              "required": []
+            },
+            "value": {
+              "$ref": "#/$defs/BigintId"
+            }
+          },
+          "required": ["scope_key", "key", "scope", "value"]
+        }
+      ]
+    },
+    "PreferenceScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "business_id": {
+              "$ref": "#/$defs/DomainUuid"
+            }
+          },
+          "required": ["business_id"]
+        }
+      ]
+    },
+    "PreferenceKey": {
+      "enum": [
+        "expense_category_id",
+        "income_category_id",
+        "business_id",
+        "supplier_id",
+        "property_id"
+      ]
+    }
+  }
+}

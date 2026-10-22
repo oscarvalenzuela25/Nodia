@@ -1,0 +1,1231 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "explicit_published_selected_capabilities_real_gemini_disposable_sql",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:35:18.618Z",
+  "maximum_generations": 2,
+  "maximum_generations_per_run": 2,
+  "diagnostic_only": false,
+  "independent_case": "finance",
+  "cohort_maximum_generations": 8,
+  "next_case_requires_explicit_operator_GO": true,
+  "requested_capability_names": [
+    "nodia_finance_movements_prepare_create"
+  ],
+  "selection_mode": "automatic_discovery_then_explicit_bounded_execution",
+  "selection_callbacks": 1,
+  "actual_provider_generations": 2,
+  "provider_dispatch_attempts": 2,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "native_terminal_ACKs": [
+    {
+      "attempt_id": "7454c847-5f64-4a52-8de5-d026ddd3e6fc",
+      "terminal_proof_sha256": "0849e7185f6b9708ea24e87b7cd714bc82fd04c32af876781306f05f65893796",
+      "acknowledged_at_utc": "2026-10-20T19:37:26.050Z"
+    },
+    {
+      "attempt_id": "4b8493a6-233b-4c97-b0fd-a7baa2413074",
+      "terminal_proof_sha256": "d29aff6c506c4bb7f648c92f667d2713ff3d240187ec9364071f9d27334e26cf",
+      "acknowledged_at_utc": "2026-10-20T19:38:25.822Z"
+    }
+  ],
+  "native_transport_observations": {
+    "7454c847-5f64-4a52-8de5-d026ddd3e6fc": {
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1022,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1022,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {},
+      "transitions": [
+        {
+          "kind": "start",
+          "direction": "request_started",
+          "at_utc": "2026-10-20T19:35:40.181Z",
+          "monotonic_ms": 21833.357704
+        },
+        {
+          "kind": "start",
+          "direction": "native_POST_started",
+          "at_utc": "2026-10-20T19:35:40.181Z",
+          "monotonic_ms": 21833.614806
+        },
+        {
+          "kind": "start",
+          "direction": "response_received",
+          "at_utc": "2026-10-20T19:35:40.192Z",
+          "monotonic_ms": 21844.234612,
+          "elapsed_ms": 10.876908000002004,
+          "http_elapsed_ms": 10.529105000001437,
+          "running": true
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 0,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:35:40.195Z",
+          "monotonic_ms": 21847.683547
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 5,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:35:41.340Z",
+          "monotonic_ms": 22992.154376
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 6,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:35:44.584Z",
+          "monotonic_ms": 26236.796278
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 7,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {
+            "tool_request": 1
+          },
+          "event_identities": [
+            {
+              "kind": "tool_request",
+              "seq": 1,
+              "name": "nodia_capabilities_select",
+              "call_id": "aebda6f7-7687-414b-9689-923545137597"
+            }
+          ],
+          "at_utc": "2026-10-20T19:37:16.517Z",
+          "monotonic_ms": 118169.664117
+        },
+        {
+          "kind": "mcp/results",
+          "direction": "request_started",
+          "at_utc": "2026-10-20T19:37:16.718Z",
+          "monotonic_ms": 118370.546719,
+          "call_id": "aebda6f7-7687-414b-9689-923545137597"
+        },
+        {
+          "kind": "mcp/results",
+          "direction": "response_received",
+          "at_utc": "2026-10-20T19:37:16.721Z",
+          "monotonic_ms": 118373.63245,
+          "elapsed_ms": 3.085730999999214,
+          "http_elapsed_ms": 2.930430000007618,
+          "call_id": "aebda6f7-7687-414b-9689-923545137597",
+          "accepted": true
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 7,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 1,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:37:16.825Z",
+          "monotonic_ms": 118477.113681
+        },
+        {
+          "kind": "mcp/events",
+          "state": "completed",
+          "rpc_messages": 7,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 1,
+          "event_kinds": {
+            "answer": 1
+          },
+          "event_identities": [
+            {
+              "kind": "answer",
+              "seq": 2
+            }
+          ],
+          "at_utc": "2026-10-20T19:37:26.017Z",
+          "monotonic_ms": 127669.413892
+        },
+        {
+          "kind": "acknowledge",
+          "direction": "request_started",
+          "at_utc": "2026-10-20T19:37:26.045Z",
+          "monotonic_ms": 127697.807675
+        },
+        {
+          "kind": "acknowledge",
+          "direction": "response_received",
+          "at_utc": "2026-10-20T19:37:26.049Z",
+          "monotonic_ms": 127701.917716,
+          "elapsed_ms": 4.110040999992634,
+          "http_elapsed_ms": 3.865338999996311,
+          "acknowledged": true
+        }
+      ],
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 7,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 1,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 2
+          }
+        ],
+        "signature": "24810d48f2976073b0335562e89ab1c062e29bb8a572771431551b8f2c641a23",
+        "at_utc": "2026-10-20T19:37:26.017Z",
+        "monotonic_ms": 127669.415292
+      },
+      "latency_ms_by_kind": {
+        "start": {
+          "count": 1,
+          "total": 10.876908000002004,
+          "minimum": 10.876908000002004,
+          "maximum": 10.876908000002004
+        },
+        "mcp/events": {
+          "count": 1022,
+          "total": 3187.121003999957,
+          "minimum": 1.8534189999918453,
+          "maximum": 4.778247000002011
+        },
+        "mcp/results": {
+          "count": 1,
+          "total": 3.085730999999214,
+          "minimum": 3.085730999999214,
+          "maximum": 3.085730999999214
+        },
+        "acknowledge": {
+          "count": 1,
+          "total": 4.110040999992634,
+          "minimum": 4.110040999992634,
+          "maximum": 4.110040999992634
+        }
+      },
+      "last_completed_request_by_kind": {
+        "start": {
+          "kind": "start",
+          "started": {
+            "at_utc": "2026-10-20T19:35:40.181Z",
+            "monotonic_ms": 21833.357704
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:35:40.192Z",
+            "monotonic_ms": 21844.234612
+          },
+          "elapsed_ms": 10.876908000002004,
+          "http_elapsed_ms": 10.529105000001437
+        },
+        "mcp/events": {
+          "kind": "mcp/events",
+          "started": {
+            "at_utc": "2026-10-20T19:37:26.014Z",
+            "monotonic_ms": 127666.20076
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:37:26.017Z",
+            "monotonic_ms": 127669.365191
+          },
+          "elapsed_ms": 3.164430999997421,
+          "http_elapsed_ms": 2.785228000007919
+        },
+        "mcp/results": {
+          "kind": "mcp/results",
+          "started": {
+            "at_utc": "2026-10-20T19:37:16.718Z",
+            "monotonic_ms": 118370.546719
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:37:16.721Z",
+            "monotonic_ms": 118373.63245
+          },
+          "elapsed_ms": 3.085730999999214,
+          "http_elapsed_ms": 2.930430000007618
+        },
+        "acknowledge": {
+          "kind": "acknowledge",
+          "started": {
+            "at_utc": "2026-10-20T19:37:26.045Z",
+            "monotonic_ms": 127697.807675
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:37:26.049Z",
+            "monotonic_ms": 127701.917716
+          },
+          "elapsed_ms": 4.110040999992634,
+          "http_elapsed_ms": 3.865338999996311
+        }
+      },
+      "in_flight_request": null,
+      "last_completed_request": {
+        "kind": "acknowledge",
+        "started": {
+          "at_utc": "2026-10-20T19:37:26.045Z",
+          "monotonic_ms": 127697.807675
+        },
+        "received": {
+          "at_utc": "2026-10-20T19:37:26.049Z",
+          "monotonic_ms": 127701.917716
+        },
+        "elapsed_ms": 4.110040999992634,
+        "http_elapsed_ms": 3.865338999996311
+      }
+    },
+    "4b8493a6-233b-4c97-b0fd-a7baa2413074": {
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 475,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 475,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {},
+      "transitions": [
+        {
+          "kind": "start",
+          "direction": "request_started",
+          "at_utc": "2026-10-20T19:37:36.617Z",
+          "monotonic_ms": 138269.857617
+        },
+        {
+          "kind": "start",
+          "direction": "native_POST_started",
+          "at_utc": "2026-10-20T19:37:36.618Z",
+          "monotonic_ms": 138270.15722
+        },
+        {
+          "kind": "start",
+          "direction": "response_received",
+          "at_utc": "2026-10-20T19:37:36.629Z",
+          "monotonic_ms": 138281.970437,
+          "elapsed_ms": 12.112820000009378,
+          "http_elapsed_ms": 11.546115000004647,
+          "running": true
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 0,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:37:36.634Z",
+          "monotonic_ms": 138286.611184
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 5,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:37:37.050Z",
+          "monotonic_ms": 138702.451527
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 6,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:37:39.434Z",
+          "monotonic_ms": 141086.359677
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 7,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 0,
+          "event_kinds": {
+            "tool_request": 1
+          },
+          "event_identities": [
+            {
+              "kind": "tool_request",
+              "seq": 1,
+              "name": "nodia_finance_movements_prepare_create",
+              "call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a"
+            }
+          ],
+          "at_utc": "2026-10-20T19:37:59.312Z",
+          "monotonic_ms": 160964.526983
+        },
+        {
+          "kind": "mcp/results",
+          "direction": "request_started",
+          "at_utc": "2026-10-20T19:37:59.417Z",
+          "monotonic_ms": 161069.406127,
+          "call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a"
+        },
+        {
+          "kind": "mcp/results",
+          "direction": "response_received",
+          "at_utc": "2026-10-20T19:37:59.420Z",
+          "monotonic_ms": 161072.541758,
+          "elapsed_ms": 3.1356310000119265,
+          "http_elapsed_ms": 2.939929000014672,
+          "call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a",
+          "accepted": true
+        },
+        {
+          "kind": "mcp/events",
+          "state": "running",
+          "rpc_messages": 7,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 1,
+          "event_kinds": {},
+          "event_identities": [],
+          "at_utc": "2026-10-20T19:37:59.524Z",
+          "monotonic_ms": 161176.549794
+        },
+        {
+          "kind": "mcp/events",
+          "state": "completed",
+          "rpc_messages": 7,
+          "unforwarded_tool_requests": 0,
+          "cursor_requested": 1,
+          "event_kinds": {
+            "answer": 1
+          },
+          "event_identities": [
+            {
+              "kind": "answer",
+              "seq": 2
+            }
+          ],
+          "at_utc": "2026-10-20T19:38:25.788Z",
+          "monotonic_ms": 187440.918807
+        },
+        {
+          "kind": "acknowledge",
+          "direction": "request_started",
+          "at_utc": "2026-10-20T19:38:25.817Z",
+          "monotonic_ms": 187469.614492
+        },
+        {
+          "kind": "acknowledge",
+          "direction": "response_received",
+          "at_utc": "2026-10-20T19:38:25.822Z",
+          "monotonic_ms": 187474.187738,
+          "elapsed_ms": 4.573246000014478,
+          "http_elapsed_ms": 4.265043000021251,
+          "acknowledged": true
+        }
+      ],
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 7,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 1,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 2
+          }
+        ],
+        "signature": "24810d48f2976073b0335562e89ab1c062e29bb8a572771431551b8f2c641a23",
+        "at_utc": "2026-10-20T19:38:25.788Z",
+        "monotonic_ms": 187440.920707
+      },
+      "latency_ms_by_kind": {
+        "start": {
+          "count": 1,
+          "total": 12.112820000009378,
+          "minimum": 12.112820000009378,
+          "maximum": 12.112820000009378
+        },
+        "mcp/events": {
+          "count": 475,
+          "total": 1503.9576530002523,
+          "minimum": 1.9271189999999478,
+          "maximum": 5.347453000023961
+        },
+        "mcp/results": {
+          "count": 1,
+          "total": 3.1356310000119265,
+          "minimum": 3.1356310000119265,
+          "maximum": 3.1356310000119265
+        },
+        "acknowledge": {
+          "count": 1,
+          "total": 4.573246000014478,
+          "minimum": 4.573246000014478,
+          "maximum": 4.573246000014478
+        }
+      },
+      "last_completed_request_by_kind": {
+        "start": {
+          "kind": "start",
+          "started": {
+            "at_utc": "2026-10-20T19:37:36.617Z",
+            "monotonic_ms": 138269.857617
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:37:36.629Z",
+            "monotonic_ms": 138281.970437
+          },
+          "elapsed_ms": 12.112820000009378,
+          "http_elapsed_ms": 11.546115000004647
+        },
+        "mcp/events": {
+          "kind": "mcp/events",
+          "started": {
+            "at_utc": "2026-10-20T19:38:25.785Z",
+            "monotonic_ms": 187437.317971
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:38:25.788Z",
+            "monotonic_ms": 187440.878806
+          },
+          "elapsed_ms": 3.560834999982035,
+          "http_elapsed_ms": 3.0584300000045914
+        },
+        "mcp/results": {
+          "kind": "mcp/results",
+          "started": {
+            "at_utc": "2026-10-20T19:37:59.417Z",
+            "monotonic_ms": 161069.406127
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:37:59.420Z",
+            "monotonic_ms": 161072.541758
+          },
+          "elapsed_ms": 3.1356310000119265,
+          "http_elapsed_ms": 2.939929000014672
+        },
+        "acknowledge": {
+          "kind": "acknowledge",
+          "started": {
+            "at_utc": "2026-10-20T19:38:25.817Z",
+            "monotonic_ms": 187469.614492
+          },
+          "received": {
+            "at_utc": "2026-10-20T19:38:25.822Z",
+            "monotonic_ms": 187474.187738
+          },
+          "elapsed_ms": 4.573246000014478,
+          "http_elapsed_ms": 4.265043000021251
+        }
+      },
+      "in_flight_request": null,
+      "last_completed_request": {
+        "kind": "acknowledge",
+        "started": {
+          "at_utc": "2026-10-20T19:38:25.817Z",
+          "monotonic_ms": 187469.614492
+        },
+        "received": {
+          "at_utc": "2026-10-20T19:38:25.822Z",
+          "monotonic_ms": 187474.187738
+        },
+        "elapsed_ms": 4.573246000014478,
+        "http_elapsed_ms": 4.265043000021251
+      }
+    }
+  },
+  "automatic_inference_retries": 0,
+  "operational_database_writes": 0,
+  "synthetic_publication_override": false,
+  "synthetic_provider_transport": false,
+  "synthetic_http_actor": true,
+  "human_confirmation_layer": "explicit_operator_HTTP_test_driver_not_physical_UI",
+  "natural_language_scope": "directed_synthetic_requests_with_exact_tool_names_and_known_ids",
+  "configured_sql_read_only": true,
+  "configured_database_access": "read_only",
+  "storage_operations": 0,
+  "services_restarted": false,
+  "credentials_logged": false,
+  "checks": [
+    "operational runtime has no pending work before real-provider verification",
+    "the actual compiled publication and registry bind all seven C05 capabilities",
+    "native exact selection reports available MCP before message admission or dispatch",
+    "native exact selection reports available MCP before message admission or dispatch",
+    "native exact selection reports available MCP before message admission or dispatch",
+    "independent_finance: discovery selection and execution are separate bounded generations",
+    "independent_finance: required real callbacks have durable completed SQL receipts",
+    "nodia_finance_movements_prepare_create: finance_preview_exact",
+    "nodia_finance_movements_prepare_create: finance_no_effect_before_confirmation",
+    "nodia_finance_movements_prepare_create: finance_exact_effect_once_after_confirmation",
+    "nodia_finance_movements_prepare_create: finance_atomic_receipt",
+    "case domain receipts recover after confirmation without replay",
+    "only this independent case requested acceptance callbacks",
+    "disposable worker has no uncertain attempts retained slots or pending proof ACKs"
+  ],
+  "turns": [
+    {
+      "label": "independent_finance",
+      "measurements": [
+        {
+          "measurementContractVersion": "nodia-ai-context-budget/1",
+          "measurementScope": "initial_native_prompt",
+          "measurementKind": "exact",
+          "canonicalUtf8Bytes": 10769,
+          "catalogUtf8Bytes": 12476,
+          "overheadUtf8Bytes": 1312,
+          "totalUtf8Bytes": 24557,
+          "maxUtf8Bytes": 262144,
+          "modelContextTokens": null,
+          "firstMcpListingUpperBoundUtf8Bytes": 15600
+        },
+        {
+          "measurementContractVersion": "nodia-ai-context-budget/1",
+          "measurementScope": "initial_native_prompt",
+          "measurementKind": "exact",
+          "canonicalUtf8Bytes": 10769,
+          "catalogUtf8Bytes": 12476,
+          "overheadUtf8Bytes": 1312,
+          "totalUtf8Bytes": 24557,
+          "maxUtf8Bytes": 262144,
+          "modelContextTokens": null,
+          "firstMcpListingUpperBoundUtf8Bytes": 15600
+        },
+        {
+          "measurementContractVersion": "nodia-ai-context-budget/1",
+          "measurementScope": "initial_native_prompt",
+          "measurementKind": "exact",
+          "canonicalUtf8Bytes": 4573,
+          "catalogUtf8Bytes": 14211,
+          "overheadUtf8Bytes": 1312,
+          "totalUtf8Bytes": 20096,
+          "maxUtf8Bytes": 262144,
+          "modelContextTokens": null,
+          "firstMcpListingUpperBoundUtf8Bytes": 17335
+        }
+      ],
+      "callbacks": [
+        {
+          "name": "nodia_capabilities_select",
+          "phase": "discovery",
+          "kind": "selection",
+          "call_id": "aebda6f7-7687-414b-9689-923545137597",
+          "observed_attempt_id": "7454c847-5f64-4a52-8de5-d026ddd3e6fc",
+          "requested_at_utc": "2026-10-20T19:37:16.534Z",
+          "requested_monotonic_ms": 118186.351083,
+          "arguments_sha256": "8b6f157f777642ca14e70e22186bdb15583b7176bba1b2ad0b79d33875bd37d7",
+          "status": "completed",
+          "completed_at_utc": "2026-10-20T19:37:16.717Z",
+          "completed_monotonic_ms": 118369.916712,
+          "result_sha256": "9cb634e6cd0ac11c25ad639aa032a8bef2ff6cb6e8be517e558a0e3b387c8ab0",
+          "durable_receipt": {
+            "receipt_id": "3550fe86-136a-4215-b622-38e33650e5c1",
+            "run_id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+            "adapter_call_id": "aebda6f7-7687-414b-9689-923545137597",
+            "state": "completed",
+            "result_sha256": "b39d69dd18bf950c99199d1975fe01c02c309d8b3be6b52f797b918264a6b697"
+          }
+        },
+        {
+          "name": "nodia_finance_movements_prepare_create",
+          "phase": "execution",
+          "kind": "capability",
+          "call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a",
+          "observed_attempt_id": "4b8493a6-233b-4c97-b0fd-a7baa2413074",
+          "requested_at_utc": "2026-10-20T19:37:59.321Z",
+          "requested_monotonic_ms": 160973.680474,
+          "arguments_sha256": "9b683b9a8d2c19fab2facb44182d50fc7b17c44c7dbb9488662830e8057f0c32",
+          "status": "completed",
+          "completed_at_utc": "2026-10-20T19:37:59.416Z",
+          "completed_monotonic_ms": 161068.69942,
+          "result_sha256": "01e4937a19279ad743190572e732887462aefaa0c111221d263cfd5e8eeac0aa",
+          "durable_receipt": {
+            "receipt_id": "4c9ff8df-86c9-422b-ac8b-06d7888d0d2f",
+            "run_id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+            "adapter_call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a",
+            "state": "completed",
+            "result_sha256": "394f8ae36513fa6ab66eb09910e8d9169dec80bec58e3f9a21c4012c97f270aa"
+          }
+        }
+      ],
+      "generations": [
+        {
+          "attempt_id": "7454c847-5f64-4a52-8de5-d026ddd3e6fc",
+          "phase": "discovery",
+          "callbacks": [
+            {
+              "name": "nodia_capabilities_select",
+              "phase": "discovery",
+              "kind": "selection",
+              "call_id": "aebda6f7-7687-414b-9689-923545137597",
+              "observed_attempt_id": "7454c847-5f64-4a52-8de5-d026ddd3e6fc",
+              "requested_at_utc": "2026-10-20T19:37:16.534Z",
+              "requested_monotonic_ms": 118186.351083,
+              "arguments_sha256": "8b6f157f777642ca14e70e22186bdb15583b7176bba1b2ad0b79d33875bd37d7",
+              "status": "completed",
+              "completed_at_utc": "2026-10-20T19:37:16.717Z",
+              "completed_monotonic_ms": 118369.916712,
+              "result_sha256": "9cb634e6cd0ac11c25ad639aa032a8bef2ff6cb6e8be517e558a0e3b387c8ab0",
+              "durable_receipt": {
+                "receipt_id": "3550fe86-136a-4215-b622-38e33650e5c1",
+                "run_id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+                "adapter_call_id": "aebda6f7-7687-414b-9689-923545137597",
+                "state": "completed",
+                "result_sha256": "b39d69dd18bf950c99199d1975fe01c02c309d8b3be6b52f797b918264a6b697"
+              }
+            }
+          ],
+          "provider_deadline_at": "2026-10-20T19:37:40.178Z",
+          "selected_tool_names": [
+            "nodia_capabilities_describe",
+            "nodia_capabilities_search",
+            "nodia_capabilities_select",
+            "nodia_entities_search",
+            "nodia_knowledge_get",
+            "nodia_knowledge_index",
+            "nodia_reports_describe",
+            "nodia_reports_run"
+          ],
+          "selected_catalog_sha256": "0791dc5247a08d3533649a2a11db1dab41fcd1b75bcccb298f600bf2390b6c5d",
+          "frozen_contracts_sha256": "1cddf239c00426f1ebc8b689eb4fa5fae0132de90e45487e23229e624768a431",
+          "terminal_proof_received": true,
+          "started_at_utc": "2026-10-20T19:35:40.179Z",
+          "started_monotonic_ms": 21831.728087,
+          "native_start_payload_sha256": "e8166325ffd4510761b334dd98871e782e1d2c32d94ebf627526aa2fe1545da6",
+          "native_canonical_prompt_sha256": "ee76b3f43cd863685fcbef2bd833d5442774357449a629cb53f9083552e8bfa6",
+          "native_timeout_seconds": 119,
+          "selection_requested_capability_ids": [
+            "nodia_finance_movements_prepare_create"
+          ],
+          "terminal_proof_sha256": "0849e7185f6b9708ea24e87b7cd714bc82fd04c32af876781306f05f65893796",
+          "terminal_proof_outcome": "completed",
+          "process_closed": true,
+          "answer_sha256": "f50e4dc718d22ca2561fa01b48117a32f835b60123bb87ad0af81986dba86ff8",
+          "finished_at_utc": "2026-10-20T19:37:26.017Z",
+          "finished_monotonic_ms": 127669.967397
+        },
+        {
+          "attempt_id": "4b8493a6-233b-4c97-b0fd-a7baa2413074",
+          "phase": "execution",
+          "callbacks": [
+            {
+              "name": "nodia_finance_movements_prepare_create",
+              "phase": "execution",
+              "kind": "capability",
+              "call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a",
+              "observed_attempt_id": "4b8493a6-233b-4c97-b0fd-a7baa2413074",
+              "requested_at_utc": "2026-10-20T19:37:59.321Z",
+              "requested_monotonic_ms": 160973.680474,
+              "arguments_sha256": "9b683b9a8d2c19fab2facb44182d50fc7b17c44c7dbb9488662830e8057f0c32",
+              "status": "completed",
+              "completed_at_utc": "2026-10-20T19:37:59.416Z",
+              "completed_monotonic_ms": 161068.69942,
+              "result_sha256": "01e4937a19279ad743190572e732887462aefaa0c111221d263cfd5e8eeac0aa",
+              "durable_receipt": {
+                "receipt_id": "4c9ff8df-86c9-422b-ac8b-06d7888d0d2f",
+                "run_id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+                "adapter_call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a",
+                "state": "completed",
+                "result_sha256": "394f8ae36513fa6ab66eb09910e8d9169dec80bec58e3f9a21c4012c97f270aa"
+              }
+            }
+          ],
+          "provider_deadline_at": "2026-10-20T19:39:36.614Z",
+          "selected_tool_names": [
+            "nodia_capabilities_describe",
+            "nodia_capabilities_search",
+            "nodia_entities_search",
+            "nodia_finance_movements_prepare_create",
+            "nodia_knowledge_get",
+            "nodia_knowledge_index",
+            "nodia_reports_describe",
+            "nodia_reports_run"
+          ],
+          "selected_catalog_sha256": "7429e1ed3f34d7749cfba5b80ee0bc6c69ad189203425de28f5f1eae86d5ad35",
+          "frozen_contracts_sha256": "9fdbc084b951c286669aee7585dfdf6147d4ffa0261972adf60cc84a88c27337",
+          "terminal_proof_received": true,
+          "started_at_utc": "2026-10-20T19:37:36.616Z",
+          "started_monotonic_ms": 138268.1704,
+          "requested_capability_ids": [
+            "nodia_finance_movements_prepare_create"
+          ],
+          "required_capabilities_selected": true,
+          "discovery_ACK_completed_before_dispatch": true,
+          "native_start_payload_sha256": "c187390f1007ea7caa5ba94f3c318c527b366b585dd91f0bef1cd558308a0a9e",
+          "native_canonical_prompt_sha256": "eedee37b41b05d8557bd4e989c2526a7ae6da5047ed74e529f511f1ada5aee70",
+          "native_timeout_seconds": 119,
+          "terminal_proof_sha256": "d29aff6c506c4bb7f648c92f667d2713ff3d240187ec9364071f9d27334e26cf",
+          "terminal_proof_outcome": "completed",
+          "process_closed": true,
+          "answer_sha256": "9ceb14476f975c71cbf59737bb17bef248edf5cf7dae46b7fe59d088fd7f8a84",
+          "finished_at_utc": "2026-10-20T19:38:25.789Z",
+          "finished_monotonic_ms": 187441.539213
+        }
+      ],
+      "required_tools": [
+        "nodia_finance_movements_prepare_create"
+      ],
+      "human_prompt_sha256": "8974eb1593723eadc2f99012bef1eeba6aed001434a8065bde1aa20cc4f333b0",
+      "started_at_utc": "2026-10-20T19:35:27.108Z",
+      "native_observation": {
+        "available": true,
+        "supports_mcp": true,
+        "source": "gemini_live_session_and_catalog",
+        "observed_at": "2026-10-20T19:37:26.392Z",
+        "reason": null
+      },
+      "run_id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+      "queued_at_utc": "2026-10-20T19:35:35.186Z",
+      "run_deadline_at": "2026-10-20T19:45:35.186Z",
+      "initial_frozen_tool_names": [
+        "nodia_capabilities_describe",
+        "nodia_capabilities_search",
+        "nodia_capabilities_select",
+        "nodia_entities_search",
+        "nodia_knowledge_get",
+        "nodia_knowledge_index",
+        "nodia_reports_describe",
+        "nodia_reports_run"
+      ],
+      "initial_frozen_contracts_sha256": "1cddf239c00426f1ebc8b689eb4fa5fae0132de90e45487e23229e624768a431",
+      "state": "completed",
+      "error_code": null,
+      "finished_at_utc": "2026-10-20T19:38:25.828Z",
+      "receipts": [
+        {
+          "receipt_id": "3550fe86-136a-4215-b622-38e33650e5c1",
+          "tool_name": "nodia_capabilities_select",
+          "run_id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+          "adapter_call_id": "aebda6f7-7687-414b-9689-923545137597",
+          "state": "completed",
+          "contract_hash": "c84994434a131c277db1391375db7f2b2fcc0de4dc2ff9bac684cd02405ce84e",
+          "result_sha256": "b39d69dd18bf950c99199d1975fe01c02c309d8b3be6b52f797b918264a6b697"
+        },
+        {
+          "receipt_id": "4c9ff8df-86c9-422b-ac8b-06d7888d0d2f",
+          "tool_name": "nodia_finance_movements_prepare_create",
+          "run_id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+          "adapter_call_id": "e4dc0ab3-ad12-4063-ad81-abe5c5a1ed0a",
+          "state": "completed",
+          "contract_hash": "940b53baf8714b1a04cff3ef7fdd59cb126a4457199feeb3993dee9dd023ae54",
+          "result_sha256": "394f8ae36513fa6ab66eb09910e8d9169dec80bec58e3f9a21c4012c97f270aa"
+        }
+      ]
+    }
+  ],
+  "per_capability": {
+    "nodia_finance_movements_prepare_create": {
+      "actual_callbacks": 1,
+      "successful_callbacks": 1,
+      "publication_bound": true,
+      "selected_in_real_generation": true,
+      "contract_hash": "940b53baf8714b1a04cff3ef7fdd59cb126a4457199feeb3993dee9dd023ae54",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": [
+        {
+          "id": "finance_preview_exact",
+          "passed": true,
+          "expected": {
+            "owner_id": "1",
+            "name": "Synthetic C05 lunch",
+            "amount": "23450",
+            "type": "expense",
+            "status": "paid",
+            "category_id": "1"
+          },
+          "observed": {
+            "owner_id": "1",
+            "name": "Synthetic C05 lunch",
+            "amount": "23450",
+            "type": "expense",
+            "status": "paid",
+            "category_id": "1"
+          }
+        },
+        {
+          "id": "finance_no_effect_before_confirmation",
+          "passed": true,
+          "expected": 0,
+          "observed": 0
+        },
+        {
+          "id": "finance_exact_effect_once_after_confirmation",
+          "passed": true,
+          "expected": {
+            "count": 1,
+            "name": "Synthetic C05 lunch",
+            "amount": "23450",
+            "type": "expense",
+            "status": "paid",
+            "category_id": "1"
+          },
+          "observed": {
+            "count": 1,
+            "name": "Synthetic C05 lunch",
+            "amount": "23450",
+            "type": "expense",
+            "status": "paid",
+            "category_id": "1"
+          }
+        },
+        {
+          "id": "finance_atomic_receipt",
+          "passed": true,
+          "expected": [
+            {
+              "state": "completed",
+              "resource_key": "finance_movements",
+              "resource_id": "1"
+            }
+          ],
+          "observed": [
+            {
+              "state": "completed",
+              "resource_key": "finance_movements",
+              "resource_id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    "nodia_proposals_get": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "dd96b92de5b86bdd807b904947706aaf103fed258122aae7b78a424a6a2e9a79",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_operations_get": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "8e8c085c8da7deb90191fbbb74cf5386c4365434d26d89c774c5a8c6b6c64f4a",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_workflows_prepare": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "3f2de6818c06114ec1715fcb9e8b6dd71ef75cde9691b7e9d4e1184892ac78b2",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_attachments_describe": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "38e1fe8ff894526917d47d45a96aa1b6a2ab16cb4c27459291d2583878959ad4",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_preferences_list": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "35895fb678b6d02ec4241d8daebbce602826e8c50c3af779bbcf74a98d67a39c",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_preferences_prepare": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "a1dd4db24e479b9baffa2848b8e0f8ccb6e21aca425e55346a14dce9ad43b4d1",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    }
+  },
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-20T19:35:27.116Z",
+        "monotonic_ms": 8768.972111
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:35:35.181Z",
+        "monotonic_ms": 16833.308366
+      },
+      "elapsed_ms": 8064.336255000002
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-20T19:35:35.490Z",
+        "monotonic_ms": 17142.808457
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:35:35.497Z",
+        "monotonic_ms": 17149.271021
+      },
+      "elapsed_ms": 6.462564000001294
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-20T19:35:35.561Z",
+        "monotonic_ms": 17213.943767
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:35:40.006Z",
+        "monotonic_ms": 21658.404256
+      },
+      "elapsed_ms": 4444.460489000001
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-20T19:35:40.121Z",
+        "monotonic_ms": 21774.057612
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:35:40.127Z",
+        "monotonic_ms": 21779.578667
+      },
+      "elapsed_ms": 5.52105500000107
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "7454c847-5f64-4a52-8de5-d026ddd3e6fc",
+      "started": {
+        "at_utc": "2026-10-20T19:35:40.157Z",
+        "monotonic_ms": 21809.820469
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-20T19:37:40.178Z",
+      "finished": {
+        "at_utc": "2026-10-20T19:35:40.178Z",
+        "monotonic_ms": 21830.443375
+      },
+      "elapsed_ms": 20.622906000000512
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "7454c847-5f64-4a52-8de5-d026ddd3e6fc",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-20T19:35:40.179Z",
+        "monotonic_ms": 21831.891489
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:37:26.017Z",
+        "monotonic_ms": 127669.803896
+      },
+      "elapsed_ms": 105837.912407
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-20T19:37:26.389Z",
+        "monotonic_ms": 128041.325198
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:37:36.454Z",
+        "monotonic_ms": 138106.848892
+      },
+      "elapsed_ms": 10065.523694000003
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-20T19:37:36.569Z",
+        "monotonic_ms": 138221.625536
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:37:36.574Z",
+        "monotonic_ms": 138226.605686
+      },
+      "elapsed_ms": 4.980149999988498
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "4b8493a6-233b-4c97-b0fd-a7baa2413074",
+      "started": {
+        "at_utc": "2026-10-20T19:37:36.598Z",
+        "monotonic_ms": 138250.574424
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-20T19:39:36.614Z",
+      "finished": {
+        "at_utc": "2026-10-20T19:37:36.614Z",
+        "monotonic_ms": 138267.053689
+      },
+      "elapsed_ms": 16.47926500000176
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "4b8493a6-233b-4c97-b0fd-a7baa2413074",
+      "phase": "execution",
+      "started": {
+        "at_utc": "2026-10-20T19:37:36.616Z",
+        "monotonic_ms": 138268.753906
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-20T19:38:25.789Z",
+        "monotonic_ms": 187441.25321
+      },
+      "elapsed_ms": 49172.499304
+    }
+  ],
+  "owned_cli_log_observations": [],
+  "acceptance_scope": "current_explicit_bundle_and_exact_configured_Gemini_selection_in_laboratory_not_productive_acceptance",
+  "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+  "configuration_snapshot_scope": "nonsecret_agentic_mode_fields_and_updated_at_preserve_native_configuration_fingerprint",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "publication": {
+    "release_id": "c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36",
+    "catalog_release": "nodia-ai-ai15-reads/1",
+    "manifest_sha256": "3f58cc23f9b09e2afd4e60b01cb40889ca58517a1927b3f574837530abead5a2",
+    "capabilities": 74,
+    "registry_hash": "31add4d121c6452e1b3cf406503803fadb9bca26f5a4fa681e49b72bf281e824"
+  },
+  "disposable_chat_id": "8cd162b3-403a-410f-a562-eb1487a255bd",
+  "native_HTTP_checks": [
+    {
+      "id": "proposal_exact_revision_hash",
+      "passed": true,
+      "expected": {
+        "proposal_id": "49aa48c1-4279-4978-a254-653c9678f924",
+        "revision": 1,
+        "hash": "2758fe89b65d2569249e344b08c6d9d962acaf14049cc4fbf72c11c81a84abeb"
+      },
+      "observed": {
+        "proposal_id": "49aa48c1-4279-4978-a254-653c9678f924",
+        "revision": 1,
+        "hash": "2758fe89b65d2569249e344b08c6d9d962acaf14049cc4fbf72c11c81a84abeb"
+      },
+      "provider_callback": false,
+      "MCP_capability_acceptance": false
+    }
+  ],
+  "human_confirmations": [
+    {
+      "proposal_id": "49aa48c1-4279-4978-a254-653c9678f924",
+      "revision": 1,
+      "proposal_hash": "2758fe89b65d2569249e344b08c6d9d962acaf14049cc4fbf72c11c81a84abeb",
+      "execution_id": "f614d3f4-7184-43c9-aa41-f3b56cc0a8a8",
+      "duplicate_confirmation_same_execution": true,
+      "layer": "operator_HTTP_fixture_actor_not_UI",
+      "purpose": "capability_acceptance"
+    }
+  ],
+  "independent_case_completed": true,
+  "uncertain_reconciliation": [],
+  "disposable_sql_final": {
+    "business_counts": {
+      "finance_movements": 1,
+      "accepted_preferences": 0
+    },
+    "runs": [
+      {
+        "id": "09eed7a1-7377-4beb-8600-1cbdf7f4142b",
+        "state": "completed",
+        "error_code": null,
+        "provider_dispatches_used": 2,
+        "tool_calls_used": 2,
+        "budget_snapshot": {
+          "tool_calls": 12,
+          "compactions": 1,
+          "delegations": 1,
+          "schema_version": 1,
+          "mcp_rpc_messages": 128,
+          "provider_dispatches": 3
+        }
+      }
+    ],
+    "receipts": [
+      {
+        "receipt_id": "3550fe86-136a-4215-b622-38e33650e5c1",
+        "tool_name": "nodia_capabilities_select",
+        "state": "completed",
+        "contract_hash": "c84994434a131c277db1391375db7f2b2fcc0de4dc2ff9bac684cd02405ce84e",
+        "arguments_hash": "8e096db0ce167c627e56c889fbc65e3c615bc649956c31b63c8fc86461f0e374",
+        "result_sha256": "b39d69dd18bf950c99199d1975fe01c02c309d8b3be6b52f797b918264a6b697"
+      },
+      {
+        "receipt_id": "4c9ff8df-86c9-422b-ac8b-06d7888d0d2f",
+        "tool_name": "nodia_finance_movements_prepare_create",
+        "state": "completed",
+        "contract_hash": "940b53baf8714b1a04cff3ef7fdd59cb126a4457199feeb3993dee9dd023ae54",
+        "arguments_hash": "9b683b9a8d2c19fab2facb44182d50fc7b17c44c7dbb9488662830e8057f0c32",
+        "result_sha256": "394f8ae36513fa6ab66eb09910e8d9169dec80bec58e3f9a21c4012c97f270aa"
+      }
+    ]
+  },
+  "unresolved_native_or_proof_state": false,
+  "disposable_database_retained_for_reconciliation": false,
+  "finished_at_utc": "2026-10-20T19:38:26.258Z"
+}

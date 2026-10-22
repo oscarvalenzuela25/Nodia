@@ -1,0 +1,24 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_validation_of_byte_exact_fresh_API_reports_and_sources",
+  "status": "passed",
+  "source_and_evidence_sha256": {
+    "docs/evidence/nodia-ai-ai38-fresh-api-process-r01.json": "0d9337f8ddc9861edcd082bc566c018560b1859dd60d1d7d7e375fd5065f421c",
+    "docs/evidence/nodia-ai-ai38-fresh-api-process-r01-native.json": "c0da8dbfc478c7087b9c66e31e318e95e03577908f6fa7bd86fa5937909da7a0",
+    "nodia-server/test/nodia-ai-ai38-fresh-api-process.mjs": "51ac8e0752c33dbd16f4013904ada395f28c18cc42f83439307e4dd43d996df3",
+    "docs/evidence/scripts/nodia-ai-ai38-fresh-api-process.py": "1e02f1244e2c9b6538e6e77237664d62b49c7b1166a2997fef397201f2021ceb",
+    "docs/evidence/nodia-ai-ai38-fresh-api-process-acceptance.md": "6f6f5aa3b13dae9bf41e693eb829043e90afea6051d0cceb9cc793fe44095800"
+  },
+  "native_checks": 11,
+  "functional_HTTP_GETs": 8,
+  "provider_requests_for_this_validation": 0,
+  "API_entrypoint": "dist/main.js",
+  "full_Google_login_tested": false,
+  "fixture_issued_sessions": true,
+  "adopted": false,
+  "local_static_checks": [
+    "node --check harness: passed",
+    "oxlint harness: passed without warnings",
+    "python -m py_compile driver: passed"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "stage": "AI-34",
+  "scope": "real_gemini_independent_synthetic_mcp_canary",
+  "status": "failed",
+  "observed_at_utc": "2026-10-18T20:00:39.916Z",
+  "maximum_generations": 1,
+  "generation_requests": 1,
+  "operational_sql_writes": 0,
+  "user_chats_created": 0,
+  "business_tools_exposed": 0,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "model_context_tokens": null,
+  "knowledge_release": "7092b896342022735935d4aaff2783ed300b905f5693d2285b748cd75ac99ffd",
+  "knowledge_capability_metadata_source": "built_manifest_projection_not_an_independent_tool_registry_test",
+  "sql_worker_and_snapshot_persistence_acceptance": "separate_isolated_integration",
+  "checks": [
+    "configured runtime is quiet before synthetic provider work",
+    "agentic: exact current selection is eligible",
+    "agentic MCP: complete initial prompt plus first listing upper bound fits"
+  ],
+  "probes": [
+    {
+      "engine": "agentic",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "compaction": null,
+      "continuity": null,
+      "terminal_proofs_acknowledged": 0
+    }
+  ],
+  "mcp_probe": {
+    "scope": "real_agentic_synthetic_read_callback_not_business_sql",
+    "attempt_id": "e735c64b-5081-4dd6-8f40-47ef5c045db1",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "measurement": {
+      "measurementContractVersion": "nodia-ai-context-budget/1",
+      "measurementScope": "initial_native_prompt",
+      "measurementKind": "exact",
+      "canonicalUtf8Bytes": 315,
+      "catalogUtf8Bytes": 238,
+      "overheadUtf8Bytes": 490,
+      "totalUtf8Bytes": 1043,
+      "maxUtf8Bytes": 262144,
+      "modelContextTokens": null,
+      "firstMcpListingUpperBoundUtf8Bytes": 3362
+    },
+    "started_at_utc": "2026-10-18T20:00:49.681Z",
+    "tool_callback_count": 0,
+    "protocol_rpc_messages": 6,
+    "unforwarded_tool_requests": 0,
+    "terminal_proof_acknowledged": false,
+    "controlled_context_ledger": "collect_safe_native_terminal_diagnostic_by_attempt_id"
+  },
+  "failure_category": "mcp_result_unknown",
+  "uncertain_attempt_reconciliation": {
+    "outcome": "abandoned_unknown",
+    "process_closed": true,
+    "acknowledged": true
+  },
+  "finished_at_utc": "2026-10-18T20:02:48.799Z"
+}

@@ -1,0 +1,62 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "offline_real_cli_log_classifier_synthetic_logs_not_provider_acceptance",
+  "observed_at_utc": "2026-10-19T17:30:30.968733+00:00",
+  "middle_error_omitted_by_line_sampling": true,
+  "cases": {
+    "head": {
+      "state": "observed",
+      "interpretation": "text_indicator_not_verified_cause",
+      "bytes_read": 4714,
+      "lines_scanned": 128,
+      "truncated": true,
+      "transport_indicators": [],
+      "provider_error_indicators": [
+        "RESOURCE_EXHAUSTED"
+      ],
+      "http_statuses": [
+        503
+      ]
+    },
+    "middle": {
+      "state": "observed",
+      "interpretation": "text_indicator_not_verified_cause",
+      "bytes_read": 4714,
+      "lines_scanned": 128,
+      "truncated": true,
+      "transport_indicators": [],
+      "provider_error_indicators": [],
+      "http_statuses": []
+    },
+    "tail": {
+      "state": "observed",
+      "interpretation": "text_indicator_not_verified_cause",
+      "bytes_read": 4714,
+      "lines_scanned": 128,
+      "truncated": true,
+      "transport_indicators": [],
+      "provider_error_indicators": [
+        "RESOURCE_EXHAUSTED"
+      ],
+      "http_statuses": [
+        503
+      ]
+    }
+  },
+  "source_hashes": [
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c05-cli-log-window-control.py",
+      "sha256": "dfd28022cbd69d010522e24e82b9b9ae76ca82229c014b013459e9c058efd4a2"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_cli_diagnostics.py",
+      "sha256": "68565bf87e0c37828703b3b3abf82a787158073213ac0bf155494213f6d6e691"
+    }
+  ],
+  "application_or_operational_profiles_imported": false,
+  "real_cli_or_provider_requests": 0,
+  "limitations": [
+    "Synthetic indicator omission does not prove the real log contained an omitted error.",
+    "Indicators classify text and do not establish the cause of a provider failure."
+  ]
+}

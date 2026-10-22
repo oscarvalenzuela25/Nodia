@@ -1,0 +1,32 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_backup_driver_negative_controls_no_external_execution",
+  "status": "passed",
+  "backup_source_sha256": "f66e2a7643d4f04d738a0eb752f090dc2fb7828bf8c26973bc07dc63f729af57",
+  "validator_sha256": "3d2029f9be308893aec1d34395a663ce3a48f7f945c17f7cbb11e45e8a986baa",
+  "check_count": 16,
+  "checks": [
+    "dry run rejects any attempted process filesystem or network side effect",
+    "retention 0 rejected before side effects",
+    "retention -1 rejected before side effects",
+    "retention 169 rejected before side effects",
+    "retention boundary 1 accepted only as dry-run plan",
+    "retention boundary 168 accepted only as dry-run plan",
+    "execute requires an explicit retention before filesystem access",
+    "count query rejects seven unsafe identifier cases",
+    "count query refuses empty table inventory",
+    "safe table inventory generates two quoted read-only aggregates",
+    "active writer rejects execution before staging backup or private environment",
+    "real readiness loop rejects temporary socket-only server and missing database before final TCP SELECT1",
+    "one dropped physical ordinal canonicalizes to exact visible order",
+    "logical comparison retains length numeric scale generated expression and collation differences",
+    "native parser bridge preserves exact original SQL and requires exact reparsed CHECK plus weakened counterexample",
+    "missing identity non-CHECK change weakened CHECK changed operator and invalid counterexample all reject"
+  ],
+  "external_processes_started": 0,
+  "configured_database_access": false,
+  "private_environment_read": false,
+  "VM_mutations": false,
+  "provider_requests": 0,
+  "actual_GPG_or_restore_verified": false
+}

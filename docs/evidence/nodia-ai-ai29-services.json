@@ -1,0 +1,57 @@
+{
+  "observed_at_utc": "2026-10-17T21:44:33.071528+00:00",
+  "clock_source": "vm_host",
+  "server_units": {
+    "nginx": "active",
+    "worker": "active",
+    "api": "active"
+  },
+  "containers": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "temporary_test_containers_remaining": 0,
+  "stage": "AI-29",
+  "scope": "private_lab_services_after_activation",
+  "windows": {
+    "client_http": 200,
+    "tunnel_api_http": 200,
+    "client_proxy_api_http": 200,
+    "listeners": [
+      {
+        "LocalPort": 5174,
+        "OwningProcess": 57196
+      },
+      {
+        "LocalPort": 3100,
+        "OwningProcess": 41704
+      }
+    ],
+    "qa_5194_stopped": true,
+    "tunnel_port": 3100,
+    "client_port": 5174
+  },
+  "configured_provider_inference_requested": false,
+  "user_browser_tab_modified": false,
+  "windows_observed_at_utc": "2026-10-17T21:38:54.257436+00:00",
+  "clock_note": "VM and Windows timestamps use their own clocks; cross-host ordering is not inferred.",
+  "post_start_stability": [
+    {
+      "MainPID": "875080",
+      "NRestarts": "0",
+      "ExecMainStatus": "0",
+      "Id": "nodia-api.service",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    {
+      "MainPID": "875083",
+      "NRestarts": "0",
+      "ExecMainStatus": "0",
+      "Id": "nodia-ai-worker.service",
+      "ActiveState": "active",
+      "SubState": "running"
+    }
+  ]
+}

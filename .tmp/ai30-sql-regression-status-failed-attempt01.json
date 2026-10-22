@@ -1,0 +1,57 @@
+[
+  {
+    "configured_database_used": false,
+    "elapsed_seconds": 4.1915975,
+    "file": "test/nodia-ai-ai14.integration.mjs",
+    "desktop_observed_at_utc": "2026-10-18T01:14:27.2094043Z",
+    "vm_observed_at_utc": "2026-10-18T01:20:41Z",
+    "desktop_started_at_utc": "2026-10-18T01:14:22.8148751Z",
+    "log": ".tmp/ai30-sql-regression-14.log",
+    "exit_code": 1,
+    "provider_inference": false,
+    "cleanup_completed_without_reported_failure": false,
+    "source_hashes": [
+      {
+        "path": "nodia-server/test/nodia-ai-ai14.integration.mjs",
+        "sha256": "03704419a20096da8926f7166cc61ec5844093db594d4d815cb1ef9e23bd312e"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-ai14.fixture.mjs",
+        "sha256": "fefb8a307773faf6f24dd421b1ded08e434cfeac70161f16a20cba92fd1f666f"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-ai15.integration.mjs",
+        "sha256": "f2b67cd3d6206587958e5c8194ef1aa85b41c06fc956db302872dcc204c09ee2"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-ai15.fixture.mjs",
+        "sha256": "89b23a1d87bc191015507bbc2db2459ef4eac4670979248dec9a759e152a9138"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-ai15-domain-seeds.fixture.mjs",
+        "sha256": "63937a9fe25c64e6c7c49cbad7edda99e93652b14a7fb121c92b55f903806b61"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-unpublished.fixture.mjs",
+        "sha256": "6fc71fca386f7e0f2f6247c22f622e189c0ca8cef98cce3a847726780afd8e84"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+        "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-ai08.integration.mjs",
+        "sha256": "1a1717851da2561d355599e5b56c7bd4c40ed0589f5f488adc5e975d1881016f"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-ai29-r01.integration.mjs",
+        "sha256": "e380335d4c3ff98c86b40b9d038c756086597270edc29523a87a4a6234bfb4bf"
+      },
+      {
+        "path": "nodia-server/test/nodia-ai-ai29-r01-worker.fixture.mjs",
+        "sha256": "b0a8a58f9d2250ce6e6342ac6d7e7ef717e126132f2459309c00d4c20768f458"
+      }
+    ],
+    "stage": "14"
+  }
+]

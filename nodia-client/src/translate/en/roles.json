@@ -96,12 +96,13 @@
   "confirm_delete_message": "The role \"{{name}}\" will be permanently deleted together with its user assignments, actions and translations. This operation cannot be undone.",
   "invalid_id": "The role ID is invalid.",
   "not_found": "The role no longer exists.",
-  "protected_role": "The super_admin role cannot be deleted.",
+  "protected_role": "The super_admin role cannot be deleted or deactivated.",
   "protected_key": "The super_admin role identifier cannot be changed.",
   "pagination": {
     "next": "Next page",
     "previous": "Previous page",
     "first": "First page",
     "last": "Last page"
-  }
+  },
+  "invalid_actions": "One or more actions do not exist or are invalid."
 }

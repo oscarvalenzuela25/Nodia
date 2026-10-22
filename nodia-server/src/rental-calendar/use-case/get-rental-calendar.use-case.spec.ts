@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { describe, it, expect } from 'vitest';
 import {
@@ -21,7 +22,7 @@ describe('Rental calendar reads', () => {
   }
   it('returns a real empty state, distinct from authorization or DB failure', async () => {
     const f = fixture();
-    const result = await f.calendar.execute('1', '10', {
+    const result = await f.calendar.execute(actorFixture('1'), '10', {
       from_on: '2026-10-01',
       to_on: '2026-11-01',
     });
@@ -32,7 +33,7 @@ describe('Rental calendar reads', () => {
       scope: { includes_archived_occupancy: true },
     });
     await expect(
-      f.calendar.execute('3', '10', {
+      f.calendar.execute(actorFixture('3'), '10', {
         from_on: '2026-10-01',
         to_on: '2026-11-01',
       }),
@@ -55,7 +56,7 @@ describe('Rental calendar reads', () => {
     f.queryRows(RentalReservation, [row]);
     f.queryRows(RentalBlock, []);
     f.queryRows(RentalTurnover, []);
-    const result = await f.calendar.execute('1', '10', {
+    const result = await f.calendar.execute(actorFixture('1'), '10', {
       from_on: '2026-10-01',
       to_on: '2026-11-01',
     });
@@ -72,7 +73,7 @@ describe('Rental calendar reads', () => {
       Array.from({ length: 1001 }, () => ({ id: '40' })),
     );
     await expect(
-      f.calendar.execute('1', '10', {
+      f.calendar.execute(actorFixture('1'), '10', {
         from_on: '2026-10-01',
         to_on: '2026-11-01',
       }),
@@ -81,29 +82,52 @@ describe('Rental calendar reads', () => {
   it('does not require a midnight that does not exist at a Santiago DST boundary', async () => {
     const f = fixture();
     await expect(
-      f.calendar.execute('1', '10', {
+      f.calendar.execute(actorFixture('1'), '10', {
         from_on: '2026-09-06',
         to_on: '2026-09-07',
       }),
     ).resolves.toMatchObject({ reservations: [] });
   });
+  it('supports a stricter inherited chat row ceiling and rejects oversized sets without truncation', async () => {
+    const f = fixture();
+    f.queryRows(
+      RentalReservation,
+      Array.from({ length: 101 }, () => ({ id: '40' })),
+    );
+    await expect(
+      f.calendar.execute(
+        actorFixture('1'),
+        '10',
+        { from_on: '2026-10-01', to_on: '2026-11-01' },
+        100,
+      ),
+    ).rejects.toThrow('rental:window_too_large');
+    await expect(
+      f.calendar.execute(
+        actorFixture('1'),
+        '10',
+        { from_on: '2026-10-01', to_on: '2026-11-01' },
+        1001,
+      ),
+    ).rejects.toThrow('rental:invalid_input');
+  });
   it('rejects unbounded windows, extra fields and ambiguous/nonexistent agreed local hours', async () => {
     const f = fixture();
     await expect(
-      f.calendar.execute('1', '10', {
+      f.calendar.execute(actorFixture('1'), '10', {
         from_on: '2026-01-01',
         to_on: '2026-12-31',
       }),
     ).rejects.toThrow('rental:invalid_input');
     await expect(
-      f.calendar.execute('1', '10', {
+      f.calendar.execute(actorFixture('1'), '10', {
         from_on: '2026-10-01',
         to_on: '2026-11-01',
         user_id: '3',
       } as { from_on: string; to_on: string }),
     ).rejects.toThrow('rental:invalid_input');
     await expect(
-      f.availability.execute('1', '10', {
+      f.availability.execute(actorFixture('1'), '10', {
         check_in_on: '2026-09-06',
         check_out_on: '2026-09-07',
         check_in_time: '00:30',
@@ -120,7 +144,7 @@ describe('Rental calendar reads', () => {
         ends_at: new Date('2026-10-11T14:00:00Z'),
       },
     ]);
-    const result = await f.availability.execute('1', '10', {
+    const result = await f.availability.execute(actorFixture('1'), '10', {
       check_in_on: '2026-10-10',
       check_out_on: '2026-10-11',
       check_in_time: '15:00',

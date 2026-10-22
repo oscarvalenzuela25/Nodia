@@ -1,0 +1,68 @@
+# AI-38 — entrega y reversión por entorno
+
+Estado: procedimiento preparado y paquete verificado en laboratorio Linux. No es una autorización de despliegue ni una aceptación productiva. La matriz de [gates](nodia-ai-ai38-gates.json) distingue artefactos, pruebas aisladas, proveedor real e infraestructura. Una evidencia de un entorno o paquete anterior no pasa automáticamente al siguiente.
+
+## Paquete y procedencia
+
+El build oficial de AI-38 genera el candidato `01`, congelado en `.tmp/ai38-node-candidate01/nodia-server`. [La referencia](nodia-ai-ai38-candidate01.json) fija el manifiesto `0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3`, los 2.827 outputs, 979 archivos runtime y 924 hashes de fuentes de producción. No incluye `.env`, perfiles ni `node_modules`; los fixtures de integración no habilitan herramientas ni acreditan aceptación por estar presentes.
+
+La publicación compilada tiene 74 contratos, 31 documentos y 31 fragmentos. Su release es `c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36`. Este pin procede del build actual; no reemplaza el candidato histórico AI-37 `04` ni certifica que las 74 capacidades hayan pasado aceptación real. Los gates de AI-36/C05 continúan en su etapa propia.
+
+El archivo `.tmp/ai38-node-candidate01.tar.gz` tiene SHA-256 `b7492afeeb31b9bb65fb0ec3a41ea1caf016d65b3f09af3ac3f487727782fabb`. [La extracción R02](nodia-ai-ai38-delivery-stage-r02.json) comprobó todos sus 2.934 archivos, incluido el manifiesto, en `/opt/nodia/verification/ai38-node-candidate01/nodia-server`. Rechaza rutas ascendentes/absolutas, duplicados, enlaces, dispositivos, archivos no declarados y secretos/dependencias dentro del archivo. No inicia el servidor ni cambia systemd.
+
+La dependencia compartida enlazada es `/opt/nodia/nodia-server/node_modules`; la ruta histórica AI-32 es un symlink a ella. El primer intento de staging rechazó ese symlink antes de crear el destino; el segundo usó su destino real comprobado. Esto acredita disponibilidad del directorio, **no** una instalación `npm ci` conforme al lock del paquete. Para otro entorno se debe instalar con el lock congelado y verificar runtime/DI allí. No construir ni sincronizar modelos durante el despliegue.
+
+## Verificación local y snapshot operativo
+
+El [preflight R01](nodia-ai-ai38-delivery-preflight-r01.json) verificó los 2.933 miembros declarados, 924 fuentes, dependencias de package contra lock, pin de conocimiento y ausencia de archivos extra. El inspector sólo usa filesystem/crypto; no importa la aplicación ni llama a BD, proveedor o R2. Para repetirlo, usar un nombre de recibo nuevo; no sobrescribir históricos:
+
+```powershell
+node docs/evidence/scripts/nodia-ai-ai38-delivery-preflight.cjs docs/evidence/nodia-ai-ai38-candidate01.json docs/evidence/nodia-ai-ai38-delivery-inventory-r02.json docs/evidence/nodia-ai-ai38-delivery-preflight-r02.json linux_lab
+```
+
+[Ocho controles negativos](nodia-ai-ai38-delivery-control-r01.json) sobre una copia sintética comprobaron rechazo sin crear recibo: sobrescritura, reetiquetado de entorno, digest de manifiesto incorrecto, `.env` extra, archivo no declarado, runtime alterado, lock alterado y miembro compilado ausente. El candidato original se conservó; estos controles no ejecutaron aplicación, BD o proveedor.
+
+El [inventario R02](nodia-ai-ai38-delivery-inventory-r02.json) es una lectura del entorno que estaba activo, **distinto del candidato**: API y worker conservan `/opt/nodia/releases/nodia-server-ai15-20261016`, 932 outputs y digest `bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792`; Gemini conserva imagen `0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa`, contenedor, seis mounts y configuración semántica. API, worker, Gemini y nginx estaban activos; SQL observó cero jobs pendientes, intentos abiertos y slots retenidos. Es un snapshot, no una reserva de exclusividad ni una prueba de inferencia.
+
+R01 comparó el orden literal de la lista de variables y dio desigualdad. R02 comprobó igualdad por clave/valor sin emitir sus valores; sólo difería el orden. Ambos snapshots se conservan. No se leyeron bytes de perfiles ni se reiniciaron servicios para este inventario.
+
+Se observaron listeners `*:3000`, `127.0.0.1:5432`, `127.0.0.1:6379` y `127.0.0.1:8000`. Esto no demuestra que un firewall externo bloquee el API ni certifica HTTPS/proxy. La exposición efectiva exige prueba desde una red externa del entorno de destino. No hay navegador en PATH ni Playwright en las cuatro rutas consultadas del host VM; no equivale a un inventario global del host o a probar Chromium del contenedor Gemini. La aceptación UI utiliza su entorno de navegador registrado por separado.
+
+El [inventario posterior R03](nodia-ai-ai38-delivery-inventory-r03.json) conserva servicios, versión Node e imagen/contenedor originales y cero pendientes SQL. El [cierre nativo](nodia-ai-ai38-delivery-native-closure-r01.json), posterior al canario MCP ya conciliado por su propio recibo, observa cero marcas unknown, pruebas armadas/terminales/inválidas y directorios temporales. No transforma ese canario fallido en aceptación satisfactoria.
+
+## Relojes y preservación de diagnóstico
+
+La [comparación R02](nodia-ai-ai38-delivery-clock-r02.json) midió VM menos Windows de **383,496 segundos**, con media vuelta de la medición de 0,636 segundos. Esa diferencia es relativa entre dos equipos: no demuestra por sí sola que la VM esté adelantada respecto de UTC. La VM informa NTP habilitado y sincronizado mediante `systemd-timesyncd`; la última respuesta registrada pertenece a `ntp.ubuntu.com`. No se encontró chrony/chronyd. El clocksource observado es `hyperv_clocksource_tsc_page`; esto no prueba por sí solo que la integración de sincronización de hora de Hyper-V esté habilitada. Su [consulta desde el proceso Windows](nodia-ai-ai38-delivery-host-integration-r01.json) no estuvo disponible.
+
+La [referencia independiente del equipo Windows](nodia-ai-ai38-windows-clock-r01.json) observó `W32Time` detenido/en inicio manual y comparó la fecha HTTPS con Windows: la referencia externa coincide aproximadamente con la VM. La inferencia respaldada por ambas observaciones es que Windows está atrasado; la fecha HTTPS tiene precisión de segundos y no sustituye una comprobación NTP autenticada. Estos datos **no justifican atrasar el reloj de la VM**. No se atribuye el resultado del canario Gemini/MCP al desfase. La sincronía de NTP declarada tampoco demuestra inferencia, MCP o exactitud eterna del reloj.
+
+Para preparar una entrega desde varios hosts, comprobar relojes en el paso 1 y repetir la comparación antes del paso 6. Si se corrige Windows, hacerlo tras cerrar las pruebas, admisiones y ejecuciones dependientes de sus timestamps, mediante el servicio de hora y una fuente independiente verificada. Inventariar Hyper-V antes de cambiar su integración, conservar la configuración previa y volver a medir Windows/VM/referencia externa. No ampliar la tolerancia del guard de fechas ni desactivar validaciones para ocultar el problema. No cambiar manualmente el reloj del guest mientras existan leases o trabajos activos. Este diagnóstico no efectuó cambios de reloj, servicio o integración.
+
+El canario cerrado conserva una ventana de logs Docker de VM `16:51:40Z–16:54:10Z` en `/opt/nodia/verification/ai38-mcp-canary-r01/private-docker-window-ai38-delivery-r01.log`, propietario root, modo `0600` y directorio privado. El recibo de reloj publica únicamente SHA-256 `cbb3c909401afbf3de33c3fdc879eb93178d32b5554448ec6fd7e0d2227db50f`, 423.190 bytes/2.354 líneas y contadores de tokens permitidos. No se publicó texto del log, tokens ni perfiles personales. Estos contadores no establecen la causa del fallo. La retención es privada para diagnóstico del incidente; no usarla como historial de chat ni aprobación de conservación indefinida.
+
+R01 del diagnóstico de reloj se conserva: su campo `no_network_connectivity` contaba literalmente mensajes `Network configuration changed`; no prueba pérdida de conectividad. R02 corrige sólo la etiqueta a `network_configuration_changed`, manteniendo el programa y recibo R01 históricos. Una primera serialización local de PowerShell no produjo recibo por conversión automática de fechas; la captura privada ya existente se reutilizó sin sobrescribir sus bytes.
+
+## Secuencia de entrega
+
+1. **Fijar el objetivo.** Registrar identidad del entorno, manifiesto del paquete, release de contexto, imagen/adaptador, fuente/medición de relojes y selección exacta de proveedor/modo/modelo/intensidad. Los modelos se leen de la configuración/descubrimiento autorizados. No cambiar selección ni habilitar capacidades pendientes por un despliegue técnico.
+2. **Cerrar los gates exigidos para ese objetivo.** Ejecutar UI contra API/BD aisladas y los flujos reales publicados que correspondan. Registrar salir/volver, permisos/revocación, efectos visibles, modalidades y errores. Un health, login o catálogo correcto no acredita inferencia ni MCP. Si falta evidencia actual, la entrega permanece cerrada; no sustituir Agentic por Web/API ni habilitar API de pago sin su propia aceptación y selección explícita.
+3. **Preparar reversión.** Guardar fuera del paquete los descriptores privados de servicios/configuración, rutas de los releases activos y versiones de imagen/dependencias; permisos de operador y sin secretos en evidencias públicas. Respaldar la BD con cifrado, claves recuperables y restauración comprobada fuera del servicio. Inventariar migraciones y compatibilidad antes de aplicar. El paquete actual no añade migraciones AI-37; eso no acredita por sí solo la compatibilidad de cualquier versión anterior con la BD actual.
+4. **Detener nuevas admisiones y drenar.** Retirar temporalmente el acceso del proxy o usar el mecanismo de mantenimiento probado del entorno; detener API y worker de modo coordinado. Revalidar SQL/nativo con los consumidores parados. Si queda un dispatch incierto, mantenerlo bloqueado y conciliar por su identidad. No matarlo y repetir el prompt para obtener una respuesta.
+5. **Activar una única versión.** Cambiar de forma controlada el descriptor de API/worker hacia una ruta de release inmutable y sus dependencias verificadas, preservando configuración privada y perfiles. Mantener un solo propietario físico por perfil. Sólo cambiar Gemini si está incluido y validado en ese objetivo; no mezclar una imagen o CLI nuevos con evidencias del anterior. Registrar antes/después y permitir restaurar el descriptor previo sin sobrescribir el release anterior.
+6. **Comprobar sin abrir tráfico general.** Validar DI, esquema/migraciones, límites de proxy, autenticación, observabilidad, relojes vigentes, rechazo no autorizado y arranque/cierre. Ejecutar las pruebas reales acordadas con identidad exacta del paquete y del runtime. Un arranque correcto no pasa automáticamente los gates funcionales. Abrir tráfico únicamente al resolver los gates de ese entorno; el inspector y el preparador de restore nunca lo autorizan.
+
+Los pasos 3–6 describen el procedimiento de adopción: **no fueron ejecutados sobre los servicios operativos por el staging de este paquete**. El ensayo aislado y las observaciones nuevas tienen sus propios recibos; no deben presentarse como despliegue público.
+
+## Reversión sin replay
+
+Si falla el arranque o la verificación antes de permitir escrituras, parar el candidato, conservar logs seguros y restaurar los descriptores/versiones de API y worker anteriores. Revalidar configuración y que no exista otro propietario nativo; comprobar API/SQL y recuperar acceso restringido. No borrar una cola ni liberar slots para que el health quede verde.
+
+Si hubo efectos o dispatch después de activar, cerrar admisión y drenar antes de revertir. Conservar receipts, jobs, identidades nativas y fences. Verificar compatibilidad del código previo con estados/catalogue/esquema actuales. No restaurar automáticamente la BD, no ejecutar `down` por conveniencia y no repetir comandos inciertos: un rollback de archivos no revierte pagos, reservas ni escrituras de dominio ya confirmadas. Si la versión anterior no interpreta con seguridad el estado, mantener mantenimiento y conciliar con la versión competente.
+
+La recuperación de un backup es un procedimiento distinto: aplicar [la cuarentena AI-37](nodia-ai-ai37-recovery-runbook.md) en una base nueva `nodia_restore_*`, con egress bloqueado y archivos privados explícitos. El modo `quarantine` bloquea nuevos arranques, pero no detiene procesos existentes ni implementa un firewall. La preparación revoca grants y deja incertidumbre durable; devuelve `release_authorized:false`. No quitar sus marcas ni liberar slots para abrir el worker.
+
+El journal externo continuo de borrados, su head confiable, rotación cifrada de backups, inventario de todas las versiones de objetos y conciliación contra dominio/runtime actuales requieren evidencia real de infraestructura. La prueba AI-37 con `pg_dump/pg_restore` y almacenamiento sintético no acredita estos puntos. Ante backup viejo, journal incompleto, fuente no comprobable o generación ausente, conservar cuarentena y resolver la conciliación; no regenerar un supuesto journal a partir del backup.
+
+## Límites de esta entrega
+
+El preflight emite siempre `release_authorized:false`. Verifica un artefacto congelado y enlaza un antecedente operativo; no adopta código, realiza inferencia, sube archivos, modifica la BD ni completa aceptación por entorno. Los reportes históricos conservan su paquete/alcance. Un nuevo proveedor, imagen, configuración, modalidad, catálogo o entorno puede requerir repetir sus gates afectados sin borrar las pruebas anteriores.

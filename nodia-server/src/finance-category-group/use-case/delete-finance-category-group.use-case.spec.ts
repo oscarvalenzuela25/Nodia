@@ -1,3 +1,5 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { FinanceCategoryGroup } from '../entities/finance-category-group.entity.js';
 import { describe, expect, it, vi } from 'vitest';
 import type { EntityManager } from 'typeorm';
@@ -10,6 +12,7 @@ describe('Delete personal category group', () => {
     const service = Object.create(
       FinanceCategoryGroupService.prototype,
     ) as FinanceCategoryGroupService;
+    service.withScope = financeScopeFixture(manager);
     service.transaction = vi.fn(async (work) => work(manager));
     service.findOwned = vi.fn(async (actor, id) =>
       actor === '1'
@@ -26,7 +29,7 @@ describe('Delete personal category group', () => {
   }
   it('deletes all memberships and group in the same transaction without deleting categories', async () => {
     const f = fixture();
-    await f.useCase.execute('1', '9007199254740993');
+    await f.useCase.execute(actorFixture('1'), '9007199254740993');
     expect(f.service.findOwned).toHaveBeenCalledWith(
       '1',
       '9007199254740993',
@@ -46,7 +49,7 @@ describe('Delete personal category group', () => {
   });
   it('rejects unknown or foreign groups before touching associations', async () => {
     const f = fixture();
-    await expect(f.useCase.execute('2', '3')).rejects.toThrow(
+    await expect(f.useCase.execute(actorFixture('2'), '3')).rejects.toThrow(
       'finance:category_group_not_found',
     );
     expect(f.service.deleteMemberships).not.toHaveBeenCalled();
@@ -56,6 +59,8 @@ describe('Delete personal category group', () => {
     f.service.deleteOwned = vi.fn(async () => {
       throw new Error('failed');
     });
-    await expect(f.useCase.execute('1', '3')).rejects.toThrow('failed');
+    await expect(f.useCase.execute(actorFixture('1'), '3')).rejects.toThrow(
+      'failed',
+    );
   });
 });

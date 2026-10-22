@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalCancellationPolicyService } from '../rental-cancellation-policy.service.js';
@@ -12,11 +13,12 @@ export class CreateRentalCancellationPolicyUseCase {
     private readonly service: RentalCancellationPolicyService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: CreateRentalCancellationPolicyDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await configurationCommand(
       CreateRentalCancellationPolicyDto,
       input,
@@ -28,7 +30,7 @@ export class CreateRentalCancellationPolicyUseCase {
     };
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'policy.create',

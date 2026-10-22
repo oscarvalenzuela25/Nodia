@@ -1,3 +1,4 @@
+import { SaveRoleUseCase } from './use-case/save-role.use-case.js';
 import { Module } from '@nestjs/common';
 import { RoleService } from './role.service.js';
 import { RoleController } from './role.controller.js';
@@ -14,6 +15,7 @@ import { DeleteRoleUseCase } from './use-case/delete-role.use-case.js';
 @Module({
   controllers: [RoleController],
   providers: [
+    SaveRoleUseCase,
     RoleService,
     GetAllRolesUseCase,
     CreateRoleUseCase,
@@ -23,6 +25,12 @@ import { DeleteRoleUseCase } from './use-case/delete-role.use-case.js';
   imports: [
     TypeOrmModule.forFeature([Role, RoleAction, Action]),
     TranslationModule,
+  ],
+  exports: [
+    RoleService,
+    GetAllRolesUseCase,
+    SaveRoleUseCase,
+    DeleteRoleUseCase,
   ],
 })
 export class RoleModule {}

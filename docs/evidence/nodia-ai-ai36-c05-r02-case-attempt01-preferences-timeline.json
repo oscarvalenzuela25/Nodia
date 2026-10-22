@@ -1,0 +1,269 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "b05be4511299505bb74b1090bb26d6304ac64dd6129900c6a2a33deb9af5af45",
+  "source_completed_at_utc": "2026-10-19T20:14:53.758Z",
+  "provider_generations": 2,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T20:11:37.045Z",
+        "monotonic_ms": 8946.292665
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:11:46.661Z",
+        "monotonic_ms": 18562.332482
+      },
+      "elapsed_ms": 9616.039817
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T20:11:46.966Z",
+        "monotonic_ms": 18867.542919
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:11:46.973Z",
+        "monotonic_ms": 18874.110346
+      },
+      "elapsed_ms": 6.567427000001771
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T20:11:47.038Z",
+        "monotonic_ms": 18939.18331
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:11:51.023Z",
+        "monotonic_ms": 22924.497439
+      },
+      "elapsed_ms": 3985.3141289999985
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T20:11:51.131Z",
+        "monotonic_ms": 23031.858179
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:11:51.136Z",
+        "monotonic_ms": 23037.2096
+      },
+      "elapsed_ms": 5.351420999999391
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "0531722e-74fd-4817-aea3-0f21867b57a3",
+      "started": {
+        "at_utc": "2026-10-19T20:11:51.166Z",
+        "monotonic_ms": 23067.050223
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-19T20:13:51.188Z",
+      "finished": {
+        "at_utc": "2026-10-19T20:11:51.188Z",
+        "monotonic_ms": 23089.631715
+      },
+      "elapsed_ms": 22.581492000001163
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "0531722e-74fd-4817-aea3-0f21867b57a3",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T20:11:51.190Z",
+        "monotonic_ms": 23091.073021
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:12:44.082Z",
+        "monotonic_ms": 75983.296405
+      },
+      "elapsed_ms": 52892.223384
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T20:12:44.437Z",
+        "monotonic_ms": 76337.842594
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:12:54.252Z",
+        "monotonic_ms": 86152.97732
+      },
+      "elapsed_ms": 9815.134726000004
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T20:12:54.379Z",
+        "monotonic_ms": 86280.592301
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:12:54.385Z",
+        "monotonic_ms": 86286.614528
+      },
+      "elapsed_ms": 6.02222700000857
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "2166278c-02b6-4cb1-8e30-39f0f0881632",
+      "started": {
+        "at_utc": "2026-10-19T20:12:54.409Z",
+        "monotonic_ms": 86310.515737
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-19T20:14:54.425Z",
+      "finished": {
+        "at_utc": "2026-10-19T20:12:54.425Z",
+        "monotonic_ms": 86326.71681
+      },
+      "elapsed_ms": 16.201073000003817
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "2166278c-02b6-4cb1-8e30-39f0f0881632",
+      "phase": "execution",
+      "started": {
+        "at_utc": "2026-10-19T20:12:54.427Z",
+        "monotonic_ms": 86328.69592
+      },
+      "status": "rejected",
+      "error_code": "mcp_result_unknown",
+      "finished": {
+        "at_utc": "2026-10-19T20:14:53.514Z",
+        "monotonic_ms": 205415.256111
+      },
+      "elapsed_ms": 119086.560191
+    }
+  ],
+  "generations": [
+    {
+      "turn": "independent_preferences",
+      "run_id": "20f08c65-8d68-4bb9-a3c3-fea61fbeb5e8",
+      "run_state": "unknown",
+      "attempt_id": "0531722e-74fd-4817-aea3-0f21867b57a3",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T20:11:51.191Z",
+      "accepted_start_at_utc": "2026-10-19T20:11:51.201Z",
+      "native_start_request_ms": 10.18894100000034,
+      "execute_elapsed_ms": 52892.380885000006,
+      "terminal_proof_received": true,
+      "terminal_proof_sha256": "f7ac782f69d49099cce68b49e9264ee4645c11a1318ad3cef23589c1712da66c",
+      "terminal_proof_outcome": "completed",
+      "process_closed": true,
+      "callbacks": [
+        {
+          "name": "nodia_capabilities_select",
+          "call_id": "bf471330-5df6-4ad2-96c7-b3e84961a5e9",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T20:12:38.726Z",
+          "completed_at_utc": "2026-10-19T20:12:38.911Z",
+          "start_to_callback_request_ms": 47534.86428800001,
+          "handler_elapsed_ms": 185.14562199999637,
+          "result_accepted_at_utc": "2026-10-19T20:12:38.915Z",
+          "result_submit_elapsed_ms": 2.7447119999997085,
+          "result_accepted_to_terminal_ms": 5167.401453999992,
+          "result_accepted_to_execute_exit_ms": 5167.099851999999
+        }
+      ],
+      "native_ACK": {
+        "attempt_id": "0531722e-74fd-4817-aea3-0f21867b57a3",
+        "terminal_proof_sha256": "f7ac782f69d49099cce68b49e9264ee4645c11a1318ad3cef23589c1712da66c",
+        "acknowledged_at_utc": "2026-10-19T20:12:44.114Z"
+      },
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 7,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 1,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 2
+          }
+        ],
+        "signature": "24810d48f2976073b0335562e89ab1c062e29bb8a572771431551b8f2c641a23",
+        "at_utc": "2026-10-19T20:12:44.082Z",
+        "monotonic_ms": 75982.952504
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 510,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 510,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    },
+    {
+      "turn": "independent_preferences",
+      "run_id": "20f08c65-8d68-4bb9-a3c3-fea61fbeb5e8",
+      "run_state": "unknown",
+      "attempt_id": "2166278c-02b6-4cb1-8e30-39f0f0881632",
+      "phase": "execution",
+      "started_at_utc": "2026-10-19T20:12:54.429Z",
+      "accepted_start_at_utc": "2026-10-19T20:12:54.441Z",
+      "native_start_request_ms": 12.813357999999425,
+      "execute_elapsed_ms": 119087.139694,
+      "terminal_proof_received": false,
+      "terminal_proof_sha256": null,
+      "terminal_proof_outcome": null,
+      "process_closed": null,
+      "callbacks": [],
+      "native_ACK": {
+        "attempt_id": "2166278c-02b6-4cb1-8e30-39f0f0881632",
+        "terminal_proof_sha256": "569bf8519d73bd3f02752d990f6ee8991ec62ede9bba629d0581bdcbc67a3e52",
+        "acknowledged_at_utc": "2026-10-19T20:14:53.564Z"
+      },
+      "latest_poll": {
+        "state": "unknown",
+        "rpc_messages": 0,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 0,
+        "event_kinds": {
+          "other": 1
+        },
+        "event_identities": [
+          {
+            "kind": "other",
+            "seq": 1
+          }
+        ],
+        "signature": "94037acb9f6a9c93cbd12170eb1ce1dec24d4a46bf226f8818cdc9ffc06245a9",
+        "at_utc": "2026-10-19T20:14:53.512Z",
+        "monotonic_ms": 205413.062999
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1153,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1153,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

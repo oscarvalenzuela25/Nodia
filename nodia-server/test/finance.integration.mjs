@@ -1,3 +1,4 @@
+import { installAuthorityFixture } from './fixtures/authority.integration.mjs';
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
@@ -60,6 +61,17 @@ try {
     'postgres:16-alpine',
   );
   started = true;
+  // The image runs a temporary Unix-socket server during initialization.
+  // Wait for its final TCP listener before opening the TypeORM connection pool.
+  for (let readiness = 0; readiness < 80; readiness++) {
+    try {
+      docker('exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', 'finance_test');
+      break;
+    } catch (error) {
+      if (readiness === 79) throw error;
+      await delay(250);
+    }
+  }
   const port = Number(docker('port', container, '5432/tcp').split(':').at(-1));
   const options = {
     type: 'postgres',
@@ -138,6 +150,7 @@ try {
     'Navigation seed repeatable, four translations, no module assignments.',
   );
 
+  const testAuthority = await installAuthorityFixture(db, ['1','2']);
   class FinanceTestModule {}
   Module({
     imports: [
@@ -163,7 +176,7 @@ try {
                 email: `${id}@example.invalid`,
                 image_url: null,
               },
-              sessionId: 'synthetic',
+              sessionId: testAuthority.actor(id).sessionId,
             };
             return true;
           },

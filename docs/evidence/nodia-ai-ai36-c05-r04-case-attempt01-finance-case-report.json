@@ -1,0 +1,198 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "explicit_published_selected_capabilities_real_gemini_disposable_sql",
+  "status": "failed",
+  "started_at_utc": "2026-10-19T20:59:37.929Z",
+  "maximum_generations": 2,
+  "maximum_generations_per_run": 2,
+  "diagnostic_only": false,
+  "independent_case": "finance",
+  "cohort_maximum_generations": 8,
+  "next_case_requires_explicit_operator_GO": true,
+  "requested_capability_names": [
+    "nodia_finance_movements_prepare_create"
+  ],
+  "selection_mode": "automatic_discovery_then_explicit_bounded_execution",
+  "selection_callbacks": 0,
+  "actual_provider_generations": 0,
+  "provider_dispatch_attempts": 0,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "native_terminal_ACKs": [],
+  "native_transport_observations": {},
+  "automatic_inference_retries": 0,
+  "operational_database_writes": 0,
+  "synthetic_publication_override": false,
+  "synthetic_provider_transport": false,
+  "synthetic_http_actor": true,
+  "human_confirmation_layer": "explicit_operator_HTTP_test_driver_not_physical_UI",
+  "natural_language_scope": "directed_synthetic_requests_with_exact_tool_names_and_known_ids",
+  "configured_sql_read_only": true,
+  "configured_database_access": "read_only",
+  "storage_operations": 0,
+  "services_restarted": false,
+  "credentials_logged": false,
+  "checks": [
+    "operational runtime has no pending work before real-provider verification",
+    "the actual compiled publication and registry bind all seven C05 capabilities"
+  ],
+  "turns": [
+    {
+      "label": "independent_finance",
+      "measurements": [],
+      "callbacks": [],
+      "generations": [],
+      "required_tools": [
+        "nodia_finance_movements_prepare_create"
+      ],
+      "human_prompt_sha256": "8974eb1593723eadc2f99012bef1eeba6aed001434a8065bde1aa20cc4f333b0",
+      "started_at_utc": "2026-10-19T20:59:46.424Z",
+      "native_observation": {
+        "available": false,
+        "supports_mcp": false,
+        "source": "gemini_live_session_and_catalog",
+        "observed_at": "2026-10-19T20:59:46.443Z",
+        "reason": "agentic_unavailable"
+      }
+    }
+  ],
+  "per_capability": {
+    "nodia_finance_movements_prepare_create": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "940b53baf8714b1a04cff3ef7fdd59cb126a4457199feeb3993dee9dd023ae54",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_proposals_get": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "dd96b92de5b86bdd807b904947706aaf103fed258122aae7b78a424a6a2e9a79",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_operations_get": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "8e8c085c8da7deb90191fbbb74cf5386c4365434d26d89c774c5a8c6b6c64f4a",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_workflows_prepare": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "3f2de6818c06114ec1715fcb9e8b6dd71ef75cde9691b7e9d4e1184892ac78b2",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_attachments_describe": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "38e1fe8ff894526917d47d45a96aa1b6a2ab16cb4c27459291d2583878959ad4",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_preferences_list": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "35895fb678b6d02ec4241d8daebbce602826e8c50c3af779bbcf74a98d67a39c",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    },
+    "nodia_preferences_prepare": {
+      "actual_callbacks": 0,
+      "successful_callbacks": 0,
+      "publication_bound": true,
+      "selected_in_real_generation": false,
+      "contract_hash": "a1dd4db24e479b9baffa2848b8e0f8ccb6e21aca425e55346a14dce9ad43b4d1",
+      "real_provider": true,
+      "actual_compiled_gateway": true,
+      "records": "synthetic_disposable_SQL",
+      "physical_UI": false,
+      "productive_acceptance": false,
+      "semantic_assertions": []
+    }
+  },
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T20:59:46.432Z",
+        "monotonic_ms": 8776.13509
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:59:58.482Z",
+        "monotonic_ms": 20826.292067
+      },
+      "elapsed_ms": 12050.156976999999
+    }
+  ],
+  "owned_cli_log_observations": [],
+  "acceptance_scope": "current_explicit_bundle_and_exact_configured_Gemini_selection_in_laboratory_not_productive_acceptance",
+  "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+  "configuration_snapshot_scope": "nonsecret_agentic_mode_fields_and_updated_at_preserve_native_configuration_fingerprint",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "publication": {
+    "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+    "catalog_release": "nodia-ai-ai15-reads/1",
+    "manifest_sha256": "cfa884b835ad2d46727a2b432ac3b9fe139bae4995ef47845fa758f33f179519",
+    "capabilities": 74,
+    "registry_hash": "31add4d121c6452e1b3cf406503803fadb9bca26f5a4fa681e49b72bf281e824"
+  },
+  "disposable_chat_id": "932d4950-c1df-402b-9765-412fc4112b37",
+  "failure_category": "acceptance_assertion_failed",
+  "failure_assertion": "native exact selection reports available MCP before message admission or dispatch",
+  "uncertain_reconciliation": [],
+  "disposable_sql_final": {
+    "business_counts": {
+      "finance_movements": 0,
+      "accepted_preferences": 0
+    },
+    "runs": [],
+    "receipts": []
+  },
+  "unresolved_native_or_proof_state": false,
+  "disposable_database_retained_for_reconciliation": false,
+  "finished_at_utc": "2026-10-19T20:59:58.690Z"
+}

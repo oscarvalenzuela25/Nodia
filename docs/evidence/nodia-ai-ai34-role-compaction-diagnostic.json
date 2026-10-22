@@ -1,0 +1,18 @@
+{
+  "stage": "AI-34",
+  "scope": "exact_attempt_read_only_native_structural_diagnostics",
+  "status": "not_found",
+  "attempt_id": "23b04470-4ae0-4890-91fe-71618b1e5569",
+  "window_utc": [
+    "2026-10-18T20:26:55Z",
+    "2026-10-18T20:28:27Z"
+  ],
+  "events": [],
+  "provider_generations": 0,
+  "services_restarted": false,
+  "provider_text_exported": false,
+  "raw_logs_exported": false,
+  "limitations": [
+    "Text indicators and missing terminal fields do not independently prove a provider failure cause"
+  ]
+}

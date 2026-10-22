@@ -1,0 +1,95 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_current_exact_Web_attachment_evidence_cross_check",
+  "status": "verified_current_Web_formats_not_global_environment_release",
+  "evidence_observed_at_utc": "2026-10-20T19:57:47.361084+00:00",
+  "timestamp_source": "VM_closure_not_unsynchronized_development_clock",
+  "total_probe_requests": 4,
+  "automatic_inference_retries": 0,
+  "accepted": [
+    {
+      "format": "png",
+      "media_type": "image/png",
+      "generations": 1,
+      "semantic_match": true,
+      "native_completed_and_ACKed": true
+    },
+    {
+      "format": "pdf",
+      "media_type": "application/pdf",
+      "generations": 1,
+      "semantic_match": true,
+      "native_completed_and_ACKed": true
+    },
+    {
+      "format": "wav",
+      "media_type": "audio/wav",
+      "generations": 1,
+      "semantic_match": true,
+      "native_completed_and_ACKed": true
+    },
+    {
+      "format": "webm",
+      "media_type": "audio/webm",
+      "generations": 1,
+      "semantic_match": true,
+      "native_completed_and_ACKed": true
+    }
+  ],
+  "same_Web_selection_fresh_configuration_session_and_provider_epoch": true,
+  "historical_Web_configuration_session_compared": false,
+  "current_physical_microphone_or_UI_acceptance": false,
+  "frontend_upload_R2_or_business_effect_acceptance": false,
+  "configured_SQL_writes": 0,
+  "services_or_models_modified": false,
+  "native_and_SQL_pending_after": false,
+  "provider_requests_by_this_validator": 0,
+  "references": [
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-web-cohort-01.json",
+      "sha256": "7f8999b63a292d74e156fb5e0943b6e6c6a908b07e9a4ec8868643974dd0cee5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-web-closure-01.json",
+      "sha256": "f9731aa842f20526acffdfdc15d736ea89a7d214a90889c7efba25778926e497"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-live-routing-routing01.json",
+      "sha256": "6420505ce52789295cc82886bac8a768bfb38857f1f3e86c3cb2f11741e4e27b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-web-png-01.json",
+      "sha256": "ec6bc0045384efd43ab90a7c8b99d0a913ebf340e96f11926a97b88ca93d94ea"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-web-pdf-01.json",
+      "sha256": "98f6461d3ca84f96737dc0a648a8dfe2fbc772e57e06ad88521d9eccce6694b1"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-web-wav-01.json",
+      "sha256": "56f21dc819535e77dadd51552b46ab71c926e9521297fe846f8ae2bac9a93f0e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-web-webm-01.json",
+      "sha256": "af9f80210cee6004fcc635c64f5a441cffd1e73eb52cae444304949ff405c01d"
+    }
+  ],
+  "sources": [
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-verifications-modalities.py",
+      "sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-web-modalities-cohort.py",
+      "sha256": "380f2bda05deb176e9deab3cf481053f3d21c3f4e3774bcdf212cc1fcf24c614"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-web-modalities-closure.py",
+      "sha256": "b2a7c1cd0313e153ba28911146435987020ddbed89f1046102916a52758a192e"
+    },
+    {
+      "path": "docs/evidence/scripts/validate-nodia-ai-ai38-web-modalities.cjs",
+      "sha256": "45d2536b257f5c658c033dd8fc319086cacdadac8865017e8b1565913296dffb"
+    }
+  ]
+}

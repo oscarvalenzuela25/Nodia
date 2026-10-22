@@ -1,0 +1,133 @@
+{
+  "stage": "AI-36-C01",
+  "status": "candidate_contracts_adapters_verified_publication_pending",
+  "scope": "73_closed_MCP_write_preparation_contracts_native_bindings_and_transactional_gateway",
+  "server_unit": {
+    "tests": 3880,
+    "files": 225,
+    "failures": 0,
+    "omitted": 0,
+    "max_workers": 2,
+    "report": {
+      "path": ".tmp/ai36-c01-server-final.json",
+      "sha256": "164ed8f475062852654832df732b11f48363053e7a211af8306d86f0ee52ba70"
+    }
+  },
+  "checks": {
+    "production_types": "passed",
+    "lint": "passed_with_three_existing_warnings",
+    "build": "passed",
+    "global_fixture_types": {
+      "previous_errors": 192,
+      "previous_files": 48,
+      "new_errors": 0,
+      "baseline_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+    }
+  },
+  "sql": {
+    "checks": 22,
+    "migrations": 29,
+    "http_requests": 8,
+    "native_effects": [
+      "finance_movements.create",
+      "providers.create"
+    ],
+    "compiled_outputs_verified": 2748,
+    "provider": "synthetic"
+  },
+  "contracts": {
+    "candidates": 73,
+    "finance_business": 26,
+    "reservations": 22,
+    "core_provider": 25,
+    "published_added": 0,
+    "domain_analyzer_missing": 1,
+    "secure_flow_adapters_pending": 4,
+    "common_helpers_pending": 6,
+    "report": {
+      "path": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+      "sha256": "9b790670a5a4195f91d10cb33b3f8fa0220df907448e2ca82fd5f988fe195551"
+    }
+  },
+  "publication": {
+    "release_id": "b4a790219b41687d2bc4ac7ad70f436d5b9a3aa83cbdfc812533a06f8027dc23",
+    "domain_reads": 67,
+    "knowledge_fragments": 27,
+    "added": 0,
+    "readiness": false,
+    "selection_and_provider_acceptance_pending": true
+  },
+  "source_inventory": {
+    "modules": 86,
+    "controllers": 46,
+    "handlers": 217,
+    "aliases": 336,
+    "source_hashes": 854,
+    "new_http_routes": 0,
+    "migrations_added": 0
+  },
+  "preserved_initial_failures": {
+    "full_suite": {
+      "tests": 3810,
+      "passed": 3806,
+      "failed": 4,
+      "reason": "Four new framework tests exceeded the unchanged 5s limit under concurrent schema compilation. Removed duplicate fixture compilation and split 73 contract assertions into separate cases; no production relaxation."
+    },
+    "initial_gateway_expectation": "Old admission fixture assumed prepare_change was always blocked; updated to assert published authorized preparation and continued secure-flow denial.",
+    "health_fixture": "SQL passed once. Separate read-only health fixture initially required a dev dependency in the operational runtime; preserved and corrected without repeating SQL."
+  },
+  "evidence": {
+    "unit": {
+      "path": ".tmp/ai36-c01-server-final.json",
+      "sha256": "164ed8f475062852654832df732b11f48363053e7a211af8306d86f0ee52ba70"
+    },
+    "initialUnit": {
+      "path": ".tmp/ai36-c01-server-all.json",
+      "sha256": "1bf41b9691f021735808c2146faf8a2eaf1e5c70b8ffcb18ddd5f6e94d753600"
+    },
+    "types": {
+      "path": ".tmp/ai36-c01-server-fixture-types-final.log",
+      "sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+    },
+    "productionTypes": {
+      "path": ".tmp/ai36-c01-tsc-build-current.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lint": {
+      "path": ".tmp/ai36-c01-server-lint-final.log",
+      "sha256": "9b0f5eec3b6d1e8aa9a2855044fc288ac40d960d276d5b24230a32a5f3e08a50"
+    },
+    "build": {
+      "path": ".tmp/ai36-c01-server-build.log",
+      "sha256": "1171c54cc7410a343cf4c65a121c58f5badc27338910901815d060f635759a1e"
+    },
+    "sql": {
+      "path": "docs/evidence/nodia-ai-ai36-c01-write-sql-validation.json",
+      "sha256": "0727b99f061eaa0536ab597fd64cb9e6c7ff58a1df79fa93c86ab909f21c2e02"
+    },
+    "audit": {
+      "path": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+      "sha256": "9b790670a5a4195f91d10cb33b3f8fa0220df907448e2ca82fd5f988fe195551"
+    },
+    "delta": {
+      "path": "docs/evidence/nodia-ai-ai36-c01-catalog-delta.json",
+      "sha256": "ca2c196885f5d480798b727043bdfd6c7ad2cb8db27ec6f55ecf045d4e23644c"
+    },
+    "sqlManifest": {
+      "path": "docs/evidence/nodia-ai-ai36-c01-write-sql-manifest.json",
+      "sha256": "dd4f995cd348f1c838ec075ba2a7f2112bbf3bab66d9eef2ca100a82ab2aa2c8"
+    }
+  },
+  "historical_AI36": {
+    "path": "docs/evidence/nodia-ai-ai36-validation.json",
+    "sha256": "e282f08e053693ffb16451a82870e1434fbceabc5025902e1a1b42381c6810e4"
+  },
+  "limitations": [
+    "No real provider generation, R2 access, configured domain write, deployment or publication in C01.",
+    "Only finance movement and supplier creation execute end-to-end through the new MCP gateway in disposable SQL; other writers retain their historical evidence.",
+    "Client code unchanged; previous 1773 tests/228 files and V8 reports are historical, not reexecuted or recomputed here.",
+    "New unit totals do not replace historical V8 percentages or prove all 73 operations accepted by Gemini.",
+    "Adapter catalog limit 74 tools/131072 bytes, JSON cardinality 128 and assembled context 262144 bytes are independent unchanged gates.",
+    "AI36-C02..C04 and publication/provider acceptance remain open; AI-36 is not complete."
+  ]
+}

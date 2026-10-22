@@ -1,0 +1,89 @@
+{
+  "generated_at_utc": "2026-10-17T19:09:18.969862+00:00",
+  "stage_directory": "/opt/nodia/verification/ai28-20261017",
+  "compiled_production_archive_sha256": "bbfa8c065a77cffa1bc0f8f70d89263054cae259bb49f1419c32f465470234ea",
+  "compiled_dist_files_verified": 851,
+  "knowledge_pin_sha256": "fcbb7f79c771ee1a85c02e7d80f21180441f04b85b44bcac33e838c8d22d4ee6",
+  "scope": "Synthetic disposable PostgreSQL, local HTTP and compiled worker processes. No configured database reads/writes, production provider/session use, external inference or MCP write publication. Agentic CLI regression uses a loopback HTTP fixture only.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "stage": "main",
+  "command": "node test/nodia-ai-ai28.integration.mjs",
+  "exit_code": 0,
+  "started_at_utc_windows_host": "2026-10-17T19:07:56.227939+00:00",
+  "duration_seconds": 10.49,
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai28.integration.mjs",
+      "sha256": "d05cf4fdb99c6a45c05841f02ddbe48302bed06552764ec0d5f2130794ddf5a9"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai28-worker.fixture.mjs",
+      "sha256": "6bb79d7fea64f4cdc13a9360851b231fc3bd2465ffc69cbd14680d4b3864b719"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    }
+  ],
+  "log_sha256": "17db7fdeff6f4a6c2ce3e8ffa792cfdf080b93bc6b41c2878593e5286e8820ef",
+  "checks": 25,
+  "result": {
+    "stage": "AI-28",
+    "scope": "compiled_http_confirmation_worker_disposable_postgresql_four_provider_operations_no_provider",
+    "checks": 25,
+    "exercised_operations": [
+      "ai_provider_catalog/create",
+      "ai_provider_catalog/update",
+      "ai_providers/create",
+      "ai_providers/update"
+    ],
+    "passed": [
+      "catalog create normalizes key and update preserves key while changing independent activity/channel flags",
+      "native ES2023 partial DTO response preserves every omitted catalog flag and activity",
+      "connection creation has no assigned models and only its first-connection default",
+      "connection translations commit with native record",
+      "four exact preparer/executor identities exercise native create/update and replay receipts",
+      "preview and stored payload exclude arbitrary historical credentials",
+      "exact dynamic model and per-model effort update preserve OCR other modes and hidden historical data",
+      "closed AI contracts reject arbitrary fields credentials catalog reassignment and unknown models",
+      "legacy flat settings survive first scoped update without copying hidden data to another mode",
+      "post-network discovery merges only observed catalog and preserves confirmed configuration",
+      "historical configured model remains editable without silently selecting the first discovered model",
+      "native REST change invalidates an earlier exact proposal",
+      "concurrent native defaults serialize to one global default with both records intact",
+      "concurrent native catalog creation produces one normalized key and one explicit conflict",
+      "catalog capability is independent of enabled connection and runtime availability",
+      "live ai:manage revocation prevents a previously confirmed provider effect",
+      "inherited active SQL manager without actual authority locks is rejected before writing",
+      "reused QueryRunner cannot retain a previous authority frontier",
+      "receipt failure rolls back provider name defaults and translations atomically",
+      "rollback preserves original hidden configuration bytes",
+      "real child death after claim leaves no administrative mutation and permits explicit recovery",
+      "duplicate human resume commits one provider catalog row and its exact receipt",
+      "lost provider COMMIT response recovers historical receipt without replaying native creation",
+      "administrative effects never invoke providers or inference slots",
+      "execution attempts and leases finish without orphaned jobs"
+    ]
+  },
+  "test_only_overrides_after_archive": [
+    {
+      "path": "test/nodia-ai-ai28.integration.mjs",
+      "packaged_sha256": "c5344f73f40416b960a4d3bbb9af74d1b5e9ec92230255692cc21b69c7b7ef6a",
+      "tested_sha256": "d05cf4fdb99c6a45c05841f02ddbe48302bed06552764ec0d5f2130794ddf5a9"
+    }
+  ],
+  "previous_attempts_not_acceptance": [
+    {
+      "archive_sha256": "b261907cb457a9a6a91e3ba214f081bbc312ae004500fd489cc06ac1a828b636",
+      "completed_checks": 4,
+      "reason": "The new test queried a nonexistent proposal_payloads table. Production proposal steps already contain the payload; corrected the fixture query and reran a fresh disposable database with the final compiled archive.",
+      "configured_data_affected": false
+    }
+  ]
+}

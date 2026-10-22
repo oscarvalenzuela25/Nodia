@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R02",
+  "scope": "derived_metadata_and_zero_start_preflight_not_MCP_acceptance",
+  "native_start_requests": 0,
+  "accepted_native_starts": 0,
+  "real_provider_generations": 0,
+  "source_artifacts": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata03-diagnostic-report.json",
+      "sha256": "22df70e1d14397b49e3a936ff3416c239df8bb2880d2775635dd7b1b57965f57"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary01-canary-report.json",
+      "sha256": "8991bf60a3d9233b68eb353b760cf487321ce58c6480ca8a59ead5e5c4001a19"
+    }
+  ],
+  "HTTP_metadata": {
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "available": true,
+    "reason": null,
+    "supports_mcp": false,
+    "elapsed_ms": 11754.717786,
+    "observed_at_utc": "2026-10-19T20:07:52.111Z",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "session_generation_sha256": "47e317d5b8becf3870956e8c9e409eb15960a1e7e6989d25809b180a82a0dd53",
+    "verified_modalities": [],
+    "verified_attachment_media_types": []
+  },
+  "preflight": {
+    "status": "failed",
+    "native_start_requests": 0,
+    "scope": "No native start was dispatched by canary01; this is a preflight failure, not a failed inference or native-role verification."
+  },
+  "derivation": "Explicit native_MCP_start_requests=0 in supervised metadata diagnostic and native_start_requests/accepted_native_starts/real_provider_generations=0 in frozen canary01. Later canary02 is counted separately, never here.",
+  "MCP_acceptance": false,
+  "capability_acceptance": false
+}

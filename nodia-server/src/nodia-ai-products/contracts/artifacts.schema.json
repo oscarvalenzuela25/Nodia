@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "nodia-ai-artifacts/1",
+  "$defs": {
+    "Bigint": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$", "maxLength": 19 },
+    "Uuid": { "type": "string", "format": "uuid" },
+    "Language": { "type": "string", "pattern": "^(es|en)(?:-[A-Za-z]{2})?$", "maxLength": 5 },
+    "Artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reference", "kind", "filename", "mime_type", "semantics", "access"],
+      "properties": {
+        "reference": { "$ref": "#/$defs/Uuid" },
+        "kind": { "enum": ["invoice_file", "csv_export"] },
+        "filename": { "type": "string", "maxLength": 80, "pattern": "^[A-Za-z0-9_-]+\\.(csv|pdf|png|jpg|jpeg|webp)$" },
+        "mime_type": { "enum": ["text/csv; charset=utf-8", "application/pdf", "image/png", "image/jpeg", "image/webp"] },
+        "semantics": { "const": "current_on_download" },
+        "access": { "const": "authenticated_reauthorized" }
+      }
+    },
+    "InvoiceFileInput": {
+      "type": "object", "additionalProperties": false, "required": ["id"],
+      "properties": { "id": { "$ref": "#/$defs/Bigint" } }
+    },
+    "ProductsExportInput": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "business_id": { "$ref": "#/$defs/Uuid" }, "lang": { "$ref": "#/$defs/Language" } }
+    },
+    "ProvidersExportInput": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "business_id": { "$ref": "#/$defs/Uuid" }, "lang": { "$ref": "#/$defs/Language" },
+        "ids": { "type": "array", "minItems": 1, "maxItems": 100, "uniqueItems": true, "items": { "$ref": "#/$defs/Bigint" } }
+      }
+    },
+    "InvoiceFileResult": { "type": "object", "additionalProperties": false, "required": ["artifact"], "properties": { "artifact": { "$ref": "#/$defs/Artifact" } } },
+    "ProductsExportResult": { "type": "object", "additionalProperties": false, "required": ["artifact"], "properties": { "artifact": { "$ref": "#/$defs/Artifact" } } },
+    "ProvidersExportResult": { "type": "object", "additionalProperties": false, "required": ["artifact"], "properties": { "artifact": { "$ref": "#/$defs/Artifact" } } }
+  }
+}

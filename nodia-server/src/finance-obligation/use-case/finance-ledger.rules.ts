@@ -66,6 +66,27 @@ export function repaymentType(
   return obligation.type === 'loan' ? 'income' : 'expense';
 }
 
+export function validateObligationPrincipal(
+  amount: string | undefined,
+  paid: string,
+): void {
+  if (amount !== undefined && BigInt(amount) < BigInt(paid))
+    throw new ConflictException('finance:principal_below_payments');
+}
+
+export function requireDeletableMovement(
+  movement: FinanceMovement,
+  obligation: FinanceObligation | null,
+): void {
+  if (obligation && movement.type !== repaymentType(obligation))
+    throw new ConflictException('finance:delete_initial_on_obligation');
+}
+
+export function requireNoRepayments(hasRepayments: boolean): void {
+  if (hasRepayments)
+    throw new ConflictException('finance:obligation_has_payments');
+}
+
 export function requireInitialMovement(
   movements: FinanceMovement[],
 ): FinanceMovement {

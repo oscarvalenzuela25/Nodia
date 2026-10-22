@@ -1,0 +1,220 @@
+{
+  "stage": "AI-36-C04",
+  "status": "passed",
+  "scope": "candidate_mcp_six_common_helpers_disposable_sql",
+  "checks": 41,
+  "http_requests": 24,
+  "check_names": [
+    "all six helpers have distinct strict candidate MCP contracts without production publication",
+    "real admission and worker expose all six explicitly synthetic-published helpers",
+    "memory preparation asks for native missing fields and has no accepted preference effect",
+    "same MCP memory callback replays one exact durable draft",
+    "stale draft CAS leaves native incomplete memory revision unchanged",
+    "correct CAS creates exact preference preview without accepting it",
+    "proposal helper returns the exact current native preview in its originating chat",
+    "preference list excludes unaccepted memory proposals",
+    "model has no confirmation operation or actor ownership override",
+    "terminal human receipt retrieval recovers exact memory preparation without replay or acceptance",
+    "separate exact human confirmation creates only the actor owned memory with an atomic receipt",
+    "accepted preference list matches native own memory reference and revision",
+    "operation helper returns native completed state and minimal safe receipt",
+    "confirmed proposal helper links only its real originating execution",
+    "attachment helper gives bounded metadata without filename storage identity interpretation or bytes",
+    "uploading metadata preserves unknown size and type without fabricated zeroes",
+    "mismatched retention epoch attachments cannot leak metadata",
+    "common read schemas reject caller nominated chat and preference owner",
+    "four native read helper receipts recover after worker completion only for authorized chat reader",
+    "revoking a frozen destination grant denies prior preference callback replay without accepting changes",
+    "a new grant without the destination module reports own reference unavailable without its label",
+    "memory write preparation revalidates its native destination module before producing another proposal",
+    "same owner cannot use another chat run to read proposal operation or attachment references",
+    "super_admin own MCP preference list does not expose another owner memory",
+    "super_admin cannot edit another actor accepted preference through the common helper",
+    "native human workflow entry still rejects unrelated preparation while a job is active",
+    "workflow MCP invokes the native coordinator under its exact armed job and typed dependency",
+    "workflow callback replay returns one exact combined preview without superseding again",
+    "combined native proposal preserves registered future output binding without fabricated provider ID",
+    "workflow atomically supersedes individual ready proposal and reserves its drafts",
+    "terminal human workflow receipt retrieval preserves exact combined preview without another coordination",
+    "exact human workflow confirmation performs supplier then bound contact without duplicate effects",
+    "operation helper presents sequential workflow receipts and completed state",
+    "invalid helper output rolls back draft proposal and gateway receipt atomically",
+    "revoked destination module denies completed operation replay with no new business effects",
+    "accepted memory update requires the current native CAS revision",
+    "concurrent identical helper callbacks resolve to one durable exact preference proposal",
+    "human-confirmed preference update advances one native revision",
+    "human receipt retrieval reauthorizes the accepted memory snapshot and denies its obsolete revision",
+    "memory deletion is a separate reviewable exact proposal until human confirmation",
+    "human-confirmed memory deletion removes only the actor preference and keeps business records"
+  ],
+  "migrations": 29,
+  "candidate_tools": 6,
+  "synthetic_published_tools": 6,
+  "compiled_outputs_verified": 2789,
+  "compiled_execution_files": 962,
+  "compiled_execution_manifest_sha256": "527759fa485de21e697b7ea23aedced6ca1610026e18cd530c99a6d66fe7de3c",
+  "application_execution_identical_attempt02_to_final": true,
+  "cache_only_packaging_delta": [
+    "dist/tsconfig.tsbuildinfo"
+  ],
+  "source_sha256": "37bdcfad7c50e33c66a9328caf5dc363394c34a6985e6091aff846415432c3b1",
+  "manifest_sha256": "8a4ab66f31acd516b467592fa854631f26df4ca147e5564910387344fe35d2f8",
+  "synthetic_provider_dispatches": 10,
+  "actual_provider_generations": 0,
+  "storage_operations": 0,
+  "native_profile_calls": 0,
+  "configured_database_used": false,
+  "services_restarted": false,
+  "production_publication": false,
+  "candidate_deployed": false,
+  "disposable_containers_remaining": 0,
+  "failure_classifications": [
+    "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt01-failure.json",
+    "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt02-failure.json"
+  ],
+  "regressions": {
+    "c01": {
+      "status": "passed",
+      "checks": 22,
+      "http_requests": 8,
+      "same_compiled_execution": true
+    },
+    "c02": {
+      "status": "passed",
+      "checks": 31,
+      "http_requests": 25,
+      "same_compiled_execution": true
+    },
+    "c03": {
+      "status": "passed",
+      "checks": 39,
+      "http_requests": 5,
+      "same_compiled_execution": true
+    }
+  },
+  "attempts": [
+    {
+      "attempt": "attempt01",
+      "status": "failed",
+      "manifest_sha256": "690dbdf527a6e4e664eaa718134ab19cbfde63a5efe56880bb471735883d6d0e",
+      "archive_sha256": "176ac44b3503e080d3a7fe2baa631124e44af8617154f0213f90f26ef57c2933",
+      "source_sha256": "eeb9839db7263cf0b84e5c8a67fe3fd333ff511e06700539623fd1356117c5af",
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt01.json",
+      "manifest_path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt01-manifest.json"
+    },
+    {
+      "attempt": "attempt02",
+      "status": "failed",
+      "manifest_sha256": "a83b4cb6765fa4bd334b3802ba2ea61bc05d3b3ad82a7001af8016f07dac076d",
+      "archive_sha256": "51959ed7507ec6fdc301e881646c435eea5fcd94a2cffa15a2994c9b78d91067",
+      "source_sha256": "4ba91ee4a289105bcca3b7c976f9afb47f03aa10ac89f49983b786179caf903f",
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt02.json",
+      "manifest_path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt02-manifest.json"
+    },
+    {
+      "attempt": "attempt03",
+      "status": "passed",
+      "manifest_sha256": "8a4ab66f31acd516b467592fa854631f26df4ca147e5564910387344fe35d2f8",
+      "archive_sha256": "df823ff82dea59c1f0e465eb92c1b61c123ebd71b508dfc9a2e6ec03dcb99ea2",
+      "source_sha256": "37bdcfad7c50e33c66a9328caf5dc363394c34a6985e6091aff846415432c3b1",
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt03.json",
+      "manifest_path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt03-manifest.json"
+    }
+  ],
+  "layers": {
+    "sql": "Actual compiled Nest/TypeORM, all current migrations, PostgreSQL16 disposable fixture ai3604",
+    "callback": "Actual admission, frozen context, MCP gateway, six candidate contracts and durable receipts",
+    "transport": "Explicit synthetic Agentic fixture only; no inference, account or model availability claim",
+    "metadata": "Synthetic attachment rows, real metadata projection/authority; no storage/inspection/bytes accessed",
+    "effects": "Native preference create/update/delete and supplier/contact effects after exact human HTTP challenge and confirmation",
+    "regressions": "Actual C01, C02 and C03 harnesses against identical compiled outputs in separate disposable PostgreSQL containers"
+  },
+  "limits": {
+    "mcp_wire_json_depth": 16,
+    "native_typed_json_decoded_depth": 8,
+    "json_collection_items": 128,
+    "tool_arguments_utf8_bytes": 65536,
+    "tool_result_utf8_bytes": 65536,
+    "assembled_context_utf8_bytes": 262144
+  },
+  "not_verified": [
+    "production publication or deployment",
+    "Gemini account inference",
+    "R2 or actual upload/download",
+    "UI browser acceptance"
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai36-common-helpers.integration.mjs",
+      "sha256": "37bdcfad7c50e33c66a9328caf5dc363394c34a6985e6091aff846415432c3b1"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai36-write-preparation.integration.mjs",
+      "sha256": "b0bdaaf47608e8414e4adc47529dfef88b9f28a2bb6463117c1be2969ee48113"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai36-secure-preparation.integration.mjs",
+      "sha256": "e55168cb4a73f0a0ae764481ecd61df592cc6154691dc0f69441615fd3b5c4fc"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai36-invoice-analysis.integration.mjs",
+      "sha256": "adff2914db5a474e9ebdba03c3269824eebe6e1acf5f8f3e38f923dac8afb357"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c04-common-sql-stage.cjs",
+      "sha256": "24f3d8c36d54d6e36d2bcfc89102bdbdcfdb737e563c5d6e886f3a2e282c3c27"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c04-common-sql-remote.py",
+      "sha256": "6a5d03e3b6d5fe44fe05d3872de32402dbc186583ab37c721b28a502f6c768f5"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c04-common-sql-health.py",
+      "sha256": "d3c8832e5fcc03b8c08e82df10750631dc134def5465ad00d62d7154ec66430a"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c04-common-sql-evidence.cjs",
+      "sha256": "3784a81718a12d8d3b1164f174d2d2be061d62e0cd82ab5a3394068d2190d2bb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-manifest.json",
+      "sha256": "8a4ab66f31acd516b467592fa854631f26df4ca147e5564910387344fe35d2f8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-health.json",
+      "sha256": "5dab8cb7dbe70ace95c769d486fa96134434c57deb1d1709a27d0ba74a6935ee"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt01.json",
+      "sha256": "21e4275446172702c7da9694aad2b64c64784b14f68dfd2f3c64ab3dced922d5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt01-manifest.json",
+      "sha256": "690dbdf527a6e4e664eaa718134ab19cbfde63a5efe56880bb471735883d6d0e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt02.json",
+      "sha256": "8ea02785513fe412f562630c01420c80ef29c2c5d40a185c9baf0fa1a652a6ee"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt02-manifest.json",
+      "sha256": "a83b4cb6765fa4bd334b3802ba2ea61bc05d3b3ad82a7001af8016f07dac076d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt03.json",
+      "sha256": "ff2b48e07375eeaf5789e7defb95a58175b5c4cb71e2567f1a2cb1d3966a80e1"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt03-manifest.json",
+      "sha256": "8a4ab66f31acd516b467592fa854631f26df4ca147e5564910387344fe35d2f8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt01-failure.json",
+      "sha256": "cd862686323d031c4125cd1d5def679fbf8f03d38a39cc2890bd02fa361a59ce"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-common-sql-attempt02-failure.json",
+      "sha256": "0dc9c7f87f3ac69cc4ba3bfa803f504daabb27c179830402b9ba66c4a6896949"
+    }
+  ]
+}

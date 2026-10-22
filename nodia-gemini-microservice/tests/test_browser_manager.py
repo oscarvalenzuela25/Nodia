@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import browser_manager
 
@@ -21,6 +21,8 @@ class FakePlaywright:
 
 class FakePage:
     def __init__(self, *, block_navigation=False, url="https://accounts.google.com/"):
+        self.on = Mock()
+        self.remove_listener = Mock()
         self.url = url
         self.navigation_started = asyncio.Event()
         self.block_navigation = block_navigation
@@ -36,6 +38,7 @@ class FakePage:
 
 class FakeContext:
     def __init__(self, page):
+        self.on = Mock()
         self.pages = [page]
         self.closed = False
 
@@ -87,7 +90,7 @@ class EnvFileTest(unittest.TestCase):
                  patch.dict(os.environ, {"GEMINI_SECURE_1PSID": "old"}, clear=False):
                 browser_manager.update_env_file("new-psid", "new-ts")
                 self.assertEqual(os.environ["GEMINI_SECURE_1PSID"], "new-psid")
-                saved.assert_called_once_with("new-psid", "new-ts")
+            saved.assert_called_once_with("new-psid", "new-ts", explicit_login=True)
             self.assertEqual(target.read_text(encoding="utf-8"), original)
             self.assertEqual(list(Path(directory).iterdir()), [target])
 

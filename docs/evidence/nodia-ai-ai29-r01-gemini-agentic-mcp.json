@@ -1,0 +1,112 @@
+{
+  "task": "AI-15",
+  "phase": "local",
+  "status": "passed",
+  "checks": 10,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader",
+    "fresh native MCP diagnostic completes and includes unpredictable callback data",
+    "exact Agentic configuration now has observed MCP support",
+    "real Gemini turn completes through the durable worker",
+    "real Agentic selects one native read from each of five product families",
+    "final answer incorporates five unpredictable values returned by native SQL",
+    "direct Agentic dispatch remains exact and uses bounded MCP",
+    "all real native runtime slots released after acknowledgement"
+  ],
+  "turns": [
+    {
+      "state": "completed",
+      "error_code": null,
+      "dispatches": 1,
+      "delegations": 0,
+      "tool_calls": 5,
+      "rpc_messages": 11,
+      "native_proofs_acknowledged": 1,
+      "receipt_tools": [
+        {
+          "name": "nodia_products_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_finance_categories_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_rental_properties_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_roles_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_ai_providers_list",
+          "state": "completed"
+        }
+      ]
+    }
+  ],
+  "downloads": [],
+  "external_observations": [],
+  "dispatches": [
+    {
+      "mode": "token_plan_agentic",
+      "tools": 72,
+      "elapsed_ms": 92881,
+      "reply_kind": "answer",
+      "native_terminal_outcome": "completed"
+    }
+  ],
+  "eligibility": [
+    {
+      "available": true,
+      "supports_mcp": false,
+      "reason": null
+    }
+  ],
+  "adapter_dispatch_requests": 2,
+  "maximum_adapter_dispatch_requests": 2,
+  "candidate_release_id": "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+  "domain_capabilities": 67,
+  "mcp_catalog_tools": 72,
+  "real_gemini_inference": true,
+  "adapter_mocked": false,
+  "product_readers_mocked": false,
+  "synthetic_sql_database": true,
+  "synthetic_http_identity": true,
+  "configured_business_database_modified": false,
+  "configured_provider_selection_modified": false,
+  "storage_objects_created": 0,
+  "invoice_content_download_verified": false,
+  "cleanup": {
+    "completed": true,
+    "pending": {
+      "jobs": 0,
+      "attempts": 0,
+      "runtime_slots": 0,
+      "diagnostic_requests": 0,
+      "diagnostic_proofs": 0
+    },
+    "disposable_database_removed": true,
+    "inference_replayed": false
+  },
+  "stage": "AI-29-R01",
+  "scope": "real_gemini_agentic_mcp_readonly_synthetic_postgresql",
+  "elapsed_seconds": 194.85,
+  "provenance": {
+    "dist_files": 873,
+    "dist_tree_sha256": "5e5d25640bf441cfe50b071b25d0caae2d9fdb9fad14f37cd6bfea1e5e82d225",
+    "dist_tree_hash_algorithm": "sha256 of compact sorted-key JSON path/sha256 array sorted by file path",
+    "knowledge_release_id": "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+    "live_harness_sha256": "0923d2b918fd4377932a6394fbc02d6b5d19d027d94d0dd12f796e3958d9ca47",
+    "selection_observer_sha256": "02bfd0aac44b295efdf8fa0ddd27c2d68cdc44873133bca72ad4e5766f300b79",
+    "selection_observation_readonly": true,
+    "selection_observer_user": "nodia",
+    "actual_model_resolved_from_configured_selection": true,
+    "web_generation_requested": false,
+    "provider_logout_requested": false,
+    "tested_server_archive_sha256": "32b06f2d4ef8161716fc96dbf8bf39c5f50a21c6501031eca28cf9aeed0a1ecb"
+  }
+}

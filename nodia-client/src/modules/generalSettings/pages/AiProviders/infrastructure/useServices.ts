@@ -13,8 +13,11 @@ import {
   getAiProviderCatalog,
   syncAiProviderModels,
   startGeminiLogin,
+  disconnectGeminiWeb,
   getGeminiLoginStatus,
   cancelGeminiLogin,
+  getGeminiLoginFrame,
+  sendGeminiLoginInput,
   startGeminiAgenticLogin,
   getCurrentGeminiAgenticLogin,
   getGeminiAgenticLoginStatus,
@@ -53,19 +56,45 @@ export const useAiProviderCatalog = () => {
   });
 };
 
-export const useStartGeminiLogin = () => useMutation({ mutationFn: startGeminiLogin });
+export const useStartGeminiLogin = () => useMutation({ mutationFn: startGeminiLogin, retry: false, gcTime: 0 });
+
+export const useDisconnectGeminiWeb = () => {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: disconnectGeminiWeb, retry: false, gcTime: 0,
+    onSuccess: async () => {
+      await client.cancelQueries({ queryKey: ["ai-providers-health"] });
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ["ai-providers-health"] }),
+        client.invalidateQueries({ queryKey: ["ai-selectable-models"] }),
+        client.invalidateQueries({ queryKey: ["ai-enabled-web-providers"] }),
+      ]);
+    },
+  });
+};
+
+export const useGeminiLoginFrame = (id: string, paused: boolean) => useQuery({
+  queryKey: ["gemini-login-frame", id], queryFn: ({ signal }) => getGeminiLoginFrame(id, signal),
+  retry: false, gcTime: 0, staleTime: 0, refetchOnWindowFocus: false,
+  meta: { errorNotification: "handled-locally" },
+  // Screen reads can recover automatically; inputs are never replayed.
+  refetchInterval: (query) => query.state.error ? 10_000 : paused ? false : 2000,
+});
+
+export const useSendGeminiLoginInput = () => useMutation({ mutationFn: sendGeminiLoginInput, retry: false, gcTime: 0 });
 
 export const useGeminiLoginStatus = (jobId: string | null, enabled: boolean) =>
   useQuery({
     queryKey: ["gemini-login", jobId],
     queryFn: () => getGeminiLoginStatus(jobId!),
     enabled: enabled && Boolean(jobId),
+    retry: false, gcTime: 0, refetchOnWindowFocus: false,
     refetchInterval: (query) =>
-      query.state.data?.state === "running" || !query.state.data ? 2000 : false,
+      query.state.error ? false : query.state.data?.state === "running" || !query.state.data ? 2000 : false,
   });
 
 export const useCancelGeminiLogin = () =>
-  useMutation({ mutationFn: cancelGeminiLogin });
+  useMutation({ mutationFn: cancelGeminiLogin, retry: false, gcTime: 0 });
 
 export const useSyncAiProviderModels = () => {
   const queryClient = useQueryClient();
@@ -111,8 +140,8 @@ export const useAiProviders = (params?: GetAiProvidersParams) => {
 const providerHealthOptions = {
   queryKey: ["ai-providers-health"],
   queryFn: () => getAiProvidersHealth(),
-  staleTime: 30_000,
-  refetchInterval: 30_000,
+  staleTime: 120_000,
+  refetchInterval: 120_000,
 };
 
 export const useAiProvidersHealth = () => useQuery(providerHealthOptions);

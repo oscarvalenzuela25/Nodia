@@ -1,4 +1,7 @@
 {
+  "nodia_ai_title": "NodiaAI",
+  "nodia_ai_unavailable": "Chat is not available yet.",
+  "nodia_ai_preparation": "This space will be enabled when conversations and their tools are ready.",
   "active_filter": {
     "label": "Activity status",
     "active": "Active",
@@ -69,5 +72,8 @@
   "date_time_time": "{{label}} · Time",
   "phone_country": "Country / calling code",
   "date_label": "Date",
-  "time_label": "Time"
+  "time_label": "Time",
+  "data_owner": "Data owner",
+  "search_owner_email": "Search by email",
+  "invalid_input": "The submitted data is invalid."
 }

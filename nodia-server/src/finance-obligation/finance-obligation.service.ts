@@ -1,3 +1,7 @@
+import {
+  runFinanceScope,
+  type FinanceActor,
+} from '../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { DataSource, In, type EntityManager } from 'typeorm';
 import { FinanceMovement } from '../finance-movement/entities/finance-movement.entity.js';
@@ -7,9 +11,24 @@ import { applyFinanceQuery } from '../finance-common/finance-query.js';
 
 @Injectable()
 export class FinanceObligationService {
+  withScope<T>(
+    actor: FinanceActor,
+    work: (scope: {
+      manager: EntityManager;
+      ownerId: string;
+      actorId: string;
+    }) => Promise<T>,
+  ): Promise<T> {
+    return runFinanceScope(this.dataSource, actor, work, 'REPEATABLE READ');
+  }
   constructor(private readonly dataSource: DataSource) {}
 
-  snapshot<T>(work: (manager: EntityManager) => Promise<T>): Promise<T> {
+  snapshot<T>(
+    work: (manager: EntityManager) => Promise<T>,
+    existingManager?: EntityManager,
+  ): Promise<T> {
+    if (existingManager) return work(existingManager);
+
     return this.dataSource.transaction('REPEATABLE READ', work);
   }
 

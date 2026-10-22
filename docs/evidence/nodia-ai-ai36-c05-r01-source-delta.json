@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R01",
+  "scope": "exact_source_hash_delta_against_frozen_catalog_not_new_AST_inventory_acceptance",
+  "historical_inventory": {
+    "path": "docs/mvp/nodia-ai-current-endpoints.json",
+    "sha256": "be81b8cd9359b1d6d6486fc90c65a8e1e2a0d853abebac6a6c826c2e2ce2bbfc"
+  },
+  "baseline_catalog_delta": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-catalog-delta.json",
+    "sha256": "ac9c97f478458b8f75c6fd894087e766ff7201d4b1a007361a0749114bedc660"
+  },
+  "source_count": 869,
+  "changed_sources": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "before_sha256": "bebdb288b1ceb14fef874d55e1f7bb50d4aa7ae17505943da874a5087980fd20",
+      "after_sha256": "76cc139e7e092caf95400e529bb45dd6067309c8843fac2da13f3dee1d01c0bc"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/types/worker.types.ts",
+      "before_sha256": "b7eed0868bb703fee2b94600ec1c0a7043b1d2541b676fa6b4bd1e7126bb9be8",
+      "after_sha256": "135f75240d94f935fadbc3aa8ccc2f436d9080c1e89004af0dae71b636bbc03c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.ts",
+      "before_sha256": "978448b681d88dc9fd2c166b455a828a901f7ed7ca4ee03657e27af5f7376aab",
+      "after_sha256": "20ad2f7995818b6d1ece3fd36d6c43a094fa978c33349fb04656ce4f9f6a1406"
+    }
+  ],
+  "counts_retained_from_historical_inventory": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 89,
+    "publicOperations": 5,
+    "staticallyComposedModules": 84,
+    "conditionalModules": 5
+  },
+  "route_and_module_source_files_changed": false,
+  "route_count_interpretation": "Historical route/module counts are retained because only the three listed runtime files changed; this is not a refreshed AST inventory or a passing legacy source-hash check.",
+  "legacy_readonly_check": {
+    "source": {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai36-c05-catalog.cjs",
+      "sha256": "ea8f25c2d516cd4e43eab6160fb48750a3761d5f21b27d52e7af6308952a7f17"
+    },
+    "arguments": [
+      "--check"
+    ],
+    "exit_code": 1,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "9fd24b045c579d81f16cfe5a64a7241bc9cc521513ec7317bfc1b4198ba247ee",
+    "classification": "expected_stale_runtime_source_hashes",
+    "passed": false
+  },
+  "original_inventory_rewritten": false,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "source": {
+    "path": "docs/evidence/scripts/nodia-ai-ai36-c05-r01-source-delta.cjs",
+    "sha256": "abd9ecf6aac79a385169bccd595871e8bd0f67ed673cea0d9e6e3d6a1c8f63f9"
+  }
+}

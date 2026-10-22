@@ -1,0 +1,61 @@
+{
+  "stage": "AI-32-R04",
+  "scope": "real_agentic_mcp_and_attachment_synthetic_canary",
+  "status": "passed",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "callbacks": 1,
+  "business_writes": 0,
+  "configured_database_modified": false,
+  "provider_response_text_stored": false,
+  "credentials_logged": false,
+  "native_acknowledged": true,
+  "harness_sha256": "edefe16c03753f124e063c886f3c1f001caf3731c8555462f0dacdbfeb7cd1bf",
+  "observation_http_status": 200,
+  "observed_at_utc": "2026-10-18T05:16:25Z",
+  "attempt_id": "19880635-54f3-4659-9b4b-890e267357f2",
+  "reference": {
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+    "operation_ref": "19880635-54f3-4659-9b4b-890e267357f2"
+  },
+  "model_id": "gemini-3.8-flash-high",
+  "effort_id": "high",
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "kind": "image",
+  "media_type": "image/png",
+  "file_sha256": "e4eabfc3b6406c3b0d9ae07e64326b385e7bc5a2ebca83f22764aa5f6388fb2a",
+  "file_bytes": 13302,
+  "expected_answer_sha256": "dfb43ceb4e954a815fc6b72270d197b1b8eec34d7a51b4ea7977fad55cb648ed",
+  "start_http_status": 200,
+  "native_start_accepted": true,
+  "answer_sha256": "dfb43ceb4e954a815fc6b72270d197b1b8eec34d7a51b4ea7977fad55cb648ed",
+  "semantic_canary_matches": true,
+  "native_hook_file_and_mcp_attested": true,
+  "terminal_identity_verified": true,
+  "native_outcome": "completed",
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "verified_modalities": [
+      "image",
+      "pdf",
+      "audio"
+    ],
+    "verified_attachment_media_types": [
+      "image/png",
+      "application/pdf",
+      "audio/webm"
+    ],
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+    "supports_mcp": true
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T05:18:32Z"
+}

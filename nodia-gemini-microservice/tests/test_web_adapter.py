@@ -13,9 +13,44 @@ from gemini_webapi.utils.decorators import running
 from gemini_webapi.exceptions import APIError, AuthError, ModelInvalidError, UsageLimitExceededError, TimeoutError as ProviderTimeout
 from service_errors import ServiceError
 from test_support import RESULT
+from web_reasoning_adapter import ObservedProfile
 
 
 class WebAdapterTest(unittest.IsolatedAsyncioTestCase):
+    async def test_verified_levels_reach_ocr_without_the_legacy_boolean(self):
+        identity = "a" * 16
+        self.model.model_id = identity
+        self.service._reasoning_profiles = {identity: ObservedProfile(identity, (1, 4, 2), 1)}
+        for level in ("low", "medium", "high"):
+            result = await self.service.analyze_invoice(Path("unused.pdf"), model=identity, thinking_level=level)
+            self.assertEqual(result["data"]["items"][0]["quantity"], 0)
+            kwargs = self.client.generate_content.call_args.kwargs
+            self.assertEqual(kwargs["thinking_level"], level)
+            self.assertNotIn("extended_thinking", kwargs)
+            self.assertEqual(kwargs["current_retry"], 0)
+
+    async def test_unverified_level_conflict_and_invalid_profile_never_generate(self):
+        for invalid in (dict(thinking_level="medium"),
+                        dict(thinking_level="medium", extended_thinking=False)):
+            with self.assertRaises(ServiceError) as caught:
+                await self.service.analyze_invoice(Path("unused.pdf"), model="live-id", **invalid)
+            self.assertEqual(caught.exception.status, 422)
+        self.service._reasoning_profile_invalid = True
+        with self.assertRaises(ServiceError) as caught:
+            await self.service.analyze_invoice(Path("unused.pdf"), model="live-id", thinking_level="high")
+        self.assertEqual(caught.exception.code, "thinking_profile_invalid")
+        self.client.generate_content.assert_not_awaited()
+
+    async def test_observed_level_options_are_scoped_to_available_models(self):
+        from gemini_service import GeminiWebService
+        identity = "a" * 16
+        self.model.model_id = identity
+        self.service._reasoning_profiles = {identity: ObservedProfile(identity, (1, 4, 2), 1)}
+        options = GeminiWebService.supported_options(self.service)
+        self.assertEqual(options["thinking_levels_by_model"], {identity: ["low", "medium", "high"]})
+        self.model.is_available = False
+        self.assertEqual(GeminiWebService.supported_options(self.service)["thinking_levels_by_model"], {})
+
     async def asyncSetUp(self):
         self.service = GeminiWebService()
         self.service.init_client = AsyncMock()

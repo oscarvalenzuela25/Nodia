@@ -1,0 +1,616 @@
+{
+  "task": "AI-21",
+  "status": "implemented_and_verified_private_lab",
+  "verified_at_utc": "2026-10-17T05:57:36.271641+00:00",
+  "scope": "twelve_single_native_financial_mutations_with_human_confirmation_and_atomic_receipt_not_mcp_prepare_publication",
+  "implementation": {
+    "financial_mutations": 12,
+    "existing_native_reads": 11,
+    "native_handlers": 23,
+    "native_writers_reused": true,
+    "single_step_per_proposal": true,
+    "new_receipt": "FinancialEffectReceipt",
+    "legacy_v2_receipt_preserved": "FinancialMovementReceipt",
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_migrations": 0
+  },
+  "server": {
+    "full_suite": {
+      "tests": 2011,
+      "files": 180,
+      "passed": true,
+      "log": "nodia-server/.tmp/ai21-server-all-tests-final.log"
+    },
+    "build": {
+      "passed": true,
+      "log": "nodia-server/.tmp/ai21-server-build-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": "nodia-server/.tmp/ai21-server-lint-final.log"
+    }
+  },
+  "client": {
+    "full_suite": {
+      "tests": 1344,
+      "files": 201,
+      "passed": true,
+      "max_workers": 2,
+      "log": "nodia-client/.tmp/ai21-client-tests.log"
+    },
+    "typecheck": {
+      "passed": true,
+      "log": "nodia-client/.tmp/ai21-client-typecheck-final.log"
+    },
+    "build": {
+      "passed": true,
+      "log": "nodia-client/.tmp/ai21-client-build.log"
+    },
+    "lint": {
+      "errors": 0,
+      "log": "nodia-client/.tmp/ai21-client-lint.log"
+    },
+    "initial_attempt": "Default worker concurrency caused high memory pressure; attempt interrupted after ProvidersTab failure. Full unchanged suite passed with two workers; assertions/timeouts unchanged."
+  },
+  "postgresql": {
+    "new_checks": 47,
+    "coordinator_regression_checks": 205,
+    "native_finance_checks": 17,
+    "total_numbered_checks": 269,
+    "new_evidence": "docs/evidence/nodia-ai-ai21-postgres-integration.json",
+    "regressions": [
+      {
+        "file": "docs/evidence/nodia-ai-ai21-worker-regression.json",
+        "checks": 36
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai21-financial-effect-regression.json",
+        "checks": 32
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai21-confirmation-regression.json",
+        "checks": 37
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai21-proposal-regression.json",
+        "checks": 52
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai21-events-regression.json",
+        "checks": 19
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai21-observation-regression.json",
+        "checks": 29
+      },
+      {
+        "file": "docs/evidence/nodia-ai-ai21-finance-native-regression.json",
+        "checks": 17
+      }
+    ],
+    "quota_gateway": {
+      "status": "passed",
+      "receipts": 5,
+      "file": "docs/evidence/nodia-ai-ai21-quota-gateway-regression.json"
+    },
+    "data": "synthetic_disposable_postgresql_16",
+    "configured_business_database_used": false,
+    "inferences": 0,
+    "temporary_containers_remaining": 0,
+    "legacy_readiness_fix": "Wait for PostgreSQL final TCP listener before TypeORM initialize; original 17 assertions unchanged"
+  },
+  "ui": {
+    "evidence": "docs/evidence/nodia-ai-ai21-ui-validation.json",
+    "transport": "isolated_synthetic",
+    "real_tab_5174_preserved": true,
+    "qa_5194_stopped": true
+  },
+  "deployment": {
+    "stage": "AI-21",
+    "scope": "private_local_vm_lab",
+    "activated_at_utc": "2026-10-17T05:55:19Z",
+    "backup": "/opt/nodia/verification-backups/ai21-before-financial-operations-1792216513",
+    "backup_bytes": 280892,
+    "backup_sha256": "28f1045358bee90e57f02edeb27691a01817682ef4bc6716a1e0d169bf7aba4f",
+    "migration": {
+      "migration": null,
+      "applied": 0,
+      "schema_unchanged": true
+    },
+    "http_health": 200,
+    "units": {
+      "nodia-api": "active",
+      "nodia-ai-worker": "active"
+    },
+    "configured_provider_environment_dependencies_unchanged": true,
+    "gemini_container_restarted": false,
+    "private_profile_modified_by_deployment": false,
+    "knowledge_capabilities": 67,
+    "knowledge_fragments": 27,
+    "quiet_after": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "held_or_unknown_slots": 0,
+      "migrations": 24
+    },
+    "real_inferences_by_deployment": 0,
+    "business_writes": 0,
+    "new_tables": 0,
+    "new_columns": 0,
+    "existing_columns_added": 0
+  },
+  "read_only_final_state": {
+    "stage": "AI-21",
+    "scope": "read_only_configured_private_lab",
+    "observed_at_utc": "2026-10-17T05:55:53.096Z",
+    "migrations": 24,
+    "tables": 18,
+    "columns": 239,
+    "challenges": 0,
+    "executions": 0,
+    "execution_steps": 0,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "knowledge_release": "057a331b12f05ae08f9f9b9a565d5349d17b7a2375e8852981f19c29d992a20e",
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "production_executor_registrations": 12,
+    "native_business_execution_enabled": true
+  },
+  "code_equality": {
+    "stage": "AI-21",
+    "scope": "read_only_deployed_dist_equality",
+    "dist_files_checked": 798,
+    "deployed_matches_final_archive": true,
+    "archive_sha256": "0282cff917998183ed4ae77783cbfa4db7b20dde5fb4e0ed1d597d24b25b72e5",
+    "final_fixture_only_archive_change_after_sql": "AI21 observation helper and packaged native fixture readiness; deployed runtime bytes identical"
+  },
+  "publication": {
+    "knowledge_release": "057a331b12f05ae08f9f9b9a565d5349d17b7a2375e8852981f19c29d992a20e",
+    "published_read_capabilities": 67,
+    "published_fragments": 27,
+    "financial_mcp_preparers_published": 0,
+    "updated_fiches_remain_drafts": true,
+    "documentation_approval_granted_by_this_delivery": false
+  },
+  "contract_verification": {
+    "common_definitions": 133,
+    "domain_definitions": 184,
+    "closed_domain_assertions": 134,
+    "structural_fixtures": 306,
+    "source_hashes_checked": 548,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json"
+  },
+  "independent_static_review": {
+    "actionable_defects": 0,
+    "scope": "financial dispatcher identity/binding, receipts, execution, recovery, legacy v2 compatibility"
+  },
+  "limitations": [
+    "MCP financial preparers remain unpublished; no financial preparation or write by Gemini demonstrated",
+    "One native operation per proposal; dependent sequences remain AI-23 and bulk writes deferred",
+    "NR-05..07 full report acceptance remains AI-30/31; financial authority coverage does not certify all houses/inference/multistep cases",
+    "AI-15 external/R2 gates and public production acceptance remain open",
+    "No physical mobile keyboard acceptance"
+  ],
+  "source_files_verified": [
+    {
+      "file": "docs/architecture/decisions/ADR-048-nodia-ai-financial-operation-ports.md",
+      "sha256": "219091ea3c26d61d091031f4cadf87ea9569224adc6a82bafb7158f1eeb1c3f3"
+    },
+    {
+      "file": "docs/mvp/67-nodia-ai-ai21-financial-operations.md",
+      "sha256": "dbc0070ce83097013a203c7468f55bf487b0ab2d1a03f0d108cfbe246a16d591"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "6576f58173b7f8dcb81467cdab7a48f41c05d47b400b5a3415efcc65cc883721"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.tsx",
+      "sha256": "38a45cdee401a90ea3802162f5edd0be0f0eef063c5de0f3e5f4c9c81a925aab"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.tsx",
+      "sha256": "6d04ff29bc003b194e87139d9d87d570f26e777270833006239096d3db3088df"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/ProposalPreview.tsx",
+      "sha256": "76c2984dc5eb19125f99875a477fca20a2c2ce112be80819f1d2d95672d56f21"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/infrastructure/financePresentation.ts",
+      "sha256": "398069874bcf3076ca0c20b6c31bf97d34b5f89483cbe74cd09176d31529e005"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/infrastructure/useExecution.ts",
+      "sha256": "4886eeb17b5dc5ecab1039be19a022d86e1f5e266501f45c28efcf79ae2536f1"
+    },
+    {
+      "file": "nodia-client/src/test/manual/nodia-ai/fixtures.ts",
+      "sha256": "b817fb5fc4397102b88021d0d8202bef1eaa50a50c5844b11be997bbf9466a5d"
+    },
+    {
+      "file": "nodia-client/src/test/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.test.tsx",
+      "sha256": "96e420257c71f7c25558a460a086d0d35618872eb07254e4e4ec9a4da9380c50"
+    },
+    {
+      "file": "nodia-client/src/test/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.test.tsx",
+      "sha256": "7ee82d40d198bd8ae8751f3ea5e117024d8425d3ef1da2f1b550181fabb7bec9"
+    },
+    {
+      "file": "nodia-client/src/test/modules/nodiaAi/components/ProposalPreview/ProposalPreview.test.tsx",
+      "sha256": "505df7ad17a98d6080c6c4ff0cfa7a2e27c0b984982811c8231f9f684dcf8691"
+    },
+    {
+      "file": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "85c7bb2dced8d431921e622680048009d9308d323d60173a8716004dc965ec8a"
+    },
+    {
+      "file": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "00c72ffdd4b0655d2bcc919293092d9631822e1cb65921c0d4a505a208f001fa"
+    },
+    {
+      "file": "nodia-server/scripts/package-nodia-ai-lab-release.mjs",
+      "sha256": "2ef0c8671a3f389490442fdcdce97ec820cc16bebd86145357c64046c7840af9"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/dto/create-finance-category-group.dto.ts",
+      "sha256": "8fbb39476e18f45d8b150ba8b3e1f0b753fbf275075868bd9d34578992597394"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/dto/finance-category-group-response.schemas.ts",
+      "sha256": "aefaa39ee0f1dd165229427a1477ba06570ac0f3eda51fd50c36eb8f55c35a8c"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/dto/update-finance-category-group.dto.ts",
+      "sha256": "84ddbc07f0aac342946564a07de68154b2780a79757ffff474cf86a96128e992"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/entities/finance-category-group-membership.entity.ts",
+      "sha256": "da090523fbeb676dbbff3f3552292a37cbb7c20a1c4a5b0d6333fe8b5854fd29"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/entities/finance-category-group.entity.ts",
+      "sha256": "5394e57b88398b35979ed9ce2bdf8faf782c2de1741f8ceccc1858c56b77a654"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/finance-category-group.controller.ts",
+      "sha256": "14fe7cb7e155edd85cdbc2e8a875f49b3ed374de073af7d44622cdc4b522ff6c"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/finance-category-group.module.ts",
+      "sha256": "615bdf690e83640cd5efd4b35f901c9c91948ed1f81ba437c394cfad988bc091"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/finance-category-group.service.ts",
+      "sha256": "5fda760d0c0df1d8b82a52e4839c35f5e81c6db59ad5a9c00588121bc9ac4583"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/types/finance-category-group.types.ts",
+      "sha256": "44751288973f16b846c18087b30205412fedf66f981bc23ad7e78e258b69a940"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/create-finance-category-group.use-case.ts",
+      "sha256": "6cf28afc1c633ef80f9d5c71134adae8ded7e37af002092dded416d8a33f7d8c"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/delete-finance-category-group.use-case.spec.ts",
+      "sha256": "30efed4cd3bbc4a3c8fc6e9da30d0e1df33d5a874dd77c0979389d77922e3cd0"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/delete-finance-category-group.use-case.ts",
+      "sha256": "3ad92aa744c5788d6551ec391cc5dde1adfb91454da70d4212856ea4747ad21c"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/get-finance-category-group.use-case.ts",
+      "sha256": "d97444c88a6176d6954a5b42c3aa594d8ed6d4fac3c6f4429b458d74cacc297f"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/get-finance-category-groups.use-case.ts",
+      "sha256": "f70d9c75eae275111ee8c2892b4fdd32382c74477d9cea287dbd89a4cb952b58"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/sync-finance-group-categories.ts",
+      "sha256": "f6a7c5d801972e1c4bae9b44151704a8172d8fd5656410770205c752d9ec0c4f"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/update-finance-category-group.use-case.spec.ts",
+      "sha256": "261ed93a793bbe4061adf3d1f23e81e60e8e47c0e023ef43ef93d949215e9d91"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/update-finance-category-group.use-case.ts",
+      "sha256": "ddcc761270e13b4518bb587e9ad315042d13891056cfe178bc4c58989f82d43b"
+    },
+    {
+      "file": "nodia-server/src/finance-category/dto/create-finance-category.dto.ts",
+      "sha256": "8328e566bc728067269ca40bbbac25f7d00fb0185c3cb1e7c17f0ed4ef64d793"
+    },
+    {
+      "file": "nodia-server/src/finance-category/dto/finance-category-response.schemas.ts",
+      "sha256": "d80d9abb91be9b602f2f04a3903b0c57a76399c6745ee27295469ef6dfc6fcfb"
+    },
+    {
+      "file": "nodia-server/src/finance-category/dto/update-finance-category.dto.ts",
+      "sha256": "d930da74a43855d9c8932706f11d7194825c8bb89083248e11ff70c39643ca2e"
+    },
+    {
+      "file": "nodia-server/src/finance-category/entities/finance-category.entity.ts",
+      "sha256": "da3329948c341e935e21bf6b95b4a962398c145a2bb50f8e882056908ab2384b"
+    },
+    {
+      "file": "nodia-server/src/finance-category/finance-category.controller.ts",
+      "sha256": "32ddf768d14d03272a21cac2665b3d88f7f4876c89194e2a7c782cce71f1c88d"
+    },
+    {
+      "file": "nodia-server/src/finance-category/finance-category.module.ts",
+      "sha256": "b81c8c1e5578ffaf029955e5c85937d38cd3a9555ef44f5844a35eba243eb01e"
+    },
+    {
+      "file": "nodia-server/src/finance-category/finance-category.service.ts",
+      "sha256": "ca67267b87670fb7f5662675c5a279b3ed6f9267072ca0a384f0956a4a0df17c"
+    },
+    {
+      "file": "nodia-server/src/finance-category/types/finance-category.types.ts",
+      "sha256": "92e13f44718f38e0defdcbe7b7322ef71fa10e08c3d483bfc3a2c7fdd7289042"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/create-finance-category.use-case.ts",
+      "sha256": "5264507f28f78ec4a0f70beb57d6daa9b325f57cf4dcf9e37f8bc102c859e899"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/delete-finance-category.use-case.spec.ts",
+      "sha256": "717879dc030ca2ed08e95a61d48114618c245838dd42d676158970fe36e83832"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/delete-finance-category.use-case.ts",
+      "sha256": "595c8002a0a7f5caa99795bc9d3167c1327c153f0d257e36463e442480e44c8e"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/finance-catalog-errors.ts",
+      "sha256": "f220f1f3225995b105ca3ef1ddb601c118300e41e5db635bb8c0c6e2137feaf2"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/get-finance-categories.use-case.ts",
+      "sha256": "547433e322568adc89bc8fa3ae4c458550ef7103da866b6a637589e5528886b3"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/get-finance-category.use-case.ts",
+      "sha256": "e9094afde4a448d6f45f87a89aae0345f48b960d04705e601d9fe11e1ade1aa9"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/update-finance-category.use-case.spec.ts",
+      "sha256": "80e9980e30e148d86a37eed75158caf19112d5a840e0b2b6224ae8393b1faa76"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/update-finance-category.use-case.ts",
+      "sha256": "54fd65d974880c7054a9b4b383c845e79dc89e1891bd5f4de688a976b26182b0"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/dto/create-finance-movement.dto.ts",
+      "sha256": "598f40001a54fb642ff0872bce3704abcd4658a386b2cff4323ade99ea8e424a"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/dto/finance-movement-response.schemas.ts",
+      "sha256": "406b9c1754f5be7c787b0984f95e334442cafc4fb0d86fad05e7673f88abf1d5"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/dto/update-finance-movement.dto.ts",
+      "sha256": "1866a74d36ba7cfc00c7bbd56bb50c24988f1c8708feaa8c5b2eccc94fcec0d5"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/entities/finance-movement.entity.ts",
+      "sha256": "ac5c8ff3da961d1e199838490b29994275d4b4cedc6caf966666667da3f157db"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/finance-movement.controller.ts",
+      "sha256": "572563970d3660786d30d237fbdef65dc6cc19e2bb3a51e1d51732054bfaeee9"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/finance-movement.module.ts",
+      "sha256": "1c4c8950e2952e8f37e06ffce37d93e348b130395497bc008cb6bf790d5fcc9c"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/finance-movement.service.ts",
+      "sha256": "3fb4de3274883cffb1369c212dd24f94874c7124b72f3ab79ca75f30f4a76a09"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/types/finance-movement.types.ts",
+      "sha256": "38b558fc81ab5581edd64f649328c97f2b459d27fe77a887bc63ae5eb1fc8e3a"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/create-finance-movement.use-case.ts",
+      "sha256": "d695aedd13bfb8c017a9cafd536042b6ff3462bf0a07d6e3a496271d12e76e37"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/delete-finance-movement.use-case.spec.ts",
+      "sha256": "b07fbbaef65a737eda5f450380a8920ecd6ab00b3b8065b78b53dbd52dfc832b"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/delete-finance-movement.use-case.ts",
+      "sha256": "91fe1923b1a811850b8e055e5e73a9e10e60bf2b0e6dd9c577c941fb3248f490"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/get-finance-movement-by-id.use-case.ts",
+      "sha256": "3cf8c26fc5e5b229aa1182b349c0dcb70cf48bd5074069297b3218b77c08f874"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/get-finance-movements.use-case.ts",
+      "sha256": "4f2580277f2f6f9093bafe5104b25984074bc30b30eff3e841292502628d3d33"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/resolve-finance-movement-update.ts",
+      "sha256": "5f0e33383c484aae9fccde1d010bd2a2afba141f57218f8c8425c6c756ffa971"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/update-finance-movement.use-case.ts",
+      "sha256": "f1e3c3736b4f23fe2692f00b9e3cd7cc300941a44a289d8db3909a0c5e420178"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/dto/create-finance-obligation.dto.ts",
+      "sha256": "ac557a4b21c328100a10d20189b987adfa14411cb409e569fc34b0b28b6fcae0"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/dto/finance-obligation-response.schemas.ts",
+      "sha256": "a50a29cb079e675bd4137d8d8ce0a66fbd7e4dea9dabbd4bfc06e290102a1cdd"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/dto/update-finance-obligation.dto.ts",
+      "sha256": "ba1e1240de9a95a01cef4085e6791b7f399961ea15709fde67bc609649b3a26b"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/entities/finance-obligation.entity.ts",
+      "sha256": "551c99c70b00946e5b8693cbd06195c523aef7d2ed472317896ea3b7fb33a437"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/finance-ledger.service.ts",
+      "sha256": "2ed6c871adb04c97830180309f1518b1f994cd1dd6ab65f1809cd037bff93031"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/finance-obligation.controller.ts",
+      "sha256": "54cc9b2fa09ab6e23a282d8aaac1765f2f5ff2253ddd5ea2f6c53c37d71ac765"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/finance-obligation.module.ts",
+      "sha256": "2f84f0f40e6095060edd9babb271cd8a22f774112cbfd19f00f2c0b5897c1131"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/finance-obligation.service.ts",
+      "sha256": "c90da0ef31ba336a0c46a4e0b88f13dd8ee4424a60f91089196170d63085f75b"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/create-finance-obligation.use-case.ts",
+      "sha256": "243947a15ccdd492465474b7e61905fad6517c1fa2fcacf4b8d81b83c5a4b8be"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/delete-finance-obligation.use-case.spec.ts",
+      "sha256": "35c057fcf702cddfbd7018abbf461cf59c60135be810fbd6dbda7271baa69f27"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/delete-finance-obligation.use-case.ts",
+      "sha256": "8ae68635b46e36424854fbd0c4262086208161a9cb562f512cabcec1142defd1"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/finance-ledger.fixtures.ts",
+      "sha256": "8d4cf8d29083b3cda133deff24e9c025b190cfd5a29ba3ae8329895a5139bc3d"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/finance-ledger.rules.ts",
+      "sha256": "f5f582d966a1ccfaec5dcbebb26b4d3810d8b199c7f234a7926e9f3674ab4764"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/finance-ledger.use-case.spec.ts",
+      "sha256": "78c5a3a574ad9ed4c8b1b01bf192cf757668cdaf49ae42f62ab19e3a60d89e18"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/get-finance-obligation-by-id.use-case.ts",
+      "sha256": "80e240b38ab80c137a10f7c732b307de974aff6d02900c66254a993f7ae2b24a"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/get-finance-obligations.use-case.ts",
+      "sha256": "5e174ab642a9d364481c6622b305f98b43d24c98e84039ba75ac78185a5b2d97"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/update-finance-obligation.use-case.ts",
+      "sha256": "f92b5d5a184b1b4bb6839a1ceb6b5fdf6928db790baf86d6c79858b1e5e66a6a"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+      "sha256": "f093fdae7350675ff94b3c5e74e4342d00c4a6adedf57b2259ddac526270a0e9"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/use-case/control-nodia-ai-execution.use-case.ts",
+      "sha256": "1dcf4557121468d77c024f750be4bf06c0cec3725cea92ecaf6a3ffbff55b2dc"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.spec.ts",
+      "sha256": "61a2f8b27643ff81ee3a9537f3c6d6dd0550ad3ff68b4c2047f7528c2e28cc91"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.ts",
+      "sha256": "fc97947b54f6694dd38db9f2a2949c3e1b7a9fa9b8fddec28ee7a9a865238658"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/use-case/validate-nodia-ai-confirmation.use-case.ts",
+      "sha256": "4616951ba04f089b7b516cf026f23e3851d207878a34d807e69ab5540380445c"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/use-case/execute-nodia-ai-financial-execution.use-case.ts",
+      "sha256": "9c59c309f061baf37674f415227b81aba9970a336f70b60494bd3a5fd4089a5d"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/use-case/recover-nodia-ai-executions.use-case.ts",
+      "sha256": "0e58953dd55a065ef497f680ef5a5011e8cc0e7c9f3840a1cd33d05a5fb28210"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-catalog/nodia-ai-finance-catalog.module.ts",
+      "sha256": "bb06c7f797dd0ff12cef97bb67a130374b7f9923846edd2fa8367b10636d9993"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-catalog/nodia-ai-finance-catalog.service.ts",
+      "sha256": "412b2b9653b821a097951a70bcf043b3ab96632ab1d5aae4514ce1690d39f322"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-catalog/use-case/build-nodia-ai-finance-catalog-operations.use-case.spec.ts",
+      "sha256": "8bdf880dc6713595c34af5a6e0ebe34828bc087dc5d37a83ae70da5512513621"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-catalog/use-case/build-nodia-ai-finance-catalog-operations.use-case.ts",
+      "sha256": "658265ca84a369a53f0b83923b6289b05b7ee5f4524e5886da07c5104c954208"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-effect/nodia-ai-finance-effect.module.ts",
+      "sha256": "ba98bfa3e48cc04feab67928d3f08fbbc9f5b3bb6f11365fc2183571c4012b6e"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-effect/types/financial-operation.types.ts",
+      "sha256": "01d91cabc628ba3a8bb96ba90475e46ce57c9b51fc77151e79d394f562451690"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-effect/use-case/execute-nodia-ai-finance-effect.use-case.spec.ts",
+      "sha256": "b11c9c68f890ea3010ae60d459935f80fdfefc4c9cfb9835a2ce64f240cdbfe9"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-effect/use-case/execute-nodia-ai-finance-effect.use-case.ts",
+      "sha256": "edef0a8b65a2d4c016e83722572c313ed8e39eed4a9ea23f9ac9b5f24b2bc629"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-effect/use-case/execute-nodia-ai-finance-movement-effect.use-case.spec.ts",
+      "sha256": "c9b08b7e53f0721478bb33bdaad140750535a91280bb66cad1d718e15b7cf574"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-effect/use-case/execute-nodia-ai-finance-movement-effect.use-case.ts",
+      "sha256": "49dda269794590b8b7113aa6d1d30d3b24cea05b53e212023c8ccda250aa6fe1"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-ledger/nodia-ai-finance-ledger.module.ts",
+      "sha256": "04ea3ed527e9dbbd0ed4aeb4bc03c331cd6cf4698bc9128745e0c3c1fee88889"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-ledger/use-case/build-nodia-ai-finance-ledger-operations.use-case.spec.ts",
+      "sha256": "fd26dd2f4a244851bb6c74bd4f228246dc4323945ea70bf5f795ad2139330d86"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-finance-ledger/use-case/build-nodia-ai-finance-ledger-operations.use-case.ts",
+      "sha256": "f4cade60045c78ed99c931512cf4a4dce20e0f6198a1f647db3406fb80272e23"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-proposal/nodia-ai-proposal.module.ts",
+      "sha256": "8486f2b95622194fc9f37be0e4e9181185c30e1b91cce91c0e724a99aaa5b3f1"
+    },
+    {
+      "file": "nodia-server/test/finance.integration.mjs",
+      "sha256": "c094ba1442360b8ca9073c09dc35725e17de1655cef3fc384015f34cbb90b5ec"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai21-worker.fixture.mjs",
+      "sha256": "d97dd2dad89ba54a8b66a03232be2bfcc6bd1d129079db3c20eed891979221f9"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai21.integration.mjs",
+      "sha256": "876722965f74ab0dae5e1fe1d16d0a1e95c58d37dc759a5fb7c22cea3157298a"
+    }
+  ]
+}

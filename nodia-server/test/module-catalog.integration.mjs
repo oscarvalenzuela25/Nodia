@@ -1,3 +1,4 @@
+import { installAuthorityFixture } from './fixtures/authority.integration.mjs';
 // Compiled NestJS + disposable PostgreSQL. No configured DB, Redis or real identity.
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
@@ -93,6 +94,7 @@ try {
     INSERT INTO user_modules(user_id,module_id) VALUES (1,100),(1,101);
     INSERT INTO translations(source_entity,source_id,source_key,locale,value) VALUES ('modules','100','key','es','Módulo de prueba'),('modules','101','key','es','Conservado'),('module_groups','11','key','es','Grupo de prueba'),('modules','11','key','es','Otro namespace');
   `);
+  const testAuthority = await installAuthorityFixture(db, ['1']);
   const redis = {
     delByPattern: async (pattern) => {
       assert.equal(pattern, 'auth:context:*');
@@ -112,6 +114,7 @@ try {
         'fixture'
       )
         throw new UnauthorizedException();
+      context.switchToHttp().getRequest().auth = testAuthority.principal();
       return true;
     }
   }
@@ -278,7 +281,7 @@ try {
       };
       return work(manager);
     });
-  const deletion = app.get(DeleteModuleGroupUseCase).execute('31');
+  const deletion = app.get(DeleteModuleGroupUseCase).execute('31', testAuthority.actor());
   await locked;
   const associating = db
     .query(

@@ -1,0 +1,30 @@
+{
+  "stage": "AI-38",
+  "status": "passed",
+  "scope": "synthetic_offline_adoption_guard_controls_not_VM_acceptance",
+  "source_sha256": "10df76eabd6c068a6e3ae033333c6807e082d4c34b5dcc6deb0b614eaf487749",
+  "validator_sha256": "8b6e44f72f7d90b0236db301ec0b04056457b01789908b8e3fae49913c016178",
+  "checks": [
+    "accepts frozen member bytes",
+    "rejects tampered member",
+    "rejects unsafe member '../escape'",
+    "rejects unsafe member '/escape'",
+    "rejects unsafe member 'dist\\\\escape'",
+    "maintenance closes API and SPA admission",
+    "existing proxy and body limit preserved",
+    "static SPA preserves deep links",
+    "static SPA retains GIS opener policy",
+    "original descriptor snapshot unchanged",
+    "rejects unknown nginx descriptor shape",
+    "nodia-api absolute entrypoint and original dotenv path",
+    "nodia-ai-worker absolute entrypoint and original dotenv path",
+    "exclusive fence targets only non-loopback API TCP3000",
+    "failed nginx validation restores exact disk bytes without reload",
+    "valid nginx descriptor reloads once"
+  ],
+  "checks_passed": 16,
+  "VM_changes": false,
+  "provider_requests": 0,
+  "services_or_firewall_exercised": false,
+  "backup_or_restore_exercised": false
+}

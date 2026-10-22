@@ -1,0 +1,75 @@
+{
+  "observed_at_utc": "2026-10-17T18:02:44.971309+00:00",
+  "stage_directory": "/opt/nodia/verification/ai26-20261017",
+  "compiled_production_archive_sha256": "985059cc1f77d40d78d60b30d732132383982f7df7cfff974a9e6c10c4cefe45",
+  "knowledge_pin_sha256": "46e4950b15ac9b89903341bbdd9cee47c578654b0ef9fc039eff32b21d2a2d0c",
+  "scope": "Synthetic disposable PostgreSQL only; no configured database mutation, provider inference, MCP write publication or Gemini acceptance.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "status": "passed",
+  "command": "node test/nodia-ai-ai18.integration.mjs",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai18.integration.mjs",
+      "sha256": "27f9568d0612dc208af2769f275a80027c0a2da3ba7589aea6d8e77e865c8ee1"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    }
+  ],
+  "result": {
+    "stage": "AI-18",
+    "scope": "compiled_http_disposable_postgresql_native_preparation_synthetic_execution_admission_no_provider_no_domain_effect",
+    "checks": 37,
+    "passed": [
+      "production review reports unavailable execution without pretending approval can run",
+      "explicit empty executor registry rejects challenge and confirmation without creating work",
+      "AI-18 migration installs all three consumed tables",
+      "human review metadata binds typed editable fields to exact revision and hash",
+      "administrator inspection exposes read-only metadata without approval or edit controls",
+      "challenge is bound to the exact public proposal identity and hash",
+      "database stores only token digest and authenticated session",
+      "challenge expiry obeys 120 seconds and does not exceed proposal lifetime",
+      "foreign ordinary users and omniscient administrator cannot confirm as owner",
+      "same-session token rotates in place while other-device challenge remains independent",
+      "strict human wire rejects unknown fields, coerced revision, malformed token and duplicate JSON keys",
+      "double click admits exactly one execution and returns its identity twice",
+      "lost HTTP response retry recovers admitted work without consuming another challenge",
+      "another device discovers the existing execution after distinct-request conflict",
+      "one atomic confirmation freezes origin, exact approval hash and stable step identity",
+      "grant and typed job refer only to confirmed identity without provider credentials",
+      "human admission commits exactly one execution event without model run or challenge material",
+      "execution event dedup preserves exact target payload and scope while rejecting approval material",
+      "shared journal reserves four terminal slots and rolls back allocation with failed transaction",
+      "confirmed proposal retains exact content and exposes its admitted execution",
+      "reopening the chat observes the admitted execution without resubmitting confirmation",
+      "current-authority operation observation reports queued work without fictional business success",
+      "request identity cannot be rebound to another hash or proposal",
+      "challenge confirmation retry and inspection never renew owner-message retention",
+      "simultaneous different device requests admit one origin and reject the competitor",
+      "old revision and token cannot approve changed content",
+      "expired challenge cannot create execution",
+      "revoked destination module denies fresh admission and prior-result replay immediately",
+      "session revocation blocks result recovery while another current session retains observation",
+      "changed native precondition rejects admission without recomputing approved content",
+      "real per-owner waiting admission limit rejects excess work without consuming approval",
+      "outbox failure rolls back execution steps grant job challenge consumption and proposal state",
+      "same exact user approval remains usable after transactional rollback",
+      "SQL cannot rewrite approval identity, per-step identity or omit execution grant hash",
+      "SQL cannot append a step from another proposal to the confirmed operation",
+      "expired unstarted execution is purged with its challenge grant job steps and events",
+      "all admission and observation cases leave the business sentinel untouched and call no provider"
+    ]
+  },
+  "verification_log": {
+    "path": ".tmp/ai26-sql-regression-18.log",
+    "sha256": "5b0337fbf4f699cb91653b9b829a9ca63ddeb048c868ee89d51410f32f73cb49"
+  }
+}

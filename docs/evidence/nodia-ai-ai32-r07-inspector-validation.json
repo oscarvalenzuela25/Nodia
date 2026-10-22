@@ -1,0 +1,88 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "offline_owned_inspector_child_lifecycle",
+  "status": "passed",
+  "documentary_approval": false,
+  "production_code_changed": false,
+  "provider_generations": 0,
+  "r2_operations": 0,
+  "services_restarted": false,
+  "sources": [
+    {
+      "path": "nodia-gemini-microservice/tests/test_attachment_inspector_process.py",
+      "sha256": "5d9c25024eb05b6af92125c3ccaf0c3a49c03b8f0d3101b8ee9ce1bd56165970",
+      "role": "four_new_lifecycle_tests"
+    },
+    {
+      "path": "nodia-gemini-microservice/attachment_inspector.py",
+      "sha256": "6b8723a2a91b196dfa83e90a7016b59bd0387e123b78453e7b973f6aa8621da2",
+      "role": "unchanged_production_receive_decode"
+    }
+  ],
+  "verified": [
+    "nonzero_child_exit_rejected_without_metadata",
+    "parser_timeout_kills_and_waits_owned_child",
+    "cancellation_during_communicate_propagates_after_cleanup",
+    "cancellation_during_spawn_retains_child_handle_until_cleanup",
+    "temporary_input_directory_empty_after_every_case",
+    "both_admission_permits_reusable_after_every_case"
+  ],
+  "windows": {
+    "focal": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "log": {
+        "path": ".tmp/ai32-r07-inspector-windows-attempt01.log",
+        "sha256": "d0c2c966b56318ce62027e56eb28a2807ed857ef614db00cbcd998b92a893a3e"
+      }
+    },
+    "full_suite": {
+      "runner": "nodia-gemini-microservice/run_tests.py",
+      "total": 389,
+      "passed": 387,
+      "skipped": 2,
+      "failed": 0,
+      "log": {
+        "path": ".tmp/ai32-r07-python-windows-full.log",
+        "sha256": "ddc7fede748b7bc3b6096fbf1747e12e7508bfdf8cb5a1456db465444c5f1b34"
+      }
+    }
+  },
+  "linux": {
+    "focal": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "log": {
+        "path": ".tmp/ai32-r07-inspector-linux.log",
+        "sha256": "527cbda417c44d8814d9292f6351a33a4a1f70b8cc2373f340d1bc1326430928"
+      }
+    },
+    "receipt": {
+      "path": ".tmp/ai32-r07-inspector-linux.json",
+      "sha256": "62cfbaca64065671a3c0a538f373933f737ebe393dc64a28df5e0dc53fc6dd62"
+    },
+    "image": "sha256:212cffaeefdd5e93f1abae290c4f387a891ddbd65357c223c6f0a3c0224488f3",
+    "temporary_container": true,
+    "network": "none",
+    "root_filesystem_read_only": true,
+    "test_readonly_bind_mount": true,
+    "production_container_modified": false
+  },
+  "fixture": {
+    "child_processes": "real_isolated_synthetic_python_processes",
+    "content_decoder_replaced_at_spawn_boundary": true,
+    "production_parser_deadline_seconds_observed": 15,
+    "test_only_parser_deadline_seconds": 0.05,
+    "module_platform_guard_replaced_only_inside_fixture": true,
+    "uses_actual_receive_and_decode_lifecycle": true
+  },
+  "limitations": [
+    "These lifecycle fixtures do not assert content decoding or Linux seccomp; the synthetic child replaces that subprocess boundary.",
+    "The 15-second parser deadline is compressed to 0.05 seconds only inside the test; no production deadline changed.",
+    "Windows evidence does not establish Linux parser isolation; Linux focal execution separately exercises child lifecycle in a temporary network-disabled container.",
+    "The full offline suite uses repository test doubles for browser/provider dependencies, without operational sessions or inference.",
+    "No new product/documentary acceptance, MCP publication, scheduler SLA or retention wall-clock wait is established."
+  ]
+}

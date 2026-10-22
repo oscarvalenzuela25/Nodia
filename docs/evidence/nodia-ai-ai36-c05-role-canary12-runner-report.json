@@ -1,0 +1,31 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "GO12_new_owned_role_one_native_MCP_canary",
+  "status": "failed",
+  "started_at_utc": "2026-10-19T19:10:56.327539+00:00",
+  "maximum_native_start_requests": 1,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "runner_source_sha256": "2e805e3e0f1f3c907d0b0214fd9ef83305c35a6f39e8bf65eaa667085c1aecaf",
+  "wrapper_source_sha256": "191877d0165c0bf4577eb836dc510b16db8d6e83a8abd5cf4dcc9b3299d38046",
+  "original_AI15_source_sha256": "604563be962df59a4b4431ad5efb2bf590b67a133a748a0d748cc90cd79ae49c",
+  "Node_operational_files_modified": 0,
+  "activation_semantic_postverification": {
+    "environment_names_unique": true,
+    "environment_values_unchanged": true,
+    "mounts_unchanged": true,
+    "resources_and_security_unchanged": true,
+    "candidate_container_id": "d7b4510ebe06564004959a6d1fe3ff393d42bc707fbe62818e2f180a7563a7b2",
+    "started_at_utc": "2026-10-19T19:09:25.005035665Z",
+    "healthy": true
+  },
+  "preflight_High_available_MCP_false": true,
+  "policy_sha256": "e62d03c83e5aadd062b697a9da44183efb638d9a41b7ae3f71b213c76a5dc469",
+  "binding_sha256": "f3052f3aace4442f18e3929d02e873d9a540684be43be238ae2a3ef07a16896b",
+  "canary_command_started_at_utc": "2026-10-19T19:11:09.828631+00:00",
+  "canary_exit_code": 1,
+  "accepted_native_starts": 1,
+  "canary_status": "failed",
+  "canary_report_sha256": "012e8dd8f313fdb45bfdb2e4aa6aa97ab0f943468b6c131bbc2e7287a3673983",
+  "finished_at_utc": "2026-10-19T19:11:17.117110+00:00"
+}

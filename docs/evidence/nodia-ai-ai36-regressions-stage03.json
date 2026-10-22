@@ -1,0 +1,43 @@
+{
+  "stage": "AI-36",
+  "scope": "disposable_sql_stage_setup",
+  "status": "passed",
+  "attempt": "attempt03",
+  "compiled_files_verified": 2730,
+  "manifest_sha256": "e1ec9983373ed8fbba9efa776b06dd2b6ec700a66114380acec4bdffa863277a",
+  "archive_sha256": "a3564e4afdcfaeea4b9cc0dd06a40f078c878a8b950977592ef32190302e4e8d",
+  "test_sha256": "d996954b7eb1c2de6aad8f76754b0e4d9c64c9ea1306fa8946bb762ee29388ea",
+  "dependency_versions": {
+    "@nestjs/common": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1"
+    },
+    "@nestjs/core": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1"
+    },
+    "@nestjs/testing": {
+      "staging": "12.0.1",
+      "activated_runtime": null
+    },
+    "@nestjs/typeorm": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1"
+    },
+    "typeorm": {
+      "staging": "1.1.1",
+      "activated_runtime": "1.1.1"
+    },
+    "pg": {
+      "staging": "8.23.0",
+      "activated_runtime": "8.23.0"
+    },
+    "@aws-sdk/client-s3": {
+      "staging": "3.1136.0",
+      "activated_runtime": "3.1136.0"
+    }
+  },
+  "configured_database_used": false,
+  "production_deployed": false,
+  "services_restarted": false
+}

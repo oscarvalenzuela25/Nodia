@@ -1,0 +1,13 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "scoped_compiled_storage_single_attempt_activation",
+  "status": "failed",
+  "observed_at_utc": "2026-10-18T16:27:05Z",
+  "provider_generations": 0,
+  "r2_object_operations": 0,
+  "configuration_modified": false,
+  "schema_modified": false,
+  "gemini_restarted": false,
+  "safe_failure_phase": "preflight",
+  "completed_at_utc": "2026-10-18T16:27:06Z"
+}

@@ -1,0 +1,16 @@
+La cohorte Agentic de la VM Linux local pasó los cuatro controles de formato el 20 de octubre de 2026, entre las 19:50:12 y las 19:53:19 UTC del entorno. Se usó la selección persistida de la conexión 2, modo `token_plan_agentic`, modelo `gemini-3.8-flash-high` e intensidad `high`, sin modificarla ni aplicar fallback.
+
+| Formato | MIME exacto | Resultado semántico | Cierre nativo |
+| --- | --- | --- | --- |
+| PNG | `image/png` | Literal leído coincide con su hash esperado | `completed`, ACK, sin identidad pendiente |
+| PDF | `application/pdf` | Literal leído coincide con su hash esperado | `completed`, ACK, sin identidad pendiente |
+| WAV | `audio/wav` | Transcripción coincide tras `speech_words_v1` | `completed`, ACK, sin identidad pendiente |
+| WebM Opus | `audio/webm` | Transcripción coincide tras `speech_words_v1` | `completed`, ACK, sin identidad pendiente |
+
+Cada formato hizo un único POST de prueba y una generación, en serie, con plazo nativo de 120 segundos; no hubo retry ni replay. La observación posterior verificó el MIME correspondiente. Los cuatro controles conservaron selección, generación de configuración, sesión, recurso actual y época Docker del canario MCP inicial. No se afirma una comparación histórica del recurso: el informe inicial del canario no lo exportaba. Las consultas de configuración exigieron transacciones de sólo lectura y ausencia de jobs, intentos o slots activos; los probes no solicitaron efectos de negocio.
+
+El audio es TTS sintético con la frase «The blue train arrived early today». WAV y WebM reutilizan exactamente los bytes fijados en la [evidencia de conversión y decodificación](nodia-ai-ai38-synthetic-speech-webm.json). Esta cohorte verifica las rutas nativas autenticadas de prueba de adjuntos; el recorrido de UI, worker, R2 y micrófono físico tiene su propia aceptación. Tampoco adopta el candidato Node/Client ni cierra por sí sola AI-38.
+
+La primera [cohorte de bootstrap](nodia-ai-ai38-modalities-agentic-cohort-01.json) se conserva sin modificar: falló antes de cualquier probe porque el transporte capturaba la configuración de entorno al importar el módulo. Se corrigió el orden únicamente en el arnés. La [regresión offline](nodia-ai-ai38-modalities-bootstrap-qa.json), usando los módulos compilados reales y un fetch sintético, reproduce `adapter_unconfigured` con cero fetch antes del cambio, y éxito con un fetch sintético después. No accedió a BD ni proveedor. Ese fallo de bootstrap no se atribuye a Gemini y esta corrección no demuestra una causa de los timeouts anteriores.
+
+Los seis informes públicos se copiaron byte por byte desde la VM; el [recibo local](nodia-ai-ai38-modalities-agentic-receipt.json) valida sus hashes, los pins de ambos scripts y doce controles de consistencia. Se conservaron el [informe de cohorte completo](nodia-ai-ai38-modalities-agentic-cohort-02.json) y los informes individuales de [PNG](nodia-ai-ai38-modalities-agentic-png-01.json), [PDF](nodia-ai-ai38-modalities-agentic-pdf-01.json), [WAV](nodia-ai-ai38-modalities-agentic-wav-01.json) y [WebM](nodia-ai-ai38-modalities-agentic-webm-01.json). Ningún informe exporta la salida textual del proveedor, credenciales ni los archivos originales.

@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { validateRentalDto } from '../../rental-common/rental-validation.js';
@@ -11,13 +12,13 @@ export class PreviewRentalCancellationUseCase {
     private readonly reservations: RentalReservationService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: PreviewRentalCancellationDto,
   ) {
     const dto = await validateRentalDto(PreviewRentalCancellationDto, input);
-    return this.transactions.read(actorId, propertyId, async (ctx) =>
+    return this.transactions.read(actor, propertyId, async (ctx) =>
       cancellationCalculation(
         ctx,
         await this.reservations.find(ctx.manager, propertyId, id),

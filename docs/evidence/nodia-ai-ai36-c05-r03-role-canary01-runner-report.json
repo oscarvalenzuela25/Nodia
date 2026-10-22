@@ -1,0 +1,38 @@
+{
+  "stage": "AI-36-C05-R03",
+  "scope": "frozen_owned_role_candidate_one_original_MCP_canary",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T20:30:53.573029+00:00",
+  "maximum_native_start_requests": 1,
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "Node_deployed": false,
+  "source_sha256": "bbbe7b54fa306bedcebec64263c032c5670f9069f6ca77341d2d85c6a45a8e19",
+  "automatic_inference_retries": 0,
+  "candidate_activated": true,
+  "epoch": {
+    "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T20:30:54.592504609Z"
+  },
+  "historical_baseline_scope": "selection_and_configuration_anchor_only_not_current_availability_or_MCP_proof",
+  "selection_binding_sha256": "b86cdf1b84c05f5b7e536723882b4a8c5bdde7e9af112e8bbfe2604b0cf97a7f",
+  "compiled_files_verified": 2803,
+  "compiled_manifest_sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a",
+  "canary_command_started_at_utc": "2026-10-19T20:31:25.797425+00:00",
+  "canary_status": "passed",
+  "canary_exit_code": 0,
+  "canary_report_sha256": "4e28fd66cf48f15cfa95666dc31147239b8aef6dff6615ad4de5518783101c93",
+  "native_start_or_restore_exit_code": 0,
+  "API_worker_restore_exit_code": 0,
+  "service_states_after": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "finished_at_utc": "2026-10-19T20:32:11.813220+00:00"
+}

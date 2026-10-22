@@ -1,3 +1,5 @@
+import { actorReference } from '../authorization/authority-transaction.js';
+import { FinanceOwnerQueryDto } from '../finance-common/dto/finance-owner-query.dto.js';
 import { DeleteFinanceCategoryUseCase } from './use-case/delete-finance-category.use-case.js';
 import {
   Body,
@@ -69,21 +71,38 @@ export class FinanceCategoryController {
   @ApiOperation({ summary: 'List personal categories with bounded pagination' })
   @ApiOkResponse({ schema: FINANCE_CATEGORY_PAGE_SCHEMA })
   findAll(@Req() request: AuthRequest, @Query() query: FinanceQueryDto) {
-    return this.list.execute(request.auth.user.id, query);
+    return this.list.execute(
+      { ...actorReference(request.auth), ownerId: query.owner_id },
+      query,
+    );
   }
   @Get(':id')
   @ApiOperation({
     summary: 'Get an owned category, including archived selections',
   })
   @ApiOkResponse({ schema: FINANCE_CATEGORY_SCHEMA })
-  findOne(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.detail.execute(request.auth.user.id, params.id);
+  findOne(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.detail.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
   @Post()
   @ApiOperation({ summary: 'Create a personal category' })
   @ApiCreatedResponse({ schema: FINANCE_CATEGORY_SCHEMA })
-  create(@Req() request: AuthRequest, @Body() dto: CreateFinanceCategoryDto) {
-    return this.createCategory.execute(request.auth.user.id, dto);
+  create(
+    @Req() request: AuthRequest,
+    @Body() dto: CreateFinanceCategoryDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.createCategory.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      dto,
+    );
   }
   @Put(':id')
   @ApiOperation({ summary: 'Update or archive a personal category' })
@@ -92,8 +111,13 @@ export class FinanceCategoryController {
     @Req() request: AuthRequest,
     @Param() params: FinanceIdDto,
     @Body() dto: UpdateFinanceCategoryDto,
+    @Query() owner: FinanceOwnerQueryDto,
   ) {
-    return this.updateCategory.execute(request.auth.user.id, params.id, dto);
+    return this.updateCategory.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+      dto,
+    );
   }
   @Delete(':id')
   @HttpCode(204)
@@ -102,7 +126,14 @@ export class FinanceCategoryController {
       'Delete an owned personal finance record with association safeguards',
   })
   @ApiNoContentResponse({ description: 'Record deleted atomically.' })
-  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.deleteCategory.execute(request.auth.user.id, params.id);
+  remove(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.deleteCategory.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
 }

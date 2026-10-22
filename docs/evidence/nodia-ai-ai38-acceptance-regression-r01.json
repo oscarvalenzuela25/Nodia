@@ -1,0 +1,98 @@
+{
+  "stage": "AI-38",
+  "status": "failed",
+  "scope": "current_compiled_cross_product_and_long_context_regression",
+  "context": {
+    "environment_id": "ai38-isolated-ui-api-sql",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "checked_at_vm_utc": "2026-10-20T16:58:53.579996+00:00",
+  "fixture_hashes": {
+    "test/nodia-ai.integration.fixture.mjs": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+    "test/nodia-ai-unpublished.fixture.mjs": "6fc71fca386f7e0f2f6247c22f622e189c0ca8cef98cce3a847726780afd8e84",
+    "test/nodia-ai-ai34.integration.mjs": "565078e152ab0cc51723095fb4e2e95a827c7f0fffe5d0e522be8ec9425dc992",
+    "test/nodia-ai-ai36.integration.mjs": "9aca7b664772eea55031302f7d1cd3f37dbc950d9a2ccc3c1064e69522bc7bf6"
+  },
+  "external_schema_fixture": {
+    "path": "nodia-server/scripts/nodia-ai-knowledge/contracts.schema.json",
+    "sha256": "d9045282b8ffaa175fee7ea2eca8cb810ca20de216246a62456bd62062a146fd",
+    "copied_outside_packet": true
+  },
+  "results": [
+    {
+      "stage": "ai36",
+      "exit_code": 0,
+      "elapsed_seconds": 13.275,
+      "report": {
+        "stage": "AI-36",
+        "scope": "compiled_cross_product_http_sql",
+        "status": "passed",
+        "checks": 24,
+        "results": [
+          "clean PostgreSQL16 installation applies all 29 migrations and the measured text search index",
+          "missing native financial fields produce clarification without any domain effect",
+          "one cross-product preview gathers three native contracts without creating any business record",
+          "wrong preview hash and both unrelated and omniscient actors cannot confirm the owner intention",
+          "a stale editor receives CAS conflict without silently replacing the accepted cross-product preview",
+          "editing the financial amount invalidates the old exact human challenge across the full workflow",
+          "duplicate confirmation admits exactly one durable execution and no inline domain effects",
+          "first native transaction commits only the revised finance amount and its receipt",
+          "remaining sequential native effects commit one supplier and one rental expense with separate receipts",
+          "stale original lease and recovery cannot repeat any completed effect or rewrite receipts",
+          "module revocation between products stops the suffix and preserves the already committed expense",
+          "revoked module blocks preview and recovery over HTTP rather than exposing retained commands",
+          "restoring module assignment exposes the exact partial execution without automatic dispatch",
+          "explicit idempotent recovery completes only the pending products and preserves the first financial receipt",
+          "human cancellation after the first effect keeps finance and cancels both other products without compensation",
+          "lost COMMIT response leaves a native atomic receipt and a recoverable exact suffix without another financial expense",
+          "lost acknowledgement reconciliation finishes one effect per product without repeating finance",
+          "cross-product report reads the actual committed effects including cancelled suffix finance and excludes unexecuted rental effects",
+          "cross-product report preserves independent temporal bases and provenance without inventing a joint total or currency",
+          "report module revocation never exposes the property source while preserving explicitly partial compatible sources",
+          "synthetic incompatible next-release registration rejects a ready persisted preview through the real compiled admission rule",
+          "evaluating incompatible admission metadata does not rewrite historical receipts or replay completed native effects",
+          "chat retention removes completed multi-product commands and journals while preserving every native business record",
+          "integration completes without provider inference storage access or native service restart"
+        ],
+        "elapsed_ms": 9789,
+        "migrations": 29,
+        "http_requests": 31,
+        "provider_calls": 0,
+        "configured_database_used": false,
+        "actual_provider": false,
+        "storage_operations": 0,
+        "synthetic_authenticated_transport": true,
+        "synthetic_next_release_admission_metadata": true,
+        "hot_reload_verified": false,
+        "native_authorization_and_domain_effects": true,
+        "mcp_publication": false
+      },
+      "stdout_sha256": "349b6e6678b9f1ed4dee9e632a03e6d024ede0cd5abc5ddef613993ed4f1dde7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "owned_containers_after": []
+    },
+    {
+      "stage": "ai34",
+      "exit_code": 1,
+      "elapsed_seconds": 8.855,
+      "report": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5627dbd5e84737ad37fad3b27a84e2ffd5face40b7725c76a4b7fa955ee801dc",
+      "owned_containers_after": []
+    }
+  ],
+  "packet_files_unchanged": true,
+  "containers_after": [],
+  "boundaries": {
+    "current_real_compiled_use_cases": true,
+    "postgresql_disposable": true,
+    "synthetic_auth_and_redis": true,
+    "synthetic_context_adapter": true,
+    "synthetic_next_release_registration": true,
+    "real_provider_calls": 0,
+    "configured_database_used": false,
+    "storage_operations": 0,
+    "hot_reload_or_new_product_publication_verified": false,
+    "operational_deployment": false
+  }
+}

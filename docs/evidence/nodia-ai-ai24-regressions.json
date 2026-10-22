@@ -1,0 +1,125 @@
+{
+  "stage": "AI-24",
+  "status": "passed",
+  "checks": 191,
+  "native_http_requests": 282,
+  "compiled_production_archive_sha256": "39c24c9cd61ac4ea378df1e36d08fa5e0cafd78bb59b8e4400317b8ce6183427",
+  "scope": "Combined summary of five compiled PostgreSQL/HTTP/process regression runs on synthetic disposable databases. No configured database, provider inference or Gemini acceptance.",
+  "provenance": "Each evidence file records the tested production archive, exact test and fixture input hashes, command, zero exit status and completed checks. The later release archive 1cc2a0ea6b5499b8588e87ff423669763e674dded1459a0837e33f4d9c4a9b1d was activated by root; these runs identify archive 39c24 explicitly and do not independently assert final release parity.",
+  "regressions": [
+    {
+      "stage": "AI-23",
+      "status": "passed",
+      "checks": 47,
+      "path": "docs/evidence/nodia-ai-ai24-ai23-regression.json",
+      "sha256": "7615b55bf272976cad03c917b5d3a17641ba3297ec2efa464e5c5ea1cc7c1590",
+      "compiled_production_archive_sha256": "39c24c9cd61ac4ea378df1e36d08fa5e0cafd78bb59b8e4400317b8ce6183427",
+      "command": "node test/nodia-ai-ai23.integration.mjs",
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai23.integration.mjs",
+          "sha256": "bc9c3eea009703b99698f83369c70aff5b705d5661ef0aae6cda24c10fbf8ad8"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai23-worker.fixture.mjs",
+          "sha256": "414944cb013baa7fec1a7ef8030f8c4c69434603b4ddefefe7e05d885d4e06ab"
+        }
+      ]
+    },
+    {
+      "stage": "AI-22",
+      "status": "passed",
+      "checks": 57,
+      "path": "docs/evidence/nodia-ai-ai24-ai22-regression.json",
+      "sha256": "add0e1d323dd6867f2244bd00f0092478484339a1177693ccceb18fc0627de7d",
+      "compiled_production_archive_sha256": "39c24c9cd61ac4ea378df1e36d08fa5e0cafd78bb59b8e4400317b8ce6183427",
+      "command": "node test/nodia-ai-ai22.integration.mjs",
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai22.integration.mjs",
+          "sha256": "3f88592bf192159396c71235864df4cb14c6fe7f13c8e98db987d444cf2f3b53"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai22-worker.fixture.mjs",
+          "sha256": "e3361d6ddcdcae514a106ab12f2f173525b262988ce7f5f4d1742afbdf17986e"
+        }
+      ]
+    },
+    {
+      "stage": "AI-20",
+      "status": "passed",
+      "checks": 36,
+      "path": "docs/evidence/nodia-ai-ai24-ai20-regression.json",
+      "sha256": "71aedb01a201d1811db1ee26cd5a96ae1f8c53092956b68474fea29267a7762e",
+      "compiled_production_archive_sha256": "39c24c9cd61ac4ea378df1e36d08fa5e0cafd78bb59b8e4400317b8ce6183427",
+      "command": "node test/nodia-ai-ai20.integration.mjs",
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai20.integration.mjs",
+          "sha256": "2d03a0ccf8ebc71b3e3da57812d0383b2208151ae6197a079c6fb500ad6e6917"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai20-worker.fixture.mjs",
+          "sha256": "4b444df8cef0d3bc1001f08bf174550dad6ffa4ba82c57370f327fd46be13c2a"
+        }
+      ]
+    },
+    {
+      "stage": "AI-18",
+      "status": "passed",
+      "checks": 37,
+      "path": "docs/evidence/nodia-ai-ai24-ai18-regression.json",
+      "sha256": "795ee15e268d8394c2d6c7a6523a4098d4d44c185957750875a2d3129280cb2c",
+      "compiled_production_archive_sha256": "39c24c9cd61ac4ea378df1e36d08fa5e0cafd78bb59b8e4400317b8ce6183427",
+      "command": "node test/nodia-ai-ai18.integration.mjs",
+      "inputs": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai18.integration.mjs",
+          "sha256": "27f9568d0612dc208af2769f275a80027c0a2da3ba7589aea6d8e77e865c8ee1"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+          "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+        }
+      ]
+    },
+    {
+      "stage": "Rental native",
+      "status": "passed",
+      "checks": 14,
+      "path": "docs/evidence/nodia-ai-ai24-rental-regression.json",
+      "sha256": "74ab12ba3140d23ee2216755e0d2138a951db5fc201d34d0c7f940e0c3ba94cf",
+      "compiled_production_archive_sha256": "39c24c9cd61ac4ea378df1e36d08fa5e0cafd78bb59b8e4400317b8ce6183427",
+      "command": "DOTENV_CONFIG_PATH=/dev/null node test/rental.integration.mjs",
+      "inputs": [
+        {
+          "path": "nodia-server/test/rental.integration.mjs",
+          "sha256": "53d2879819bdfac1515dcbe62de0406776624d8cff755d28b14e5d8fe98289fb"
+        },
+        {
+          "path": "nodia-server/test/fixtures/authority.integration.mjs",
+          "sha256": "4fdcb9fb81ab5a0994e18f6b94c5d6a4e17f049d339755b48825341635f12b27"
+        },
+        {
+          "path": "docs/mvp/28-rental-reservations-contracts.md",
+          "sha256": "9b9b4b387fd595f9f234240ca01cd4230124a499c0dd7637e099f70a18989bbf"
+        }
+      ],
+      "native_http_requests": 282
+    }
+  ],
+  "disposable_containers_removed": true,
+  "operational_services_untouched": true
+}

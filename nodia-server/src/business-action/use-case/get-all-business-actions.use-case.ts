@@ -1,3 +1,4 @@
+import type { EntityManager } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { GetBusinessActionsDto } from '../dto/get-business-actions.dto.js';
 import { BusinessActionService } from '../business-action.service.js';
@@ -6,7 +7,9 @@ import { BusinessActionService } from '../business-action.service.js';
 export class GetAllBusinessActionsUseCase {
   constructor(private readonly businessActionService: BusinessActionService) {}
 
-  async execute(queryParams: GetBusinessActionsDto) {
-    return this.businessActionService.findAll(queryParams);
+  async execute(queryParams: GetBusinessActionsDto, manager?: EntityManager) {
+    return manager
+      ? this.businessActionService.findAll(queryParams, manager)
+      : this.businessActionService.findAll(queryParams);
   }
 }

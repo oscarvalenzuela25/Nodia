@@ -1,3 +1,5 @@
+import { actorReference } from '../authorization/authority-transaction.js';
+import { FinanceOwnerQueryDto } from '../finance-common/dto/finance-owner-query.dto.js';
 import { DeleteFinanceCategoryGroupUseCase } from './use-case/delete-finance-category-group.use-case.js';
 import {
   Body,
@@ -73,15 +75,25 @@ export class FinanceCategoryGroupController {
   })
   @ApiOkResponse({ schema: FINANCE_CATEGORY_GROUP_PAGE_SCHEMA })
   findAll(@Req() request: AuthRequest, @Query() query: FinanceQueryDto) {
-    return this.list.execute(request.auth.user.id, query);
+    return this.list.execute(
+      { ...actorReference(request.auth), ownerId: query.owner_id },
+      query,
+    );
   }
   @Get(':id')
   @ApiOperation({
     summary: 'Hydrate a personal category group and historical selections',
   })
   @ApiOkResponse({ schema: FINANCE_CATEGORY_GROUP_DETAIL_SCHEMA })
-  findOne(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.detail.execute(request.auth.user.id, params.id);
+  findOne(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.detail.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
   @Post()
   @ApiOperation({
@@ -91,8 +103,12 @@ export class FinanceCategoryGroupController {
   create(
     @Req() request: AuthRequest,
     @Body() dto: CreateFinanceCategoryGroupDto,
+    @Query() owner: FinanceOwnerQueryDto,
   ) {
-    return this.createGroup.execute(request.auth.user.id, dto);
+    return this.createGroup.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      dto,
+    );
   }
   @Put(':id')
   @ApiOperation({
@@ -104,8 +120,13 @@ export class FinanceCategoryGroupController {
     @Req() request: AuthRequest,
     @Param() params: FinanceIdDto,
     @Body() dto: UpdateFinanceCategoryGroupDto,
+    @Query() owner: FinanceOwnerQueryDto,
   ) {
-    return this.updateGroup.execute(request.auth.user.id, params.id, dto);
+    return this.updateGroup.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+      dto,
+    );
   }
   @Delete(':id')
   @HttpCode(204)
@@ -114,7 +135,14 @@ export class FinanceCategoryGroupController {
       'Delete an owned personal finance record with association safeguards',
   })
   @ApiNoContentResponse({ description: 'Record deleted atomically.' })
-  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.deleteGroup.execute(request.auth.user.id, params.id);
+  remove(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.deleteGroup.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
 }

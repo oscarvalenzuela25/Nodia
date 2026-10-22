@@ -120,6 +120,7 @@
     "export_logs": "Exportación de Datos"
   },
   "routes": {
+    "nodia_ai": "NodiaAI",
     "home": "Inicio",
     "business": "Negocios",
     "users": "Usuarios",
@@ -183,5 +184,6 @@
     "previous": "Página anterior",
     "first": "Primera página",
     "last": "Última página"
-  }
+  },
+  "immutable_key": "El identificador del módulo no se puede modificar."
 }

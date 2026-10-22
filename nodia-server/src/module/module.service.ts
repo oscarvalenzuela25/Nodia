@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Module } from './entities/module.entity.js';
-import { CreateModuleDto } from './dto/create-module.dto.js';
-import { UpdateModuleDto } from './dto/update-module.dto.js';
-import { GetModulesDto } from './dto/get-modules.dto.js';
-import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
-import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
-import { GetModulesResponse } from './types/module.types.js';
-import { TranslationService } from '../translation/translation.service.js';
+import { Repository, type EntityManager } from 'typeorm';
 import { RedisService } from '../common/redis/redis.service.js';
+import {
+  applyRansack,
+  validateRansackEnvelope,
+} from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
+import { TranslationService } from '../translation/translation.service.js';
+import { GetModulesDto } from './dto/get-modules.dto.js';
+import { Module } from './entities/module.entity.js';
+import { GetModulesResponse } from './types/module.types.js';
 
 @Injectable()
 export class ModuleService {
@@ -17,17 +18,16 @@ export class ModuleService {
     @InjectRepository(Module)
     private readonly moduleRepository: Repository<Module>,
     private readonly translationService: TranslationService,
-    private readonly redisService: RedisService,
+    _redisService: RedisService,
   ) {}
 
-  async findAll({
-    page = 1,
-    limit = 10,
-    all = false,
-    includes = true,
-    q,
-  }: GetModulesDto): Promise<GetModulesResponse> {
-    const qb = this.moduleRepository.createQueryBuilder('module');
+  async findAll(
+    { page = 1, limit = 10, all = false, includes = true, q }: GetModulesDto,
+    manager?: EntityManager,
+  ): Promise<GetModulesResponse> {
+    const qb = (
+      manager?.getRepository(Module) ?? this.moduleRepository
+    ).createQueryBuilder('module');
     validateRansackEnvelope(q);
 
     if (includes) {
@@ -35,6 +35,8 @@ export class ModuleService {
     }
 
     applyRansack(qb, q, 'module', RANSACK_POLICIES.module);
+    if (manager && !/^id\s/i.test(String(q?.s ?? '')))
+      qb.addOrderBy('module.id', 'ASC');
 
     const attachGroupTranslations = async (modulesList: any[]) => {
       if (!includes) return;
@@ -45,10 +47,12 @@ export class ModuleService {
         }
       }
       if (groupsMap.size > 0) {
-        const translatedGroups = await this.translationService.attachTranslations(
-          'module_groups',
-          Array.from(groupsMap.values()),
-        );
+        const translatedGroups =
+          await this.translationService.attachTranslations(
+            'module_groups',
+            Array.from(groupsMap.values()),
+            manager,
+          );
         const translatedMap = new Map(
           translatedGroups.map((g) => [String(g.id), g]),
         );
@@ -67,6 +71,7 @@ export class ModuleService {
       const data = await this.translationService.attachTranslations(
         'modules',
         rawData,
+        manager,
       );
       return {
         data: data as any,
@@ -88,6 +93,7 @@ export class ModuleService {
     const data = await this.translationService.attachTranslations(
       'modules',
       rawData,
+      manager,
     );
     const total_pages = Math.ceil(total_items / limit);
 
@@ -102,8 +108,10 @@ export class ModuleService {
     };
   }
 
-  async findOne(id: string): Promise<Module> {
-    const module = await this.moduleRepository.findOne({
+  async findOne(id: string, manager?: EntityManager): Promise<Module> {
+    const module = await (
+      manager?.getRepository(Module) ?? this.moduleRepository
+    ).findOne({
       where: { id },
       relations: {
         module_group: true,
@@ -115,61 +123,18 @@ export class ModuleService {
     }
 
     if (module.module_group) {
-      module.module_group = (await this.translationService.attachTranslationsToOne(
-        'module_groups',
-        module.module_group,
-      )) as any;
+      module.module_group =
+        (await this.translationService.attachTranslationsToOne(
+          'module_groups',
+          module.module_group,
+          manager,
+        )) as any;
     }
 
     return this.translationService.attachTranslationsToOne(
       'modules',
       module,
+      manager,
     ) as any;
   }
-
-  async create(createModuleDto: CreateModuleDto): Promise<Module> {
-    const existing = await this.moduleRepository.findOne({
-      where: { key: createModuleDto.key },
-    });
-    if (existing) {
-      return this.update(existing.id, createModuleDto);
-    }
-
-    const { translates, ...moduleData } = createModuleDto;
-    const module = this.moduleRepository.create(moduleData);
-    const savedModule = await this.moduleRepository.save(module);
-
-    if (translates && translates.length > 0) {
-      await this.translationService.saveTranslations(
-        'modules',
-        savedModule.id,
-        translates,
-      );
-    }
-
-    await this.redisService.delByPattern('auth:context:*');
-
-    return this.findOne(savedModule.id);
-  }
-
-  async update(id: string, updateModuleDto: UpdateModuleDto): Promise<Module> {
-    const module = await this.moduleRepository.findOne({ where: { id } });
-    if (!module) {
-      throw new NotFoundException(`Module with ID "${id}" not found`);
-    }
-
-    const { translates, ...rest } = updateModuleDto;
-    Object.assign(module, rest);
-    await this.moduleRepository.save(module);
-
-    if (translates !== undefined) {
-      await this.translationService.updateTranslations('modules', id, translates);
-    }
-
-    await this.redisService.delByPattern('auth:context:*');
-
-    return this.findOne(id);
-  }
-
 }
-

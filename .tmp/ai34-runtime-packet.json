@@ -1,0 +1,40 @@
+{
+  "stage": "AI-34",
+  "scope": "additive_runtime_packet_preparation",
+  "status": "prepared_not_activated",
+  "compiled_files": 931,
+  "previous_compiled_files": 923,
+  "changed": [
+    "dist/nodia-ai-adapter/nodia-ai-adapter.service.js",
+    "dist/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.js",
+    "dist/nodia-ai-attachment/nodia-ai-attachment.service.js",
+    "dist/nodia-ai-context/config/knowledge-pin.json",
+    "dist/nodia-ai-context/nodia-ai-processing.module.js",
+    "dist/nodia-ai-context/use-case/build-nodia-ai-context.use-case.js",
+    "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js",
+    "dist/nodia-ai-run/entities/nodia-ai-run.entity.js",
+    "dist/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.js",
+    "dist/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.js",
+    "dist/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.js",
+    "dist/nodia-ai/knowledge/manifest.json"
+  ],
+  "added": [
+    "dist/migrations/1793000000000-CreateNodiaAiContextSnapshots.js",
+    "dist/nodia-ai-context-snapshot/entities/nodia-ai-context-snapshot.entity.js",
+    "dist/nodia-ai-context-snapshot/nodia-ai-context-snapshot.module.js",
+    "dist/nodia-ai-context-snapshot/nodia-ai-context-snapshot.service.js",
+    "dist/nodia-ai-context-snapshot/use-case/load-nodia-ai-context-history.use-case.js",
+    "dist/nodia-ai-context/types/nodia-ai-compaction.types.js",
+    "dist/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.js",
+    "dist/nodia-ai-context/use-case/load-nodia-ai-recovery-refs.use-case.js"
+  ],
+  "relative_imports_verified": 3158,
+  "sql_compiled_manifest_sha256": "9e943aedbf8e8527d262564bbad04964b7f3ec201736c1b0043b9c55ebc2ac83",
+  "candidate_manifest_sha256": "5f5f89bb4d8418f422f6fd446f91c838e011e579ccbad4e0f7590b7d41ee7909",
+  "packet_sha256": "973f383956f91dd538043d5e6899f0daf7c60355b9d5fda231a564075233cb61",
+  "test_sha256": "ff1d50cd3cda76e3dd6c373351c34722e2a335e1bc8f4de24abf8a95f819cb02",
+  "production_database_migrated": false,
+  "services_restarted": false,
+  "provider_generations": 0,
+  "storage_operations": 0
+}

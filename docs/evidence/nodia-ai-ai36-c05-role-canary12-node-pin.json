@@ -1,0 +1,11 @@
+{
+  "scope": "post_GO12_readonly_Node_runtime_and_canary_compiled_parity",
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "operational_compiled_files": 932,
+  "operational_manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792",
+  "canary_compiled_files": 2803,
+  "canary_manifest_sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a",
+  "canary_compiled_parity": true,
+  "Node_deployed": false
+}

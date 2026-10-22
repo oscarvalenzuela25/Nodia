@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36",
+  "status": "validation_passed_exit_criteria_open",
+  "audit_and_tests_verified": true,
+  "ai36_complete": false,
+  "product_ready": false,
+  "completion_criterion": "All strict domain MCP contracts and candidate acceptance gates closed; AI-37/38 operational and real-provider gates are independent. Classified NR rows are not full product acceptance.",
+  "current_domain_contract_gaps": 74,
+  "blocked_candidates": 84,
+  "requirements_classified": 34,
+  "new_cross_product_checks": 24,
+  "new_cross_product_http_requests": 31,
+  "evidence": {
+    "capabilities": {
+      "file": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+      "sha256": "5bf6c6d999c3bd3388b45408089f4c3e635dcef4dc3388b47a847fc8153d4616"
+    },
+    "integration": {
+      "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+      "sha256": "ab8702970b13bf01fdfb64f4d1f0e696ae13aad78d7396f3f8d7706e344804c1"
+    },
+    "regressions": {
+      "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+      "sha256": "5974e3efffc8bf5c0014805da27990f2e40e50b2f1ce2b66316821fa531e25e1"
+    },
+    "client": {
+      "file": "docs/evidence/nodia-ai-ai36-client-acceptance.json",
+      "sha256": "b9e36ba9ff4942fc9aa7188e21d3f5ef50e2254a7d05adc426c28a7ab322357e"
+    },
+    "units": {
+      "file": "docs/evidence/nodia-ai-ai36-unit-validation.json",
+      "sha256": "1089dce4c22fcc61d32742972b71f104cbd07c2d6657fe8cf7ab9e42a48f2b3d"
+    },
+    "nativeBudget": {
+      "file": "docs/evidence/nodia-ai-ai36-native-budget-validation.json",
+      "sha256": "7a9efbb8b58f3df7919076efaac07ddccb695dc7100667bd59e40e079b7afbd0"
+    },
+    "integrationStage": {
+      "file": "docs/evidence/nodia-ai-ai36-integration-stage.json",
+      "sha256": "63ca46c40e6dbc5259c134c8dd0dda783b03a09407074d148b5bfc14c9c7e326"
+    },
+    "runtimeParity": {
+      "file": "docs/evidence/nodia-ai-ai36-integration-runtime-parity.json",
+      "sha256": "c5d822205d9a019419c8afb4a8d57808a726ab64656636ff25615997eb8a7fa7"
+    },
+    "catalogDelta": {
+      "file": "docs/evidence/nodia-ai-ai36-catalog-delta.json",
+      "sha256": "d17feb7265b383e4977f57e44cfa73275a4b9413845356f24eeb49f45a812844"
+    },
+    "activation": {
+      "file": "docs/evidence/nodia-ai-ai36-runtime-activation.json",
+      "sha256": "bf77d98cc5cab7a2ad23e55f7d1e01a73379c508ea9b986029cf526d818dac31"
+    },
+    "finalHealth": {
+      "file": "docs/evidence/nodia-ai-ai36-final-health.json",
+      "sha256": "8c18f0880593f2f297ff5857cd39972c20ee6c091b3c0fbe956b87304ff41d17"
+    },
+    "docLinks": {
+      "file": "docs/evidence/nodia-ai-ai36-doc-links.json",
+      "sha256": "5eaa1aa94667d57d64c2188bf0f9e052cde02147e06f0cb3a9e38e8fc6764f9c"
+    },
+    "requirements": {
+      "file": "docs/evidence/nodia-ai-ai36-requirements-matrix.json",
+      "sha256": "f2213f0619c46d3cb05e160ebbf78f031bb46a420784f80ee2dbb246fd212e41"
+    }
+  },
+  "publication_changed": false,
+  "provider_generations": 0,
+  "configured_business_data_changed": false,
+  "limitations": [
+    "Code coverage is not semantic acceptance.",
+    "Current compiled SQL uses synthetic domain records and a provider adapter that rejects generation.",
+    "Missing MCP contracts/bindings remain open work, not implicitly postponed or published.",
+    "NR-33/34 operational and real-provider acceptance retain AI-37/38 scope."
+  ]
+}

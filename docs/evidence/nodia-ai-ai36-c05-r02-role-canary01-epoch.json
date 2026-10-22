@@ -1,0 +1,15 @@
+{
+  "scope": "R02_current_candidate_epoch_after_original_AI15_preflight",
+  "observed_at_utc": "2026-10-19T20:07:00.607880+00:00",
+  "image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+  "container_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+  "started_at_utc": "2026-10-19T20:05:13.415129549Z",
+  "health": "healthy",
+  "historical_baseline_observation_scope": "selection_and_configuration_anchor_only_not_current_availability_or_MCP_proof",
+  "current_availability_source": "original_AI15_preflight_after_candidate_restart",
+  "AI15_preflight_passed": false,
+  "native_start_requests": 0,
+  "accepted_native_starts": 0,
+  "C05_cumulative_native_accepted_starts": 16,
+  "MCP_support_currently_verified": false
+}

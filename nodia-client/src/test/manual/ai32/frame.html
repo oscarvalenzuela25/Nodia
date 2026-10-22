@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI-32 responsive synthetic QA</title>
+<style>body{margin:16px;font:16px/1.5 system-ui;background:#eef0f4}button{min-height:44px;margin:4px}iframe{display:block;height:1050px;border:1px solid #777;background:white}label{margin:8px}h1{font-size:20px}</style></head>
+<body><h1>AI-32 · Synthetic isolated frame</h1><p>Width changes preserve the same attachment and review draft.</p><nav aria-label="Frame width">
+<button>320</button><button>390</button><button>599</button><button>600</button><button>900</button><button>1440</button></nav>
+<p id="metrics" style="overflow-wrap:anywhere;max-width:1000px">Waiting for measured layout…</p><iframe title="AI-32 synthetic report" width="390"></iframe><script>
+const frame=document.querySelector('iframe');frame.src='./index.html'+location.search;
+document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>frame.width=button.textContent));
+window.addEventListener('message',event=>{if(event.origin===location.origin&&event.source===frame.contentWindow&&event.data.kind==='ai32-layout')document.querySelector('#metrics').textContent=event.data.metrics;});
+</script></body></html>
+

@@ -1,0 +1,882 @@
+{
+  "date": "2026-10-15",
+  "kind": "documentation_coverage_not_runtime_registry",
+  "status": "draft_unregistered",
+  "inventory": "docs/mvp/nodia-ai-current-endpoints.json",
+  "catalog": "docs/mvp/nodia-ai-v1-tool-catalog.json",
+  "products": [
+    {
+      "id": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/README.md"
+    },
+    {
+      "id": "personal-finance",
+      "path": "docs/nodia-ai/knowledge/personal-finance/README.md"
+    },
+    {
+      "id": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/README.md"
+    },
+    {
+      "id": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/README.md"
+    }
+  ],
+  "features": [
+    {
+      "id": "businesses.businesses-and-collaborators",
+      "productId": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md"
+    },
+    {
+      "id": "businesses.suppliers",
+      "productId": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/features/suppliers.md"
+    },
+    {
+      "id": "businesses.supplier-contacts",
+      "productId": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md"
+    },
+    {
+      "id": "businesses.products",
+      "productId": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/features/products.md"
+    },
+    {
+      "id": "businesses.product-logs",
+      "productId": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/features/product-logs.md"
+    },
+    {
+      "id": "businesses.invoices-and-files",
+      "productId": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md"
+    },
+    {
+      "id": "businesses.invoice-analysis",
+      "productId": "businesses",
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md"
+    },
+    {
+      "id": "personal-finance.movements",
+      "productId": "personal-finance",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/movements.md"
+    },
+    {
+      "id": "personal-finance.categories-and-groups",
+      "productId": "personal-finance",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md"
+    },
+    {
+      "id": "personal-finance.obligations",
+      "productId": "personal-finance",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md"
+    },
+    {
+      "id": "personal-finance.summaries",
+      "productId": "personal-finance",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md"
+    },
+    {
+      "id": "reservations.properties-and-collaborators",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md"
+    },
+    {
+      "id": "reservations.cancellation-policies",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md"
+    },
+    {
+      "id": "reservations.reservations",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/reservations.md"
+    },
+    {
+      "id": "reservations.availability-and-calendar",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md"
+    },
+    {
+      "id": "reservations.payments-and-refunds",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md"
+    },
+    {
+      "id": "reservations.expenses",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/expenses.md"
+    },
+    {
+      "id": "reservations.blocks",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/blocks.md"
+    },
+    {
+      "id": "reservations.preparation",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/preparation.md"
+    },
+    {
+      "id": "reservations.audit-and-recovery",
+      "productId": "reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md"
+    },
+    {
+      "id": "general-settings.users",
+      "productId": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/users.md"
+    },
+    {
+      "id": "general-settings.roles",
+      "productId": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/roles.md"
+    },
+    {
+      "id": "general-settings.actions-and-business-actions",
+      "productId": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md"
+    },
+    {
+      "id": "general-settings.modules-and-groups",
+      "productId": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md"
+    },
+    {
+      "id": "general-settings.ai-connections",
+      "productId": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md"
+    },
+    {
+      "id": "general-settings.ai-models-and-health",
+      "productId": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md"
+    },
+    {
+      "id": "general-settings.ai-credentials-and-sessions",
+      "productId": "general-settings",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md"
+    }
+  ],
+  "handlers": [
+    {
+      "operationId": "ActionController.create",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "ActionController.findAll",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "ActionController.findOne",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "ActionController.update",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "ActionController.updatePatch",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "ActionController.remove",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "AiApiKeyController.findAll",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiApiKeyController.create",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiApiKeyController.update",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiApiKeyController.remove",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderEventController.findAll",
+      "featureId": "general-settings.ai-models-and-health"
+    },
+    {
+      "operationId": "AiProviderController.getCodexSession",
+      "featureId": "general-settings.ai-models-and-health"
+    },
+    {
+      "operationId": "AiProviderController.startCodexLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.currentCodexLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.codexLoginStatus",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.cancelCodexLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.logoutCodex",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.getGeminiEngines",
+      "featureId": "general-settings.ai-models-and-health"
+    },
+    {
+      "operationId": "AiProviderController.startGeminiLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.disconnectGeminiWeb",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.startGeminiAgenticLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.currentGeminiAgenticLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.getGeminiAgenticLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.submitGeminiAgenticCode",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.cancelGeminiAgenticLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.getGeminiLoginStatus",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.cancelGeminiLogin",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.getGeminiLoginFrame",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.sendGeminiLoginInput",
+      "featureId": "general-settings.ai-credentials-and-sessions"
+    },
+    {
+      "operationId": "AiProviderController.getCatalog",
+      "featureId": "general-settings.ai-connections"
+    },
+    {
+      "operationId": "AiProviderController.createCatalog",
+      "featureId": "general-settings.ai-connections"
+    },
+    {
+      "operationId": "AiProviderController.updateCatalog",
+      "featureId": "general-settings.ai-connections"
+    },
+    {
+      "operationId": "AiProviderController.getSupportedProviders",
+      "featureId": "general-settings.ai-connections"
+    },
+    {
+      "operationId": "AiProviderController.getHealth",
+      "featureId": "general-settings.ai-models-and-health"
+    },
+    {
+      "operationId": "AiProviderController.getSelectableModels",
+      "featureId": "general-settings.ai-models-and-health"
+    },
+    {
+      "operationId": "AiProviderController.findAll",
+      "featureId": "general-settings.ai-connections"
+    },
+    {
+      "operationId": "AiProviderController.create",
+      "featureId": "general-settings.ai-connections"
+    },
+    {
+      "operationId": "AiProviderController.syncModels",
+      "featureId": "general-settings.ai-models-and-health"
+    },
+    {
+      "operationId": "AiProviderController.update",
+      "featureId": "general-settings.ai-connections"
+    },
+    {
+      "operationId": "AppController.getHelloWorld",
+      "featureId": null
+    },
+    {
+      "operationId": "AuthController.signIn",
+      "featureId": "general-settings.users"
+    },
+    {
+      "operationId": "AuthController.renew",
+      "featureId": "general-settings.users"
+    },
+    {
+      "operationId": "AuthController.signOut",
+      "featureId": "general-settings.users"
+    },
+    {
+      "operationId": "AuthController.me",
+      "featureId": "general-settings.users"
+    },
+    {
+      "operationId": "AuthController.seed",
+      "featureId": null
+    },
+    {
+      "operationId": "AuthorizationController.getContext",
+      "featureId": "general-settings.users"
+    },
+    {
+      "operationId": "BusinessActionController.create",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "BusinessActionController.findAll",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "BusinessActionController.findOne",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "BusinessActionController.update",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "BusinessActionController.remove",
+      "featureId": "general-settings.actions-and-business-actions"
+    },
+    {
+      "operationId": "BusinessController.findMyBusinesses",
+      "featureId": "businesses.businesses-and-collaborators"
+    },
+    {
+      "operationId": "BusinessController.findOne",
+      "featureId": "businesses.businesses-and-collaborators"
+    },
+    {
+      "operationId": "BusinessController.create",
+      "featureId": "businesses.businesses-and-collaborators"
+    },
+    {
+      "operationId": "BusinessController.update",
+      "featureId": "businesses.businesses-and-collaborators"
+    },
+    {
+      "operationId": "BusinessController.assignCollaborators",
+      "featureId": "businesses.businesses-and-collaborators"
+    },
+    {
+      "operationId": "FinanceCategoryGroupController.findAll",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryGroupController.findOne",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryGroupController.create",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryGroupController.update",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryGroupController.remove",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryController.findAll",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryController.findOne",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryController.create",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryController.update",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceCategoryController.remove",
+      "featureId": "personal-finance.categories-and-groups"
+    },
+    {
+      "operationId": "FinanceMovementController.list",
+      "featureId": "personal-finance.movements"
+    },
+    {
+      "operationId": "FinanceMovementController.findOne",
+      "featureId": "personal-finance.movements"
+    },
+    {
+      "operationId": "FinanceMovementController.create",
+      "featureId": "personal-finance.movements"
+    },
+    {
+      "operationId": "FinanceMovementController.update",
+      "featureId": "personal-finance.movements"
+    },
+    {
+      "operationId": "FinanceMovementController.remove",
+      "featureId": "personal-finance.movements"
+    },
+    {
+      "operationId": "FinanceObligationController.list",
+      "featureId": "personal-finance.obligations"
+    },
+    {
+      "operationId": "FinanceObligationController.findOne",
+      "featureId": "personal-finance.obligations"
+    },
+    {
+      "operationId": "FinanceObligationController.create",
+      "featureId": "personal-finance.obligations"
+    },
+    {
+      "operationId": "FinanceObligationController.update",
+      "featureId": "personal-finance.obligations"
+    },
+    {
+      "operationId": "FinanceObligationController.remove",
+      "featureId": "personal-finance.obligations"
+    },
+    {
+      "operationId": "FinanceOverviewController.overview",
+      "featureId": "personal-finance.summaries"
+    },
+    {
+      "operationId": "FinanceOverviewController.categories",
+      "featureId": "personal-finance.summaries"
+    },
+    {
+      "operationId": "FinanceOverviewController.groups",
+      "featureId": "personal-finance.summaries"
+    },
+    {
+      "operationId": "InvoiceController.findAll",
+      "featureId": "businesses.invoices-and-files"
+    },
+    {
+      "operationId": "InvoiceController.verifyIaProviders",
+      "featureId": "businesses.invoice-analysis"
+    },
+    {
+      "operationId": "InvoiceController.getViewUrl",
+      "featureId": "businesses.invoices-and-files"
+    },
+    {
+      "operationId": "InvoiceController.reserveObservation",
+      "featureId": "businesses.invoice-analysis"
+    },
+    {
+      "operationId": "InvoiceController.readObservation",
+      "featureId": "businesses.invoice-analysis"
+    },
+    {
+      "operationId": "InvoiceController.findOne",
+      "featureId": "businesses.invoices-and-files"
+    },
+    {
+      "operationId": "InvoiceController.analyze",
+      "featureId": "businesses.invoice-analysis"
+    },
+    {
+      "operationId": "InvoiceController.create",
+      "featureId": "businesses.invoices-and-files"
+    },
+    {
+      "operationId": "InvoiceController.update",
+      "featureId": "businesses.invoices-and-files"
+    },
+    {
+      "operationId": "ModuleGroupController.create",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleGroupController.findAll",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleGroupController.update",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleGroupController.remove",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleController.create",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleController.findAll",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleController.findOne",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleController.update",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleController.updatePatch",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ModuleController.remove",
+      "featureId": "general-settings.modules-and-groups"
+    },
+    {
+      "operationId": "ProductLogController.findAll",
+      "featureId": "businesses.product-logs"
+    },
+    {
+      "operationId": "ProductLogController.query",
+      "featureId": "businesses.product-logs"
+    },
+    {
+      "operationId": "ProductLogController.createBulk",
+      "featureId": "businesses.product-logs"
+    },
+    {
+      "operationId": "ProductLogController.updateBulk",
+      "featureId": "businesses.product-logs"
+    },
+    {
+      "operationId": "ProductLogController.findOne",
+      "featureId": "businesses.product-logs"
+    },
+    {
+      "operationId": "ProductLogController.create",
+      "featureId": "businesses.product-logs"
+    },
+    {
+      "operationId": "ProductLogController.update",
+      "featureId": "businesses.product-logs"
+    },
+    {
+      "operationId": "ProductController.findAll",
+      "featureId": "businesses.products"
+    },
+    {
+      "operationId": "ProductController.createBulk",
+      "featureId": "businesses.products"
+    },
+    {
+      "operationId": "ProductController.updateBulk",
+      "featureId": "businesses.products"
+    },
+    {
+      "operationId": "ProductController.exportCsv",
+      "featureId": "businesses.products"
+    },
+    {
+      "operationId": "ProductController.findOne",
+      "featureId": "businesses.products"
+    },
+    {
+      "operationId": "ProductController.create",
+      "featureId": "businesses.products"
+    },
+    {
+      "operationId": "ProductController.update",
+      "featureId": "businesses.products"
+    },
+    {
+      "operationId": "ProviderContactController.list",
+      "featureId": "businesses.supplier-contacts"
+    },
+    {
+      "operationId": "ProviderContactController.create",
+      "featureId": "businesses.supplier-contacts"
+    },
+    {
+      "operationId": "ProviderContactController.update",
+      "featureId": "businesses.supplier-contacts"
+    },
+    {
+      "operationId": "ProviderContactController.toggle",
+      "featureId": "businesses.supplier-contacts"
+    },
+    {
+      "operationId": "ProviderController.findAll",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "ProviderController.createBulk",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "ProviderController.importCsv",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "ProviderController.updateBulk",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "ProviderController.exportCsv",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "ProviderController.findOne",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "ProviderController.create",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "ProviderController.update",
+      "featureId": "businesses.suppliers"
+    },
+    {
+      "operationId": "RentalBlockController.createRentalBlock",
+      "featureId": "reservations.blocks"
+    },
+    {
+      "operationId": "RentalBlockController.getRentalBlocks",
+      "featureId": "reservations.blocks"
+    },
+    {
+      "operationId": "RentalBlockController.getRentalBlock",
+      "featureId": "reservations.blocks"
+    },
+    {
+      "operationId": "RentalBlockController.updateRentalBlock",
+      "featureId": "reservations.blocks"
+    },
+    {
+      "operationId": "RentalCalendarController.getRentalCalendar",
+      "featureId": "reservations.availability-and-calendar"
+    },
+    {
+      "operationId": "RentalCalendarController.getRentalAvailability",
+      "featureId": "reservations.availability-and-calendar"
+    },
+    {
+      "operationId": "RentalCancellationPolicyController.createRentalCancellationPolicy",
+      "featureId": "reservations.cancellation-policies"
+    },
+    {
+      "operationId": "RentalCancellationPolicyController.getRentalCancellationPolicies",
+      "featureId": "reservations.cancellation-policies"
+    },
+    {
+      "operationId": "RentalCancellationPolicyController.getRentalCancellationPolicy",
+      "featureId": "reservations.cancellation-policies"
+    },
+    {
+      "operationId": "RentalCancellationPolicyController.updateRentalCancellationPolicy",
+      "featureId": "reservations.cancellation-policies"
+    },
+    {
+      "operationId": "RentalCollaboratorController.createRentalCollaborator",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalCollaboratorController.getRentalCollaboratorCandidates",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalCollaboratorController.getRentalCollaborators",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalCollaboratorController.updateRentalCollaborator",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalHistoryController.history",
+      "featureId": "reservations.audit-and-recovery"
+    },
+    {
+      "operationId": "RentalHistoryController.recover",
+      "featureId": "reservations.audit-and-recovery"
+    },
+    {
+      "operationId": "RentalExpenseController.createRentalExpense",
+      "featureId": "reservations.expenses"
+    },
+    {
+      "operationId": "RentalExpenseController.getRentalExpenses",
+      "featureId": "reservations.expenses"
+    },
+    {
+      "operationId": "RentalExpenseController.getRentalExpense",
+      "featureId": "reservations.expenses"
+    },
+    {
+      "operationId": "RentalExpenseController.payRentalExpense",
+      "featureId": "reservations.expenses"
+    },
+    {
+      "operationId": "RentalExpenseController.updateRentalExpense",
+      "featureId": "reservations.expenses"
+    },
+    {
+      "operationId": "RentalExpenseController.voidRentalExpense",
+      "featureId": "reservations.expenses"
+    },
+    {
+      "operationId": "RentalOverviewController.getRentalOverview",
+      "featureId": "reservations.availability-and-calendar"
+    },
+    {
+      "operationId": "RentalPaymentController.createRentalPayment",
+      "featureId": "reservations.payments-and-refunds"
+    },
+    {
+      "operationId": "RentalPaymentController.getRentalPayments",
+      "featureId": "reservations.payments-and-refunds"
+    },
+    {
+      "operationId": "RentalPaymentController.getRentalPayment",
+      "featureId": "reservations.payments-and-refunds"
+    },
+    {
+      "operationId": "RentalPaymentController.voidRentalPayment",
+      "featureId": "reservations.payments-and-refunds"
+    },
+    {
+      "operationId": "RentalPropertyController.createRentalProperty",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalPropertyController.getRentalProperties",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalPropertyController.getRentalProperty",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalPropertyController.updateRentalProperty",
+      "featureId": "reservations.properties-and-collaborators"
+    },
+    {
+      "operationId": "RentalReservationController.cancelRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.completeRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.confirmRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.createRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.getRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.listRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.previewRentalCancellation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.startRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalReservationController.updateRentalReservation",
+      "featureId": "reservations.reservations"
+    },
+    {
+      "operationId": "RentalTurnoverController.approveSameDayRentalTurnover",
+      "featureId": "reservations.preparation"
+    },
+    {
+      "operationId": "RentalTurnoverController.getRentalTurnover",
+      "featureId": "reservations.preparation"
+    },
+    {
+      "operationId": "RentalTurnoverController.listRentalTurnover",
+      "featureId": "reservations.preparation"
+    },
+    {
+      "operationId": "RentalTurnoverController.updateRentalTurnover",
+      "featureId": "reservations.preparation"
+    },
+    {
+      "operationId": "RoleController.create",
+      "featureId": "general-settings.roles"
+    },
+    {
+      "operationId": "RoleController.findAll",
+      "featureId": "general-settings.roles"
+    },
+    {
+      "operationId": "RoleController.findOne",
+      "featureId": "general-settings.roles"
+    },
+    {
+      "operationId": "RoleController.update",
+      "featureId": "general-settings.roles"
+    },
+    {
+      "operationId": "RoleController.updatePatch",
+      "featureId": "general-settings.roles"
+    },
+    {
+      "operationId": "RoleController.remove",
+      "featureId": "general-settings.roles"
+    },
+    {
+      "operationId": "UserController.findAll",
+      "featureId": "general-settings.users"
+    },
+    {
+      "operationId": "UserController.create",
+      "featureId": "general-settings.users"
+    },
+    {
+      "operationId": "UserController.update",
+      "featureId": "general-settings.users"
+    }
+  ],
+  "infrastructureExclusions": [
+    {
+      "operationId": "AppController.getHelloWorld",
+      "reason": "Liveness técnico; sin herramienta de producto"
+    },
+    {
+      "operationId": "AuthController.seed",
+      "reason": "Bootstrap de instalación con secreto; fuera de conversación"
+    }
+  ]
+}

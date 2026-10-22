@@ -1,10 +1,16 @@
 # Reservas — contratos Backend e integración Client
 
+> AI-08 implementado localmente: [autoridad transversal, invariantes y evidencia](54-nodia-ai-ai08-transversal-authority.md). Destinatario explícito, actor real, barreras de transacción y NI-13 verificados; consumidores/herramientas del chat pendientes. Esta nota sustituye menciones históricas de acceso transversal pendiente, sin aprobar documentos ni invalidar sus reglas nativas.
+
 > Estado: en revisión documental — Backend/Client implementados; migraciones aplicadas en BD local; smoke de sesión real pendiente
 > Fecha: 2026-10-04
 > Dependencias: [entrevista 25](25-rental-reservations-interview.md), [especificación 26](26-rental-reservations-spec.md), [ERD 27](27-rental-reservations-erd.md), [ADR-012](../architecture/decisions/ADR-012-rental-property-collaboration.md), [ADR-013](../architecture/decisions/ADR-013-rental-integrity-and-idempotency.md)
 
 ## Ajuste solicitado — 2026-10-09
+
+Contexto funcional NodiaAI: [ficha de producto](../nodia-ai/knowledge/reservations/README.md) y9 funcionalidades revisadas en[AI-05](51-nodia-ai-ai05-product-knowledge.md), con transiciones/dinero/ocupación/preparación y journal nativo. Documentan acceso nativo y ampliación transversal implementada en AI-08; no publican herramientas ni cambian aprobación de28/ERD27.
+
+> Cambio posterior de acceso del 2026-10-14: el usuario confirma en [NodiaAI38](38-nodia-ai-research-and-v1-plan.md) lectura y operación transversal de `super_admin` sobre todas las casas, incluida configuración y colaboradores, con vista previa y confirmación para cambios desde el chat. Sustituye para ese rol la prohibición administrativa de acceso a casas ajenas descrita abajo. Los demás usuarios conservan pertenencia propietario/colaborador y sus capacidades; se mantienen propiedad, autoría real, asociaciones, locks e idempotencia. La implementación AI-08 comparte autoridad en casos de uso y REST, con capacidades Client y pruebas locales; herramientas/bridge de recuperación quedan AI-24..26. La evidencia histórica anterior se complementa con54. No operar en nombre del propietario ni cambiarlo implícitamente. [ADR-032](../architecture/decisions/ADR-032-nodia-ai-domain-tools-and-conversation.md) propuesto.
 
 El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
 

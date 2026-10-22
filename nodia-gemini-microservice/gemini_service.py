@@ -2,18 +2,24 @@ import asyncio
 import os
 import time
 from copy import deepcopy
+from contextlib import AsyncExitStack
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from collections.abc import Callable
 from dotenv import dotenv_values
 from loguru import logger
-from gemini_webapi import GeminiClient
+from web_generation_diagnostics import DiagnosticWebClient as GeminiClient, WebGenerationDiagnostics, observe_generation, preserve_structured_output
+from web_audio_transport import native_audio_transport
 from gemini_webapi.exceptions import (APIError, AuthError, ModelInvalidError, UsageLimitExceededError,
     TemporarilyBlockedError, TimeoutError as ProviderTimeout)
 from invoice_parser import build_invoice_prompt, clean_and_parse_invoice_json, is_refusal_response
 from service_errors import ServiceError
 from browser_manager import BrowserCookieManager
-from session_store import SESSION_FILE, read_session, save_session
+from session_store import SESSION_FILE, read_session, save_session, disconnected_state, mark_disconnected
+from web_session_cleanup import clear_web_files, validate_web_roots
+from web_reasoning_adapter import ReasoningWebClient, load_profiles, LEVELS, VERIFIED_SDK_VERSION
+from importlib.metadata import version
+from uuid import uuid4
 
 
 
@@ -22,6 +28,7 @@ ENV_FILE = Path(__file__).resolve().parent / ".env"
 class GeminiWebService:
     def __init__(self, generation_timeout: float = 300):
         self.browser_manager = BrowserCookieManager()
+        self.session_generation = uuid4().hex
         self.secure_1psid = ""
         self.secure_1psidts = ""
         self.model_name = os.getenv("GEMINI_MODEL", "").strip()
@@ -37,6 +44,73 @@ class GeminiWebService:
         self._quota_lock = asyncio.Lock()
         self._analysis_lock = asyncio.Lock()
         self._generation_timeout = generation_timeout
+        self._session_resetting = False
+        self._reasoning_profiles = {}
+        self._reasoning_profile_invalid = False
+
+    def assert_login_allowed(self) -> None:
+        if (self._session_resetting or disconnected_state() == "pending"
+                or any(lock.locked() for lock in (self._analysis_lock, self._quota_lock, self._client_lock, self.browser_manager.lock))):
+            raise ServiceError("web_session_busy", "Completa o reintenta la limpieza de la sesión Web antes de iniciar sesión.", 409)
+
+    async def disconnect(self) -> None:
+        locks = (self._analysis_lock, self._quota_lock, self._client_lock, self.browser_manager.lock)
+        if self._session_resetting or any(lock.locked() for lock in locks):
+            raise ServiceError("web_session_busy", "La sesión Web está ocupada. Espera a que termine la operación y reintenta.", 409)
+        self._session_resetting = True
+        self.session_generation = uuid4().hex
+        try:
+            async with AsyncExitStack() as stack:
+                # No await yields between the admission check and unlocked lock acquisition.
+                for lock in locks:
+                    await stack.enter_async_context(lock)
+                try:
+                    validate_web_roots(self.browser_manager.profile_dir, SESSION_FILE.parent)
+                except OSError:
+                    raise ServiceError("web_session_cleanup_failed", "No se pudo validar el directorio de sesión Web. Revisa la configuración del servicio antes de reintentar.", 503) from None
+                mark_disconnected(pending=True)
+                self.is_initialized = False
+                self.secure_1psid = self.secure_1psidts = ""
+                self._env_credentials = None
+                self._quota_cache = None
+                self._quota_cache_time = 0.0
+                self.tier = "UNKNOWN"
+                self.credits_remaining = None
+                self.browser_manager.last_refresh_time = None
+                for key in ("GEMINI_SECURE_1PSID", "GEMINI_SECURE_1PSIDTS", "SECURE_1PSID", "SECURE_1PSIDTS"):
+                    os.environ.pop(key, None)
+                if self._persist_task:
+                    self._persist_task.cancel()
+                    await asyncio.gather(self._persist_task, return_exceptions=True)
+                    self._persist_task = None
+                try:
+                    if self.client:
+                        client = self.client
+                        tasks = [task for name in ("refresh_task", "activity_task", "close_task")
+                                 if (task := getattr(client, name, None)) is not None]
+                        for task in tasks:
+                            task.cancel()
+                        async with asyncio.timeout(5):
+                            await asyncio.gather(*tasks, return_exceptions=True)
+                            await client.close()
+                        self.client = None
+                    cleanup = asyncio.create_task(asyncio.to_thread(
+                        clear_web_files, self.browser_manager.profile_dir, SESSION_FILE.parent))
+                    try:
+                        await asyncio.shield(cleanup)
+                    except asyncio.CancelledError:
+                        # A filesystem thread cannot be cancelled; retain ownership/locks until done.
+                        try:
+                            await cleanup
+                        except Exception as error:
+                            logger.warning("Cancelled Web cleanup failed: {}", type(error).__name__)
+                        raise
+                    mark_disconnected(pending=False)
+                except Exception as error:
+                    logger.warning("Web session cleanup failed: {}", type(error).__name__)
+                    raise ServiceError("web_session_cleanup_failed", "No se pudo completar la limpieza Web. Reintenta antes de conectar otra cuenta.", 503) from None
+        finally:
+            self._session_resetting = False
 
     def _read_env(self) -> tuple[str, str, str]:
         env_path = ENV_FILE
@@ -75,8 +149,21 @@ class GeminiWebService:
             self._persist_live_cookies()
             self.client = None
             await previous_client.close()
-        os.environ.setdefault("GEMINI_COOKIE_PATH", str(SESSION_FILE.parent))
-        candidate = GeminiClient(psid, psidts)
+        # All Web clients use this adapter's private volume, including browser verification.
+        os.environ["GEMINI_COOKIE_PATH"] = str(SESSION_FILE.parent)
+        self._reasoning_profiles = {}
+        self._reasoning_profile_invalid = False
+        profile_path = os.getenv("GEMINI_WEB_REASONING_PROFILES_PATH", "").strip()
+        if profile_path:
+            try:
+                if version("gemini-webapi") != VERIFIED_SDK_VERSION:
+                    raise ValueError("SDK version changed")
+                self._reasoning_profiles = load_profiles(Path(profile_path))
+            except (OSError, ValueError, TypeError):
+                self._reasoning_profile_invalid = True
+                logger.warning("Gemini reasoning profile configuration is invalid or incompatible.")
+        candidate = (ReasoningWebClient(psid, psidts, profiles=self._reasoning_profiles)
+                     if self._reasoning_profiles else GeminiClient(psid, psidts))
         try:
             # SDK timeout also applies to inference streams, not only startup.
             # Bound startup separately without shortening every generation.
@@ -93,6 +180,7 @@ class GeminiWebService:
             self.is_initialized = False
             raise
         self.client = candidate
+        self.session_generation = uuid4().hex
         self.secure_1psid = psid
         self.secure_1psidts = psidts
         self.is_initialized = True
@@ -105,14 +193,16 @@ class GeminiWebService:
 
     async def init_client(self, force_refresh: bool = False):
         async with self._client_lock:
+            if disconnected_state():
+                self.is_initialized = False
+                return
             disk_psid, disk_psidts, disk_model = self._read_env()
             disk_credentials = (disk_psid, disk_psidts)
-            env_path = ENV_FILE
             stored = read_session()
             if self._env_credentials is None:
-                # An interactive login replaces .env. Otherwise use the latest rotated cookie.
-                store_is_newer = stored and (not env_path.exists() or SESSION_FILE.stat().st_mtime >= env_path.stat().st_mtime)
-                credentials = stored if store_is_newer else disk_credentials
+                # .env is a bootstrap seed. Editing unrelated config must not restore
+                # a previous account after an explicit login in the runtime volume.
+                credentials = stored or disk_credentials
             elif disk_psid and disk_psidts and disk_credentials != self._env_credentials:
                 credentials = disk_credentials
                 force_refresh = True
@@ -131,7 +221,7 @@ class GeminiWebService:
                 refreshed = await self.browser_manager.refresh_cookies_headless()
                 if refreshed:
                     psid, psidts = refreshed["secure_1psid"], refreshed["secure_1psidts"]
-                    self._env_credentials = (psid, psidts)
+                    self._env_credentials = self._read_env()[:2]
             if not psid or not psidts:
                 self.is_initialized = False
                 logger.warning("Gemini login is missing. Run auth.py or use Settings in local development.")
@@ -148,18 +238,22 @@ class GeminiWebService:
                 refreshed = await self.browser_manager.refresh_cookies_headless()
                 if not refreshed:
                     raise
-                self._env_credentials = (refreshed["secure_1psid"], refreshed["secure_1psidts"])
-                await self._connect(*self._env_credentials)
+                self._env_credentials = self._read_env()[:2]
+                await self._connect(refreshed["secure_1psid"], refreshed["secure_1psidts"])
 
     async def reload_cookies(self, secure_1psid: str, secure_1psidts: str):
         """Reconnect with cookies from an explicit login or browser refresh."""
         async with self._client_lock:
             self.is_initialized = False
-            self._env_credentials = (secure_1psid, secure_1psidts)
+            # Track the actual seed, which can remain old in a read-only mount.
+            # A later health check must not mistake it for a newer explicit login.
+            self._env_credentials = self._read_env()[:2]
             await self._connect(secure_1psid, secure_1psidts)
 
     async def recover_auth(self, failed_client: Optional[GeminiClient] = None) -> None:
         async with self._client_lock:
+            if disconnected_state():
+                raise AuthError("Explicit Web login required")
             # Another request may already have replaced the failed client.
             if failed_client and self.client is not failed_client and self.is_initialized:
                 return
@@ -171,26 +265,30 @@ class GeminiWebService:
                 self.is_initialized = False
                 raise AuthError("Gemini browser profile could not renew the session")
             self.is_initialized = False
-            self._env_credentials = (refreshed["secure_1psid"], refreshed["secure_1psidts"])
-            await self._connect(*self._env_credentials)
+            self._env_credentials = self._read_env()[:2]
+            await self._connect(refreshed["secure_1psid"], refreshed["secure_1psidts"])
 
     async def get_status(self) -> Dict[str, Any]:
-        authenticated = bool(self.is_initialized and self.client and self.client.account_status.name == "AVAILABLE")
+        disconnected = bool(disconnected_state())
+        authenticated = bool(not disconnected and self.is_initialized and self.client and self.client.account_status.name == "AVAILABLE")
         return {
             "initialized": authenticated,
-            "has_cookies": bool(self.secure_1psid and self.secure_1psidts),
+            "has_cookies": bool(not disconnected and self.secure_1psid and self.secure_1psidts),
             "has_browser_profile": self.browser_manager.has_profile(),
             "last_refresh_time": self.browser_manager.last_refresh_time,
-            "tier": str(getattr(self.client, "tier", "UNKNOWN")),
+            "tier": "UNKNOWN" if disconnected else str(getattr(self.client, "tier", "UNKNOWN")),
             "model": self.model_name or None,
             "model_display": self.model_name or None,
             "supported_options": self.supported_options(),
         }
 
-    def supported_options(self) -> Dict[str, bool]:
+    def supported_options(self) -> Dict[str, Any]:
         # Transport support comes from the installed SDK, never a model's name.
         import inspect
-        return {"extended_thinking": "extended_thinking" in inspect.signature(GeminiClient.generate_content).parameters}
+        observed = {item.model_id: list(LEVELS) for item in self.discovered_models()
+                    if item.model_id in self._reasoning_profiles}
+        return {"extended_thinking": "extended_thinking" in inspect.signature(GeminiClient.generate_content).parameters,
+                "thinking_level": bool(observed), "thinking_levels_by_model": observed}
 
     async def get_quota_summary(self, max_cache_age_seconds: float = 30.0) -> Dict[str, Any]:
         if self._analysis_lock.locked():
@@ -280,27 +378,41 @@ class GeminiWebService:
             raise ServiceError("model_unavailable", "El modelo configurado no está disponible en esta sesión.", 422)
         return matches[0]
 
-    async def _generate_content(self, prompt: str, **options: Any) -> Any:
+    async def _generate_content(self, prompt: str, *, diagnostics: WebGenerationDiagnostics | None = None,
+                                preserve_structured_text: bool = False,
+                                native_attachment_media_types: list[str] | None = None, **options: Any) -> Any:
         active_client = self.client
-        operation = asyncio.create_task(active_client.generate_content(prompt, current_retry=0, **options))
-        try:
-            return await asyncio.shield(operation)
-        except asyncio.CancelledError:
-            # curl_cffi's stream context waits for its transfer in aclose().
-            # Close the transport BEFORE cancelling the generation; otherwise
-            # wait_for can exceed its deadline while waiting for that transfer.
-            async with self._client_lock:
-                self.is_initialized = False
-                try:
-                    await active_client.close()
-                finally:
-                    operation.cancel()
-                    await asyncio.gather(operation, return_exceptions=True)
-            raise
+        with observe_generation(active_client, diagnostics):
+            async def generate():
+                with (native_audio_transport(active_client, options.get("files"), native_attachment_media_types),
+                      preserve_structured_output(active_client, preserve_structured_text) as structured):
+                    result = await active_client.generate_content(prompt, current_retry=0, **options)
+                    if structured is not None:
+                        structured.verify(result, record=False)
+                    return result
+            operation = asyncio.create_task(generate())
+            if diagnostics is not None:
+                diagnostics.generation_task = operation
+            try:
+                return await asyncio.shield(operation)
+            except asyncio.CancelledError:
+                if diagnostics is not None:
+                    diagnostics.cancelling()
+                # curl_cffi's stream context waits for its transfer in aclose().
+                # Close the transport BEFORE cancelling the generation; otherwise
+                # wait_for can exceed its deadline while waiting for that transfer.
+                async with self._client_lock:
+                    self.is_initialized = False
+                    try:
+                        await active_client.close()
+                    finally:
+                        operation.cancel()
+                        await asyncio.gather(operation, return_exceptions=True)
+                raise
 
     async def analyze_invoice(self, file_path: Path, provider_fields: Optional[Dict[str, Any]] = None,
                               provider_tax: Optional[int] = None, model: Optional[str] = None,
-                              extended_thinking: Optional[bool] = False,
+                              extended_thinking: Optional[bool] = None,
                               thinking_level: Optional[str] = None, progress_callback: Callable[[str], None] | None = None) -> Dict[str, Any]:
         # SDK recovery can close its shared HTTP session. Never overlap analyses.
         if self._analysis_lock.locked():
@@ -335,10 +447,17 @@ class GeminiWebService:
                 selected_id = identity
                 if extended_thinking and not self.supported_options()["extended_thinking"]:
                     raise ServiceError("thinking_unsupported", "El SDK Web instalado no admite extended_thinking.", 422)
-                # Web has no reported per-model low/medium/high control in the current SDK.
                 if thinking_level is not None:
-                    raise ServiceError("thinking_level_unsupported", "El motor Web no admite niveles de razonamiento.", 422)
-                options = {"extended_thinking": bool(extended_thinking)} if self.supported_options()["extended_thinking"] else {}
+                    if extended_thinking is not None:
+                        raise ServiceError("thinking_options_conflict", "No combine niveles con pensamiento extendido histórico.", 422)
+                    if self._reasoning_profile_invalid:
+                        raise ServiceError("thinking_profile_invalid", "El perfil de razonamiento Web es incompatible. Revise la configuración del servicio.", 422)
+                    profile = self._reasoning_profiles.get(identity)
+                    if profile is None or thinking_level not in LEVELS:
+                        raise ServiceError("thinking_level_unsupported", "El adaptador Web no tiene un protocolo comprobado para el nivel y modelo elegidos.", 422)
+                    options = {"thinking_level": thinking_level}
+                else:
+                    options = {"extended_thinking": bool(extended_thinking)} if self.supported_options()["extended_thinking"] else {}
                 # gemini-webapi 2.1.1 forwards this option to its @running(retry=5)
                 # generator. A lost response must not resend an uncertain inference.
                 if progress_callback:
@@ -377,6 +496,18 @@ class GeminiWebService:
         except Exception as error:
             logger.warning("Analysis failed: {}", type(error).__name__)
             raise ServiceError("provider_unavailable", "El proveedor no pudo completar el análisis.") from None
+
+    async def suspend_for_login(self) -> None:
+        """Yield the SDK cookie writer before a dedicated login owns the profile.
+
+        The next consumer reloads the canonical runtime cookie store, rather
+        than persisting this interpreter's previous account over the new login.
+        """
+        async with self._client_lock:
+            await self.close()
+            self._env_credentials = None
+            self.secure_1psid = ""
+            self.secure_1psidts = ""
 
     async def close(self):
         self._quota_cache = None

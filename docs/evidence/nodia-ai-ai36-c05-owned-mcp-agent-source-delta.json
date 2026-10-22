@@ -1,0 +1,27 @@
+{
+  "scope": "owned_MCP_agent_candidate_source_delta_not_deployed",
+  "base_image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "production_files": [
+    {
+      "path": "nodia-gemini-microservice/native_execution_agents.py",
+      "old_sha256": "73f000fdb9915a4ba2a4fad41f10180783464f3b87b9edc186960b8d6e0a7eef",
+      "new_sha256": "634ff3981e81e2bc0b4b14da6d783a5049fee0a76d17f378119b86cd3ae08e87",
+      "added_lines": 21,
+      "removed_lines": 3
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+      "old_sha256": "b658fa4d2e0f4fc014346c4f6e8343a5b83ad9eaa406663f1bb36b93a0c54222",
+      "new_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+      "added_lines": 18,
+      "removed_lines": 5
+    }
+  ],
+  "compiled_source_files": 2,
+  "diagnostic_parser_included": false,
+  "wire_contract_version_changed": false,
+  "private_MCP_verification_binding_changed": true,
+  "CLI_support_verified": false,
+  "provider_generations": 0,
+  "deployment_performed": false
+}

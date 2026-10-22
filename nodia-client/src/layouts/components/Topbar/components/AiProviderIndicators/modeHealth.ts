@@ -1,8 +1,7 @@
 import type { AiProviderHealthItem, AiProvidersHealthResponse } from "../../../../../modules/generalSettings/pages/AiProviders/infrastructure/types";
 
 export type ProviderMode = "api_key" | "token_plan_web" | "token_plan_agentic";
-export const PROVIDER_MODES = ["api_key", "token_plan_web", "token_plan_agentic"] as const;
-export type ModeState = "session_ready" | "healthy" | "needs_review" | "unverified" | "disabled";
+export type ModeState = "configured" | "session_ready" | "healthy" | "needs_review" | "unverified" | "disabled";
 
 export function enabledModes(provider: AiProviderHealthItem): ProviderMode[] {
   return ([
@@ -14,14 +13,14 @@ export function enabledModes(provider: AiProviderHealthItem): ProviderMode[] {
 
 export function modeHealth(provider: AiProviderHealthItem, mode: ProviderMode, health: AiProvidersHealthResponse, failed: boolean): ModeState {
   if (!enabledModes(provider).includes(mode)) return "disabled";
+  if (mode === "api_key") {
+    // This indicator reports stored configuration, independently of the model
+    // or another channel's session. It does not certify API inference.
+    return (provider.apiKeysCount ?? 0) > 0 || provider.selectedApiKey != null
+      ? "configured" : "needs_review";
+  }
   if (failed) return "unverified";
   if (provider.isActive !== true) return "needs_review";
-  if (mode === "api_key") {
-    // Aggregate session health does not prove that the API channel works.
-    if (provider.mode !== "api_key") return "unverified";
-    if (provider.status === "healthy") return "healthy";
-    return ["degraded", "expired", "unconfigured"].includes(provider.status) ? "needs_review" : "unverified";
-  }
   const key = typeof provider.key === "string" ? provider.key.toLowerCase() : "";
   const session = key === "openai" && mode === "token_plan_agentic" ? provider.codexSession
     : ["gemini", "google"].includes(key) ? health.engines?.[mode === "token_plan_web" ? "web" : "agentic"] : undefined;

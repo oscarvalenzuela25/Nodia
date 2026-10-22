@@ -1,0 +1,50 @@
+{
+  "task": "AI-15",
+  "phase": "eligibility",
+  "status": "passed",
+  "checks": 5,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader",
+    "preflight generates no provider inference",
+    "all real native runtime slots released after acknowledgement"
+  ],
+  "turns": [],
+  "downloads": [],
+  "external_observations": [],
+  "dispatches": [],
+  "eligibility": [
+    {
+      "available": true,
+      "supports_mcp": true,
+      "reason": null
+    }
+  ],
+  "adapter_dispatch_requests": 0,
+  "maximum_adapter_dispatch_requests": 0,
+  "candidate_release_id": "46ededf58e6f705a2891aca2d8c9e36b3eb9ea2e37b02d3cfd5df61b612aa5a0",
+  "domain_capabilities": 67,
+  "mcp_catalog_tools": 72,
+  "real_gemini_inference": false,
+  "adapter_mocked": false,
+  "product_readers_mocked": false,
+  "synthetic_sql_database": true,
+  "synthetic_http_identity": true,
+  "configured_business_database_modified": false,
+  "configured_provider_selection_modified": false,
+  "storage_objects_created": 0,
+  "invoice_content_download_verified": false,
+  "cleanup": {
+    "completed": true,
+    "pending": {
+      "jobs": 0,
+      "attempts": 0,
+      "runtime_slots": 0,
+      "diagnostic_requests": 0,
+      "diagnostic_proofs": 0
+    },
+    "disposable_database_removed": true,
+    "inference_replayed": false
+  }
+}

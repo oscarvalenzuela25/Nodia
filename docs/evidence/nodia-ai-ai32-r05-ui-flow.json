@@ -1,0 +1,91 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "real_app_r2_worker_gemini_web_and_user_microphone",
+  "status": "passed",
+  "conversation_id": "33d6c32d-19a3-4533-8077-3ca7299d30cb",
+  "run_id": "a7ed643b-e1f2-4d07-98e2-c1e0a79759fb",
+  "browser": "ChatGPT in-app browser",
+  "origin": "http://localhost:5174",
+  "mode": "token_plan_web",
+  "connection_id": 2,
+  "model_id": "56fdd199312815e2",
+  "effort": null,
+  "capture": {
+    "physical_microphone_user_confirmed": true,
+    "virtual_microphone_used": false,
+    "user_started_and_stopped_capture": true,
+    "record_control_returned_to_idle": true,
+    "track_release_directly_instrumented": false,
+    "media_type_decoded": "audio/webm",
+    "bytes": 99755,
+    "duration_seconds": 6.18,
+    "sha256": "91160741102cef1bbf0edc84e8d5bd96f0a3107a112af8b8a4dccb974faa4652",
+    "transcription_confirmed_by_user_after_response": true,
+    "suggested_test_phrase_was_spoken": false
+  },
+  "originals": {
+    "count": 3,
+    "kinds": [
+      "image",
+      "pdf",
+      "audio"
+    ],
+    "upload_clicks": 3,
+    "manual_interpretations_accepted": 0,
+    "original_parts_linked_once": true,
+    "private_ui_downloads_completed": 3,
+    "download_hashes_match_sql_and_r2": true
+  },
+  "generation": {
+    "send_clicks": 1,
+    "provider_dispatches": 1,
+    "tools": 0,
+    "delegations": 0,
+    "run_state": "completed",
+    "user_messages": 1,
+    "assistant_messages": 1,
+    "internal_completed_stages": [
+      "context",
+      "inference"
+    ],
+    "expected_attachment_text_in_user_message": false,
+    "image_text_matches_fixture": true,
+    "pdf_text_matches_fixture": true,
+    "audio_semantics_user_confirmed": true,
+    "automatic_inference_replay": false
+  },
+  "persistence": {
+    "reload_kept_response": true,
+    "reload_kept_three_references": true,
+    "configuration_applied_after_reload": false,
+    "availability_false_observed_after_reload": true,
+    "availability_false_cause": "not_observed",
+    "explicit_metadata_recheck_restored_composer": true,
+    "extra_provider_generations_for_recheck": 0
+  },
+  "layout": {
+    "before_overflow_pixels": 398.140625,
+    "viewports_checked": [
+      320,
+      599,
+      600,
+      900,
+      1440
+    ],
+    "three_drafts_preserved_through_resize": true,
+    "horizontal_overflow": false,
+    "composer_contained": true,
+    "send_action_keyboard_reachable": true,
+    "viewport_override_reset": true,
+    "phone_or_virtual_keyboard_tested": false
+  },
+  "not_verified_in_this_run": [
+    "real_chat_expiry_and_janitor_deletion",
+    "real_r2_invoice_promotion_or_legacy_transfer",
+    "production_acceptance",
+    "other_native_media_formats",
+    "agentic_generation_in_this_run"
+  ],
+  "services_left_running": true,
+  "document_approval_granted": false
+}

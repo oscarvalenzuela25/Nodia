@@ -1,0 +1,196 @@
+{
+  "stage": "AI-36",
+  "status": "passed_with_existing_global_fixture_typing_debt",
+  "scope": "current_complete_suites_V8_build_types_lint",
+  "suites": [
+    {
+      "name": "server_all",
+      "tests_passed": 3549,
+      "files": 219,
+      "failed": 0,
+      "pending": 0,
+      "source_report_local": ".tmp/ai36-server-all-final.json",
+      "report_sha256": "32e3202b0fa39fc45176947161d0a65beeae999a5ad29d5140a78018b6207540"
+    },
+    {
+      "name": "client_all",
+      "tests_passed": 1773,
+      "files": 228,
+      "failed": 0,
+      "pending": 0,
+      "source_report_local": ".tmp/ai36-client-all.json",
+      "report_sha256": "a77144e7abb3760c461d7260815c32ebbd09ebe225e7b566625683576b3b788d"
+    }
+  ],
+  "coverage": {
+    "server": {
+      "source_report_local": ".tmp/ai36-server-coverage-final/coverage-summary.json",
+      "sha256": "8c1a08f472a45c3da9574320d16c3ff281747cba1fcea8014229b805c7cebe63",
+      "instrumented_files": 310,
+      "totals": {
+        "lines": {
+          "total": 11448,
+          "covered": 9752,
+          "skipped": 0,
+          "pct": 85.18
+        },
+        "statements": {
+          "total": 12069,
+          "covered": 10137,
+          "skipped": 0,
+          "pct": 83.99
+        },
+        "functions": {
+          "total": 2112,
+          "covered": 1714,
+          "skipped": 0,
+          "pct": 81.15
+        },
+        "branches": {
+          "total": 12627,
+          "covered": 10634,
+          "skipped": 0,
+          "pct": 84.21
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "scope": "unit_component_V8_execution_only_not_SQL_or_Gemini_acceptance",
+      "new_thresholds": false,
+      "executable_typescript": {
+        "files": 295,
+        "all_expected_files_present": true,
+        "totals": {
+          "lines": {
+            "total": 11382,
+            "covered": 9752,
+            "pct": 85.67
+          },
+          "statements": {
+            "total": 12003,
+            "covered": 10137,
+            "pct": 84.45
+          },
+          "functions": {
+            "total": 2112,
+            "covered": 1714,
+            "pct": 81.15
+          },
+          "branches": {
+            "total": 12627,
+            "covered": 10634,
+            "pct": 84.21
+          }
+        }
+      },
+      "non_executable_assets": {
+        "json_files_in_raw_summary": 15,
+        "generated_markdown_parse_warnings": 27,
+        "note": "Raw V8 glob included schemas/JSON and attempted Markdown; code totals are an explicit recomputation over every295expected TypeScript implementation file. No executable file was omitted."
+      }
+    },
+    "client": {
+      "source_report_local": ".tmp/ai36-client-coverage/coverage-summary.json",
+      "sha256": "e61985b65c64df8e839ab577f83328413783b5c207eb991b56fa3d7de5ad5b66",
+      "instrumented_files": 80,
+      "totals": {
+        "lines": {
+          "total": 2090,
+          "covered": 2005,
+          "skipped": 0,
+          "pct": 95.93
+        },
+        "statements": {
+          "total": 3866,
+          "covered": 3525,
+          "skipped": 0,
+          "pct": 91.17
+        },
+        "functions": {
+          "total": 760,
+          "covered": 699,
+          "skipped": 0,
+          "pct": 91.97
+        },
+        "branches": {
+          "total": 4686,
+          "covered": 3997,
+          "skipped": 0,
+          "pct": 85.29
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "scope": "unit_component_V8_execution_only_not_SQL_or_Gemini_acceptance",
+      "new_thresholds": false
+    }
+  },
+  "server_production_build": {
+    "status": "passed",
+    "log_local": ".tmp/ai36-server-build-final.log",
+    "log_sha256": "1171c54cc7410a343cf4c65a121c58f5badc27338910901815d060f635759a1e"
+  },
+  "client_production_build": {
+    "status": "passed",
+    "includes": "tsc-b_and_vite",
+    "log_local": ".tmp/ai36-client-build.log",
+    "log_sha256": "a71267c8f62872aab2b55ae4fba27f1f59180d8ed068982866222247e0466ae3"
+  },
+  "lint": {
+    "server_errors": 0,
+    "server_previous_warnings": 3,
+    "server_log_sha256": "9b0f5eec3b6d1e8aa9a2855044fc288ac40d960d276d5b24230a32a5f3e08a50",
+    "client_new_acceptance_errors": 0,
+    "client_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "server_log_local": ".tmp/ai36-server-lint-final.log",
+    "client_log_local": ".tmp/ai36-client-lint.log"
+  },
+  "global_server_fixture_types": {
+    "exit_code": 2,
+    "errors": 192,
+    "files": 48,
+    "log_local": ".tmp/ai36-server-fixture-types-final.log",
+    "log_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9",
+    "baseline": "docs/evidence/nodia-ai-ai35-global-fixture-types.json",
+    "byte_identical_to_baseline": true,
+    "changed_AI36_spec_diagnostics": false
+  },
+  "new_knowledge_regression": {
+    "source_report_local": ".tmp/ai36-knowledge-evolution-final.json",
+    "sha256": "ab0e0f623bbc2777e16a9d17f917774429b2b4686c716ab988481b695e69b8fb",
+    "scope": "synthetic_published_bundle_real_loader_and_ContextBuilder"
+  },
+  "application_source_changed": true,
+  "new_dependencies": false,
+  "provider_generations": 0,
+  "new_cloud_storage_operations": 0,
+  "limitations": [
+    "V8 metrics do not cover the standalone PostgreSQL harness processes.",
+    "Historical192fixture type errors remain; production compilation and new test typing pass.",
+    "Current suites do not make unpublished MCP contracts operational."
+  ],
+  "changed_application_files": [
+    "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+    "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.ts"
+  ],
+  "new_prearm_regression": {
+    "source_report_local": ".tmp/ai36-prearm-regression-final.json",
+    "sha256": "c33144657174d24a113482596d40f4621b386f424d9e31842e9e2dbd3b5a67b3",
+    "scope": "trusted local rejection versus uncertain arming response and earlier dispatch",
+    "tests_passed": 67,
+    "final_specs": {
+      "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.spec.ts": "fcaf00c5b3ac55758920f8ae402bef9ceff5a3cec4d1b81950683505d2a88f69",
+      "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.spec.ts": "6f30aab0a8e1ebb5e4e471bf1fcbda27a9235a47a831b3e5658abfa9e4b90d1f"
+    },
+    "note": "After the complete3549-test suite, two existing assertions were strengthened to require exact error identity; both changed spec files rerun, no production change afterward."
+  },
+  "previous_test_only_snapshot": "docs/evidence/nodia-ai-ai36-unit-validation-before-worker-fix.json"
+}

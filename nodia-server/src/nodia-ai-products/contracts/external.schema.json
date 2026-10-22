@@ -1,0 +1,641 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/nodia-ai/external-read/1",
+  "$defs": {
+    "EmptyInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {},
+      "required": []
+    },
+    "ModelsInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "mode": {
+          "enum": ["api_key", "token_plan_web", "token_plan_agentic"]
+        }
+      },
+      "required": ["provider_id"]
+    },
+    "CodexInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": ["provider_id"]
+    },
+    "Engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "available": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authenticated": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quota_observed_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["available", "authenticated", "quota_observed_at"]
+    },
+    "Engines": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "active_engine": {
+          "enum": ["web", "agentic", null]
+        },
+        "web": {
+          "$ref": "#/$defs/Engine"
+        },
+        "agentic": {
+          "$ref": "#/$defs/Engine"
+        }
+      },
+      "required": ["active_engine", "web", "agentic"]
+    },
+    "EnginesResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "engines": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Engines"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["engines"]
+    },
+    "HealthProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "key": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "mode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 32
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "healthy",
+            "degraded",
+            "expired",
+            "unconfigured",
+            "unverified"
+          ]
+        },
+        "last_check": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "latency_ms": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_model": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "has_connection": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "name",
+        "is_active",
+        "mode",
+        "status",
+        "last_check",
+        "latency_ms",
+        "selected_model",
+        "has_connection"
+      ]
+    },
+    "HealthResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "overall_status": {
+          "enum": ["healthy", "degraded", "incident"]
+        },
+        "providers": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/HealthProvider"
+          }
+        },
+        "engines": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Engines"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["timestamp", "overall_status", "providers", "engines"]
+    },
+    "QuotaWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "usedPercent": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "windowDurationMins": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resetsAt": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["usedPercent", "windowDurationMins", "resetsAt"]
+    },
+    "Quota": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "primary": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuotaWindow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "secondary": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuotaWindow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["id", "name", "primary", "secondary"]
+    },
+    "CodexResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "authenticated": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "plan_type": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quotas": {
+          "anyOf": [
+            {
+              "type": "array",
+              "maxItems": 32,
+              "items": {
+                "$ref": "#/$defs/Quota"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_inference_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "usage_allowed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "provider_id",
+        "available",
+        "authenticated",
+        "plan_type",
+        "checked_at",
+        "reason",
+        "quotas",
+        "last_inference_at",
+        "usage_allowed"
+      ]
+    },
+    "Model": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "display_name": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "context_window": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "display_name",
+        "description",
+        "context_window",
+        "capabilities"
+      ]
+    },
+    "ModelsProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "provider": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "mode": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "models_source": {
+          "enum": ["provider", "unavailable", "configuration"]
+        },
+        "models_observed_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_model": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "models": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Model"
+          }
+        }
+      },
+      "required": [
+        "provider_id",
+        "provider",
+        "mode",
+        "models_source",
+        "models_observed_at",
+        "selected_model",
+        "is_active",
+        "models"
+      ]
+    },
+    "ModelsResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 1,
+          "items": {
+            "$ref": "#/$defs/ModelsProvider"
+          }
+        }
+      },
+      "required": ["items"]
+    },
+    "EligibleConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "key": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "mode": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "active_mode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 32
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "is_default": {
+          "type": "boolean"
+        },
+        "can_use_model": {
+          "type": "boolean"
+        },
+        "default_model": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ocr_model": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supports_thinking": {
+          "type": "boolean"
+        },
+        "extended_thinking_enabled": {
+          "type": "boolean"
+        },
+        "eligibility_error": {
+          "enum": ["connection_not_eligible", null]
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "name",
+        "mode",
+        "active_mode",
+        "is_active",
+        "is_default",
+        "can_use_model",
+        "default_model",
+        "ocr_model",
+        "supports_thinking",
+        "extended_thinking_enabled",
+        "eligibility_error"
+      ]
+    },
+    "EligibleResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/EligibleConnection"
+          }
+        }
+      },
+      "required": ["items"]
+    }
+  }
+}

@@ -13,6 +13,8 @@ import { join } from 'node:path';
 import { CodexRpc } from '../dist/common/ai/codex/codex-rpc.js';
 import { CodexRuntimeService } from '../dist/common/ai/codex/codex-runtime.service.js';
 import { codexDocument } from '../dist/common/ai/codex/codex-document.js';
+import { CODEX_READ_ONLY_POLICY } from '../dist/common/ai/codex/codex-contract.js';
+import { API_INVOICE_SCHEMA } from '../dist/common/ai/api-invoice-contract.js';
 
 // No .env, database, real credentials, login or generation. Real native startup is
 // opt-in; fake JSONL and the actual PDF worker always run in disposable profiles.
@@ -20,6 +22,9 @@ const root = await realpath(
   await mkdtemp(join(tmpdir(), 'nodia-codex-contract-')),
 );
 let runtime;
+const originalBus = process.env.DBUS_SESSION_BUS_ADDRESS;
+const originalRuntimeDir = process.env.XDG_RUNTIME_DIR;
+const originalApiKey = process.env.OPENAI_API_KEY;
 try {
   if (process.platform !== 'win32') {
     const peer = join(root, 'peer');
@@ -29,6 +34,9 @@ try {
       { mode: 0o700 },
     );
     process.env.NODIA_SYNTHETIC_SECRET = 'must-not-be-inherited';
+    process.env.OPENAI_API_KEY = 'synthetic-must-not-be-inherited';
+    process.env.DBUS_SESSION_BUS_ADDRESS = `unix:path=${root}/synthetic-bus`;
+    process.env.XDG_RUNTIME_DIR = root;
     for (const method of [
       'peer/echo',
       'peer/tool',
@@ -48,6 +56,13 @@ try {
           const env = await rpc.request('peer/env');
           assert(!env.includes('NODIA_SYNTHETIC_SECRET'));
           assert(!env.includes('OPENAI_API_KEY'));
+          assert.deepEqual(await rpc.request('peer/keyringEnvironment'), {
+            bus:
+              process.platform === 'linux'
+                ? `unix:path=${root}/synthetic-bus`
+                : null,
+            runtime: process.platform === 'linux' ? root : null,
+          });
         } else if (method === 'peer/tool') {
           let rejected = 0;
           rpc.on('toolRejected', () => rejected++);
@@ -63,6 +78,14 @@ try {
       }
     }
     delete process.env.NODIA_SYNTHETIC_SECRET;
+    for (const [key, value] of [
+      ['DBUS_SESSION_BUS_ADDRESS', originalBus],
+      ['XDG_RUNTIME_DIR', originalRuntimeDir],
+      ['OPENAI_API_KEY', originalApiKey],
+    ]) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
   }
   const pdf = (pages) => {
     const objects = [
@@ -137,6 +160,21 @@ try {
     );
     const other = await runtime.get('43');
     assert.notEqual(other.cwd, lease.profile.cwd);
+    // Verify the production sandbox policy against the pinned native parser,
+    // not the fake JSONL peer. This profile is unauthenticated, uses no document
+    // or account, and is terminated immediately after turn/start acceptance.
+    const started = await other.rpc.request('thread/start', {
+      model: 'synthetic-model', cwd: other.cwd, ephemeral: true,
+      approvalPolicy: 'never', sandbox: 'read-only',
+    });
+    const turn = await other.rpc.request('turn/start', {
+      threadId: started.thread.id,
+      input: [{ type: 'text', text: 'Synthetic protocol compatibility check.' }],
+      model: 'synthetic-model', summary: 'none', approvalPolicy: 'never',
+      sandboxPolicy: CODEX_READ_ONLY_POLICY, outputSchema: API_INVOICE_SCHEMA,
+    });
+    assert.equal(typeof turn.turn.id, 'string');
+    await runtime.stop('43');
     if (process.platform !== 'win32')
       assert.equal((await lstat(join(root, 'profiles', '42'))).mode & 0o077, 0);
     lease.release();

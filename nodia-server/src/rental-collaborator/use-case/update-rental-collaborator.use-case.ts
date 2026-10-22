@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   ConflictException,
   Injectable,
@@ -15,12 +16,13 @@ export class UpdateRentalCollaboratorUseCase {
     private readonly service: RentalCollaboratorService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: UpdateRentalCollaboratorDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await configurationCommand(
       UpdateRentalCollaboratorDto,
       input,
@@ -28,7 +30,7 @@ export class UpdateRentalCollaboratorUseCase {
     );
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'collaborator.update',

@@ -1,3 +1,4 @@
+import { FinanceOwnerQueryDto } from './finance-owner-query.dto.js';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsIn, IsInt, IsObject, Max, Min } from 'class-validator';
@@ -14,7 +15,7 @@ function queryInteger(value: unknown): unknown {
   return value;
 }
 
-export class FinanceQueryDto {
+export class FinanceQueryDto extends FinanceOwnerQueryDto {
   @ApiPropertyOptional({ default: 1, minimum: 1 })
   @Transform(({ value }: { value: unknown }) => queryInteger(value))
   @IsInt()

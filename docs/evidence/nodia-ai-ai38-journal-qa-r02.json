@@ -1,0 +1,1033 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38-journal-final-QA",
+  "unit": {
+    "command": "npx vitest run --reporter=json --outputFile=../.tmp/ai38-journal-unit-r03-final.json",
+    "passed": 4387,
+    "failed": 0,
+    "total": 4387,
+    "files": 244,
+    "success": true,
+    "raw_report": {
+      "path": ".tmp/ai38-journal-unit-r03-final.json",
+      "sha256": "0c1d51001c9d56238bbd6d30c45de4a5730ad100ee618bda8f833a88e67d092b",
+      "bytes": 1726809
+    },
+    "suites": {
+      "src/action/use-case/create-action.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/action/use-case/delete-action.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/action/use-case/get-all-actions.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/action/use-case/update-action.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/ai-provider/use-case/api-model-discovery.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/ai-provider/use-case/codex-provider-contracts.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/ai-provider/use-case/create-ai-provider-event.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/ai-provider/use-case/execute-api-invoice.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 16
+      },
+      "src/ai-provider/use-case/execute-codex-invoice.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 20
+      },
+      "src/ai-provider/use-case/get-ai-provider-catalog.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/ai-provider/use-case/get-ai-providers-health.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 19
+      },
+      "src/ai-provider/use-case/get-all-ai-api-keys.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/ai-provider/use-case/get-all-ai-provider-events.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/ai-provider/use-case/get-all-ai-providers.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/ai-provider/use-case/get-gemini-engines.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 22
+      },
+      "src/ai-provider/use-case/get-selectable-models.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/ai-provider/use-case/get-supported-ai-providers.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 1
+      },
+      "src/ai-provider/use-case/manage-ai-provider-secure-session.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 40
+      },
+      "src/ai-provider/use-case/manage-codex-session.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 25
+      },
+      "src/ai-provider/use-case/manage-gemini-agentic-login.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 36
+      },
+      "src/ai-provider/use-case/manage-gemini-login.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 8
+      },
+      "src/ai-provider/use-case/save-ai-api-key.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 25
+      },
+      "src/ai-provider/use-case/save-ai-provider-catalog.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/ai-provider/use-case/save-ai-provider-configuration.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 28
+      },
+      "src/ai-provider/use-case/sync-ai-provider-models.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/auth/use-case/revoke-own-auth-session.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/auth/use-case/seed-auth.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/auth/use-case/session.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 27
+      },
+      "src/business/use-case/assign-business-collaborators.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/business/use-case/business-description.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/business/use-case/business-native-authority.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/business/use-case/create-business.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/business/use-case/get-business-by-id.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/business/use-case/get-my-businesses.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/business/use-case/update-business.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/authorization/use-case/check-action-permission.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/authorization/use-case/get-authorization-context.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/business-action/use-case/get-all-business-actions.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/business-action/use-case/save-business-action.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/finance-category/use-case/delete-finance-category.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/finance-category/use-case/update-finance-category.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/finance-movement/use-case/delete-finance-movement.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/finance-category-group/use-case/delete-finance-category-group.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/finance-category-group/use-case/update-finance-category-group.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/finance-obligation/use-case/delete-finance-obligation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/finance-obligation/use-case/finance-ledger.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 41
+      },
+      "src/finance-overview/use-case/get-finance-category-summary.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/finance-overview/use-case/get-finance-group-summary.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/finance-overview/use-case/get-finance-overview.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 21
+      },
+      "src/invoice/use-case/analysis-observations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/invoice/use-case/analyze-invoice.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 60
+      },
+      "src/invoice/use-case/analyze-web-without-storage.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 1
+      },
+      "src/invoice/use-case/create-invoice.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 17
+      },
+      "src/invoice/use-case/get-all-invoices.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/invoice/use-case/get-invoice-by-id.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/invoice/use-case/get-invoice-view-url.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/invoice/use-case/recover-invoice-uploads.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 8
+      },
+      "src/invoice/use-case/update-invoice.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 12
+      },
+      "src/invoice/use-case/verify-ia-providers.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/module-group/use-case/create-module-group.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/module-group/use-case/delete-module-group.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 14
+      },
+      "src/module-group/use-case/get-all-module-groups.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/module-group/use-case/update-module-group.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/module/use-case/create-module.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/module/use-case/delete-module.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/module/use-case/get-all-modules.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/module/use-case/update-module.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/nodia-ai/use-case/authorize-nodia-ai.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 25
+      },
+      "src/nodia-ai/use-case/execute-authorized-nodia-ai.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/nodia-ai-attachment/use-case/create-nodia-ai-attachment.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 15
+      },
+      "src/nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/nodia-ai-attachment/use-case/observe-nodia-ai-attachment-capabilities.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/nodia-ai-attachment/use-case/upload-nodia-ai-attachment.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 66
+      },
+      "src/nodia-ai-adapter/use-case/reconcile-gemini-nodia-ai-runtime.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/nodia-ai-common-preparation/use-case/build-nodia-ai-common-preparation-tools.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 28
+      },
+      "src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 44
+      },
+      "src/nodia-ai-common-reads/use-case/build-nodia-ai-common-read-tools.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 20
+      },
+      "src/nodia-ai-context/use-case/attest-nodia-ai-native-sources.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 18
+      },
+      "src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 32
+      },
+      "src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 28
+      },
+      "src/nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 16
+      },
+      "src/nodia-ai-context/use-case/load-nodia-ai-knowledge.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 16
+      },
+      "src/nodia-ai-context/use-case/load-nodia-ai-recovery-refs.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 15
+      },
+      "src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 25
+      },
+      "src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 89
+      },
+      "src/nodia-ai-confirmation/use-case/confirm-nodia-ai-proposal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 21
+      },
+      "src/nodia-ai-confirmation/use-case/control-nodia-ai-execution.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 29
+      },
+      "src/nodia-ai-confirmation/use-case/create-nodia-ai-confirmation-challenge.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 138
+      },
+      "src/nodia-ai-confirmation/use-case/nodia-ai-confirmation-availability.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 12
+      },
+      "src/nodia-ai-confirmation/use-case/validate-nodia-ai-confirmation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 19
+      },
+      "src/nodia-ai-conversation/use-case/admit-nodia-ai-message.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 20
+      },
+      "src/nodia-ai-conversation/use-case/authorize-nodia-ai-conversation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/nodia-ai-conversation/use-case/create-nodia-ai-conversation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/nodia-ai-conversation/use-case/expire-nodia-ai-conversations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-conversation/use-case/list-nodia-ai-messages.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/nodia-ai-conversation/use-case/observe-nodia-ai-eligibility.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 14
+      },
+      "src/nodia-ai-conversation/use-case/project-nodia-ai-conversation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 12
+      },
+      "src/nodia-ai-conversation/use-case/update-nodia-ai-conversation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/nodia-ai-conversation/use-case/update-nodia-ai-routing.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 12
+      },
+      "src/nodia-ai-conversation/use-case/validate-nodia-ai-conversation-input.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 24
+      },
+      "src/nodia-ai-conversation/use-case/validate-nodia-ai-snapshots.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 24
+      },
+      "src/nodia-ai-context-snapshot/use-case/load-nodia-ai-context-history.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 29
+      },
+      "src/nodia-ai-finance-catalog/use-case/build-nodia-ai-finance-catalog-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 28
+      },
+      "src/nodia-ai-core-operations/use-case/build-nodia-ai-core-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 89
+      },
+      "src/nodia-ai-execution/use-case/claim-nodia-ai-execution.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/nodia-ai-execution/use-case/execute-nodia-ai-financial-execution.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 60
+      },
+      "src/nodia-ai-execution/use-case/execute-nodia-ai-local-execution.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/nodia-ai-execution/use-case/recover-nodia-ai-executions.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-finance-ledger/use-case/build-nodia-ai-finance-ledger-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 43
+      },
+      "src/nodia-ai-invoice-analysis/use-case/build-nodia-ai-invoice-analysis-tool.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 44
+      },
+      "src/nodia-ai-finance-effect/use-case/execute-nodia-ai-finance-effect.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/nodia-ai-finance-effect/use-case/execute-nodia-ai-finance-movement-effect.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 52
+      },
+      "src/nodia-ai-invoice-attachment/use-case/stage-nodia-ai-invoice-attachment.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 8
+      },
+      "src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 73
+      },
+      "src/nodia-ai-operations/use-case/observe-nodia-ai-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 22
+      },
+      "src/nodia-ai-operations/use-case/report-nodia-ai-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/nodia-ai-products/use-case/compose-nodia-ai-read-families.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/nodia-ai-observation/use-case/get-nodia-ai-tool-result.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 41
+      },
+      "src/nodia-ai-observation/use-case/observe-nodia-ai-proposals.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 22
+      },
+      "src/nodia-ai-observation/use-case/observe-nodia-ai-run.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/nodia-ai-proposal/use-case/cancel-nodia-ai-proposal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/nodia-ai-proposal/use-case/canonicalize-nodia-ai-proposal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 44
+      },
+      "src/nodia-ai-proposal/use-case/get-nodia-ai-proposal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 61
+      },
+      "src/nodia-ai-proposal/use-case/prepare-nodia-ai-proposal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/nodia-ai-proposal/use-case/prepare-nodia-ai-remaining-workflow.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 22
+      },
+      "src/nodia-ai-proposal/use-case/prepare-nodia-ai-workflow.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 33
+      },
+      "src/nodia-ai-proposal/use-case/update-nodia-ai-proposal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 22
+      },
+      "src/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 24
+      },
+      "src/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 35
+      },
+      "src/nodia-ai-preference/use-case/get-nodia-ai-preference-options.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/nodia-ai-preference/use-case/list-nodia-ai-preferences.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 8
+      },
+      "src/nodia-ai-preference/use-case/nodia-ai-preference-reader.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/nodia-ai-preference/use-case/prepare-nodia-ai-preference.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/nodia-ai-proposal-review/use-case/get-nodia-ai-proposal-review.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 12
+      },
+      "src/nodia-ai-recovery/use-case/encrypt-nodia-ai-backup.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 18
+      },
+      "src/nodia-ai-recovery/use-case/manage-nodia-ai-backups.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 21
+      },
+      "src/nodia-ai-recovery/use-case/prepare-nodia-ai-restore.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-recovery/use-case/update-nodia-ai-external-state.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 26
+      },
+      "src/nodia-ai-recovery/use-case/validate-nodia-ai-restore.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 25
+      },
+      "src/nodia-ai-rental-configuration/use-case/build-nodia-ai-rental-configuration-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 56
+      },
+      "src/nodia-ai-rental-money/use-case/build-nodia-ai-rental-money-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 64
+      },
+      "src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 66
+      },
+      "src/nodia-ai-rental-operations/use-case/build-nodia-ai-rental-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 53
+      },
+      "src/nodia-ai-rental-reservation/use-case/build-nodia-ai-rental-reservation-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 47
+      },
+      "src/nodia-ai-runtime/use-case/assert-nodia-ai-operation-mode.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 46
+      },
+      "src/nodia-ai-runtime/use-case/claim-nodia-ai-job.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 18
+      },
+      "src/nodia-ai-runtime/use-case/cleanup-nodia-ai-attachments.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 8
+      },
+      "src/nodia-ai-runtime/use-case/maintain-nodia-ai-runtime.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/nodia-ai-runtime/use-case/reconcile-nodia-ai-runtime.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/nodia-ai-runtime/use-case/recover-nodia-ai-jobs.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/nodia-ai-runtime/use-case/retry-nodia-ai-job.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 40
+      },
+      "src/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-runtime/use-case/validate-nodia-ai-runtime-policy.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-reports/use-case/compile-nodia-ai-report.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 38
+      },
+      "src/nodia-ai-reports/use-case/compose-nodia-ai-report.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 32
+      },
+      "src/nodia-ai-reports/use-case/describe-nodia-ai-reports.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/nodia-ai-reports/use-case/nodia-ai-report-registry.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 17
+      },
+      "src/nodia-ai-reports/use-case/run-nodia-ai-report.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 28
+      },
+      "src/nodia-ai-secure-flow/use-case/durable-nodia-ai-secure-flow.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 23
+      },
+      "src/nodia-ai-secure-flow/use-case/manage-nodia-ai-secure-flow.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 41
+      },
+      "src/nodia-ai-secure-flow/use-case/pause-nodia-ai-secure-flow.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-secure-flow/use-case/recover-nodia-ai-secure-flows.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 45
+      },
+      "src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 43
+      },
+      "src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 101
+      },
+      "src/nodia-ai-write-tools/use-case/core-provider-write-contracts.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 105
+      },
+      "src/nodia-ai-write-tools/use-case/decode-nodia-ai-write-json.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 20
+      },
+      "src/nodia-ai-write-tools/use-case/finance-business-write-contracts.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 62
+      },
+      "src/nodia-ai-write-tools/use-case/reservation-write-contracts.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 49
+      },
+      "src/nodia-ai-write-tools/use-case/secure-flow-contracts.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 32
+      },
+      "src/nodia-ai-tools/use-case/compose-nodia-ai-published-families.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/nodia-ai-tools/use-case/discover-nodia-ai-tools.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 10
+      },
+      "src/nodia-ai-tools/use-case/execute-nodia-ai-report-tool.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 54
+      },
+      "src/nodia-ai-tools/use-case/nodia-ai-report-tools.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 41
+      },
+      "src/nodia-ai-tools/use-case/nodia-ai-tool-selection-flow.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 47
+      },
+      "src/nodia-ai-tools/use-case/select-nodia-ai-turn-tools.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 28
+      },
+      "src/product/use-case/create-bulk-product-logs.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/create-bulk-products.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/create-product-log.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/create-product.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/export-products-csv.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/product/use-case/get-all-product-logs.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/get-all-products.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 44
+      },
+      "src/product/use-case/get-product-by-id.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/get-product-log-by-id.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/product-bulk-integrity.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/product/use-case/product-native-transactions.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/product/use-case/query-product-logs.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/product/use-case/update-bulk-product-logs.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/update-bulk-products.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/update-product-log.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/product/use-case/update-product.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/provider-contact/use-case/create-provider-contact.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 23
+      },
+      "src/provider-contact/use-case/get-provider-contacts.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/provider-contact/use-case/update-provider-contact.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/provider/use-case/create-bulk-providers.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/provider/use-case/create-provider.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/provider/use-case/export-providers-csv.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/provider/use-case/get-all-providers.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/provider/use-case/get-provider-by-id.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/provider/use-case/import-providers.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/provider/use-case/update-bulk-providers.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 9
+      },
+      "src/provider/use-case/update-provider.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 5
+      },
+      "src/rental-audit/use-case/get-rental-audit-events.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/rental-block/use-case/create-rental-block.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/rental-calendar/use-case/get-rental-calendar.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/rental-navigation/use-case/seed-rental-navigation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 2
+      },
+      "src/rental-operation/use-case/get-rental-operation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/rental-expense/use-case/create-rental-expense.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 6
+      },
+      "src/rental-overview/use-case/get-rental-overview.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/rental-payment/use-case/create-rental-payment.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 11
+      },
+      "src/rental-payment/use-case/get-rental-payments.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/rental-payment/use-case/void-rental-payment.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/rental-property/use-case/rental-configuration.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 71
+      },
+      "src/rental-turnover/use-case/update-rental-turnover.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 14
+      },
+      "src/role/use-case/create-role.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/role/use-case/delete-role.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 15
+      },
+      "src/role/use-case/get-all-roles.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 3
+      },
+      "src/role/use-case/save-role.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 1
+      },
+      "src/role/use-case/update-role.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/rental-reservation/use-case/cancel-rental-reservation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 15
+      },
+      "src/rental-reservation/use-case/confirm-rental-reservation.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 40
+      },
+      "src/user/use-case/create-user.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/user/use-case/get-all-users.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/user/use-case/update-user.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 4
+      },
+      "src/nodia-ai-products/ai-settings/use-case/read-ai-settings.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 7
+      },
+      "src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 27
+      },
+      "src/nodia-ai-products/artifacts/use-case/download-nodia-ai-artifact.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 13
+      },
+      "src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 19
+      },
+      "src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 14
+      },
+      "src/nodia-ai-products/external/use-case/read-external.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 21
+      },
+      "src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 12
+      },
+      "src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.spec.ts": {
+        "status": "passed",
+        "tests": 27
+      }
+    }
+  },
+  "production_typecheck": {
+    "command": "npx tsc --project tsconfig.build.json --noEmit --incremental false",
+    "exit": 0,
+    "log": {
+      "path": ".tmp/ai38-journal-typecheck-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "build": {
+    "command": "npm run build",
+    "exit": 0,
+    "log": {
+      "path": ".tmp/ai38-journal-build-r05.log",
+      "sha256": "9282cb481ec486c9aad142494e776afefe444e791c39fb179987f5002b57de1a",
+      "bytes": 2101
+    }
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exit": 0,
+    "errors": 0,
+    "historical_warnings": 3,
+    "log": {
+      "path": ".tmp/ai38-journal-lint-final.log",
+      "sha256": "9b0f5eec3b6d1e8aa9a2855044fc288ac40d960d276d5b24230a32a5f3e08a50",
+      "bytes": 601
+    }
+  },
+  "knowledge": {
+    "sources": 59,
+    "excluded": 28,
+    "documents": 31,
+    "fragments": 31,
+    "capabilities": 74,
+    "release": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+    "new_publication_or_approval": false
+  }
+}

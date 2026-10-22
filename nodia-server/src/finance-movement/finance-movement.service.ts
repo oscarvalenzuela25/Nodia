@@ -1,3 +1,7 @@
+import {
+  runFinanceScope,
+  type FinanceActor,
+} from '../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { DataSource, type EntityManager } from 'typeorm';
 import { FinanceMovement } from './entities/finance-movement.entity.js';
@@ -9,6 +13,16 @@ import {
 
 @Injectable()
 export class FinanceMovementService {
+  withScope<T>(
+    actor: FinanceActor,
+    work: (scope: {
+      manager: EntityManager;
+      ownerId: string;
+      actorId: string;
+    }) => Promise<T>,
+  ): Promise<T> {
+    return runFinanceScope(this.dataSource, actor, work, 'READ COMMITTED');
+  }
   constructor(private readonly dataSource: DataSource) {}
 
   findOne(
@@ -22,8 +36,12 @@ export class FinanceMovementService {
     });
   }
 
-  list(userId: string, query: FinanceQueryDto) {
-    const qb = this.dataSource
+  list(
+    userId: string,
+    query: FinanceQueryDto,
+    manager: EntityManager = this.dataSource.manager,
+  ) {
+    const qb = manager
       .getRepository(FinanceMovement)
       .createQueryBuilder('movement')
       .where('movement.user_id = :userId', { userId })

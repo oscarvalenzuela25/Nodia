@@ -41,13 +41,13 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
   });
 
   const [isActive, setIsActive] = useState<boolean>(
-    initialData?.isActive ?? true
+    initialData?.isActive ?? true,
   );
   const [moduleKey, setModuleKey] = useState<string>(initialData?.key ?? "");
   const [link, setLink] = useState<string>(initialData?.link ?? "");
   const [icon, setIcon] = useState<string | null>(initialData?.icon ?? null);
   const [moduleGroupId, setModuleGroupId] = useState<string | null>(
-    initialData?.module_group_id ?? null
+    initialData?.module_group_id ?? null,
   );
   const [nameTranslations, setNameTranslations] = useState<
     Record<string, string>
@@ -225,19 +225,20 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           label={t("modules:form.key", "Identificador")}
           value={moduleKey}
           onChangeKey={setModuleKey}
+          keyReadOnly={isEditing}
           placeholder={t(
             "modules:form.key_placeholder",
-            "ej: users, roles, settings"
+            "ej: users, roles, settings",
           )}
           translations={nameTranslations}
           onChangeTranslations={setNameTranslations}
           sectionTitle={t(
             "modules:form.translations_title",
-            "Traducciones del Identificador"
+            "Traducciones del Identificador",
           )}
           sectionSubtitle={t(
             "modules:form.translations_subtitle",
-            "Define cómo se mostrará el nombre del módulo en cada idioma."
+            "Define cómo se mostrará el nombre del módulo en cada idioma.",
           )}
           required
           autoFocus={!isEditing}
@@ -251,11 +252,11 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           onChange={(val) => setLink(val ?? "")}
           placeholder={t(
             "modules:form.link_select_placeholder",
-            "Seleccionar ruta disponible..."
+            "Seleccionar ruta disponible...",
           )}
           searchPlaceholder={t(
             "modules:form.link_search_placeholder",
-            "Buscar ruta..."
+            "Buscar ruta...",
           )}
           helperText={
             link.trim()
@@ -264,7 +265,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
                 }`
               : t(
                   "modules:form.link_helper",
-                  "Ruta relativa del módulo en la aplicación."
+                  "Ruta relativa del módulo en la aplicación.",
                 )
           }
           required
@@ -276,10 +277,13 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           label={t("modules:form.icon", "Ícono")}
           value={icon}
           onChange={setIcon}
-          placeholder={t("modules:form.icon_placeholder", "Por defecto (automático)")}
+          placeholder={t(
+            "modules:form.icon_placeholder",
+            "Por defecto (automático)",
+          )}
           helperText={t(
             "modules:form.icon_helper",
-            "Selecciona un ícono representativo de Material-UI para este elemento."
+            "Selecciona un ícono representativo de Material-UI para este elemento.",
           )}
           disabled={isSubmitting}
           data-testid="module-icon-select"
@@ -292,7 +296,7 @@ const ModuleModalInner: FC<ModuleModalProps> = ({
           onChange={setModuleGroupId}
           placeholder={t(
             "modules:form.group_placeholder",
-            "Seleccionar grupo..."
+            "Seleccionar grupo...",
           )}
           required
           disabled={isSubmitting || isLoadingGroups}

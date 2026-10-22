@@ -24,6 +24,13 @@ import { GetFinanceMovementByIdUseCase } from './use-case/get-finance-movement-b
     GetFinanceMovementsUseCase,
     GetFinanceMovementByIdUseCase,
   ],
-  exports: [FinanceMovementService],
+  exports: [
+    UpdateFinanceMovementUseCase,
+    DeleteFinanceMovementUseCase,
+    CreateFinanceMovementUseCase,
+    FinanceMovementService,
+    GetFinanceMovementsUseCase,
+    GetFinanceMovementByIdUseCase,
+  ],
 })
 export class FinanceMovementModule {}

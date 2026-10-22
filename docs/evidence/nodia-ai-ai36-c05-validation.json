@@ -1,0 +1,4451 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05",
+  "status": "selective_publication_local_QA_verified_SQL_or_real_acceptance_partial",
+  "scope": "offline_consolidation_of_distinct_publication_unit_compiled_SQL_and_real_provider_receipts",
+  "server_unit": {
+    "path": ".tmp/ai36-c05-server-final3.json",
+    "sha256": "ac5386ec93e54ee795a13b4b3450a0512268103ad85ddc4af04656f05b0d2249",
+    "tests": 4159,
+    "passed": 4159,
+    "failed": 0,
+    "omitted": 0,
+    "todo": 0,
+    "files": 232,
+    "failed_files": [],
+    "max_workers": 2
+  },
+  "focused_process_runtime": {
+    "path": ".tmp/ai36-c05-process-runtime-final3.json",
+    "sha256": "74a3441b02e91be1b36c4b65948f7d1ae92740e41552ba0a364323204df11847",
+    "tests": 110,
+    "passed": 110,
+    "failed": 0,
+    "omitted": 0,
+    "todo": 0,
+    "files": 2,
+    "failed_files": [],
+    "scope": "110_passed_with_bounded_authorized_discovery_metadata_index_provenance_checks"
+  },
+  "focused_discovery_index": {
+    "path": ".tmp/ai36-c05-discovery-index-final.json",
+    "sha256": "47c5657471ebcc01117c5d6fbe38dbaf29b467c5f62103677bc3b9fb7e4f427c",
+    "tests": 75,
+    "passed": 75,
+    "failed": 0,
+    "omitted": 0,
+    "todo": 0,
+    "files": 2,
+    "failed_files": [],
+    "scope": "47_provider_flow_and_28_context_builder_tests_for_complete_bounded_authorized_catalog_metadata_index_without_grant_activation"
+  },
+  "focused_selection_intermediate": {
+    "path": ".tmp/ai36-c05-selection-final.json",
+    "sha256": "ad1d5b74c2ae3f358f9db6a478db0958e5b27855937fe15c609634d965d2a942",
+    "tests": 205,
+    "passed": 205,
+    "failed": 0,
+    "omitted": 0,
+    "todo": 0,
+    "files": 8,
+    "failed_files": [],
+    "scope": "205_passed_before_removing_two_unwanted_HTTP_profile_tests_not_summed_into_final_suite"
+  },
+  "focused_observation": {
+    "path": ".tmp/ai36-c05-selection-observation.json",
+    "sha256": "99fb12545174e70bf5abb090d586c49702bfc1a41abaa88b3addc95e63729e39",
+    "tests": 41,
+    "passed": 41,
+    "failed": 0,
+    "omitted": 0,
+    "todo": 0,
+    "files": 1,
+    "failed_files": []
+  },
+  "quality": {
+    "build": "complete_final_build_chain_verified",
+    "production_types": "passed",
+    "lint_errors": 0,
+    "existing_lint_warnings": 3,
+    "global_fixture_types": {
+      "existing_errors": 192,
+      "existing_files": 48,
+      "added_errors": 0,
+      "comparison": "CRLF_to_LF_then_error_source_coordinates_replaced_only",
+      "normalized_semantic_sha256": "bb66ca2330e1910236bc58539cf1af47787393c4dd807ce4b549afcd62036aed",
+      "raw_final": {
+        "path": ".tmp/ai36-c05-fixture-types-final3.log",
+        "sha256": "11b2024594a62215d4e8f6b0e726735c7fa4a8dd887a6a4e41c8724dfe641051"
+      },
+      "raw_C04_baseline": {
+        "path": ".tmp/ai36-c04-server-fixture-types-final.log",
+        "sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+      }
+    }
+  },
+  "publication": {
+    "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+    "catalog_release": "nodia-ai-ai15-reads/1",
+    "preserved_reads": 67,
+    "new_capabilities": [
+      "nodia_attachments_describe",
+      "nodia_finance_movements_prepare_create",
+      "nodia_operations_get",
+      "nodia_preferences_list",
+      "nodia_preferences_prepare",
+      "nodia_proposals_get",
+      "nodia_workflows_prepare"
+    ],
+    "global_capabilities": 74,
+    "documents": 31,
+    "fragments": 31,
+    "source_paths": 59,
+    "excluded": 28,
+    "preserved_prior_content_hashes": 27,
+    "preserved_prior_MCP_receipt_hashes": 67,
+    "unpublished_candidates": 77
+  },
+  "staged_selection": {
+    "default": "automatic_discovery",
+    "discovery_technical_descriptors": 8,
+    "execution_technical_descriptors": 7,
+    "selectable_capability_IDs": {
+      "minimum": 1,
+      "maximum": 67,
+      "unique": true
+    },
+    "catalog_tools": 74,
+    "catalog_utf8_bytes": 131072,
+    "json_cardinality": 128,
+    "sql_grant_cardinality": 128,
+    "assembled_context_utf8_bytes": 262144,
+    "accumulated_provider_generations": 3,
+    "delegations": 1,
+    "compaction_consumes_same_generation_budget": true,
+    "automatic_uncertain_retries": 0,
+    "activation": "terminal_proof_ACK_then_local_stage_replaces_validated_allowlist_within_frozen_modules_scope_and_current_permissions",
+    "selection_tool_absent_during_execution": true,
+    "explicit_profiles": "programmatic_internal_backend_WeakSet_options_only_no_public_HTTP_field_or_UI_profile_selector",
+    "finance_assistance_profile_capabilities": 18,
+    "initial_catalog_index": {
+      "scope": "complete_current_published_and_actor_authorized_metadata_grouped_by_module_and_resource",
+      "schemas_or_handlers_included": false,
+      "capability_grant_activated_by_metadata": false,
+      "current_catalog_hash_and_context_source_provenance_revalidated": true,
+      "cumulative_tool_calls_budget_unchanged": 12
+    }
+  },
+  "SQL": {
+    "status": "passed",
+    "checks": 40,
+    "evidence": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+      "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+    },
+    "earlier_failures": 2,
+    "transport": "synthetic",
+    "publication": "actual_compiled_production_bundle_no_synthetic_override",
+    "attempts": [
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt01.json",
+        "sha256": "28a2c17a8785a25c4f7e4e5035dd7c57b53cc83b277bc0bbadb5a36b0e6608cf",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt01-manifest.json",
+          "sha256": "2733c2dfa51f2579f1bc96c298921ec69da4285b6736adc8a12a01e0abbe9935"
+        },
+        "logs": {
+          "stdout": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt01-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt01-stderr.log",
+            "sha256": "37990e91f0cf7c39607fce9894a7d288fae347e66179c238c13350342c7928a1"
+          }
+        },
+        "attempt": "attempt01",
+        "outer_status": "failed",
+        "assertion_status": null,
+        "verified_pass": false,
+        "exit_code": 1,
+        "timeout": false,
+        "completed_checks": null,
+        "check_names": [],
+        "compiled_files_verified": 2804,
+        "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+        "started_at_utc": "2026-10-19T02:56:57.890180+00:00",
+        "completed_at_utc": "2026-10-19T02:57:13.089034+00:00",
+        "actual_provider_generations": 0,
+        "provider_dispatch_attempts": null,
+        "synthetic_provider_dispatches": null,
+        "failure_category": "harness_or_preassertion_failure",
+        "disposable_containers_remaining": 0,
+        "operational_runtime_unchanged": null,
+        "unresolved_native_or_proof_state": null
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt02.json",
+        "sha256": "ef36bb5614d46a5384ddd5c0fce5122f0c01561e8f6cfbe20ca8d2adde40a04d",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt02-manifest.json",
+          "sha256": "7d69837c3355caff19f689f2253d4e40c5aadb3f705f6682f5e678f0493410ee"
+        },
+        "logs": {
+          "stdout": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt02-stdout.log",
+            "sha256": "cc0451fbe0cd305a08242e791cf4cbd4d7e7aca0233a9acf9f58cfde8b6fac23"
+          },
+          "stderr": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt02-stderr.log",
+            "sha256": "1a6b80358d250afd4565efa2998445e207b5130ac6ae26fa514bc4b90071223e"
+          }
+        },
+        "attempt": "attempt02",
+        "outer_status": "failed",
+        "assertion_status": "failed",
+        "verified_pass": false,
+        "exit_code": 1,
+        "timeout": false,
+        "completed_checks": 4,
+        "check_names": [
+          "production bundle publishes the seven new candidates without any synthetic publication override",
+          "web_delegated_discovery_ACK_execution_all_seven: discovery exposes selection without business capability descriptors",
+          "web_delegated_discovery_ACK_execution_all_seven: same selection callback returns one durable receipt without granting tools",
+          "web_delegated_discovery_ACK_execution_all_seven: a business callback remains denied in the original discovery generation"
+        ],
+        "compiled_files_verified": 2804,
+        "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+        "started_at_utc": "2026-10-19T02:58:16.401896+00:00",
+        "completed_at_utc": "2026-10-19T02:58:31.253483+00:00",
+        "actual_provider_generations": 0,
+        "provider_dispatch_attempts": null,
+        "synthetic_provider_dispatches": null,
+        "failure_category": "AssertionError",
+        "disposable_containers_remaining": 0,
+        "operational_runtime_unchanged": null,
+        "unresolved_native_or_proof_state": null
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt03.json",
+        "sha256": "9f1210a41e23bffe9ac599e09a956838092cef7ebd812cb7d426675b55cc56e9",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt03-manifest.json",
+          "sha256": "20c1d42f54ec30d4cbe5a4ac5f6f7543264344262511fb014ba485712cfbb154"
+        },
+        "logs": {
+          "stdout": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt03-stdout.log",
+            "sha256": "165ff5b9e95d15b960e45d086006102cdfd2455cdc766eac9157d2523d1f6137"
+          },
+          "stderr": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt03-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "attempt": "attempt03",
+        "outer_status": "passed",
+        "assertion_status": "passed",
+        "verified_pass": true,
+        "exit_code": 0,
+        "timeout": false,
+        "completed_checks": 40,
+        "check_names": [
+          "production bundle publishes the seven new candidates without any synthetic publication override",
+          "web_delegated_discovery_ACK_execution_all_seven: discovery exposes selection without business capability descriptors",
+          "web_delegated_discovery_ACK_execution_all_seven: same selection callback returns one durable receipt without granting tools",
+          "web_delegated_discovery_ACK_execution_all_seven: a business callback remains denied in the original discovery generation",
+          "web_delegated_discovery_ACK_execution_all_seven: execution starts only after exact discovery proof acknowledgement",
+          "all seven new published adapters execute through the selected production gateway",
+          "Web and two Agentic generations finish through the real worker state machine",
+          "the continuing delegated execution charges exactly one delegation and three provider dispatches",
+          "all delegated Agentic generations preserve the frozen target mode and model",
+          "model preparation has no additional financial or accepted-memory effect before human HTTP confirmation",
+          "exact human workflow confirmation applies memory and expense once with SQL receipts",
+          "ACK_failure_does_not_activate_or_dispatch: discovery exposes selection without business capability descriptors",
+          "ACK_failure_does_not_activate_or_dispatch: same selection callback returns one durable receipt without granting tools",
+          "ACK_failure_does_not_activate_or_dispatch: a business callback remains denied in the original discovery generation",
+          "failed native ACK retains discovery grant and prevents a second inference",
+          "ACK_failure_does_not_activate_or_dispatch: execution starts only after exact discovery proof acknowledgement",
+          "retrying only the ACK and undispatched selection stage resumes without replaying discovery",
+          "unknown_discovery_never_activates: discovery exposes selection without business capability descriptors",
+          "unknown_discovery_never_activates: same selection callback returns one durable receipt without granting tools",
+          "unknown_discovery_never_activates: a business callback remains denied in the original discovery generation",
+          "lost discovery reply leaves selection unactivated and dispatch unknown without replay",
+          "uncertain selection never receives the selected business grant",
+          "explicit synthetic native reconciliation closes uncertainty without another generation",
+          "destination_revoked_after_selection: discovery exposes selection without business capability descriptors",
+          "destination_revoked_after_selection: same selection callback returns one durable receipt without granting tools",
+          "destination_revoked_after_selection: a business callback remains denied in the original discovery generation",
+          "destination revocation before activation denies selected capabilities without another inference",
+          "catalog_hash_changes_after_selection: discovery exposes selection without business capability descriptors",
+          "catalog_hash_changes_after_selection: same selection callback returns one durable receipt without granting tools",
+          "catalog_hash_changes_after_selection: a business callback remains denied in the original discovery generation",
+          "stale catalog identity denies activation without silently reselecting or dispatching",
+          "selected_execution_respects_remaining_dispatch_budget: discovery exposes selection without business capability descriptors",
+          "selected_execution_respects_remaining_dispatch_budget: same selection callback returns one durable receipt without granting tools",
+          "selected_execution_respects_remaining_dispatch_budget: a business callback remains denied in the original discovery generation",
+          "selected execution reserves its own provider dispatch and cannot bypass an exhausted budget",
+          "delegated_source_attempt_cannot_be_replaced: discovery exposes selection without business capability descriptors",
+          "delegated_source_attempt_cannot_be_replaced: same selection callback returns one durable receipt without granting tools",
+          "delegated_source_attempt_cannot_be_replaced: a business callback remains denied in the original discovery generation",
+          "tampering with the acknowledged delegated source cannot authorize a second delegated execution",
+          "all synthetic SQL scenarios finish without pending jobs attempts or runtime slots"
+        ],
+        "compiled_files_verified": 2803,
+        "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+        "started_at_utc": "2026-10-19T03:01:35.269489+00:00",
+        "completed_at_utc": "2026-10-19T03:02:01.511604+00:00",
+        "actual_provider_generations": 0,
+        "provider_dispatch_attempts": null,
+        "synthetic_provider_dispatches": 11,
+        "failure_category": null,
+        "disposable_containers_remaining": 0,
+        "operational_runtime_unchanged": null,
+        "unresolved_native_or_proof_state": null
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+        "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04-manifest.json",
+          "sha256": "319438420bb011d91b8a77c3b778142bcfa1b39d2547bed81094945e8123fbad"
+        },
+        "logs": {
+          "stdout": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04-stdout.log",
+            "sha256": "e957b714ac1f9b740a6d465ea84f6ca53c2b79bfdc9c93c19db1e890afbffb60"
+          },
+          "stderr": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "attempt": "attempt04",
+        "outer_status": "passed",
+        "assertion_status": "passed",
+        "verified_pass": true,
+        "exit_code": 0,
+        "timeout": false,
+        "completed_checks": 40,
+        "check_names": [
+          "production bundle publishes the seven new candidates without any synthetic publication override",
+          "web_delegated_discovery_ACK_execution_all_seven: discovery exposes selection without business capability descriptors",
+          "web_delegated_discovery_ACK_execution_all_seven: same selection callback returns one durable receipt without granting tools",
+          "web_delegated_discovery_ACK_execution_all_seven: a business callback remains denied in the original discovery generation",
+          "web_delegated_discovery_ACK_execution_all_seven: execution starts only after exact discovery proof acknowledgement",
+          "all seven new published adapters execute through the selected production gateway",
+          "Web and two Agentic generations finish through the real worker state machine",
+          "the continuing delegated execution charges exactly one delegation and three provider dispatches",
+          "all delegated Agentic generations preserve the frozen target mode and model",
+          "model preparation has no additional financial or accepted-memory effect before human HTTP confirmation",
+          "exact human workflow confirmation applies memory and expense once with SQL receipts",
+          "ACK_failure_does_not_activate_or_dispatch: discovery exposes selection without business capability descriptors",
+          "ACK_failure_does_not_activate_or_dispatch: same selection callback returns one durable receipt without granting tools",
+          "ACK_failure_does_not_activate_or_dispatch: a business callback remains denied in the original discovery generation",
+          "failed native ACK retains discovery grant and prevents a second inference",
+          "ACK_failure_does_not_activate_or_dispatch: execution starts only after exact discovery proof acknowledgement",
+          "retrying only the ACK and undispatched selection stage resumes without replaying discovery",
+          "unknown_discovery_never_activates: discovery exposes selection without business capability descriptors",
+          "unknown_discovery_never_activates: same selection callback returns one durable receipt without granting tools",
+          "unknown_discovery_never_activates: a business callback remains denied in the original discovery generation",
+          "lost discovery reply leaves selection unactivated and dispatch unknown without replay",
+          "uncertain selection never receives the selected business grant",
+          "explicit synthetic native reconciliation closes uncertainty without another generation",
+          "destination_revoked_after_selection: discovery exposes selection without business capability descriptors",
+          "destination_revoked_after_selection: same selection callback returns one durable receipt without granting tools",
+          "destination_revoked_after_selection: a business callback remains denied in the original discovery generation",
+          "destination revocation before activation denies selected capabilities without another inference",
+          "catalog_hash_changes_after_selection: discovery exposes selection without business capability descriptors",
+          "catalog_hash_changes_after_selection: same selection callback returns one durable receipt without granting tools",
+          "catalog_hash_changes_after_selection: a business callback remains denied in the original discovery generation",
+          "stale catalog identity denies activation without silently reselecting or dispatching",
+          "selected_execution_respects_remaining_dispatch_budget: discovery exposes selection without business capability descriptors",
+          "selected_execution_respects_remaining_dispatch_budget: same selection callback returns one durable receipt without granting tools",
+          "selected_execution_respects_remaining_dispatch_budget: a business callback remains denied in the original discovery generation",
+          "selected execution reserves its own provider dispatch and cannot bypass an exhausted budget",
+          "delegated_source_attempt_cannot_be_replaced: discovery exposes selection without business capability descriptors",
+          "delegated_source_attempt_cannot_be_replaced: same selection callback returns one durable receipt without granting tools",
+          "delegated_source_attempt_cannot_be_replaced: a business callback remains denied in the original discovery generation",
+          "tampering with the acknowledged delegated source cannot authorize a second delegated execution",
+          "all synthetic SQL scenarios finish without pending jobs attempts or runtime slots"
+        ],
+        "compiled_files_verified": 2803,
+        "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+        "started_at_utc": "2026-10-19T03:13:52.930061+00:00",
+        "completed_at_utc": "2026-10-19T03:14:14.896575+00:00",
+        "actual_provider_generations": 0,
+        "provider_dispatch_attempts": null,
+        "synthetic_provider_dispatches": 11,
+        "failure_category": null,
+        "disposable_containers_remaining": 0,
+        "operational_runtime_unchanged": null,
+        "unresolved_native_or_proof_state": null
+      }
+    ],
+    "checks_not_summed_across_attempts": true,
+    "actual_provider_generations": 0,
+    "synthetic_provider_dispatches_last_attempt": 11,
+    "synthetic_terminal_ACKs_last_attempt": 11,
+    "synthetic_failed_ACKs_last_attempt": 1,
+    "operator_HTTP_requests_last_attempt": 6,
+    "scenarios_last_attempt": [
+      {
+        "name": "web_delegated_discovery_ACK_execution_all_seven",
+        "final_state": "completed",
+        "error_code": null,
+        "provider_dispatches_used": 3,
+        "delegations_used": 1,
+        "tool_calls_used": 10,
+        "final_selection_phase": "execution"
+      },
+      {
+        "name": "ACK_failure_does_not_activate_or_dispatch",
+        "final_state": "completed",
+        "error_code": null,
+        "provider_dispatches_used": 2,
+        "delegations_used": 0,
+        "tool_calls_used": 4,
+        "final_selection_phase": "execution"
+      },
+      {
+        "name": "unknown_discovery_never_activates",
+        "final_state": "failed",
+        "error_code": "nodia_ai:outcome_unknown",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "selection_requested"
+      },
+      {
+        "name": "destination_revoked_after_selection",
+        "final_state": "failed",
+        "error_code": "nodia_ai:capability_denied",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "ack_pending"
+      },
+      {
+        "name": "catalog_hash_changes_after_selection",
+        "final_state": "failed",
+        "error_code": "nodia_ai:catalog_changed",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "ack_pending"
+      },
+      {
+        "name": "selected_execution_respects_remaining_dispatch_budget",
+        "final_state": "failed",
+        "error_code": "nodia_ai:execution_limit",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "execution"
+      },
+      {
+        "name": "delegated_source_attempt_cannot_be_replaced",
+        "final_state": "failed",
+        "error_code": "nodia_ai:tool_selection_ack_pending",
+        "provider_dispatches_used": 2,
+        "delegations_used": 1,
+        "tool_calls_used": 3,
+        "final_selection_phase": "ack_pending"
+      }
+    ]
+  },
+  "real_provider": {
+    "status": "failed_or_incomplete",
+    "checks": 5,
+    "evidence": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+      "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+    },
+    "earlier_failures": 1,
+    "attempts": [
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+        "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01-manifest.json",
+          "sha256": "93375aa248dcd3dc4c00ad2a06e515391e6081e8beae558e87b344cac850b4ae"
+        },
+        "logs": {
+          "stdout": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01-stdout.log",
+            "sha256": "2870114f75eed9699cd22efd45387acdbe033d76847c4c344b6914ad7e063bd4"
+          },
+          "stderr": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "attempt": "attempt01",
+        "outer_status": "failed",
+        "assertion_status": "failed",
+        "verified_pass": false,
+        "exit_code": 1,
+        "timeout": false,
+        "completed_checks": 5,
+        "check_names": [
+          "operational runtime has no pending work before real-provider verification",
+          "the actual compiled publication and registry bind all seven C05 capabilities",
+          "native exact selection reports available MCP before message admission or dispatch",
+          "native exact selection reports available MCP before message admission or dispatch",
+          "native exact selection reports available MCP before message admission or dispatch"
+        ],
+        "compiled_files_verified": 2803,
+        "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+        "started_at_utc": "2026-10-19T03:03:20.597695+00:00",
+        "completed_at_utc": "2026-10-19T03:06:37.299427+00:00",
+        "actual_provider_generations": 2,
+        "provider_dispatch_attempts": 2,
+        "synthetic_provider_dispatches": null,
+        "failure_category": "acceptance_assertion_failed",
+        "disposable_containers_remaining": 0,
+        "operational_runtime_unchanged": true,
+        "unresolved_native_or_proof_state": false
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+        "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-manifest.json",
+          "sha256": "24077c5efe17eb95f830f2b3ab3ed789256eddd5be10c0f307807978ee0c6c79"
+        },
+        "logs": {
+          "stdout": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-stdout.log",
+            "sha256": "8e22955878ffb0cc24449bb82488d4cb43ce0967504b9757491ab6aa84a1e01a"
+          },
+          "stderr": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "attempt": "attempt02",
+        "outer_status": "failed",
+        "assertion_status": "failed",
+        "verified_pass": false,
+        "exit_code": 1,
+        "timeout": false,
+        "completed_checks": 5,
+        "check_names": [
+          "operational runtime has no pending work before real-provider verification",
+          "the actual compiled publication and registry bind all seven C05 capabilities",
+          "native exact selection reports available MCP before message admission or dispatch",
+          "native exact selection reports available MCP before message admission or dispatch",
+          "native exact selection reports available MCP before message admission or dispatch"
+        ],
+        "compiled_files_verified": 2803,
+        "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+        "started_at_utc": "2026-10-19T03:14:26.370008+00:00",
+        "completed_at_utc": "2026-10-19T03:18:33.531672+00:00",
+        "actual_provider_generations": 2,
+        "provider_dispatch_attempts": 2,
+        "synthetic_provider_dispatches": null,
+        "failure_category": "acceptance_assertion_failed",
+        "disposable_containers_remaining": 0,
+        "operational_runtime_unchanged": true,
+        "unresolved_native_or_proof_state": false
+      }
+    ],
+    "supplementary_native_evidence": [
+      {
+        "attempt": "attempt01",
+        "evidence": [
+          {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01-quiescence.json",
+            "sha256": "5bb740c20e3cfba9aca8212adb20e4ff08a12bdc79d610d8733254eef255e5a6"
+          }
+        ],
+        "scope": "read_only_retained_observations_not_completed_turn_acceptance",
+        "interpretation": null,
+        "native_image": null,
+        "verified_native_source_version": null,
+        "local_or_productive_acceptance_added": false
+      },
+      {
+        "attempt": "attempt02",
+        "evidence": [
+          {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-interpretation.json",
+            "sha256": "695e17baf7630c7e72746695436d0eaf3caf357ec14b39dad4bac20987e21a78"
+          },
+          {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-native-source.json",
+            "sha256": "047bf4e8c438ff94535c2307d7312a2d00561d0561115568c9833b62c71993ca"
+          },
+          {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-native-diagnostics.json",
+            "sha256": "ad60244a93e346da2a4b5278d7ec75275a30b2508ccadfba97e636c58c2f1dba"
+          },
+          {
+            "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-quiescence.json",
+            "sha256": "cc5e98c11b7f9d01dcce2f8bf25fb1a76c13832e72bc83d878a52b392a2c489c"
+          }
+        ],
+        "scope": "read_only_retained_observations_not_completed_turn_acceptance",
+        "interpretation": {
+          "observed_at_utc": "2026-10-19T03:27:46Z",
+          "derived_at_utc": "2026-10-19T03:27:46Z",
+          "source_observed_at_utc": {
+            "nodia-ai-ai36-c05-live-attempt02-report.json": "2026-10-19T03:18:33.347Z",
+            "nodia-ai-ai36-c05-live-attempt02-native-diagnostics.json": "2026-10-19T03:21:03.612274+00:00",
+            "nodia-ai-ai36-c05-live-attempt02-native-source.json": "2026-10-19T03:24:21.848674+00:00",
+            "nodia-ai-ai36-c05-live-attempt02-quiescence.json": "2026-10-19T03:23:53.280Z"
+          },
+          "conclusion": "Native stage was cancelled while awaiting CLI terminal. Exact reason for absent terminal remains unverified; no evidence establishes malformed JSON, provider quota, a hung second call, or MCP tool budget exhaustion.",
+          "correction": {
+            "tool_event_counts_counts": "Every tool step_update, including DONE; not unique tool invocations.",
+            "tool_completed_counts_counts": "DONE step_update events.",
+            "conclusion": "Two call_mcp_tool events and one DONE are consistent with one START and one DONE for the single successful finance callback; a second invocation is not established.",
+            "previous_second_invocation_interpretation_retracted": true
+          },
+          "observed_confirmed": {
+            "provider_generations": 2,
+            "selection_callbacks": 1,
+            "successful_finance_callbacks": 1,
+            "native_ACKs": [
+              {
+                "attempt_id": "0143291e-357a-4bf0-bb88-7500aadb2082",
+                "terminal_proof_sha256": "a1f0a8811b1e78452b5a2815258028948c07430cab867ff77cbdcd13568f3a3a",
+                "acknowledged_at_utc": "2026-10-19T03:16:32.601Z"
+              },
+              {
+                "attempt_id": "9ed028c9-01bf-45dc-9ea2-38765c6507af",
+                "terminal_proof_sha256": "2a351a82a3fd97ebef867b88bade8dce825ea7947fa3abcebc568d8208285fc4",
+                "acknowledged_at_utc": "2026-10-19T03:18:33.147Z"
+              }
+            ],
+            "confirmed_human_effects": 0
+          },
+          "not_retained_after_cleanup": {
+            "tool_requests_final": null,
+            "unforwarded_tool_requests_final": null,
+            "rpc_counts_by_method": null,
+            "second_tool_name": null,
+            "second_tool_server": null,
+            "tool_result_accepted_timestamp": null,
+            "per_callback_monotonic_timeline": null
+          },
+          "retention_limits": [
+            "Native terminal log omitted tool_requests and per-RPC metadata.",
+            "ACK removed the owned McpJob; temporary bridge request/response files were cleaned.",
+            "Existing live harness retained callback completion hashes but did not retain poll counters or submit accepted timestamps."
+          ]
+        },
+        "native_image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+        "verified_native_source_version": null,
+        "local_or_productive_acceptance_added": false
+      }
+    ],
+    "actual_generations": {
+      "observed_total": 4,
+      "complete_for_all_recorded_attempts": true,
+      "unknown_attempts": []
+    },
+    "dispatch_attempts": {
+      "observed_total": 4,
+      "complete_for_all_recorded_attempts": true,
+      "unknown_attempts": []
+    },
+    "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "natural_language_scope": "directed_synthetic_requests_with_exact_tool_names_and_known_ids",
+    "human_confirmation_layer": "explicit_operator_HTTP_test_driver_not_physical_UI",
+    "physical_UI_accepted": false,
+    "productive_acceptance": false,
+    "proof_ACKs_last_attempt": 2,
+    "operator_HTTP_confirmations_last_attempt": null,
+    "configured_database": "read_only_public_connection_configuration_and_quiet_checks_only",
+    "business_effects": "synthetic_disposable_PostgreSQL_after_separate_exact_operator_HTTP_confirmation",
+    "no_all_capability_acceptance_claim": true
+  },
+  "supplementary_offline_bridge_control": {
+    "evidence": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-native-bridge-control.json",
+      "sha256": "55d9b89a12d3ff1e0f4b954039a8a7ebff47fc0dd30de484b62a66f8edfe38d6"
+    },
+    "scope": "supplementary_offline_bridge_diagnostic_not_provider_acceptance",
+    "source_imports_hashes_verified": 28,
+    "script_hash_verified": true,
+    "result": {
+      "scope": "offline_actual_bridge_and_supervisor_synthetic_cli_and_callback_results",
+      "one_call_progress_events": 2,
+      "one_call_progress_done": 1,
+      "callbacks": 2,
+      "rpc_messages": 5,
+      "unforwarded_tool_requests": 0,
+      "state": "completed",
+      "rpc_reply_utf8_bytes": [
+        161,
+        448,
+        96156,
+        248
+      ],
+      "real_cli_or_provider_requests": 0,
+      "operational_profiles_or_services_accessed": false
+    },
+    "boundaries": {
+      "real_stdio_bridge_and_supervisor": true,
+      "cli_client_and_terminal_result": "synthetic_test_fixture",
+      "callback_results": "synthetic_test_fixture",
+      "subprocess": "local_python_stdio_bridge_only",
+      "external_network_blocked_by": "tests/test_support.py installed before service imports",
+      "production_services_started_or_restarted": false,
+      "production_data_accessed": false,
+      "real_cli_or_provider_acceptance": false
+    },
+    "limitations": [
+      "Does not execute the Antigravity CLI binary or infer with Gemini.",
+      "Fixture client allows replies above 64 KiB; real CLI parsing limits are not measured.",
+      "Does not identify the cause of the Live02 deadline.",
+      "Two progress events with one DONE can represent one tool invocation."
+    ],
+    "productive_or_real_provider_acceptance_added": false
+  },
+  "capability_acceptance": {
+    "rows": [
+      {
+        "capability_id": "nodia_actions_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_actions_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_actions_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_actions_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_actions_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_events_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_catalog_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_codex_session",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_gemini_engines",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_health",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_models",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_prepare_catalog_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_prepare_catalog_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_prepare_codex_logout",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_prepare_gemini_web_logout",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_prepare_sync_models",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_ai_providers_supported_providers",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_api_keys_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_api_keys_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_attachments_describe",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": true
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c04-common-contracts.json",
+        "current_SQL_layer": {
+          "status": "first_lot_native_gateway_and_receipts_verified_with_synthetic_transport",
+          "evidence": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+            "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+          }
+        },
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+              "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          },
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+              "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          }
+        ],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_business_actions_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_business_actions_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_business_actions_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_business_actions_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_business_actions_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_businesses_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_businesses_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_businesses_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_businesses_prepare_set_collaborators",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_businesses_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_categories_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_categories_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_categories_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_categories_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_categories_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_category_groups_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_category_groups_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_category_groups_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_category_groups_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_category_groups_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_movements_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_movements_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_movements_prepare_create",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": true
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": {
+          "status": "first_lot_native_gateway_and_receipts_verified_with_synthetic_transport",
+          "evidence": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+            "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+          }
+        },
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "successful_callback_observed_in_incomplete_attempt",
+        "current_real_observations": [
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+              "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 1,
+            "successful_callbacks": 1,
+            "selected_in_real_generation": true,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          },
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+              "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 1,
+            "successful_callbacks": 1,
+            "selected_in_real_generation": true,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          }
+        ],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_movements_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_movements_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_obligations_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_obligations_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_obligations_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_obligations_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_obligations_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_summaries_by_category",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_summaries_by_category_group",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_finance_summaries_overview",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_analyze",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c03-invoice-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_eligible_invoice_connections",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_file",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_invoices_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_module_groups_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_module_groups_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_module_groups_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_module_groups_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_modules_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_modules_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_modules_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_modules_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_modules_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_operations_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": true
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c04-common-contracts.json",
+        "current_SQL_layer": {
+          "status": "first_lot_native_gateway_and_receipts_verified_with_synthetic_transport",
+          "evidence": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+            "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+          }
+        },
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+              "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          },
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+              "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          }
+        ],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_preferences_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": true
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c04-common-contracts.json",
+        "current_SQL_layer": {
+          "status": "first_lot_native_gateway_and_receipts_verified_with_synthetic_transport",
+          "evidence": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+            "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+          }
+        },
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+              "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          },
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+              "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          }
+        ],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_preferences_prepare",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": true
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c04-common-contracts.json",
+        "current_SQL_layer": {
+          "status": "first_lot_native_gateway_and_receipts_verified_with_synthetic_transport",
+          "evidence": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+            "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+          }
+        },
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+              "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          },
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+              "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          }
+        ],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_product_logs_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_product_logs_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_product_logs_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_product_logs_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_product_logs_query",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_products_export_csv",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_products_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_products_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_products_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_products_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_proposals_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": true
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c04-common-contracts.json",
+        "current_SQL_layer": {
+          "status": "first_lot_native_gateway_and_receipts_verified_with_synthetic_transport",
+          "evidence": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+            "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+          }
+        },
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+              "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 1,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": true,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          },
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+              "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": true,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          }
+        ],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_provider_contacts_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_provider_contacts_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_provider_contacts_prepare_set_active",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_provider_contacts_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_providers_export_csv",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_providers_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_providers_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_providers_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_providers_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_audit_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_blocks_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_blocks_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_blocks_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_blocks_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_calendar_availability",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_calendar_calendar",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_cancellation_policies_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_cancellation_policies_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_cancellation_policies_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_cancellation_policies_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_collaborators_candidates",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_collaborators_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_collaborators_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_collaborators_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_expenses_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_expenses_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_expenses_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_expenses_prepare_pay",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_expenses_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_expenses_prepare_void",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_payments_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_payments_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_payments_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_payments_prepare_void",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_properties_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_properties_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_properties_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_properties_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_cancellation_preview",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_prepare_cancel",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_prepare_complete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_prepare_confirm",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_prepare_start",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_reservations_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_summaries_overview",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_turnovers_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_turnovers_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_turnovers_prepare_approve_same_day",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_rental_turnovers_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_roles_get",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_roles_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_roles_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_roles_prepare_delete",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_roles_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_secure_flows_prepare_api_key_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c02-secure-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_secure_flows_prepare_api_key_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c02-secure-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_secure_flows_prepare_connection_login",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c02-secure-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_secure_flows_prepare_nodia_logout",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c02-secure-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_users_list",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-capability-coverage.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_users_prepare_create",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_users_prepare_update",
+        "publication": {
+          "status": "not_published",
+          "catalog_release": null,
+          "first_C05_lot": false
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+        "current_SQL_layer": null,
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "publication_and_binding",
+          "bounded_selection",
+          "real_provider_callback",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      },
+      {
+        "capability_id": "nodia_workflows_prepare",
+        "publication": {
+          "status": "published_in_source_build",
+          "catalog_release": "nodia-ai-ai15-reads/1",
+          "first_C05_lot": true
+        },
+        "internal_contract_evidence": "docs/evidence/nodia-ai-ai36-c04-common-contracts.json",
+        "current_SQL_layer": {
+          "status": "first_lot_native_gateway_and_receipts_verified_with_synthetic_transport",
+          "evidence": {
+            "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04.json",
+            "sha256": "d29615a83d4fd9f0bc10238db310a0d6beffaaf7b3d4fe45792e5123874647e5"
+          }
+        },
+        "historical_evidence_does_not_prove_current_acceptance": true,
+        "real_callback_status": "pending",
+        "current_real_observations": [
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+              "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          },
+          {
+            "evidence": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+              "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+            },
+            "overall_attempt_passed": false,
+            "completed_turns_with_terminal_proofs_and_durable_callback_receipts": [],
+            "actual_callbacks": 0,
+            "successful_callbacks": 0,
+            "selected_in_real_generation": false,
+            "selection": {
+              "connection_id": "2",
+              "mode": "token_plan_agentic",
+              "model_id": "gemini-3.8-flash-high",
+              "effort_id": "high"
+            }
+          }
+        ],
+        "complete_semantic_acceptance": false,
+        "productive_acceptance": false,
+        "remaining": [
+          "real_provider_callback_and_receipt_for_this_capability",
+          "dependency_and_environment_scenarios",
+          "AI38_productive_acceptance"
+        ]
+      }
+    ],
+    "real_callback_verified_capabilities": 0,
+    "total_registrable_capabilities": 151,
+    "complete_semantic_or_productive_acceptance_claimed": false
+  },
+  "final_compiled_provenance": [
+    {
+      "attempt": "attempt04",
+      "status": "passed",
+      "scope": "automatic_selection_actual_compiled_SQL_synthetic_transport",
+      "files": 2803,
+      "executable_files_matched": 971,
+      "changed_non_executable_files": [],
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt04-manifest.json",
+        "sha256": "319438420bb011d91b8a77c3b778142bcfa1b39d2547bed81094945e8123fbad"
+      }
+    },
+    {
+      "attempt": "attempt02",
+      "status": "failed",
+      "scope": "explicit_published_candidate_real_Gemini_disposable_SQL",
+      "files": 2803,
+      "executable_files_matched": 971,
+      "changed_non_executable_files": [],
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02-manifest.json",
+        "sha256": "24077c5efe17eb95f830f2b3ab3ed789256eddd5be10c0f307807978ee0c6c79"
+      }
+    }
+  ],
+  "historical_compiled_provenance": [
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt01.json",
+        "sha256": "28a2c17a8785a25c4f7e4e5035dd7c57b53cc83b277bc0bbadb5a36b0e6608cf"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt01-manifest.json",
+        "sha256": "2733c2dfa51f2579f1bc96c298921ec69da4285b6736adc8a12a01e0abbe9935"
+      },
+      "status": "failed",
+      "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+      "compiled_files": 2804,
+      "comparison": "immutable_historical_cohort_not_claimed_identical_to_later_deliberate_build"
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt02.json",
+        "sha256": "ef36bb5614d46a5384ddd5c0fce5122f0c01561e8f6cfbe20ca8d2adde40a04d"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt02-manifest.json",
+        "sha256": "7d69837c3355caff19f689f2253d4e40c5aadb3f705f6682f5e678f0493410ee"
+      },
+      "status": "failed",
+      "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+      "compiled_files": 2804,
+      "comparison": "immutable_historical_cohort_not_claimed_identical_to_later_deliberate_build"
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt03.json",
+        "sha256": "9f1210a41e23bffe9ac599e09a956838092cef7ebd812cb7d426675b55cc56e9"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-selection-attempt03-manifest.json",
+        "sha256": "20c1d42f54ec30d4cbe5a4ac5f6f7543264344262511fb014ba485712cfbb154"
+      },
+      "status": "passed",
+      "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+      "compiled_files": 2803,
+      "comparison": "immutable_historical_cohort_not_claimed_identical_to_later_deliberate_build"
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+        "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01-manifest.json",
+        "sha256": "93375aa248dcd3dc4c00ad2a06e515391e6081e8beae558e87b344cac850b4ae"
+      },
+      "status": "failed",
+      "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+      "compiled_files": 2803,
+      "comparison": "immutable_historical_cohort_not_claimed_identical_to_later_deliberate_build"
+    }
+  ],
+  "source_inventory": {
+    "modules": 89,
+    "controllers": 46,
+    "handlers": 217,
+    "aliases": 336,
+    "source_hashes": 869,
+    "coordination_routes": 41,
+    "total_migrations": 29,
+    "new_tables": 0,
+    "new_migrations": 0,
+    "new_HTTP_routes": 0
+  },
+  "task_scope": {
+    "candidate_operationally_deployed": false,
+    "operational_services_restarted": false,
+    "UI_changed": false,
+    "application_Python_changed": false,
+    "R2_operations": 0,
+    "evidence_python_harnesses_are_not_application_changes": true,
+    "operational_provider_configuration_read_only": true
+  },
+  "preserved_intermediate_evidence": [
+    {
+      "path": ".tmp/ai36-c05-server-full.json",
+      "sha256": "f2d63b934fc9581b040d42f4a1b34737619363565fd00b543a7e3369069c3dad",
+      "tests": 4137,
+      "passed": 4027,
+      "failed": 110,
+      "omitted": 0,
+      "todo": 0,
+      "files": 232,
+      "failed_files": [
+        {
+          "file": "src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.spec.ts",
+          "failed": 2
+        },
+        {
+          "file": "src/nodia-ai-observation/use-case/get-nodia-ai-tool-result.use-case.spec.ts",
+          "failed": 41
+        },
+        {
+          "file": "src/nodia-ai-tools/use-case/discover-nodia-ai-tools.use-case.spec.ts",
+          "failed": 10
+        },
+        {
+          "file": "src/nodia-ai-tools/use-case/execute-nodia-ai-report-tool.use-case.spec.ts",
+          "failed": 5
+        },
+        {
+          "file": "src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts",
+          "failed": 52
+        }
+      ],
+      "status": "preserved_intermediate_not_final_acceptance",
+      "classification": "108_fixture_TDZ_failures_and_two_Web_prompt_projection_expectations"
+    },
+    {
+      "path": ".tmp/ai36-c05-server-final.json",
+      "sha256": "eaeb162562d32f5e3fe508c0ad05a2f9deb9b74adb201a998da83cde6896b827",
+      "tests": 4144,
+      "passed": 4144,
+      "failed": 0,
+      "omitted": 0,
+      "todo": 0,
+      "files": 232,
+      "failed_files": [],
+      "status": "preserved_intermediate_not_final_acceptance",
+      "classification": "earlier_complete_suite_before_final_SQL_and_internal_profile_cleanup"
+    },
+    {
+      "path": ".tmp/ai36-c05-server-final2.json",
+      "sha256": "1964d20c966a3cc59df2326e8d085d7755ef300a3ade128f8ebbbe26d9646a1e",
+      "tests": 4144,
+      "passed": 4144,
+      "failed": 0,
+      "omitted": 0,
+      "todo": 0,
+      "files": 232,
+      "failed_files": [],
+      "status": "preserved_intermediate_not_final_acceptance",
+      "classification": "previous_complete_suite_before_compact_authorized_catalog_index"
+    }
+  ],
+  "preserved_findings": [
+    "The early complete suite is retained:108 fixture temporal-dead-zone failures and two Web prompt projection expectations were corrected before final validation.",
+    "The first SQL attempt failed before assertions; the second retained four checks then exposed PostgreSQL JSON operator precedence in delegated continuation. Parenthesized operands require the final rebuilt SQL acceptance; failures are not overwritten or presented as provider timeouts.",
+    "Two public HTTP profile-field tests and their DTO extension were removed; the unchanged strict HTTP contract is preserved and profiles remain programmatic internal backend options.",
+    "The first real-provider cohort completed a finance preparation callback but exhausted the unchanged12-call cumulative budget before closing its turn. Its unknown outcome was reconciled without replay. A later deliberate build adds the complete bounded authorized catalog metadata index; the first cohort remains historical and its callback is not completed-turn acceptance.",
+    "Full fixture typechecking retains192 prior errors in48files. Only line/column offsets and CRLF are normalized for the semantic comparison; production typechecking is independently clean."
+  ],
+  "limitations": [
+    "First-lot publication is seven capabilities, not all84 candidates or151 registrable capabilities. AI36 remains open with77 unpublished candidates.",
+    "Unit tests, SQL with synthetic transport, real-provider callbacks, exact operator HTTP confirmation, physical UI and productive acceptance are separate evidence layers.",
+    "A successful callback in an incomplete attempt is recorded as an observation, not full turn acceptance. Earlier failures remain linked.",
+    "Actual generation counters represent accepted native MCP start requests; they do not measure tokens, billing or undisclosed internal provider inference.",
+    "Retained native diagnostics and their correction are supplementary observations. Repeated tool step_update events do not establish unique invocations; the missing CLI terminal in LIVE02 has no verified root cause, including malformed JSON, quota, a second hung call or exhausted tool budget.",
+    "Directed synthetic prompts with exact tool names and known IDs do not prove unrestricted natural-language quality or every semantic scenario for a capability.",
+    "Client, V8, Python application suites and R2 were not rerun for this Node/publication change; historical reports keep their original scope.",
+    "No automatic inference replay is used to resolve uncertainty; retained native state must be explicitly reconciled before cleanup."
+  ],
+  "evidence": {
+    "unit": {
+      "path": ".tmp/ai36-c05-server-final3.json",
+      "sha256": "ac5386ec93e54ee795a13b4b3450a0512268103ad85ddc4af04656f05b0d2249"
+    },
+    "processRuntime": {
+      "path": ".tmp/ai36-c05-process-runtime-final3.json",
+      "sha256": "74a3441b02e91be1b36c4b65948f7d1ae92740e41552ba0a364323204df11847"
+    },
+    "discoveryIndex": {
+      "path": ".tmp/ai36-c05-discovery-index-final.json",
+      "sha256": "47c5657471ebcc01117c5d6fbe38dbaf29b467c5f62103677bc3b9fb7e4f427c"
+    },
+    "selectionIntermediate": {
+      "path": ".tmp/ai36-c05-selection-final.json",
+      "sha256": "ad1d5b74c2ae3f358f9db6a478db0958e5b27855937fe15c609634d965d2a942"
+    },
+    "observation": {
+      "path": ".tmp/ai36-c05-selection-observation.json",
+      "sha256": "99fb12545174e70bf5abb090d586c49702bfc1a41abaa88b3addc95e63729e39"
+    },
+    "productionTypes": {
+      "path": ".tmp/ai36-c05-production-types-final3.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fixtureTypes": {
+      "path": ".tmp/ai36-c05-fixture-types-final3.log",
+      "sha256": "11b2024594a62215d4e8f6b0e726735c7fa4a8dd887a6a4e41c8724dfe641051"
+    },
+    "fixtureBaseline": {
+      "path": ".tmp/ai36-c04-server-fixture-types-final.log",
+      "sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+    },
+    "lint": {
+      "path": ".tmp/ai36-c05-lint-final3.log",
+      "sha256": "651b3ee86f4123c090a4b6363c50fcb1c4ba85be29b34de86ea939aa7b583fff"
+    },
+    "build": {
+      "path": ".tmp/ai36-c05-build-final3.log",
+      "sha256": "08ba103f8a7f5d7dcd9a4102bd9bfd62a3d3ce90572e5b03615900b2b69d3715"
+    },
+    "publication": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-publication-validation.json",
+      "sha256": "85c0efe12c35eb5408662a890fbf85f1e7e810342fcdcf1807d03e90d114e099"
+    },
+    "delta": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-catalog-delta.json",
+      "sha256": "ac9c97f478458b8f75c6fd894087e766ff7201d4b1a007361a0749114bedc660"
+    },
+    "inventory": {
+      "path": "docs/mvp/nodia-ai-current-endpoints.json",
+      "sha256": "be81b8cd9359b1d6d6486fc90c65a8e1e2a0d853abebac6a6c826c2e2ce2bbfc"
+    },
+    "coordination": {
+      "path": "docs/mvp/nodia-ai-v1-coordination-api.json",
+      "sha256": "03689d264816fcf7848e69a1509b9b69699422292b70a10e6c0be5a498f89f8d"
+    },
+    "registry": {
+      "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "sha256": "be5dba960f773d9df1c3defdd0e111f963305bba5727e8b492e4532bc3af9c05"
+    },
+    "manifest": {
+      "path": "nodia-server/dist/nodia-ai/knowledge/manifest.json",
+      "sha256": "cfa884b835ad2d46727a2b432ac3b9fe139bae4995ef47845fa758f33f179519"
+    },
+    "pin": {
+      "path": "nodia-server/dist/nodia-ai-context/config/knowledge-pin.json",
+      "sha256": "9c9deac1d9f73c69cc809601cd1d23ea8f8cde27c71745543bf4b36c5c7dd38e"
+    },
+    "policy": {
+      "path": "nodia-server/dist/nodia-ai-runtime/config/runtime-policy.json",
+      "sha256": "10f108aaf07e738a56b4aeee5732a63806c097efca2346af106bb88a108e8587"
+    },
+    "profiles": {
+      "path": "nodia-server/src/nodia-ai-tools/config/tool-selection-profiles.json",
+      "sha256": "0a59dccc1f6684ee794ba9ca1333d4d04bd871c128213062030cb9d5bbb4017e"
+    },
+    "bridgeControl": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-native-bridge-control.json",
+      "sha256": "55d9b89a12d3ff1e0f4b954039a8a7ebff47fc0dd30de484b62a66f8edfe38d6"
+    }
+  },
+  "reproducible_consolidator": {
+    "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05.cjs",
+    "sha256": "9c3dc96001671bad21ac5532914bd40509ea98e788e6f03c38c7191996f12461"
+  }
+}

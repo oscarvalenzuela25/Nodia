@@ -1,0 +1,82 @@
+{
+  "observed_at_utc": "2026-10-17T17:39:39.689343+00:00",
+  "stage_directory": "/opt/nodia/verification/ai25-20261017",
+  "compiled_production_archive_sha256": "d36ac0b2a9aeb99d93027cf25c1895db2745fbc7d371c5024e8896559e6d720e",
+  "knowledge_pin_sha256": "fe96f76311b45096287f600108c242477146150653c4720687a11f6de230834f",
+  "scope": "Synthetic disposable PostgreSQL only; no configured database mutation, provider inference, MCP write publication or Gemini acceptance.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "status": "passed",
+  "command": "node test/nodia-ai-ai24.integration.mjs",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai24.integration.mjs",
+      "sha256": "efea534a68431859e4ef4e333c3ebf9c3464a642bbfdc485ccda3b26a475a066"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai24-worker.fixture.mjs",
+      "sha256": "9b42510924295293a9f5d0cf81770fc2d696a47c5abe27bef15464476619e0e2"
+    }
+  ],
+  "result": {
+    "stage": "AI-24",
+    "scope": "compiled_http_confirmation_worker_disposable_postgresql_six_native_rental_configuration_mutations_no_provider",
+    "checks": 36,
+    "exercised_operations": [
+      "rental_cancellation_policies/create",
+      "rental_cancellation_policies/update",
+      "rental_collaborators/create",
+      "rental_collaborators/update",
+      "rental_properties/create",
+      "rental_properties/update"
+    ],
+    "passed": [
+      "property creation preserves exact bigint money zero percent null optional fields and actor ownership",
+      "property update preserves omitted capacity and explicit null without changing its owner",
+      "collaborator create and update preserve identity and support explicit null and revocation",
+      "active collaborators cannot edit configuration or create policies even with destination access",
+      "an inaccessible house yields uniform not found for ordinary actors",
+      "super administrator edits a foreign house with real authorship and no implicit ownership transfer",
+      "only explicit super administrator owner selection can create for another user",
+      "owner mutation and duplicate or owner collaborator creation remain forbidden",
+      "policy create stores all rules atomically with canonical order and decimal percentages",
+      "native idempotency replays canonical rule order and decimal equivalents without duplicate header or rules",
+      "complete rule replacement reuses a retained threshold removes superseded rules and normalizes values",
+      "omitted rules keep existing IDs and values byte for byte",
+      "default policies must be active and belong to their exact house",
+      "policy preparation rejects empty incomplete duplicate and invalid percentage rule sets",
+      "missing required fields produce a clarification without a runnable proposal",
+      "a human challenge cannot confirm a different proposal hash",
+      "material human review keeps the native request key and requires the exact new revision",
+      "a same timestamp material property change invalidates confirmation",
+      "a same timestamp material rule change after admission blocks native dispatch",
+      "ordinary users require the destination module even when they own the house",
+      "destination module revocation after confirmation is rechecked before the writer",
+      "session revocation after confirmation cannot write as the former user",
+      "updating live policy rules never changes a monetary reservation snapshot",
+      "configuration preparation preserves timezone history and the capacity of current confirmed agreements",
+      "archiving a house preserves historical occupancy money policy snapshots and native read access",
+      "rental history exposes no physical delete endpoint",
+      "archived houses permit collaborator removal and require house reactivation before restoring access",
+      "a receipt failure rolls back policy header rules native journal and audit in the same SQL transaction",
+      "a later rule insert failure restores the previous policy header and every threshold without a journal or receipt",
+      "real worker death after claim leaves no rental effect and permits explicit resume",
+      "duplicate human resume produces one native property update journal and receipt",
+      "lost COMMIT response reconciles an immutable rental receipt without replaying the native journal",
+      "known-input operations across houses execute sequentially with independent native receipts",
+      "all six rental configuration operations execute against compiled native writers",
+      "local rental effects never invoke a provider or acquire inference runtime slots",
+      "rental execution attempts and job leases finish without orphans"
+    ]
+  }
+}

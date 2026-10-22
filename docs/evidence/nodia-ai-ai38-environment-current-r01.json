@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "status": "offline_scope_review_with_fresh_receipts_environment_release_incomplete",
+  "review_date": "2026-10-20",
+  "review_kind": "offline_document_and_receipt_audit_not_new_operational_observation",
+  "environment_id": "linux_lab",
+  "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "AI38_complete": false,
+  "AI36_complete": false,
+  "release_authorized": false,
+  "productive_acceptance": false,
+  "documentation_approved": false,
+  "offline_review_only": true,
+  "new_remote_operations": 0,
+  "new_provider_generations": 0,
+  "historical_gate_counts_reused_as_current": false,
+  "criteria": [
+    {
+      "id": "immutable_packages",
+      "status": "probado",
+      "scope": "Artefactos congelados, no adopción permanente",
+      "confirmed": "Server candidato01 y Client de 171 outputs tienen manifiestos y pines comprobados; instalación física fresca probada.",
+      "outstanding": "El paquete completo no es el runtime operativo final.",
+      "remaining_work_location": "none_for_artifact_scope",
+      "evidence_ids": [
+        "package",
+        "adoption",
+        "functional"
+      ]
+    },
+    {
+      "id": "authenticated_UI_and_drawer",
+      "status": "probado",
+      "scope": "UI humana bajo túnel y activación temporal del candidato completo",
+      "confirmed": "Login Google legítimo, identidad, historial, drawer, salida/vuelta y recarga profunda del candidato; viewport móvil sin overflow.",
+      "outstanding": "No acredita origen público, teléfono físico o una generación nueva.",
+      "remaining_work_location": "none_for_restricted_UI_scope",
+      "evidence_ids": [
+        "UI"
+      ]
+    },
+    {
+      "id": "rollback_read_continuity",
+      "status": "probado",
+      "scope": "Lectura de historial desde SPA retenida después de revertir",
+      "confirmed": "GET nuevos a API original y hashes DOM/SQL del chat iguales después del rollback.",
+      "outstanding": "La raíz original devuelve 404; no se verificó recargar el shell revertido ni generar otro turno entre versiones.",
+      "remaining_work_location": "VM",
+      "evidence_ids": [
+        "UI"
+      ]
+    },
+    {
+      "id": "deployment_and_rollback",
+      "status": "parcial",
+      "scope": "Ensayo real A→B→A sin efectos comerciales ni trabajo activo",
+      "confirmed": "Paquetes completos y procesos efectivos adoptados temporalmente; reversión exacta y cuatro servicios originales recuperados.",
+      "outstanding": "Falta adopción permanente del objetivo ofrecido y drenaje de trabajo activo; el ensayo sólo detuvo consumidores quietos.",
+      "remaining_work_location": "VM",
+      "evidence_ids": [
+        "adoption",
+        "UI"
+      ]
+    },
+    {
+      "id": "proxy_and_real_attachment_transport",
+      "status": "probado",
+      "scope": "PUT binario de PDF sintético de 20 MiB, UI autenticada e integridad R2 privada",
+      "confirmed": "20.971.520 bytes admitidos, +1 byte rechazado; borrador preservado; SHA/tamaño exactos en R2 y eliminación del objeto propio comprobada.",
+      "outstanding": "No es descarga autenticada UI/API, envío de original de 20 MiB a Gemini, cuatro archivos/40 MiB agregados o garantía de borrado físico.",
+      "remaining_work_location": "none_for_transport_scope",
+      "evidence_ids": [
+        "proxy"
+      ]
+    },
+    {
+      "id": "provider_text_routing_and_formats",
+      "status": "parcial",
+      "scope": "Gemini real con selección High y época registrada; adaptador candidato y arneses",
+      "confirmed": "17 solicitudes generativas con ACK: C05 delta, delegación Web→Agentic→Web y PNG/PDF/WAV/WebM en ambos modos.",
+      "outstanding": "No equivale a una nueva generación end-to-end desde la UI autenticada sobre el paquete completo adoptado; cualquier cambio de época exige revisar atestaciones afectadas.",
+      "remaining_work_location": "VM",
+      "evidence_ids": [
+        "functional",
+        "UI"
+      ]
+    },
+    {
+      "id": "published_capability_acceptance",
+      "status": "parcial",
+      "scope": "Primer lote representativo C05 acumulado",
+      "confirmed": "7/7 acumuladas: cuatro históricas no reejecutadas y tres nuevas en la época AI-38.",
+      "outstanding": "No son siete reaceptadas en una única época ni aceptación de las 74 herramientas. AI-36 conserva 77 candidatas sin publicar.",
+      "remaining_work_location": "AI36_and_VM",
+      "evidence_ids": [
+        "functional"
+      ]
+    },
+    {
+      "id": "human_confirmation_and_native_effect",
+      "status": "parcial",
+      "scope": "UI/API/SQL y efecto financiero desechables; preparación MCP representativa real",
+      "confirmed": "Revisión/hash/botón, gasto visible, cancelación y autoridad comprobados en entorno aislado; preparación real del modelo sin efecto comercial operativo.",
+      "outstanding": "Falta recorrido generativo sobre candidato completo: preparación MCP→propuesta exacta→botón humano→efecto autorizado visible en la app, sin duplicación.",
+      "remaining_work_location": "VM_after_AI36_publication",
+      "evidence_ids": [
+        "isolated_UI",
+        "functional",
+        "UI"
+      ]
+    },
+    {
+      "id": "authority_and_revocation",
+      "status": "parcial",
+      "scope": "Casos HTTP/SQL aislados y sesión humana de super_admin",
+      "confirmed": "Autoridad vigente y revocación probadas con actores fixture; UI autenticada acredita el acceso ordinario observado.",
+      "outstanding": "No se heredó aceptación de todos los roles/módulos y revocación del entorno operativo usando sesiones legítimas equivalentes.",
+      "remaining_work_location": "VM",
+      "evidence_ids": [
+        "isolated_UI",
+        "functional",
+        "UI"
+      ]
+    },
+    {
+      "id": "product_context_evolution",
+      "status": "parcial",
+      "scope": "Compilador/PostgreSQL y dos procesos reales con dispatches sintéticos",
+      "confirmed": "A termina con su contexto fijado, B no reclama ese trabajo y el próximo turno utiliza B con producto revisado/función nueva.",
+      "outstanding": "No acredita hot reload, publicación/aprobación de un producto nuevo ni su uso generativo operativo. No modificar fichas aprobadas para fabricar aceptación.",
+      "remaining_work_location": "VM_controlled_context_scenario",
+      "evidence_ids": [
+        "functional"
+      ]
+    },
+    {
+      "id": "encrypted_backup_and_isolated_restore",
+      "status": "probado",
+      "scope": "Copia puntual de BD propia y restore desechable sin red o consumidores",
+      "confirmed": "AES256/MDC, restore lógico de 62 tablas/29 migraciones y limpieza de copia/clave/unidades temporales verificados.",
+      "outstanding": "No es rotación continua, restore operativo liberado o restore de versiones cloud con journal externo.",
+      "remaining_work_location": "none_for_point_in_time_scope",
+      "evidence_ids": [
+        "backup",
+        "backup_cleanup",
+        "adoption",
+        "UI"
+      ]
+    },
+    {
+      "id": "backup_inventory_rotation_and_expiry",
+      "status": "pendiente",
+      "scope": "Todas las copias propias capaces de reconstruir contenido NodiaAI",
+      "confirmed": "Inventario fresco acotado encuentra 29 archivos .dump, 7.561.623 bytes y mtimes del 16 al 18 de octubre, sin abrirlos; no identifica cifrado/fecha real de captura. PostgreSQL observado: archive_mode off, cero slots, dos WAL/32 MiB. No apareció timer Nodia de backup/journal en unidades/paths seleccionados.",
+      "outstanding": "Inventariar todos los destinos, snapshots, WAL/exportaciones; acreditar cifrado/acceso y máximo 7 días aplicado. Los mtimes no prueban captura, contenido o copias vencidas. No se concluye inexistencia global del mecanismo por esta observación.",
+      "remaining_work_location": "VM_and_external_storage_or_hypervisor",
+      "evidence_ids": [
+        "retention_policy",
+        "retention_fresh",
+        "infrastructure_historical"
+      ]
+    },
+    {
+      "id": "external_deletion_journal_and_restore_reconciliation",
+      "status": "pendiente",
+      "scope": "Cobertura externa íntegra de borrados desde captura hasta cuarentena",
+      "confirmed": "Preparador aislado fail-closed valida manifiesto/head y mantiene incertidumbre; siempre release_authorized false.",
+      "outstanding": "Falta acreditar productor continuo de todas las rutas de borrado, head externo confiable, expiración acotada e inventario/conciliación actual de dominio/runtime y generaciones ausentes del backup. No reconstruir cobertura desde backup o logs parciales ni inferir inexistencia global de un productor desde paths seleccionados.",
+      "remaining_work_location": "implementation_plus_VM_and_external_journal",
+      "evidence_ids": [
+        "retention_policy",
+        "restore_contract",
+        "retention_fresh"
+      ]
+    },
+    {
+      "id": "storage_versions_and_cleanup_guarantee",
+      "status": "parcial",
+      "scope": "Objeto vivo propio R2 eliminado en un ensayo",
+      "confirmed": "HEAD/GET 404 y cero trabajos del objeto; no se borraron objetos ajenos o promovidos.",
+      "outstanding": "Falta condición real de versionado/multipart, inventario aplicable y evidencia continua del objetivo de limpieza de 24 horas. Retención/borrado remoto de chats nativos del proveedor siguen desconocidos salvo contrato verificado y ownership; no borrar perfiles/chats ajenos. Ausencia del objeto vivo no acredita borrado físico de discos/WAL/copias del proveedor.",
+      "remaining_work_location": "R2_provider_contract_and_VM",
+      "evidence_ids": [
+        "proxy",
+        "retention_policy",
+        "retention_fresh"
+      ]
+    },
+    {
+      "id": "public_origin_TLS_and_exposure",
+      "status": "pendiente",
+      "scope": "Entrega pública del entorno de destino",
+      "confirmed": "Inspección fresca: nginx sólo escucha en loopback sin directivas TLS/certificado; políticas INPUT DROP IPv4/IPv6. Host→IP privada: SSH acepta; puertos 80/443/3000/5432/6379/8000/8080 agotan plazo TCP, sin bytes de aplicación.",
+      "outstanding": "Falta dominio/origen público elegido, TLS, cookies/OAuth/CORS allí y verificación desde Internet/IPv6. Los timeouts no prueban una regla de firewall particular ni el aislamiento desde todas las rutas.",
+      "remaining_work_location": "external_target_and_network_plus_VM",
+      "evidence_ids": [
+        "inspection_fresh",
+        "host_network",
+        "UI"
+      ]
+    }
+  ],
+  "counts_by_scoped_status": {
+    "probado": 5,
+    "parcial": 7,
+    "pendiente": 3
+  },
+  "count_warning": "Los estados corresponden a scopes diferentes y no son un porcentaje de cierre ni la matriz histórica de diez gates.",
+  "C05_cohorts": {
+    "historical_not_reexecuted": [
+      "nodia_attachments_describe",
+      "nodia_operations_get",
+      "nodia_proposals_get",
+      "nodia_workflows_prepare"
+    ],
+    "new_AI38_epoch": [
+      "nodia_preferences_prepare",
+      "nodia_preferences_list",
+      "nodia_finance_movements_prepare_create"
+    ],
+    "accumulated_representative": 7,
+    "all_seven_reaccepted_same_epoch": false,
+    "published_capabilities": 74,
+    "remaining_unpublished_candidates": 77
+  },
+  "fresh_operational_inspection": {
+    "status": "runtime_network_and_bounded_retention_receipts_bound_not_release_acceptance",
+    "expected_paths": [],
+    "source_ids": [
+      "runtime_fresh",
+      "runtime_harness_failure",
+      "inspection_fresh",
+      "host_network",
+      "retention_fresh",
+      "retention_inspector"
+    ],
+    "runtime_status": "passed_read_only_runtime_snapshot_not_full_release_acceptance",
+    "runtime_observed_at_utc": "2026-10-20T23:15:39.732265+00:00",
+    "runtime_facts": "Cuatro servicios originales activos, Node932 y época Gemini conservados, proxy scoped 20 MiB y cero pendientes en el instante R02.",
+    "inspection_observed_at_utc": "2026-10-20T23:17:03.557864+00:00",
+    "retention_observed_at_utc": "2026-10-20T23:18:06.062540+00:00",
+    "retention_facts": {
+      "bounded_dump_files": 29,
+      "bounded_dump_bytes": 7561623,
+      "dump_mtime_range_UTC_dates": [
+        "2026-10-16",
+        "2026-10-18"
+      ],
+      "dump_contents_read": false,
+      "dump_capture_or_encryption_proven": false,
+      "dump_expiration_inferred": false,
+      "postgres_archive_mode": "off",
+      "replication_slots": 0,
+      "WAL_files": 2,
+      "WAL_bytes": 33554432,
+      "global_absence_of_backup_or_journal_claimed": false
+    },
+    "network_limits": "TCP privado sólo desde el host Windows; no tráfico HTTP, Internet ni IPv6. R01 de inspección no recuperó propiedades horarias; R02 corrigió el arnés de consulta y conserva NTP declarado yes/synchronized yes, sin cambiar relojes.",
+    "prior_harness_failure": "R01 ejecutó el inspector por stdin y no pudo hashear __file__; FileNotFoundError del arnés, sin mutación ni diagnóstico de fallo del runtime. R02 ejecutó el archivo exacto y pasó.",
+    "claim_current_service_state_from_offline_review_alone": false
+  },
+  "next_verifications": [
+    "Inventario acotado y actual de servicios/listeners/nginx, mecanismos de backup/expiración/journal y red, sin copiar secretos ni contenidos.",
+    "Contrastar mecanismos existentes con política 7 días y journal externo: distinguir ausencia comprobada en paths concretos de inexistencia global.",
+    "Definir/implementar lo ausente antes de pretender probar rotación o continuidad; repetir un dump puntual no cierra ese gate.",
+    "Programar aceptación generativa del paquete completo y efecto con botón sólo para capacidades publicadas y datos de prueba autorizados; preservar operación incierta y no replay."
+  ],
+  "sources": {
+    "plan": {
+      "path": "docs/mvp/45-nodia-ai-implementation-plan.md",
+      "sha256": "34480ffead82efdc5355b4cad01155c8726d8f1eea0aacc3e6dc987bb28ae6a1"
+    },
+    "retention_policy": {
+      "path": "docs/mvp/50-nodia-ai-ai04-runtime-policy.md",
+      "sha256": "5f41f630ffe164fc343aa8cc4235433eb38822aa303b32c1e41995b46193fccd"
+    },
+    "gates_historical": {
+      "path": "docs/evidence/nodia-ai-ai38-gates-linux-lab-r03.json",
+      "sha256": "50dd9736f9c437ac2ce30b87e2ba0a33168a7cef498f6aedb0c46aad0676e055"
+    },
+    "package": {
+      "path": "docs/evidence/nodia-ai-ai38-candidate01.json",
+      "sha256": "bdb9b27b0983adaca01b5dcc73d11428fa3c6c31c1a4fdcd2b417b5a0d8d552d"
+    },
+    "isolated_UI": {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+      "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb"
+    },
+    "functional": {
+      "path": "docs/evidence/nodia-ai-ai38-verifications-r01.json",
+      "sha256": "c6eab39d2da3ce3e9c5d2488d884f017f248dd0107ca4adb8be70a6227a11501"
+    },
+    "adoption": {
+      "path": "docs/evidence/nodia-ai-ai38-adoption-validation.json",
+      "sha256": "d3317ee551307fab73c4219eddc4e8fdd769a73336efec9358f99303dbb4d77c"
+    },
+    "UI": {
+      "path": "docs/evidence/nodia-ai-ai38-ui-retry-validation.json",
+      "sha256": "758c6b18cbc77b41213853512c398e5ad56e875a64364d21a052b229c39391ac"
+    },
+    "proxy": {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-attachments-validation.json",
+      "sha256": "b76fdf2b6c729a9d40daabbbec9daed1c13e29c4386dc2b14191217543d8f73c"
+    },
+    "backup": {
+      "path": "docs/evidence/nodia-ai-ai38-adoption-backup-r04.json",
+      "sha256": "4d9d13494c5d864e1da6b00ea16e767070a365f0de451e4517cad71012e4690e"
+    },
+    "backup_cleanup": {
+      "path": "docs/evidence/nodia-ai-ai38-adoption-backup-purge-r04.json",
+      "sha256": "b35bdc9d50726802402ad3f87138ffae9533cc3b6ea9b081500b5a2e58669698"
+    },
+    "infrastructure_historical": {
+      "path": "docs/evidence/nodia-ai-ai38-infrastructure-observation-r01.json",
+      "sha256": "3f42ce40b04c33d3c3e8d283b887857c8d9c7e73054129b60bd3579a88cb9c18"
+    },
+    "restore_contract": {
+      "path": "docs/evidence/nodia-ai-ai37-recovery-runbook.md",
+      "sha256": "c747b7a88ccf772e034a0541b6ad3c4ee72c9b21316e6ee7ab26e91feda1bfe8"
+    },
+    "runtime_fresh": {
+      "path": "docs/evidence/nodia-ai-ai38-environment-runtime-r02.json",
+      "sha256": "4bf0814f5020465ad51d33133bfb7cb29e1b3642557291ba3b00c4feb3241c2e"
+    },
+    "runtime_harness_failure": {
+      "path": "docs/evidence/nodia-ai-ai38-environment-runtime-r01.json",
+      "sha256": "4c8fa65f5ab095603a2f83fd7453876a8bc87af7ddd4a9122963ee31ae138110"
+    },
+    "inspection_fresh": {
+      "path": "docs/evidence/nodia-ai-ai38-environment-inspection-r02.json",
+      "sha256": "d3d8600da6ebaf26602d95ac4c03aac6b9d26141a0cc62e679099ebde94a9cbb"
+    },
+    "host_network": {
+      "path": "docs/evidence/nodia-ai-ai38-environment-host-network-r01.json",
+      "sha256": "83c5f9bd577d0e90121795aee14d74b67ade5f454abf4a061ff3e5ad6f6d8d3b"
+    },
+    "retention_fresh": {
+      "path": "docs/evidence/nodia-ai-ai38-environment-retention-r02.json",
+      "sha256": "13370e9eed7dd00220bd4cf28158a897739225a27e33793f7bf864098ff224c4"
+    },
+    "retention_inspector": {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-environment-retention-inspect.py",
+      "sha256": "f249b1379be3d16d58fcc60ed05cf86055475be739f550a64dbfc46043fea9da"
+    }
+  },
+  "limitations": [
+    "Auditoría semántica offline; no ejecución del viejo validador ni actualización de matrices históricas.",
+    "SHA verifica los bytes enlazados, no honestidad del productor ni aceptación automática de otro entorno/época.",
+    "API key y Codex son etapas propias; no bloquean por sí solos el alcance Gemini de AI-38 ni se habilitan como fallback.",
+    "No se aprueba documentación, se publican herramientas ni se adoptan paquetes por esta revisión."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "task": "AI-12",
+  "checks": 20,
+  "passed": [
+    "actual compiled release loads no draft documents or tools",
+    "real admission freezes current release, policy and session grant",
+    "retry recovers the same run before a second provider observation",
+    "first attempt advances context without provider dispatch",
+    "context manifest pins exact history and compiled release",
+    "external call starts only after durable dispatch arming",
+    "shared dispatch budget is durable before provider I/O",
+    "adapter receives canonical history without invented product knowledge",
+    "second attempt completes inference once",
+    "answer, assistant reference and activity close atomically",
+    "successful response releases physical runtime and preserves fence",
+    "background stages and assistant reply do not renew retention",
+    "completed job is never dispatched a second time",
+    "external call starts only after durable dispatch arming",
+    "shared dispatch budget is durable before provider I/O",
+    "adapter receives canonical history without invented product knowledge",
+    "lost response becomes unknown with profile quarantined",
+    "unknown inference does not replay on recovery",
+    "standalone worker composition resolves dependencies without an HTTP listener",
+    "standalone autoLoadEntities registers the run and all eleven M1 entities"
+  ],
+  "external_adapter": "synthetic",
+  "real_inference": false
+}

@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "status": "isolated_acceptance_passed_environment_delivery_incomplete",
+  "target": "VM Linux local, explicitly confirmed by the user",
+  "candidate": {
+    "server": {
+      "path": "docs/evidence/nodia-ai-ai38-candidate01.json",
+      "sha256": "bdb9b27b0983adaca01b5dcc73d11428fa3c6c31c1a4fdcd2b417b5a0d8d552d"
+    },
+    "client": {
+      "path": "docs/evidence/nodia-ai-ai38-client-candidate01.json",
+      "sha256": "74af671dd483351cde89daa7a7ae2f3e10fe8fb292973aa68fb0a0f8691f10bf"
+    },
+    "server_archive": {
+      "path": ".tmp/ai38-node-candidate01.tar.gz",
+      "sha256": "b7492afeeb31b9bb65fb0ec3a41ea1caf016d65b3f09af3ac3f487727782fabb"
+    },
+    "client_archive": {
+      "path": ".tmp/ai38-client-candidate01.tar.gz",
+      "sha256": "b60ecf0fc7e78843dcaf88233ae244b227b4d4574c92957b0fc43deb997aaca0"
+    },
+    "production_source_hashes_verified": {
+      "server": 924,
+      "client": 647
+    },
+    "deployment": false,
+    "client_target_origin_and_proxy_verified": false
+  },
+  "quality": {
+    "server": {
+      "unit_tests": 4274,
+      "files": 237,
+      "build_exit_observed": 0,
+      "lint_exit_observed": 0,
+      "historical_lint_warnings": 3,
+      "global_fixture_type_exit": 2,
+      "historical_fixture_diagnostics": 192,
+      "new_fixture_diagnostics": 0
+    },
+    "client": {
+      "unit_tests": 1773,
+      "files": 228,
+      "build_exit_observed": 0,
+      "typecheck_exit_observed": 0,
+      "lint_exit_observed": 0
+    },
+    "isolated_acceptance": {
+      "UI_HTTP_SQL": 20,
+      "cross_product_regression": 24,
+      "context_regression": 36,
+      "total": 80,
+      "actual_provider": false,
+      "worker_standalone_process": false,
+      "complete_shell_login": false,
+      "product_context_evolution_between_deliveries": false
+    },
+    "delivery_negative_controls": 8,
+    "evidence_checker_fixture_controls": 21,
+    "logs": [
+      {
+        "path": ".tmp/ai38-server-build01.log",
+        "sha256": "b08eb584e54160f0adf1c82c30098066abc0c1bc8b2248cfad012ae421ea2d49"
+      },
+      {
+        "path": ".tmp/ai38-server-lint01.log",
+        "sha256": "bf902d879594dd130d9c54fd009b25660b8a7b5a8be2e388e7d272e804ee3776"
+      },
+      {
+        "path": ".tmp/ai38-server-unit01.log",
+        "sha256": "660b449ceb3c004615f5d41aa20188e7bc9c95c54fcc76c52b8a974383f38a2f"
+      },
+      {
+        "path": ".tmp/ai38-server-unit01.json",
+        "sha256": "335da025f35fa37e1379f93f355d85138bf4f8f502b8814ec70c9b0a73dbb8c4"
+      },
+      {
+        "path": ".tmp/ai38-server-fixture-types01.log",
+        "sha256": "cbeef1a9d1f5e547773d34459cb9e2e8c1bff278820d9da548b1602101a9160b"
+      },
+      {
+        "path": ".tmp/ai38-client-build01.log",
+        "sha256": "79ae2b486ca1446bf1b1c19bf17149c2e740cd816ad4771ff0329986748c4cd7"
+      },
+      {
+        "path": ".tmp/ai38-client-typecheck01.log",
+        "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865"
+      },
+      {
+        "path": ".tmp/ai38-client-lint01.log",
+        "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+      },
+      {
+        "path": ".tmp/ai38-client-unit01.log",
+        "sha256": "ed84db773529546ee0733e4dee4090cd7c24a3987060885510676fb14620cb22"
+      },
+      {
+        "path": ".tmp/ai38-client-unit01.json",
+        "sha256": "6780658653bfde7e6ada88b943eab022bccf2ed76fb20477c10bcec1cfe3ba66"
+      }
+    ]
+  },
+  "knowledge": {
+    "fiche": {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md",
+      "sha256": "24d9b64b985f2d4854cd961f46e62c3c4dbe2ad4edd2811d82ab88bc40f7e8e8"
+    },
+    "revision": 6,
+    "status": "draft_unregistered_approval_null",
+    "entry_snapshot": {
+      "path": "docs/evidence/nodia-ai-ai38-runtime-policy-entry-snapshot.md",
+      "sha256": "df5021113a5867968a08850613bf6115c649138f78d90ece430854d90fe07b3e"
+    },
+    "approved_documents_byte_identical": 31,
+    "sources": 59,
+    "excluded": 28,
+    "fragments": 31,
+    "capabilities": 74,
+    "release_id": "c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36",
+    "matches_frozen_server_candidate": true,
+    "current_validation_emitted_assets": false,
+    "new_approvals_or_bindings": false
+  },
+  "provider": {
+    "metadata_requests": 2,
+    "canary_dispatch_requests": 1,
+    "canary_status": "mcp_result_unknown_nonce_not_verified",
+    "terminal_proof_acknowledged": true,
+    "native_pending_identity": false,
+    "business_effects": 0,
+    "configured_SQL_writes": 0,
+    "inference_replayed": false,
+    "modality_canaries": 0,
+    "R2_operations": 0
+  },
+  "environment": {
+    "services_original_active": 4,
+    "operational_Node_outputs_unchanged": 932,
+    "pending_SQL_and_native_artifacts": 0,
+    "services_restarted": false,
+    "clocks_modified": false,
+    "Windows_clock_issue": "W32Time stopped; independent HTTPS Date approximately 383 seconds ahead, consistent with guest NTP. No proven MCP causality.",
+    "adoption_or_rollback_rehearsal_performed": false,
+    "acceptance": "incomplete"
+  },
+  "gates": [
+    {
+      "environment": {
+        "environment_id": "ai38-isolated-ui-api-sql",
+        "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+      },
+      "counts": {
+        "passed": 3,
+        "failed": 0,
+        "unknown": 7
+      },
+      "status": "environment_acceptance_incomplete"
+    },
+    {
+      "environment": {
+        "environment_id": "linux_lab",
+        "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+      },
+      "counts": {
+        "passed": 1,
+        "failed": 0,
+        "unknown": 9
+      },
+      "status": "environment_acceptance_incomplete"
+    }
+  ],
+  "records": [
+    {
+      "path": "docs/evidence/nodia-ai-ai38-candidate01.json",
+      "sha256": "bdb9b27b0983adaca01b5dcc73d11428fa3c6c31c1a4fdcd2b417b5a0d8d552d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-client-candidate01.json",
+      "sha256": "74af671dd483351cde89daa7a7ae2f3e10fe8fb292973aa68fb0a0f8691f10bf"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-r06.json",
+      "sha256": "c5d31c30a7e8140b7d1e7b435ca552a7423fceb6cd6e4985c2d2a0825aafb3bb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-cleanup-r02.json",
+      "sha256": "c407d6709c008d191f510c90bce5369aad33441685f32ff6dd24bfbda4a414c6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-regression-r01.json",
+      "sha256": "49b727b2b2e38fad9fef36b86be2492e05bf334bf95cf907cee292d9ccadd247"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-acceptance-context-r02.json",
+      "sha256": "cce249e1cdc7ea21825c6e0a5df0f9bfc181d7870c5e50fceac5658af25e0301"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-preflight-r01.json",
+      "sha256": "331242abafcd8ee1f7a9a1bab2d5ce14eb372c25c8c9943afab47546179b4bb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-control-r01.json",
+      "sha256": "2351a8d7761ac27335620dfb98b4251ea5de00b09e1e8f4103e9779fcb6ea947"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-stage-r02.json",
+      "sha256": "38ca506282cded5adf5c2132c0ae636c7774dfbc9a386a063aa337e668d2e278"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-inventory-r03.json",
+      "sha256": "5daa50d82646ee643af3a3abd11c96a6c0f16e9efddfcf1b15f09aec031827d5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-native-closure-r01.json",
+      "sha256": "a07b5a788bbbee0aa9bfb870d3f7c507490d5aa0fca2b5db4c759539023e928c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-clock-r02.json",
+      "sha256": "98714c5c3fbfc45f688902f4b824b85a987104fefa9b591c639fc725acec2a79"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-windows-clock-r01.json",
+      "sha256": "199375bd91920852440220811d7437f7c82874c339986873cd4037465f86d18c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-modalities-r01.json",
+      "sha256": "50c6330ba615cdec74436af97fb2bbd5fffc47c11101be1163c57e897bccb970"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-mcp-canary-r01.json",
+      "sha256": "14878a88a783f14f4e3e6b6789c0eaaacb56c6fed12c3ecd688da47849768485"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-gates-isolated-r03.json",
+      "sha256": "a659630536a976aeaf101385e23a1cd6a13dcc38e7042fc623338699aed4c82d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-gates-linux-lab-r03.json",
+      "sha256": "50dd9736f9c437ac2ce30b87e2ba0a33168a7cef498f6aedb0c46aad0676e055"
+    }
+  ],
+  "open_scope": [
+    "AI36/C05 historical 4/7 acceptance and 77 unpublished candidates remain in their own stage.",
+    "Real text, delegation, MIME/model modalities and domain acceptance on the delivered runtime remain open.",
+    "Actual adoption/rollback, full UI shell/auth, product context evolution and infrastructure retention/backup gates remain open.",
+    "Client target-origin/proxy and a fresh dependency installation on the target are not verified.",
+    "Synchronize the development host before further cross-host time-sensitive tests; do not enlarge future-observation tolerances."
+  ],
+  "release_authorized": false,
+  "reproducible_validator": {
+    "path": "docs/evidence/scripts/validate-nodia-ai-ai38.cjs",
+    "sha256": "d0c2c04b5671bdc79793e128a5d6fc7cff4434cae17edf49800e222f8491fb41"
+  }
+}

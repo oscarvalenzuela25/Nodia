@@ -1,18 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
-import { User } from './entities/user.entity.js';
-import { UserRole } from './entities/user-role.entity.js';
-import { UserModule as UserModuleEntity } from './entities/user-module.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { GetUsersDto } from './dto/get-users.dto.js';
-import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import { Repository, type EntityManager } from 'typeorm';
+import {
+  applyRansack,
+  validateRansackEnvelope,
+} from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
+import { GetUsersDto } from './dto/get-users.dto.js';
+import { UserModule as UserModuleEntity } from './entities/user-module.entity.js';
+import { UserRole } from './entities/user-role.entity.js';
+import { User } from './entities/user.entity.js';
 import { GetUsersResponse } from './types/user.types.js';
 
-import { TranslationService } from '../translation/translation.service.js';
 import { RedisService } from '../common/redis/redis.service.js';
+import { TranslationService } from '../translation/translation.service.js';
 
 @Injectable()
 export class UserService {
@@ -20,21 +21,20 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserRole)
-    private readonly userRoleRepository: Repository<UserRole>,
+    _userRoleRepository: Repository<UserRole>,
     @InjectRepository(UserModuleEntity)
-    private readonly userModuleRepository: Repository<UserModuleEntity>,
+    _userModuleRepository: Repository<UserModuleEntity>,
     private readonly translationService: TranslationService,
-    private readonly redisService: RedisService,
+    _redisService: RedisService,
   ) {}
 
-  async findAll({
-    page = 1,
-    limit = 10,
-    all = false,
-    includes = true,
-    q,
-  }: GetUsersDto): Promise<GetUsersResponse> {
-    const qb = this.userRepository.createQueryBuilder('user');
+  async findAll(
+    { page = 1, limit = 10, all = false, includes = true, q }: GetUsersDto,
+    manager?: EntityManager,
+  ): Promise<GetUsersResponse> {
+    const qb = (
+      manager?.getRepository(User) ?? this.userRepository
+    ).createQueryBuilder('user');
     validateRansackEnvelope(q);
 
     if (includes) {
@@ -49,11 +49,17 @@ export class UserService {
         qb.leftJoin('user.user_roles', 'user_roles');
       }
       if (q.roles_id_eq) {
-        qb.andWhere('user_roles.role_id = :roleIdEq', { roleIdEq: q.roles_id_eq });
+        qb.andWhere('user_roles.role_id = :roleIdEq', {
+          roleIdEq: q.roles_id_eq,
+        });
       }
       if (q.roles_id_in) {
-        const inValues = Array.isArray(q.roles_id_in) ? q.roles_id_in : [q.roles_id_in];
-        qb.andWhere('user_roles.role_id IN (:...roleIdIn)', { roleIdIn: inValues });
+        const inValues = Array.isArray(q.roles_id_in)
+          ? q.roles_id_in
+          : [q.roles_id_in];
+        qb.andWhere('user_roles.role_id IN (:...roleIdIn)', {
+          roleIdIn: inValues,
+        });
       }
     }
 
@@ -62,11 +68,17 @@ export class UserService {
         qb.leftJoin('user.user_modules', 'user_modules');
       }
       if (q.modules_id_eq) {
-        qb.andWhere('user_modules.module_id = :moduleIdEq', { moduleIdEq: q.modules_id_eq });
+        qb.andWhere('user_modules.module_id = :moduleIdEq', {
+          moduleIdEq: q.modules_id_eq,
+        });
       }
       if (q.modules_id_in) {
-        const inValues = Array.isArray(q.modules_id_in) ? q.modules_id_in : [q.modules_id_in];
-        qb.andWhere('user_modules.module_id IN (:...moduleIdIn)', { moduleIdIn: inValues });
+        const inValues = Array.isArray(q.modules_id_in)
+          ? q.modules_id_in
+          : [q.modules_id_in];
+        qb.andWhere('user_modules.module_id IN (:...moduleIdIn)', {
+          moduleIdIn: inValues,
+        });
       }
     }
 
@@ -78,6 +90,8 @@ export class UserService {
       ...cleanQ
     } = q ?? {};
     applyRansack(qb, cleanQ, 'user', RANSACK_POLICIES.user);
+    if (manager && !/^id\s/i.test(String(q?.s ?? '')))
+      qb.addOrderBy('user.id', 'ASC');
 
     const formatUsers = async (users: User[]): Promise<User[]> => {
       let translatedModulesMap = new Map<string, any>();
@@ -96,20 +110,24 @@ export class UserService {
         }
 
         if (allModulesMap.size > 0) {
-          const translatedModules = await this.translationService.attachTranslations(
-            'modules',
-            Array.from(allModulesMap.values()),
-          );
+          const translatedModules =
+            await this.translationService.attachTranslations(
+              'modules',
+              Array.from(allModulesMap.values()),
+              manager,
+            );
           translatedModulesMap = new Map(
             translatedModules.map((m) => [String(m.id), m]),
           );
         }
 
         if (allRolesMap.size > 0) {
-          const translatedRoles = await this.translationService.attachTranslations(
-            'roles',
-            Array.from(allRolesMap.values()),
-          );
+          const translatedRoles =
+            await this.translationService.attachTranslations(
+              'roles',
+              Array.from(allRolesMap.values()),
+              manager,
+            );
           translatedRolesMap = new Map(
             translatedRoles.map((r) => [String(r.id), r]),
           );
@@ -117,13 +135,27 @@ export class UserService {
       }
 
       return users.map((user) => {
-        const roles = user.user_roles
-          ?.map((ur) => (ur.role ? (translatedRolesMap.get(String(ur.role.id)) ?? ur.role) : null))
-          .filter(Boolean) ?? [];
-        const modules = user.user_modules
-          ?.map((um) => (um.module ? (translatedModulesMap.get(String(um.module.id)) ?? um.module) : null))
-          .filter(Boolean) ?? [];
-        const { user_roles: _user_roles, user_modules: _user_modules, ...rest } = user;
+        const roles =
+          user.user_roles
+            ?.map((ur) =>
+              ur.role
+                ? (translatedRolesMap.get(String(ur.role.id)) ?? ur.role)
+                : null,
+            )
+            .filter(Boolean) ?? [];
+        const modules =
+          user.user_modules
+            ?.map((um) =>
+              um.module
+                ? (translatedModulesMap.get(String(um.module.id)) ?? um.module)
+                : null,
+            )
+            .filter(Boolean) ?? [];
+        const {
+          user_roles: _user_roles,
+          user_modules: _user_modules,
+          ...rest
+        } = user;
         return {
           ...rest,
           roles: includes ? roles : [],
@@ -166,52 +198,10 @@ export class UserService {
     };
   }
 
-  async create(createUserDto: CreateUserDto) {
-    const normalizedEmail = createUserDto.email?.toLowerCase().trim();
-    if (normalizedEmail) {
-      const existing = await this.userRepository.findOne({
-        where: { email: normalizedEmail },
-      });
-      if (existing) {
-        return this.update(existing.id, createUserDto);
-      }
-    }
-
-    const { roles, modules, ...userData } = createUserDto;
-    const newUser = this.userRepository.create(userData);
-    const savedUser = await this.userRepository.save(newUser);
-
-    if (roles && roles.length > 0) {
-      const userRoles = roles.map((roleId) =>
-        this.userRoleRepository.create({
-          user_id: savedUser.id,
-          role_id: roleId,
-          is_active: true,
-        }),
-      );
-      await this.userRoleRepository.save(userRoles);
-    }
-
-    if (modules && modules.length > 0) {
-      const userModules = modules.map((moduleId) =>
-        this.userModuleRepository.create({
-          user_id: savedUser.id,
-          module_id: moduleId,
-          is_active: true,
-        }),
-      );
-      await this.userModuleRepository.save(userModules);
-    }
-
-    if (savedUser.email) {
-      await this.redisService.del(`auth:context:${savedUser.email.toLowerCase().trim()}`);
-    }
-
-    return this.findOne(savedUser.id);
-  }
-
-  async findOne(id: string) {
-    const user = await this.userRepository.findOne({
+  async findOne(id: string, manager?: EntityManager) {
+    const user = await (
+      manager?.getRepository(User) ?? this.userRepository
+    ).findOne({
       where: { id },
       relations: {
         user_roles: {
@@ -226,80 +216,34 @@ export class UserService {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
     let roles = user.user_roles?.map((ur) => ur.role).filter(Boolean) ?? [];
-    let modules = user.user_modules?.map((um) => um.module).filter(Boolean) ?? [];
+    let modules =
+      user.user_modules?.map((um) => um.module).filter(Boolean) ?? [];
 
     if (modules.length > 0) {
       modules = (await this.translationService.attachTranslations(
         'modules',
         modules,
+        manager,
       )) as any;
     }
     if (roles.length > 0) {
       roles = (await this.translationService.attachTranslations(
         'roles',
         roles,
+        manager,
       )) as any;
     }
 
-    const { user_roles: _user_roles, user_modules: _user_modules, ...rest } = user;
+    const {
+      user_roles: _user_roles,
+      user_modules: _user_modules,
+      ...rest
+    } = user;
     return {
       ...rest,
       roles,
       modules,
     } as User;
-  }
-
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
-    }
-
-    const { roles, modules, ...rest } = updateUserDto;
-    Object.assign(user, rest);
-    await this.userRepository.save(user);
-
-    if (roles !== undefined) {
-      await this.userRoleRepository.delete({ user_id: id });
-      if (roles.length > 0) {
-        const userRoles = roles.map((roleId) =>
-          this.userRoleRepository.create({
-            user_id: id,
-            role_id: roleId,
-            is_active: true,
-          }),
-        );
-        await this.userRoleRepository.save(userRoles);
-      }
-    }
-
-    if (modules !== undefined) {
-      await this.userModuleRepository.delete({ user_id: id });
-      if (modules.length > 0) {
-        const userModules = modules.map((moduleId) =>
-          this.userModuleRepository.create({
-            user_id: id,
-            module_id: moduleId,
-            is_active: true,
-          }),
-        );
-        await this.userModuleRepository.save(userModules);
-      }
-    }
-
-    if (user.email) {
-      await this.redisService.del(`auth:context:${user.email.toLowerCase().trim()}`);
-    }
-    if (
-      updateUserDto.email &&
-      updateUserDto.email.toLowerCase().trim() !== user.email?.toLowerCase().trim()
-    ) {
-      await this.redisService.del(
-        `auth:context:${updateUserDto.email.toLowerCase().trim()}`,
-      );
-    }
-
-    return this.findOne(id);
   }
 
   remove(id: number) {

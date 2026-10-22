@@ -1,0 +1,289 @@
+{
+  "stage": "AI-33",
+  "checked_on": "2026-10-18T18:40:21.0101252Z",
+  "status": "passed",
+  "scope": "Client implementation and offline/synthetic validation. No operational preference writes, Gemini inference, provider session changes or deployment.",
+  "verification": {
+    "preference_focal_attempt01": {
+      "passed": 11,
+      "files_passed": 4,
+      "failed": 0,
+      "source_stage": "Before the final picker and page regression tests"
+    },
+    "nodia_ai_suite_attempt01": {
+      "passed": 499,
+      "files_passed": 31,
+      "failed": 0,
+      "source_stage": "Before the final preferences_changed page regression"
+    },
+    "full_attempt01": {
+      "files_failed": 1,
+      "total": 1704,
+      "files_passed": 222,
+      "passed": 1703,
+      "failure": "Existing ProvidersTab lazy contact editor did not resolve before its unchanged Testing Library deadline under unrestricted parallel load. Cause inferred from the loading view; test and deadline were not changed.",
+      "duration_seconds": 181.16,
+      "failed": 1
+    },
+    "existing_provider_isolated": {
+      "passed": 13,
+      "files_passed": 1,
+      "failed": 0,
+      "duration_seconds": 10.59
+    },
+    "full_final": {
+      "files_passed": 223,
+      "passed": 1705,
+      "exit_code": 0,
+      "command": "npx vitest run --maxWorkers=2",
+      "duration_seconds": 461.83,
+      "failed": 0
+    },
+    "build_attempt01": {
+      "exit_code": 1,
+      "failure": "New synthetic manual fixture and test fixture TypeScript typing only; fixed before the final source freeze. Original log retained."
+    },
+    "build_final": {
+      "typescript": true,
+      "vite": "8.2.1",
+      "warning": "Build reports chunks larger than 500 kB; no bundle reduction or productive performance acceptance is claimed.",
+      "exit_code": 0,
+      "command": "npm run build",
+      "vite_duration_seconds": 11.84
+    },
+    "typecheck_final": {
+      "exit_code": 0,
+      "command": "npm run typecheck"
+    },
+    "lint_final": {
+      "exit_code": 0,
+      "scope": [
+        "src/modules/nodiaAi",
+        "src/test/modules/nodiaAi",
+        "src/test/manual/nodia-ai/preferences-main.tsx"
+      ]
+    },
+    "browser": {
+      "kind": "isolated synthetic HTTP fixture",
+      "performed_by": "root agent",
+      "sha256": "47a9121f483b3eaa14dddb5ddbe84ae310694984b144a89872b2b846509933b4",
+      "operational_writes": 0,
+      "path": "docs/evidence/nodia-ai-ai33-ui-validation.json"
+    },
+    "qa_listener_cleanup": {
+      "stopped": true,
+      "port": 5197,
+      "other_services_untouched": true,
+      "verified_owned_vite_commandline": true
+    }
+  },
+  "coverage": [
+    "Intent-only loader and local retry without page reload",
+    "Actor/session query separation and stale preparation response isolation",
+    "Strict catalog/list/options/preparation boundaries",
+    "Named selectors including the separate supplier business scope",
+    "Revoked preferences remain forgettable without leaking stale labels",
+    "Preparation failure retains editable draft for explicit retry",
+    "Human proposal revision uses a named picker; writes use the existing exact confirmation channel",
+    "preferences_changed explains pre-dispatch failure, preserves a new composer draft and performs no automatic retry"
+  ],
+  "source_pins": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.tsx",
+      "sha256": "098f33fbe0b7461d284a002dd145a19a0bdaf4c8dc7d876cfecf1f3c58278e71",
+      "bytes": 8304
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Preferences/index.tsx",
+      "sha256": "7cad9eeaa812d33bdaf3708aaf94160ff8dfbabdff7c0eea14be5f22c60abf34",
+      "bytes": 1816
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Preferences/loadPreferences.ts",
+      "sha256": "9417817e8d57405a87891c0f27af1235307a35d08d0777e653239b106357ec0d",
+      "bytes": 62
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Preferences/PreferenceEditor.tsx",
+      "sha256": "95de21911c9fd02050cd318846bbb5d107acf142a7ef4babc054448239dcf14e",
+      "bytes": 6246
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Preferences/Preferences.tsx",
+      "sha256": "e16e743003995bf6637d7479891cb56450a9bfb60ad270da5765018e19b31ba3",
+      "bytes": 6320
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Preferences/PreferenceValueEditor.tsx",
+      "sha256": "5a2c49b61c76be6c379ac2eec29bb790734e11315c546a5c6ad77e347ecd7522",
+      "bytes": 2740
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Preferences/styles.ts",
+      "sha256": "b275c903afc2502ae327a467cd70e90684cf8257032ff567ff7a5b2ee5dd0553",
+      "bytes": 1469
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Preferences/types.ts",
+      "sha256": "a7cdbe19e7c6552d0fc9a7f7f3cb1572bb24d856ada192538c0f752f6ae345a9",
+      "bytes": 132
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.tsx",
+      "sha256": "d97749d41f4628139d6e943ef7058dca7f213b2a8de70ea8ab2a047b96655ed6",
+      "bytes": 15059
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/ProposalPreview.tsx",
+      "sha256": "daa4a12deb4349a63502c0739074f6392f32a94953222e5561b03bdb9cc541a2",
+      "bytes": 15034
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/preferencePresentation.ts",
+      "sha256": "04d47bffc3beb8482e082f5792122d9f310cff2a9028d01f9bc92f2230cf5651",
+      "bytes": 417
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/preferenceSchemas.ts",
+      "sha256": "e6163172a5955330fda11c922dbc2a5fe0e25caf2035310f51e3beea8783127d",
+      "bytes": 4654
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/preferenceServices.ts",
+      "sha256": "18131d562bc3511b7b8e773fbcfef73f7fd2d074eb445e1d07bddcff607d69f8",
+      "bytes": 2210
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/schemas.ts",
+      "sha256": "dcaf12c07e9630a5042ef735d251508bcd15b3c2f6423c54b2001bbfde9e2b87",
+      "bytes": 15254
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useExecution.ts",
+      "sha256": "b053032a31ed9d3a1ae7254182011e387c7f803e229f0b2188dca29ddd646213",
+      "bytes": 9382
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/usePreferences.ts",
+      "sha256": "3231beea82daa98758e62d6b733a5b86dd2fb132cd2721e306e5845a6d0033e6",
+      "bytes": 3187
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "97c2f24633290440a3d6a52136b9dd7a771b6fc29f3dc72fb1c13d2d64f2f43c",
+      "bytes": 26149
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai/preferences-frame.html",
+      "sha256": "da3bac83585fd48bfe1c6b9b778ec8d33a3ecdd65ae4fdaa6ded1c58d625a284",
+      "bytes": 288
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai/preferences-main.tsx",
+      "sha256": "abf10063c6ea54d5c7457c88aa85078694c6b4f9fcd8c2ac412e9c632f6fc341",
+      "bytes": 9317
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/Preferences/PreferenceEditor.test.tsx",
+      "sha256": "301fb14679e21db2035ae29e9cdde9173d6d8859d053782e5972b32bc48d6195",
+      "bytes": 3091
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/Preferences/Preferences.test.tsx",
+      "sha256": "315629be01789bb6772b70efa0207396a689e33ed6100c303020de8f5bd70631",
+      "bytes": 5411
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/Preferences/PreferencesLoader.test.tsx",
+      "sha256": "2ef54ae0b98ae5e731228b053b9aae3a57c1d7d40cf77b7a765e75dbeca7a7a3",
+      "bytes": 1788
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/Preferences/PreferenceValueEditor.test.tsx",
+      "sha256": "2c8d9238b9f6d6ea5330a9d6dd76f767fb10f5b089980bd7e8d6960e341996ce",
+      "bytes": 2221
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/preferenceFixtures.ts",
+      "sha256": "13b316c81a546d76ccc4cb457cd985a56547643f4a95f958951acb7e4a5e699b",
+      "bytes": 2024
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/preferenceServices.test.ts",
+      "sha256": "7bdc9169cb873d4634de73f907847263140013dae9e7bf36f6b550577a45397c",
+      "bytes": 3675
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/usePreferences.test.tsx",
+      "sha256": "e646f2645e1d355053ffbdb08cc55a877d60531b4dd1996413d2c4763315b323",
+      "bytes": 3178
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+      "sha256": "28e5a79ce09e1dc99c6e253441d8b294404a9badc3e9994d527330baf74aae40",
+      "bytes": 34882
+    },
+    {
+      "path": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "5ae25d9e7a6cef7f42c7f2d2db2a10bc93fc61560e168077f34f4039a1b4fa16",
+      "bytes": 47462
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "4214e11f9924664944f7cf49735c9b658f4bd69a9d007c810c1e87c67aafcc40",
+      "bytes": 50444
+    }
+  ],
+  "logs": [
+    {
+      "path": ".tmp/ai33-client-focal-attempt01.log",
+      "sha256": "49318e175cd27e1e0c63fbcf15a601e6316fb6facc3fe0684d878388e3288a5b",
+      "bytes": 241
+    },
+    {
+      "path": ".tmp/ai33-client-nodia-ai-attempt01.log",
+      "sha256": "9c373f34dc626eda86a122d9690b6017d834e958c2f7094a71ff33aaa30935b6",
+      "bytes": 253
+    },
+    {
+      "path": ".tmp/ai33-client-full-attempt01.log",
+      "sha256": "db145e78cb87a9f2f1dc8b9cbf86e69c6953ffee047cdff52381de87325042ae",
+      "bytes": 3198
+    },
+    {
+      "path": ".tmp/ai33-client-existing-provider-isolated.log",
+      "sha256": "e486dd03d59f196c7bce2d9cc210d551b466c99b6d44fce6b63b778f777680f7",
+      "bytes": 340
+    },
+    {
+      "path": ".tmp/ai33-client-full-final.log",
+      "sha256": "3ce9624a0bb4c1daf5848c65623abebb21f2463629bbe915690fa91e66df6a0e",
+      "bytes": 455
+    },
+    {
+      "path": ".tmp/ai33-client-build-attempt01.log",
+      "sha256": "9e7fa9bfbd1830be6399477b7c2f812456a3956ab1eefca69597552001cc71a0",
+      "bytes": 3771
+    },
+    {
+      "path": ".tmp/ai33-client-build-final.log",
+      "sha256": "dfc0a493dc569074e5b06f9bdc79aa9985444d39e787668149616be9868f38a2",
+      "bytes": 14564
+    },
+    {
+      "path": ".tmp/ai33-client-typecheck-final.log",
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865",
+      "bytes": 46
+    },
+    {
+      "path": ".tmp/ai33-client-lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "limitations": [
+    "Browser checks use synthetic responses and are reported separately. This report does not assert live Gemini or MCP preference tool publication.",
+    "The retained failed full run and failed initial build are historical attempts; the final suite, typecheck, lint and build are all successful.",
+    "No changes were made to an existing test deadline to achieve the final result."
+  ]
+}

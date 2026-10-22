@@ -1,0 +1,109 @@
+{
+  "task": "AI-15",
+  "scope": "fresh_standalone_worker_metadata_and_native_sql",
+  "status": "passed",
+  "expected_missing_baseline": false,
+  "metadata": [
+    {
+      "entity": "Business",
+      "registered": true
+    },
+    {
+      "entity": "BusinessCollaborator",
+      "registered": true
+    },
+    {
+      "entity": "BusinessAction",
+      "registered": true
+    },
+    {
+      "entity": "Product",
+      "registered": true
+    },
+    {
+      "entity": "ProductLog",
+      "registered": true
+    },
+    {
+      "entity": "Provider",
+      "registered": true
+    },
+    {
+      "entity": "ProviderContact",
+      "registered": true
+    },
+    {
+      "entity": "Invoice",
+      "registered": true
+    },
+    {
+      "entity": "UserRole",
+      "registered": true
+    },
+    {
+      "entity": "Translation",
+      "registered": true
+    },
+    {
+      "entity": "AiProvider",
+      "registered": true
+    },
+    {
+      "entity": "AiApiKey",
+      "registered": true
+    },
+    {
+      "entity": "AiProviderCatalog",
+      "registered": true
+    },
+    {
+      "entity": "AiProviderEvent",
+      "registered": true
+    },
+    {
+      "entity": "FinanceCategory",
+      "registered": true
+    }
+  ],
+  "entity_count": 48,
+  "reads": [
+    {
+      "capability_id": "nodia_businesses_list",
+      "status": "completed",
+      "synthetic_sql_marker_verified": true
+    },
+    {
+      "capability_id": "nodia_finance_categories_list",
+      "status": "completed",
+      "synthetic_sql_marker_verified": true
+    },
+    {
+      "capability_id": "nodia_rental_properties_list",
+      "status": "completed",
+      "synthetic_sql_marker_verified": true
+    },
+    {
+      "capability_id": "nodia_roles_list",
+      "status": "completed",
+      "synthetic_sql_marker_verified": true
+    },
+    {
+      "capability_id": "nodia_ai_providers_list",
+      "status": "completed",
+      "synthetic_sql_marker_verified": true
+    }
+  ],
+  "datasource_explicit_entities_override": false,
+  "app_module_imported": false,
+  "worker_lifecycle_initialized": false,
+  "postgres_read_only": true,
+  "provider_generations": 0,
+  "provider_profiles_read": false,
+  "empty_publication": {
+    "scope": "fresh_worker_empty_publication",
+    "status": "passed",
+    "runtime_initialization": false
+  },
+  "configured_database_modified": false,
+  "disposable_database_removed": true
+}

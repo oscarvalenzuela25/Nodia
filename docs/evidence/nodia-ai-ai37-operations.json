@@ -1,0 +1,150 @@
+{
+  "stage": "AI-37",
+  "scope": "minimal_aggregate_operations_observability",
+  "status": "unit_and_isolated_postgresql_DI_verified_not_operationally_adopted",
+  "source_files": [
+    {
+      "path": "nodia-server/src/nodia-ai-operations/nodia-ai-operations.module.ts",
+      "sha256": "958f932b2b32e2c2e74c708f8325ec2122034cc07bec4a0c7355108706416479"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-operations/nodia-ai-operations.service.ts",
+      "sha256": "4a63e55897630cd36c2260fbd2185821c440563315ec863a8764589bb95520d4"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-operations/types/operations.types.ts",
+      "sha256": "02104c3f22fad67b4515b5cce27917a3011b3dc7cb08bb776fa9e842eb8e5b23"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-operations/use-case/observe-nodia-ai-operations.use-case.spec.ts",
+      "sha256": "5317fa65957598187434b1bff0371001e623bdbcb1b2536187f56dc766e423c0"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-operations/use-case/observe-nodia-ai-operations.use-case.ts",
+      "sha256": "f65f26025cc0c6aad843fd6494d505ad53c10820dacbbe5c7183ab20ffd6a62e"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-operations/use-case/report-nodia-ai-operations.use-case.spec.ts",
+      "sha256": "215b698801729160c7aec6d5d8cf9a11eaefaeaffa6b8767026469dc03163f79"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-operations/use-case/report-nodia-ai-operations.use-case.ts",
+      "sha256": "78328e2dd46c8d15030f73a451a903bfa3cf7413dab7bc104a11276cd7d84315"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai37-operations.integration.mjs",
+      "sha256": "2595651540a2d8c01a5746c59a5e9bd912cea47df4ad09a4e9894b5dbfcca272"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-worker.module.ts",
+      "sha256": "70d27a31fa0300c2ac8586bcb9c9056070389fb2845c16a5f24602dd9b71c5e1"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.ts",
+      "sha256": "b56bb7ca647ad20e9489baebf87ba9f4628a6891840a9a2c4bc6a5742da23565"
+    }
+  ],
+  "verification": {
+    "case_tests": {
+      "passed": 25,
+      "files": 2,
+      "runner": "Vitest 4.1.11",
+      "external_dependencies": "synthetic ports only"
+    },
+    "focused_oxlint": {
+      "exit_code": 0
+    },
+    "harness_syntax": {
+      "exit_code": 0
+    },
+    "postgresql_harness": {
+      "status": "passed",
+      "candidate": "04",
+      "path": "docs/evidence/nodia-ai-ai37-operations-sql.json",
+      "sha256": "99bea692f38fb880e9073f815b40286e101b5968fa16302302fa27fa0424a3dd",
+      "checks": 17,
+      "measured": {
+        "pending_jobs": 1006,
+        "aggregate_statements": 1,
+        "total_statements_including_begin_commit": 4,
+        "elapsed_ms": 9.839296999998624
+      },
+      "provider_inferences": 0,
+      "operational_database_touched": false,
+      "DI_scope": "actual worker module compiled without init/start/listen; actual operations module/policy/SQL, synthetic transport/Redis and explicitly empty publication/tool families test-only",
+      "completed_attempt": 3
+    },
+    "worker_DI": "passed in candidate04 isolated PostgreSQL harness without starting loops",
+    "operational_database_touched": false,
+    "provider_calls": 0,
+    "typecheck": {
+      "command": "npx tsc --noEmit --incremental false --pretty false",
+      "diagnostics": 192,
+      "baseline_diagnostics": 192,
+      "new_operations_diagnostics": 0,
+      "new_recovery_diagnostics": 0,
+      "log": ".tmp/ai37-operations-typecheck.log",
+      "fixture_change": "complete typed snapshot instead of partial assertion"
+    },
+    "preserved_failed_controls": [
+      {
+        "path": "docs/evidence/nodia-ai-ai37-operations-attempt01.stderr.log",
+        "sha256": "6e93b7b5e839a0d802be3547d430d48c7f537280f6ca7d2d5ea516dc8cd4d468",
+        "outcome": "Initial empty snapshot and its two checks ran; then fixture INSERT parameter42P08 failed before seeded cases/DI. Corrected explicit uuid cast, no production source fix. Zero external calls.",
+        "acceptance_claimed": false
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai37-operations-attempt02.stderr.log",
+        "sha256": "a74f1a52e92315d2f6fcf37ed6e36f5f8f838ae5a40c6de1a4be3bf9f020633b",
+        "outcome": "Seeded operations SQL checks ran, then DI empty-publication fixture conflicted with pilot tool families. Aligned test-only families to empty manifest without weakening real registry. Zero external calls.",
+        "acceptance_claimed": false
+      }
+    ],
+    "worker_integration": "NodiaAiOperationsModule imported only into explicit standalone worker composition; Report is a required injected dependency, maintenance attempts it after recovery/retention without coupling errors; transition warnings recovered only after completed checks"
+  },
+  "contract": {
+    "public_API_routes_added": 0,
+    "tables_added": 0,
+    "indexes_added": 0,
+    "aggregate_statements_per_observation": 1,
+    "statements_including_begin_local_timeout_commit": 4,
+    "cadence_source": "policy.retention.sweep_seconds",
+    "provider_ready": null,
+    "external_cost": null,
+    "alert_logs": "only category transitions; bounded snapshot once per sweep; outage category deduplicated",
+    "throttle": "per worker process; coalesces concurrent execute calls",
+    "database_time": "single statement_timestamp for observation",
+    "unknown_age_basis": "minimum updated_at among unknown jobs, age of persisted observation; not proof of first uncertainty instant",
+    "cleanup_age_basis": "minimum cleanup job created_at; not physical deletion latency",
+    "blob_overdue_basis": "persisted cleanup job deadline_at originally created from write window plus physical_cleanup_target_seconds; retries do not reset it",
+    "proof_cleanup_attempt_basis": "recovery_descriptor.cleanup_attempts validated numeric representation; not job.attempt_count",
+    "blob_cleanup_attempt_basis": "attempt_count; currently leased last attempt not exhausted until failed/nonleased",
+    "queue_wait_basis": "turn: run.created_at+wait with dispatches_used=0; execution: ready.available_at+wait",
+    "queued_age_basis": "minimum job.created_at among currently ready turn/execution jobs; age of queued job, not exact current-stage waiting duration. queue_wait_expired uses native per-kind timestamps separately.",
+    "restore_quarantine_alert": "presence of restore_quarantined key in pending jobs, including failed; distinct bounded aggregate signal, not provider readiness or release authority"
+  },
+  "review": {
+    "polling": {
+      "type": "static code review, not measured throughput",
+      "detail_ms": 2000,
+      "history_ms": 2000,
+      "events_ms": 2000,
+      "events_catchup_ms": 100,
+      "upper_bound_formula_visible_active_chat": "30*(2+P) requests/min, P loaded history pages, absent timer/request delays",
+      "P1_requests_per_min": 90,
+      "events_backlog_only_requests_per_second": 10,
+      "new_snapshot_rate": "1 aggregate per 900 s per worker process in current policy",
+      "message_SQL": "parts and messageRuns batched; no per-message SQL loop",
+      "event_authority": "sequential results.observe per result ref; bounded but repeated each poll",
+      "proposal_authority": "verifyAuthority per selected step, bounded by current policy max8",
+      "recommendation": "Measure batch authorization/result observation ports and history refetch-by-journal; preserve revocation/cursor-reset checks before adopting. No speculative UI change or indexes."
+    },
+    "not_proven": [
+      "production alert delivery/retention",
+      "provider readiness",
+      "external billing/internal CLI token consumption",
+      "physical deletion SLA",
+      "production observation latency/scale; synthetic single operations sample is not percentile or SLA"
+    ]
+  }
+}

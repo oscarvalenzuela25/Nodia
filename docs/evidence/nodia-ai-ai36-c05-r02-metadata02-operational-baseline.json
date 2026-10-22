@@ -1,0 +1,80 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "readonly_operational_existing_metadata_trace_baseline",
+  "status": "passed",
+  "observed_at_utc": "2026-10-19T19:55:57.193452+00:00",
+  "source_sha256": "f5e935e9037797da95baec01fd3730c2e8c669270db3c5531337bf453d41e93b",
+  "container": {
+    "id": "4efe9f9252149e19757477e0899e81dd78c8ff770e838ca5ed245b6c9a2bd5d1",
+    "image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+    "started_at": "2026-10-19T19:22:44.590589162Z",
+    "health": "healthy"
+  },
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "source_hashes": {
+    "agentic_service.py": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e",
+    "agentic_cli.py": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+    "nodia_ai_chat.py": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0"
+  },
+  "local_runtime_source_parity": true,
+  "Node_compiled_files": 932,
+  "Node_manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792",
+  "native_quiet": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0,
+    "agentic_home_configured": true,
+    "stage": "AI-32-R04",
+    "scope": "read_only_native_runtime_artifact_counts",
+    "observed_at_utc": "2026-10-19T19:55:57Z",
+    "provider_calls": 0,
+    "configured_database_modified": false,
+    "profile_bytes_read": false
+  },
+  "SQL_baseline": {
+    "stage": "AI-36-C05-R02",
+    "scope": "readonly_SQL_exact_configured_High_baseline",
+    "status": "passed",
+    "observed_at_utc": "2026-10-19T19:55:56.908Z",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1
+    },
+    "configured_SQL_writes": 0,
+    "provider_requests": 0,
+    "source_sha256": "323f519af1e0d1572449cb2054a4707cf4e53eb2c4f3562cafda56ca4213f27d"
+  },
+  "existing_metadata_checks": [
+    {
+      "at_utc": "2026-10-19T19:22:57.552327322Z",
+      "duration_ms": 12035,
+      "verified": false
+    },
+    {
+      "at_utc": "2026-10-19T19:23:53.293087778Z",
+      "duration_ms": 12017,
+      "verified": false
+    }
+  ],
+  "provider_requests": 0,
+  "configured_SQL_writes": 0,
+  "services_restarted": false
+}

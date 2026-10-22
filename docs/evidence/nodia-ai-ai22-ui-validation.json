@@ -1,0 +1,47 @@
+{
+  "task": "AI-22",
+  "scope": "isolated_synthetic_client_transport_no_provider_no_business_database",
+  "verified_at_utc": "2026-10-17T15:29:19.377750+00:00",
+  "origin": "http://127.0.0.1:5194",
+  "checks": [
+    "Spanish product preview preserves numeric zero, false, signed cost and derived snapshot fields",
+    "Scientific notation 1e2 rejected by the integer editor with translated error and draft retained",
+    "Corrected draft 1200 and focus preserved when resized to 390x844; saving creates revision2 and success toast",
+    "English historical product receipt preserves bigint9007199254740993 and links to Businesses without claiming current record existence",
+    "Spanish invoice preview preserves total0, provider null and file_attached false without exposing a storage key"
+  ],
+  "requested_mobile_viewport": [
+    390,
+    844
+  ],
+  "real_user_tab_5174_modified": false,
+  "temporary_tab_closed": true,
+  "viewport_override_reset": true,
+  "qa_service_stopped": true,
+  "screenshots": [
+    {
+      "file": "docs/evidence/nodia-ai-ai22/desktop-business-receipt-en.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "8e2974170ce128100f8381b0eea12f97b879e934d2c365a7adf7f83a76d1921c"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai22/desktop-invoice-zero-es.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "ae3a9232cd71955f518069603e5809131a545ba4540ca3764746a9c4381eb4e8"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai22/mobile-integer-editor.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "fe1bdf9bebe68ea4b62df8e5b0686072615eeac6951d8414566d15b287623604"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai22/mobile-revision-saved.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "614f07046003bcb470a35fa959a5da835d31523d0d6923e9005171522e3fb22f"
+    }
+  ]
+}

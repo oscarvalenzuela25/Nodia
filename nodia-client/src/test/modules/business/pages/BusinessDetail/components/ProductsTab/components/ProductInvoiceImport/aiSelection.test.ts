@@ -9,6 +9,14 @@ const first: VerifyIaProviderItem = {
 };
 
 describe("invoice AI selection", () => {
+  it("resolves Web levels within its mode and honors explicit clearing over a general preference", () => {
+    const provider = { ...first, fields: { token_plan_web: { selected_model: "model-a",
+      thinking_levels: { "model-a": "medium" as string | null }, thinking_level: "high", enable_extended_thinking: true },
+      api_key: { thinking_level: "low" } } };
+    expect(resolveInvoiceAiConfiguration(provider, "token_plan_web").thinkingLevel).toBe("medium");
+    provider.fields.token_plan_web.thinking_levels["model-a"] = null;
+    expect(resolveInvoiceAiConfiguration(provider, "token_plan_web").thinkingLevel).toBeUndefined();
+  });
   it("uses instance IDs and retains an unavailable explicit selection", () => {
     const second = { ...first, id: "instance-2", is_default: false };
     expect(resolveInvoiceAiProvider([first, second], "instance-2")).toBe(second);

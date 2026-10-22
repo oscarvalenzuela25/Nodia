@@ -1,0 +1,39 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "phase": "absent",
+  "status": "passed",
+  "observed_at_utc": "2026-10-20T23:06:49.354Z",
+  "source_sha256": "5adb8100e55b679c07831500c7d3a7717443509688d86c3e63ed8c0adca9d3ce",
+  "conversation_id": "a69b44aa-5592-4ad7-b69d-b74b48682a56",
+  "attachment_id": "6a140189-de1f-4fb4-946a-9995a4448d86",
+  "sql_read_only": true,
+  "configured_sql_writes": 0,
+  "provider_requests": 0,
+  "provider_generations": 0,
+  "puts": 0,
+  "deletes": 0,
+  "listings": 0,
+  "signed_urls": 0,
+  "secret_or_key_or_bucket_exported": false,
+  "checks": [
+    "PostgreSQL connection is read only",
+    "SQL metadata no longer ready after native discard",
+    "Real R2 HEAD404 exact owned key",
+    "Real R2 GET404 exact owned key",
+    "Owned deletion witness is fully settled"
+  ],
+  "cloud_reads": [
+    {
+      "operation": "HEAD",
+      "status": 404,
+      "not_found": true
+    },
+    {
+      "operation": "GET",
+      "status": 404,
+      "not_found": true
+    }
+  ],
+  "remaining_owned_cleanup_jobs": 0,
+  "objects_verified_absent": 1
+}

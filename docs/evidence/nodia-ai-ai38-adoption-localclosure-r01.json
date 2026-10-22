@@ -1,0 +1,29 @@
+{
+  "stage": "AI-38",
+  "scope": "owned_local_browser_tunnel_closure_and_post_purge_service_state",
+  "status": "passed",
+  "observed_at_utc_VM": "2026-10-20T21:19:33Z",
+  "owned_browser_tab_id": "1",
+  "owned_browser_tab_closed": true,
+  "browser_viewport_changed": false,
+  "owned_tunnel_pid": 29840,
+  "owned_tunnel_identity_and_127_0_0_1_forward_verified_before_stop": true,
+  "owned_tunnel_stopped": true,
+  "port_5174_listeners_remaining": 0,
+  "unrelated_processes_stopped": 0,
+  "services": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "original_runtime_receipt_sha256": "49833663658fd8314b273419948994f2df9eeff7d08b0e285bb29ab1cc175255",
+  "purge_receipt_sha256": "a3e6b0872603367d6edb2bb5eef2f8961d244282b6f7cd436d941370c38e4ec0",
+  "provider_requests": 0,
+  "configured_SQL_writes": 0,
+  "authenticated_UI_accepted": false,
+  "limits": [
+    "VM timestamp sampled after local closure and the separate service observation; not an atomic cross-host timestamp.",
+    "Original runtime identity and SQL/native quiescence are asserted by the separately pinned runtime receipt."
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "stage": "AI-35",
+  "scope": "additive_search_index_api_worker_lab_activation",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T23:01:32Z",
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "storage_operations": 0,
+  "configuration_modified": false,
+  "native_restarted": false,
+  "profile_bytes_read": false,
+  "packet_sha256": "c1ae2f1fd10c010c099f8af5c68815dd68635e6f4e2a661ed891d90f4e773fed",
+  "activation_script_sha256": "61b1be1ce8a39b92f4be81e10145679e0414d0024ee22338d43ca8ee12054c53",
+  "migration_script_sha256": "e78cbe85b376dd3c5d278accdc41061d503393b61596005e17f385f661d77971",
+  "migration": {
+    "stage": "AI-35",
+    "scope": "configured_database_exact_additive_search_index_migration",
+    "status": "passed",
+    "provider_generations": 0,
+    "storage_operations": 0,
+    "credential_values_exported": false,
+    "existing_domain_data_modified": false,
+    "database_backup_created": true,
+    "database_backup_tool": "cached_postgres16_ephemeral_pg_dump",
+    "database_backup_catalog_verified": true,
+    "database_backup_bytes": 307500,
+    "database_backup_mode": "600",
+    "database_backup_sha256": "c5edb20ac3582791389684f827c2248136896ac32bbcab5fdfa838b6e9b4bb30",
+    "migrations_before": 28,
+    "migrations_after": 29,
+    "applied": [
+      "AddNodiaAiTextSearchIndex1793100000000"
+    ],
+    "schema": {
+      "tables": 21,
+      "columns": 289
+    },
+    "index": {
+      "valid": true,
+      "ready": true,
+      "method": "gin",
+      "operator_class": "gin_trgm_ops",
+      "operator_schema": "public",
+      "column": "text",
+      "predicate": "(kind = 'text'::text)",
+      "bytes": "40960"
+    },
+    "pg_trgm_previously_installed": false,
+    "prior_migration_history_preserved": true
+  },
+  "compiled_files_verified": 932,
+  "previous_compiled_files_verified": 931,
+  "changed_paths": [
+    "dist/nodia-ai-context/config/knowledge-pin.json",
+    "dist/nodia-ai-conversation/nodia-ai-conversation.service.js",
+    "dist/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.js",
+    "dist/nodia-ai/knowledge/manifest.json"
+  ],
+  "added_output_paths": [
+    "dist/migrations/1793100000000-AddNodiaAiTextSearchIndex.js"
+  ],
+  "compiled_manifest_sha256": "d06939fd44e082538efd92479b3994250a802b1ec3471c3be3ba2df40d25a0bf",
+  "backup_directory": "/opt/nodia/verification-backups/ai35-1792364492826",
+  "api_and_worker_restarted": true,
+  "native_image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "native_container_identity_preserved": true,
+  "environment_mounts_isolation_preserved": true,
+  "nginx_identity_preserved": true,
+  "configured_chat_preserved": true,
+  "quiet_before": {
+    "sql": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "held_or_unknown_slots": 0,
+      "migrations": 28
+    },
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0
+    }
+  },
+  "quiet_after": {
+    "sql": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "held_or_unknown_slots": 0,
+      "migrations": 29
+    },
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0
+    }
+  },
+  "knowledge_release_before": "72e2d9823d559968836eb36a0a48c7a9afa268f02ba549cb7be9ad930f646896",
+  "knowledge_release": "b4a790219b41687d2bc4ac7ad70f436d5b9a3aa83cbdfc812533a06f8027dc23",
+  "published_fragments_unchanged": 27,
+  "published_capabilities_unchanged": 67,
+  "completed_at_utc": "2026-10-18T23:01:38Z"
+}

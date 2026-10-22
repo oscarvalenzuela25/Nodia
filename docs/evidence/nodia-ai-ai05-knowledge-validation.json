@@ -1,0 +1,1557 @@
+{
+  "date": "2026-10-15",
+  "task": "AI-05",
+  "status": "documentation_complete_draft_unregistered",
+  "scope": "Static AI-05 coverage/source integrity with canonical AI-06 frontmatter; not semantic runtime certification or publication",
+  "products": 4,
+  "features": 27,
+  "documents": 31,
+  "inventoriedHandlers": 177,
+  "productHandlersMapped": 175,
+  "infrastructureExcluded": [
+    {
+      "operationId": "AppController.getHelloWorld",
+      "reason": "Liveness técnico; sin herramienta de producto"
+    },
+    {
+      "operationId": "AuthController.seed",
+      "reason": "Bootstrap de instalación con secreto; fuera de conversación"
+    }
+  ],
+  "productMethodPathPairs": 294,
+  "candidateToolsCovered": 145,
+  "deferredBulkHandlers": 7,
+  "negativeFixtures": [
+    "duplicate feature",
+    "missing feature",
+    "missing product",
+    "outside feature path",
+    "invented feature binding",
+    "missing handler",
+    "duplicate handler",
+    "unknown handler",
+    "bulk cannot disappear",
+    "infrastructure cannot become tool",
+    "no unexplained exclusion",
+    "unknown manifest field",
+    "no automatic approval",
+    "no automatic publication",
+    "minimum section required",
+    "candidate name cannot drift",
+    "extra invented candidate rejected",
+    "broken local link rejected"
+  ],
+  "localLinksChecked": 911,
+  "sourceInventoryHashesChecked": 188,
+  "linkedSourceHashes": [
+    {
+      "file": "docs/features/businesses/01-prd.md",
+      "sha256": "3ab28dec7da4fea72c69d0034d3e865491591732287ac83cd8a2ce30e4a5d7ba"
+    },
+    {
+      "file": "docs/mvp/02-prd-v1.md",
+      "sha256": "9b3e56b739b4f7d5dc7dfb48630d490d4ecfb0e626db41a434a83a3453cc1122"
+    },
+    {
+      "file": "docs/mvp/19-prelaunch-review.md",
+      "sha256": "d2a18783aea3e70411c11619229069efc9fcd0ea4a6a83c1d3171617546129b7"
+    },
+    {
+      "file": "docs/mvp/21-personal-finance-erd.md",
+      "sha256": "7cc8ed2a0e278416f92042323de1c60869aa97184ac49e52297b8dcd857fc475"
+    },
+    {
+      "file": "docs/mvp/22-personal-finance-contracts.md",
+      "sha256": "7105f0ce35a7aef5186fa192b21e6087d43d49863266e6fb68a419c31e30fb09"
+    },
+    {
+      "file": "docs/mvp/26-rental-reservations-spec.md",
+      "sha256": "887de11ab2ace63321a1c737e5f1f14d3d07eda5c09f1fb748dc35638528a750"
+    },
+    {
+      "file": "docs/mvp/27-rental-reservations-erd.md",
+      "sha256": "5dcf8e055eaed6a4aa7eddfc01f953fd8680931a1e54bae957bda223352ed5ef"
+    },
+    {
+      "file": "docs/mvp/28-rental-reservations-contracts.md",
+      "sha256": "9b9b4b387fd595f9f234240ca01cd4230124a499c0dd7637e099f70a18989bbf"
+    },
+    {
+      "file": "docs/mvp/31-provider-contacts-proposal.md",
+      "sha256": "2c212d07a05e62b9d179f60cadbd7aa11cdd3ba57fa716cfc222c582a20e019b"
+    },
+    {
+      "file": "docs/mvp/40-nodia-ai-tool-catalog-v1.md",
+      "sha256": "2751823232c41c8c3ae2f4086df5ab5695a4566e4332cb973d243a019826e8ce"
+    },
+    {
+      "file": "docs/mvp/41-nodia-ai-v1-contracts.md",
+      "sha256": "6c48dd19b604d9c3806c88c0c2b1499a14a28bd2c2b4b37a120ead88efb2b69c"
+    },
+    {
+      "file": "docs/mvp/48-nodia-ai-mode-routing-policy.md",
+      "sha256": "1b6ddfa90ba02cf5b9ab8ffb69c5203bca8a9bf1abc90fd9f2ee83ea683d0287"
+    },
+    {
+      "file": "docs/mvp/50-nodia-ai-ai04-runtime-policy.md",
+      "sha256": "2831f27d11e0971bf384422d017aaca574aec5c4ca4b10473ac1902d6beed1db"
+    },
+    {
+      "file": "docs/mvp/51-nodia-ai-ai05-product-knowledge.md",
+      "sha256": "2cbff14b65a3e66a8fa5ec0b68699e27e3cf62dab751a378bb83a2a978ac9838"
+    },
+    {
+      "file": "docs/mvp/52-nodia-ai-ai06-knowledge-publication-contract.md",
+      "sha256": "dcae857be56ecc14f9c4538afef2b017c5bb88d97f5f3b29f333d1ef07758eed"
+    },
+    {
+      "file": "docs/mvp/53-nodia-ai-ai07-module-authorization.md",
+      "sha256": "9d65506ea5f34d27f99a5c5d4e40ef0ebd5e36d94b3d341ce9b528253644d0bb"
+    },
+    {
+      "file": "docs/mvp/54-nodia-ai-ai08-transversal-authority.md",
+      "sha256": "3a7cbb95e143f434d5e8d0ab596f7afb7fa26bc8d74c64f07180b48c34970bde"
+    },
+    {
+      "file": "docs/mvp/ai-provider-feature-contract.md",
+      "sha256": "52b052d0157def965997bf144dc7ac32b4bd8517119d2c7afbf521579a445f9c"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-current-endpoints.json",
+      "sha256": "680c18b762c7dc9e1172ce5f51027d1cd8ff2b7a7fc268cb95cb7b9f906934ba"
+    },
+    {
+      "file": "nodia-server/src/action/action.controller.ts",
+      "sha256": "3ec717cbd9738cd58168e0f0f2b60dc3b289e01c7eece50dbfeb22e84c63ca70"
+    },
+    {
+      "file": "nodia-server/src/action/action.service.ts",
+      "sha256": "c90e739e248ea16e84aa1e90043c981d200962ab65bf7a8bb4734833fdb9fae9"
+    },
+    {
+      "file": "nodia-server/src/action/dto/action-id.dto.ts",
+      "sha256": "8198e71939edc2cc2c32ab2d42129e4f0c8b5c8354f17fcae6602fb3c9addbae"
+    },
+    {
+      "file": "nodia-server/src/action/dto/create-action.dto.ts",
+      "sha256": "4fea64a240457d0ac0dd86c3cd8c808ac20de6037cae629a55f1252e918ebe53"
+    },
+    {
+      "file": "nodia-server/src/action/dto/get-actions.dto.ts",
+      "sha256": "f47b2e99064ae42c376f5b0a3e264e6511e8981b7c4977da3e01aee01e35d6c3"
+    },
+    {
+      "file": "nodia-server/src/action/dto/update-action.dto.ts",
+      "sha256": "6a466706af1f179c6b28955b5ba80348df47c38a4da1806c0fbac0060a8eb4a6"
+    },
+    {
+      "file": "nodia-server/src/action/entities/action.entity.ts",
+      "sha256": "3f7b18c9686cded3c9fae294dcdfb3a2341ebcde6469958b865e39e78b95fac8"
+    },
+    {
+      "file": "nodia-server/src/action/use-case/create-action.use-case.ts",
+      "sha256": "47e64b48e608f1fda2af626f01fa3b10cca045486b818290f23c2d4d4eb9751d"
+    },
+    {
+      "file": "nodia-server/src/action/use-case/delete-action.use-case.ts",
+      "sha256": "44a8b281c161939776831c367ae9b2cfb8145bd37638fb5dc140d200bbf1b8e9"
+    },
+    {
+      "file": "nodia-server/src/action/use-case/get-all-actions.use-case.ts",
+      "sha256": "f36edc2b586d0365d5fe1097f9cb046f3957263ed1d02659c068a63cc49896b6"
+    },
+    {
+      "file": "nodia-server/src/action/use-case/save-action.use-case.ts",
+      "sha256": "0156c62d14f5db1f545d4ccfcc4446e563b50a3df41a3124dbda02bb2a9227e2"
+    },
+    {
+      "file": "nodia-server/src/action/use-case/update-action.use-case.ts",
+      "sha256": "2f5a95b069c50a01e201a0e4b71ea10bf9486d25f84a33eb87b95c1bc1b9c57b"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/ai-api-key.controller.ts",
+      "sha256": "2103ff203938ce93c61c24d7573d6a1f919ee26bf85e2ac1345e3c1f7f2930a7"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/ai-provider-event.controller.ts",
+      "sha256": "ab5a1cdb9ab6301eca363f824af2c007a8bf2dc575d9c2aa7c5cb616b1eb46e9"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/ai-provider.controller.ts",
+      "sha256": "afe2b4c273fd958e68015de5efd28f86e72bb01aefda82c156fb74797eca81d5"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/ai-provider.service.ts",
+      "sha256": "d06aca812dec841e0f688bd81035e3fa282be173d8445528ea5447f20fb2c78c"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/codex-session.dto.ts",
+      "sha256": "8d8b60370227dd82752829c37611c7256b408852b8da3e8ba656bd11f622e245"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/create-ai-api-key.dto.ts",
+      "sha256": "3ce1277341d13387741ce347b80304e401d0eb955e1921dd1ab0e401b5c816d2"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/create-ai-provider-catalog.dto.ts",
+      "sha256": "a8f9655f9657b6a989a6c91eaf467fdc4ac0355124b60b57af6169469b338ac0"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/create-ai-provider.dto.ts",
+      "sha256": "f45aae5b1c031348aed9509ea77374d9115af0b97089be76a6cfc5ff5cbfe842"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/gemini-login-input.dto.ts",
+      "sha256": "a12c43af026069b78e56828bdee33d8839d20464ff4501abeb8ea6b07cc020e0"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/get-ai-api-keys.dto.ts",
+      "sha256": "ecf5f55993e4c4864fc7f24c8ae67c741dafe13310fdb7855ad4f9e2764990dd"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/get-ai-provider-events.dto.ts",
+      "sha256": "b01f7470ad924a4fe94dd2114ecbc62f6891ed6bf156270c97081ab579b2793a"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/get-ai-providers.dto.ts",
+      "sha256": "de5ea153ae530221ec60682450bf6b7cfe99792e849a557da3cb7ca44311ff78"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/get-selectable-models.dto.ts",
+      "sha256": "3c50e39599ae19e9d44641a86d348f06778e0a66a74735ae461c0ca3512f2110"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/submit-gemini-agentic-code.dto.ts",
+      "sha256": "0f69f915c5e952108d7a2081ad381acdf18fd9edd5539505963621b976f41da4"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/update-ai-api-key.dto.ts",
+      "sha256": "8c82a02c839ac9720bdb428a66cd8bfaeb35bf3cca20afe2fda3038656250c8c"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/update-ai-provider-catalog.dto.ts",
+      "sha256": "091a7427639c45d2477269b9caf25a9ac8badbab303809c94758aecf061a6b39"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/dto/update-ai-provider.dto.ts",
+      "sha256": "659e08578c5f2e3529b2114f0d6003daa0157c6d4ea69b07c51067da66722d55"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/entities/ai-api-key.entity.ts",
+      "sha256": "85ce578be7a336e047ff70d3d7645f6d5a3af0b21966f39827cc19f816297c6d"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/entities/ai-provider-catalog.entity.ts",
+      "sha256": "d105ad1bebb76af830a8ca5555511432760b0882e8bae18d55dfe58683305241"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/entities/ai-provider.entity.ts",
+      "sha256": "190942db716d87db8aaba909e115574e9e5ff4a44f494c08212ad66039d50611"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/create-ai-api-key.use-case.ts",
+      "sha256": "11d9c7b1dae0705824246bc512378d82f7a5e47fd43cb2730cf0b689a1cf8ea2"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/create-ai-provider-catalog.use-case.ts",
+      "sha256": "83e69281a05ad1a00116e0b57f0427ad140e2baa5fd6f2ccf59121e7b3872ae2"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/create-ai-provider.use-case.ts",
+      "sha256": "9999f3d6cb44d603b8710bf8024bcd24135a110e6dc14566047c7e7d60782163"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/delete-ai-api-key.use-case.ts",
+      "sha256": "937712623058564d6237b392fdbe9f9efd0019f648a995697026e1a9427c8cb2"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-ai-provider-catalog.use-case.ts",
+      "sha256": "57364a19b168e9c2555a3e532a3d6209546f82637979d895e3cc84dc457f21f5"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-ai-providers-health.use-case.ts",
+      "sha256": "75d4e02fbd876bbbf54ec418f3b45bdd1801d694d0dd0099bc197893136b9769"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-all-ai-api-keys.use-case.ts",
+      "sha256": "283c8f1d9a92de84f44225c0a511313ed136d66837357ec9e9e557805f0c6ed9"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-all-ai-provider-events.use-case.ts",
+      "sha256": "0718b6e60200990d0f5730eb4839e53b98e87274fda4aa19efd069437bb04c9d"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-all-ai-providers.use-case.ts",
+      "sha256": "bed0f1ffd99e7b9ba28990cd067e2eb2ccec9fb2eed90972a1e224308dd8c1a6"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-gemini-engines.use-case.ts",
+      "sha256": "14b587f0e87e02ae65a3fb1e6248ec581f8ecc497207625ce0e463be595c9890"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-selectable-models.use-case.ts",
+      "sha256": "245e50ea8de40566d21509275964192de31af393f1ae2962d2a5e9a33bca80e3"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/get-supported-ai-providers.use-case.ts",
+      "sha256": "9c8ddf80b5737453aa0f9d1bb6a465a4697a47a4487c90905833bdbb34820ff1"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/manage-codex-session.use-case.ts",
+      "sha256": "f5c89c5e64aa512afeb94800ca6b370218355a0a23301936c75e577722ab9140"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/manage-gemini-agentic-login.use-case.ts",
+      "sha256": "c9df9be790f685be2b8fb0aa0c6d9dee04176c076aa07299ddb18af274a256db"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/manage-gemini-login.use-case.ts",
+      "sha256": "3654dc683118e1d9a2af39ee4ec64ee702226f3b298e54e250d8a39aed679710"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/sync-ai-provider-models.use-case.ts",
+      "sha256": "a184c4aad723d3a3de6acc90039b2660049d34459057e3afcb0ae3c62f155145"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/update-ai-api-key.use-case.ts",
+      "sha256": "2799f6e06a894095fc3c60d95d901278117f5303c6e34c6092f063f2580bd543"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/update-ai-provider-catalog.use-case.ts",
+      "sha256": "137353a44971f0fa1ae64e4c5e1223132bb4280603ebce857bd2a1a490afeb3a"
+    },
+    {
+      "file": "nodia-server/src/ai-provider/use-case/update-ai-provider.use-case.ts",
+      "sha256": "4f61d854ef53385b3de2b59244340c14d48ed746374c1ae7045ea16765789050"
+    },
+    {
+      "file": "nodia-server/src/auth/auth-cookie.service.ts",
+      "sha256": "f8be09345c1d41431345381579176244be16cdd90918b7681ceb5652421aaf99"
+    },
+    {
+      "file": "nodia-server/src/auth/auth.controller.ts",
+      "sha256": "331badb2ce5ef84f096310077025b2d8275a3d4e4089b10efb4bf68e45cf537e"
+    },
+    {
+      "file": "nodia-server/src/auth/dto/login.dto.ts",
+      "sha256": "d369e1dcf09a576fa475a56e6b2f17218715d3060fab731e827dc841c6cfc2f0"
+    },
+    {
+      "file": "nodia-server/src/auth/use-case/login.use-case.ts",
+      "sha256": "e97e767def8f9a6d8360be6cba2e0b3897fdbfb0063fb4c2b77b471e80f86d66"
+    },
+    {
+      "file": "nodia-server/src/auth/use-case/logout.use-case.ts",
+      "sha256": "e76a5dc6321ffc1b1881a86df2a9dc7f3d9839808b1af758fdf8912af2dea96c"
+    },
+    {
+      "file": "nodia-server/src/auth/use-case/refresh-session.use-case.ts",
+      "sha256": "d7b874a4c543d489d784d5d1620753162b297a718a4326535d39189d3a290b1d"
+    },
+    {
+      "file": "nodia-server/src/authorization/authorization.controller.ts",
+      "sha256": "9be4243d7cda23edc787a1386c2a7dc3db0a46893b52790dbdc0351fe8659744"
+    },
+    {
+      "file": "nodia-server/src/authorization/use-case/get-authorization-context.use-case.ts",
+      "sha256": "260726bd078b6d015ce8513e2dacc0ec2852082307d7b8112edc05598b056d56"
+    },
+    {
+      "file": "nodia-server/src/business-action/business-action.controller.ts",
+      "sha256": "3b4b2ced41017feed26a794cf55893015fa15fec822694a68a206f32e7510613"
+    },
+    {
+      "file": "nodia-server/src/business-action/business-action.service.ts",
+      "sha256": "4056da85d0a3ee1d440d311dbca3a75d46095eed25a089130a055e3e625985eb"
+    },
+    {
+      "file": "nodia-server/src/business-action/dto/create-business-action.dto.ts",
+      "sha256": "75e006f14b146e24f88c12933f6061f1961e9e9bbcbdb4517ba8036a4598ff83"
+    },
+    {
+      "file": "nodia-server/src/business-action/dto/get-business-actions.dto.ts",
+      "sha256": "cd7ac5c3805e927a9276894ba0c8e2ddf0bee80317c6b3e75ea1c4a0d94ccaeb"
+    },
+    {
+      "file": "nodia-server/src/business-action/dto/update-business-action.dto.ts",
+      "sha256": "cbdef43f3370c5e44a2bb9b574699a7485d4a68ef6a85b0407c351ab23654931"
+    },
+    {
+      "file": "nodia-server/src/business-action/entities/business-action.entity.ts",
+      "sha256": "53a5246926c49911dd4c25d40c125afaa9cc3f871cdbe5bf2cc7ac5d12322706"
+    },
+    {
+      "file": "nodia-server/src/business-action/use-case/create-business-action.use-case.ts",
+      "sha256": "35a7467c64de70c2d3819b137e2c0a19ab6a14917823b7c97989443accc9d83e"
+    },
+    {
+      "file": "nodia-server/src/business-action/use-case/delete-business-action.use-case.ts",
+      "sha256": "f40927e9796703fe1410aa0a1780814674a2058d542ab59eb9c12b8f8c4cdbd1"
+    },
+    {
+      "file": "nodia-server/src/business-action/use-case/get-all-business-actions.use-case.ts",
+      "sha256": "d0fd60960c4fc76f41ee8b5b70c5fae154210021f5a394a89226ed42279b0f3a"
+    },
+    {
+      "file": "nodia-server/src/business-action/use-case/update-business-action.use-case.ts",
+      "sha256": "174f1340d8e92a7ee5360416ee798f473a0d4ad58ad550db34bd7c5b6aabb831"
+    },
+    {
+      "file": "nodia-server/src/business/business.controller.ts",
+      "sha256": "5edd53b5c483f227759a22f320be5242d6697be212abd084bbeb312687d242f6"
+    },
+    {
+      "file": "nodia-server/src/business/business.service.ts",
+      "sha256": "d9762131c17b01e852dac09ce7adf7468fd9516e8730fd4c8d09135e785c856d"
+    },
+    {
+      "file": "nodia-server/src/business/dto/assign-collaborators.dto.ts",
+      "sha256": "4258d9591dcdf0525bc85124b96e4c818296b84301291268b826ba3f62e0b9b5"
+    },
+    {
+      "file": "nodia-server/src/business/dto/create-business.dto.ts",
+      "sha256": "758ae03e4edc0abf3b2941c7eddc01fa049601677dcec0515cc44bbda52f6d2a"
+    },
+    {
+      "file": "nodia-server/src/business/dto/get-businesses.dto.ts",
+      "sha256": "f77ed603774bd4930287ba2a3e9a0fdddbe37901afc3ce4cf7328f9afc7a9225"
+    },
+    {
+      "file": "nodia-server/src/business/dto/update-business.dto.ts",
+      "sha256": "3141981aab63019dd84ec47d75bb74d458d1589bd57a6e22f13c4dba1cbbefa2"
+    },
+    {
+      "file": "nodia-server/src/business/entities/business-collaborator.entity.ts",
+      "sha256": "4d8022bb48474278c8a21ae83265f345d5ef3e3bf70c017c5d52f93b0e362389"
+    },
+    {
+      "file": "nodia-server/src/business/entities/business.entity.ts",
+      "sha256": "2d7cecf800244891f3561a351a51b78d77450bdbff36982d4e8abdcc048f4262"
+    },
+    {
+      "file": "nodia-server/src/business/use-case/assign-business-collaborators.use-case.ts",
+      "sha256": "c879f94d276b23c677c81802bb935b51e906fa29abfca58a622961f9c68b9e11"
+    },
+    {
+      "file": "nodia-server/src/business/use-case/create-business.use-case.ts",
+      "sha256": "78df5fa9d2a5997960f2ecadc5b5d6a151f6f7325e2aaaa7fe54a36d9e059475"
+    },
+    {
+      "file": "nodia-server/src/business/use-case/get-business-by-id.use-case.ts",
+      "sha256": "e9a034153c38542046e65f5e8c7899342ced444f08b1c98dabbf0c93d84e078a"
+    },
+    {
+      "file": "nodia-server/src/business/use-case/get-my-businesses.use-case.ts",
+      "sha256": "58d6281ad8086344633f680ee8d81bb5a1aeab5da64f70824bb720e533a62a85"
+    },
+    {
+      "file": "nodia-server/src/business/use-case/update-business.use-case.ts",
+      "sha256": "2cb93eca9fe6648b396000cda5b54c7f4534aa37e901ea9e30d82db49593d3ee"
+    },
+    {
+      "file": "nodia-server/src/common/dto/catalog-id.dto.ts",
+      "sha256": "9b85bfe94e7ae9668b488aab286e475748c5b2788d13fde6d8f9f53345542033"
+    },
+    {
+      "file": "nodia-server/src/common/utils/ransack-query.policies.ts",
+      "sha256": "f4937eb789b8be7425be323f4d22cbe7f2c3efa3924eba81bba4b457923bffdd"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/dto/create-finance-category-group.dto.ts",
+      "sha256": "8fbb39476e18f45d8b150ba8b3e1f0b753fbf275075868bd9d34578992597394"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/dto/update-finance-category-group.dto.ts",
+      "sha256": "84ddbc07f0aac342946564a07de68154b2780a79757ffff474cf86a96128e992"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/entities/finance-category-group.entity.ts",
+      "sha256": "5394e57b88398b35979ed9ce2bdf8faf782c2de1741f8ceccc1858c56b77a654"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/finance-category-group.controller.ts",
+      "sha256": "14fe7cb7e155edd85cdbc2e8a875f49b3ed374de073af7d44622cdc4b522ff6c"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/create-finance-category-group.use-case.ts",
+      "sha256": "6cf28afc1c633ef80f9d5c71134adae8ded7e37af002092dded416d8a33f7d8c"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/delete-finance-category-group.use-case.ts",
+      "sha256": "3ad92aa744c5788d6551ec391cc5dde1adfb91454da70d4212856ea4747ad21c"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/get-finance-category-group.use-case.ts",
+      "sha256": "d97444c88a6176d6954a5b42c3aa594d8ed6d4fac3c6f4429b458d74cacc297f"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/get-finance-category-groups.use-case.ts",
+      "sha256": "f70d9c75eae275111ee8c2892b4fdd32382c74477d9cea287dbd89a4cb952b58"
+    },
+    {
+      "file": "nodia-server/src/finance-category-group/use-case/update-finance-category-group.use-case.ts",
+      "sha256": "ddcc761270e13b4518bb587e9ad315042d13891056cfe178bc4c58989f82d43b"
+    },
+    {
+      "file": "nodia-server/src/finance-category/dto/create-finance-category.dto.ts",
+      "sha256": "8328e566bc728067269ca40bbbac25f7d00fb0185c3cb1e7c17f0ed4ef64d793"
+    },
+    {
+      "file": "nodia-server/src/finance-category/dto/update-finance-category.dto.ts",
+      "sha256": "d930da74a43855d9c8932706f11d7194825c8bb89083248e11ff70c39643ca2e"
+    },
+    {
+      "file": "nodia-server/src/finance-category/entities/finance-category.entity.ts",
+      "sha256": "da3329948c341e935e21bf6b95b4a962398c145a2bb50f8e882056908ab2384b"
+    },
+    {
+      "file": "nodia-server/src/finance-category/finance-category.controller.ts",
+      "sha256": "32ddf768d14d03272a21cac2665b3d88f7f4876c89194e2a7c782cce71f1c88d"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/create-finance-category.use-case.ts",
+      "sha256": "5264507f28f78ec4a0f70beb57d6daa9b325f57cf4dcf9e37f8bc102c859e899"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/delete-finance-category.use-case.ts",
+      "sha256": "595c8002a0a7f5caa99795bc9d3167c1327c153f0d257e36463e442480e44c8e"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/get-finance-categories.use-case.ts",
+      "sha256": "547433e322568adc89bc8fa3ae4c458550ef7103da866b6a637589e5528886b3"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/get-finance-category.use-case.ts",
+      "sha256": "e9094afde4a448d6f45f87a89aae0345f48b960d04705e601d9fe11e1ade1aa9"
+    },
+    {
+      "file": "nodia-server/src/finance-category/use-case/update-finance-category.use-case.ts",
+      "sha256": "54fd65d974880c7054a9b4b383c845e79dc89e1891bd5f4de688a976b26182b0"
+    },
+    {
+      "file": "nodia-server/src/finance-common/dto/finance-id.dto.ts",
+      "sha256": "5db0ec2121a12c10b1447ebdaf8db6f5fb1208bdfaeab153eda62f76bfeb5ab5"
+    },
+    {
+      "file": "nodia-server/src/finance-common/dto/finance-query.dto.ts",
+      "sha256": "20004b16e53a6c88c17cf5e035d36167d01bee3e48ca93cb223c8311d5606658"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/dto/create-finance-movement.dto.ts",
+      "sha256": "598f40001a54fb642ff0872bce3704abcd4658a386b2cff4323ade99ea8e424a"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/dto/update-finance-movement.dto.ts",
+      "sha256": "1866a74d36ba7cfc00c7bbd56bb50c24988f1c8708feaa8c5b2eccc94fcec0d5"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/entities/finance-movement.entity.ts",
+      "sha256": "ac5c8ff3da961d1e199838490b29994275d4b4cedc6caf966666667da3f157db"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/finance-movement.controller.ts",
+      "sha256": "572563970d3660786d30d237fbdef65dc6cc19e2bb3a51e1d51732054bfaeee9"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/create-finance-movement.use-case.ts",
+      "sha256": "d695aedd13bfb8c017a9cafd536042b6ff3462bf0a07d6e3a496271d12e76e37"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/delete-finance-movement.use-case.ts",
+      "sha256": "3fba9c08e68cf80cafd536162f6ac193cf3668adececc2b22bb07201cca1256d"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/get-finance-movement-by-id.use-case.ts",
+      "sha256": "3cf8c26fc5e5b229aa1182b349c0dcb70cf48bd5074069297b3218b77c08f874"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/get-finance-movements.use-case.ts",
+      "sha256": "4f2580277f2f6f9093bafe5104b25984074bc30b30eff3e841292502628d3d33"
+    },
+    {
+      "file": "nodia-server/src/finance-movement/use-case/update-finance-movement.use-case.ts",
+      "sha256": "25a85d6c374052b97dedb0251f1c48ea317af1395906798dc42cbdcd397f174c"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/dto/create-finance-obligation.dto.ts",
+      "sha256": "ac557a4b21c328100a10d20189b987adfa14411cb409e569fc34b0b28b6fcae0"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/dto/update-finance-obligation.dto.ts",
+      "sha256": "ba1e1240de9a95a01cef4085e6791b7f399961ea15709fde67bc609649b3a26b"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/entities/finance-obligation.entity.ts",
+      "sha256": "551c99c70b00946e5b8693cbd06195c523aef7d2ed472317896ea3b7fb33a437"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/finance-obligation.controller.ts",
+      "sha256": "54cc9b2fa09ab6e23a282d8aaac1765f2f5ff2253ddd5ea2f6c53c37d71ac765"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/create-finance-obligation.use-case.ts",
+      "sha256": "243947a15ccdd492465474b7e61905fad6517c1fa2fcacf4b8d81b83c5a4b8be"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/delete-finance-obligation.use-case.ts",
+      "sha256": "9349fc5f7a4e6179e39f5fa2a8eff3279c9326116580ce2339c220c38b4bd435"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/get-finance-obligation-by-id.use-case.ts",
+      "sha256": "80e240b38ab80c137a10f7c732b307de974aff6d02900c66254a993f7ae2b24a"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/get-finance-obligations.use-case.ts",
+      "sha256": "5e174ab642a9d364481c6622b305f98b43d24c98e84039ba75ac78185a5b2d97"
+    },
+    {
+      "file": "nodia-server/src/finance-obligation/use-case/update-finance-obligation.use-case.ts",
+      "sha256": "a4cc015a96b997158214dcae98e3e807f65f43833a5f2c544c9d3a4b875cb04c"
+    },
+    {
+      "file": "nodia-server/src/finance-overview/dto/finance-overview-query.dto.ts",
+      "sha256": "7828cbdbcfb4ed8fa5e836ae7559c993dc1c39e4b15728bb287f40a1af2f407f"
+    },
+    {
+      "file": "nodia-server/src/finance-overview/finance-overview.controller.ts",
+      "sha256": "18e477b12d5bccb2e544691102b9132413016b4fa1c7addb1026223e24c29e9c"
+    },
+    {
+      "file": "nodia-server/src/finance-overview/use-case/get-finance-category-summary.use-case.ts",
+      "sha256": "e519ec2bf7af5eeadcd143bfc875ac9fbc8b427f2bfb758f10eae6c70dc66080"
+    },
+    {
+      "file": "nodia-server/src/finance-overview/use-case/get-finance-group-summary.use-case.ts",
+      "sha256": "e569509353bc649d72c04082a13f83ab7618bef011870222419b1bf1397759ae"
+    },
+    {
+      "file": "nodia-server/src/finance-overview/use-case/get-finance-overview.use-case.ts",
+      "sha256": "1eef608f44ffac918c164e8c99f15198848eb6972178d88e5a70af118b89f6db"
+    },
+    {
+      "file": "nodia-server/src/invoice/dto/analyze-invoice.dto.ts",
+      "sha256": "52848dd83441a1512280764a823fd9a7cd1e309d7a1b7a13bb94bc52273853ea"
+    },
+    {
+      "file": "nodia-server/src/invoice/dto/create-invoice.dto.ts",
+      "sha256": "9ca62baa3790ab459143fa5f12766b5a66c32c824b823ba49ed95389503310c8"
+    },
+    {
+      "file": "nodia-server/src/invoice/dto/get-invoices.dto.ts",
+      "sha256": "1dda446e613781f90d98c9b7027e7d358658a6a27bb013f7dbe268ccd85fd165"
+    },
+    {
+      "file": "nodia-server/src/invoice/dto/reserve-analysis-observation.dto.ts",
+      "sha256": "73afad47724388fd34f95bf02bbd8739384a9d58b3438225dbdde7945dd6bda2"
+    },
+    {
+      "file": "nodia-server/src/invoice/dto/update-invoice.dto.ts",
+      "sha256": "9cdbf203816a1e7a40da9c381d890ef6bb485a2339fcd3bc7deb453535a6f5a9"
+    },
+    {
+      "file": "nodia-server/src/invoice/entities/invoice.entity.ts",
+      "sha256": "118ac4e13b2b91f09eeb165d010109be0675971bb3fc79ce2737f93bba96d742"
+    },
+    {
+      "file": "nodia-server/src/invoice/invoice.controller.ts",
+      "sha256": "e658012a5821c5d5eab7129b31499f8d795b20f380cd37461ca25f9c9a93119e"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/analysis-observations.use-case.ts",
+      "sha256": "01a770fb079353b2d245f1e4f047ba8f148c9ca911f21f330f255984e0e60754"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/analyze-invoice.use-case.ts",
+      "sha256": "2d93dd23fb733314fe9ddd1944734a23d2121f265454d7b0df3c807ef126dea0"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/create-invoice.use-case.ts",
+      "sha256": "0f784fe6633f676a8505a7a7d19aebf1f76f76c048a83c99a0fc451df4dfba3c"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/get-all-invoices.use-case.ts",
+      "sha256": "97e6260263f4f03839f3d663c3e03469c05855aad15a1fde36a9bace420162cf"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/get-invoice-by-id.use-case.ts",
+      "sha256": "6f18a856476ecefbdabb9af9268fa542cd10cdfdaefb8a18f375efd4e6f464fb"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/get-invoice-view-url.use-case.ts",
+      "sha256": "99e71b9fc179503dd4e7e54147021413c67c7b6f539c03e5e8bd4b325cf16a3d"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/update-invoice.use-case.ts",
+      "sha256": "12fc7d8e1e4a4553ceb4415bce023ff315199912a2f7c02259683b964340cca2"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/verify-ia-providers.use-case.ts",
+      "sha256": "ba67d99c3ebc8776027626872a44c553eecce19cd217eae415007396a4a16810"
+    },
+    {
+      "file": "nodia-server/src/module-group/dto/create-module-group.dto.ts",
+      "sha256": "1bfe822052104e75d15e9d983a87668ff1de1181917f7778575105035a8176e7"
+    },
+    {
+      "file": "nodia-server/src/module-group/dto/get-module-groups.dto.ts",
+      "sha256": "9dfd36bcc837e732b836e213089039facfec3acb0cf944408ac9364d8f79e684"
+    },
+    {
+      "file": "nodia-server/src/module-group/dto/update-module-group.dto.ts",
+      "sha256": "79a8cb55a5809f53609576cf921b1bed1494e7c2f522243b906628e173436382"
+    },
+    {
+      "file": "nodia-server/src/module-group/entities/module-group.entity.ts",
+      "sha256": "d15a370a9d4eae12bceb151ce68282cddcd22480d9531656ec95b9827fe0187b"
+    },
+    {
+      "file": "nodia-server/src/module-group/module-group.controller.ts",
+      "sha256": "f54d852f0cfb9dffea015e1bc105828b01574336785f2af2cc4bf6b483be4ee5"
+    },
+    {
+      "file": "nodia-server/src/module-group/use-case/create-module-group.use-case.ts",
+      "sha256": "fc02814aa0a6b795664668d1aa644d12e4d7f2240ff6f9f1cc034c7c5b6c0d87"
+    },
+    {
+      "file": "nodia-server/src/module-group/use-case/delete-module-group.use-case.ts",
+      "sha256": "7abb14936c380e3362930d3a5731e045fd81ebeef216b7506320b3d25bf301ff"
+    },
+    {
+      "file": "nodia-server/src/module-group/use-case/get-all-module-groups.use-case.ts",
+      "sha256": "9a898e305733b80e09f9c7ce55e4df69dbba7e0aded454c4f92e3fce0d1ff2c4"
+    },
+    {
+      "file": "nodia-server/src/module-group/use-case/update-module-group.use-case.ts",
+      "sha256": "63304a1f9ecb16bb886d6ab19217ebae6a55f9649c7a8a71854b56c272ab7452"
+    },
+    {
+      "file": "nodia-server/src/module/dto/create-module.dto.ts",
+      "sha256": "4e5af977818dcddf223f96b2b3f5e0a66e9f8e685e5da0a717a239c12a20efdd"
+    },
+    {
+      "file": "nodia-server/src/module/dto/get-modules.dto.ts",
+      "sha256": "73379c82264e5f42e0edfbeec4b628c7c6b5dd64cf4cdb971a714e0e58bee30e"
+    },
+    {
+      "file": "nodia-server/src/module/dto/update-module.dto.ts",
+      "sha256": "30e74207e95a77dacbe281049815dff85d1090a4e61aafe4de45acb7678e8492"
+    },
+    {
+      "file": "nodia-server/src/module/entities/module.entity.ts",
+      "sha256": "15d1cd214c6c2533e341ea81970d1b55bcd49e4f45d727220b07b926cbd3ef67"
+    },
+    {
+      "file": "nodia-server/src/module/module.controller.ts",
+      "sha256": "67c2a2716921e5ec466cd6734905ae1831bc7e313f112713a248c44bd509f81d"
+    },
+    {
+      "file": "nodia-server/src/module/module.service.ts",
+      "sha256": "a294b6715385f15792a74b8196431ac0a7fef32f93baf644d8ccd1868d817822"
+    },
+    {
+      "file": "nodia-server/src/module/use-case/create-module.use-case.ts",
+      "sha256": "aa4603aad3ab89c8c529a5ba74263fc87069db477afc61758db649f423d14fd0"
+    },
+    {
+      "file": "nodia-server/src/module/use-case/delete-module.use-case.ts",
+      "sha256": "dd66cab1776dd271c2eac148bd1107b177a1443080eca908b07c39df7a07fd90"
+    },
+    {
+      "file": "nodia-server/src/module/use-case/get-all-modules.use-case.ts",
+      "sha256": "4e2b96ea508c86e6119e7fdb05d224c7a7e3d9df09ec339a42f955ed83de8385"
+    },
+    {
+      "file": "nodia-server/src/module/use-case/save-module.use-case.ts",
+      "sha256": "758fd3363ab391493d3946a65e18e0cb190ccf108366082903f8db4dd41f7d63"
+    },
+    {
+      "file": "nodia-server/src/module/use-case/update-module.use-case.ts",
+      "sha256": "194dc28d8eb83d5b58338a366c86b9fee29e6cbdb6a2c0c18f7c1e3bcc57b244"
+    },
+    {
+      "file": "nodia-server/src/product/dto/bulk-create-product-log.dto.ts",
+      "sha256": "62f7fde27b2e183e1d834d5abb0b75a6d66928b9f95b2f60bc0afc2c0d59bf8f"
+    },
+    {
+      "file": "nodia-server/src/product/dto/bulk-create-product.dto.ts",
+      "sha256": "dc93a76bc1b603dce408cdefe9e76fc7099de71bada77b13e926cd4cbfd5784b"
+    },
+    {
+      "file": "nodia-server/src/product/dto/bulk-update-product-log.dto.ts",
+      "sha256": "a3aae18c26d483ff4b8ce0d59f446a633f496e5f22164f1e5365aa009bb4eb99"
+    },
+    {
+      "file": "nodia-server/src/product/dto/bulk-update-product.dto.ts",
+      "sha256": "b09a0320089ac4196b5107a98365e2419e73e02855558b3c5353cb554b3ed9a4"
+    },
+    {
+      "file": "nodia-server/src/product/dto/create-product-log.dto.ts",
+      "sha256": "22e7fa3f9668e5ff09053987863390bcb92ae73283bece264426d63be1ef64bc"
+    },
+    {
+      "file": "nodia-server/src/product/dto/create-product.dto.ts",
+      "sha256": "353fb292cafcb830274a16ea6eb3aa848487d0e33ee82adc8ba3fc14510315ae"
+    },
+    {
+      "file": "nodia-server/src/product/dto/export-products-csv.dto.ts",
+      "sha256": "d4cffcb3c20b6c17de328bb604fdb0ba5af9fcd424d88af72d7115bd5188e5d3"
+    },
+    {
+      "file": "nodia-server/src/product/dto/get-product-logs.dto.ts",
+      "sha256": "cfeb70b36b85e4bb4491ee9cf409a8d909a9ad41d7aa2256b3c3b266a510badf"
+    },
+    {
+      "file": "nodia-server/src/product/dto/get-products.dto.ts",
+      "sha256": "01e378ede91940ca44a178e11593cca7e0e3b4961084ae384ab3a15b193818c6"
+    },
+    {
+      "file": "nodia-server/src/product/dto/query-product-logs.dto.ts",
+      "sha256": "b34e240e54ed64ef974ce165a0559bb36ea266854440fce35a9c1b757d7aecd9"
+    },
+    {
+      "file": "nodia-server/src/product/dto/update-product-log.dto.ts",
+      "sha256": "a4829acaf7cb3d265fb91b3bb8a90e9c5af93c839fbfad6554769aad180c265d"
+    },
+    {
+      "file": "nodia-server/src/product/dto/update-product.dto.ts",
+      "sha256": "5fc7f7e3485b5523612c0fe49ec81aa3f6be1dfaefef82ea214b85fdd1481618"
+    },
+    {
+      "file": "nodia-server/src/product/entities/product-log.entity.ts",
+      "sha256": "758ba2504776d58d66778cdbb031c8bc9b80c4f93d429a024587dc69620e738f"
+    },
+    {
+      "file": "nodia-server/src/product/entities/product.entity.ts",
+      "sha256": "c783cb21a90673c99799d5c70bf88245068d4d724468b925e31bd9ed3c1440b2"
+    },
+    {
+      "file": "nodia-server/src/product/product-log.controller.ts",
+      "sha256": "bc08f80d64bc3bb41864b285805c92fc99e96a36da90a37318c3f7d987f892a8"
+    },
+    {
+      "file": "nodia-server/src/product/product.controller.ts",
+      "sha256": "e0479c3dd045ea53f187d97228242a757ad5e5eeb103b6cea281bcb8e2b437e3"
+    },
+    {
+      "file": "nodia-server/src/product/product.service.ts",
+      "sha256": "40c08bb7a0e0b43df8d6752f209cdf666db92a0f70ec56c2e7622ee03bb9c5d8"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/create-bulk-product-logs.use-case.ts",
+      "sha256": "b456bafc6d4c865787bdb84162489c85126048ca83429d7aa0e8b0ff5ba13303"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/create-bulk-products.use-case.ts",
+      "sha256": "d4212a259929f2296477dbebe20c6eb05f3ae1128fed6c8156c26c1545585dbe"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/create-product-log.use-case.ts",
+      "sha256": "6fcc7ed27a73adbfa2d8629fcb840fdf8d597d0b3bbdc2b7d748968c6892f36d"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/create-product.use-case.ts",
+      "sha256": "5bea6b7bd141c741111bd2ae239e0a9ad9b5c23011ad155a62f8af1191d62214"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/export-products-csv.use-case.ts",
+      "sha256": "56ee37e70922e8136027c5f3e2e75d4d535b92856ca5e0949fc07a79c6f41239"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/get-all-product-logs.use-case.ts",
+      "sha256": "c98396f6da688b80326f6b15322ea5e8822142794263b244b63879bf91a75aef"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/get-all-products.use-case.ts",
+      "sha256": "06d22eb1e9f6fcbebabd3490b5080118fb6438ed605cafdaa7c8cdfd4d78b9c4"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/get-product-by-id.use-case.ts",
+      "sha256": "fdd0eae7b46d662bb47c338a5080c3169094f11a7f16772851dcf21757db5f36"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/get-product-log-by-id.use-case.ts",
+      "sha256": "b2177a841dd0dcdc50f3aace0abe300e4eb15d64e05743aab0dc139163a18da6"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/query-product-logs.use-case.ts",
+      "sha256": "42ca51127a81256f16e7318e1c623d2d97aae73c007ae9931d47dac853079ab6"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/update-bulk-product-logs.use-case.ts",
+      "sha256": "0fac953f7f4b1c7e94f5174938ade4619b4859db7e9af949f89ee7fd7cef5c64"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/update-bulk-products.use-case.ts",
+      "sha256": "8e0e24201079488739381c53ab98791950920220c05b3ecaac06d46f44390fb7"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/update-product-log.use-case.ts",
+      "sha256": "561d317c0f52789915b24a04458b3f0ccff988dce5b95f7e1d04fe5df38257ac"
+    },
+    {
+      "file": "nodia-server/src/product/use-case/update-product.use-case.ts",
+      "sha256": "78a2b13db514cef36dff7935bee05283e1ce2c5b4690c69b675b72f623164fdd"
+    },
+    {
+      "file": "nodia-server/src/provider-contact/dto/provider-contact.dto.ts",
+      "sha256": "30a1b81b94afeb2666db97540d1bb6ca94c032670649710e5184721bcb66869e"
+    },
+    {
+      "file": "nodia-server/src/provider-contact/entities/provider-contact.entity.ts",
+      "sha256": "8267ae8e51237f9c8a15399ca86666ba196bb5fc78fa7e635d4c43a0fa0449e4"
+    },
+    {
+      "file": "nodia-server/src/provider-contact/provider-contact.controller.ts",
+      "sha256": "694c82209f009fba53c6dc9442c573a19beabd56497426951487fe4c9dedf14b"
+    },
+    {
+      "file": "nodia-server/src/provider-contact/use-case/contact-validation.ts",
+      "sha256": "0e20d7945df9fe7df990add2bb630d339baf99e744c2ab7d4211fa21dbf3a94a"
+    },
+    {
+      "file": "nodia-server/src/provider-contact/use-case/create-provider-contact.use-case.ts",
+      "sha256": "f8e1ca7d6a8eac4ffc0011ec2f1d25cda5c8330d651345591a39a6710fccade4"
+    },
+    {
+      "file": "nodia-server/src/provider-contact/use-case/get-provider-contacts.use-case.ts",
+      "sha256": "1ee38b1c87ed1db5abed6b9a3bb6e94e20693d872bf81ab0688ca3c768df935d"
+    },
+    {
+      "file": "nodia-server/src/provider-contact/use-case/update-provider-contact.use-case.ts",
+      "sha256": "33692657fddde41ef323578da688f16c96d7b562e2effeae68212bc8853b0000"
+    },
+    {
+      "file": "nodia-server/src/provider/dto/bulk-create-provider.dto.ts",
+      "sha256": "c746c140473a1d4486e185696470168949e66ce60c8c9890313953ffc14627d0"
+    },
+    {
+      "file": "nodia-server/src/provider/dto/bulk-update-provider.dto.ts",
+      "sha256": "ba80af8adbe154fac16d1601cb56f299ec7fcc52a15e142b882e9984cef083d2"
+    },
+    {
+      "file": "nodia-server/src/provider/dto/create-provider.dto.ts",
+      "sha256": "825ab35ece0e1d03d84d1dda21790a32de02cad0b4aa783185989142d802b620"
+    },
+    {
+      "file": "nodia-server/src/provider/dto/export-providers-csv.dto.ts",
+      "sha256": "95769620caab19879a925445b65a4932e46ec4278f9d13cc4f9134ec7edc8dae"
+    },
+    {
+      "file": "nodia-server/src/provider/dto/get-providers.dto.ts",
+      "sha256": "4fc30fba4cc797a55945c0b314e58e1c851f922df85f67e022f9c14816d44213"
+    },
+    {
+      "file": "nodia-server/src/provider/dto/import-providers.dto.ts",
+      "sha256": "ba376b26f2bee343c3f8470885016829077b96f16b859bfdc1b0e52c4a185cb7"
+    },
+    {
+      "file": "nodia-server/src/provider/dto/update-provider.dto.ts",
+      "sha256": "75a5e47a77cb7e5e56ff89be0a153754797fc33699c4f343c71076239a4af6d2"
+    },
+    {
+      "file": "nodia-server/src/provider/entities/provider.entity.ts",
+      "sha256": "3972433e9d85ae4860acf121366f9c93eb79f8629543e667c5201388fd898621"
+    },
+    {
+      "file": "nodia-server/src/provider/provider.controller.ts",
+      "sha256": "2306b9dea7d99a1d507b61a1c08408e68ec41ec8b0b9db59318db243d0ef97c6"
+    },
+    {
+      "file": "nodia-server/src/provider/provider.service.ts",
+      "sha256": "a0db08ffaf42f5ad5d7e789c8f41c8330141a84d49f78bab143ae40e8fef07e2"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/create-bulk-providers.use-case.ts",
+      "sha256": "1f8178bd4771d14c14c4339047d694e7dadeb07bcd938460ab62d162db9e7807"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/create-provider.use-case.ts",
+      "sha256": "fdf41906a1bba8b8d188740edd1405e8775e249d3830f19944120b57e4594a21"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/export-providers-csv.use-case.ts",
+      "sha256": "aaee3057b7835cff87dc97c186e88964a60828cf1708e0a12fb495434c989e3e"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/get-all-providers.use-case.ts",
+      "sha256": "3482664c458006a1021edfd3c76d129a99492abb9f794808287c2a6aefe03d13"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/get-provider-by-id.use-case.ts",
+      "sha256": "332698da55cd83824a3b52addb8dc2eb221d448ae2952b59f509f106ad189a47"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/import-providers.use-case.ts",
+      "sha256": "82700b130a9593026f4a4551c851687f0ec5dde4d08ff8c610fcac7a21d9ada8"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/update-bulk-providers.use-case.ts",
+      "sha256": "4db956f8373cb1ff9e814c7b689a6dc5e8343a0112198ac11181a40679675d1c"
+    },
+    {
+      "file": "nodia-server/src/provider/use-case/update-provider.use-case.ts",
+      "sha256": "22bdd8a15aa77802879d5498591589600f6acdc99c98de09bf30d68f08aa9bcd"
+    },
+    {
+      "file": "nodia-server/src/rental-audit/dto/rental-audit-query.dto.ts",
+      "sha256": "3d47c858afb8cfde05afa258df043504720ccb49a59e39f8e96597774733e5d8"
+    },
+    {
+      "file": "nodia-server/src/rental-audit/entities/rental-audit-event.entity.ts",
+      "sha256": "f597fa0a2e3ec280af6c7794ca2ba895d494a31765ee0e44920062067f50fa4b"
+    },
+    {
+      "file": "nodia-server/src/rental-audit/use-case/get-rental-audit-events.use-case.ts",
+      "sha256": "facde7257f8e09fc4bbff90a0d477d4dc8346b946dd284fb8bbea225407f3057"
+    },
+    {
+      "file": "nodia-server/src/rental-block/dto/rental-block.dto.ts",
+      "sha256": "dc5dd92a841d1614b1bf2cdee6ef0b01636f0711d70ecbee1787bf514e77c875"
+    },
+    {
+      "file": "nodia-server/src/rental-block/entities/rental-block.entity.ts",
+      "sha256": "2566e42567a0c5af0ca26f6852f800c75b5198c80aa59d7632c5cddb655c9159"
+    },
+    {
+      "file": "nodia-server/src/rental-block/rental-block.controller.ts",
+      "sha256": "a8ffdc6271955abfafb655d75ff95e1291fd131ed3967e4e74fa93ffc0983eec"
+    },
+    {
+      "file": "nodia-server/src/rental-block/use-case/create-rental-block.use-case.ts",
+      "sha256": "33d346436924776010705931974058d7675b1346769faeff0d03911bd8ea1a3d"
+    },
+    {
+      "file": "nodia-server/src/rental-block/use-case/get-rental-blocks.use-case.ts",
+      "sha256": "68ba42e84985cdb88b6163d4cfd05bcead2d11a87fd6a56d9c4207235359c56d"
+    },
+    {
+      "file": "nodia-server/src/rental-block/use-case/update-rental-block.use-case.ts",
+      "sha256": "2540fcebff428019c8c71d3966d2b74de02af0dce3e925949aa5c5978f08c861"
+    },
+    {
+      "file": "nodia-server/src/rental-calendar/dto/rental-calendar.dto.ts",
+      "sha256": "6bba0725dd48c1c8a32555894dc672128a7e2e18f50c56bd2c1a4cd87679221b"
+    },
+    {
+      "file": "nodia-server/src/rental-calendar/rental-calendar.controller.ts",
+      "sha256": "f4b0b0d40a44c88fc1c0282cd4f10d544981a7596c3334807afd4a610fc4b762"
+    },
+    {
+      "file": "nodia-server/src/rental-calendar/use-case/get-rental-calendar.use-case.ts",
+      "sha256": "d5ff20f6edc5607aaf1739f0a67f57534a4724476246444e115b311a70b2443f"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/dto/create-rental-cancellation-policy.dto.ts",
+      "sha256": "53a38ca3705bf4303c1f4fc3417425253242f4f81953b6270086a7cf15e3dc73"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/dto/update-rental-cancellation-policy.dto.ts",
+      "sha256": "fc8daaf64ba61fe5e00f7741258dcd064029c4d43febe63144b4e344c0d0dff6"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/entities/rental-cancellation-policy.entity.ts",
+      "sha256": "c17185aeeba4772b77cea8de79c785a144014e16a5eca79a01d38358c82a5846"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/rental-cancellation-policy.controller.ts",
+      "sha256": "947bc87137cf3769ae7f6553988acc0ee4a5e0e27eca5249190bff6f4b899174"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/use-case/create-rental-cancellation-policy.use-case.ts",
+      "sha256": "883c01d070778f212e422f208135f5daa741a1ded10831a3b91ef44d77b5a9cf"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/use-case/get-rental-cancellation-policies.use-case.ts",
+      "sha256": "423f9458139d110c06fb389328c0bfde2db9bf255b2fdfd4909e09f10c6feb0e"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/use-case/get-rental-cancellation-policy.use-case.ts",
+      "sha256": "c463a495b71484c70e997ae71aee3f0e920a54ee84d9abad237f14e7552b51d8"
+    },
+    {
+      "file": "nodia-server/src/rental-cancellation-policy/use-case/update-rental-cancellation-policy.use-case.ts",
+      "sha256": "686fe426108f6a424b55357b5d397f1dad24cc2c318696ec6a6c8066a3caef93"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/dto/create-rental-collaborator.dto.ts",
+      "sha256": "1ad926c7f04598018b26ef4e3084d9708162e3fd5017a27d2d2d52078df5c534"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/dto/update-rental-collaborator.dto.ts",
+      "sha256": "b1216bfbf04471e9bf4c5276d48acb0c382a7266783e18ac5cb1b53edf708f98"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/entities/rental-collaborator.entity.ts",
+      "sha256": "549a9eedbef26dface39992052bf8ef7c889f0a206e055fc192595d793a94373"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/rental-collaborator.controller.ts",
+      "sha256": "4aebb55eb5711ec014631a0bacc7dac4767e70e49e6f619df2b0b4dec79cfe2c"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/use-case/create-rental-collaborator.use-case.ts",
+      "sha256": "d01f2a5e725b151cba609924df40a181cbb1de4f31f6d466d03f4a7301596d60"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/use-case/get-rental-collaborator-candidates.use-case.ts",
+      "sha256": "ff70d8370024a36241a33aa267f684e0d64e68c1452a0c1cda8fee4bb6e2a8a7"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/use-case/get-rental-collaborators.use-case.ts",
+      "sha256": "e2be0732647e46a9405b7687accc3b7e4f23e1ca32d5a2e6f23029d6aed56de1"
+    },
+    {
+      "file": "nodia-server/src/rental-collaborator/use-case/update-rental-collaborator.use-case.ts",
+      "sha256": "9bef458f99c8d780f66beccb23fe28651abe609ebd08f5ce5d4b1a14d2a6b06a"
+    },
+    {
+      "file": "nodia-server/src/rental-common/dto/rental-params.dto.ts",
+      "sha256": "8527cbd21edcba80c3c5defdb8addd796625a6091bed71d517f3f86180217232"
+    },
+    {
+      "file": "nodia-server/src/rental-common/rental-history.controller.ts",
+      "sha256": "106f1de22a801071f1e26bd713c881fc59849b9c93c61437dc13389032f52c8f"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/dto/rental-expense.dto.ts",
+      "sha256": "ad1ab4e3400993f9eed1643c8447461163042c64176850b4c126e64e91335205"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/entities/rental-expense.entity.ts",
+      "sha256": "95b9e18c12ab6aee682123ab9348c5d537938ff259b996c89d28548093aa418a"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/rental-expense.controller.ts",
+      "sha256": "09a8f0ba37e252e62e0912bdedf8530119e22a092b9aea57a49a365937dd2932"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/use-case/create-rental-expense.use-case.ts",
+      "sha256": "d1dd26c685aedab54b9374b273775c2207eea00e87faafa9742201026f4e35aa"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/use-case/get-rental-expenses.use-case.ts",
+      "sha256": "bccdf59c9d61a6d2d2d1f89c43ba9924e723dc47a5d5fd9a932db13e047e8c03"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/use-case/pay-rental-expense.use-case.ts",
+      "sha256": "74cc886b5256532d9b6b03610d34e9cc0ce7ad3884b691fa13d06716745389f3"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/use-case/update-rental-expense.use-case.ts",
+      "sha256": "db47e24fa642fcace58ea2ba40f16de4395fdf4e46bca3bcaad37250b7d64593"
+    },
+    {
+      "file": "nodia-server/src/rental-expense/use-case/void-rental-expense.use-case.ts",
+      "sha256": "948e84ad1abc28b0dfee9fefe277cdd1b16291bb609c5795aaaf8699406fa9fe"
+    },
+    {
+      "file": "nodia-server/src/rental-operation/entities/rental-operation.entity.ts",
+      "sha256": "37968b479d29bf2d8d42116590a2e7ca8c5dbce8b2eaae4607560470b9eff9a8"
+    },
+    {
+      "file": "nodia-server/src/rental-operation/use-case/get-rental-operation.use-case.ts",
+      "sha256": "d30696281cbb6391de35d621b39d4e4bfede2c284d456e9aa7d188215eb4a078"
+    },
+    {
+      "file": "nodia-server/src/rental-overview/dto/rental-overview.dto.ts",
+      "sha256": "bb25bad1d946b8e243bb38b13567317addf651def2bec9857f52bf8edf8c497e"
+    },
+    {
+      "file": "nodia-server/src/rental-overview/rental-overview.controller.ts",
+      "sha256": "76a8d4a0a6b446e81c72aaac16291e77af19ef77100464341f26b62341692c57"
+    },
+    {
+      "file": "nodia-server/src/rental-overview/use-case/get-rental-overview.use-case.ts",
+      "sha256": "4b66ba10ecb4a92adfeac869aa46db88238201e2b4cfa87b39e75452661b6d5b"
+    },
+    {
+      "file": "nodia-server/src/rental-payment/dto/rental-payment.dto.ts",
+      "sha256": "b2d25cc599a59a53d63a34679d7af47d168db389bb3431dc786a043784376697"
+    },
+    {
+      "file": "nodia-server/src/rental-payment/entities/rental-payment.entity.ts",
+      "sha256": "e1b0b9723150480650149be97c4a477a7ddbf5272b5b6e1921b4734cd429d20d"
+    },
+    {
+      "file": "nodia-server/src/rental-payment/rental-payment.controller.ts",
+      "sha256": "5df37b861f70333f104c323e627de9045071bbddf107db7dd1a5bfd8e7eb4389"
+    },
+    {
+      "file": "nodia-server/src/rental-payment/use-case/create-rental-payment.use-case.ts",
+      "sha256": "62fc6c1c24dd059ac11fab22ecc1b2b01b4e0b96303ee6186508afc7b906b5c4"
+    },
+    {
+      "file": "nodia-server/src/rental-payment/use-case/get-rental-payments.use-case.ts",
+      "sha256": "263b034233dadcf308e863299a9530ea8ccee7419cb0eeb4e9959ad35e30e350"
+    },
+    {
+      "file": "nodia-server/src/rental-payment/use-case/void-rental-payment.use-case.ts",
+      "sha256": "dcb9bfe934953b49ffd6f83e6d443b291db68fc578ee1348aaca533633ce34ac"
+    },
+    {
+      "file": "nodia-server/src/rental-property/dto/create-rental-property.dto.ts",
+      "sha256": "ced765e870afb48d97e82abf92733dfbe027e418586134b2cc1364056efca5d1"
+    },
+    {
+      "file": "nodia-server/src/rental-property/dto/rental-configuration-query.dto.ts",
+      "sha256": "a587b65be5afd66b8158abff50e6512d4655b300ae9e56a0300b99f7f9605250"
+    },
+    {
+      "file": "nodia-server/src/rental-property/dto/update-rental-property.dto.ts",
+      "sha256": "bbcd6e857832aa80d1249309c7d03343b5712d2a712186126cf58132555abce2"
+    },
+    {
+      "file": "nodia-server/src/rental-property/entities/rental-property.entity.ts",
+      "sha256": "032f64e11d14cf70edce2a128b7db3af36baecf54fffb0b3c1ed166e7c1022c0"
+    },
+    {
+      "file": "nodia-server/src/rental-property/rental-property.controller.ts",
+      "sha256": "d8bf547e9dd6a8d1162a48a694443ea1498a44ec1ee7fe55a61a70a4e0dfc9de"
+    },
+    {
+      "file": "nodia-server/src/rental-property/use-case/create-rental-property.use-case.ts",
+      "sha256": "519d5927490af504b7ccd2986b56a2641ee4da41bdd86a64290de8133f898bc8"
+    },
+    {
+      "file": "nodia-server/src/rental-property/use-case/get-rental-properties.use-case.ts",
+      "sha256": "5d0484b0f355c93df29f84eb956a147e3243bc7fed3a335029146960e77aba7b"
+    },
+    {
+      "file": "nodia-server/src/rental-property/use-case/get-rental-property.use-case.ts",
+      "sha256": "52c00e65839b4b449f9e0b58a0be37f894991e5ea5dd64148bd3d0208f0ab838"
+    },
+    {
+      "file": "nodia-server/src/rental-property/use-case/update-rental-property.use-case.ts",
+      "sha256": "ea90d20ff75d63f10e4e5a8adbad47d6694056fe5d5b61e7c748cd1f15058c9e"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/dto/create-rental-reservation.dto.ts",
+      "sha256": "83c3098e2015fce217c77a1b72375e238bced59790a8806fe067a86e327d98a7"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/dto/rental-reservation-query.dto.ts",
+      "sha256": "27834d0551a06ef530b990f1dae7b2780143bf66b5d6bd0b85198e73d195f115"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/dto/reservation-commands.dto.ts",
+      "sha256": "83a699068ec5296c033b976a2d0af1e11fe5acb822f582d220b8426acee35bf3"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/dto/update-rental-reservation.dto.ts",
+      "sha256": "aa274e03ee6ff3097c2e68e7b998ee8d9be0c9d972f10c9ca901f19d07dbd72a"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/entities/rental-reservation.entity.ts",
+      "sha256": "1cab481f6107c00604dba1e64005021b94dcb7e2fb34a17724ada21359535bac"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/rental-reservation.controller.ts",
+      "sha256": "818e18978ae097dcfcd2e5bd1253c6904e201d559b85edb06d825f2436fb08c7"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/cancel-rental-reservation.use-case.ts",
+      "sha256": "1ce21b69ebac9cbcac8d0a15f8c6934bcde5ed97002f1fc2b619c953e6bc3aaa"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/complete-rental-reservation.use-case.ts",
+      "sha256": "aac785f6385d632ac2036aca183dea41c3f830b8f147f1e520993619a0092b7a"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/confirm-rental-reservation.use-case.ts",
+      "sha256": "16c9593357a723fc866d4b81ffe785a7eddce1744f16b1738918f5837f7e61f7"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/create-rental-reservation.use-case.ts",
+      "sha256": "5adcf42ee5b69514dd79e5120e6c7b3119e8fe09f1ab09ea2f69e694b4a1dbc2"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/get-rental-reservation.use-case.ts",
+      "sha256": "10baab0fd1d50de912a974818198bfbbe97f984b4e8473fcbf6e0fb32a7d3b42"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/list-rental-reservation.use-case.ts",
+      "sha256": "5e7f3e65181bf279ab407a7a50424006d15f4dd28ba5f5a808eef36817eee73f"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/preview-rental-cancellation.use-case.ts",
+      "sha256": "679b8c062db7a467529df6665eec96b977bc40c72d3274eb541e6852222c3b05"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/start-rental-reservation.use-case.ts",
+      "sha256": "70fccfb0901da1ffc8da464108171fad7f78fffa4f5db3a364f0c348feb9ace0"
+    },
+    {
+      "file": "nodia-server/src/rental-reservation/use-case/update-rental-reservation.use-case.ts",
+      "sha256": "8ce356d4e888ac8be27e01013619719612a419b643c2fa26f12693ac07031f1d"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/dto/rental-turnover-query.dto.ts",
+      "sha256": "d1ebdeac761475512b3d1cb11338c1592386a527fb6415f2557fd2712b364b34"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/dto/update-rental-turnover.dto.ts",
+      "sha256": "03db881deb24b62ea70d3de863036c981415ff6c6f8975ab86507e01a48adab4"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/entities/rental-turnover.entity.ts",
+      "sha256": "f2fac447b51e7882c635d90fadaa71449199b46e89a7e8df1b8f3ab2da055f2d"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/rental-turnover.controller.ts",
+      "sha256": "7577d871c5be6222d9ae15bd981e04eca07181540135fa2dd202ed937d0a535c"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/use-case/approve-same-day-rental-turnover.use-case.ts",
+      "sha256": "91c6217742336b7ed282d305df5412307aa735e19b48f1e9b3d2cbe17530ce7a"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/use-case/get-rental-turnover.use-case.ts",
+      "sha256": "5fb5623fcea370915a69c10ec4e2318f2a59550df4f181fe3b09d9ead2e2878e"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/use-case/list-rental-turnover.use-case.ts",
+      "sha256": "d1316a6686fa907e3c734b51a5e771b1b1afac72bd3d3c2c667f9bae12ec4701"
+    },
+    {
+      "file": "nodia-server/src/rental-turnover/use-case/update-rental-turnover.use-case.ts",
+      "sha256": "88c9dccc61a8345d232f0d32e55991b9bfe6809d5ec0b30fe9c8b83d3a11c8d8"
+    },
+    {
+      "file": "nodia-server/src/role/dto/create-role.dto.ts",
+      "sha256": "6edba15d5d3bc495586983da21102b1ca20968f9b7a41d86f13438d863316493"
+    },
+    {
+      "file": "nodia-server/src/role/dto/get-roles.dto.ts",
+      "sha256": "5f50ca87b82e133fad6f94d438a9993c95865be10e2d156bcb897acbe877c0a7"
+    },
+    {
+      "file": "nodia-server/src/role/dto/role-id.dto.ts",
+      "sha256": "d6f77862de94a64c9294bd399825ca0be550dcc13c4031b9a27939ba611d4637"
+    },
+    {
+      "file": "nodia-server/src/role/dto/update-role.dto.ts",
+      "sha256": "559c38d0a0d976d26352b0d1ab0f81e57a412f42e388d2ed8e9d2a6553e74aa9"
+    },
+    {
+      "file": "nodia-server/src/role/entities/role.entity.ts",
+      "sha256": "4fdc59c7abdd4662eeae0af14863849f782079b8be3d244a8dea9035f8aed0d4"
+    },
+    {
+      "file": "nodia-server/src/role/role.controller.ts",
+      "sha256": "08d9cc65960c6baff1b45d4c3ad020b10bf277044f9c571ad76c69cb1a614abd"
+    },
+    {
+      "file": "nodia-server/src/role/role.service.ts",
+      "sha256": "2d08357f3c86faf403481c519ed42e5ab0948f73b2c09240ef2833dd6a172960"
+    },
+    {
+      "file": "nodia-server/src/role/use-case/create-role.use-case.ts",
+      "sha256": "a20a9bf6fcf8f067ea0e6714ae7a947ec080c1000917d746ac83a6c9457411e8"
+    },
+    {
+      "file": "nodia-server/src/role/use-case/delete-role.use-case.ts",
+      "sha256": "e6806abfee392a80a6d15e6ad777a3496678f707ed125662aa5b10df56d09371"
+    },
+    {
+      "file": "nodia-server/src/role/use-case/get-all-roles.use-case.ts",
+      "sha256": "d471f57183463f477219527da5e01bc5e34678b0777a2528e1331904e501d3cc"
+    },
+    {
+      "file": "nodia-server/src/role/use-case/save-role.use-case.ts",
+      "sha256": "7e58d025170c15c1cdd8d67d8eb79d81f626797abf289466c2fa440173fd92b8"
+    },
+    {
+      "file": "nodia-server/src/role/use-case/update-role.use-case.ts",
+      "sha256": "34fa579d505a4b004afeaa9e228838a933fb8b27fe3de7c690b5b13ad010e877"
+    },
+    {
+      "file": "nodia-server/src/user/dto/create-user.dto.ts",
+      "sha256": "09a7985ca71a4235cc858a45a2134e0923c705f9ab2479557bdfaec99b2fbf60"
+    },
+    {
+      "file": "nodia-server/src/user/dto/get-users.dto.ts",
+      "sha256": "e4f262bb0af2e00294a7743ac0897aced0641b2b438bda62577ab0d5e5ff0795"
+    },
+    {
+      "file": "nodia-server/src/user/dto/update-user.dto.ts",
+      "sha256": "36407e76fa11ff1eb1ca9f9e19af59a45b69fed56ce82187f8f5da55153ff872"
+    },
+    {
+      "file": "nodia-server/src/user/entities/user.entity.ts",
+      "sha256": "79830f2e9d243e2367f48ea955e252bdcc23765d00ee84fddcdc5b84a3fcf011"
+    },
+    {
+      "file": "nodia-server/src/user/use-case/create-user.use-case.ts",
+      "sha256": "6cb62366228651a15c16675c750591eabe3027e1437dbf5c02138423e52a3a3b"
+    },
+    {
+      "file": "nodia-server/src/user/use-case/get-all-users.use-case.ts",
+      "sha256": "a588872deec94a4fea264bd62683e5b9589e9e16b88972a15148c73e669be68e"
+    },
+    {
+      "file": "nodia-server/src/user/use-case/save-user.use-case.ts",
+      "sha256": "dfca2497ec9d7ce0752654213007c5d483c72168ca776d3c5e12e5005dc74d5d"
+    },
+    {
+      "file": "nodia-server/src/user/use-case/update-user.use-case.ts",
+      "sha256": "43d5461f0f8fdfa69ff3754252bd10ead404cb9e0d42e67b502fdc94f2455c3f"
+    },
+    {
+      "file": "nodia-server/src/user/user.controller.ts",
+      "sha256": "0f73cf2316517cfd0f99b15355020cd6199c7bdea9586db745858a7b47b0499f"
+    },
+    {
+      "file": "nodia-server/src/user/user.service.ts",
+      "sha256": "a5b3c5bc6ea77bb0356260d478671e6981314a26a4e7acf0a38835d2ab22f962"
+    }
+  ],
+  "artifacts": [
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/README.md",
+      "sha256": "1855c60768c7f91a39c0bbb12fd610fc664eb3d06f041f4acb0ab938b04d1a15"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/README.md",
+      "sha256": "b00d166a9196613e3f66c183a02da207a4455978b31f240b0befe5c810e6ec3e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/README.md",
+      "sha256": "d57316257199b3a96b262b123438b2945bc070cd5d6dbdd2a3df7f4b376b80d6"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "sha256": "b7f576e263dab13262a7db4f101553704fcf53fc036964967529bee1869adeaf"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+      "sha256": "bc95a8d2e56c124cd3bb6408e0ed49921856c2e91ea28c24a3975c860d335edc"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+      "sha256": "f8051aa43f37bfbf27e90a2e561f7d4a17e254d37c5b287aebd3f2eb36da0587"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+      "sha256": "2be89c25fb83b32c565a4efb44510d99eb580fbba852d90595bf5d6c56f8fe6e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/products.md",
+      "sha256": "15df9597ffbe31e7c4aac42998983aa23acd92bbc89d1c844a6a05cfd36bd73e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+      "sha256": "3d1dfe2d9f60beaf73bbbeda760296b2f2f70102036934effca7b7a107d7ede8"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+      "sha256": "a0545dd9f3e605f609e1077de60dcb3ff34fa106e5e98094f6b60e9c2be0b00b"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+      "sha256": "f1912861f8adb905fe115c950e972cc53c91efe14b86462ef436051dc7c362b3"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+      "sha256": "885a4f021244594f84993c8d9b829ca20b5689623940217b68a14b9f89f9d1c8"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+      "sha256": "950261ffc6ed94b567a00652f921e67615759f92d4e3e5bf136d84b39a342b8f"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+      "sha256": "f848fa3d87b6863b23ab8464e0271270fb5b0ec402bdc955d68d8fcce89ab7ca"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+      "sha256": "31eb3f0afdd7b51540579780c273375637532a1a85a33e5dd6acd8c19951d613"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+      "sha256": "78012bb92691bf490f51484ff3d2440193749fb50e951b2e821b05c2bcddd2d4"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+      "sha256": "15e86912ae91805d89b0b7c9c1d1602b96050af92bacf2118d890d5e20208fd7"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+      "sha256": "fbaf5349013f98f88eee9aae1f981bbc4a6243b79871f4a068cce5aa69070950"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+      "sha256": "a198d2bfa4cac9563108e66ffcd1791c9340ac0a04e0e107a584391c73219578"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+      "sha256": "8e5b75fc252d0764da9e51a99c95f4088120625e63b914848c439e4ab0d5ff9d"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+      "sha256": "923ad5740398beea55ee2d43356fc934967a16276e1eb39ff5457518fb4b524f"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+      "sha256": "e2ca3efc0399c0a79d991d7e76dedfeee5d6c8948e4fb3d435a46b155646d63e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+      "sha256": "0571b6de979078628855532d4748d4920c6be3c193a80ff0c974cbacbf9adbeb"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+      "sha256": "c40c99b126afb6d966ad617a8a5f8c14f6c59d80cdf709c6ff37cf05c056318e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+      "sha256": "8c0ebe3f956fe8a8ad48baba5fb01010f20a949c1888ed9177e626ffb533f0c6"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+      "sha256": "ee4989939e75950bc994b8f6dbdb3320456df993ddee420b1c9850dd2c88c55c"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+      "sha256": "e159ded03e792a5767f0ac69c3158b4264ccc97ead28fa9e396a18ffc4b7ee78"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+      "sha256": "e780780ee9bbac0fe5c83e9b6fd8a7232984caaf52a77a1352a3e5d78eafee63"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+      "sha256": "b1b3328ed7a88f1dd2555ee29653c6d6818f66fb94fafd9a87dcc1b00951b614"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+      "sha256": "ff10aca43c0d12ebb19c1ecb603bf3a850b4278f26f56bcc2aef14d966aad861"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+      "sha256": "30a8ac1c6d6932b488755a2f90b3a7c2f941c9f750d56dda9aa88fd23de1e9e4"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-ai05-knowledge-coverage.json",
+      "sha256": "06d9187823b8241a5280d7aba5eab50f817cc39bf7795d42c84ed17979614fdb"
+    },
+    {
+      "file": "docs/mvp/51-nodia-ai-ai05-product-knowledge.md",
+      "sha256": "2cbff14b65a3e66a8fa5ec0b68699e27e3cf62dab751a378bb83a2a978ac9838"
+    },
+    {
+      "file": "docs/evidence/scripts/validate-nodia-ai-ai05.cjs",
+      "sha256": "5eaba69b563b19552126c3355276c63cf04b43e0e2be825dcb7bc07c12a300fc"
+    }
+  ],
+  "servicesStarted": false,
+  "businessWrites": 0,
+  "providerCalls": 0,
+  "publishedTools": 0,
+  "limitations": [
+    "Natural-language facts reviewed against cited sources; structural checks do not prove semantic completeness",
+    "No DB/HTTP/authentication/permission/transaction/provider tests executed for this documentation task",
+    "Publication metadata/frontmatter contract, registry compilation and selective loading remain AI-06/12",
+    "Source authority gaps and new super_admin behavior remain AI-07/08 and relevant domain stages",
+    "No document approval, runtime deployment or migration"
+  ]
+}

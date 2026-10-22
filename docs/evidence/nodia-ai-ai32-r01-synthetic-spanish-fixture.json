@@ -1,0 +1,27 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "synthetic_spanish_voice_fixture_provenance",
+  "voice": {
+    "engine": "Windows SAPI/System.Speech",
+    "name": "Microsoft Sabina Desktop",
+    "culture": "es-MX",
+    "installed_and_enabled_observed": true,
+    "synthesis_rate": -1
+  },
+  "expected_synthetic_text": "La casa tiene ventanas azules.",
+  "speech_words_v1_sha256": "1b057f4a611413632846c5f10df105c2c1c322e975dec629bd207b8784569414",
+  "file_sha256": "abd96e103b7396b7c9506b9df3654ce110da2d951f579911cef34ba4795c8f91",
+  "bytes": 136070,
+  "observed_wave": {
+    "sample_rate": 22050,
+    "channels": 1,
+    "sample_width_bytes": 2,
+    "frames": 68012,
+    "duration_seconds": 3.0844
+  },
+  "physical_microphone_recording": false,
+  "private_user_audio_used": false,
+  "provider_calls": 0,
+  "expected_text_sent_to_provider_prompt": false,
+  "encoded_formats_evidence": "docs/evidence/nodia-ai-ai32-r01-synthetic-spanish-encoding.json"
+}

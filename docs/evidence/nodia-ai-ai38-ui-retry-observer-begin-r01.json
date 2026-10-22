@@ -1,0 +1,13 @@
+{
+  "schema": "ai38-ui-nginx-observer-v1",
+  "action": "begin",
+  "status": "cursor_created_no_UI_acceptance",
+  "began_at_utc": "2026-10-20T22:47:33.717338+00:00",
+  "device": 2050,
+  "inode": 3673396,
+  "offset": 38691,
+  "acceptance_conversation_sha256": "e5aff7d747c5a27c6f890f749323901c5a235d6e8a99a2087b696351fb05fc0c",
+  "start_anchor_bytes": 4096,
+  "cursor_sha256": "e3e1185f6464ade5b4d733ef074333c6b625b5dcb8c2e487b7302a7e6c9f804a",
+  "raw_log_saved": false
+}

@@ -1,0 +1,86 @@
+{
+  "stage": "AI-38",
+  "scope": "compiled_standalone_worker_disposable_PG_Redis_no_provider",
+  "status": "failed",
+  "started_at_utc": "2026-10-20T19:37:36.417092+00:00",
+  "runner_sha256": "4295622c31a3eebcbb2862e06728e38b04dcbcfea0f52a5dabff0b73832ab5d9",
+  "harness_sha256": "b20117399414e6ec38a4c74b49c9ff5dc7a271b1f9b5661779e8f309d33686cb",
+  "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "provider_generations": 0,
+  "configured_database_used": false,
+  "storage_operations": 0,
+  "operational_services_modified": false,
+  "dependency_installation_reused": true,
+  "npm_ci_executed": false,
+  "timeout_seconds": 300,
+  "exit_code": 1,
+  "native_result": {
+    "stage": "AI-38",
+    "scope": "actual_compiled_standalone_worker_confirmed_finance_disposable_SQL_Redis",
+    "status": "failed",
+    "started_at_utc": "2026-10-20T19:37:36.702Z",
+    "checks": [
+      "HTTP confirmation admits exact queued execution without an inline financial effect",
+      "actual standalone worker commits financial effect and receipt with terminal job",
+      "worker preserves exact approved financial fields",
+      "receipt retains resource owner and immutable bound command",
+      "standalone process drains after SIGTERM without forced kill",
+      "real worker connected only to disposable PostgreSQL and Redis"
+    ],
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+    "configured_database_access": false,
+    "provider_generations": 0,
+    "storage_operations": 0,
+    "operational_services_touched": false,
+    "fixture_HTTP_actor": true,
+    "physical_UI_or_generative_acceptance": false,
+    "inline_claim_or_execution": false,
+    "child_entrypoint": "dist/nodia-ai-worker.js",
+    "HTTP_requests": [
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirmation-challenge",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirm",
+        "status": 202
+      },
+      {
+        "method": "GET",
+        "endpoint": "/nodia-ai/operations/:uuid",
+        "status": 500
+      }
+    ],
+    "worker_network": {
+      "postgres_connections": 6,
+      "redis_connections": 1,
+      "blocked_sockets": 0,
+      "fetch_attempts": 0,
+      "listen_attempts": 0
+    },
+    "own_child_stopped": true,
+    "disposable_cleanup_complete": true,
+    "redis_image_id": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+    "fixture_API_closed_before_worker": true,
+    "worker_entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+    "network_guard_sha256": "fc148fa70797f96623111fa4b547b15d6fdf7bf6de5c65a2261c0c416645754c",
+    "worker_pid": 2202999,
+    "child_exit": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "failure_class": "AssertionError",
+    "failure_assertion": "Expected values to be strictly equal:\n\n500 !== 200\n",
+    "finished_at_utc": "2026-10-20T19:37:57.686Z"
+  },
+  "own_process_group_remaining": false,
+  "emergency_owned_containers_removed": [],
+  "owned_containers_remaining": 0,
+  "finished_at_utc": "2026-10-20T19:37:57.857790+00:00",
+  "private_log_hashes": {
+    "private-stdout.log": "85c5c6557993c1b93298313c95be13b13d3b46034d10ed19a02b67e29b629613",
+    "private-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

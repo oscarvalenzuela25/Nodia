@@ -1,0 +1,8 @@
+{
+  "docs/evidence/scripts/nodia-ai-ai36-c05-r04-role-activate.py": "4f2459535561ca48876ab4a897481c14373721498b8155633dcdfed13e358366",
+  "docs/evidence/scripts/nodia-ai-ai36-c05-r04-role-canary-remote.py": "b8611bef0cfb6e10372a781c6af83eb6b66479231543aaf7a120b8be33b07655",
+  "docs/evidence/scripts/nodia-ai-ai36-c05-r04-case-runner.py": "cda2a510039dff82db32253b38149cd0f2fe2cb0ca298f625e6215329207db7a",
+  "docs/evidence/scripts/nodia-ai-ai36-c05-r04-restoration-modalities.mjs": "3502a800febf58b5a1a9969e22be6f2230a9bb6660edf770e6ceaf78492d4215",
+  "docs/evidence/scripts/nodia-ai-ai36-c05-r04-binary-observation.py": "97872c7910d8fb54a4d9f7dddd47d5147a595cb876040d2e74b808830f87b74b",
+  "docs/evidence/scripts/nodia-ai-ai36-c05-r04-role-rollback.py": "8c699cbca31d9e3b9f2cd4e17056ae7fe02482fd550bd92f57d00d0a0275a190"
+}

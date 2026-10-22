@@ -6,9 +6,13 @@
 
 ## Objetivo
 
+Ampliación del 2026-10-14: [NodiaAI38](38-nodia-ai-research-and-v1-plan.md) planifica chat/MCP con herramientas de dominio e historial propio; [ADR-032](../architecture/decisions/ADR-032-nodia-ai-domain-tools-and-conversation.md) propuesto. [Catálogo40](40-nodia-ai-tool-catalog-v1.md)/[contratos41](41-nodia-ai-v1-contracts.md) derivan156 herramientas candidatas y coordinación confirmada funcionalmente: botón sobre preview exacta, ejecución secuencial con efectos parciales recuperables e informes compatibles con procedencia separada; [ADR-033](../architecture/decisions/ADR-033-nodia-ai-confirmation-and-sequential-recovery.md) propuesto. El usuario confirma autoridad transversal de `super_admin` sobre chats y datos/operaciones, incluidas Finanzas/Reservas; contratos22/28 reabren autorización. ERD/diagramas/runtime, esquemas por dominio, política compartida de actor/destinatario, cachés y consumidores necesitan reconciliación; no se implementó la ampliación ni se aprobó arquitectura nueva.
+
 Proveer una visión unificada de cómo interactúan los distintos componentes tecnológicos y lógicos del sistema (Frontend, Backend, Base de Datos y despliegue) basándose en las definiciones acordadas previamente.
 
 ## 1. Diagrama de Alto Nivel
+
+NodiaAI añade propuesta de [persistencia42](42-nodia-ai-erd.md) y [ejecución43](43-nodia-ai-execution-architecture.md)/[ADR-034](../architecture/decisions/ADR-034-nodia-ai-postgres-jobs-and-retention.md):23 tablas previstas/62 FKs (22 para v1 completa y adapter_states condicional), jobs/outbox PostgreSQL, worker Nest del proyecto sin puerto HTTP y runtime gateway compartido con OCR/login. Efecto/receipt en una UoW o recovery nativo, fencing/epoch y conciliación remota; Redis no es fuente de aprobación/dedup. Caducidad90 días del último mensaje del dueño, adjuntos/transcripciones con chat y preferencias independientes. Propuesta en revisión, no introduce microservicio ni modifica ejecución existente. El diagrama histórico siguiente permanece como referencia; integrar el nuevo flujo al aceptar arquitectura.
 
 ```mermaid
 flowchart TD

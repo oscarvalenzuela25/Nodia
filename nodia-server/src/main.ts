@@ -1,4 +1,6 @@
 import cookieParser from 'cookie-parser';
+import { createNodiaAiConversationBodyParser } from './nodia-ai-conversation/nodia-ai-conversation-body-parser.js';
+import { NODIA_AI_RUNTIME_POLICY, type NodiaAiRuntimePolicy } from './nodia-ai-runtime/config/runtime-policy.js';
 import { providerImportBodyParser } from './provider/provider-import-body-parser.js';
 import { rentalBodyParser } from './rental-common/rental-body-parser.js';
 import { readAuthConfig } from './auth/auth.config.js';
@@ -12,8 +14,10 @@ import { AppModule } from './app.module.js';
 import { envs } from './config/envs.config.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor.js';
+import { AssertNodiaAiOperationModeUseCase } from './nodia-ai-runtime/use-case/assert-nodia-ai-operation-mode.use-case.js';
 
 async function bootstrap() {
+  new AssertNodiaAiOperationModeUseCase().execute(process.env);
   if (process.env.NODE_ENV === 'production') {
     if (!/^[0-9a-fA-F]{64}$/.test(process.env.AI_SECRET_MASTER_KEY || '')) {
       throw new Error(
@@ -44,6 +48,7 @@ async function bootstrap() {
   // Installed before Nest's default parser; rental payloads are bounded before parsing.
   app.use('/api/v1/rental', rentalBodyParser);
   app.use(['/api/v1/providers/import', '/api/v1/provider/import'], providerImportBodyParser);
+  app.use('/api/v1/nodia-ai', createNodiaAiConversationBodyParser(app.get<NodiaAiRuntimePolicy>(NODIA_AI_RUNTIME_POLICY).admission.http_json_bytes));
 
   const authConfig = readAuthConfig(process.env);
   app.use(cookieParser());

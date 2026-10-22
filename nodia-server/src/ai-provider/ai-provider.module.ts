@@ -1,3 +1,7 @@
+import { ManageAiProviderSecureSessionUseCase } from './use-case/manage-ai-provider-secure-session.use-case.js';
+import { SaveAiApiKeyUseCase } from './use-case/save-ai-api-key.use-case.js';
+import { SaveAiProviderConfigurationUseCase } from './use-case/save-ai-provider-configuration.use-case.js';
+import { SaveAiProviderCatalogUseCase } from './use-case/save-ai-provider-catalog.use-case.js';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AiProvider } from './entities/ai-provider.entity.js';
@@ -37,7 +41,7 @@ import { CreateAiProviderEventUseCase } from './use-case/create-ai-provider-even
 
 import { GeminiModule } from '../common/ai/gemini.module.js';
 import { TranslationModule } from '../translation/translation.module.js';
-import { CodexRuntimeService } from '../common/ai/codex/codex-runtime.service.js';
+import { CodexRuntimeModule } from '../common/ai/codex/codex-runtime.module.js';
 import { ManageCodexSessionUseCase } from './use-case/manage-codex-session.use-case.js';
 import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use-case.js';
 
@@ -50,6 +54,7 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
       AiProviderCatalog,
     ]),
     GeminiModule,
+    CodexRuntimeModule,
     TranslationModule,
   ],
   controllers: [
@@ -58,7 +63,10 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
     AiProviderEventController,
   ],
   providers: [
-    CodexRuntimeService,
+    ManageAiProviderSecureSessionUseCase,
+    SaveAiApiKeyUseCase,
+    SaveAiProviderConfigurationUseCase,
+    SaveAiProviderCatalogUseCase,
     ManageCodexSessionUseCase,
     ExecuteCodexInvoiceUseCase,
     ExecuteApiInvoiceUseCase,
@@ -87,7 +95,11 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
     CreateAiProviderEventUseCase,
   ],
   exports: [
-    CodexRuntimeService,
+    ManageAiProviderSecureSessionUseCase,
+    SaveAiApiKeyUseCase,
+    SaveAiProviderConfigurationUseCase,
+    SaveAiProviderCatalogUseCase,
+    CodexRuntimeModule,
     ExecuteCodexInvoiceUseCase,
     ExecuteApiInvoiceUseCase,
     AiProviderService,
@@ -105,6 +117,10 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
     GetAllAiApiKeysUseCase,
     CreateAiApiKeyUseCase,
     UpdateAiApiKeyUseCase,
+    DeleteAiApiKeyUseCase,
+    ManageGeminiLoginUseCase,
+    ManageGeminiAgenticLoginUseCase,
+    ManageCodexSessionUseCase,
     GetAllAiProviderEventsUseCase,
     CreateAiProviderEventUseCase,
   ],

@@ -1,0 +1,1 @@
+const fs=require('fs'),p='docs/mvp/nodia-ai-v1-common-contracts.schema.json',s=JSON.parse(fs.readFileSync(p));s.$defs.ConfirmationRequest.properties.proposal_revision={$ref:'#/$defs/PositiveRevision'};fs.writeFileSync(p,JSON.stringify(s,null,2)+'\n');

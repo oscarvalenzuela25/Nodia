@@ -87,4 +87,24 @@ describe('ExportProductsCsvUseCase', () => {
     );
     expect(lines[1]).toBe('PROD-002,Potato Chips,450,85,35,900,30,false,102');
   });
+
+  it('neutralizes spreadsheet formulas while retaining zero/false and CSV quoting', async () => {
+    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({ data: [{ id: '1', code: '=SUM(1,2)', name: '  @CMD', cost_price: 0, stock: 0, is_active: false }] as Product[], meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 } });
+    const csv = await useCase.execute({}, { maxRows: 100, maxBytes: 4096 });
+    expect(csv).toContain('"\'=SUM(1,2)",\'  @CMD,0');
+    expect(csv).toContain(',0,false,1');
+    expect(productServiceMock.findAllProducts).toHaveBeenCalledWith({ all: true, includes: false }, 100);
+  });
+
+  it('rejects an oversized row probe rather than silently truncating the export', async () => {
+    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({ data: [{}, {}] as Product[], meta: { page: 1, limit: 2, total_items: 2, total_pages: 1 } });
+    await expect(useCase.execute({}, { maxRows: 1, maxBytes: 4096 })).rejects.toThrow('Export exceeds row limit');
+  });
+
+  it('rejects header/row bytes and cancellation without returning partial CSV', async () => {
+    vi.mocked(productServiceMock.findAllProducts!).mockResolvedValue({ data: [], meta: { page: 1, limit: 1, total_items: 0, total_pages: 0 } });
+    await expect(useCase.execute({}, { maxRows: 100, maxBytes: 1 })).rejects.toThrow('Export exceeds byte limit');
+    const controller = new AbortController(); controller.abort();
+    await expect(useCase.execute({}, { maxRows: 100, maxBytes: 4096, signal: controller.signal })).rejects.toThrow();
+  });
 });

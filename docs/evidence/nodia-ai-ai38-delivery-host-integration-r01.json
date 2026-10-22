@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "scope": "read_only_windows_hyperv_time_integration",
+  "windows_utc": "2026-10-20T16:54:48.4119763+00:00",
+  "integration_status": "unavailable_from_current_process",
+  "integration": [],
+  "host_clock_changed": false,
+  "guest_clock_changed": false,
+  "services_changed": false,
+  "release_authorized": false
+}

@@ -1,0 +1,71 @@
+{
+  "task": "AI-15",
+  "phase": "local",
+  "status": "passed",
+  "checks": 10,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader",
+    "fresh native MCP diagnostic completes and includes unpredictable callback data",
+    "exact Agentic configuration now has observed MCP support",
+    "real Gemini turn completes through the durable worker",
+    "real Agentic selects one native read from each of five product families",
+    "final answer incorporates five unpredictable values returned by native SQL",
+    "direct Agentic dispatch remains exact and uses bounded MCP",
+    "all real native runtime slots released after acknowledgement"
+  ],
+  "turns": [
+    {
+      "state": "completed",
+      "dispatches": 1,
+      "delegations": 0,
+      "tool_calls": 5,
+      "rpc_messages": 11,
+      "receipt_tools": [
+        {
+          "name": "nodia_products_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_finance_categories_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_rental_properties_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_roles_list",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_ai_providers_list",
+          "state": "completed"
+        }
+      ]
+    }
+  ],
+  "downloads": [],
+  "external_observations": [],
+  "dispatches": [
+    {
+      "mode": "token_plan_agentic",
+      "tools": 72
+    }
+  ],
+  "adapter_dispatch_requests": 2,
+  "maximum_adapter_dispatch_requests": 2,
+  "candidate_release_id": "6ed2552585b9d302f49b38a872f804114d425468477f2de19eb886929591b6d0",
+  "domain_capabilities": 67,
+  "mcp_catalog_tools": 72,
+  "real_gemini_inference": true,
+  "adapter_mocked": false,
+  "product_readers_mocked": false,
+  "synthetic_sql_database": true,
+  "synthetic_http_identity": true,
+  "configured_business_database_modified": false,
+  "configured_provider_selection_modified": false,
+  "storage_objects_created": 0,
+  "invoice_content_download_verified": false
+}

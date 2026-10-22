@@ -1,0 +1,47 @@
+{
+  "task": "AI-25",
+  "scope": "isolated_synthetic_client_transport_no_business_database_no_provider",
+  "verified_at_utc": "2026-10-17T17:38:25.587786+00:00",
+  "origin": "http://127.0.0.1:5194",
+  "checks": [
+    "Create preview preserves exact CLP bigint strings, channel, draft state and house timezone",
+    "Invalid civil date2026-02-30 is rejected and retained in the open editor",
+    "Corrected civil date2026-11-02 and focused input survive requested390x844 responsive viewport",
+    "Saving corrected civil date creates revision2 with new hash and localized success toast",
+    "Cancellation preview separates confirmed received, retained, expected refund and zero post-cancellation balance in CLP",
+    "Changing only resolution saves revision2, preserves exact cancellation instant2026-10-17T12:30:00.000Z and accepts refund0",
+    "English historical reservation receipt preserves bigint9007199254740994 and links to actual /tools/reservations route"
+  ],
+  "requested_mobile_viewport": [
+    390,
+    844
+  ],
+  "real_user_tab_5174_modified": false,
+  "temporary_tab_closed": true,
+  "viewport_override_reset": true,
+  "qa_service_stopped": true,
+  "screenshots": [
+    {
+      "file": "docs/evidence/nodia-ai-ai25/desktop-cancellation-revision-es.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "1ecb84b5621c7040e0f083232f67aeefab7a3f130126f5875a4a82b02672a30c"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai25/desktop-reservation-receipt-en.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "16a9008235f342fd147de2d4042922a7720a162957e89888ebd0baf8bc02f8dc"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai25/mobile-reservation-editor-es.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "fdaf90708347cb9e3c7895ed74900ea93fb4277437a9a9629a21a7e6c1e545bb"
+    }
+  ],
+  "limitations": [
+    "Synthetic adapter checks rendering and revision protocol, not recalculation of reservation prices or domain effects.",
+    "No real provider, MCP write, configured database, physical phone or virtual keyboard acceptance."
+  ]
+}

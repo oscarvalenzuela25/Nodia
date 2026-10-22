@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "stage": "AI-37",
+  "status": "source_hash_only_release_change_pending_next_build_not_adopted",
+  "reason": "AI37 checklist completion changes the source provenance of an approved conversation-coordination fiche.",
+  "historical_and_candidate04_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+  "next_in_memory_release": "c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36",
+  "exact_diff": [
+    {
+      "document_id": "nodia-ai.conversation-coordination",
+      "source": "docs/mvp/45-nodia-ai-implementation-plan.md",
+      "before": "26f47d8b6fbeb8831f80c0da2bd63e2094e3b707495fe7c875ddae9a16f3e2e7",
+      "after": "34480ffead82efdc5355b4cad01155c8726d8f1eea0aacc3e6dc987bb28ae6a1"
+    },
+    {
+      "field": "release_id",
+      "before": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+      "after": "c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36"
+    }
+  ],
+  "unchanged": {
+    "approved_document_content_and_revisions": true,
+    "fragments": 31,
+    "capabilities": 74,
+    "bindings_registry_and_contracts": true,
+    "source_count": 59,
+    "excluded_count": 28,
+    "all_other_manifest_fields": true,
+    "frozen_candidate04": true
+  },
+  "historical_C05_comparator": {
+    "command": "node docs/evidence/scripts/nodia-ai-ai36-c05-publication-build.cjs --check",
+    "exit_code": 1,
+    "result": "artifact drift solely in compiled_publication.release_id; historical receipt retained unchanged",
+    "rerun_log": {
+      "path": ".tmp/ai37-publication-final.log",
+      "sha256": "b7f54e54b88f35132a481942dbe2a8f218d588c2baded5767ac7c8d8b6e9d5d3"
+    }
+  },
+  "evidence": [
+    {
+      "path": "docs/mvp/45-nodia-ai-implementation-plan.md",
+      "sha256": "34480ffead82efdc5355b4cad01155c8726d8f1eea0aacc3e6dc987bb28ae6a1"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai/knowledge/manifest.json",
+      "sha256": "cfa884b835ad2d46727a2b432ac3b9fe139bae4995ef47845fa758f33f179519"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-publication-validation.json",
+      "sha256": "85c0efe12c35eb5408662a890fbf85f1e7e810342fcdcf1807d03e90d114e099"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-knowledge.json",
+      "sha256": "76b7a76773d1d337ddb4b8fa26aa2cf436c3f9d36875000bebd177406f90ffbc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-validation.json",
+      "sha256": "6837001444fc6230c6f8b35dc7a4dc11868b485d0b70d392292ac17c55fd625d"
+    }
+  ],
+  "boundaries": {
+    "assets_emitted": false,
+    "historical_receipts_rewritten": false,
+    "deployment": false,
+    "provider_calls": 0,
+    "SQL_access": false,
+    "new_knowledge_approval": false
+  },
+  "next_gate": "Next official build and immutable deployment packet must pin the new release and validate its assets; candidate04 does not contain this documentation-only provenance update.",
+  "validator": {
+    "path": "docs/evidence/scripts/validate-nodia-ai-ai37-documentation.cjs",
+    "sha256": "d08e2658036e4a91c76543cc4eb011df9b4e60729a829ded4f6ebce38c081799"
+  }
+}

@@ -1,0 +1,77 @@
+// Non-generative inventory of current mode/format gates, before maintenance.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
+import { performance } from 'node:perf_hooks';
+const [runtime, candidate, bindingFile] = process.argv.slice(2);
+assert.ok(bindingFile && path.isAbsolute(bindingFile));
+const binding = JSON.parse(fs.readFileSync(bindingFile, 'utf8'));
+assert.ok(runtime && candidate && path.isAbsolute(runtime) && path.isAbsolute(candidate));
+const require = createRequire(path.join(candidate, 'package.json'));
+require('reflect-metadata');
+const { parse } = require('dotenv'), { DataSource } = require('typeorm');
+const config = parse(fs.readFileSync(path.join(runtime, '.env')));
+assert.ok(['127.0.0.1', 'localhost', '::1', '[::1]'].includes(new URL(config.GEMINI_MICROSERVICE_URL).hostname));
+process.env.GEMINI_SERVICE_TOKEN = config.GEMINI_SERVICE_TOKEN;
+process.env.GEMINI_MICROSERVICE_URL = config.GEMINI_MICROSERVICE_URL;
+process.env.DOTENV_CONFIG_PATH = '/dev/null';
+const load = file => import(pathToFileURL(path.join(candidate, 'dist', file + '.js')).href);
+const [{ GeminiNodiaAiAdapterUseCase: Adapter }, { NodiaAiAdapterTransport: Transport }, { projectNodiaAiConnection: project }] = await Promise.all([
+  load('nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case'), load('nodia-ai-adapter/nodia-ai-adapter.service'),
+  load('nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case'),
+]);
+const source = await new DataSource({ type: 'postgres', host: config.POSTGRES_HOST, port: Number(config.POSTGRES_PORT),
+  username: config.POSTGRES_USER, password: config.POSTGRES_PASSWORD, database: config.POSTGRES_DB,
+  ssl: config.POSTGRES_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+  extra: { options: '-c default_transaction_read_only=on' }, synchronize: false, migrationsRun: false }).initialize();
+try {
+  const [readOnly] = await source.query('SHOW default_transaction_read_only'); assert.equal(readOnly.default_transaction_read_only, 'on');
+  const [quiet] = await source.query(`SELECT (SELECT count(*)::int FROM nodia_ai_jobs WHERE state IN ('ready','leased','waiting','unknown')) pending_jobs,
+    (SELECT count(*)::int FROM nodia_ai_job_attempts WHERE ended_at IS NULL) open_attempts,
+    (SELECT count(*)::int FROM nodia_ai_runtime_slots WHERE state IN ('held','unknown')) retained_slots`);
+  assert.ok(Object.values(quiet).every(value => value === 0));
+  const rows = await source.query(`SELECT p.id::text,p.name label,p.fields,p.updated_at,p.is_active,p.use_api_key,p.use_token_plan_web,p.use_token_plan_agentic,
+    c.key provider_key,c.is_active catalog_active,c.can_use_api_key,c.can_use_token_plan_web,c.can_use_token_plan_agentic
+    FROM ai_providers p JOIN ai_provider_catalog c ON c.id=p.catalog_id WHERE c.key='gemini' AND p.is_active AND c.is_active`);
+  assert.equal(rows.length, 1);
+  let nativeRequests = 0;
+  const real = new Transport();
+  const requestTimings = [];
+  const transport = { async request(target, ...args) {
+    assert.equal(target, '/nodia-ai/agentic/observe');
+    assert.equal(++nativeRequests, 1);
+    const start = { at_utc: new Date().toISOString(), monotonic_ms: performance.now() };
+    try {
+      const value = await real.request(target, ...args);
+      requestTimings.push({ started: start, finished: { at_utc: new Date().toISOString(), monotonic_ms: performance.now() }, returned: true });
+      return value;
+    } catch (error) {
+      requestTimings.push({ started: start, finished: { at_utc: new Date().toISOString(), monotonic_ms: performance.now() }, returned: false });
+      throw error;
+    }
+  } };
+  const observations = [], adapter = new Adapter(source, transport);
+  for (const mode of project(rows[0]).modes.filter(mode => mode.mode === 'token_plan_agentic')) {
+    if (!mode.configured_selection) { observations.push({ mode: mode.mode, selection: null, state: 'unconfigured' }); continue; }
+    const selection = mode.configured_selection;
+    assert.deepEqual(selection, binding.selection);
+    const started = performance.now();
+    const value = await adapter.observe(selection, AbortSignal.timeout(35000));
+    observations.push({ selection, available: value.available, reason: value.reason, supports_mcp: value.supportsMcp,
+      elapsed_ms: performance.now() - started,
+      observed_at_utc: value.observedAt.toISOString(), configuration_generation: value.configurationGeneration,
+      session_generation_sha256: createHash('sha256').update(value.sessionGeneration).digest('hex'),
+      verified_modalities: value.verifiedModalities ?? null, verified_attachment_media_types: value.verifiedAttachmentMediaTypes ?? null });
+  }
+  assert.equal(observations.length, 1);
+  assert.equal(nativeRequests, 1);
+  assert.equal(observations[0].configuration_generation, binding.configuration_generation);
+  console.log(JSON.stringify({ stage: 'AI-36-C05-R02', scope: 'one_controlled_HTTP_High_observation_no_new_CLI_owner', status: 'passed',
+    observed_at_utc: new Date().toISOString(), source_sha256: createHash('sha256').update(fs.readFileSync(new URL(import.meta.url))).digest('hex'),
+    observations, quiet, configured_SQL_writes: 0, provider_generations: 0, metadata_requests: observations.filter(value => value.selection).length,
+    request_timings: requestTimings, eligible_for_future_MCP_probe: observations[0].available === true && observations[0].supports_mcp === false,
+    modality_canaries_executed: 0, services_restarted: false }, null, 2));
+} finally { await source.destroy(); }

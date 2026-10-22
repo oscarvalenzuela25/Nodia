@@ -1,0 +1,31 @@
+{
+  "stage": "AI-25",
+  "scope": "private_lab_services_after_activation",
+  "observed_at_utc": "2026-10-17T17:41:54.3446303Z",
+  "clock_source": "windows_host",
+  "vm": "nodia-vps-lab",
+  "server_units": {
+    "nginx": "active",
+    "worker": "active",
+    "api": "active"
+  },
+  "containers": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "temporary_test_containers_remaining": 0,
+  "windows": {
+    "tunnel_api_http": 200,
+    "tunnel_pid": 41704,
+    "client_pid": 57196,
+    "tunnel_port": 3100,
+    "client_proxy_api_http": 200,
+    "client_port": 5174,
+    "qa_5194_stopped": true,
+    "client_http": 200
+  },
+  "local_services_reused": true,
+  "browser_tabs_modified_for_activation": false,
+  "configured_provider_inference": false
+}

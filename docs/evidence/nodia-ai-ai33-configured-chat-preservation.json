@@ -1,0 +1,13 @@
+{
+  "stage": "AI-33",
+  "scope": "unchanged_R05_chat_metadata_across_additive_M4_activation",
+  "status": "passed",
+  "conversation_id": "33d6c32d-19a3-4533-8077-3ca7299d30cb",
+  "attachment_rows": 3,
+  "before_after_metadata_equal": true,
+  "metadata_sha256": "46a9dd312147858f853bc6581056bd9b3d0ccfcc4c48041a78383eec73b9cf0d",
+  "provider_generations": 0,
+  "private_cloud_gets": 0,
+  "storage_mutations": 0,
+  "message_text_exported": false
+}

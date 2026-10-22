@@ -1,0 +1,27 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_backup_driver_negative_controls_no_external_execution",
+  "status": "passed",
+  "backup_source_sha256": "745662e7a0941f5fb8f265d761f8d94f1e002090cc196837731fb54296d69199",
+  "validator_sha256": "f36cd2b538f0fed6a1bc4fdccba4215641234199d44551416ea2622ff4fced89",
+  "check_count": 11,
+  "checks": [
+    "dry run rejects any attempted process filesystem or network side effect",
+    "retention 0 rejected before side effects",
+    "retention -1 rejected before side effects",
+    "retention 169 rejected before side effects",
+    "retention boundary 1 accepted only as dry-run plan",
+    "retention boundary 168 accepted only as dry-run plan",
+    "execute requires an explicit retention before filesystem access",
+    "count query rejects seven unsafe identifier cases",
+    "count query refuses empty table inventory",
+    "safe table inventory generates two quoted read-only aggregates",
+    "active writer rejects execution before staging backup or private environment"
+  ],
+  "external_processes_started": 0,
+  "configured_database_access": false,
+  "private_environment_read": false,
+  "VM_mutations": false,
+  "provider_requests": 0,
+  "actual_GPG_or_restore_verified": false
+}

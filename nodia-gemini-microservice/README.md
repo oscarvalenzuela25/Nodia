@@ -45,9 +45,9 @@ Los marcadores antiguos `ANTIGRAVITY_AGENT`, `ANTIGRAVITY_LS_ADDRESS`, listas ad
 
 ## Sesión y login
 
-`auth.py` / `login.bat` / `login.sh` abren Chrome en el host Python. También existe un trabajo HTTP interno de login para Settings en desarrollo: Server exige sesión Nodia, acción administrativa y entorno local. El navegador no recibe el token ni llama a FastAPI.
+`auth.py` / `login.bat` / `login.sh` conservan el login manual en el host Python. El flujo habitual es Ajustes IA → Gemini Web → «Abrir visor de Gemini»: Nodia muestra la pantalla y permite enviar entradas por su API autenticada. Disponible en desarrollo/producción; Server y Python vinculan cada intento al actor autenticado con `ai:manage`. El navegador cliente no recibe el token privado ni llama a FastAPI. Ver [uso y despliegue del visor](../docs/features/ai-providers/gemini-web-login-viewer.md) y [ADR-030](../docs/architecture/decisions/ADR-030-gemini-web-login-viewer.md).
 
-`.env` es la semilla; `session_state/` conserva cookies rotadas mediante reemplazo atómico y debe persistir junto con `browser_profile/`. Docker monta `.env` de solo lectura. No publicar un puerto ni un visor gráfico para suplir el login remoto: su procedimiento privado en VPS sigue pendiente.
+`.env` es la semilla; `session_state/` conserva cookies rotadas mediante reemplazo atómico y debe persistir junto con `browser_profile/`. Docker monta `.env` de solo lectura y arranca su propio Xvfb sin TCP como usuario10001. No publicar FastAPI ni un puerto gráfico; el visor utiliza exclusivamente las rutas protegidas de Nodia Server. Login Google y OCR del motor Web con cuenta real comprobados en VM el2026-10-13; niveles Web integrados y OCR privado por los tres niveles comprobados posteriormente. Flujo público y alcance VPS se registran en la funcionalidad del visor.
 
 **Agentic tiene una autenticación independiente desde Ajustes IA → Gemini → Token Plan (Agentic) → Autenticar sesión Agentic.** El servidor ejecuta el login remoto oficial del CLI; el operador abre el enlace Google desde su equipo y pega el código en Nodia. Solo Nodia Server consume `/agentic/auth/login/*`, con token interno e identidad del administrador. Estas rutas no dependen de `NODE_ENV=development` y no modifican la sesión Web; su operación con cuenta del VPS aún debe verificarse. Instalar los requisitos actualizados/reiniciar el servicio; Windows usa `pywinpty`, Linux PTY estándar. Ver [contrato de funcionalidad](../docs/features/ai-providers/gemini-agentic-authentication.md) y [persistencia/operación pendiente del VPS](../docs/mvp/agentic-cli-runbook.md). El almacén de credenciales queda bajo gestión del CLI.
 
@@ -57,6 +57,24 @@ La recuperación de autenticación Web reintenta un análisis **como máximo una
 
 Todas las rutas salvo `/health`, incluidas `/`, `/ready`, `/docs`, `/redoc` y `/openapi.json`, exigen `X-Nodia-Service-Token`.
 
+### Adjuntos de NodiaAI (AI-32)
+
+`POST /attachments/inspect` recibe un cuerpo binario `application/octet-stream` y `X-Nodia-Attachment-Kind: image|pdf|audio`, exclusivamente desde Server. Cuenta los bytes reales (20 MiB), admite dos cargas/parsers simultáneos y limpia temporales también ante fallo/cancelación. La recepción tiene60s; cada decoder corre en un proceso Linux x86-64 con15s,256 MiB de espacio de direcciones, sin ejecución de procesos ni sockets mediante seccomp. En plataformas sin ese aislamiento falla explícitamente; no ejecuta un parser ilimitado como alternativa. Este mecanismo limita recursos y syscalls; no equivale a una VM independiente por documento.
+
+Pillow13.0.0 decodifica imágenes estáticas PNG/JPEG/WebP (12 millones de píxeles); pypdf6.19.0 verifica estructura/contenidos de PDF no cifrados (100 páginas) sin ejecutar acciones/JavaScript/archivos incrustados. PyAV19.0.1 decodifica las muestras de un único stream de audio WAV/Ogg/WebM/MP3/M4A y calcula su duración real (300s), sin confiar en duración enviada por el cliente. Los formatos anunciados se verifican por contenido; no se aceptan playlists/URLs. Las versiones y APIs se contrastaron con [Pillow](https://pypi.org/project/pillow/13.0.0/), [pypdf](https://pypi.org/project/pypdf/6.19.0/) y [PyAV](https://pypi.org/project/av/19.0.1/).
+
+La respuesta cerrada contiene `media_type`, `page_count`, `duration_seconds` y `extracted_text`. Los valores no aplicables/desconocidos son `null`. La extracción determinista de PDF es un texto revisable de hasta32768 bytes UTF-8; si está vacío o supera ese límite se devuelve `null`, sin recortar ni inventar el documento. Imagen/audio no generan OCR ni transcripciones en el inspector.
+
+El transporte privado `ChatRequest.attachments` admite hasta cuatro archivos/40 MiB decodificados por turno: `{kind,media_type,sha256,content_base64}`. Server proporciona únicamente archivos propios previamente autorizados; el adaptador vuelve a validar contenido/hash, genera paths privados y conserva los archivos hasta el cierre del SDK/CLI. El base64 no forma parte del historial ni del recibo nativo. El recibo mínimo conserva sólo un hash de los hashes/formatos/orden de entrada. Los cuerpos grandes se admiten únicamente en los turnos/probes y `mcp/start`; los callbacks conservan sus presupuestos anteriores. Los documentos son datos no confiables y no autorizan efectos.
+
+La modalidad nativa está bloqueada hasta una prueba semántica de la combinación exacta de motor, perfil, generación de sesión, modelo descubierto, esfuerzo, configuración y versión de adaptador. `POST /nodia-ai/{engine}/attachments/probe` es una herramienta interna de verificación: exige exactamente un archivo sintético y `expected_answer_sha256`; usa una instrucción fija que no contiene el texto/hash esperado, ejecuta una sola generación con recibo normal y habilita la modalidad sólo si el contenido leído/transcrito coincide exactamente. Un200 con respuesta distinta conserva el recibo completado pero no habilita la capacidad; se debe consultar `verified_attachment_media_types` de `/observe` para el MIME exacto (`verified_modalities` es sólo un resumen por categoría) y hacer ACK incluso cuando la prueba semántica no coincida. El cache es local al proceso y desaparece al reiniciar, igual que la prueba MCP; autenticación y catálogo no lo reconstruyen.
+
+En Agentic, los archivos se copian a un workspace desechable con permiso de lectura exacto; los hooks permiten sólo `view_file` sobre esos archivos, `finish` y, cuando corresponde, las herramientas MCP registradas. El resultado exige un recibo de lectura para cada adjunto. Shell, HTTP, otros archivos y confirmaciones siguen bloqueados. El canal implementado y sus pruebas sintéticas no acreditan que el CLI acepte audio ni que una cuenta/modelo haya completado una inferencia; sólo el probe real puede acreditarlo.
+
+El staging nativo comparte una reserva global de40 MiB entre Web y Agentic, adquirida antes de materializar archivos y liberada en `finally`, incluso al cancelar. Los dos inspectores pueden ocupar otros40 MiB:80 MiB combinados frente al tmpfs de96 MiB. Saturación produce429 sin cola ni archivos adicionales. Las copias de Agentic viven en su workspace desechable del perfil, no en ese tmpfs, y se borran al cerrar el CLI.
+
+El canary de audio permite la normalización explícita `speech_words_v1`: UnicodeNFC, minúsculas y lista completa de palabras/dígitos ASCII separados por espacios. Se ignoran puntuación/mayúsculas, pero no se eliminan palabras ni números de la comparación. El hash esperado nunca se añade al prompt; la versión de normalización forma parte del hash del intento y del protocolo de prueba. Esta comprobación de una frase sintética no garantiza exactitud universal de transcripción; cualquier interpretación sigue siendo revisable. Imagen/PDF usan comparación literal.
+
 | Ruta | Función |
 |---|---|
 | `GET /health` | Vida del proceso; no informa autenticación |
@@ -65,6 +83,7 @@ Todas las rutas salvo `/health`, incluidas `/`, `/ready`, `/docs`, `/redoc` y `/
 | `GET /auth/status`, `/web/status`, `/agentic/status` | Estado del motor indicado |
 | `GET /models`, `/web/models`, `/agentic/models` | Catálogo descubierto, con identificador real |
 | `POST /auth/login/start` | Inicia un único trabajo local |
+| `POST /auth/logout` | Desconecta Web y limpia su perfil/caché, exige actor y token; 409 ocupado, 503 limpieza incompleta |
 | `GET /auth/login/{id}` | Consulta `running`, `succeeded`, `failed` o `cancelled` |
 | `POST /auth/login/{id}/cancel` | Solicita cancelación; un nuevo trabajo espera la liberación del anterior |
 | `POST /auth/refresh` | Recuperación de sesión privada |
@@ -72,7 +91,15 @@ Todas las rutas salvo `/health`, incluidas `/`, `/ready`, `/docs`, `/redoc` y `/
 
 Análisis: `multipart/form-data` con **un archivo** `file`, **modelo obligatorio** `model`, y hasta seis campos: `engine`, `provider_fields` (JSON objeto), `provider_tax` (0–100), `extended_thinking`, `thinking_level`, además del modelo. Las rutas específicas rechazan un motor contradictorio. Se rechazan campos duplicados, desconocidos y partes de configuración mayores de 16 KiB. Se admiten PDF/PNG/JPG/JPEG/WEBP con firma correcta y archivo dentro del límite.
 
-El SDK Web actual descubre identidad/disponibilidad de modelos, pero no reporta contexto ni capacidades de razonamiento fiables. No se deducen del nombre. `supported_options.extended_thinking` comprueba la firma del SDK instalado y habilita el booleano de transporte sin inventar capacidades del modelo; `thinking_level` se rechaza en Web; no se ignoran opciones que el usuario creyó ejecutar.
+El SDK Web descubre identidad/disponibilidad de modelos, pero no reporta contexto ni profundidad interna de razonamiento. No se deducen del nombre. El adaptador `web_reasoning_adapter.py` permite `thinking_level=low|medium|high` únicamente con observaciones nativas verificadas del mismo ID/número de modelo y SDK2.1.1. `supported_options.thinking_levels_by_model` informa perfiles observados que coinciden con modelos descubiertos; ausencia/valores inválidos son desconocidos. El booleano histórico sigue soportado según la firma del SDK, sin conversión automática. Nivel y booleano juntos producen422, incluido booleanofalse; un ID sin perfil o un layout incompatible se rechazan sin cambiar modelo/motor ni repetir inferencias.
+
+### Activar perfiles Web comprobados
+
+Sin `GEMINI_WEB_REASONING_PROFILES_PATH`, el runtime conserva el SDK habitual y rechaza niveles explícitos. Para habilitarlos, proporcionar fuera del repositorio/build un JSON público sanitizado con `{ "sdk_version": "2.1.1", "observations": [ [captura_bajo, captura_medio, captura_alto] ] }`. Cada captura requiere `level`, `model_id`, `http_status:200` y formas nativas `body_shape`/`header_shape`; ver el validador y el diagnóstico en `experiments/`. No incluir cookies ni copiar un perfil de otro modelo. Un archivo inválido no acredita soporte.
+
+En Compose, definir `GEMINI_WEB_REASONING_PROFILES_HOST_PATH` con una ruta absoluta existente y añadir `-f docker-compose.web-reasoning.yml` a los archivos base del despliegue. El overlay monta el archivo de solo lectura en `/app/config/web_reasoning_profiles.json`; no crea rutas inexistentes. Fuera de Docker, definir directamente `GEMINI_WEB_REASONING_PROFILES_PATH`. Reiniciar para cargar el registro; actualizar perfiles solo con observaciones comprobadas. No cambiar la propiedad/permisos de `.env` al editar las variables; conservar el usuario10001 y los volúmenes privados.
+
+La intervención se limita a body80/header15 dentro de `_generate`, después de subir archivos. Upload/auth siguen usando el `AsyncSession` real, evitando incompatibilidad con su validación Pydantic. Contexto por cliente, generación única, cierre del iterador y limpieza ante cancelación; no se modifica el SDK instalado. Analizar para devolver un borrador en memoria no necesita R2; persistir adjuntos mantiene los requisitos de almacenamiento de Nodia Server. [Decisión y alcance](../docs/architecture/decisions/ADR-031-gemini-web-reasoning-levels.md).
 
 La respuesta contiene `code`, `total_amount` y `data: {issue_date, items}`. Los números faltantes permanecen `null`; cero permanece cero. Importes/cantidades deben ser números finitos no negativos; no se convierten strings, booleanos, valores inválidos o datos faltantes en cifras válidas. `items` requiere al menos un producto con nombre y admite hasta 2000. Solo se deriva cantidad si falta y están presentes ambos factores de embalaje; no se redondea una cantidad fraccionaria. La revisión del borrador en Client calcula precios según el impuesto configurado; esta extracción no confirma stock ni factura.
 
@@ -106,3 +133,189 @@ Se verificaron construcción y arranque Linux sin red, sin cookies ni volúmenes
 ## Operación Agentic
 
 Instalación versionada, variables `ANTIGRAVITY_CLI_*`, login, créditos adicionales desactivados, límites, hooks de lectura/finalización y rollback: [runbook](../docs/mvp/agentic-cli-runbook.md). Server utiliza las rutas agénticas explícitas manteniendo Client intacto. El CLI puede realizar varios turnos o correcciones de esquema dentro de una ejecución; Nodia no reenvía automáticamente la factura tras un fallo agéntico. Evidencia actual: 76 pruebas Python en Windows y Linux, integración HTTP con fixtures y sesión CLI real/PNG/PDF; regenerar imagen tras cambios antes de desplegar. La evidencia histórica de 57 pruebas anterior no cierra operación con cuenta Linux/VPS.
+
+
+## NodiaAI AI-11/AI-12: conversación y perfil compartido
+
+El adaptador privado incorpora `POST /nodia-ai/{web|agentic}/observe` y
+`POST /nodia-ai/{web|agentic}/turn`. Requieren la misma credencial interna;
+no se exponen al navegador. Server valida conexión, catálogo, modo y generación
+configurada antes del transporte. El cuerpo privado está acotado antes del parser
+(300.000 bytes; contexto UTF-8 máximo262.144 bytes), y la respuesta de chat acepta
+como máximo32.768 bytes de texto. Estos son presupuestos Nodia, no cuotas Google.
+
+- Web devuelve `answer` o una solicitud tipada `delegation_request`; no recibe
+  herramientas MCP, SQL ni autorización para ejecutar cambios.
+- Agentic recibe historia canónica en un home/cwd descartables y política cerrada.
+  Sin herramientas, MCP queda vacío y el hook global permite sólo `finish`. Con
+  herramientas registradas por Server, el supervisor admite exclusivamente ese
+  catálogo y `finish`; shell, archivos, HTTP y subagentes permanecen denegados.
+  El resultado exige recibo del hook, modelo exacto y cierre del proceso.
+- El loop MCP privado usa `POST /nodia-ai/agentic/mcp/start` y
+  `/nodia-ai/agentic/attempts/{attempt_id}/mcp/{events|results|cancel|attest}`.
+  Server consulta eventos y entrega resultados; no existen callbacks por URL ni
+  acceso directo del CLI a Server, credenciales internas o la BD. El puente stdio
+  usa IPC temporal supervisado. El presupuesto por intento es de128 mensajes RPC,
+  12 solicitudes de herramienta y64KiB por mensaje. Cada `tools/call` consume una
+  solicitud antes de validar el envelope, argumentos, permisos o replay; el intento13
+  termina el puente sin reenviar un callback. El inicio admite hasta400.000 bytes
+  por su catálogo.
+- Cada evento RPC incluye `tool_requests` acumulado. El polling privado publica
+  `unforwarded_tool_requests`: solicitudes totales menos callbacks emitidos hacia
+  Server, incluidos rechazos y replays resueltos dentro del puente. Server valida
+  monotonía por intento y reserva sólo el delta oculto en el presupuesto SQL común
+  del run; cada callback visible reserva su solicitud en una transacción separada
+  antes de validar o recuperar un resultado previo. Un rechazo posterior no revierte
+  ese consumo. La idempotencia evita repetir efectos, sin conceder solicitudes gratis
+  ni reiniciar presupuesto al cambiar de etapa.
+- AI-12 registra únicamente consulta técnica de conocimiento autorizado. Las
+  herramientas de negocio siguen AI-14. `supports_mcp` permanece falso hasta una
+  prueba explícita completa del loop con CLI real, hook validado y callback; la
+  certificación en memoria vincula perfil, sesión, modelo, esfuerzo, generación
+  de configuración y protocolo. Reiniciar o cambiar esa identidad la invalida;
+  observar sesión/catálogo no ejecuta la prueba ni habilita herramientas.
+- Cada intento tiene identidad UUID y se admite una sola vez. El índice de proceso
+  está acotado a10.000 intentos y exige drenar/reiniciar al agotarse. Un recibo mínimo
+  persistente impide admitir otra vez un intento aún no conciliado tras reinicio;
+  PostgreSQL conserva la identidad durable y los fences. No reintentar inferencias.
+- `observe` comprueba sesión, catálogo exacto, versión de protocolo y opciones
+  disponibles. Es elegibilidad del transporte, **no una nueva inferencia real
+  verificada**, certificación MCP o aceptación de despliegue. Configuración,
+  sesión e inferencia continúan siendo evidencias diferentes.
+
+`profile_admission.py` identifica el perfil físico mediante un hash de su ruta
+resuelta normalizada por el sistema operativo. Dos conexiones que apunten al mismo
+perfil no obtienen capacidad adicional. Chat, OCR, login, descubrimiento, refresh
+y logout comparten esa puerta; Web y Agentic conservan capacidad independiente
+cuando sus perfiles son distintos. El login mantiene su reserva hasta el cierre
+real de la tarea, incluso al cancelar antes de su primera instrucción. Discovery
+Agentic ejecuta los comandos no generativos en serie contra ese perfil.
+
+Antes de una generación se escribe un marcador mínimo `.unknown` en
+`session_state/runtime_admission/`. Una respuesta validada lo elimina. Error,
+cancelación o caída después de despacho conservan la cuarentena también tras un
+reinicio del servicio y bloquean a los consumidores antiguos del mismo perfil.
+El marcador no contiene mensajes, credenciales ni IDs de negocio. El recibo nativo
+añade únicamente identidad de intento/recurso/sesión, resultado técnico y prueba
+de cierre. El envelope privado de respuesta incluye esa prueba fuera del texto
+del modelo. Server la valida y agenda su acuse sólo tras confirmar el resultado en
+SQL; `POST /nodia-ai/{web|agentic}/attempts/{attempt_id}/acknowledge` borra el recibo
+y el estado efímero asociado. No guardar auditoría indefinida.
+
+`POST /nodia-ai/{web|agentic}/attempts/{attempt_id}/reconcile` devuelve únicamente
+una prueba existente de operación completada o abandonada con procesos cerrados.
+Debe coincidir exactamente con el intento, recurso, sesión y referencia originales;
+no libera un perfil ocupado por otra operación. Un proceso caído antes de producir
+esa prueba, o un marcador histórico sin identidad, sigue sin resolución automática.
+No inferir cierre por PID ausente, TTL, borrado de chat o reinicio; la recuperación
+manual y su interfaz siguen AI-20/37. Los ensayos aislados comprueban reinicio de
+proceso, no pérdida de energía.
+
+Se conserva un worker Python por instancia y un único dueño operativo por perfil.
+El CLI manual/`auth.py` no puede ejecutarse concurrentemente por fuera de esta puerta.
+No escalar réplicas compartiendo volúmenes hasta incorporar coordinación entre
+procesos. Server utiliza leases durables para los workers NodiaAI; el mutex Python
+no sustituye esos fences ni la autorización del actor.
+
+Validación aislada2026-10-15:235 casos Python,233 correctos y dos omisiones
+históricas de symlinks en Windows; Linux235/235 en imagen final aislada con red
+deshabilitada y sin montar cuentas;55 casos del bridge Server correctos. Incluye
+stdio real con proceso fixture, presupuestos, cierre/cancelación, conciliación y
+acuse. No equivale a inferencia con cuenta ni aceptación del loop Gemini real;
+registrar ese resultado y su selección exacta en la evidencia de integración.
+
+El supervisor emite `nodia_ai_mcp_terminal` con fase, clase de excepción acotada,
+duración y contadores de RPC/callback/proceso/hook. El observador conserva sólo
+metadatos estructurales; no registra prompts, texto del modelo, argumentos,
+credenciales, stderr ni mensajes de error nativos. Un timeout sin estos datos no
+permite atribuir el fallo al proveedor, al descubrimiento o al retorno MCP.
+
+El catálogo confiable de herramientas también se adjunta explícitamente al prompt
+con nombres y schemas exactos; no crea aliases ni amplía permisos. Cualquier
+denegación del hook invalida el resultado final aunque el CLI reporte SUCCESS.
+`gate-diagnostic.jsonl` sólo conserva categorías fijas de rechazo en el directorio
+temporal, junto al recibo cerrado de dos campos; ambos se eliminan al cerrar.
+
+## Login durable de NodiaAI (AI-29/R01)
+
+El login de NodiaAI utiliza un UUIDv4 de solicitud guardado por Server **antes** de
+despachar. Los endpoints administrativos anteriores conservan su contrato; las
+nuevas rutas privadas son `POST/GET /auth/login/requests/{uuid}` y
+`POST /auth/login/requests/{uuid}/{cancel|ack}`. Agentic usa el mismo contrato bajo
+`/agentic/auth/login`. Todas exigen token de servicio, `X-Nodia-Actor-Id` y
+`X-Nodia-Provider-Id` canónicos (BIGINT exacto); iniciar exige además
+`X-Nodia-Login-Expires-At`, fecha UTC del descriptor SQL. El plazo debe seguir
+vigente y quedar a no más de310 segundos; no se renueva mediante un replay.
+
+La identidad nativa es el UUID sin guiones. Consultar nunca inicia otro login.
+Cancelar una solicitud desconocida crea un fence durable bajo el mismo lock de
+admisión; un inicio retrasado no puede franquearlo. Un404 nunca significa cerrado.
+`unknown` expresa ausencia de prueba y conserva el perfil en cuarentena. Agentic
+mantiene `authorization_url` y `reason` explícitamente nulos cuando no proceden;
+el enlace de autorización sólo vive en memoria y sale por el canal humano.
+Visor, input y código de los jobs durables usan las rutas anteriores por job ID y
+actor exactos, a través de un socket Unix privado del supervisor.
+
+`session_state/login_requests/` contiene únicamente el journal operativo:
+actor/proveedor/motor, UUID, plazo, identidad de perfil, certificado de proceso,
+identidad de cgroup y candidato/prueba terminal. No contiene mensajes, URL de
+autorización, códigos, cookies, claves, capturas ni payloads humanos. Directorio700,
+archivos600, escritura atómica y fsync; schema cerrado, lectura acotada y lock
+entre procesos no bloqueante con espera async máxima de un segundo. Se permiten
+hasta128 registros: incertidumbre o falta de acuse saturan la admisión de forma
+explícita, sin borrar pruebas pendientes. ACK sólo se envía después del commit SQL;
+es idempotente, retira el cgroup vacío y conserva el fence mínimo hasta vencer el
+plazo original. Entonces puede podarse al admitir otra solicitud. Una cancelación
+sin despacho conserva sólo su fence durante310 segundos. Los estados inciertos
+nunca se borran por TTL.
+
+Cada login tiene un supervisor local separado. La API guarda la identidad de su
+cgroup y mueve el proceso **antes** de liberar el gate de ejecución. Chromium,
+crashpad y el CLI/PTY heredan esa contención aunque creen sesiones o grupos nuevos.
+El supervisor guarda un candidato al terminar; sigue sin ser prueba terminal.
+El observador sólo publica el resultado tras comprobar `cgroup.events populated0`;
+cancelación o crash cierran primero el árbol con `cgroup.kill`. Cancelado prueba el
+cierre del intento, sin afirmar logout ni deshacer una autorización que ya haya
+alcanzado el almacén de credenciales. No se modifica el sandbox de Chromium ni se
+inyectan preloads/flags de crashpad/seccomp para sostener esta garantía.
+
+El runtime Linux necesita cgroupv2 delegado por el helper privilegiado del host:
+el **cgroup actual del contenedor**, con sus límites Docker intactos, se adjunta en
+`/run/nodia-login-cgroups`. El contenedor no recibe Docker socket, capacidades de
+administración, cgroup del host completo ni un servicio de red adicional. La prueba
+`/run/nodia-login-containment.json` pertenece a root y es0444. Vincula root device,
+inode y boot actuales; opcionalmente certifica raíces anteriores cerradas mediante
+`closed_roots` acotado. El adaptador verifica esas identidades y el filesystem
+real antes de admitir. Una ruta ordinaria, montaje faltante, identidad cambiada o
+prueba insuficiente falla cerrado. Cambiar de namespace o faltar un PID **no**
+prueba por sí solo el cierre de un contenedor anterior: hace falta la atestación
+del host sobre su generación Docker y cgroup. La API no acepta claims de cierre.
+
+La API puede reiniciarse sin perder el supervisor. Durante un login Web suspende
+su SDK escritor de cookies; al volver a consumir relee el almacén canónico. El
+startup también respeta la reserva del perfil antes de conectar Web/Agentic.
+
+Verificación aislada: `python run_tests.py` usa dobles y prohíbe red/navegador real.
+`NODIA_ISOLATED_NATIVE_TEST=1 python scripts/verify_durable_login.py` se ejecuta
+separadamente en un contenedor efímero sin red ni cuentas, con el helper adjunto y
+Xvfb. Usa PTY/CLI fixture y Chromium real, pérdida de respuesta, SIGKILL del dueño
+HTTP y del supervisor, observación desde otra instancia y cierre del árbol. Esas
+pruebas no acreditan autenticación ni inferencia de una cuenta Gemini; esa evidencia
+se obtiene por separado en Server y nunca exporta cookies o códigos.
+
+Revalidación AI-32-R02: las pruebas se separan por MIME realmente decodificado; WAV no autoriza WebM/Ogg ni PNG autoriza JPEG/WebP. Chat y MCP exigen MIME exacto además de selección/sesión/perfil. Ausencia de prueba permanece desconocido, sin transcodificación ni fallback. Los resultados actuales y límites de audio se registran en[entrega78](../docs/mvp/78-nodia-ai-ai32-attachments-voice.md#revalidación-ai-32-r02--formatos-de-audio-y-traslado-legacy); esta documentación no habilita capacidades.
+
+Revalidación AI-32-R03: sólo NodiaAI Web solicita preservación literal de entidades HTML antes de Candidate, con verificación de huellas por cliente/tarea y resultado final; OCR conserva la semántica del SDK. No repara JSON. Upload/cadencia se observan sin contenido, IDs ni peticiones extra. La prueba privada de adjuntos usa /3; exige revalidar MIME/selección/sesión tras reiniciar. [R03 de entrega78](../docs/mvp/78-nodia-ai-ai32-attachments-voice.md#revalidación-ai-32-r03--entidades-html-y-diagnóstico-por-fase) conserva resultados y límites vigentes, sin atribuir los timeouts históricos a una causa no observada.
+
+AI-32-R04: NodiaAI añade tipo de audio/MIME explícitos al descriptor de generación de los archivos ya subidos, sin repetir upload ni cambiar bytes/nombres/modelo. Scope por cliente/tarea, cardinalidad/alineación exactas y fallo cerrado ante shape inesperado; OCR/imagen/PDF/texto conservados. Prueba privada /4 obliga revalidar por MIME/selección/sesión. Captura previa al parser sólo de huellas/sintaxis acotadas por candidata elegida, sin contenido. WebM/Ogg pasaron dos frases con Gemini real; WAV/PNG/PDF y Agentic/MCP conservados. [R04 de entrega78](../docs/mvp/78-nodia-ai-ai32-attachments-voice.md#revalidación-ai-32-r04--clasificación-explícita-del-audio-web) distingue estos canarios de R2/micrófono físico y aceptación productiva aún pendientes.
+
+
+## AI-34 — presupuesto y compactación de NodiaAI
+
+[Entrega80](../docs/mvp/80-nodia-ai-ai34-long-context-compaction.md) y [ADR-059](../docs/architecture/decisions/ADR-059-nodia-ai-cited-context-compaction.md). `POST /nodia-ai/{engine}/measure-context` es un contrato interno autenticado, puramente determinista: no observa cuentas, abre SDK, genera inferencias ni materializa archivos. Acepta prompt canónico, catálogo autorizado y metadatos opcionales de adjuntos; no buffers ni credenciales. Los cuerpos de esta ruta tienen su límite propio de 2 MiB y plazo de recepción, sin ampliar los callbacks existentes.
+
+Su respuesta cerrada `nodia-ai-context-budget/1` distingue el prompt inicial exacto (o cota superior explícita de las rutas Agentic aún no materializadas), bytes de catálogo/instrucciones, reserva superior separada para el primer listado MCP y tokens de modelo desconocidos (`null`). El constructor es compartido con ejecución; la frontera nativa comprueba siempre el prompt final exacto y no suma el techo independiente del catálogo para eludir los 256 KiB de Nodia.
+
+El puente MCP contabiliza además cada respuesta JSON-RPC completa entregada al CLI, incluidos listados, errores y replays. Una reclamación persistente por intento impide reiniciar el contador al relanzar el puente; un marcador de fallo se comprueba antes de aceptar la respuesta final del CLI. El exceso rechaza contenido entero, sin truncado, replay automático ni reversión de callbacks ya confirmados. Los resultados inciertos conservan el supervisor y conciliación existentes. Los identificadores RPC tienen un límite propio validado para que la reserva del primer listado sea comprobable.
+
+Este presupuesto abarca el contenido observable bajo control de Nodia. No demuestra la ventana de tokens ni el razonamiento/contexto privado del SDK/CLI, ni transforma tamaños de archivos multimodales en tokens. Binarios conservan sus límites de admisión e inspección separados. La compactación se ejecuta desde el worker con la selección exacta vigente y sin exponer herramientas; la memoria validada pertenece al backend, no a una sesión opaca del proveedor. Pruebas offline, SQL, cuenta real y activación se registran separadamente en la entrega80.

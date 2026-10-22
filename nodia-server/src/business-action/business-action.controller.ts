@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Put, Body, Param, Delete, Query } from '@nestjs/common';
+import { Req } from '@nestjs/common';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { BusinessActionService } from './business-action.service.js';
 import { CreateBusinessActionDto } from './dto/create-business-action.dto.js';
 import { UpdateBusinessActionDto } from './dto/update-business-action.dto.js';
@@ -19,8 +31,14 @@ export class BusinessActionController {
   ) {}
 
   @Post()
-  create(@Body() createBusinessActionDto: CreateBusinessActionDto) {
-    return this.createBusinessActionUseCase.execute(createBusinessActionDto);
+  create(
+    @Body() createBusinessActionDto: CreateBusinessActionDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createBusinessActionUseCase.execute(
+      createBusinessActionDto,
+      actorReference(request.auth),
+    );
   }
 
   @Get()
@@ -37,12 +55,20 @@ export class BusinessActionController {
   update(
     @Param('id') id: string,
     @Body() updateBusinessActionDto: UpdateBusinessActionDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.updateBusinessActionUseCase.execute(id, updateBusinessActionDto);
+    return this.updateBusinessActionUseCase.execute(
+      id,
+      updateBusinessActionDto,
+      actorReference(request.auth),
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.deleteBusinessActionUseCase.execute(id);
+  remove(@Param('id') id: string, @Req() request: AuthRequest) {
+    return this.deleteBusinessActionUseCase.execute(
+      id,
+      actorReference(request.auth),
+    );
   }
 }

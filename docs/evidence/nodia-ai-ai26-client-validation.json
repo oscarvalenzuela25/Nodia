@@ -1,0 +1,183 @@
+{
+  "stage": "AI-26",
+  "scope": "client_unit_and_synthetic_transport_no_database_or_provider",
+  "status": "passed",
+  "verified_at_utc": "2026-10-17T18:04:10.983081+00:00",
+  "full_suite": {
+    "tests": 1526,
+    "files": 203,
+    "workers": 2,
+    "duration_seconds": 481.94,
+    "exit_code": 0
+  },
+  "focused": {
+    "tests": 260,
+    "files": 5,
+    "workers": 2,
+    "duration_seconds": 27.61,
+    "exit_code": 0
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exit_code": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exit_code": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "vite_seconds": 11.9,
+    "exit_code": 0,
+    "historical_large_chunk_warning": true
+  },
+  "checks": [
+    "Ten registered rental money/block/preparation actions and all rental field labels exist in Spanish and English; unknown arbitrary tool CRUD is not inferred",
+    "Payments and actual refunds are records of money already moved; void preserves history and does not imply a transfer or refund",
+    "Paying an existing pending expense does not create another expense or an external collection",
+    "Exact bigint money and IDs remain strings; zero is rejected when metadata minimum is one, while existing zero-allowed refund metadata is preserved",
+    "Money dates are civil days; block and readiness instants use the authoritative house timezone and preserve unedited offsets",
+    "Nullable linen uses a three-option shared select; null, false and true survive edits, retries and unrelated field changes independently",
+    "Planned/actual readiness and expense association retain explicit null without converting it to false, zero or an empty value",
+    "Native policy snapshots, same-day approvals and affected turnover IDs render as recursive readonly facts with localized field/value labels",
+    "Rejected writes retain inputs and show whitelisted native money/plan/readiness errors; no result is announced as committed",
+    "Only completed receipts for all four new resources invalidate the actor rental cache and link to the existing reservations route"
+  ],
+  "document_validation": {
+    "status": "passed",
+    "markdown_files": 5,
+    "local_links": 136,
+    "source_and_frontmatter_checks": "passed",
+    "rental_field_labels_per_locale": {
+      "es": 85,
+      "en": 85
+    },
+    "locales": [
+      "es",
+      "en"
+    ],
+    "approval": "unchanged_null",
+    "new_tools_published": 0,
+    "broken_links": []
+  },
+  "ui_evidence": "docs/evidence/nodia-ai-ai26-ui-validation.json",
+  "sources": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/rentalPresentation.ts",
+      "sha256": "845f6fd77a726fe8bce72f8e1ffb87566bb0d30bbd17c37e6e1a97e5820507e3",
+      "bytes": 4531
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/rentalReview.ts",
+      "sha256": "aab8c853892b51efd0a0c089f0a8263471550dc7d1f2866dcb12c640be919cf0",
+      "bytes": 1773
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useExecution.ts",
+      "sha256": "59c9b9b7adf22e7f6c457648655fd7aa77f3672dc66e0eba0d2b8c43218d90a3",
+      "bytes": 8126
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useHumanProposal.ts",
+      "sha256": "d543f08068b2c7e886811c6b9633d631ae92c5ffdbe975c6c8fa57459552b46d",
+      "bytes": 8673
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/ProposalPreview.tsx",
+      "sha256": "b76dfc34de3407385c150effb405982bfb98aa53e102a9c7182cac1c0db3a03e",
+      "bytes": 11605
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.tsx",
+      "sha256": "ffd8331a42504de6b2cccb15ec3fb34ca65d61b2062907c4df6d77254c35ed88",
+      "bytes": 11737
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.tsx",
+      "sha256": "ba823048400110b47e764ed0298504d77d4d1a682a81618a724a0bae5c750490",
+      "bytes": 5797
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "4ef02668ad0757fc33527437b454047115394860133bc2d5706012444c237491",
+      "bytes": 28734
+    },
+    {
+      "path": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "8e3bee2977db60ba21ea8c608ec04ecdbc0242404ce953ad78df931ed316831d",
+      "bytes": 26977
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/rentalMoneyPreparationFixtures.ts",
+      "sha256": "998d57bb63863764cbdd246971c83b6f48735d2f5ad57a06e8b567fe49222562",
+      "bytes": 4816
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/rentalReview.test.ts",
+      "sha256": "1499bad1681f69c4a221e046b01fee7fc42e1636f66c5710abe61e9061fe58aa",
+      "bytes": 5263
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.test.tsx",
+      "sha256": "41d734f574fe3052cd2529c1f54a37f22dc160a7e914f3d7192aa44a5103877d",
+      "bytes": 50689
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/ProposalPreview/ProposalPreview.test.tsx",
+      "sha256": "812d1866f17923287e26ab186a4a703d30079767eef35441eb575a9206858a04",
+      "bytes": 32455
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.test.tsx",
+      "sha256": "d4ce65b7b1818b74914487c767cb96deacfd19af1b4923a110f58b48d30bc086",
+      "bytes": 22759
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai/fixtures.ts",
+      "sha256": "73e53ef6cb3ae0c6c3e925f3fb5f7abcc740e50fe33818002905720695e320ec",
+      "bytes": 22731
+    }
+  ],
+  "logs": [
+    {
+      "path": "nodia-client/.tmp/ai26-client-full-release.log",
+      "sha256": "a423bf19eb9934859c15980a4907585592a79972b6ce0fb865dc41f363fd41cd",
+      "bytes": 6402
+    },
+    {
+      "path": "nodia-client/.tmp/ai26-client-focused-final.log",
+      "sha256": "a62a73b55750eea171c42862eea1c0673a1618574b66d8885212cc4fa3d26784",
+      "bytes": 768
+    },
+    {
+      "path": "nodia-client/.tmp/ai26-client-typecheck-final.log",
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865",
+      "bytes": 46
+    },
+    {
+      "path": "nodia-client/.tmp/ai26-client-lint-final.log",
+      "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe",
+      "bytes": 43
+    },
+    {
+      "path": "nodia-client/.tmp/ai26-client-build-final.log",
+      "sha256": "16f8c27f2868e2e70369b957cc76ee9f8f3756c392fad5dd881920aec75c9922",
+      "bytes": 12784
+    }
+  ],
+  "warnings": {
+    "jsdom_navigation_messages": 4,
+    "other_observed_test_warnings": [
+      "Emotion first-child SSR warning",
+      "React Query undefined synthetic mock data",
+      "React Router HydrateFallback warning"
+    ],
+    "failed_tests": 0
+  },
+  "limits": [
+    "Unit mocks and browser QA do not establish SQL authorization, atomicity, real inference or published MCP writes",
+    "No physical phone or virtual keyboard acceptance",
+    "No model, dependency or route was added"
+  ],
+  "approval_changed": false
+}

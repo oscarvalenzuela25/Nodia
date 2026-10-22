@@ -1,0 +1,73 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T03:32:34Z",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "verification_semantics": "this_canary_semantic_match_and_completed_ack_and_exact_cached_modality",
+  "probe": {
+    "engine": "agentic",
+    "kind": "audio",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "reference": {
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "bb476c5d38fd47cc805b2f8a2fe6cafc",
+      "operation_ref": "8ebe6eb3-e742-4c1e-bc30-35cd0ae50185"
+    },
+    "attempt_id": "8ebe6eb3-e742-4c1e-bc30-35cd0ae50185",
+    "file_bytes": 22264,
+    "media_type": "audio/webm",
+    "file_sha256": "11b085cf4e8ae91ab634a3a564af9899aed88bffe6c2a09bd0e6165c06b855a1",
+    "expected_answer_sha256": "a26c5e0dce40a892145850e954339118ffc1e0a8963c63cc27632916e9fbe215",
+    "answer_normalization": "speech_words_v1",
+    "native_acknowledged": true,
+    "verified": true,
+    "fixture": "synthetic_known_canary",
+    "audio_oracle_source": "explicit_cli_synthetic_text",
+    "http_status": 200,
+    "answer_sha256": "a26c5e0dce40a892145850e954339118ffc1e0a8963c63cc27632916e9fbe215",
+    "semantic_canary_matches": true,
+    "semantic_diagnostic": {
+      "answer_is_string": true,
+      "answer_chars": 29,
+      "expected_chars": 30,
+      "line_count": 1,
+      "trim_equals": false,
+      "casefold_equals": false,
+      "whitespace_collapse_equals": false,
+      "contains_expected": false,
+      "expected_is_prefix": false,
+      "expected_is_suffix": false,
+      "json_string_decoded_equals": false
+    },
+    "elapsed_seconds": 38.01,
+    "native_outcome": "completed",
+    "cached_modality_verified": true
+  },
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [
+      "image",
+      "pdf",
+      "audio"
+    ],
+    "supports_mcp": false
+  },
+  "diagnostics": [],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T03:33:33Z"
+}

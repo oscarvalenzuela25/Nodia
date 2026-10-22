@@ -1,0 +1,70 @@
+{
+  "stage": "AI-38",
+  "scope": "local_original_database_encrypted_backup_and_unserved_isolated_restore",
+  "status": "failed_preserved_no_retry",
+  "source_sha256": "0e257902e86a6fc7c1cfa3049b72a369a923d13ba8230acc3ddbe858b7428d05",
+  "configured_database_backup": true,
+  "configured_database_writes": 0,
+  "disposable_restore_verified": false,
+  "original_database_restored": false,
+  "restored_content_served": false,
+  "provider_requests": 0,
+  "storage_operations": 0,
+  "encryption": {
+    "format": "openpgp",
+    "cipher": "AES256",
+    "integrity": "MDC"
+  },
+  "retention_hours": 24,
+  "maximum_retention_hours": 168,
+  "external_rotation_journal_or_production_restore_verified": false,
+  "release_authorized": false,
+  "started_at_utc": "2026-10-20T20:54:13.687110+00:00",
+  "execution_stage": "compare_metadata",
+  "expiry_timer_persistent": true,
+  "backup_expires_at_utc": "2026-10-21T20:54:13.687168+00:00",
+  "source_snapshot_finished_at_utc": "2026-10-20T20:54:15.486787+00:00",
+  "encrypted_backup_sha256": "dc74a52ab8504b93a5ed6a6ffbeaa163069059b60b4bbc81d82e28cef1c437e2",
+  "encrypted_backup_bytes": 56146,
+  "restore_network_none_no_ports_tmpfs": true,
+  "final_TCP_database_ready": true,
+  "metadata_comparison": {
+    "mismatched_keys": [
+      "columns",
+      "constraints"
+    ],
+    "source_digests": {
+      "tables": "0d595f4eb95cd535fcda4769d6ce76d3f6e59e4a3ec7d2ba9600c621e87af0a4",
+      "columns": "254002a823e842bd083d37e13e242215499f697c7c11a8ab966331023aad7268",
+      "indexes": "66e311934ed3d8c5b6e5a12f75aa952c0e8f701a093789c30b4a0272b6c53213",
+      "constraints": "108061cc368fe99a06c23bf991e0bdaf20dc406549b90f525e7e393b48f73cb8",
+      "migrations": "57f8d87d2459e64dbb16c8e6b6ca928a12940d526387c8fa4b33837a38fdddb1",
+      "guard": "3179c6a29319dbe4d0a795702b7717802c615c76e0eb07e5a9d80378331b5e43"
+    },
+    "restored_digests": {
+      "tables": "0d595f4eb95cd535fcda4769d6ce76d3f6e59e4a3ec7d2ba9600c621e87af0a4",
+      "columns": "57c31ff375ea1df909b8ec6d02f46fe67f4693c5c7e35d122b75b3180676f65d",
+      "indexes": "66e311934ed3d8c5b6e5a12f75aa952c0e8f701a093789c30b4a0272b6c53213",
+      "constraints": "f04af3adc84d7bf08ed4ca37675e9b52f4f58ad63bd64e302d16d8d0a31ae85b",
+      "migrations": "57f8d87d2459e64dbb16c8e6b6ca928a12940d526387c8fa4b33837a38fdddb1",
+      "guard": "3179c6a29319dbe4d0a795702b7717802c615c76e0eb07e5a9d80378331b5e43"
+    },
+    "source_table_count": 62,
+    "restored_table_count": 62,
+    "row_count_mismatches": 0
+  },
+  "failure_class": "AssertionError",
+  "child_exit_codes": {
+    "source": 0,
+    "dump": 0,
+    "encrypt": 0,
+    "decrypt": 0,
+    "restore": 0,
+    "target": 0
+  },
+  "owned_containers_remaining": 0,
+  "failed_copy_and_passphrase_removed": true,
+  "expiry_timer_active_after": false,
+  "elapsed_seconds": 4.411,
+  "finished_at_utc": "2026-10-20T20:54:18.098399+00:00"
+}

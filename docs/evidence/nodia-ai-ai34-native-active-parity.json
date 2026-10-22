@@ -1,0 +1,13 @@
+{
+  "stage": "AI-34",
+  "scope": "native_source_parity_container",
+  "status": "passed",
+  "target": "nodia-gemini-microservice",
+  "source_manifest_sha256": "e9e955f093f7c1491b1a856fed0ca782b7a098a48f053f3cc6e7c271871600c5",
+  "files": 99,
+  "drift_count": 0,
+  "drift_paths": [],
+  "provider_generations": 0,
+  "configured_sessions_used": false,
+  "services_restarted": false
+}

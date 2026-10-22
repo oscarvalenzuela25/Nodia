@@ -1,0 +1,26 @@
+{
+  "selection_source": "/tmp/nodia-ai-timeout-selection-full-20261016.json",
+  "configured_database_modified": false,
+  "jwt_persisted_or_printed": false,
+  "roles_or_sessions_created": false,
+  "generations": 0,
+  "observations": [
+    {
+      "mode": "token_plan_agentic",
+      "http_status": 200,
+      "elapsed_ms": 12023,
+      "available": true,
+      "supports_mcp": true,
+      "reason": null
+    },
+    {
+      "mode": "token_plan_web",
+      "http_status": 200,
+      "elapsed_ms": 3080,
+      "available": true,
+      "supports_mcp": false,
+      "reason": null
+    }
+  ],
+  "limitation": "This observation does not identify why the earlier UI eligibility response remained unavailable. No repeated probe, model change or cache/configuration mutation was performed."
+}

@@ -1,6 +1,6 @@
 # Plan de implementación: OpenAI Codex Agentic en Nodia
 
-> Estado: código implementado; migración aplicada y conexión ID 4 habilitada en BD local por solicitud del 2026-10-08. Cuenta/inferencia, soporte Windows y P1 de cancelación pendientes. Documento sin aprobación automática.
+> Estado al2026-10-12: código implementado; login y OCR PNG con cuenta real comprobados en VM Ubuntu, sesión conservada tras reinicio completo. Linux usa conexión de laboratorio ID1; Windows ID4 sigue independiente y su runtime continúa pendiente. PDF real, renovación/revocación y aceptación VPS pública pendientes. P1 de cancelación corregido y cubierto por regresión. Documento sin aprobación automática.
 > Fecha: 2026-10-07.
 > Solicitud actual: integrar la cuenta Codex como `openai` + `token_plan_agentic`, conservar API key y trasladar la documentación final a `docs/features/` al terminar.
 > Arquitectura propuesta, sin aprobación automática. Este documento no habilita nuevos modos en el catálogo.
@@ -13,7 +13,7 @@ Permitir utilizar la suscripción de la cuenta ChatGPT/Codex mediante el canal `
 
 La solicitud actual sustituye la prioridad anterior de comenzar por inferencia directa: esta entrega propone Codex Agentic. `token_plan_web` de OpenAI queda fuera de alcance y deshabilitado. La investigación de Responses con autorización del plan se conserva más abajo como antecedente, sin crear otra cuota ni otro canal en esta entrega.
 
-La integración Codex está implementada en código y su migración se aplicó en la BD local configurada por solicitud explícita posterior a la revisión. OpenAI tiene Agentic habilitado en catálogo y conexión ID 4, conservando API como predeterminado. La cuenta del usuario y la inferencia real siguen sin comprobarse. Conservar el [contrato de funcionalidades IA](ai-provider-feature-contract.md), incluida la configuración independiente por instancia/modo, claves cifradas, modelos dinámicos, selección explícita y ausencia de cambios automáticos de proveedor o modo.
+La integración Codex está implementada en código y su migración se aplicó en la BD local configurada por solicitud explícita posterior a la revisión. OpenAI tiene Agentic habilitado en catálogo y conexión ID4, conservando API como predeterminado. El ensayo Linux posterior usa una BD nueva y conexión1: login por código, keyring cifrado, catálogo observado y OCR PNG con modelo seleccionado por el usuario comprobados; no se importaron perfiles/secretos Windows. Evidencia y límites en [runbook Codex](../features/ai-providers/openai-codex-agentic.md#ensayo-ubuntu--2026-10-12) y [laboratorio VM](vps-local-vm-lab.md). Conservar el [contrato de funcionalidades IA](ai-provider-feature-contract.md), incluida la configuración independiente por instancia/modo, claves cifradas, modelos dinámicos, selección explícita y ausencia de cambios automáticos de proveedor o modo.
 
 La redacción inicial del 2026-10-07 no inició implementación. El 2026-10-08 se añadieron el runtime versionado, casos de uso, UI, pruebas y migración; sin login real, cuota consumida, cambios de BD o flags aplicados. Tampoco sustituye el diagnóstico pendiente de Gemini Web: el PDF sintético probado el 2026-10-07 terminó en timeout aunque la sesión y el catálogo estuvieran disponibles.
 
@@ -69,7 +69,7 @@ No se necesitan nuevas columnas en `ai_provider` para los switches existentes. M
 
 ## Checklist de implementación
 
-**Primer pendiente operativo: CG-01/CG-04 con la cuenta del usuario.** El código está implementado; el usuario pidió el 2026-10-08 dejar BD y validación real para después. Se conserva la secuencia de aceptación, incluida CG-06..08 antes de aplicar CG-09. Preparar una migración no equivale a aplicarla.
+**Continuidad al2026-10-12:** CG-01/CG-04 tienen evidencia de login local en VM y reinicio autenticado; CG-05/CG-08/CG-10/CG-11 tienen catálogo y OCR PNG desde UI. No se marcan íntegramente cerrados: faltan elegibilidad/despliegue público, renovación/revocación, PDF real y matriz completa de proveedores. El plan permanece para conservar esos pendientes; preparar o aplicar una migración no equivale a aceptación operativa.
 
 **Revisión posterior solicitada, 2026-10-08:** entorno Windows no operativo: runtime rechazado por plataforma, catálogo Agentic deshabilitado y migración ausente, confirmados con código compilado/lecturas de BD. Dependencias instaladas con lockfile y checks focalizados correctos. Hallazgo P1 reproducido en CG-08: cancelación sin lease puede detener el perfil ocupado por otra solicitud; corregir y añadir regresión antes de aceptación. [Evidencia durable y límites](../features/ai-providers/openai-codex-agentic.md#revisión-solicitada-en-windows--2026-10-08). No se marca disponible ni se aprueban documentos por el éxito de suites sintéticas.
 

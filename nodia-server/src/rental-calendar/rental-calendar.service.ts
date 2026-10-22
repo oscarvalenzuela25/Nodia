@@ -13,6 +13,7 @@ export class RentalCalendarService {
     from: string,
     to: string,
     includeNonOccupying: boolean,
+    maxRows = 1000,
   ) {
     // Civil boundaries are compared in local SQL time; midnight need not exist on a DST transition.
     const reservationsQuery = manager
@@ -43,7 +44,7 @@ export class RentalCalendarService {
       .orderBy('r.check_in_on', 'ASC')
       .addOrderBy('r.check_in_time', 'ASC')
       .addOrderBy('r.id', 'ASC')
-      .take(1001)
+      .take(maxRows + 1)
       .getMany();
     const blocks = await manager
       .getRepository(RentalBlock)
@@ -65,9 +66,9 @@ export class RentalCalendarService {
       )
       .orderBy('b.starts_at', 'ASC')
       .addOrderBy('b.id', 'ASC')
-      .take(1001)
+      .take(maxRows + 1)
       .getMany();
-    const ids = reservations.slice(0, 1001).map((row) => row.id);
+    const ids = reservations.slice(0, maxRows + 1).map((row) => row.id);
     const turnovers = ids.length
       ? await manager
           .getRepository(RentalTurnover)
@@ -89,7 +90,7 @@ export class RentalCalendarService {
           )
           .orderBy('t.planned_ready_at', 'ASC', 'NULLS LAST')
           .addOrderBy('t.id', 'ASC')
-          .take(1001)
+          .take(maxRows + 1)
           .getMany()
       : [];
     return { reservations, blocks, turnovers };

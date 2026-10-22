@@ -1,0 +1,18 @@
+{
+  "stage": "AI-32-R06",
+  "scope": "invoice_harness_exact_guard_memory_only",
+  "status": "passed",
+  "checks": 5,
+  "real_storage_calls": 0,
+  "database_calls": 0,
+  "provider_calls": 0,
+  "preexisting_collision_delete_calls": 0,
+  "executed_test": {
+    "path": "docs/evidence/scripts/test-nodia-ai-ai32-r06-invoice-guards.mjs",
+    "sha256": "1162d08cc0bc35525e2ca0bbdebe7487860f18c2b052eaf7d47a49599c6a8b35"
+  },
+  "guarded_harness": {
+    "path": "docs/evidence/scripts/nodia-ai-ai32-r06-invoice-real.mjs",
+    "sha256": "e8ea662a01f5265bfe56350963a3202694b86f3ce20ecd0df10c97813da44b03"
+  }
+}

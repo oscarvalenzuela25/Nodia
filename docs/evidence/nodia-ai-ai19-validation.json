@@ -1,0 +1,134 @@
+{
+  "task": "AI-19",
+  "status": "implemented_and_verified_private_lab",
+  "verified_at_utc": "2026-10-17T05:00:04.855Z",
+  "scope": "internal_single_confirmed_financial_effect_atomic_witness_not_operational_worker_or_mcp_publication",
+  "server": {
+    "full_suite": {
+      "tests": 1877,
+      "files": 174,
+      "passed": true,
+      "log": "nodia-server/.tmp/ai19-server-tests.log",
+      "note": "Before final SQL reserved-identifier correction; final focused cases and PostgreSQL integration execute corrected version"
+    },
+    "final_focused": {
+      "tests": 53,
+      "files": 2,
+      "passed": true,
+      "log": "nodia-server/.tmp/ai19-final-focused.log"
+    },
+    "build": {
+      "passed": true,
+      "log": "nodia-server/.tmp/ai19-build.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": "nodia-server/.tmp/ai19-lint.log"
+    }
+  },
+  "client": {
+    "source_changes": false,
+    "regression": {
+      "tests": 109,
+      "files": 8,
+      "passed": true,
+      "log": "nodia-client/.tmp/ai19-client-regression.log"
+    },
+    "typecheck": {
+      "passed": true,
+      "log": "nodia-client/.tmp/ai19-client-typecheck.log"
+    },
+    "note": "No full Client suite or new browser QA: UI and public EntityRef contract unchanged"
+  },
+  "postgres": {
+    "checks": 32,
+    "evidence": "docs/evidence/nodia-ai-ai19-postgres-integration.json",
+    "regression_checks": 137,
+    "regression_evidence": [
+      "docs/evidence/nodia-ai-ai19-confirmation-regression.json",
+      "docs/evidence/nodia-ai-ai19-proposal-regression.json",
+      "docs/evidence/nodia-ai-ai19-events-regression.json",
+      "docs/evidence/nodia-ai-ai19-observation-regression.json"
+    ],
+    "fixture_disposed": true,
+    "configured_database_used": false,
+    "provider_calls": 0
+  },
+  "lab": {
+    "activation": "docs/evidence/nodia-ai-ai19-lab-activation.json",
+    "read_only_state": "docs/evidence/nodia-ai-ai19-live-state.json",
+    "stage": "AI-19",
+    "scope": "read_only_configured_private_lab",
+    "observed_at_utc": "2026-10-17T05:03:34.440Z",
+    "migrations": 24,
+    "tables": 18,
+    "columns": 239,
+    "challenges": 0,
+    "executions": 0,
+    "execution_steps": 0,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "knowledge_release": "057a331b12f05ae08f9f9b9a565d5349d17b7a2375e8852981f19c29d992a20e",
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "production_executor_registrations": 0,
+    "native_business_execution_enabled": false
+  },
+  "knowledge": {
+    "authoring_documents": 45,
+    "excluded": 18,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "delta": "docs/evidence/nodia-ai-ai19-knowledge-delta.json",
+    "new_publication": false,
+    "validation": "docs/evidence/nodia-ai-ai19-knowledge-validation.json"
+  },
+  "delivery_archive_sha256": "89d8e71feb3eb25a058279035a61c0fb6d3638bb9cb4d6a88586247bf84d6f9b",
+  "limitations": [
+    "Production admission registry remains empty; no execution worker dispatch or MCP preparation publication",
+    "Only one local confirmed step without bindings or dependencies",
+    "Durable worker claim/fencing, unknown reconciliation, cancellation and resume remain AI-20",
+    "Synthetic fixtures with real PostgreSQL/native ledger do not demonstrate real Gemini writing to the configured app",
+    "Existing independent AI-15 R2/external/routing gates remain open"
+  ],
+  "artifacts": [
+    {
+      "file": "docs/mvp/65-nodia-ai-ai19-financial-effect.md",
+      "sha256": "df777df29d0dfebb81f401e88863cac23a84b9876aa54e9150345ddea7b1c331"
+    },
+    {
+      "file": "docs/architecture/decisions/ADR-046-nodia-ai-local-financial-witness.md",
+      "sha256": "e6e3795814b6611a5ef73fb5ca3cc0b21fa5d36f1bed854460f5a5920e154c0f"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md",
+      "sha256": "3e48788687c7417864fff8a4fcbb9e6430ed719cce1704cfbc5d6c3051432139"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "6b2961e6e3b556ebf0a214b1cd757ca83cd3c5c4a0c89c6220bb60bd6686bae6"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-data-model.json",
+      "sha256": "8751b917d448041eae94811f7d386877e635ec4e1a772d55338b5bd49d3edb0d"
+    },
+    {
+      "file": "nodia-server/src/migrations/1792600000000-FreezeNodiaAiFinancialWitness.ts",
+      "sha256": "f0b74b5ed1d29fbc8fab0c0dd5dbae545c355d789d5b3f675f45dbdb23a95e19"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai19.integration.mjs",
+      "sha256": "9d19d325bd2db1bb4113434b7079c276c8e49328370fe2ef91370329bb562bc5"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/use-case/execute-nodia-ai-financial-execution.use-case.ts",
+      "sha256": "95c7a428b169a2a1d62a5bc4951965bd1a85a14bca60c4d0a32b9f9ebb286d34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/nodia-ai-execution.service.ts",
+      "sha256": "6f4180957e6b2a64be91348738ee5a73b813ff6be1ac80c4ed9af27bd16a629c"
+    }
+  ]
+}

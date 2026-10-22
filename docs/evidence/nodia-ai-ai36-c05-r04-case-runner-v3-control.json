@@ -1,0 +1,52 @@
+{
+  "stage": "AI-36-C05-R04",
+  "scope": "actual_runner_v3_unit_state_exit_pair_guard_offline",
+  "status": "passed",
+  "checks": [
+    {
+      "state": "active",
+      "exit": 0,
+      "expected_valid": true,
+      "passed": true
+    },
+    {
+      "state": "inactive",
+      "exit": 3,
+      "expected_valid": true,
+      "passed": true
+    },
+    {
+      "state": "active",
+      "exit": 3,
+      "expected_valid": false,
+      "passed": true
+    },
+    {
+      "state": "inactive",
+      "exit": 0,
+      "expected_valid": false,
+      "passed": true
+    },
+    {
+      "state": "failed",
+      "exit": 3,
+      "expected_valid": false,
+      "passed": true
+    },
+    {
+      "state": "unknown",
+      "exit": 4,
+      "expected_valid": false,
+      "passed": true
+    },
+    {
+      "state": "",
+      "exit": 0,
+      "expected_valid": false,
+      "passed": true
+    }
+  ],
+  "source_sha256": "5025efe2fe12d5589a46f62f6366ee0c5c14362ac7c2b76de825432cb4f24d63",
+  "VM_operations": 0,
+  "provider_requests": 0
+}

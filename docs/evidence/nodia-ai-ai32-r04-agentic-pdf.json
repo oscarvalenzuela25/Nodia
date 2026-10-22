@@ -1,0 +1,95 @@
+{
+  "stage": "AI-32-R04",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T05:13:47Z",
+  "harness_sha256": "f7fa25655014fc3dd41266c602287e71e812007ac2b27ed021d590a8c7b4d14a",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "verification_semantics": "this_canary_semantic_match_and_completed_ack_and_exact_cached_media_type",
+  "probe": {
+    "engine": "agentic",
+    "kind": "pdf",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "reference": {
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+      "operation_ref": "0e3e8f17-6475-4e08-acf7-59b304755f93"
+    },
+    "attempt_id": "0e3e8f17-6475-4e08-acf7-59b304755f93",
+    "file_bytes": 672,
+    "media_type": "application/pdf",
+    "file_sha256": "02cd54496e0cd86232e021a94a6210bc21455fc176877d3d4843ae0121b33f51",
+    "expected_answer_sha256": "7a87089eba3cf1c2089fde23067d3ee40085e55ddbf1fba7c455e1e14fcfae78",
+    "answer_normalization": "literal",
+    "native_acknowledged": true,
+    "verified": true,
+    "fixture": "synthetic_known_canary",
+    "http_status": 200,
+    "answer_sha256": "7a87089eba3cf1c2089fde23067d3ee40085e55ddbf1fba7c455e1e14fcfae78",
+    "semantic_canary_matches": true,
+    "semantic_diagnostic": {
+      "answer_is_string": true,
+      "answer_chars": 12,
+      "expected_chars": 12,
+      "line_count": 1,
+      "trim_equals": true,
+      "casefold_equals": true,
+      "whitespace_collapse_equals": true,
+      "contains_expected": true,
+      "expected_is_prefix": true,
+      "expected_is_suffix": true,
+      "json_string_decoded_equals": false,
+      "closed_keyword_present": {
+        "audio": false,
+        "transcri": false,
+        "no puedo": false,
+        "no tengo": false,
+        "cannot": false,
+        "can't": false,
+        "unable": false,
+        "unsupported": false,
+        "formato": false,
+        "silencio": false,
+        "vac\u00edo": false,
+        "upload": false,
+        "archivo": false
+      }
+    },
+    "elapsed_seconds": 25.63,
+    "native_outcome": "completed",
+    "cached_modality_verified": true,
+    "exact_format_verified": true
+  },
+  "reply_kind": "answer",
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [
+      "image",
+      "pdf"
+    ],
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+    "supports_mcp": false,
+    "verified_attachment_media_types": [
+      "image/png",
+      "application/pdf"
+    ]
+  },
+  "diagnostics": [],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T05:14:27Z"
+}

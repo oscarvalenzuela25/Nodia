@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { ZodError } from "zod";
 import type { ReactNode } from "react";
+import { useState } from "react";
+import { FinanceOwnerContext } from "../../../../modules/finances/infrastructure/FinanceOwnerContext";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sileo } from "sileo";
 import useAuthStore from "../../../../store/authStore";
@@ -71,6 +73,72 @@ afterEach(() => {
 });
 
 describe("finance queries", () => {
+  it("never carries cached data across recipient changes and sends the new explicit scope", async () => {
+    const { wrapper: Base } = setup();
+    let changeOwner!: (id: string) => void;
+    const Wrapper = ({ children }: { children: ReactNode }) => {
+      const [ownerId, setOwnerId] = useState("20");
+      changeOwner = setOwnerId;
+      return (
+        <Base>
+          <FinanceOwnerContext value={{ ownerId }}>
+            {children}
+          </FinanceOwnerContext>
+        </Base>
+      );
+    };
+    vi.mocked(services.getFinanceList).mockResolvedValueOnce({
+      ...page,
+      data: [{ ...record, user_id: "20" }],
+    });
+    const hook = renderHook(() => useFinanceList("categories", { page: 1 }), {
+      wrapper:Wrapper,
+    });
+    await waitFor(() =>
+      expect(hook.result.current.data?.data[0].user_id).toBe("20"),
+    );
+    vi.mocked(services.getFinanceList).mockImplementation(
+      () => new Promise(() => undefined),
+    );
+    act(() => changeOwner("30"));
+    expect(hook.result.current.data).toBeUndefined();
+    expect(hook.result.current.isPlaceholderData).toBe(false);
+    expect(services.getFinanceList).toHaveBeenLastCalledWith(
+      "categories",
+      { page: 1, owner_id: "30" },
+      expect.any(AbortSignal),
+    );
+  });
+  it("binds mutations to the selected recipient without replacing the authenticated actor", async () => {
+    const { wrapper: Base } = setup();
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <Base>
+        <FinanceOwnerContext value={{ ownerId: "20" }}>
+          {children}
+        </FinanceOwnerContext>
+      </Base>
+    );
+    vi.mocked(services.saveFinanceRecord).mockResolvedValue({
+      ...record,
+      user_id: "20",
+    });
+    const hook = renderHook(() => useFinanceMutation("categories"), {
+      wrapper,
+    });
+    await act(async () => {
+      await hook.result.current.mutateAsync({
+        data: { name: "Category", key: "category", is_active: true },
+      });
+    });
+    expect(services.saveFinanceRecord).toHaveBeenCalledWith(
+      "categories",
+      expect.objectContaining({
+        data: { name: "Category", key: "category", is_active: true },
+      }),
+      "20",
+    );
+    expect(useAuthStore.getState().user?.id).toBe("42");
+  });
   it("disables reads without an authenticated principal", () => {
     useAuthStore.getState().logout();
     const { wrapper } = setup();

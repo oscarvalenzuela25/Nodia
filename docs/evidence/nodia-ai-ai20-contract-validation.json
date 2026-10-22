@@ -1,0 +1,17 @@
+{
+  coordinationRoutes: 31,
+  currentAstHandlers: 204,
+  compiled: 132,
+  domainDefinitions: 184,
+  domainContracts: 134,
+  fixtures: 289,
+  coverageCounts: {
+    domain_tool: 144,
+    secure_client_flow: 18,
+    infrastructure_only: 2,
+    coordinator_internal: 6,
+    deferred_bulk: 7
+  },
+  hashes: 540,
+  localLinks: 1111
+}

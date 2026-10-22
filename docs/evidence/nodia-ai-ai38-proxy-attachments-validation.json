@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "status": "restricted_VM_scoped_proxy20MiB_and_real_attachment_transport_verified_full_release_incomplete",
+  "AI38_complete": false,
+  "release_authorized": false,
+  "input": {
+    "path": "docs/evidence/nodia-ai-ai38-proxy-attachments-input-r01.json",
+    "sha256": "e091acd4706f7cbd75b866d6d66113e56a82a2c948c789d42eaf0990d776c57d"
+  },
+  "historical": {
+    "path": "docs/evidence/nodia-ai-ai38-ui-retry-validation.json",
+    "sha256": "758c6b18cbc77b41213853512c398e5ad56e875a64364d21a052b229c39391ac"
+  },
+  "observed_facts": {
+    "fixture_session_or_token_injected": false,
+    "authentication_kind": "existing_legitimate_session_restored",
+    "transport": "PUT_application_octet_stream",
+    "application_file_limit_bytes": 20971520,
+    "proxy_content_route_limit_bytes": 20971520,
+    "global_proxy_limit_changed": false,
+    "route_scoped_limit": true,
+    "nginx_test_passed": true,
+    "proxy_reversal_byte_exact": true,
+    "proxy_fix_durable_at_end": true,
+    "UI_real_attachment_upload_success": true,
+    "r2_private_download_verified": true,
+    "over_limit_frontend_rejected": true,
+    "only_owned_resources_cleaned": true,
+    "exact_file_bytes": 20971520,
+    "R2_downloaded_file_bytes": 20971520,
+    "fixture_sha256": "14a57764f731612d59a5c43beee356428f4428a59f473bc414801d4d86ed595e",
+    "R2_download_sha256": "14a57764f731612d59a5c43beee356428f4428a59f473bc414801d4d86ed595e",
+    "over_limit_file_bytes": 20971521,
+    "over_limit_proxy_HTTP_status": 413,
+    "over_limit_R2_objects_created": 0,
+    "owned_R2_objects_remaining": 0,
+    "provider_generations": 0,
+    "business_effects": 0,
+    "original_database_restored": false
+  },
+  "offline_controls": {
+    "status": "passed_offline_controls_only",
+    "positive": 1,
+    "negative": 16,
+    "network_requests": 0,
+    "VM_changes": false,
+    "real_acceptance_claimed_by_controls": false
+  },
+  "limits": [
+    "This accepts real UI upload and discard plus operator-authenticated R2 HEAD/GET on the local Linux VM; the draft UI has no download action.",
+    "No authenticated application-download API or UI acceptance is claimed for the 20 MiB fixture. No new provider inference or OCR is claimed.",
+    "TLS, public deployment, backup rotation, external restore and AI36 remaining publication retain their separate gates.",
+    "Absence of owned live objects is not proof of physical storage erasure or a continuous retention SLA."
+  ],
+  "sources": [
+    {
+      "path": ".tmp/ai37-baseline.json",
+      "sha256": "624a54bf43c0f51cce560cc47804cc241884eac0ffac47462abb2c576e462633"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-chat-final-r01.json",
+      "sha256": "6e78a58531fc4542a5e408826ec0ef9a985246340947a39603556c31c6fc8dee"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-closure-r01.json",
+      "sha256": "98314427182a09af71c590e6db0e2376766017563ac8c974d46372d2d0f613ee"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-fixtures-r01.json",
+      "sha256": "fe1eec9c6342e02f3b83a14f1a2703ba3e978ab362729b1d6d7bfd242ace26b2"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-ledger-cleanup-r01.json",
+      "sha256": "1c341a4e17836ea09eaf4616bf117da230a1e8a449d77f85cc84141913c76a40"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-observer-begin-r01.json",
+      "sha256": "7b58a762b41dd098d24655516e8b93bb491a953b5ae9772e9e9982ac1f56ff20"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-observer-end-r01.json",
+      "sha256": "ed38159abb1199ea809595dc9e177d184e77e74a9916923d581a34e4a5abdc71"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-over-limit-sql-r01.json",
+      "sha256": "a02141089a56fe58b90dce76426cc86a442a6c65548c1eba3da650cc7ab6ec65"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-over-limit-ui-r01.png",
+      "sha256": "62f32a6d85ac5b3b0e1d1b0301a9cab4f17846d30647f9ce431d5e67f848c36e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-r2-absent-r01.json",
+      "sha256": "48a63190eb6e83cf03539bc08bd9f83b9ec8c1f8499a47a24a21171f1f4ee10d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-r2-ready-r01.json",
+      "sha256": "6757f6b4fa24656cd95ea8de68f14c9535a5a879af95e7075bface12ba0e0c59"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-ready-ui-r01.png",
+      "sha256": "ac5ccf8f6adf4e61f5b8ec0f83cc5b4aa8dc316391866690659485223082fe9c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-removed-ui-r01.png",
+      "sha256": "62f32a6d85ac5b3b0e1d1b0301a9cab4f17846d30647f9ce431d5e67f848c36e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-ui-r01.json",
+      "sha256": "003e71be8bcd876c990167acbad387d5e2ca0b025ca4dea5b89a0731ebeeb0bd"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-apply-r01.json",
+      "sha256": "e84e9af1e7bfb3317ab79882fa235359c6f2a03839c1411a58860f3c1ed1d37d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-attachments-contract-r01.md",
+      "sha256": "6b3cea0d9f4db514f3d978311f8f3f8922d55960d970896ed86e9255cb512719"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-attachments-input-r01.json",
+      "sha256": "e091acd4706f7cbd75b866d6d66113e56a82a2c948c789d42eaf0990d776c57d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-attachments-r01.md",
+      "sha256": "afabd221c95e0b5ea37899d2965da31d8152568c8f9ecccc121939eb6d06f9eb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-auth-r01.json",
+      "sha256": "1a3b8ca390ebfefab30a3bb935ff123d15ea79e25b0be09613d8f7b39e830723"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-entry-r01.json",
+      "sha256": "bf15a69efc1fc64ac65fe5dc855e3f147ea712e922ea62c4fb37d1a0057c98ec"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-final-r01.json",
+      "sha256": "ca733b4d327a501fc8a239131f0cfaa20b0c35db5d4dccb1d424f143e4456d24"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-probe-final-r01.json",
+      "sha256": "b889d24aecfc453557665252f3ae407c2b64a7c32b9b21a977e145fb19a9e3aa"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-revert-r01.json",
+      "sha256": "b04ba0911791b256274b2817cb0564922ba067859f3fa1c1fabc586b05745aed"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-runtime-final-r01.json",
+      "sha256": "06268cd7e9083860fea9300f363e4ff3c87860777b2d2d4b0477d7acac008ad1"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-ui-close-r01.json",
+      "sha256": "c20c235c9f18680f3d85a2fe71b278b0c235d871d18f5ca7d32c31ee08674c25"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-proxy-ui-open-r01.json",
+      "sha256": "01412ffc6101cec8f50c075241f5720aacd636417394ad70578f422ffcf02346"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-ui-retry-validation.json",
+      "sha256": "758c6b18cbc77b41213853512c398e5ad56e875a64364d21a052b229c39391ac"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-adoption-runtime.py",
+      "sha256": "a0a8ab1afa2dc433da1a0265cb1ee16fa7a5246a734887120e968a93ae7cd336"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-attachment-discover.mjs",
+      "sha256": "7654e04fc5edf908477e3f6214a037ac74ce99126d2f2a503fdc3860081eba3b"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-attachment-fixtures.py",
+      "sha256": "578637b3597614820cd6a81769fc904eb3567571de9f43f20915784097eee59c"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-attachment-ledger-cleanup.py",
+      "sha256": "597d880da68eae0710c1d16695a2d5a29f5de5e7f3c048a2a9cb090a5df33a9a"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-attachment-nginx-observer.py",
+      "sha256": "8a8d48280e33d4e831bd1a7c7476ba2d248c94ef2adb3b86b246189e1598adc7"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-attachment-r2-observer.mjs",
+      "sha256": "5adb8100e55b679c07831500c7d3a7717443509688d86c3e63ed8c0adca9d3ce"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-proxy-auth-probe.py",
+      "sha256": "fbdd27a90113e1588b0371a6b9d939c86101b59ab4a4ae8aab644f05a6355f81"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-proxy-probe.py",
+      "sha256": "3a88e1fe3c2d52aae319e8fa538256eeffa5e17904f5782baa8a3bc96213e17c"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-proxy-ui.py",
+      "sha256": "acb97f99a6f9bd3de56793de6b9e2d2e975e8fef8bb4acf30aab4ea8d6bc11f2"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-proxy.py",
+      "sha256": "bf51cfd468e19eb4620d9244186f1a3de00ceb9e4cb9c2414e7210f0797961eb"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-ui-chat-snapshot.mjs",
+      "sha256": "897bcf3966cdcf747ba6b2cb0b9b6ea6375f7ca6c5c62aa2b13586d0e5dca30d"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+      "sha256": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+      "sha256": "629762ec44c0dea4e34744a83769480a1e86105d05af0669a22f33d40e7a5b4a"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+      "sha256": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+      "sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/products.md",
+      "sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+      "sha256": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+      "sha256": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+      "sha256": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+      "sha256": "6079989af96ecec7c326b10da18bf840f599962f79b32e535a89dc72377e7a91"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+      "sha256": "358c4b18b3073875203addb398a24e659f9da96071f567463542e3dc1a32153c"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+      "sha256": "978bfd8c6667f67d650ee134cf388a92ec158a0b9df8c19e61db081708854d72"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+      "sha256": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+      "sha256": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+      "sha256": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md",
+      "sha256": "62964211264988e62aa32f06b8ba956beccec14275f31e26d44d6959fa20daa8"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "sha256": "a98368e3e3113fc254b200708b8c5b5aada9fe6668845f6a2aef9502e99057fa"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "sha256": "4fec68d7475b06a06243671739101ab0a1e7177e879a28464fc03e05ec31dd95"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+      "sha256": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md",
+      "sha256": "2c40d09529595032f9e7b1f636c83f8b0990bab747f3b7df95c76c190911aebd"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+      "sha256": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+      "sha256": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+      "sha256": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+      "sha256": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+      "sha256": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+      "sha256": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+      "sha256": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+      "sha256": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+      "sha256": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+      "sha256": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+      "sha256": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+      "sha256": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f"
+    },
+    {
+      "path": "ops/nginx/nodia-ai-attachment-content.conf",
+      "sha256": "01055ee0da4c03ba7ecac0d36226a9da5ca9ce26f198ec3d73a8b67af93b683e"
+    }
+  ],
+  "validator": {
+    "path": "docs/evidence/scripts/validate-nodia-ai-ai38-proxy-attachments.cjs",
+    "sha256": "7a1408e74203393255061c8f2c1a0e5bda1e4ad51297bc4faefc92c65b21effc"
+  }
+}

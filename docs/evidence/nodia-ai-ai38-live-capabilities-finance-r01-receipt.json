@@ -1,0 +1,16 @@
+{
+  "stage": "AI-38",
+  "scope": "finance_case_exact_byte_copy_and_private_log_receipt",
+  "files": {
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-case.json": "56c87fc3f5e3118012bf9819ccd8971b6af4b454c4ea94000d5fdeef508fe204",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-capture.json": "b8a6c4f7f24d7c63f99492ac25fbe82b40101e31fd8d91b0c6a3f4debdb50c13",
+    "docs/evidence/scripts/nodia-ai-ai38-capabilities-capture.py": "5c93b705d6534d49d467ceb8979269603a75df18f67b7aea551ecacb8faed848",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-guard.json": "842143e9ba841a6722a7318cc7aaafcb682754e569eb4313a97b28580a50ed9e",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-driver.json": "6c6f8b9712042113cecb2e4f733319339d85f2cebfa0234dc556d768d1f33139"
+  },
+  "configured_SQL_writes": 0,
+  "provider_requests_by_capture": 0,
+  "services_restarted_by_capture": false,
+  "raw_private_log_emitted": false,
+  "log_window_scope": "case_started_at_until_case_finished_at_excludes_following_routing"
+}

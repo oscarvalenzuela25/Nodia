@@ -1,0 +1,15 @@
+{
+  "scope": "isolated_synthetic_regression",
+  "expected_failure": true,
+  "actual_exit_code": 1,
+  "error_type": "Error",
+  "error_code": "nodia_ai:execution_limit",
+  "checkpoint": "terminal reservation without caller hint",
+  "helper_sha256": "74f1ac50cb8d1eed585ea7da6849b97e23c2252f1f86fedca7e727adaea79271",
+  "configured_database_used": false,
+  "real_inference": false,
+  "services_modified": false,
+  "positive_evidence_18_preserved": true,
+  "fixture_containers_remaining": 0,
+  "harness_sha256": "a45f903dbbb6e188ac95f422b5fe8a96869b80f4a53b4f62fa6b05842119cd82"
+}

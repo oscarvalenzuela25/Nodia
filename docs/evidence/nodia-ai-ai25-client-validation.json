@@ -1,0 +1,143 @@
+{
+  "stage": "AI-25",
+  "scope": "client_unit_and_synthetic_transport_no_database_or_provider",
+  "status": "passed",
+  "full_suite": {
+    "tests": 1488,
+    "files": 203,
+    "workers": 2,
+    "duration_seconds": 420.9,
+    "exit_code": 0
+  },
+  "focused": {
+    "tests": 222,
+    "files": 5,
+    "workers": 2,
+    "duration_seconds": 19.43,
+    "exit_code": 0
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exit_code": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exit_code": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "vite_seconds": 11.49,
+    "exit_code": 0,
+    "historical_large_chunk_warning": true
+  },
+  "checks": [
+    "Six registered reservation action labels and all 52 rental field labels are present in Spanish and English",
+    "Draft creation, commercial confirmation and exact human proposal confirmation remain distinct",
+    "Money and bigint IDs remain strings; zero is permitted only when registered metadata bounds allow it; decimal/sign/exponent/overflow drafts are retained and rejected",
+    "Civil dates/times use shared DateInput/TimeInput controls and explicit house timezone instants use DateTimeInput",
+    "Invalid civil date and nonexistent DST minute are retained and rejected without a POST/PATCH",
+    "Editing another cancellation field preserves original offset/instant and zero refund; exact revision/hash is used",
+    "Approval ID arrays and platform terms remain structured readonly without a free JSON editor",
+    "Localized native availability and refund errors retain editor and never claim a completed effect",
+    "Only completed rental receipts invalidate the current actor rental cache and link to the existing reservations route"
+  ],
+  "document_validation": {
+    "status": "passed",
+    "markdown_files": 4,
+    "local_links": 114,
+    "source_and_frontmatter_checks": "passed",
+    "rental_field_labels_per_locale": 52,
+    "locales": [
+      "es",
+      "en"
+    ],
+    "approval": "unchanged_null",
+    "new_tools_published": 0,
+    "broken_links": []
+  },
+  "ui_evidence": "docs/evidence/nodia-ai-ai25-ui-validation.json",
+  "sources": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/rentalPresentation.ts",
+      "sha256": "cdd5fb2fb7986400126be1056ba3080a61da4bde8c4bc901bb29ae14974de967",
+      "bytes": 2778
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/rentalReview.ts",
+      "sha256": "aa3bbed89bbe6ed0e7ee4d286068e9a4bf96bd81832ec5d38fb9a8417a3483ad",
+      "bytes": 1676
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useExecution.ts",
+      "sha256": "59c9b9b7adf22e7f6c457648655fd7aa77f3672dc66e0eba0d2b8c43218d90a3",
+      "bytes": 8126
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useHumanProposal.ts",
+      "sha256": "d543f08068b2c7e886811c6b9633d631ae92c5ffdbe975c6c8fa57459552b46d",
+      "bytes": 8673
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/ProposalPreview.tsx",
+      "sha256": "a3b2ad780270f3bda0bbd6df2329521d4607d80b405027f5b6578d6c46d36bb5",
+      "bytes": 10944
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.tsx",
+      "sha256": "05cc169f728774586f6960f49bbea7acb958af988292085c43988b9fb1f9d1a7",
+      "bytes": 11058
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.tsx",
+      "sha256": "ba823048400110b47e764ed0298504d77d4d1a682a81618a724a0bae5c750490",
+      "bytes": 5797
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "444dc229132c388b169ce7e1a4b58b0240895a3db96924e8eded2d7627158096",
+      "bytes": 24856
+    },
+    {
+      "path": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "9aeadeb840d2637ad3b5d3d27802e8c1076f3bd77b112bf9726d8847718b012c",
+      "bytes": 23378
+    }
+  ],
+  "logs": [
+    {
+      "path": "nodia-client/.tmp/ai25-client-full-release.log",
+      "sha256": "5d2bb7c93d1f64d085ca3dcbf4ee80bfc43bbeb06c2d017bfeead96d2aa4d16e",
+      "bytes": 515
+    },
+    {
+      "path": "nodia-client/.tmp/ai25-client-focused-final.log",
+      "sha256": "8531dce58920a89d6e25a83ec5f72301a2686683a5f91dd3cfe720c5f8bdfc5b",
+      "bytes": 664
+    },
+    {
+      "path": "nodia-client/.tmp/ai25-client-typecheck-final.log",
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865",
+      "bytes": 46
+    },
+    {
+      "path": "nodia-client/.tmp/ai25-client-lint-final.log",
+      "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe",
+      "bytes": 43
+    },
+    {
+      "path": "nodia-client/.tmp/ai25-client-build-final.log",
+      "sha256": "014c6ba847ca64e8bb53fd1d4a6678f72df747efa8cf6f358f6e367fc565ccde",
+      "bytes": 12784
+    }
+  ],
+  "warnings": {
+    "jsdom_navigation_messages": 4,
+    "failed_tests": 0
+  },
+  "limits": [
+    "Unit mocks and browser QA do not establish SQL authorization, atomicity, real inference or published MCP writes",
+    "No physical phone or virtual keyboard acceptance",
+    "No model, dependency or route was added"
+  ],
+  "approval_changed": false
+}

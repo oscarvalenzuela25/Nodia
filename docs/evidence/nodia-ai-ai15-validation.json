@@ -1,0 +1,174 @@
+{
+  "stage": "AI-15",
+  "date": "2026-10-16",
+  "status": "all_67_read_artifact_candidates_implemented_verified_locally_unpublished",
+  "scope": "Real native product use cases over disposable PostgreSQL; synthetic publication, actor records and adapter. No configured database, real provider inference or production publication.",
+  "coverage": {
+    "candidate_reads": 64,
+    "candidate_read_artifacts": 3,
+    "implemented_local_reads": 59,
+    "business": 12,
+    "finance": 11,
+    "reservations": 21,
+    "core_settings": 10,
+    "ai_settings": 5,
+    "positive_sql_outputs_validated": 59,
+    "remaining_external_reads": 0,
+    "remaining_artifacts": 0,
+    "published_business_tools": 0,
+    "stage_closed": false,
+    "implemented_external_reads": 5,
+    "implemented_read_artifacts": 3,
+    "implemented_candidates": 67
+  },
+  "server": {
+    "full_suite": {
+      "command": "npm run test -- --maxWorkers=4",
+      "passed": 1498,
+      "files": 156,
+      "duration_seconds": 52.6
+    },
+    "build": "npm run build passed, including production TypeScript and generated assets",
+    "lint": "npm run lint passed; zero errors, three pre-existing warnings outside this stage",
+    "all_test_sources_typecheck": "npx tsc --noEmit retains 30 pre-existing errors in unrelated fixtures; no new NodiaAI, authority or product-log fixture errors",
+    "integration": {
+      "command": "npm run test:nodia-ai:products (final build and its three integration scripts executed separately against the same compiled release)",
+      "checks": 41,
+      "passed": 41,
+      "positive_native_read_contracts": 59,
+      "worker_runs": 2,
+      "tools_per_worker_dispatch": 72,
+      "report": "docs/evidence/nodia-ai-ai15-postgres-integration.json"
+    },
+    "compiled_postgres_regressions": [
+      {
+        "command": "node test/nodia-ai-ai14.integration.mjs",
+        "checks": 40,
+        "passed": 40
+      },
+      {
+        "command": "node test/nodia-ai-ai12.integration.mjs",
+        "checks": 21,
+        "passed": 21
+      },
+      {
+        "command": "node test/nodia-ai-ai12-routing.integration.mjs",
+        "checks": 33,
+        "passed": 33
+      },
+      {
+        "command": "node test/nodia-ai-ai13.integration.mjs",
+        "checks": 21,
+        "passed": 21
+      }
+    ],
+    "external_integration": {
+      "checks": 22,
+      "passed": 22,
+      "report": "docs/evidence/nodia-ai-ai15-external-validation.json",
+      "synthetic_remote_adapters": true
+    },
+    "artifact_integration": {
+      "checks": 24,
+      "passed": 24,
+      "report": "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+      "synthetic_storage": true
+    }
+  },
+  "transport": {
+    "report": "docs/evidence/nodia-ai-ai15-mcp-transport-validation.json",
+    "server_focal_tests": 80,
+    "python_total": 240,
+    "python_passed": 238,
+    "python_skipped_preexisting_windows": 2,
+    "actual_descriptor_count": 72,
+    "product_read_descriptors": 64,
+    "infrastructure_descriptors": 5,
+    "exact_private_wire_utf8_bytes": 92931,
+    "stdio_list_reply_utf8_bytes": 100371,
+    "catalog_max_tools": 72,
+    "catalog_max_utf8_bytes": 131072,
+    "ordinary_rpc_and_callback_max_utf8_bytes_unchanged": 65536,
+    "verification": "actual Windows stdio subprocess; last registered name, replay, rejected names, cancellation notification, UTF-8 and exact bounds",
+    "gemini_inference": false,
+    "linux_execution": false,
+    "dynamic_selection_implemented": false,
+    "product_artifact_descriptors": 3
+  },
+  "contracts": {
+    "command": "npm run test:nodia-ai:contracts",
+    "common_definitions": 125,
+    "common_structural_assertions": 243,
+    "product_schema_libraries": 7,
+    "product_definitions": 184,
+    "closed_product_input_output_contracts": 134,
+    "source_hashes": 484,
+    "modules": 54,
+    "statically_composed_modules": 49,
+    "conditional_publication_modules": 5,
+    "controllers": 38,
+    "handlers": 191,
+    "http_routes": 310,
+    "candidate_product_tools_implemented": 67,
+    "all_proposed_tools_published_false": 156,
+    "report": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json",
+    "coordination_routes": 29
+  },
+  "knowledge": {
+    "commands": [
+      "npm run knowledge:check",
+      "npm run context:prepare"
+    ],
+    "sources": 44,
+    "excluded_drafts": 44,
+    "published_documents": 0,
+    "published_fragments": 0,
+    "release_id": "2001786c9e3b2cd5815647199ac802e6ef631fa512ded2dc39111914efef5c1f",
+    "catalog_release": "nodia-ai-unpublished/1",
+    "approval": "preserved null",
+    "integration": "preserved unregistered",
+    "production_bindings": 0
+  },
+  "verified_invariants": [
+    "All 59 native read ports executed positive SQL cases and validated exact output contracts; five typed families are not only metadata stubs",
+    "Actual publication composition selects precisely approved IDs without activating extra candidates; an empty worker retains all eleven M1 entities but instantiates neither reader families nor Redis",
+    "Ordinary actors require NodiaAI, destination assignments and existing action requirements; super_admin preserves native transversal authority without impersonation",
+    "Finance uses REPEATABLE READ, other families preserve READ COMMITTED; resource revocation remains subject to the native lock and fresh statement protocol",
+    "Gateway internal SQL deadline propagates without native barriers widening three seconds to five, and SET/LOCK remains before the first MVCC query",
+    "Result schema validation precedes resource-result authorization on replay; membership and session revocation deny stored projections",
+    "Core role associations are bounded before ORM hydration; list includes and unbounded all flags are not exposed",
+    "Bigint IDs above JavaScript safe integer remain exact strings, financial amounts remain exact, product log identity is UUID, zero/false/null retain their meaning",
+    "Five business list queries have unique ID tie-breakers; three disjoint pages of equal-timestamp rows fail before the fix and pass afterward",
+    "Provider settings do not claim live availability; credentials, arbitrary fields, messages, event JSON and private relations do not enter public projections",
+    "Two worker runs receive the complete 72-tool catalog and use native Business, Finance and Rental callbacks, an external observation with durable replay and a private artifact reference",
+    "Transport ceilings are verified and fail explicitly, while argument/result budgets remain unchanged; no generic invoke, arbitrary SQL, URL or model fallback is introduced",
+    "External prepare and final verification use short SQL checkpoints; actual native external use cases perform zero SQL during observation and reuse batched selected credentials without N+1 queries",
+    "External validated receipts precede I/O and forbid redispatch of incomplete calls; completed replay requires matching current configuration fingerprint and authority without new network calls",
+    "Cancellation and absolute deadline are forwarded; late, malformed, revoked or config-changed responses are never published",
+    "Human artifact downloads reauthorize chat expiry, owner/super_admin, destination, receipt and resource before and after external I/O; no signed URLs or document/CSV content enter tool results",
+    "CSV references regenerate current data at download with row and byte limits and formula protection; invoice object reads enforce declared and actual stream bytes and destroy the stream on errors or cancellation",
+    "Artifact references disappear with existing chat/tool-call cascade; no additional persisted files, database tables, migrations or dependencies are introduced"
+  ],
+  "remaining": [],
+  "publication_gates": [
+    "Explicit review/approval of product knowledge and exact bindings, without automatically approving draft documents",
+    "Deploy compatible Server and native bridge together and verify these new product tools with the actual Gemini adapter before publishing",
+    "Keep the full-stage checklist open for publication and real adapter acceptance; the eight remaining implementation ports are now completed locally",
+    "Future tools exceed the measured 72-tool ceiling and require another explicit measured review or bounded selection before publication",
+    "Volume, concurrency, deployment, restoration and full production acceptance keep their separate planned checks"
+  ],
+  "changes": {
+    "new_tables": 0,
+    "new_migrations": 0,
+    "new_dependencies": 0,
+    "frontend_changes": false,
+    "configured_database_modified": false,
+    "real_provider_inference": false,
+    "production_family_publication": false,
+    "new_external_or_mutating_tools": true,
+    "new_external_read_tools": true,
+    "new_mutating_business_tools": false,
+    "new_human_download_endpoint": "/api/v1/nodia-ai/artifacts/:reference"
+  },
+  "updated_at": "2026-10-16T18:21:56.283Z"
+}

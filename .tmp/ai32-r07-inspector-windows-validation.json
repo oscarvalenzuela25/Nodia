@@ -1,0 +1,37 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "offline_inspector_owned_subprocess_lifecycle_windows",
+  "status": "passed",
+  "test_file": "nodia-gemini-microservice/tests/test_attachment_inspector_process.py",
+  "test_sha256": "5d9c25024eb05b6af92125c3ccaf0c3a49c03b8f0d3101b8ee9ce1bd56165970",
+  "production_file": "nodia-gemini-microservice/attachment_inspector.py",
+  "production_sha256": "6b8723a2a91b196dfa83e90a7016b59bd0387e123b78453e7b973f6aa8621da2",
+  "production_changed": false,
+  "new_tests": 4,
+  "controlled_child_processes_real": true,
+  "child_program": "isolated_synthetic_python_process",
+  "decoder_or_seccomp_claimed": false,
+  "parser_deadline_seconds_observed": 15,
+  "test_only_parser_deadline_seconds": 0.05,
+  "invariants": [
+    "nonzero_child_exit_rejected_without_metadata",
+    "timeout_kills_and_waits_owned_child",
+    "cancellation_during_communicate_propagates_after_cleanup",
+    "cancellation_during_spawn_retains_handle_until_cleanup",
+    "temporary_input_directory_empty_after_every_case",
+    "both_admission_permits_reusable_after_every_case"
+  ],
+  "focal_log": ".tmp/ai32-r07-inspector-windows-attempt01.log",
+  "focal_log_sha256": "d0c2c966b56318ce62027e56eb28a2807ed857ef614db00cbcd998b92a893a3e",
+  "full_suite_log": ".tmp/ai32-r07-python-windows-full.log",
+  "full_suite_log_sha256": "ddc7fede748b7bc3b6096fbf1747e12e7508bfdf8cb5a1456db465444c5f1b34",
+  "full_suite": { "total": 389, "passed": 387, "skipped": 2, "failed": 0 },
+  "provider_generations": 0,
+  "r2_operations": 0,
+  "production_services_restarted": false,
+  "limitations": [
+    "Windows module platform guard replaced only inside lifecycle fixture; Linux parser isolation is not asserted.",
+    "Four subprocess cases use the actual receive/decode lifecycle with a synthetic child instead of the content decoder.",
+    "Timeout is compressed only in this fixture; no production deadline changed."
+  ]
+}

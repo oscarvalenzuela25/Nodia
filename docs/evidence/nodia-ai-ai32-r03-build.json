@@ -1,0 +1,13 @@
+{
+  "stage": "AI-32-R03",
+  "scope": "candidate_staging_build_and_offline_tests",
+  "candidate_image": "sha256:c67438e96221737d739776a71b3766171c31077f106dc266571b2962d8ac0ba7",
+  "native_source_files": 88,
+  "native_manifest_sha256": "1dd02d6dc3d980debb146afe78b1ed9f65381d1a5d3b67eaf2d7c531d111ddb3",
+  "linux_test_log_sha256": "95e8895c664e46508b75e6e60a4db2988f128b8ee453cc87fcf72091bb458612",
+  "linux_test_exit_code": 0,
+  "active_container_restarted": false,
+  "active_image_retagged": false,
+  "provider_generations": 0,
+  "credential_files_copied": false
+}

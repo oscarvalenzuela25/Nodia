@@ -1,0 +1,143 @@
+{
+  "stage": "AI-38",
+  "scope": "fresh_lock_pinned_production_dependencies_isolated_runtime",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:45:00.130027+00:00",
+  "runner_sha256": "cd5fa00c5e7494ba2d10d8d72c0631963814d449ac4a35f302cdd019d443b34c",
+  "candidate_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "npm_ci_invocations": 1,
+  "automatic_install_retries": 0,
+  "lifecycle_scripts_disabled": false,
+  "TLS_verification_disabled": false,
+  "registry_or_dependency_fallbacks": false,
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "operational_services_or_dependencies_modified": false,
+  "adopted": false,
+  "raw_logs_retained_privately": true,
+  "outer_deadline_seconds": 300,
+  "checks": [
+    "single_real_npm_ci_with_lifecycles_TLS_and_lock_unchanged",
+    "main_real_static_graph_loads_with_fresh_production_dependencies_no_IO",
+    "nodia-ai-worker_real_static_graph_loads_with_fresh_production_dependencies_no_IO",
+    "fresh_production_dependencies_real_standalone_worker_11_SQL_HTTP_Redis_checks"
+  ],
+  "resources_before": {
+    "MemAvailable_bytes": 6912069632,
+    "disk_free_bytes": 6719553536,
+    "npm_heap_limit_MiB": 512,
+    "heap_limit_reason": "bound_install_heap_to_preserve_concurrent_lab_processes"
+  },
+  "package_sha256": "fc09f82cb4953e3a3dd56437c6dbdab66c674b895d93f7eb3d9cd760ded34adc",
+  "lock_sha256": "da6aa3011319ef898404fe1cbca16d740b8aebf05ac4be341d95dba1cc4d12bd",
+  "compiled_outputs_copied": 2827,
+  "runtime_assets_copied": 979,
+  "node_version": "v24.20.0",
+  "npm_version": "11.19.0",
+  "npm_ci_exit_code": 0,
+  "direct_production_dependencies": 30,
+  "installed_package_records": 262,
+  "all_installed_versions_match_lock": true,
+  "Nest_testing_absent_as_expected_dev_dependency": true,
+  "all_979_runtime_assets_and_2827_outputs_match_candidate": true,
+  "worker_harness_original_sha256": "9f86e2c211bd5f17f0d0c8a0de5e12754fe733d7e4163ef43362165a53f7bd03",
+  "worker_harness_fresh_entry_only_sha256": "b3f6365b579146f09bf65209d7a954f0cbceef50d1687917448a3180848a8a17",
+  "worker_control_exit_code": 0,
+  "worker_control": {
+    "stage": "AI-38",
+    "scope": "actual_compiled_standalone_worker_confirmed_finance_disposable_SQL_Redis",
+    "status": "passed",
+    "started_at_utc": "2026-10-20T19:45:14.108Z",
+    "checks": [
+      "HTTP confirmation admits exact queued execution without an inline financial effect",
+      "actual standalone worker commits financial effect and receipt with terminal job",
+      "worker preserves exact approved financial fields",
+      "receipt retains resource owner and immutable bound command",
+      "standalone process drains after SIGTERM without forced kill",
+      "real worker connected only to disposable PostgreSQL and Redis",
+      "returning HTTP client observes saved execution and receipt",
+      "returning client sees worker-created movement through actual finance endpoint",
+      "repeated exact HTTP confirmation returns the same execution",
+      "one effect one receipt and no pending SQL identities remain",
+      "fixture API never requested provider or storage"
+    ],
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+    "configured_database_access": false,
+    "provider_generations": 0,
+    "storage_operations": 0,
+    "operational_services_touched": false,
+    "fixture_HTTP_actor": true,
+    "physical_UI_or_generative_acceptance": false,
+    "inline_claim_or_execution": false,
+    "child_entrypoint": "dist/nodia-ai-worker.js",
+    "HTTP_requests": [
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirmation-challenge",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirm",
+        "status": 202
+      },
+      {
+        "method": "GET",
+        "endpoint": "/nodia-ai/operations/:uuid",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "endpoint": "/finance/movements/:id",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirm",
+        "status": 202
+      }
+    ],
+    "worker_network": {
+      "postgres_connections": 6,
+      "redis_connections": 1,
+      "blocked_sockets": 0,
+      "fetch_attempts": 0,
+      "listen_attempts": 0
+    },
+    "own_child_stopped": true,
+    "disposable_cleanup_complete": true,
+    "redis_image_id": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+    "fixture_API_closed_before_worker": true,
+    "worker_entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+    "network_guard_sha256": "e9cb9644bb1b60edd7c0384dfd82132ff78b15a722de85314d437893a66a10f3",
+    "worker_pid": 2210189,
+    "child_exit": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "disposable_final": {
+      "effects": 1,
+      "receipts": 1,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "finished_at_utc": "2026-10-20T19:45:35.258Z"
+  },
+  "owned_process_groups_force_cleaned": 0,
+  "emergency_owned_containers_removed": [],
+  "owned_containers_remaining": 0,
+  "finished_at_utc": "2026-10-20T19:45:35.423416+00:00",
+  "elapsed_seconds": 35.293,
+  "private_log_hashes": {
+    "private-main-stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "private-main-stderr.log": "d74af2679c8742de58c09cd15f99256a576eaf00fb0d3115ffa9051f0a29d167",
+    "private-npm-ci-stderr.log": "03d6898ead7f253158455d17987b308dd2624995ed102dea14730e1bc6b5ade8",
+    "private-nodia-ai-worker-stderr.log": "012868ac8cb10725365e1b833106f8d7c2ffe0d3dc3aa19b08638bd5ac9a3fd8",
+    "private-npm-ci-stdout.log": "05fdae7e74aabf31ea67fd9fd94d00d1b942e5848b50510104c65e144be61f21",
+    "private-worker-proof-stdout.log": "75905bc56ce746cc9136f211243c31a0082b6dd389e7884fb27ff530bab555dc",
+    "private-nodia-ai-worker-stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "private-worker-proof-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

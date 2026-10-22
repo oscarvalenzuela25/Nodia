@@ -1,0 +1,26 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "status": "passed",
+  "source_sha256": "3a88e1fe3c2d52aae319e8fa538256eeffa5e17904f5782baa8a3bc96213e17c",
+  "started_at_utc": "2026-10-20T23:01:43.270941+00:00",
+  "finished_at_utc": "2026-10-20T23:01:43.523522+00:00",
+  "transport": "HTTP Expect header-only; sockets closed without sending any body",
+  "exact_bytes": 20971520,
+  "exact_status": 100,
+  "settled_exact_status_observations": [
+    100,
+    100
+  ],
+  "over_bytes": 20971521,
+  "over_status": 413,
+  "other_route_over_11MiB_status": 413,
+  "invalid_UUID_route_over_11MiB_status": 413,
+  "request_body_bytes_sent": 0,
+  "authentication_used": false,
+  "provider_requests": 0,
+  "configured_SQL_writes": 0,
+  "limits": [
+    "100 Continue verifies proxy header admission, not application upload or storage acceptance.",
+    "The separate real authenticated UI upload must verify the full 20 MiB body."
+  ]
+}

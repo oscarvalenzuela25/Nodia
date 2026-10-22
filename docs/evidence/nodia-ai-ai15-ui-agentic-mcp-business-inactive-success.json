@@ -1,0 +1,61 @@
+{
+  "task": "AI-15",
+  "scope": "real_ui_agentic_domain_read_audit",
+  "status": "passed",
+  "configured_database_read_only": true,
+  "configured_database_modified": false,
+  "provider_generations_by_auditor": 0,
+  "run_state": "completed",
+  "provider_dispatches": 1,
+  "tool_calls": 1,
+  "rpc_messages": 7,
+  "checks": {
+    "run_completed": true,
+    "assistant_sealed": true,
+    "actual_agentic_selection": true,
+    "actor_may_access_chat": true,
+    "current_authority_allowed": true,
+    "target_receipt_present": true,
+    "comparisons_passed": true,
+    "no_pending_work": true
+  },
+  "comparisons": [
+    {
+      "capability_id": "nodia_businesses_list",
+      "receipt_completed": true,
+      "frozen_contract_matches": true,
+      "authority_hash_present": true,
+      "destination_route_in_receipt": true,
+      "grant_actor_session_match": true,
+      "capability_in_grant": true,
+      "destination_route_in_grant": true,
+      "grant_valid_at_receipt": true,
+      "requested_activity_matches": true,
+      "requested_scope_matches": true,
+      "requested_page_matches": true,
+      "filters": {
+        "activity": "inactive",
+        "page": 1,
+        "limit": 25,
+        "all_businesses": false,
+        "name_filter_applied": false,
+        "description_filter_applied": false
+      },
+      "sql_total": 0,
+      "result_total": 0,
+      "returned_count": 0,
+      "expected_page_count": 0,
+      "totals_match": true,
+      "page_count_matches": true,
+      "meta_matches": true
+    }
+  ],
+  "other_receipt_count": 0,
+  "pending": {
+    "jobs": 0,
+    "attempts": 0,
+    "runtime_slots": 0
+  },
+  "private_rows_exported": false,
+  "private_message_content_exported": false
+}

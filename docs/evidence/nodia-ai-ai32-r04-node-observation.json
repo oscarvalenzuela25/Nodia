@@ -1,0 +1,91 @@
+{
+  "stage": "AI-32-R04-node-observation",
+  "status": "passed",
+  "provider_generations": 0,
+  "database_writes": 0,
+  "configured_database_read_only": true,
+  "connection_id": "2",
+  "selections": [
+    {
+      "mode": "token_plan_web",
+      "connectionId": "2",
+      "modelId": "56fdd199312815e2",
+      "effortId": null,
+      "status": "contract_accepted",
+      "available": true,
+      "source": "gemini_live_session_and_catalog",
+      "observedAt": "2026-10-18T05:19:29.328Z",
+      "resourceKey": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "configurationGeneration": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+      "sessionGeneration": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+      "adapterContractVersion": "nodia-ai-gemini-chat/1",
+      "verifiedModalities": [
+        "image",
+        "pdf",
+        "audio"
+      ],
+      "verifiedAttachmentMediaTypes": [
+        "image/png",
+        "application/pdf",
+        "audio/wav",
+        "audio/ogg",
+        "audio/webm"
+      ],
+      "supportsMcp": false,
+      "reason": null,
+      "exactSessionMatched": true,
+      "exactMediaTypesMatched": true
+    },
+    {
+      "mode": "token_plan_agentic",
+      "connectionId": "2",
+      "modelId": "gemini-3.8-flash-high",
+      "effortId": "high",
+      "status": "contract_accepted",
+      "available": true,
+      "source": "gemini_live_session_and_catalog",
+      "observedAt": "2026-10-18T05:19:29.341Z",
+      "resourceKey": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "configurationGeneration": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "sessionGeneration": "12b540cb151a48f9847d0ed103f2c6cb",
+      "adapterContractVersion": "nodia-ai-gemini-chat/1",
+      "verifiedModalities": [
+        "image",
+        "pdf",
+        "audio"
+      ],
+      "verifiedAttachmentMediaTypes": [
+        "image/png",
+        "application/pdf",
+        "audio/webm"
+      ],
+      "supportsMcp": true,
+      "reason": null,
+      "exactSessionMatched": true,
+      "exactMediaTypesMatched": true
+    }
+  ],
+  "source_hashes": {
+    "dist/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.js": "b50c2e3cf952b90f09bfcaa7c5de5ca2153234dc079efca16111667b41ff1377",
+    "dist/nodia-ai-adapter/nodia-ai-adapter.service.js": "d9f90be2c3e84e10774b30ff89df5de9d5fb4250d6e3d8b9a59e951201720dd5",
+    "dist/nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case.js": "06258f6518c692f44c7bf10dd7a90b2844face5b3b0f3e654bb24f012a46312b"
+  },
+  "compiled_dist_files_verified": 905,
+  "compiled_manifest_reference": "docs/evidence/nodia-ai-ai32-r02-final-health.json",
+  "compiled_manifest_sha256": "d35929086e5aa85850088fa1931c15db579e6e7a6b1903e494a6505826643417",
+  "runtime_release": "/opt/nodia/releases/nodia-server-ai15-20261016",
+  "database_session": {
+    "default_read_only": "on",
+    "transaction_read_only": "on",
+    "pool_max": 1
+  },
+  "observed_at_utc_vm": "2026-10-18T05:19:36.759Z",
+  "exit_code": 0,
+  "desktop_started_at_utc": "2026-10-18T05:13:13.735717+00:00",
+  "desktop_observed_at_utc": "2026-10-18T05:13:21.859867+00:00",
+  "elapsed_seconds": 8.124,
+  "script_path": ".tmp/ai32-r04-node-observation.mjs",
+  "script_sha256": "2ff56dc0058f71a4cebae65763d757969689e7123a88b833958dfd71a2be18a7",
+  "log_path": ".tmp/ai32-r04-node-observation.log",
+  "log_sha256": "a1dd3167de7510fffb5dc7bd27b25035e63882243144745238ce4c293d06deb8"
+}

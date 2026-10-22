@@ -1,0 +1,67 @@
+{
+  "stage": "AI-38",
+  "scope": "isolated_product_context_evolution_runner",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:31:33.687652+00:00",
+  "payload_sha256": "4dfbdf95511e808626dd28c01e40208036d2498169e74afe5a5967df888ca27f",
+  "candidate_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "driver_sha256": "c466786a804c0514930e7fc3db432a8f39ed91738e40840d9b9aa4d98017aebc",
+  "provider_generations": 0,
+  "configured_database_access": false,
+  "operational_publication": false,
+  "operational_adoption": false,
+  "candidate_files_unchanged": true,
+  "exit_code": 0,
+  "integration": {
+    "stage": "AI-38",
+    "scope": "isolated_fixture_approved_product_context_evolution_two_processes",
+    "status": "passed",
+    "checks": [
+      "run admitted in process A pins release A and catalog A before publication",
+      "compiler publishes a changed product revision and a new fixture-approved feature only in isolated bundle B",
+      "B starts in a genuinely different process while old A remains alive",
+      "new worker B refuses to claim old catalog A job",
+      "existing A loader retains its pinned product and does not hot-reload B",
+      "old A completes exactly once with its original context and synthetic terminal receipt",
+      "in-flight A answer never receives B explanation or feature",
+      "next human turn in the same chat is admitted under release B",
+      "B prompt uses revised product summary and the new feature index",
+      "B preserves the original human request and assistant answer from A as canonical history",
+      "new process resolves the exact new feature detail through the real compiled loader",
+      "new product detail is still hidden without its target module",
+      "B completion does not rewrite the old context manifest or terminal-attempt receipt",
+      "old admitted run remains completed and cannot be replayed by B"
+    ],
+    "provider_generations": 0,
+    "configured_database_access": false,
+    "operational_publication": false,
+    "operational_adoption": false,
+    "approvals": "synthetic fixtures only; never approval of repository documents",
+    "hot_reload": false,
+    "releases": {
+      "a": {
+        "release_id": "28c89c7d33cd7d9222510e26c8808405e6a353e5077f980ae8c6eb450166e716",
+        "catalog": "synthetic-evolution/a"
+      },
+      "b": {
+        "release_id": "9a62da138fc98eb8db9c8b2fed12daae843d532f10cdaa82a49523d81c4c3c72",
+        "catalog": "synthetic-evolution/b"
+      }
+    },
+    "synthetic_dispatches": 2,
+    "receipt_a_before_after_sha256": "985c43d4da828e70004b65f5ea669f8ecc64ddd8d211c836500851d15a65aa1d",
+    "process_ids": [
+      2197140,
+      2197212
+    ],
+    "cleanup_complete": true
+  },
+  "emergency_fixture_containers_removed": [],
+  "preexisting_container_identities_preserved": true,
+  "owned_fixture_containers_remaining": [],
+  "log_sha256": {
+    "stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finished_at_utc": "2026-10-20T19:31:41.491934+00:00"
+}

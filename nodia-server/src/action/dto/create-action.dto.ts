@@ -1,4 +1,11 @@
-import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { TranslateItemDto } from '../../translation/dto/translate-item.dto.js';
 
@@ -13,7 +20,7 @@ export class CreateActionDto {
 
   @IsOptional()
   @IsBoolean()
-  is_active?: boolean = true;
+  is_active?: boolean;
 
   @IsOptional()
   @IsArray()
@@ -21,4 +28,3 @@ export class CreateActionDto {
   @Type(() => TranslateItemDto)
   translates?: TranslateItemDto[];
 }
-

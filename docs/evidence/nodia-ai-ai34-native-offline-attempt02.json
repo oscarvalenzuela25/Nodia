@@ -1,0 +1,24 @@
+{
+  "stage": "AI-34",
+  "scope": "isolated_native_candidate_build_and_linux_unit",
+  "status": "passed",
+  "candidate_image": "sha256:f9c1782ab32d95fd3e1134f8ba98d1cb3f5d783b5e83239d6e01ad461adb2772",
+  "source_files": 96,
+  "source_manifest_sha256": "7e7f5739a21b72d3bcc734e0c1b466c476cbe5d658e5e0660bf9555106a38e17",
+  "linux_tests": 409,
+  "linux_seconds": 9.348,
+  "linux_test_log_sha256": "23f24c8bf9fbff85e6f8400cbd0b97ed92022e9506d8e0b7060231c809f63871",
+  "build_log_sha256": "3bd8c8559ad54f38c81a41bc4cf7f43217e1a1e99798293a5de2c1b8e933b7a1",
+  "isolated_network": "none",
+  "read_only_root": true,
+  "memory_bytes": 536870912,
+  "cpu_limit": 1,
+  "active_tag_modified": false,
+  "services_restarted": false,
+  "configured_database_used": false,
+  "profile_or_credential_files_copied": false,
+  "provider_generations": 0,
+  "limitations": [
+    "Offline synthetic tests prove adapter contracts, not real session inference or deployment"
+  ]
+}

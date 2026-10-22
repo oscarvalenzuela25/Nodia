@@ -38,7 +38,11 @@ describe('GetAllActionsUseCase', () => {
           action_roles: [],
           translates: [
             { key: 'key', es: 'Crear usuario', en: 'Create user' },
-            { key: 'comment', es: 'Permite crear nuevos usuarios', en: 'Allows creating new users' },
+            {
+              key: 'comment',
+              es: 'Permite crear nuevos usuarios',
+              en: 'Allows creating new users',
+            },
           ],
         } as any,
       ],
@@ -79,7 +83,11 @@ describe('GetAllActionsUseCase', () => {
           action_roles: [],
           translates: [
             { key: 'key', es: 'Crear usuario', en: 'Create user' },
-            { key: 'comment', es: 'Permite crear nuevos usuarios', en: 'Allows creating new users' },
+            {
+              key: 'comment',
+              es: 'Permite crear nuevos usuarios',
+              en: 'Allows creating new users',
+            },
           ],
         } as any,
       ],

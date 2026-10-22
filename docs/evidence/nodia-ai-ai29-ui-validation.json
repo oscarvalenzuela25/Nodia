@@ -1,0 +1,88 @@
+{
+  "stage": "AI-29",
+  "scope": "Synthetic isolated UI only; no account, API or database operation",
+  "observed_at_utc": "2026-10-17T21:22:33.060121+00:00",
+  "viewports": [
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 1280,
+      "height": 720
+    }
+  ],
+  "languages": [
+    "es",
+    "en"
+  ],
+  "checks": [
+    {
+      "case": "confirmed proposal clearly explains separate human flow",
+      "passed": true
+    },
+    {
+      "case": "open secure channel exposes only safe target metadata before human entry",
+      "passed": true
+    },
+    {
+      "case": "mobile modal and full-width action buttons stay usable at390px",
+      "passed": true
+    },
+    {
+      "case": "synthetic422 retains dialog, input and visible error",
+      "passed": true
+    },
+    {
+      "case": "explicit retry completes, closes input form and displays opaque UUID receipt",
+      "passed": true
+    },
+    {
+      "case": "receipt parses in execution and refreshed chat without raw BigInt exception",
+      "passed": true
+    },
+    {
+      "case": "Codex synthetic pending login shows official authorization link and device code only in human modal",
+      "passed": true
+    },
+    {
+      "case": "pending login disables duplicate Start action",
+      "passed": true
+    },
+    {
+      "case": "explicit cancellation refreshes operation to Cancelled and enables composer",
+      "passed": true
+    }
+  ],
+  "fixes": [
+    "Bigint schema refinement must reject nondecimal UUID before BigInt() to let entityRef UUID union branch validate."
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/screenshots/ai29/secure-key-error-mobile.jpg",
+      "sha256": "41fa9b7fe26ae762277b8b179594d21008a5df539a5e4504995f62773eb7eaf1"
+    },
+    {
+      "path": "docs/evidence/screenshots/ai29/secure-key-mobile.jpg",
+      "sha256": "295547e894e6fb4e30427b83275000725fa056d733adb5c75feb6db7d0c4ac08"
+    },
+    {
+      "path": "docs/evidence/screenshots/ai29/secure-login-desktop-en.jpg",
+      "sha256": "42e3048d70897bb604b69357000b9b67dc327b38bc821044aea640e6d8810279"
+    },
+    {
+      "path": "docs/evidence/screenshots/ai29/secure-receipt-mobile.jpg",
+      "sha256": "8f7cfae2a21d7130b740dfa437690234bc5caafdbf8a8e91022e87fa6171eca8"
+    }
+  ],
+  "cleanup": {
+    "temporary_tab8_closed": true,
+    "viewport_reset": true,
+    "qa5194_pid70268_stopped": true,
+    "user_tab5174_untouched": true
+  },
+  "limitations": [
+    "No native account login, real credential or inference used.",
+    "Secret/codes persistence, HTTP ownership, TTL, revocation and atomic receipts are verified separately by unit and SQL suites."
+  ]
+}

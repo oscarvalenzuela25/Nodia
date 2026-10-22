@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C02",
+  "before_inventory_sha256": "27cdc00f2bf1958c9f2aabf04f207714d51cbf3de5a67af0fbaebbe921e61ffe",
+  "after_inventory_sha256": "c95f1d05a6bee53417d7f0c17c83710fefea59003161be1f1ec20d7915126590",
+  "before_coordination_sha256": "d13b874821195e3edd705e7c58de7262cadc6cb0782201038e9cbe06eb66ce73",
+  "after_coordination_sha256": "c6ee5f39776e93f7d1ab8ca5ec0065e7a206d00b09fd94019e75de42746eedcc",
+  "historical_stage_metadata_sha256": "25de0c81d312cc97d45f87571b6e459d66acc962ac433264593c690f2017939d",
+  "before_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 86,
+    "publicOperations": 5,
+    "staticallyComposedModules": 81,
+    "conditionalModules": 5
+  },
+  "after_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 86,
+    "publicOperations": 5,
+    "staticallyComposedModules": 81,
+    "conditionalModules": 5
+  },
+  "before_source_count": 854,
+  "after_source_count": 854,
+  "source_hash_changes": [
+    {
+      "file": "nodia-server/src/nodia-ai-tools/nodia-ai-tool-registry.module.ts",
+      "before_sha256": "544b480af28baf5031b65c195b3c4495188ba20193a6b04aee12e576535f21a7",
+      "after_sha256": "293a084f6f1aea314b4e95360aab4b6245097935f593a4d20bbcf24ce4cba5c1",
+      "provenance": "AI-36-C02"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/types/tool-registry.types.ts",
+      "before_sha256": "562684f49eaff13acdfb25b56c581660842b30f4b7089b69915952f937f36c2d",
+      "after_sha256": "4f9aa46c85f2fae1f9dd447ee08eaf8b2fb724637e15e386eabc158b5d99fa15",
+      "provenance": "AI-36-C02"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.ts",
+      "before_sha256": "f7d0cb4cf534c25ba84c81b4c15d7776ba721fc61bec73dea0796af422b15d67",
+      "after_sha256": "deae904699235d0067e90be0a405ce051877ff1f43fc54b39e0456c4896c17ae",
+      "provenance": "AI-36-C02"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-write-tools/nodia-ai-write-tools.module.ts",
+      "before_sha256": "d4411fcd76074c4c4b472192be2b920ba797efff67aed92fe9c7f5785d06b2cd",
+      "after_sha256": "e87d689555cad3db92da562925cb45fdaa0cba9329fe677294c88fb9a4d19c5e",
+      "provenance": "AI-36-C02"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-write-tools/types/write-tool-contract.types.ts",
+      "before_sha256": "e659290a5bcb7c4e9c992042f63ed9b6c7c8fa10823941bfe187a67436a6aa01",
+      "after_sha256": "727745bad4d35deb8afab944a8e2dc3308c7a0c2f01357904e520aedd6c2ad6c",
+      "provenance": "AI-36-C02"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "before_sha256": "bcfd1679ef7a5c6c1090331d5614da56789cda486a328a148b5c8844aa94b9a6",
+      "after_sha256": "a34093fde2c1e03fe48a1c637bb7806afe53690f9535b5339228d94d1051bffa",
+      "provenance": "AI-36-C02"
+    }
+  ],
+  "new_controller": null,
+  "new_handlers": [],
+  "unchanged_prior_handler_operations": 217,
+  "domain_handler_coverage_unchanged": 177,
+  "coordination_routes": 41,
+  "runtime_verified": false,
+  "database_applied": false,
+  "provider_generations": 0,
+  "limitations": [
+    "AST and source provenance only; no operational database write, real inference, deployment or document approval",
+    "Every previous public/app route, domain handler coverage and historical stage fact is preserved; AI-36-C02 adds four candidate secure-preparation adapters but does not publish tools or change HTTP routes"
+  ]
+}

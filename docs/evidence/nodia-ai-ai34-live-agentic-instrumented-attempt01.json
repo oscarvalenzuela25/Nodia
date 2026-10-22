@@ -1,0 +1,52 @@
+{
+  "stage": "AI-34",
+  "scope": "real_gemini_agentic_compaction_continuity_mcp_instrumented_canary",
+  "status": "failed",
+  "observed_at_utc": "2026-10-18T20:10:46.305Z",
+  "maximum_generations": 3,
+  "generation_requests": 1,
+  "operational_sql_writes": 0,
+  "user_chats_created": 0,
+  "business_tools_exposed": 0,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "model_context_tokens": null,
+  "knowledge_release": "7092b896342022735935d4aaff2783ed300b905f5693d2285b748cd75ac99ffd",
+  "knowledge_capability_metadata_source": "built_manifest_projection_not_an_independent_tool_registry_test",
+  "sql_worker_and_snapshot_persistence_acceptance": "separate_isolated_integration",
+  "checks": [
+    "configured runtime is quiet before synthetic provider work",
+    "agentic: exact current selection is eligible",
+    "agentic: each synthetic original respects the current human-message byte ceiling",
+    "agentic: long extraction request fits the measured complete native prompt"
+  ],
+  "probes": [
+    {
+      "engine": "agentic",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "compaction": null,
+      "continuity": null,
+      "terminal_proofs_acknowledged": 0,
+      "attempts": [
+        {
+          "attempt_id": "f3ad738e-1305-4078-83e8-b14a973a2d94",
+          "stage": "compaction",
+          "started_at_utc": "2026-10-18T20:10:54.133Z",
+          "terminal_proof_acknowledged": false
+        }
+      ]
+    }
+  ],
+  "failure_category": "adapter_result_unknown",
+  "uncertain_attempt_reconciliation": {
+    "outcome": "abandoned_unknown",
+    "process_closed": true,
+    "acknowledged": true
+  },
+  "finished_at_utc": "2026-10-18T20:12:45.420Z"
+}

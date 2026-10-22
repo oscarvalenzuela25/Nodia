@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NodiaAI AI-17 — synthetic 390px proposal QA</title>
+    <style>
+      body { margin: 0; background: #eceef2; color: #20252e; font: 16px/1.5 system-ui, sans-serif; }
+      main { padding: 16px; width: fit-content; max-width: 100%; box-sizing: border-box; }
+      h1 { margin: 0 0 8px; font-size: 18px; }
+      p { max-width: 390px; margin: 0 0 12px; }
+      iframe { display: block; width: 390px; height: 800px; border: 1px solid #818794; background: white; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>AI-17 · 390px responsive QA</h1>
+      <p>Synthetic transport only. Real interface, without provider or business writes.</p>
+      <iframe id="fixture" title="390px NodiaAI synthetic proposal fixture" hidden></iframe>
+      <p id="origin-error" hidden>This fixture is available only at http://127.0.0.1:5194.</p>
+    </main>
+    <script type="module">
+      if (location.origin === "http://127.0.0.1:5194") {
+        const frame = document.getElementById("fixture");
+        frame.src = "./index.html?scenario=proposal&lang=en&theme=light";
+        frame.hidden = false;
+      } else {
+        document.getElementById("origin-error").hidden = false;
+      }
+    </script>
+  </body>
+</html>

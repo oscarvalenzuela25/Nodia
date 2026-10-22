@@ -1,0 +1,122 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "new_owned_role_single_exact_configured_MCP_probe_not_capability_acceptance",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T20:08:57.432Z",
+  "maximum_native_start_requests": 1,
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "real_provider_generations": 1,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "automatic_inference_retries": 0,
+  "capability_acceptance": false,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "image_binding": {
+    "schema_version": 1,
+    "candidate_image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+    "candidate_build_report_sha256": "151c182322c08662abdb24f425f5d47949d255c2c0d0b2cbe9d66a64d2eb9d1e",
+    "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+    "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "baseline_observation_sha256": "b50c9c38e8946e4c60c357d4718229d41c99e06cafeb038dec2ef1eb2c40ee49",
+    "scope": "exact_current_configured_High_native_owned_role_no_old_proof_transfer"
+  },
+  "image_binding_file_sha256": "c26d0087d1f239c686ef8c1c2eaf913a2a21d5d66a7aa86ef80d43a52a4d7c19",
+  "source_sha256": "191877d0165c0bf4577eb836dc510b16db8d6e83a8abd5cf4dcc9b3299d38046",
+  "existing_canary_source_sha256": "604563be962df59a4b4431ad5efb2bf590b67a133a748a0d748cc90cd79ae49c",
+  "request_events": [
+    {
+      "kind": "start",
+      "started": {
+        "at_utc": "2026-10-19T20:09:08.126Z",
+        "monotonic_ms": 10818.063368
+      },
+      "finished": {
+        "at_utc": "2026-10-19T20:09:08.137Z",
+        "monotonic_ms": 10828.535295
+      },
+      "returned": true
+    },
+    {
+      "kind": "results",
+      "started": {
+        "at_utc": "2026-10-19T20:09:21.680Z",
+        "monotonic_ms": 24372.187747
+      },
+      "finished": {
+        "at_utc": "2026-10-19T20:09:21.682Z",
+        "monotonic_ms": 24374.022752
+      },
+      "returned": true
+    },
+    {
+      "kind": "attest",
+      "started": {
+        "at_utc": "2026-10-19T20:09:33.765Z",
+        "monotonic_ms": 36456.873716
+      },
+      "finished": {
+        "at_utc": "2026-10-19T20:09:33.767Z",
+        "monotonic_ms": 36458.851522
+      },
+      "returned": true
+    },
+    {
+      "kind": "acknowledge",
+      "started": {
+        "at_utc": "2026-10-19T20:09:33.767Z",
+        "monotonic_ms": 36459.158523
+      },
+      "finished": {
+        "at_utc": "2026-10-19T20:09:33.772Z",
+        "monotonic_ms": 36463.499735
+      },
+      "returned": true
+    }
+  ],
+  "proofs": [
+    {
+      "attempt_id": "8ef681a1-ebb8-476e-ab11-e9d7fbad78f9",
+      "terminal_proof_sha256": "e8fd0aa45730e9c72dec8af496dd6ef1a8446eb5b61a80c6c1f7dc416d107227",
+      "outcome": "completed",
+      "process_closed": true,
+      "observed_at_utc": "2026-10-19T20:09:33.736496+00:00"
+    }
+  ],
+  "acknowledgements": [
+    {
+      "attempt_id": "8ef681a1-ebb8-476e-ab11-e9d7fbad78f9",
+      "terminal_proof_sha256": "e8fd0aa45730e9c72dec8af496dd6ef1a8446eb5b61a80c6c1f7dc416d107227",
+      "acknowledged": true
+    }
+  ],
+  "attempt_id": "8ef681a1-ebb8-476e-ab11-e9d7fbad78f9",
+  "selection": {
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "native_timeout_seconds": 119,
+  "canonical_prompt_sha256": "da2e8a2d1ed3778fec63aa5f8fce621ceb3c2411269f40e593fcad47f7c4fa20",
+  "tools_sha256": "6323f8ecb4e2bab94a8713375959102fe5e88d38e29ca9a32b6a36354bcd5f73",
+  "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+  "session_generation_sha256": "47e317d5b8becf3870956e8c9e409eb15960a1e7e6989d25809b180a82a0dd53",
+  "native_start_payload_sha256": "5e4c9b16bfa56563e176f1b3ef80360df28cd126e6c05a2443d671e0ab6a4cbe",
+  "fixture_callbacks_observed": 1,
+  "attestation": {
+    "verified": true,
+    "adapter_contract_version": "nodia-ai-gemini-chat/1"
+  },
+  "existing_canary_report_sha256": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9",
+  "existing_canary_status": "passed",
+  "native_pending_identity": false,
+  "finished_at_utc": "2026-10-19T20:09:37.824Z"
+}

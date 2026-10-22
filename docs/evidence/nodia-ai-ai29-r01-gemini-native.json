@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "stage": "AI-29 R01",
+  "scope": "Gemini Web and Agentic durable native login; isolated kernel/Chromium/PTY proof",
+  "checked_at": "2026-10-17T22:22:07.824244+00:00",
+  "status": "passed",
+  "environment": {
+    "os": "Linux VM and Windows unit runner",
+    "container": "ephemeral ai29-r01-native-gemini-verify",
+    "base_image": "sha256:e1fcee82dd54afbb0d386e406169f85613085a5b1cdb8a3148962409a0b4a695",
+    "network": "none",
+    "uid": 10001,
+    "memory_limit_bytes": 805306368,
+    "pids_limit": 512,
+    "real_chromium_used": true,
+    "real_agentic_cli_used": false,
+    "real_credentials_used": false,
+    "provider_network_calls": 0,
+    "database_used": false,
+    "configured_service_changed": false
+  },
+  "unit_tests": {
+    "new_login_tests": 17,
+    "windows": {
+      "discovered": 283,
+      "passed": 281,
+      "skipped": 2,
+      "duration_seconds": 12.914
+    },
+    "linux": {
+      "discovered": 283,
+      "passed": 283,
+      "skipped": 0,
+      "duration_seconds": 7.418
+    }
+  },
+  "quality": {
+    "python_compileall_passed": true,
+    "git_diff_check_passed": true,
+    "dedicated_python_linter_configured": false,
+    "remote_runtime_source_hashes_match_local": true
+  },
+  "checks": [
+    "Request UUID, actor and provider persisted before native dispatch; delayed-start cancellation fence",
+    "A real HTTP-owner Python process is SIGKILLed after native login admission; another process recovers the original request",
+    "Start-response loss and stable-ID replay observe the same native supervisor without redispatch",
+    "Exact foreign actor is refused before interacting with native login",
+    "AgenticLoginManager and CliRunner use real PTY and a fixture CLI without account data; human code is never journaled",
+    "Fixture Agentic completion is published only after native cgroup closure and returns explicit null human fields",
+    "Supervisor SIGKILL with remaining PTY and descendant PGID is reconciled through cgroup.kill and kernel populated zero",
+    "Real Chromium renders a frame with 13 native processes in 4 independent sessions; all remain in the request cgroup",
+    "Web supervisor SIGKILL is reconciled with kernel-empty proof; no crashpad/sandbox flags, preload or seccomp changes",
+    "Exact profile reservation releases only after closure; terminal ACK removes empty cgroup and preserves the deadline fence"
+  ],
+  "check_count": 10,
+  "process_harness": {
+    "path": "nodia-gemini-microservice/scripts/verify_durable_login.py",
+    "exit_code": 0,
+    "result": {
+      "chromium_sigkill": {
+        "native_processes": 13,
+        "native_sessions": 4,
+        "real_chromium_frame": true,
+        "sigkill_native_tree_closed": true
+      },
+      "response_loss_and_http_restart": {
+        "kernel_cgroup_closed": true,
+        "state": "succeeded"
+      },
+      "supervisor_sigkill_and_pty_descendant_cleanup": {
+        "kernel_cgroup_closed": true,
+        "state": "cancelled"
+      }
+    }
+  },
+  "host_attachment_evidence": "docs/evidence/nodia-ai-ai29-r01-cgroup-host-validation.json",
+  "limitations": [
+    "No real account authentication, authorization code, cookie, credential or provider inference was used. Agentic CLI executable is a fixture; its manager, PTY and transport are real.",
+    "This verifies an isolated ephemeral container with current Python sources overlaid on the existing pinned image. The configured microservice was not rebuilt or deployed by this test.",
+    "Real account acceptance and SQL/human-flow integration are verified separately by the parent task.",
+    "Docker generation attestation is covered by the separate 12-check host-helper evidence; this native harness tests API/supervisor SIGKILL and cgroup cleanup, not VM power loss.",
+    "A missing/untrusted host proof, unavailable cgroup delegation, mismatched scope identity or unproven old container remains unknown/quarantined without replay.",
+    "Durable request starts require the verified Linux cgroup runtime; legacy Settings routes retain their platform contracts.",
+    "Terminal unacknowledged receipts and unresolved requests are retained for reconciliation under the bounded 128-record journal. They are not pruned merely because the chat expired."
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-gemini-microservice/Dockerfile",
+      "sha256": "d0b45ead1d60b9b3304f5bba09bf0d6bed398042a4c2a776decef1458fb24221"
+    },
+    {
+      "path": "nodia-gemini-microservice/main.py",
+      "sha256": "4c7668984af6db1672efca8dbbe21bfff38ca090b9539c44ab4339b27f77e55d"
+    },
+    {
+      "path": "nodia-gemini-microservice/gemini_service.py",
+      "sha256": "900e3c4feffe08f6e4951bd1e97f98cf1d371e2bb969998fc239b7023aeac08b"
+    },
+    {
+      "path": "nodia-gemini-microservice/interactive_login.py",
+      "sha256": "38e8ae229d39764394c96fa3f0daaee0b2adb65aa4dba11fbfd977c72c309848"
+    },
+    {
+      "path": "nodia-gemini-microservice/agentic_login.py",
+      "sha256": "10e080d2e8c55bd1bf6c1a4926cdbb195cecaed26c0d208fd2551338f0379225"
+    },
+    {
+      "path": "nodia-gemini-microservice/login_request_store.py",
+      "sha256": "de522f93e6e5fe44ededf7a86c1c140360d7a86034b092086725569d43539f61"
+    },
+    {
+      "path": "nodia-gemini-microservice/durable_login.py",
+      "sha256": "4bf6ba19617f8a23724f10928da7fb12d971911a1aed30f9a66fab604724e2bf"
+    },
+    {
+      "path": "nodia-gemini-microservice/durable_login_routes.py",
+      "sha256": "8000a67577c49adc79ea4891196833e1c0206793a5d668896bd80ab7a11abb87"
+    },
+    {
+      "path": "nodia-gemini-microservice/login_cgroups.py",
+      "sha256": "117c73f407e35c6c63c583311257835fad49d3742d9eb42f17ea2c589e772088"
+    },
+    {
+      "path": "nodia-gemini-microservice/login_supervisor.py",
+      "sha256": "8859645ee2dde0543348ee34f38bc2bb0c1410e9a2723529aa13a2e38d7a4317"
+    },
+    {
+      "path": "nodia-gemini-microservice/scripts/verify_durable_login.py",
+      "sha256": "038368156ae506ea372fcfad9ac565ceaac631a5a9b544006b7c174115d803bd"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_durable_login.py",
+      "sha256": "34e80c73d51b658f6f581d62081df162c1927e7aa445848c1edf6e2d325a7d02"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/fixtures/login_cli_fixture.py",
+      "sha256": "abd688c22004d1af8d388506d4181d59f4f4c39db63b630780952be13c5f32c6"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/fixtures/login_supervisor_fixture.py",
+      "sha256": "72951a49de8c5c1bf5e0f03a795cf00abd27456a98629612c1f9b489670ee421"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/fixtures/login_api_fixture.py",
+      "sha256": "5ff390f050fc8dc5603515c0188dd50b59e4f164d26da72934b9a40b8f7fe326"
+    },
+    {
+      "path": "nodia-gemini-microservice/README.md",
+      "sha256": "8edbd392b81ebd4bdc253bfce814d84aaee01254de4230b4d37fd858802625f7"
+    }
+  ]
+}

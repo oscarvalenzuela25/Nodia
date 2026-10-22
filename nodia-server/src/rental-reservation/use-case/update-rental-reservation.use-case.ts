@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable, ConflictException } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import {
@@ -16,17 +17,18 @@ export class UpdateRentalReservationUseCase {
     private readonly reservations: RentalReservationService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: UpdateRentalReservationDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(UpdateRentalReservationDto, input);
     requireNonEmptyUpdate(dto);
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'reservation.update',

@@ -1,0 +1,114 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "immutable_owned_MCP_role_candidate_build_and_offline_Linux_QA",
+  "started_at_utc": "2026-10-19T19:17:45.760967+00:00",
+  "status": "passed",
+  "baseline_container": {
+    "container_id": "d7b4510ebe06564004959a6d1fe3ff393d42bc707fbe62818e2f180a7563a7b2",
+    "image_id": "sha256:3f004c6c170ea79d16a544a788a5189f3afc17d3d68d465cb5092c3099cd0404",
+    "started_at": "2026-10-19T19:09:25.005035665Z"
+  },
+  "archive_sha256": "0d30b1f6331d3512fa7e4b97916c1914c188d0f4024beb3697c90a0707395dd6",
+  "manifest_sha256": "5572e21e9466d6592e3ee0427312911551aad50df4dd5f8e5e6db600184be70d",
+  "image_source_hashes": {
+    "native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "public_test_files": 41,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "candidate_activated": false,
+  "test_sources_mount_only": true,
+  "operational_environment_or_profile_mounts": false,
+  "network": "none",
+  "root_filesystem_read_only": true,
+  "excluded_C03_test_file": {
+    "path": "test_invoice_mcp_contract.py",
+    "sha256": "c4ff2aebc8ec12b10a2f8d0abb63628230d080df1e0d06799b24ef8258b1ce35",
+    "methods": 15,
+    "reason": "C03_invoice_MCP_contract_absent_from_approved_base_and_candidate_image"
+  },
+  "expected_applicable_tests": 430,
+  "source_runner_sha256": "e574543305598e601d3a907950ced5529d04013b9ffcaa050adffa1b38a91705",
+  "build_exit_code": 0,
+  "candidate_image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+  "runtime_image_config_unchanged": true,
+  "added_image_layers": 1,
+  "public_source_delta": {
+    "native_cli_diagnostics.py": {
+      "old_sha256": "68565bf87e0c37828703b3b3abf82a787158073213ac0bf155494213f6d6e691",
+      "new_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+    },
+    "native_execution_agents.py": {
+      "old_sha256": "73f000fdb9915a4ba2a4fad41f10180783464f3b87b9edc186960b8d6e0a7eef",
+      "new_sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6"
+    },
+    "native_mcp_sessions.py": {
+      "old_sha256": "b658fa4d2e0f4fc014346c4f6e8343a5b83ad9eaa406663f1bb36b93a0c54222",
+      "new_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c"
+    }
+  },
+  "public_source_files_compared": 47,
+  "production_dependency_comparison": {
+    "native_context_budget.py": {
+      "local_sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+      "candidate_sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+      "equal": true
+    },
+    "nodia_ai_chat.py": {
+      "local_sha256": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0",
+      "candidate_sha256": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0",
+      "equal": true
+    },
+    "agentic_cli.py": {
+      "local_sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+      "candidate_sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+      "equal": true
+    },
+    "native_mcp_stdio.py": {
+      "local_sha256": "0f3fa1a2e4b88d5aaba7a01ac0a35a20bb11ffb039870c26c8b7fbd12d24d999",
+      "candidate_sha256": "0f3fa1a2e4b88d5aaba7a01ac0a35a20bb11ffb039870c26c8b7fbd12d24d999",
+      "equal": true
+    },
+    "agentic_progress.py": {
+      "local_sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+      "candidate_sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+      "equal": true
+    },
+    "native_attachments.py": {
+      "local_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+      "candidate_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+      "equal": true
+    },
+    "native_attempts.py": {
+      "local_sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+      "candidate_sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+      "equal": true
+    },
+    "profile_admission.py": {
+      "local_sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+      "candidate_sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+      "equal": true
+    },
+    "run_tests.py": {
+      "local_sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+      "candidate_sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+      "equal": true
+    }
+  },
+  "exact_public_source_diff_sha256": "01892bac5f1fc53a4a5490dd76ec56f94e6f16311549195a86e5281e05e4bafe",
+  "MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "QA_exit_code": 0,
+  "Linux_tests_total": 430,
+  "Linux_test_seconds": 7.893,
+  "Linux_skips": 0,
+  "QA_logs": {
+    "qa-stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa-stderr.log": "a2d325fddaf8eccf36d22829fadaf55039fdc8e0e7edb07e9c9d110912e19a18",
+    "build-stdout.log": "3106649173e6fbae9cbc918f7f739813f7ac51b9fd6a8113cce92ac6098a6474",
+    "build-stderr.log": "ec34a09e033b515c85951f12dbaa17dc3090601dd78ed912c6b4548ce882034a"
+  },
+  "operational_container_unchanged": true,
+  "finished_at_utc": "2026-10-19T19:17:59.551344+00:00"
+}

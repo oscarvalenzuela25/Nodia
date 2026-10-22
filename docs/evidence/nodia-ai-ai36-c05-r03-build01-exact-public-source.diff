@@ -1,0 +1,57 @@
+--- base/native_mcp_stdio.py
++++ candidate/native_mcp_stdio.py
+@@ -17,6 +17,7 @@
+ MAX_CONTROLLED_CONTEXT_BYTES = 262144
+ MAX_RPC_ID_UTF8_BYTES = 512
+ MAX_RPC_ID_INTEGER = 9007199254740991
++MAX_JSON_DEPTH = 16
+ 
+ 
+ def rpc_result(identity, value):
+@@ -61,7 +62,7 @@
+     return result
+ 
+ 
+-def bounded_json(raw, max_bytes=MAX_BYTES):
++def _bounded_json(raw, max_bytes, max_depth):
+     if len(raw) > max_bytes:
+         raise ValueError("Message budget")
+     value = json.loads(raw, object_pairs_hook=pairs,
+@@ -69,13 +70,17 @@
+     pending = [(value, 0)]
+     while pending:
+         item, depth = pending.pop()
+-        if depth > 16:
++        if depth > max_depth:
+             raise ValueError("JSON depth")
+         if isinstance(item, (dict, list)):
+             if len(item) > 128:
+                 raise ValueError("JSON collection")
+             pending.extend((child, depth+1) for child in (item.values() if isinstance(item, dict) else item))
+     return value
++
++
++def bounded_json(raw, max_bytes=MAX_BYTES):
++    return _bounded_json(raw, max_bytes, MAX_JSON_DEPTH)
+ 
+ 
+ def atomic(path, value, max_bytes=MAX_BYTES):
+@@ -89,7 +94,17 @@
+ 
+ def read_manifest(path: Path):
+     with path.open("rb") as source:
+-        policy = bounded_json(source.read(MAX_MANIFEST_BYTES + 1), MAX_MANIFEST_BYTES)
++        # The catalog has its own depth-16 budget. This closed supervisor-owned
++        # object adds exactly one structural level; it grants no extra payload depth.
++        policy = _bounded_json(source.read(MAX_MANIFEST_BYTES + 1), MAX_MANIFEST_BYTES, MAX_JSON_DEPTH + 1)
++    required = {"tools", "rpc_budget", "tool_budget", "timeout_seconds", "cli_json_string_arguments", "context_budget"}
++    if not isinstance(policy, dict) or not required <= set(policy) or set(policy) - required - {"documents"}:
++        raise ValueError("Manifest envelope")
++    if (type(policy["rpc_budget"]) is not int or not 1 <= policy["rpc_budget"] <= 128
++            or type(policy["tool_budget"]) is not int or not 1 <= policy["tool_budget"] <= 12
++            or type(policy["timeout_seconds"]) is not int or not 1 <= policy["timeout_seconds"] <= 120
++            or type(policy["cli_json_string_arguments"]) is not bool):
++        raise ValueError("Manifest budgets")
+     tools = policy.get("tools") if isinstance(policy, dict) else None
+     if not isinstance(tools, list) or not 1 <= len(tools) <= MAX_CATALOG_TOOLS:
+         raise ValueError("Catalog tool budget")

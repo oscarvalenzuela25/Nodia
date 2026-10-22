@@ -1,0 +1,324 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "automatic_selection_actual_compiled_SQL_synthetic_transport",
+  "attempt": "attempt03",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T03:01:35.269489+00:00",
+  "completed_at_utc": "2026-10-19T03:02:01.511604+00:00",
+  "exit_code": 0,
+  "timeout": false,
+  "manifest_sha256": "20c1d42f54ec30d4cbe5a4ac5f6f7543264344262511fb014ba485712cfbb154",
+  "archive_sha256": "f7305b029ad332759e7effcee59b6b70e12594dde3723bbeb6db8a00e1f65408",
+  "compiled_files_verified": 2803,
+  "harness_sha256": "a155ac01c5911292b460e355c6d923e8bc622fbe1397d4f05f803c09b137ecc3",
+  "runner_sha256": "41d45cf5479a099fff38581b81f4a74a6979abd742469c531d8f84258e989995",
+  "stdout_sha256": "165ff5b9e95d15b960e45d086006102cdfd2455cdc766eac9157d2523d1f6137",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "assertion_result": {
+    "stage": "AI-36-C05",
+    "scope": "automatic_selection_actual_compiled_SQL_synthetic_transport",
+    "status": "passed",
+    "checks": 40,
+    "check_names": [
+      "production bundle publishes the seven new candidates without any synthetic publication override",
+      "web_delegated_discovery_ACK_execution_all_seven: discovery exposes selection without business capability descriptors",
+      "web_delegated_discovery_ACK_execution_all_seven: same selection callback returns one durable receipt without granting tools",
+      "web_delegated_discovery_ACK_execution_all_seven: a business callback remains denied in the original discovery generation",
+      "web_delegated_discovery_ACK_execution_all_seven: execution starts only after exact discovery proof acknowledgement",
+      "all seven new published adapters execute through the selected production gateway",
+      "Web and two Agentic generations finish through the real worker state machine",
+      "the continuing delegated execution charges exactly one delegation and three provider dispatches",
+      "all delegated Agentic generations preserve the frozen target mode and model",
+      "model preparation has no additional financial or accepted-memory effect before human HTTP confirmation",
+      "exact human workflow confirmation applies memory and expense once with SQL receipts",
+      "ACK_failure_does_not_activate_or_dispatch: discovery exposes selection without business capability descriptors",
+      "ACK_failure_does_not_activate_or_dispatch: same selection callback returns one durable receipt without granting tools",
+      "ACK_failure_does_not_activate_or_dispatch: a business callback remains denied in the original discovery generation",
+      "failed native ACK retains discovery grant and prevents a second inference",
+      "ACK_failure_does_not_activate_or_dispatch: execution starts only after exact discovery proof acknowledgement",
+      "retrying only the ACK and undispatched selection stage resumes without replaying discovery",
+      "unknown_discovery_never_activates: discovery exposes selection without business capability descriptors",
+      "unknown_discovery_never_activates: same selection callback returns one durable receipt without granting tools",
+      "unknown_discovery_never_activates: a business callback remains denied in the original discovery generation",
+      "lost discovery reply leaves selection unactivated and dispatch unknown without replay",
+      "uncertain selection never receives the selected business grant",
+      "explicit synthetic native reconciliation closes uncertainty without another generation",
+      "destination_revoked_after_selection: discovery exposes selection without business capability descriptors",
+      "destination_revoked_after_selection: same selection callback returns one durable receipt without granting tools",
+      "destination_revoked_after_selection: a business callback remains denied in the original discovery generation",
+      "destination revocation before activation denies selected capabilities without another inference",
+      "catalog_hash_changes_after_selection: discovery exposes selection without business capability descriptors",
+      "catalog_hash_changes_after_selection: same selection callback returns one durable receipt without granting tools",
+      "catalog_hash_changes_after_selection: a business callback remains denied in the original discovery generation",
+      "stale catalog identity denies activation without silently reselecting or dispatching",
+      "selected_execution_respects_remaining_dispatch_budget: discovery exposes selection without business capability descriptors",
+      "selected_execution_respects_remaining_dispatch_budget: same selection callback returns one durable receipt without granting tools",
+      "selected_execution_respects_remaining_dispatch_budget: a business callback remains denied in the original discovery generation",
+      "selected execution reserves its own provider dispatch and cannot bypass an exhausted budget",
+      "delegated_source_attempt_cannot_be_replaced: discovery exposes selection without business capability descriptors",
+      "delegated_source_attempt_cannot_be_replaced: same selection callback returns one durable receipt without granting tools",
+      "delegated_source_attempt_cannot_be_replaced: a business callback remains denied in the original discovery generation",
+      "tampering with the acknowledged delegated source cannot authorize a second delegated execution",
+      "all synthetic SQL scenarios finish without pending jobs attempts or runtime slots"
+    ],
+    "scenarios": [
+      {
+        "name": "web_delegated_discovery_ACK_execution_all_seven",
+        "run": "cb487461-6f09-4a2e-a45c-b3a68071450f",
+        "dispatches": [
+          {
+            "attempt_id": "6b8c821f-a7a4-40fa-b508-cf3066cc3334",
+            "mode": "token_plan_web",
+            "selection_phase": "discovery",
+            "tools": []
+          },
+          {
+            "attempt_id": "35aaae36-dfbe-4e50-9835-7026b4bd7e54",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          },
+          {
+            "attempt_id": "02553d8f-8354-4d8d-8618-d6dc32f281d9",
+            "mode": "token_plan_agentic",
+            "selection_phase": "execution",
+            "tools": [
+              "nodia_attachments_describe",
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_entities_search",
+              "nodia_finance_movements_prepare_create",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_operations_get",
+              "nodia_preferences_list",
+              "nodia_preferences_prepare",
+              "nodia_proposals_get",
+              "nodia_reports_describe",
+              "nodia_reports_run",
+              "nodia_workflows_prepare"
+            ]
+          }
+        ],
+        "final_state": "completed",
+        "error_code": null,
+        "provider_dispatches_used": 3,
+        "delegations_used": 1,
+        "tool_calls_used": 10,
+        "final_selection_phase": "execution"
+      },
+      {
+        "name": "ACK_failure_does_not_activate_or_dispatch",
+        "run": "59db65fe-cd75-48de-9596-eb2207a5f75b",
+        "dispatches": [
+          {
+            "attempt_id": "77af8c86-1bc1-4dbe-ac39-5afb759622b8",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          },
+          {
+            "attempt_id": "5639280c-10e8-4d89-8429-6f2b000467c0",
+            "mode": "token_plan_agentic",
+            "selection_phase": "execution",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_entities_search",
+              "nodia_finance_movements_prepare_create",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          }
+        ],
+        "final_state": "completed",
+        "error_code": null,
+        "provider_dispatches_used": 2,
+        "delegations_used": 0,
+        "tool_calls_used": 4,
+        "final_selection_phase": "execution"
+      },
+      {
+        "name": "unknown_discovery_never_activates",
+        "run": "3f4c083c-146e-48e8-b2ef-a843fefe94bc",
+        "dispatches": [
+          {
+            "attempt_id": "9b5f27a3-f38a-49a5-9734-2a4053078486",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          }
+        ],
+        "final_state": "failed",
+        "error_code": "nodia_ai:outcome_unknown",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "selection_requested"
+      },
+      {
+        "name": "destination_revoked_after_selection",
+        "run": "73467ed7-b025-45a3-8169-592656d2ecc2",
+        "dispatches": [
+          {
+            "attempt_id": "f340f4a3-0d28-49b5-b909-bdc5fa1587db",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          }
+        ],
+        "final_state": "failed",
+        "error_code": "nodia_ai:capability_denied",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "ack_pending"
+      },
+      {
+        "name": "catalog_hash_changes_after_selection",
+        "run": "5ec9504f-fa47-4550-9910-19e3b8ee1e4a",
+        "dispatches": [
+          {
+            "attempt_id": "2563ad77-7ae4-45e6-8419-e3568e7afc98",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          }
+        ],
+        "final_state": "failed",
+        "error_code": "nodia_ai:catalog_changed",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "ack_pending"
+      },
+      {
+        "name": "selected_execution_respects_remaining_dispatch_budget",
+        "run": "304041ed-4237-4270-a6a8-f7a7fa580c2d",
+        "dispatches": [
+          {
+            "attempt_id": "0cdc76dd-48ba-4c00-b942-936f7eddc4cd",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          }
+        ],
+        "final_state": "failed",
+        "error_code": "nodia_ai:execution_limit",
+        "provider_dispatches_used": 1,
+        "delegations_used": 0,
+        "tool_calls_used": 3,
+        "final_selection_phase": "execution"
+      },
+      {
+        "name": "delegated_source_attempt_cannot_be_replaced",
+        "run": "4b310ce6-0b2d-450b-8f49-77d1d0fb5fe6",
+        "dispatches": [
+          {
+            "attempt_id": "a1ae27eb-9f29-46b5-90b1-b0f9316a163d",
+            "mode": "token_plan_web",
+            "selection_phase": "discovery",
+            "tools": []
+          },
+          {
+            "attempt_id": "1113ea5d-8ebc-489f-b4b9-b0b8afb15a99",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          }
+        ],
+        "final_state": "failed",
+        "error_code": "nodia_ai:tool_selection_ack_pending",
+        "provider_dispatches_used": 2,
+        "delegations_used": 1,
+        "tool_calls_used": 3,
+        "final_selection_phase": "ack_pending"
+      }
+    ],
+    "synthetic_provider_dispatches": 11,
+    "actual_provider_generations": 0,
+    "synthetic_proof_ACKs": 11,
+    "synthetic_failed_ACKs": 1,
+    "http_requests": 6,
+    "production_bundle_capabilities": 74,
+    "knowledge_release": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+    "synthetic_publication_override": false,
+    "configured_database_used": false,
+    "storage_operations": 0,
+    "native_profile_calls": 0,
+    "services_restarted": false,
+    "human_confirmation_layer": "synthetic_operator_HTTP_exact_preview_not_physical_UI"
+  },
+  "actual_provider_generations": 0,
+  "configured_database_used": false,
+  "storage_operations": 0,
+  "services_restarted": false,
+  "synthetic_publication_override": false,
+  "disposable_containers_remaining": 0,
+  "emergency_synthetic_fixture_cleanup": []
+}

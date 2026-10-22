@@ -1,0 +1,25 @@
+{
+  "stage": "AI-34",
+  "scope": "read_only_filtered_agentic_generation_failure_metadata",
+  "status": "observed",
+  "events": [
+    {
+      "engine": "agentic",
+      "phase": "generation",
+      "error_type": "TimeoutError",
+      "failure_category": null,
+      "attempt_id": "97551a6b-4627-4e75-bfc3-7a2e3bdfd76e",
+      "elapsed_ms": 119045,
+      "response_shape": null,
+      "exit_code": null,
+      "gate_result": null
+    }
+  ],
+  "raw_logs_exported": false,
+  "provider_text_exported": false,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "limitations": [
+    "Phase and timeout category do not identify the underlying cause; missing exit/gate fields remain unknown"
+  ]
+}

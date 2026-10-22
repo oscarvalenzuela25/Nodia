@@ -1,0 +1,200 @@
+{
+  "task": "AI-17",
+  "status": "implemented_and_verified_private_lab",
+  "verified_at_utc": "2026-10-16T23:51:31.293Z",
+  "scope": "internal_native_preparation_drafts_immutable_revisions_and_readonly_preview; not MCP prepare publication or effects",
+  "server": {
+    "full_suite": {
+      "tests": 1739,
+      "files": 167,
+      "passed": true,
+      "log": "nodia-server/.tmp/ai17-close-vitest.log"
+    },
+    "build": {
+      "passed": true,
+      "log": "nodia-server/.tmp/ai17-close-build.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": "nodia-server/.tmp/ai17-close-lint.log"
+    },
+    "jcs": {
+      "reference": "https://www.rfc-editor.org/rfc/rfc8785.html",
+      "appendix_B_finite_vectors": 24,
+      "primitive_and_UTF16_ordering": true,
+      "nonJSON_unicode_duplicates_and_proxy_rejection": true
+    }
+  },
+  "client": {
+    "full_suite": {
+      "tests": 1274,
+      "files": 199,
+      "passed": true,
+      "note": "Full suite before six extra tests; final NodiaAI subset covers all six and subsequent changes"
+    },
+    "final_affected_suite": {
+      "tests": 75,
+      "files": 7,
+      "passed": true
+    },
+    "typecheck": true,
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "final_build": {
+      "passed": true,
+      "log": "nodia-client/.tmp/ai17-final-build.log"
+    },
+    "manual": "docs/evidence/nodia-ai-ai17-browser-qa.json"
+  },
+  "postgres_http": {
+    "checks": 52,
+    "passed": true,
+    "evidence": "docs/evidence/nodia-ai-ai17-postgres-integration.json",
+    "configured_database_used": false,
+    "provider_calls": 0,
+    "business_writes": 0,
+    "total_including_observation_regression": 100
+  },
+  "regression": {
+    "checks": 48,
+    "passed": true,
+    "evidence": "docs/evidence/nodia-ai-ai17-observation-regression.json",
+    "note": "SQL/HTTP regression ran on the AI17 snapshot preceding the final clarification merge. Observation code is unchanged; the final AI17 integration also covers its current proposal event path."
+  },
+  "lab": {
+    "migration": {
+      "migration": "CreateNodiaAiProposalPersistence1792400000000",
+      "applied": 1
+    },
+    "new_tables": 4,
+    "new_columns": 40,
+    "ledger": 22,
+    "http_health": 200,
+    "backup_before_migration": "/opt/nodia/verification-backups/ai17-before-proposals-1792194373",
+    "backup_sha256": "7d905c9d358a835d199fc8ab577401051e813b86efffcfe2d60f1da6555a9739",
+    "activation": "docs/evidence/nodia-ai-ai17-lab-activation.json",
+    "final_code_deployment": "docs/evidence/nodia-ai-ai17-code-deployment.json",
+    "final_archive_sha256": "3eadb7cffaf774daaa2ccf060cec7b11d30e2f8b41f5bc73716c8ebf9defa118",
+    "files": 779,
+    "services_left_running": true,
+    "gemini_restarted": false,
+    "real_inferences": 0,
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "held_or_unknown_slots": 0,
+      "migrations": 22
+    },
+    "final_state": "docs/evidence/nodia-ai-ai17-live-state.json",
+    "metadata": {
+      "tables": 15,
+      "m2_columns": 40,
+      "ledger": 22,
+      "proposal_payload_rows": 0
+    }
+  },
+  "publication": {
+    "release_id": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+    "capabilities": 67,
+    "fragments": 27,
+    "new_tools_published": 0,
+    "private_preparer": "nodia_finance_movements_prepare_create",
+    "knowledge_approval_changed": false
+  },
+  "limitations": [
+    "AI18 human confirmation, AI19 first native effect and AI20 execution recovery/cancellation remain pending",
+    "Internal preparer is deliberately not available to MCP until catalog confirmation/recovery gates pass",
+    "No new Gemini inference, write capability or business mutation tested against the configured database",
+    "AI15 R2/external/routing and public production acceptance remain independent"
+  ],
+  "artifacts": [
+    {
+      "file": "docs/mvp/63-nodia-ai-ai17-drafts-revisions.md",
+      "sha256": "59bdb87672579cd8fc28d9fc89823fe37d8013de9b68d5958d8802fcc477c175"
+    },
+    {
+      "file": "docs/architecture/decisions/ADR-044-nodia-ai-frozen-proposal-revisions.md",
+      "sha256": "c3e36a635a870989b447ac45b1edddb3406306bc8017950803ef16ec8ee4be6d"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai17-postgres-integration.json",
+      "sha256": "4ce249275e132daf2c0a3af9440cf316331b33d0a95ba47b31261c091b9eb9ed"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai17-observation-regression.json",
+      "sha256": "34d59c5313a496ff7b9dc7142fee8d083e84d6d440828edace5153e9c6afc7b4"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai17-browser-qa.json",
+      "sha256": "d3455a67a8911bdc5290ae6114987586078e36b23ee6399d5604e8e71f48de5a"
+    },
+    {
+      "file": "nodia-server/src/migrations/1792400000000-CreateNodiaAiProposalPersistence.ts",
+      "sha256": "85818d55319c5ff1d3260ced394fee45131054ab550fb46cfd2ca69345f6c680"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai17.integration.mjs",
+      "sha256": "40cfeb048848515b676c8167602505ce389cb3cc900c5307b366a6034867e25d"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai17-live-state.json",
+      "sha256": "04259e72d80a256c66c320c03a3b0097e9b0a7fc60c9f7640bc8dd42e5c6d69f"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai17-code-deployment.json",
+      "sha256": "49fdce711021d10d6ae17842ec4e30cfa955eb5c2c01da268c9deed821c31189"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai17-lab-activation.json",
+      "sha256": "b23353a390db775e5f49a82a0224b864fd6037e25cf6fde3e7b19f3778a5bd1e"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-current-endpoints.json",
+      "sha256": "65ff68655e2f9e7a54d16831223861f7c161d2830046e0684c429428ef430b88"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-coordination-api.json",
+      "sha256": "75caa798b6a7c9bb22f2b7a4e6bb8c53a1f32c8e1a718eb7a52be4b19f7e871b"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-data-model.json",
+      "sha256": "c8619f40247ad18b031bbd44639f617426ea99fad0f1e781ee6bb0b46dc5417d"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "c96ea01eebdb4f08bd4ce925e3142be41ed766f9fc4abe05d9a88c311dd55a74"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json",
+      "sha256": "42732dae52f5fc7e01d19403427a3133ba9b4f8db47568f96cc3dd01a9d3a3dd"
+    }
+  ],
+  "continuation": {
+    "domain_merge_only": true,
+    "reply_can_be_only_missing_field": true,
+    "prior_recipient_origins_and_command_preserved": true,
+    "stale_draft_revision_http_status": 409
+  },
+  "static_contracts": {
+    "passed": true,
+    "common_definitions": 128,
+    "domain_definitions": 184,
+    "closed_domain_contract_assertions": 134,
+    "fixtures": 262,
+    "source_hashes": 508,
+    "controllers": 40,
+    "handlers": 198,
+    "routes": 317,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json"
+  },
+  "knowledge": {
+    "passed": true,
+    "compiler_checks": 53,
+    "unchanged_release": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+    "log": "nodia-server/.tmp/ai17-knowledge-tests.log",
+    "final_check": "nodia-server/.tmp/ai17-knowledge-close.log"
+  }
+}

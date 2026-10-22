@@ -1,0 +1,20 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "r2_preparation_vm_read_only_health",
+  "observed_at_utc": "2026-10-18T16:46:45Z",
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "http": {
+    "api": 200,
+    "gemini": 200
+  },
+  "gemini_image": "sha256:212cffaeefdd5e93f1abae290c4f387a891ddbd65357c223c6f0a3c0224488f3",
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "configuration_modified": false,
+  "services_restarted": false
+}

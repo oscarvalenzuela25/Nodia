@@ -1,0 +1,86 @@
+{
+  "stage": "AI-38-MCP-R01",
+  "scope": "minimal_public_diagnostics_candidate_offline_only",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:09:46.735360+00:00",
+  "archive_sha256": "a6840888cf3c3ccbf52c00eced6bbf3925e92be5f0c77cd7b5ba24e95c00c8bb",
+  "manifest_sha256": "a92d4802bd5c6ecd5aefbdf17162920a0768bc34cd6277bf19dfcbbb2469a8ae",
+  "source_runner_sha256": "22f1fd07f36083a80dd0b5efdb4c3cb06730caa6408ee916f1703b2fb674dc80",
+  "baseline_container": {
+    "id": "83f01759821f42b21b8956dd5c6e91f761a59b8e072326c4b2bcc46bdd467ca4",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T21:22:19.611154456Z"
+  },
+  "image_sources": {
+    "native_mcp_sessions.py": "e7350b8d8d1f5d6a34c536b895b78a1df36d4477711bb08dacaa13317bcf5f5f",
+    "native_mcp_stdio.py": "37b77325fff33b8b53ce30bc33c55ae3dd54e2f1e480fb7d515595e44c6cdd20"
+  },
+  "excluded_test_files": {
+    "test_agentic_cli_versions.py": {
+      "sha256": "6529fa8bf056abb72917c2f41b3acc4e5e77abdbf7b6dbfa7a8fdf8a80c37b8a",
+      "test_methods": 11,
+      "reason": "R04 alternate CLI configuration absent from base and intentionally excluded"
+    },
+    "test_agentic_observation_timeout.py": {
+      "sha256": "61ac25b286dcddeaac483eeecebaf6e7b34f4ef1be5cad64baf36ff131de28ec",
+      "test_methods": 5,
+      "reason": "R05 outer metadata timeout change absent from base and intentionally excluded"
+    },
+    "test_invoice_mcp_contract.py": {
+      "sha256": "c4ff2aebc8ec12b10a2f8d0abb63628230d080df1e0d06799b24ef8258b1ce35",
+      "test_methods": 15,
+      "reason": "C03 invoice contract absent from base; diagnostics do not implement it"
+    }
+  },
+  "expected_applicable_tests": 442,
+  "test_sources_mount_only": true,
+  "image_sources_not_overridden_in_QA": true,
+  "provider_requests": 0,
+  "candidate_activated": false,
+  "service_restarts": 0,
+  "operational_environment_or_profiles_mounted": false,
+  "build_and_QA_network": "none",
+  "QA_read_only_root": true,
+  "full_local_suite_parity_claimed": false,
+  "build_exit_code": 0,
+  "candidate_image_id": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+  "runtime_image_Config_unchanged": true,
+  "added_layers": 1,
+  "public_source_files_compared": 47,
+  "public_source_delta": {
+    "native_mcp_sessions.py": {
+      "old_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+      "new_sha256": "e7350b8d8d1f5d6a34c536b895b78a1df36d4477711bb08dacaa13317bcf5f5f"
+    },
+    "native_mcp_stdio.py": {
+      "old_sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+      "new_sha256": "37b77325fff33b8b53ce30bc33c55ae3dd54e2f1e480fb7d515595e44c6cdd20"
+    }
+  },
+  "all_unchanged_public_dependencies_pinned": true,
+  "exact_public_source_diff_sha256": "8a2e5239472d2ba8e64a5996fa7336ab25d0ec6e997b25c5cf1ae2000ca7b4ae",
+  "MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "QA_exit_code": 0,
+  "Linux_tests_discovered_and_executed": 442,
+  "Linux_test_seconds": 7.861,
+  "Linux_runtime_skips": 0,
+  "QA_logs_sha256": {
+    "build-stdout.log": "10fdfe9233ff049197feec794736a845402521ff77c220f2ed08306250a48408",
+    "build-stderr.log": "ec34a09e033b515c85951f12dbaa17dc3090601dd78ed912c6b4548ce882034a",
+    "qa-stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa-stderr.log": "e791fb9d2b7c8656c5109f4a22cff00cc1320929f2efacc6078180667f91cc25"
+  },
+  "operational_container_unchanged": true,
+  "owned_offline_container_names": [
+    "ai38-mcp-r01-candidate-build02-check-01",
+    "ai38-mcp-r01-candidate-build02-check-02",
+    "ai38-mcp-r01-candidate-build02-check-03",
+    "ai38-mcp-r01-candidate-build02-check-04",
+    "ai38-mcp-r01-candidate-build02-check-05",
+    "ai38-mcp-r01-candidate-build02-check-06",
+    "ai38-mcp-r01-candidate-build02-check-07",
+    "ai38-mcp-r01-candidate-build02-check-08"
+  ],
+  "owned_offline_containers_remaining": 0,
+  "finished_at_utc": "2026-10-20T19:10:00.473242+00:00"
+}

@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   ConflictException,
   Injectable,
@@ -16,12 +17,13 @@ export class UpdateRentalCancellationPolicyUseCase {
     private readonly service: RentalCancellationPolicyService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: UpdateRentalCancellationPolicyDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await configurationCommand(
       UpdateRentalCancellationPolicyDto,
       input,
@@ -31,7 +33,7 @@ export class UpdateRentalCancellationPolicyUseCase {
       dto.rules = normalizedCancellationRules(dto.rules);
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'policy.update',

@@ -1,0 +1,187 @@
+{
+  "stage": "AI-36",
+  "layer": "frontend_cross_component_http_acceptance",
+  "status": "passed",
+  "checked_at_utc": "2026-10-19T00:03:43.0597246Z",
+  "test_file": "nodia-client/src/test/modules/nodiaAi/acceptance/confirmationLifecycle.test.tsx",
+  "source_sha256": "8516409a72688ef69b365209f722ca8f9023dd8881b9f359d00334532c2c9107",
+  "provenance": "synthetic_closed_Axios_adapter_real_React_components_services_schemas_TanStack_Query_and_session_store",
+  "production_code_changed": false,
+  "test_results": {
+    "tests": 5,
+    "passed": 5,
+    "failed": 0,
+    "files": 1,
+    "assertions": [
+      {
+        "name": "AI-36 real React/HTTP confirmation lifecycle with synthetic transport revises a dependent contact, confirms the displayed immutable revision and resumes only after showing the committed supplier receipt",
+        "status": "passed"
+      },
+      {
+        "name": "AI-36 real React/HTTP confirmation lifecycle with synthetic transport reconciles a malformed successful confirmation response through GETs without issuing a second write (es)",
+        "status": "passed"
+      },
+      {
+        "name": "AI-36 real React/HTTP confirmation lifecycle with synthetic transport reconciles a malformed successful confirmation response through GETs without issuing a second write (en)",
+        "status": "passed"
+      },
+      {
+        "name": "AI-36 real React/HTTP confirmation lifecycle with synthetic transport retires a previous session's pending confirmation and denies its private proposal without adopting its late receipt",
+        "status": "passed"
+      },
+      {
+        "name": "AI-36 real React/HTTP confirmation lifecycle with synthetic transport removes an observed partial execution's receipts after access revocation and prevents resuming from stale authority",
+        "status": "passed"
+      }
+    ]
+  },
+  "checks": {
+    "focused_vitest": "passed",
+    "client_full_typecheck": "passed",
+    "focused_eslint": {
+      "errors": 0.0,
+      "warnings": 0.0
+    },
+    "full_client_suite": "delegated_to_root_final_integration",
+    "build": "no_production_or_import_graph_change_test_only"
+  },
+  "scenarios": [
+    {
+      "id": "C36-01",
+      "related_nr": [
+        "NR-02",
+        "NR-08",
+        "NR-09",
+        "NR-21"
+      ],
+      "behavior": "Registered dependent-contact correction creates revision2; no confirm until button; double click yields one challenge and one confirmation for exact revision/hash; challenge absent from query cache; partial supplier receipt remains; explicit resume sends current execution CAS and shows both receipts",
+      "boundary": "Frontend one-request guard and request identity only, not SQL atomicity or backend idempotence"
+    },
+    {
+      "id": "C36-02",
+      "related_nr": [
+        "NR-03",
+        "NR-22"
+      ],
+      "languages": [
+        "es",
+        "en"
+      ],
+      "behavior": "HTTP200 invalid confirmation payload is rejected by production schema, blocks duplicate confirm, then GET current proposal+execution recovers committed partial result without another write",
+      "boundary": "Controlled malformed adapter response; no real provider or uncertain SQL commit induced"
+    },
+    {
+      "id": "C36-03",
+      "related_nr": [
+        "NR-18",
+        "NR-21",
+        "NR-25"
+      ],
+      "behavior": "Actor/session changes during pending confirmation; new scope denied; old private proposal removed and late successful receipt ignored with no operation GET or cross-session cache adoption",
+      "boundary": "Frontend session race only; server authorization tested separately"
+    },
+    {
+      "id": "C36-04",
+      "related_nr": [
+        "NR-18"
+      ],
+      "behavior": "Execution observed with partial receipt then GET403; receipt and resume controls removed; no resume mutation; one error toast",
+      "boundary": "Synthetic access denial; does not claim server revocation enforcement"
+    }
+  ],
+  "isolation": {
+    "real_provider_calls": 0,
+    "real_http_calls": 0,
+    "real_sql_effects": 0,
+    "real_R2_calls": 0,
+    "account_or_business_mutations": 0,
+    "model_names": "synthetic_fixtures_only",
+    "undeclared_requests": "throw"
+  },
+  "scope_limits": [
+    "Does not independently close every NR scenario or certify production acceptance",
+    "Provider availability, SQL atomicity/idempotence, storage retention and runtime fencing require their own real integration evidence",
+    "Existing page routing/attachments/compaction/read-only/history tests remain part of final module/full-client regression"
+  ],
+  "commands": [
+    "npx vitest run src/test/modules/nodiaAi/acceptance/confirmationLifecycle.test.tsx --reporter=json --outputFile=../.tmp/ai36-client-acceptance-tests.json",
+    "npm run typecheck",
+    "npx eslint src/test/modules/nodiaAi/acceptance/confirmationLifecycle.test.tsx --format json --output-file ../.tmp/ai36-client-acceptance-lint.json"
+  ],
+  "module_coverage": {
+    "status": "passed",
+    "provider": "v8",
+    "scope": "src/modules/nodiaAi/**",
+    "test_scope": "src/test/modules/nodiaAi",
+    "tests": 568,
+    "passed": 568,
+    "failed": 0,
+    "pending": 0,
+    "todo": 0,
+    "files": 36,
+    "instrumented_files": 80,
+    "metrics": {
+      "lines": {
+        "total": 2090,
+        "covered": 2005,
+        "skipped": 0,
+        "pct": 95.93
+      },
+      "statements": {
+        "total": 3866,
+        "covered": 3525,
+        "skipped": 0,
+        "pct": 91.17
+      },
+      "functions": {
+        "total": 760,
+        "covered": 699,
+        "skipped": 0,
+        "pct": 91.97
+      },
+      "branches": {
+        "total": 4686,
+        "covered": 3997,
+        "skipped": 0,
+        "pct": 85.29
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "summary_sha256": "e61985b65c64df8e839ab577f83328413783b5c207eb991b56fa3d7de5ad5b66",
+    "test_report_sha256": "5fd44c5cc028b259d6caaf4c49be22932d87e903774c8b15e6989e963a1278f7",
+    "command": "npx vitest run src/test/modules/nodiaAi --coverage --coverage.include='src/modules/nodiaAi/**' --coverage.reportsDirectory='../.tmp/ai36-client-coverage' --coverage.reporter=text --coverage.reporter=json-summary --reporter=json --outputFile=../.tmp/ai36-client-module-tests.json",
+    "threshold_changed": false,
+    "limitations": [
+      "Coverage measures instrumented code reachability rather than semantic or end-to-end product acceptance",
+      "No new skips, TODOs, ignore directives, exclusions or production changes introduced",
+      "Includes isolated existing unit/component fixtures alongside the new cross-component acceptance tests"
+    ],
+    "lower_coverage_functional_areas": [
+      {
+        "path": "src/modules/nodiaAi/components/Attachments/AttachmentMessage.tsx",
+        "lines_pct": 48.57,
+        "branches_pct": 50
+      },
+      {
+        "path": "src/modules/nodiaAi/infrastructure/attachmentServices.ts",
+        "lines_pct": 75,
+        "branches_pct": 50
+      },
+      {
+        "path": "src/modules/nodiaAi/infrastructure/secureFlow.ts",
+        "lines_pct": 100,
+        "branches_pct": 56.66
+      },
+      {
+        "path": "src/modules/nodiaAi/components/Preferences/PreferenceValueEditor.tsx",
+        "lines_pct": 87.5,
+        "branches_pct": 63.88
+      }
+    ]
+  }
+}

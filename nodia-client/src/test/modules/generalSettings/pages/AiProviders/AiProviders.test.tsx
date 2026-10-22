@@ -18,8 +18,11 @@ vi.mock(
     getCurrentGeminiAgenticLogin: vi.fn(), startGeminiAgenticLogin: vi.fn(),
     getGeminiAgenticLoginStatus: vi.fn(), submitGeminiAgenticCode: vi.fn(), cancelGeminiAgenticLogin: vi.fn(),
     startGeminiLogin: vi.fn(),
+    disconnectGeminiWeb: vi.fn(),
     getGeminiLoginStatus: vi.fn(),
     cancelGeminiLogin: vi.fn(),
+    getGeminiLoginFrame: vi.fn().mockResolvedValue({ ready: false, frame_id: null, image: null, width: 1280, height: 850 }),
+    sendGeminiLoginInput: vi.fn(),
     getAiProviders: vi.fn(),
     createAiProvider: vi.fn(),
     updateAiProvider: vi.fn(),
@@ -321,7 +324,7 @@ describe("AiProviders Page", () => {
     vi.mocked(aiServices.getGeminiLoginStatus).mockResolvedValue({ ...job, state: "succeeded" });
     renderWithClient(<AiProviders />);
     await user.click(await screen.findByRole("button", { name: /Renovar Sesión \(Navegador Remoto\)/i }));
-    await user.click(await screen.findByRole("button", { name: /Iniciar navegador local/i }));
+    await user.click(await screen.findByRole("button", { name: /Abrir visor de Gemini/i }));
     await waitFor(() => expect(vi.mocked(aiServices.getAiProvidersHealth).mock.calls.length).toBeGreaterThan(1));
   });
 });

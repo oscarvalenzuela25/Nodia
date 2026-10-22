@@ -1,0 +1,16 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "configured_chat_metadata_preservation",
+  "status": "passed",
+  "comparison_excludes_only_snapshot_timestamps": true,
+  "metadata_byte_equivalent_after_json_projection": true,
+  "conversation_id": "33d6c32d-19a3-4533-8077-3ca7299d30cb",
+  "attachments_preserved": 3,
+  "retention_epoch": "1",
+  "conversation_revision": 3,
+  "provider_dispatches_remain": 1,
+  "database_mutations_by_projection": 0,
+  "storage_operations_by_projection": 0,
+  "source_before": "docs/evidence/nodia-ai-ai32-r07-configured-chat-before.json",
+  "source_after": "docs/evidence/nodia-ai-ai32-r07-configured-chat-after.json"
+}

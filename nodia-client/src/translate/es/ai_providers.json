@@ -1,4 +1,11 @@
 {
+  "web_account": {
+    "change": "Cambiar cuenta",
+    "confirm_title": "Cambiar cuenta de Gemini Web",
+    "confirm_message": "Se cerrará la sesión compartida por todas las conexiones Gemini Web de Nodia y se limpiará su navegador guardado. Después podrás ingresar con otra cuenta. Si cancelas el nuevo login, Web quedará desconectado. Las API keys, Gemini Agéntico y Codex conservan sus sesiones.",
+    "confirm_action": "Limpiar sesión y continuar",
+    "disconnected": "Sesión Gemini Web desconectada"
+  },
   "agentic_login": {
     "title": "Iniciar sesión Gemini Agentic",
     "manage": "Autenticar sesión Agentic",
@@ -204,19 +211,29 @@
     "title": "Renovación de Sesión de Navegador Remoto",
     "service_name": "Sesión web de Google Gemini",
     "service_type": "Navegador privado del servidor",
-    "local_description": "En desarrollo, el inicio de sesión abre Chrome en el equipo donde se ejecuta el microservicio Python.",
-    "local_instruction": "Mantén abierto este panel y completa el inicio de sesión en la ventana local de Chrome. El navegador de Nodia solo consulta el estado a través de Nodia Server.",
-    "unavailable": "El inicio de sesión remoto aún no está habilitado. El navegador no puede llamar directamente al microservicio privado.",
-    "operator_instruction": "Un operador debe renovar la sesión desde el entorno privado del servidor. La renovación desde Nodia estará disponible cuando exista un flujo administrativo seguro.",
-    "open_browser": "Iniciar navegador local",
+    "local_description": "El navegador privado se muestra aquí, tanto si el servicio está en tu equipo, una VM o un VPS.",
+    "local_instruction": "Mantén abierto este panel. Completa el acceso en el visor; el intento termina después de cinco minutos.",
+    "open_browser": "Abrir visor de Gemini",
     "started": "Navegador de Gemini iniciado",
-    "status_pending": "Esperando el inicio de sesión en Chrome...",
+    "status_pending": "Esperando el inicio de sesión en el visor...",
     "status_success": "Sesión de Gemini iniciada correctamente",
     "error_title": "No se pudo iniciar sesión en Gemini",
-    "error_desc": "El inicio de sesión no se completó. Revisa la ventana de Chrome y vuelve a intentarlo.",
+    "error_desc": "El inicio de sesión no se completó. Revisa el visor e inicia un nuevo intento.",
     "cancel": "Cancelar login",
     "cancelled": "Inicio de sesión cancelado",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "viewer_instruction": "Pulsa el campo de destino en la pantalla, escribe abajo y envía el texto. Usa el icono del ojo para mostrar u ocultar lo que escribes.",
+    "viewer_error": "No se pudo actualizar la pantalla. Se reintentará automáticamente; tu texto se conserva y no se enviará por su cuenta.",
+    "screen": "Pantalla interactiva de Gemini",
+    "screen_alt": "Pantalla del navegador de Google Gemini",
+    "viewer_starting": "Preparando la pantalla del navegador...",
+    "text_label": "Texto para el campo seleccionado",
+    "text_help": "Máximo 2048 caracteres. Revisa la pantalla antes de repetir una acción.",
+    "send_text": "Enviar texto",
+    "show_text": "Mostrar texto",
+    "hide_text": "Ocultar texto",
+    "action_sent": "Acción enviada al navegador",
+    "refresh_viewer": "Actualizar visor"
   },
   "modal_sync_models": {
     "title": "Sincronizar y configurar modelos",
@@ -484,7 +501,13 @@
     "quota_pro_label": "Gemini Pro",
     "quota_5h_label": "Quota 5h",
     "quota_weekly_label": "Quota semanal",
-    "agentic_reasoning_preference": "Configura Low, Medium o High. Guardar la preferencia no habilita el adaptador ni verifica razonamiento."
+    "agentic_reasoning_preference": "Configura Low, Medium o High. Guardar la preferencia no habilita el adaptador ni verifica razonamiento.",
+    "web_level_low": "Bajo",
+    "web_level_medium": "Medio",
+    "web_level_high": "Alto",
+    "web_reasoning_preference": "Configura el nivel para cada modelo. La disponibilidad depende del modelo y de la sesión.",
+    "web_legacy_reasoning": "Esta conexión conserva una preferencia histórica de pensamiento extendido. Elige un nivel para reemplazarla explícitamente; no se ha convertido automáticamente.",
+    "reasoning_model_label": "Razonamiento de {{model}}"
   },
   "engine_selection": {
     "title": "Motor de Ejecución",

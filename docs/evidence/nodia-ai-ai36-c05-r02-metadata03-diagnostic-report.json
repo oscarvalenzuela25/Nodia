@@ -1,0 +1,206 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "one_actual_HTTP_observe_with_readonly_native_metadata_process_timing",
+  "status": "passed_diagnostic_observation_not_MCP_acceptance",
+  "started_at_utc": "2026-10-19T20:07:51.381950+00:00",
+  "maximum_HTTP_observations": 1,
+  "HTTP_observations_requested": 1,
+  "native_MCP_start_requests": 0,
+  "provider_inference_requests": 0,
+  "additional_CLI_executions": 0,
+  "application_sources_modified": 0,
+  "services_restarted": false,
+  "baseline_sha256": "c7151157df2e87875a1ed087f6e3d10ec4c82207ec4456ac5d46d0c4d4c35275",
+  "source_sha256": "524a08cc1d079aa1254db3e99ace52669131da40c1c7981597ef2b0c5f706aa3",
+  "observer_source_sha256": "97a9499f1dfcaeecf62f1637a7e9f8891ad39195942400fd7580dc5bda59a03f",
+  "observer_ready": {
+    "kind": "ready",
+    "baseline_CLI_processes": 0,
+    "same_container_cgroup": true,
+    "sample_interval_ms": 20,
+    "cgroup_metrics_before": {
+      "cpu.stat": {
+        "usage_usec": 2475895,
+        "user_usec": 1878900,
+        "system_usec": 596995,
+        "nr_periods": 671,
+        "nr_throttled": 0,
+        "throttled_usec": 0
+      },
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "cpu.max": "200000 100000",
+      "memory.current": 77463552,
+      "memory.max": 2147483648,
+      "pids.current": 6,
+      "pids.max": 256,
+      "scope": "same_container_cgroup_includes_app_CLI_and_readonly_observer_overhead"
+    },
+    "at_utc": "2026-10-19T20:07:51.767230+00:00",
+    "monotonic_ms": 164037865.726129
+  },
+  "HTTP_command_started": {
+    "at_utc": "2026-10-19T20:07:51.768038+00:00",
+    "monotonic_ms": 164037866.52983
+  },
+  "HTTP_command_closed": {
+    "at_utc": "2026-10-19T20:08:03.855414+00:00",
+    "monotonic_ms": 164049953.904989
+  },
+  "HTTP_command_exit_code": 0,
+  "HTTP_observation_sha256": "878f733d9f730a2d818a2c02335e8956e52c8cd6035c32b1f9e6b03f13e44630",
+  "observer_exit_code": 0,
+  "process_observation": {
+    "kind": "result",
+    "state": "caller_stopped_after_HTTP_closed",
+    "commands": [
+      {
+        "pid": 89,
+        "group": 89,
+        "start_ticks": 16403821,
+        "kind": "usage",
+        "first_seen": {
+          "at_utc": "2026-10-19T20:07:52.124617+00:00",
+          "monotonic_ms": 164038223.10284302
+        },
+        "last_seen": {
+          "at_utc": "2026-10-19T20:07:58.487958+00:00",
+          "monotonic_ms": 164044586.44075102
+        },
+        "first_zombie_seen": null,
+        "exit_observed": {
+          "at_utc": "2026-10-19T20:07:58.551211+00:00",
+          "monotonic_ms": 164044649.69776502
+        }
+      },
+      {
+        "pid": 98,
+        "group": 98,
+        "start_ticks": 16404463,
+        "kind": "models",
+        "first_seen": {
+          "at_utc": "2026-10-19T20:07:58.551211+00:00",
+          "monotonic_ms": 164044649.69776502
+        },
+        "last_seen": {
+          "at_utc": "2026-10-19T20:07:59.988050+00:00",
+          "monotonic_ms": 164046086.53326398
+        },
+        "first_zombie_seen": null,
+        "exit_observed": {
+          "at_utc": "2026-10-19T20:08:00.029917+00:00",
+          "monotonic_ms": 164046128.39974
+        }
+      },
+      {
+        "pid": 106,
+        "group": 106,
+        "start_ticks": 16404612,
+        "kind": "model",
+        "first_seen": {
+          "at_utc": "2026-10-19T20:08:00.051010+00:00",
+          "monotonic_ms": 164046149.495779
+        },
+        "last_seen": {
+          "at_utc": "2026-10-19T20:08:03.805639+00:00",
+          "monotonic_ms": 164049904.12629703
+        },
+        "first_zombie_seen": null,
+        "exit_observed": {
+          "at_utc": "2026-10-19T20:08:03.847523+00:00",
+          "monotonic_ms": 164049946.031775
+        }
+      }
+    ],
+    "related_process_group_members": [],
+    "cgroup_metrics_after": {
+      "cpu.stat": {
+        "usage_usec": 3837619,
+        "user_usec": 2779636,
+        "system_usec": 1057982,
+        "nr_periods": 794,
+        "nr_throttled": 0,
+        "throttled_usec": 0
+      },
+      "memory.events": {
+        "low": 0,
+        "high": 0,
+        "max": 0,
+        "oom": 0,
+        "oom_kill": 0,
+        "oom_group_kill": 0
+      },
+      "cpu.max": "200000 100000",
+      "memory.current": 77369344,
+      "memory.max": 2147483648,
+      "pids.current": 6,
+      "pids.max": 256,
+      "scope": "same_container_cgroup_includes_app_CLI_and_readonly_observer_overhead"
+    },
+    "command_output_shape": null,
+    "command_exit_codes": null,
+    "raw_arguments_or_paths_emitted": false,
+    "profile_or_credentials_read": false,
+    "CLI_executions_by_observer": 0,
+    "timestamps_scope": "VM_monotonic_clock_with_20ms_sampling_uncertainty",
+    "at_utc": "2026-10-19T20:08:04.014520+00:00",
+    "monotonic_ms": 164050113.01128602
+  },
+  "HTTP_observation": {
+    "stage": "AI-36-C05-R02",
+    "scope": "one_controlled_HTTP_High_observation_no_new_CLI_owner",
+    "status": "passed",
+    "observed_at_utc": "2026-10-19T20:08:03.842Z",
+    "source_sha256": "ba6ec0ff625478f461033623d824e9524accf60dd3387321827d09746b99010e",
+    "observations": [
+      {
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high"
+        },
+        "available": true,
+        "reason": null,
+        "supports_mcp": false,
+        "elapsed_ms": 11754.717786,
+        "observed_at_utc": "2026-10-19T20:07:52.111Z",
+        "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+        "session_generation_sha256": "47e317d5b8becf3870956e8c9e409eb15960a1e7e6989d25809b180a82a0dd53",
+        "verified_modalities": [],
+        "verified_attachment_media_types": []
+      }
+    ],
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "configured_SQL_writes": 0,
+    "provider_generations": 0,
+    "metadata_requests": 1,
+    "request_timings": [
+      {
+        "started": {
+          "at_utc": "2026-10-19T20:07:52.090Z",
+          "monotonic_ms": 320.25905
+        },
+        "finished": {
+          "at_utc": "2026-10-19T20:08:03.833Z",
+          "monotonic_ms": 12062.995114
+        },
+        "returned": true
+      }
+    ],
+    "eligible_for_future_MCP_probe": true,
+    "modality_canaries_executed": 0,
+    "services_restarted": false
+  },
+  "finished_at_utc": "2026-10-19T20:08:04.022112+00:00"
+}

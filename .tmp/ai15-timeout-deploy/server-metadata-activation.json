@@ -1,0 +1,38 @@
+{
+  "ready_at_utc": "2026-10-16T21:08:52Z",
+  "server_archive_sha256": "38198cd4a3c84ba71f5cee25caec2c8213204c8cfd485f737d6bcbe4c9fd7316",
+  "server_files": 746,
+  "backup": "/opt/nodia/verification-backups/ai15-server-metadata-fix-1792184929/dist-before",
+  "api_health_http": 200,
+  "active_pids": {
+    "nodia-api": 277878,
+    "nodia-ai-worker": 277879
+  },
+  "service_identity_configuration_unchanged": true,
+  "execstart_path_and_argv_before_after_verified": true,
+  "approved_commands": {
+    "nodia-api": [
+      "/usr/local/bin/node",
+      "/usr/local/bin/node dist/main.js"
+    ],
+    "nodia-ai-worker": [
+      "/usr/local/bin/node",
+      "/usr/local/bin/node dist/nodia-ai-worker.js"
+    ]
+  },
+  "environment_dependencies_bytes_owner_mode_preserved": true,
+  "bridge_container_image_start_unchanged": true,
+  "bridge_restarted": false,
+  "knowledge_pin": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+  "capabilities": 67,
+  "fragments": 27,
+  "quiet_before_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 20
+  },
+  "migrations_executed": false,
+  "generations": 0,
+  "restarts_per_server_unit": 1
+}

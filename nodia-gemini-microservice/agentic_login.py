@@ -4,6 +4,7 @@ import asyncio
 import re
 import time
 from uuid import uuid4
+from collections.abc import Callable
 
 from agentic_login_terminal import CODE_PATTERN
 from agentic_service import AntigravityAgentService
@@ -31,18 +32,20 @@ class AgenticLoginManager:
             return None
         return dict(self._job)
 
-    async def start(self, owner: str) -> dict:
+    async def start(self, owner: str, on_finished: Callable[[], None] | None = None, *, job_id: str | None = None) -> dict:
         if self._task is not None and not self._task.done():
             if owner == self._owner:
                 return dict(self._job)
             raise ServiceError("login_busy", "Otro administrador está iniciando sesión Agentic.", 409)
         await self.service.begin_authentication()
         self._owner = owner
-        self._job = {"id": uuid4().hex, "state": "running", "authorization_url": None, "reason": None}
+        self._job = {"id": job_id or uuid4().hex, "state": "running", "authorization_url": None, "reason": None}
         self._created = time.monotonic()
         self._codes = asyncio.Queue(maxsize=1)
         self._submitted = asyncio.Event()
         self._task = asyncio.create_task(self._run())
+        if on_finished is not None:
+            self._task.add_done_callback(lambda _: on_finished())
         return dict(self._job)
 
     def submit(self, job_id: str, owner: str, code: str) -> dict:

@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { VoidRentalPaymentUseCase } from './void-rental-payment.use-case.js';
@@ -40,14 +41,20 @@ describe('VoidRentalPaymentUseCase', () => {
   it('does not undermine the received deposit of a confirmed direct booking', async () => {
     const f = fixture();
     await expect(
-      f.useCase.execute('1', '10', '50', { reason: 'Wrong entry' }, rentalKey),
+      f.useCase.execute(
+        actorFixture('1'),
+        '10',
+        '50',
+        { reason: 'Wrong entry' },
+        rentalKey,
+      ),
     ).rejects.toThrow('rental:deposit_required');
     expect(f.table(RentalPayment)[0].status).toBe('confirmed');
   });
   it('can void a mistaken draft payment but preserves the frozen agreement and audit', async () => {
     const f = fixture('draft');
     const result = await f.useCase.execute(
-      '1',
+      actorFixture('1'),
       '10',
       '50',
       { reason: 'Wrong entry' },
@@ -59,7 +66,7 @@ describe('VoidRentalPaymentUseCase', () => {
     });
     expect(
       await f.useCase.execute(
-        '1',
+        actorFixture('1'),
         '10',
         '50',
         { reason: 'Wrong entry' },
@@ -68,7 +75,7 @@ describe('VoidRentalPaymentUseCase', () => {
     ).toEqual(result);
     await expect(
       f.useCase.execute(
-        '1',
+        actorFixture('1'),
         '10',
         '50',
         { reason: 'Wrong entry' },
@@ -80,7 +87,7 @@ describe('VoidRentalPaymentUseCase', () => {
     const paid = fixture('cancelled');
     await expect(
       paid.useCase.execute(
-        '1',
+        actorFixture('1'),
         '10',
         '50',
         { reason: 'Wrong entry' },
@@ -89,7 +96,7 @@ describe('VoidRentalPaymentUseCase', () => {
     ).rejects.toThrow('rental:invalid_transition');
     const refunded = fixture('cancelled', 'refund');
     await refunded.useCase.execute(
-      '1',
+      actorFixture('1'),
       '10',
       '50',
       { reason: 'Wrong refund' },

@@ -8,6 +8,8 @@ La ampliación permite registrar vendedores, contactos de despacho y otras perso
 
 ## Requisitos expresados
 
+Contexto NodiaAI: [contactos de proveedores](../nodia-ai/knowledge/businesses/features/supplier-contacts.md), dentro de[Negocios](../nodia-ai/knowledge/businesses/README.md), revisado en[AI-05](51-nodia-ai-ai05-product-knowledge.md). Distingue reemplazo completo/versionado y request_key; no habilita herramientas ni cambia la aprobación documental.
+
 - Nueva tabla `personal_info_provider`, vinculada a `providers` mediante `provider_id bigint`, con ID autoincremental, nombre requerido, teléfonos y email opcionales, horario, comentario opcional, estado activo y fechas de creación y actualización.
 - Varios teléfonos: botón para agregar un input, deshabilitado mientras exista un teléfono nuevo sin completar. Selector de prefijo internacional a la izquierda, con Chile `+56` preseleccionado.
 - En el listado, cada teléfono tiene acciones para copiar y abrir WhatsApp Web; el email tiene acciones para copiar y redactar un correo.

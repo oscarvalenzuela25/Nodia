@@ -1,3 +1,6 @@
+import { Req } from '@nestjs/common';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
 import {
   Controller,
   Get,
@@ -29,8 +32,14 @@ export class ModuleGroupController {
   ) {}
 
   @Post()
-  create(@Body() createModuleGroupDto: CreateModuleGroupDto) {
-    return this.createModuleGroupUseCase.execute(createModuleGroupDto);
+  create(
+    @Body() createModuleGroupDto: CreateModuleGroupDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createModuleGroupUseCase.execute(
+      createModuleGroupDto,
+      actorReference(request.auth),
+    );
   }
 
   @Get()
@@ -42,13 +51,21 @@ export class ModuleGroupController {
   update(
     @Param('id') id: string,
     @Body() updateModuleGroupDto: UpdateModuleGroupDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.updateModuleGroupUseCase.execute(id, updateModuleGroupDto);
+    return this.updateModuleGroupUseCase.execute(
+      id,
+      updateModuleGroupDto,
+      actorReference(request.auth),
+    );
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param() params: CatalogIdDto) {
-    return this.deleteModuleGroupUseCase.execute(params.id);
+  remove(@Param() params: CatalogIdDto, @Req() request: AuthRequest) {
+    return this.deleteModuleGroupUseCase.execute(
+      params.id,
+      actorReference(request.auth),
+    );
   }
 }

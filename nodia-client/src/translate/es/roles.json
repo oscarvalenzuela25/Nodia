@@ -96,12 +96,13 @@
   "confirm_delete_message": "El rol \"{{name}}\" se eliminará permanentemente junto con sus asignaciones a usuarios, acciones y traducciones. Esta operación no se puede deshacer.",
   "invalid_id": "El ID del rol no es válido.",
   "not_found": "El rol ya no existe.",
-  "protected_role": "El rol super_admin no se puede eliminar.",
+  "protected_role": "El rol super_admin no se puede eliminar ni desactivar.",
   "protected_key": "El identificador del rol super_admin no se puede cambiar.",
   "pagination": {
     "next": "Página siguiente",
     "previous": "Página anterior",
     "first": "Primera página",
     "last": "Última página"
-  }
+  },
+  "invalid_actions": "Una o más acciones no existen o no son válidas."
 }

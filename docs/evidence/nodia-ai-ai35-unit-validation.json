@@ -1,0 +1,71 @@
+{
+  "stage": "AI-35",
+  "status": "passed_with_documented_global_test_fixture_typing_limit",
+  "scope": "unit_compilation_static_checks_laboratory",
+  "suites": [
+    {
+      "name": "server_all",
+      "runner": "vitest",
+      "tests_passed": 3543,
+      "files": 219,
+      "failed": 0,
+      "source_report_local": ".tmp/ai35-server-full-tests.json",
+      "report_sha256": "b8e774777ef446054f7801ec7b7f1b8676c395cd1124784f89813f168fda70b7",
+      "overlaps_other_suites": false
+    },
+    {
+      "name": "client_all",
+      "runner": "vitest",
+      "tests_passed": 1768,
+      "files": 227,
+      "failed": 0,
+      "source_report_local": ".tmp/ai35-client-final-all.json",
+      "report_sha256": "8707727f708d92587c66d1c426369ca159630e7024c88760f2748eb96915c702",
+      "overlaps_other_suites": false
+    }
+  ],
+  "server_production_build": {
+    "status": "passed",
+    "log_sha256": "1171c54cc7410a343cf4c65a121c58f5badc27338910901815d060f635759a1e"
+  },
+  "server_lint": {
+    "errors": 0,
+    "warnings": 3,
+    "notes": "Existing provider imports and historical live-unknown fixture warnings, outside AI-35.",
+    "log_sha256": "bf902d879594dd130d9c54fd009b25660b8a7b5a8be2e388e7d272e804ee3776"
+  },
+  "client_typecheck_build_lint": {
+    "status": "passed",
+    "build_log_sha256": "32d07458dc39a3e2e4326c59c78f8e6c8a3e5cf450b57372f75f2930e7ced801",
+    "lint_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "notes": "Final complete1768tests/227files, tsc-b/Vite build and scoped ESLint passed after drawer identity, hidden preference observation and prepend-commit regression fixes. Existing Vite chunk/plugin timing warnings remain.",
+    "final_source_revision_verified": true,
+    "source_manifest_local": ".tmp/ai35-client-final-source-manifest.json",
+    "source_manifest_sha256": "2051965e0b3cc862e7632b3b382f21fdd90b1dab76a56fd5e4a6c2b48e370213"
+  },
+  "global_server_test_fixture_typecheck": {
+    "stage": "AI-35",
+    "scope": "global_server_test_fixture_typecheck",
+    "status": "failed_unchanged_from_ai34_baseline",
+    "exit_code": 2,
+    "errors": 192,
+    "files": 48,
+    "source_log_local": ".tmp/ai35-server-global-test-fixtures.log",
+    "log_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9",
+    "baseline_log_local": ".tmp/ai34-tsc-all-after-spec-fixes.log",
+    "baseline_log_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9",
+    "file_code_count_changes": [],
+    "changed_ai35_files_errors": 0,
+    "changed_ai35_files": [
+      "src/nodia-ai-conversation/nodia-ai-conversation.service.ts",
+      "src/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.ts",
+      "src/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.spec.ts",
+      "src/migrations/1793100000000-AddNodiaAiTextSearchIndex.ts"
+    ],
+    "notes": "192 diagnostics in48 existing fixture files remain; the five conversation-resource diagnostics belong to unmodified admit-nodia-ai-message.use-case.spec.ts. Production build is checked separately."
+  },
+  "python": {
+    "status": "not_rerun",
+    "notes": "No native Python changes; AI34 verification remains historical."
+  }
+}

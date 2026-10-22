@@ -1,0 +1,56 @@
+{
+  "task": "AI-15",
+  "scope": "zero_inference_native_quota_shape_gateway_regression",
+  "expected_schema_rejection": false,
+  "status": "passed",
+  "native_normalizer_timestamp_type": "number",
+  "native_schema_rejection_observed": false,
+  "gateway_receipts": [
+    {
+      "tool_name": "nodia_ai_providers_health",
+      "state": "completed"
+    },
+    {
+      "tool_name": "nodia_ai_providers_gemini_engines",
+      "state": "completed"
+    },
+    {
+      "tool_name": "nodia_ai_providers_codex_session",
+      "state": "completed"
+    },
+    {
+      "tool_name": "nodia_ai_providers_models",
+      "state": "completed"
+    },
+    {
+      "tool_name": "nodia_invoices_eligible_invoice_connections",
+      "state": "completed"
+    }
+  ],
+  "valid_projections": [
+    {
+      "tool": "nodia_ai_providers_health",
+      "engine": "web",
+      "timestamp_type": "string"
+    },
+    {
+      "tool": "nodia_ai_providers_health",
+      "engine": "agentic",
+      "timestamp_type": "string"
+    },
+    {
+      "tool": "nodia_ai_providers_gemini_engines",
+      "engine": "web",
+      "timestamp_type": "string"
+    },
+    {
+      "tool": "nodia_ai_providers_gemini_engines",
+      "engine": "agentic",
+      "timestamp_type": "string"
+    }
+  ],
+  "provider_inferences": 0,
+  "synthetic_adapter": true,
+  "synthetic_provider_observation": true,
+  "configured_database_modified": false
+}

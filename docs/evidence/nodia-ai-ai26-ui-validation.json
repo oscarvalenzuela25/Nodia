@@ -1,0 +1,56 @@
+{
+  "task": "AI-26",
+  "scope": "isolated_synthetic_client_transport_no_business_database_no_provider",
+  "verified_at_utc": "2026-10-17T18:01:11.431121+00:00",
+  "origin": "http://127.0.0.1:5194",
+  "checks": [
+    "Preparation editor exposes linen null, false and true as three independent choices; selecting unavailable is preserved as false",
+    "Impossible civil date2026-02-30 is rejected without closing the preparation editor or losing the draft",
+    "Corrected planned date2026-11-02 and focused field survive requested390x844 viewport",
+    "Saving creates revision2 with a new hash and localized toast; planned time resolves in America/Santiago while actual ready_at stays null",
+    "Refund preview distinguishes actual refunded money from voiding and does not claim an external transfer",
+    "English historical money receipt preserves exact bigint9007199254740996 and links to /tools/reservations",
+    "Block preview exposes house timezone America/Santiago and explicit affected turnover identities",
+    "Editing only block reason retains original starts_at and ends_at offsets and nullable notes",
+    "Saving block correction creates revision2/hash/toast and keeps human confirmation unavailable in the isolated fixture"
+  ],
+  "requested_mobile_viewport": [
+    390,
+    844
+  ],
+  "real_user_tab_5174_modified": false,
+  "temporary_tab_closed": true,
+  "viewport_override_reset": true,
+  "qa_service_stopped": true,
+  "screenshots": [
+    {
+      "file": "docs/evidence/nodia-ai-ai26/block-revision.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "32d5971e9b31b3f3508c13cb0cebfe7a758a1168e39fda93d5b54733680ec6b7"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai26/money-receipt-en.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "ec94074b4260338e8a9c29298d73a90b6fe4b00df02c9e7a285c501c74866f13"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai26/preparation-mobile.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "f7fbe52f878573797de9b41aa5222f6c3c803243ac99bd6b888e26b06d82538f"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai26/refund-preview.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "c2e54a6c75bac3f94c7ddd602d10e1c2ca754b0911e086f1559c21fc4edbfa5c"
+    }
+  ],
+  "limitations": [
+    "Synthetic transport checks interface/protocol, not SQL effects or provider inference.",
+    "HTTP errors and DST metadata rejection are covered separately by component tests; no browser failNext injected.",
+    "No real MCP write, Gemini acceptance, physical phone or virtual keyboard acceptance."
+  ]
+}

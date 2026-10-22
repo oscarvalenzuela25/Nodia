@@ -1,0 +1,9 @@
+{
+  "keys_sent_to_VM": false,
+  "status": "operator_key_custody_metadata_observed",
+  "journal_key_acl_protected": true,
+  "private_RSA_file_exists": true,
+  "private_RSA_acl_protected": true,
+  "key_contents_read": false,
+  "journal_key_file_exists": true
+}

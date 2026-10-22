@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { describe, it, expect, vi } from 'vitest';
 import {
@@ -26,7 +27,11 @@ describe('Rental payment reads', () => {
       { type: null },
     ])
       await expect(
-        useCase.execute('1', '10', query as unknown as RentalPaymentQueryDto),
+        useCase.execute(
+          actorFixture('1'),
+          '10',
+          query as unknown as RentalPaymentQueryDto,
+        ),
       ).rejects.toThrow();
     expect(list).not.toHaveBeenCalled();
   });
@@ -52,7 +57,7 @@ describe('Rental payment reads', () => {
     vi.spyOn(service, 'list').mockResolvedValue([[row], 25]);
     const useCase = new GetRentalPaymentsUseCase(f.tx, service);
     const result = await useCase.execute(
-      '1',
+      actorFixture('1'),
       '10',
       {} as RentalPaymentQueryDto,
     );
@@ -64,7 +69,7 @@ describe('Rental payment reads', () => {
     });
     expect(result.data[0].amount).toBe('9007199254740993');
     await expect(
-      useCase.execute('3', '10', {} as RentalPaymentQueryDto),
+      useCase.execute(actorFixture('3'), '10', {} as RentalPaymentQueryDto),
     ).rejects.toThrow('rental:not_found');
   });
   it('does not leak another property by an otherwise valid payment ID', async () => {
@@ -78,11 +83,11 @@ describe('Rental payment reads', () => {
       f.tx,
       new RentalPaymentService(),
     );
-    await expect(useCase.execute('1', '10', '50')).rejects.toThrow(
-      'rental:not_found',
-    );
-    await expect(useCase.execute('1', '10', '00')).rejects.toThrow(
-      'rental:invalid_input',
-    );
+    await expect(
+      useCase.execute(actorFixture('1'), '10', '50'),
+    ).rejects.toThrow('rental:not_found');
+    await expect(
+      useCase.execute(actorFixture('1'), '10', '00'),
+    ).rejects.toThrow('rental:invalid_input');
   });
 });

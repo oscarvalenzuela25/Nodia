@@ -154,15 +154,19 @@ const records = (resource: FinanceResource) =>
       : resource === "obligations"
         ? obligations
         : movements;
+const scopeRequests:{url:string;method:string;ownerId:string|undefined}[]=[];
+Object.defineProperty(window,'__ai08Requests',{value:scopeRequests});
 let failedDelete = false,
   failedSave = false;
 mainInstance.defaults.adapter = async (request) => {
   await new Promise<void>((resolve) => setTimeout(resolve, 120));
   const url = request.url ?? "",
     q = request.params?.q ?? {};
+  scopeRequests.push({url,method:request.method??'get',ownerId:request.params?.owner_id});
+  const scopeData=(value:unknown):unknown=>Array.isArray(value)?value.map(scopeData):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,key==='user_id'&&request.params?.owner_id?request.params.owner_id:scopeData(item)])):value;
   const response = (data: unknown, status = 200) => ({
     config: request,
-    data,
+    data:scopeData(data),
     status,
     statusText: "Synthetic QA",
     headers: {},
@@ -176,6 +180,11 @@ mainInstance.defaults.adapter = async (request) => {
       response({ message }, status),
     );
   };
+  if(url.endsWith('/users')) {
+    const users=[{id:actorId,name:'Usuario principal QA',email:'principal@example.invalid',is_active:true},{id:'9007199254740994',name:'Otro usuario QA',email:'otro@example.invalid',is_active:true}];
+    const filtered=users.filter(user=>(!q.id_eq||q.id_eq===user.id)&&(!q.email_cont||user.email.includes(String(q.email_cont))));
+    return response({data:filtered,meta:{page:1,limit:20,total_pages:1,total_items:filtered.length}});
+  }
   if (url.endsWith("/authorization/context")) return response(context);
   if (url.endsWith("/ai-providers/health"))
     return response({

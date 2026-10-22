@@ -1,0 +1,32 @@
+{
+  "schema": "ai38-live-final-qa-v1",
+  "status": "passed",
+  "checked_local_links": 119,
+  "knowledge_check": {
+    "task": "AI-06",
+    "mode": "check",
+    "sources": 59,
+    "excluded": 28,
+    "documents": 31,
+    "fragments": 31,
+    "catalogRelease": "nodia-ai-ai15-reads/1",
+    "releaseId": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130"
+  },
+  "draft_revision": 15,
+  "approval": null,
+  "final_projection_unchanged_after_window_cleanup": true,
+  "global_quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "window_closed": true,
+  "VM_services_retained": true,
+  "source_hashes": {
+    "docs/evidence/nodia-ai-ai38-live-ui-r01.md": "1055e6d84de04a1fbda9ec9c16bfdee7a2c759db90faa697b48fce5198e8b4a3",
+    "docs/mvp/84-nodia-ai-ai38-environment-acceptance.md": "33dc4ede419956d20bf5bec1e426fb48c9fb26a2a45da74e3eaf6fb1c415e60b",
+    "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md": "aab5ad3e6a70c0e11df0fb320d1684817fbdb3a253a7a4f5c45f80785901e28e"
+  },
+  "prior_metadata_check_failure": "evidence_paths exceeded32; references consolidated without relaxing schema or deleting historical evidence",
+  "runtime_requests": 0
+}

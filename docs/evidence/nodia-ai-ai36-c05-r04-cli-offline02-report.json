@@ -1,0 +1,114 @@
+{
+  "stage": "AI-36-C05-R04",
+  "scope": "isolated_public_CLI_1_4_2_version_help_and_static_metadata_only",
+  "started_at_utc": "2026-10-19T20:45:19.102649+00:00",
+  "status": "passed",
+  "source_sha256": "51f444640012b8571be658d336c1eb06a9f6fefa642479b393fdcb97f9c5634c",
+  "binary_sha512": "f63dd18d9aee3742055452c6eefbc22740ac4cb7bd7ad4c6b5cac2cccbd69d0548058ef5a3f7105d57146f7ce0a3ae07ef9dd89cde84dcac2cba64edc6f8dbdc",
+  "base_image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+  "network": "none",
+  "root_filesystem_read_only": true,
+  "user": "10001:10001",
+  "capabilities_dropped": "ALL",
+  "no_new_privileges": true,
+  "public_binary_readonly_mount_only": true,
+  "operational_mounts_or_env": false,
+  "provider_inferences": 0,
+  "service_restarts": 0,
+  "runtime_operational_before": {
+    "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T20:30:54.592504609Z",
+    "units": {
+      "nodia-api": "active",
+      "nodia-ai-worker": "active",
+      "nodia-gemini-lab": "active",
+      "nginx": "active"
+    }
+  },
+  "control": {
+    "commands": [
+      {
+        "command_class": "version",
+        "limit_seconds": 4,
+        "elapsed_ms": 95.762,
+        "exit_code": 0,
+        "bounded_failure": null,
+        "stdout_bytes": 6,
+        "stderr_bytes": 0,
+        "stdout_sha256": "b99b4c7cdf236f59bc9f65d963deaecae3b16a7dad87939cacb9057f7664daee",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exact_pinned_version_reported": true,
+        "reported_version": "1.4.2"
+      },
+      {
+        "command_class": "help",
+        "limit_seconds": 15,
+        "elapsed_ms": 107.535,
+        "exit_code": 0,
+        "bounded_failure": null,
+        "stdout_bytes": 0,
+        "stderr_bytes": 2907,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "a12355e8fc064b330eeb25ba52de596406582752442e293083bcda6388a63b78",
+        "required_runtime_options": {
+          "--agent": true,
+          "--model": true,
+          "--effort": true,
+          "--input-format": true,
+          "--output-format": true,
+          "--json-schema": true,
+          "--disable-slash-commands": true,
+          "--sandbox": true,
+          "--print-timeout": true,
+          "--log-file": true
+        },
+        "all_required_runtime_options_documented": true,
+        "public_command_tokens": [
+          "models",
+          "agents",
+          "mcp",
+          "update",
+          "help"
+        ]
+      }
+    ],
+    "binary_sha512": "f63dd18d9aee3742055452c6eefbc22740ac4cb7bd7ad4c6b5cac2cccbd69d0548058ef5a3f7105d57146f7ce0a3ae07ef9dd89cde84dcac2cba64edc6f8dbdc",
+    "static_marker_presence": {
+      "inheritMcp": true,
+      "disableDefaultMcps": false,
+      "mcpServers": true,
+      "call_mcp_tool": true,
+      "jsonSchema": true,
+      "stream-json": true,
+      "print-timeout": true
+    },
+    "static_marker_interpretation": "byte_presence_only_not_runtime_parser_or_provider_compatibility",
+    "environment_keys": [
+      "HOME",
+      "LANG",
+      "PATH",
+      "TERM"
+    ],
+    "network_requests_possible": false,
+    "provider_inferences": 0,
+    "credential_or_operational_profile_access": false,
+    "role_inheritance_gate_runtime_parse": "pending_requires_a_separate_non_generative_parse_path_not_demonstrated_by_help",
+    "empty_HOME_entries_after_commands": 0
+  },
+  "control_stderr_bytes": 0,
+  "disposable_container_remaining": false,
+  "runtime_operational_after": {
+    "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T20:30:54.592504609Z",
+    "units": {
+      "nodia-api": "active",
+      "nodia-ai-worker": "active",
+      "nodia-gemini-lab": "active",
+      "nginx": "active"
+    }
+  },
+  "runtime_operational_unchanged": true,
+  "finished_at_utc": "2026-10-19T20:45:20.171363+00:00"
+}

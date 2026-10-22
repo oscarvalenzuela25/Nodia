@@ -1,0 +1,46 @@
+{
+  "stage": "AI-34",
+  "scope": "final_post_canary_read_only_health_parity",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T20:39:39Z",
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "storage_operations": 0,
+  "services_restarted": false,
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "http": {
+    "api": 200,
+    "gemini": 200,
+    "proxy": 200
+  },
+  "sql_quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 28
+  },
+  "native_runtime_artifact_counts": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "compiled_files_verified": 931,
+  "compiled_manifest_sha256": "0d7e3ade11f4a40695ebae89a597c606480f8818d22aca61d42bcb3eff78bc2c",
+  "compiled_drift_files": [],
+  "knowledge_release": "c2d7a6299d5306dacdb094015d1b7dacf6bda126fffea416d4769fb822032980",
+  "native_image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "native_source_files_verified": 99,
+  "native_source_drift_count": 0,
+  "native_source_manifest_sha256": "e9e955f093f7c1491b1a856fed0ca782b7a098a48f053f3cc6e7c271871600c5",
+  "configured_chat_preserved": true,
+  "configured_chat_metadata_sha256": "46a9dd312147858f853bc6581056bd9b3d0ccfcc4c48041a78383eec73b9cf0d",
+  "completed_at_utc": "2026-10-18T20:39:39Z"
+}

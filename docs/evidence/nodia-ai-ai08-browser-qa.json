@@ -1,0 +1,151 @@
+{
+  "task": "AI-08",
+  "scope": "actual_production_finance_page_synthetic_http_adapter",
+  "browser": "155.0.8059.80",
+  "cases": [
+    {
+      "width": 320,
+      "lang": "es",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "lang": "es",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "lang": "en",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 320,
+      "lang": "en",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 600,
+      "lang": "es",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 600,
+      "lang": "es",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 600,
+      "lang": "en",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 600,
+      "lang": "en",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "lang": "es",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "lang": "es",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "lang": "en",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 900,
+      "lang": "en",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "lang": "es",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "lang": "es",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "theme": "light",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "lang": "en",
+      "theme": "dark",
+      "ownerChanged": true,
+      "ownerLockedWithForm": true,
+      "noPageOverflow": true,
+      "errors": []
+    }
+  ]
+}

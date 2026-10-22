@@ -1,25 +1,19 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type EntityManager } from 'typeorm';
-import { Role } from './entities/role.entity.js';
-import { RoleAction } from './entities/role-action.entity.js';
 import { Action } from '../action/entities/action.entity.js';
-import { GetRolesDto } from './dto/get-roles.dto.js';
 import {
   applyRansack,
   validateRansackEnvelope,
 } from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
+import { GetRolesDto } from './dto/get-roles.dto.js';
+import { RoleAction } from './entities/role-action.entity.js';
+import { Role } from './entities/role.entity.js';
 import { GetRolesResponse } from './types/role.types.js';
-import { CreateRoleDto } from './dto/create-role.dto.js';
-import { UpdateRoleDto } from './dto/update-role.dto.js';
 
-import { TranslationService } from '../translation/translation.service.js';
 import { RedisService } from '../common/redis/redis.service.js';
+import { TranslationService } from '../translation/translation.service.js';
 
 @Injectable()
 export class RoleService {
@@ -27,21 +21,20 @@ export class RoleService {
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(RoleAction)
-    private readonly roleActionRepository: Repository<RoleAction>,
+    _roleActionRepository: Repository<RoleAction>,
     @InjectRepository(Action)
     private readonly actionRepository: Repository<Action>,
     private readonly translationService: TranslationService,
-    private readonly redisService: RedisService,
+    _redisService: RedisService,
   ) {}
 
-  async findAll({
-    page = 1,
-    limit = 10,
-    all = false,
-    includes = true,
-    q,
-  }: GetRolesDto): Promise<GetRolesResponse> {
-    const qb = this.roleRepository.createQueryBuilder('role');
+  async findAll(
+    { page = 1, limit = 10, all = false, includes = true, q }: GetRolesDto,
+    manager?: EntityManager,
+  ): Promise<GetRolesResponse> {
+    const qb = (
+      manager?.getRepository(Role) ?? this.roleRepository
+    ).createQueryBuilder('role');
     validateRansackEnvelope(q);
 
     if (includes) {
@@ -90,6 +83,8 @@ export class RoleService {
       ...cleanRoleQ
     } = q ?? {};
     applyRansack(qb, cleanRoleQ, 'role', RANSACK_POLICIES.role);
+    if (manager && !/^id\s/i.test(String(q?.s ?? '')))
+      qb.addOrderBy('role.id', 'ASC');
 
     const attachActionTranslations = async (
       rolesList: Role[],
@@ -118,6 +113,7 @@ export class RoleService {
         await this.translationService.attachTranslations(
           'actions',
           Array.from(uniqueActionsMap.values()),
+          manager,
         );
 
       const map = new Map<string, any>();
@@ -153,6 +149,7 @@ export class RoleService {
       const data = await this.translationService.attachTranslations(
         'roles',
         rawData.map((r) => formatRole(r, actionTranslationsMap)),
+        manager,
       );
       return {
         data: data as any,
@@ -174,6 +171,7 @@ export class RoleService {
     const data = await this.translationService.attachTranslations(
       'roles',
       rawData.map((r) => formatRole(r, actionTranslationsMap)),
+      manager,
     );
     const total_pages = Math.ceil(total_items / limit);
 
@@ -188,86 +186,10 @@ export class RoleService {
     };
   }
 
-  private async resolveActionIds(
-    actions: string[],
-    manager?: EntityManager,
-  ): Promise<string[]> {
-    if (!actions || actions.length === 0) return [];
-
-    const numericIds = actions.filter((a) => /^\d+$/.test(a));
-    const keys = actions.filter((a) => !/^\d+$/.test(a));
-
-    const qb = (
-      manager?.getRepository(Action) ?? this.actionRepository
-    ).createQueryBuilder('action');
-    if (keys.length > 0 && numericIds.length > 0) {
-      qb.where('action.key IN (:...keys) OR action.id IN (:...numericIds)', {
-        keys,
-        numericIds,
-      });
-    } else if (keys.length > 0) {
-      qb.where('action.key IN (:...keys)', { keys });
-    } else if (numericIds.length > 0) {
-      qb.where('action.id IN (:...numericIds)', { numericIds });
-    } else {
-      return [];
-    }
-
-    const actionEntities = await qb.getMany();
-
-    if (actionEntities.length > 0) {
-      const idMap = new Map<string, string>();
-      for (const entity of actionEntities) {
-        idMap.set(entity.key, entity.id);
-        idMap.set(entity.id, entity.id);
-      }
-      return actions
-        .map((act) => idMap.get(act) ?? act)
-        .filter((id) => /^\d+$/.test(id));
-    }
-
-    return actions.filter((id) => /^\d+$/.test(id));
-  }
-
-  async create(createRoleDto: CreateRoleDto): Promise<Role> {
-    const existing = await this.roleRepository.findOne({
-      where: { key: createRoleDto.key },
-    });
-    if (existing) {
-      return this.update(existing.id, createRoleDto);
-    }
-
-    const { actions, translates, ...roleData } = createRoleDto;
-    const newRole = this.roleRepository.create(roleData);
-    const savedRole = await this.roleRepository.save(newRole);
-
-    if (actions && actions.length > 0) {
-      const resolvedIds = await this.resolveActionIds(actions);
-      const roleActions = resolvedIds.map((actionId) =>
-        this.roleActionRepository.create({
-          role_id: savedRole.id,
-          action_id: actionId,
-          is_active: true,
-        }),
-      );
-      await this.roleActionRepository.save(roleActions);
-    }
-
-    if (translates && translates.length > 0) {
-      await this.translationService.saveTranslations(
-        'roles',
-        savedRole.id,
-        translates,
-      );
-    }
-
-    await this.redisService.delByPattern('auth:context:*');
-
-    return this.findOne(savedRole.id);
-  }
-
-  async findOne(id: string): Promise<Role> {
-    const role = await this.roleRepository.findOne({
+  async findOne(id: string, manager?: EntityManager): Promise<Role> {
+    const role = await (
+      manager?.getRepository(Role) ?? this.roleRepository
+    ).findOne({
       where: { id },
       relations: {
         role_actions: {
@@ -283,6 +205,7 @@ export class RoleService {
     const actions = await this.translationService.attachTranslations(
       'actions',
       rawActions,
+      manager,
     );
     const { role_actions: _ra, role_users: _ru, ...rest } = role;
     const formatted = {
@@ -293,54 +216,7 @@ export class RoleService {
     return this.translationService.attachTranslationsToOne(
       'roles',
       formatted,
+      manager,
     ) as any;
-  }
-
-  async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
-    await this.roleRepository.manager.transaction(async (manager) => {
-      const repository = manager.getRepository(Role);
-      const role = await repository.findOne({
-        where: { id },
-        lock: { mode: 'pessimistic_write' },
-      });
-      if (!role) throw new NotFoundException('roles:not_found');
-      // The reserved key must stay reserved, even when this update races a deletion.
-      if (
-        role.key === 'super_admin' &&
-        updateRoleDto.key !== undefined &&
-        updateRoleDto.key !== role.key
-      ) {
-        throw new ForbiddenException('roles:protected_key');
-      }
-      const { actions, translates, ...rest } = updateRoleDto;
-      Object.assign(role, rest);
-      await repository.save(role);
-      if (actions !== undefined) {
-        const assignments = manager.getRepository(RoleAction);
-        await assignments.delete({ role_id: id });
-        if (actions.length > 0) {
-          const resolvedIds = await this.resolveActionIds(actions, manager);
-          await assignments.save(
-            resolvedIds.map((actionId) =>
-              assignments.create({
-                role_id: id,
-                action_id: actionId,
-                is_active: true,
-              }),
-            ),
-          );
-        }
-      }
-      if (translates !== undefined) {
-        await this.translationService.updateTranslations(
-          'roles',
-          id,
-          translates,
-          manager,
-        );
-      }
-    });
-    await this.redisService.delByPattern('auth:context:*');
-    return this.findOne(id);
   }
 }

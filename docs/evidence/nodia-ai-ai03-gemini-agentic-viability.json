@@ -1,0 +1,955 @@
+{
+  "task": "AI-03",
+  "date": "2026-10-14",
+  "status": "spike_verified_runtime_unpublished",
+  "scope": "Authorized local Linux VM; configured selection; synthetic MCP only",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high"
+  },
+  "configuredThinkingLevel": "high",
+  "cliVersion": "1.3.1",
+  "offline": {
+    "newTestsPassed": 24,
+    "deployedRegressionTestsPassed": 151,
+    "totalTestsPassed": 175,
+    "realStdioFixtureProcessTest": true,
+    "externalCallsInUnitTests": 0,
+    "scope": "Existing VM image plus the updated CLI transport, isolated fixture/diagnostic source and corresponding tests"
+  },
+  "investigation": [
+    {
+      "stage": "fresh_profile_without_native_auth_files",
+      "generationProcesses": 0,
+      "result": "configured model not obtained in isolated catalog; native authentication absent",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "readonly_native_google_auth_files",
+      "generationProcesses": 0,
+      "result": "configured exact model and intensity verified non-generatively; empty-input MCP discovery assumption rejected",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "workspace_config_only",
+      "generationProcesses": 1,
+      "result": "CLI reported SUCCESS but result/continuation contract was not accepted",
+      "elapsedSeconds": 123.59,
+      "mcpCallbacksRecorded": null,
+      "runtimeRestored": true
+    },
+    {
+      "stage": "mcp_list_local_workspace_config",
+      "generationProcesses": 0,
+      "fixtureRegistered": false,
+      "initialize": 0,
+      "toolsList": 0,
+      "toolCompleted": 0,
+      "runtimeRestored": true
+    },
+    {
+      "stage": "mcp_list_disposable_global_config",
+      "generationProcesses": 0,
+      "fixtureRegistered": true,
+      "initialize": 0,
+      "toolsList": 0,
+      "toolCompleted": 0,
+      "runtimeRestored": true
+    },
+    {
+      "stage": "global_config_native_mcp_inference",
+      "observedAt": "2026-10-15T00:16:57.186345+00:00",
+      "generationProcesses": 1,
+      "result": "agentic_timeout",
+      "outcome": "unknown",
+      "discoveredModels": 6,
+      "configuredModelVerified": true,
+      "configuredIntensityVerified": true,
+      "nodiaSecretEnvironmentAbsent": true,
+      "nodiaSecretDataAbsent": true,
+      "nativeGoogleAuthReadonly": true,
+      "initialize": 4,
+      "toolsList": 4,
+      "toolCompleted": 0,
+      "hookAllowed": 0,
+      "hookDenied": 0,
+      "ownedProcessesRemaining": 0,
+      "temporaryContextRemoved": true,
+      "runtimeRestored": true
+    },
+    {
+      "stage": "plain_text_baseline_new_intent",
+      "generationProcesses": 1,
+      "result": "configured model returned requested nonce; no schema or business tools in generative phase",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "print_input_diagnostic_before_global_hook",
+      "generationProcesses": 1,
+      "result": "tool step started; deadline with SUCCESS but empty response and absent structured output; rejected",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "diagnostic_transport_overlay_import_error",
+      "generationProcesses": 0,
+      "reportedLaunchCounter": 1,
+      "result": "TypeError binding stderr_observer before starting a generative CLI; corrected clone workdir and added signature guard",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "global_hook_native_dispatcher_discovered",
+      "generationProcesses": 1,
+      "result": "call_mcp_tool observed; closed gate rejected unrecognized dispatcher and invalid house field; no tool completed",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "closed_dispatcher_and_exact_schemas",
+      "generationProcesses": 1,
+      "result": "three allow receipts, zero completed callbacks; transport diagnosis continued",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "native_arguments_wire_type_observed",
+      "generationProcesses": 1,
+      "result": "tools/call received arguments as str; standard object schema rejected; CLI later returned SUCCESS without structured output",
+      "mcpCallAttempts": [
+        {
+          "arguments_type": "str"
+        }
+      ],
+      "toolCompleted": 0,
+      "runtimeRestored": true
+    },
+    {
+      "stage": "explicit_cli_131_compatibility_first_positive_loop",
+      "generationProcesses": 4,
+      "result": "read, preview, same-profile resume and new-conversation canonical history passed; two MCP callbacks",
+      "toolCompleted": 2,
+      "runtimeRestored": true
+    },
+    {
+      "stage": "negative_preinvocation_object_injection_rejected",
+      "generationProcesses": 1,
+      "result": "CLI ERROR before tool events; zero hook receipts; not a denial proof",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "negative_preinvocation_serialized_injection_not_executed",
+      "generationProcesses": 1,
+      "result": "CLI replied but injected actions did not pass the gate; zero denials; discarded prototype, not a denial proof",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "direct_negative_and_native_cancellation",
+      "generationProcesses": 2,
+      "result": "actual run_command denied without sentinel effect; separate turn cancelled after MCP discovery and prompt receipt; no fixture descendants remained",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "positive_loop_with_explicit_no_repeated_callbacks_and_process_cleanup",
+      "generationProcesses": 4,
+      "result": "25 checks, two MCP callbacks, native continuation and canonical new-conversation recall; no repeated effects or fixture descendants",
+      "runtimeRestored": true
+    },
+    {
+      "stage": "fresh_profile_random_canonical_history",
+      "generationProcesses": 1,
+      "result": "fresh temporary profile; randomized canonical values recalled without expected values in question or MCP callbacks",
+      "runtimeRestored": true
+    }
+  ],
+  "generationProcessesTotal": 20,
+  "automaticInferenceRetry": false,
+  "businessWrites": 0,
+  "publishedCapabilities": 0,
+  "decision": {
+    "mcpRegistration": "observed",
+    "mcpInitializeAndList": "observed",
+    "mcpToolsCycle": "verified_synthetic_under_pinned_cli",
+    "chatContinuation": "verified_same_private_profile",
+    "canonicalReplay": "verified_independent_fresh_profile_synthetic_history",
+    "productionMcpTools": "unpublished",
+    "adapterStates": "not_activated",
+    "webProductTools": "excluded_by_policy48",
+    "autoRoutingSwitch": "pending_runtime_integration_not_eligible_from_authentication_alone"
+  },
+  "postRestore": {
+    "webAuthenticated": true,
+    "agenticAvailable": true,
+    "agenticSessionActive": true,
+    "api": "active",
+    "apiService": "nodia-api.service",
+    "gemini": "active",
+    "nginx": "active",
+    "probeContainerRemoved": true,
+    "frontendHttpStatus": 200,
+    "apiViaFrontendHttpStatus": 200,
+    "apiViaFrontendVerifiedHelloWorld": true
+  },
+  "security": {
+    "containerRootReadonly": true,
+    "capabilitiesDropped": true,
+    "noNewPrivileges": true,
+    "noPublishedPorts": true,
+    "noNodiaEnvMount": true,
+    "noWebProfileMount": true,
+    "noWebSessionMount": true,
+    "noDatabaseOrApiCredentials": true,
+    "nativeGoogleAuth": "two CLI-owned files mounted readonly in the same authorized VM, never copied, printed, hashed, put in fixtures or given as tool arguments",
+    "existingAgenticPolicyChanged": false
+  },
+  "limitations": [
+    "Private Linux VM, configured connection/model/effort and pinned CLI only; no general Windows/VPS/provider/model acceptance",
+    "Synthetic read/prepare fixture, no production domain tools, authorization/grants or business writes",
+    "Cancellation verified after MCP discovery and prompt receipt, before any business callback; no cancellation of committed effects tested",
+    "Per-process fixture budgets and supervisor deadlines only; global production run/queue budgets remain AI-04/12",
+    "Native continuation needs its profile; independent canonical recovery used a fresh profile and randomized synthetic history, not an implemented Server persistence layer",
+    "CLI-owned readonly authentication borrowing is a lab arrangement; refresh, restart, backup and remote-provider retention remain unverified",
+    "Provider HTTP inference count, commercial quota and token consumption not measured; native process counts are not inference/token claims",
+    "Log categories are bounded text matches, not proof that a successful tool failed; rely on callback receipts and final typed output",
+    "Do not retry the historical unknown executions or silently change model, mode or provider",
+    "API/drawer/automatic routing and database integrations remain later plan stages"
+  ],
+  "files": [
+    "nodia-gemini-microservice/experiments/nodia_ai_mcp_fixture.py",
+    "nodia-gemini-microservice/experiments/nodia_ai_agentic_gate.py",
+    "nodia-gemini-microservice/experiments/probe_nodia_ai_agentic.py",
+    "nodia-gemini-microservice/experiments/nodia_ai_agentic_diagnostics.py",
+    "nodia-gemini-microservice/tests/test_nodia_ai_mcp_fixture.py",
+    "nodia-gemini-microservice/tests/test_nodia_ai_agentic_diagnostics.py",
+    "nodia-gemini-microservice/agentic_cli.py",
+    "nodia-gemini-microservice/tests/test_agentic_cli.py",
+    "docs/evidence/scripts/validate-nodia-ai-ai03.cjs"
+  ],
+  "sources": [
+    "https://www.antigravity.google/docs/mcp/",
+    "https://www.antigravity.google/docs/cli/headless/",
+    "https://www.antigravity.google/docs/hooks/",
+    "https://www.antigravity.google/docs/permissions/",
+    "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+    "https://modelcontextprotocol.io/specification/2025-11-25/basic/transports"
+  ],
+  "currentHarnessHashes": {
+    "nodia-gemini-microservice/experiments/nodia_ai_mcp_fixture.py": "8ef578567e89834361383a63a208b82850783d720f42ab4ba7f0896801e20daf",
+    "nodia-gemini-microservice/experiments/nodia_ai_agentic_gate.py": "9f6acfda20be05a680dd83c0d1e14236595790de388f62da5b17a0777da93bbd",
+    "nodia-gemini-microservice/experiments/probe_nodia_ai_agentic.py": "ff81a5e4af3f82d904a6d823b1f371e0f00a1aa66cbc936a34b5fd93e4794d28",
+    "nodia-gemini-microservice/experiments/nodia_ai_agentic_diagnostics.py": "33bc1ef664b11e10933a7b727d7e84a0968db59333d9b1ed7bca1d35f76e375a",
+    "nodia-gemini-microservice/tests/test_nodia_ai_mcp_fixture.py": "c6db00c34bbb1ae907e41e1e4a6145143237cf8b487922bc21886ac14db3e8aa",
+    "nodia-gemini-microservice/tests/test_nodia_ai_agentic_diagnostics.py": "d3ea8e560ce8cb690ab85ff6272f114256ad8720a8f4a2020d890b1d08a11fa7",
+    "nodia-gemini-microservice/agentic_cli.py": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+    "nodia-gemini-microservice/tests/test_agentic_cli.py": "54e968e86b2915e1ad7175070765e7715f6dfa9248fea4660581ce0ef95f4e6f",
+    "docs/evidence/scripts/validate-nodia-ai-ai03.cjs": "70152c1d2f4db8ffbfe1cc97978a47a6ac9a7ad7e04eb41168f8d6bb88e14089"
+  },
+  "harnessNote": "Current hashes identify the delivered checkout. The authoritative loop and safety runs preceded the addition of the independent --canonical-only branch; that final branch was verified separately with a fresh profile. Historical source hashes do not imply those runs executed later code. Diagnostic modes intentionally exit 1 with viable=false; safety_passed/canonical_fresh_profile_passed certify only their named checks.",
+  "previousHarnessHashes": {
+    "nodia-gemini-microservice/experiments/nodia_ai_mcp_fixture.py": "65b6618e642425d9df9cd74f85eda9a423467834349ce0a76b3a60f14868fa2a",
+    "nodia-gemini-microservice/experiments/nodia_ai_agentic_gate.py": "9f6acfda20be05a680dd83c0d1e14236595790de388f62da5b17a0777da93bbd",
+    "nodia-gemini-microservice/experiments/probe_nodia_ai_agentic.py": "9e581c15e49841acb5d488dc99998115b93ff84057a78900a12e5bd29b4ef29b",
+    "nodia-gemini-microservice/tests/test_nodia_ai_mcp_fixture.py": "ed27b4f55d72071d4a2d36b5b9278c66a1811ad7b5068642d9db5d0876dbb7a0"
+  },
+  "authoritativeLiveRun": {
+    "native_google_auth_readonly": true,
+    "runtime_stopped": true,
+    "runtime_restored": true,
+    "isolated_container": true,
+    "probe": {
+      "task": "AI-03",
+      "observed_at": "2026-10-15T01:17:24.781978+00:00",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high"
+      },
+      "protocol": "mcp-stdio-synthetic",
+      "checks": [
+        {
+          "name": "diagnostic_transport_available",
+          "passed": true
+        },
+        {
+          "name": "wire_compatibility_verified_version",
+          "passed": true
+        },
+        {
+          "name": "binary_version_hash_verified",
+          "passed": true
+        },
+        {
+          "name": "cli_auth_readonly_files_attached",
+          "passed": true
+        },
+        {
+          "name": "nodia_secret_environment_absent",
+          "passed": true
+        },
+        {
+          "name": "nodia_secret_data_absent",
+          "passed": true
+        },
+        {
+          "name": "exact_discovered_selection",
+          "passed": true,
+          "cli_exit_code": 0,
+          "discovered_count": 6
+        },
+        {
+          "name": "model_preflight_exact_non_generative",
+          "passed": true
+        },
+        {
+          "name": "eof_diagnostic_no_inference",
+          "passed": true
+        },
+        {
+          "name": "mcp_configuration_registered",
+          "passed": true
+        },
+        {
+          "name": "turn_1",
+          "passed": true,
+          "elapsed_seconds": 55.24
+        },
+        {
+          "name": "native_mcp_discovery_receipts",
+          "passed": true
+        },
+        {
+          "name": "native_mcp_read_roundtrip",
+          "passed": true
+        },
+        {
+          "name": "callback_bound_to_probe_run",
+          "passed": true
+        },
+        {
+          "name": "turn_2",
+          "passed": true,
+          "elapsed_seconds": 17.09
+        },
+        {
+          "name": "native_mcp_prepare_roundtrip",
+          "passed": true
+        },
+        {
+          "name": "native_conversation_identity_preserved",
+          "passed": true
+        },
+        {
+          "name": "turn_3",
+          "passed": true,
+          "elapsed_seconds": 10.1
+        },
+        {
+          "name": "native_process_resume_recall",
+          "passed": true
+        },
+        {
+          "name": "recall_no_repeated_callbacks",
+          "passed": true
+        },
+        {
+          "name": "turn_4",
+          "passed": true,
+          "elapsed_seconds": 96.67
+        },
+        {
+          "name": "canonical_history_new_process_recall",
+          "passed": true
+        },
+        {
+          "name": "canonical_replay_no_new_callbacks",
+          "passed": true
+        },
+        {
+          "name": "no_confirmation_binding",
+          "passed": true
+        },
+        {
+          "name": "mcp_callbacks_passed_hook",
+          "passed": true
+        }
+      ],
+      "fixture_only": true,
+      "business_writes": 0,
+      "published_capabilities": 0,
+      "generation_processes": 4,
+      "configured_thinking_level": "high",
+      "baseline": null,
+      "prompt_input": "print",
+      "safety_only": false,
+      "cli_version": "1.3.1",
+      "discovered_fixture_tool_names": [],
+      "eof_discovery": {
+        "exit_code": 0,
+        "events": 1,
+        "fixture_names": 0
+      },
+      "mcp_list_diagnostic": {
+        "exit_code": 0,
+        "stdout_bytes": 262,
+        "fixture_entry_seen": true
+      },
+      "turn_progress": [
+        {
+          "stage": "result",
+          "events": 9,
+          "invalid_lines": 0,
+          "stdout_bytes": 4895,
+          "initialized": true,
+          "document_read_completed": false,
+          "result_seen": true,
+          "last_event_age_ms": 99,
+          "steps": {
+            "user_input:DONE": 1,
+            "agent_response:DONE": 2,
+            "tool:ACTIVE": 2,
+            "tool:DONE": 1
+          },
+          "fixture_names": [],
+          "result_shape": {
+            "status": "SUCCESS",
+            "structured_type": "dict",
+            "response_nonempty": true,
+            "error_categories": [],
+            "num_turns": 1
+          },
+          "log_read": true,
+          "log_categories": [
+            "mcp_lookup"
+          ],
+          "stderr_bytes": 0,
+          "stderr_categories": [],
+          "tool_steps": [
+            {
+              "name": "call_mcp_tool",
+              "state": "ACTIVE",
+              "argument_keys": [
+                "Arguments",
+                "ServerName",
+                "ToolName"
+              ],
+              "has_error": false,
+              "error_categories": []
+            },
+            {
+              "name": "call_mcp_tool",
+              "state": "DONE",
+              "argument_keys": [
+                "Arguments",
+                "ServerName",
+                "ToolName"
+              ],
+              "has_error": false,
+              "error_categories": []
+            },
+            {
+              "name": "finish",
+              "state": "ACTIVE",
+              "argument_keys": [
+                "answer"
+              ],
+              "has_error": false,
+              "error_categories": []
+            }
+          ]
+        },
+        {
+          "stage": "result",
+          "events": 10,
+          "invalid_lines": 0,
+          "stdout_bytes": 5539,
+          "initialized": true,
+          "document_read_completed": false,
+          "result_seen": true,
+          "last_event_age_ms": 129,
+          "steps": {
+            "user_input:DONE": 1,
+            "agent_response:DONE": 2,
+            "tool:ACTIVE": 2,
+            "tool:DONE": 1
+          },
+          "fixture_names": [],
+          "result_shape": {
+            "status": "SUCCESS",
+            "structured_type": "dict",
+            "response_nonempty": true,
+            "error_categories": [],
+            "num_turns": 2
+          },
+          "log_read": true,
+          "log_categories": [
+            "mcp_lookup"
+          ],
+          "stderr_bytes": 0,
+          "stderr_categories": [],
+          "tool_steps": [
+            {
+              "name": "call_mcp_tool",
+              "state": "ACTIVE",
+              "argument_keys": [
+                "Arguments",
+                "ServerName",
+                "ToolName"
+              ],
+              "has_error": false,
+              "error_categories": []
+            },
+            {
+              "name": "call_mcp_tool",
+              "state": "DONE",
+              "argument_keys": [
+                "Arguments",
+                "ServerName",
+                "ToolName"
+              ],
+              "has_error": false,
+              "error_categories": []
+            },
+            {
+              "name": "finish",
+              "state": "ACTIVE",
+              "argument_keys": [
+                "answer"
+              ],
+              "has_error": false,
+              "error_categories": []
+            }
+          ]
+        },
+        {
+          "stage": "result",
+          "events": 7,
+          "invalid_lines": 0,
+          "stdout_bytes": 3525,
+          "initialized": true,
+          "document_read_completed": false,
+          "result_seen": true,
+          "last_event_age_ms": 100,
+          "steps": {
+            "user_input:DONE": 1,
+            "agent_response:DONE": 1,
+            "tool:ACTIVE": 1
+          },
+          "fixture_names": [],
+          "result_shape": {
+            "status": "SUCCESS",
+            "structured_type": "dict",
+            "response_nonempty": true,
+            "error_categories": [],
+            "num_turns": 3
+          },
+          "log_read": true,
+          "log_categories": [
+            "mcp_lookup"
+          ],
+          "stderr_bytes": 0,
+          "stderr_categories": [],
+          "tool_steps": [
+            {
+              "name": "finish",
+              "state": "ACTIVE",
+              "argument_keys": [
+                "answer"
+              ],
+              "has_error": false,
+              "error_categories": []
+            }
+          ]
+        },
+        {
+          "stage": "result",
+          "events": 6,
+          "invalid_lines": 0,
+          "stdout_bytes": 3314,
+          "initialized": true,
+          "document_read_completed": false,
+          "result_seen": true,
+          "last_event_age_ms": 116,
+          "steps": {
+            "user_input:DONE": 1,
+            "agent_response:DONE": 1,
+            "tool:ACTIVE": 1
+          },
+          "fixture_names": [],
+          "result_shape": {
+            "status": "SUCCESS",
+            "structured_type": "dict",
+            "response_nonempty": true,
+            "error_categories": [],
+            "num_turns": 1
+          },
+          "log_read": true,
+          "log_categories": [
+            "mcp_lookup"
+          ],
+          "stderr_bytes": 0,
+          "stderr_categories": [],
+          "tool_steps": [
+            {
+              "name": "finish",
+              "state": "ACTIVE",
+              "argument_keys": [
+                "answer"
+              ],
+              "has_error": false,
+              "error_categories": []
+            }
+          ]
+        }
+      ],
+      "last_result_shape": {
+        "structured_type": "dict",
+        "has_answer": true,
+        "conversation_type": "str",
+        "response_type": "str"
+      },
+      "mcp_calls": 2,
+      "viable": true,
+      "mcp_event_counts": {
+        "initialize": 7,
+        "tools_list": 7,
+        "tool_completed": 2,
+        "rpc_received": 40,
+        "rpc_rejected": 7,
+        "cli_arguments_normalized": 2
+      },
+      "mcp_call_attempts": [
+        {
+          "arguments_type": "str"
+        },
+        {
+          "arguments_type": "str"
+        }
+      ],
+      "mcp_protocols": [
+        "2025-11-25"
+      ],
+      "hook_counts": {
+        "allowed": 6,
+        "denied": 0
+      },
+      "owned_processes_remaining": 0,
+      "owned_fixture_processes_remaining": 0,
+      "temporary_context_cleanup": true,
+      "temporary_context_removed": true
+    },
+    "exit_code": 0
+  },
+  "authoritativeSafetyRun": {
+    "metadataProjection": true,
+    "native_google_auth_readonly": true,
+    "runtime_stopped": true,
+    "runtime_restored": true,
+    "isolated_container": true,
+    "exit_code": 1,
+    "probe": {
+      "task": "AI-03",
+      "observed_at": "2026-10-15T01:15:04.909872+00:00",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high"
+      },
+      "configured_thinking_level": "high",
+      "cli_version": "1.3.1",
+      "fixture_only": true,
+      "safety_only": true,
+      "viable": false,
+      "reason": "safety_only",
+      "generation_processes": 2,
+      "business_writes": 0,
+      "published_capabilities": 0,
+      "checks": [
+        {
+          "name": "diagnostic_transport_available",
+          "passed": true
+        },
+        {
+          "name": "wire_compatibility_verified_version",
+          "passed": true
+        },
+        {
+          "name": "binary_version_hash_verified",
+          "passed": true
+        },
+        {
+          "name": "cli_auth_readonly_files_attached",
+          "passed": true
+        },
+        {
+          "name": "nodia_secret_environment_absent",
+          "passed": true
+        },
+        {
+          "name": "nodia_secret_data_absent",
+          "passed": true
+        },
+        {
+          "name": "exact_discovered_selection",
+          "passed": true
+        },
+        {
+          "name": "model_preflight_exact_non_generative",
+          "passed": true
+        },
+        {
+          "name": "eof_diagnostic_no_inference",
+          "passed": true
+        },
+        {
+          "name": "mcp_configuration_registered",
+          "passed": true
+        },
+        {
+          "name": "turn_1",
+          "passed": true
+        },
+        {
+          "name": "native_forbidden_shell_attempt_observed",
+          "passed": true
+        },
+        {
+          "name": "native_forbidden_shell_denied",
+          "passed": true
+        },
+        {
+          "name": "native_forbidden_shell_has_no_effect",
+          "passed": true
+        },
+        {
+          "name": "native_unregistered_confirmation_has_no_callback",
+          "passed": true
+        },
+        {
+          "name": "native_cancelled_process_discovered_mcp",
+          "passed": true
+        },
+        {
+          "name": "native_cancellation_reaps_cli_and_mcp",
+          "passed": true
+        },
+        {
+          "name": "native_cancellation_does_not_dispatch_business_tools",
+          "passed": true
+        }
+      ],
+      "native_cancelled": true,
+      "native_cancel": {
+        "phase": "prompt_received_after_mcp_discovery",
+        "remote_outcome": "unknown",
+        "automatic_retry": false,
+        "fixture_processes_remaining": 0,
+        "progress": {
+          "stage": "prompt_received",
+          "events": 2,
+          "invalid_lines": 0,
+          "stdout_bytes": 1661,
+          "initialized": true,
+          "result_seen": false,
+          "steps": {
+            "user_input:DONE": 1
+          },
+          "stderr_bytes": 0,
+          "stderr_categories": [],
+          "tool_steps": []
+        }
+      },
+      "mcp_event_counts": {
+        "initialize": 5,
+        "tools_list": 5,
+        "tool_completed": 0,
+        "rpc_received": 26,
+        "rpc_rejected": 5,
+        "cli_arguments_normalized": 0
+      },
+      "mcp_protocols": [
+        "2025-11-25"
+      ],
+      "hook_counts": {
+        "allowed": 1,
+        "denied": 1
+      },
+      "safety_passed": true,
+      "owned_processes_remaining": 0,
+      "owned_fixture_processes_remaining": 0,
+      "temporary_context_removed": true,
+      "forbiddenShellElapsedSeconds": 9.56,
+      "forbiddenShellStepName": "run_command",
+      "forbiddenShellEffect": false
+    }
+  },
+  "authoritativeFreshProfileRun": {
+    "native_google_auth_readonly": true,
+    "runtime_stopped": true,
+    "runtime_restored": true,
+    "isolated_container": true,
+    "probe": {
+      "task": "AI-03",
+      "observed_at": "2026-10-15T01:22:54.113597+00:00",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high"
+      },
+      "protocol": "mcp-stdio-synthetic",
+      "checks": [
+        {
+          "name": "diagnostic_transport_available",
+          "passed": true
+        },
+        {
+          "name": "wire_compatibility_verified_version",
+          "passed": true
+        },
+        {
+          "name": "binary_version_hash_verified",
+          "passed": true
+        },
+        {
+          "name": "cli_auth_readonly_files_attached",
+          "passed": true
+        },
+        {
+          "name": "nodia_secret_environment_absent",
+          "passed": true
+        },
+        {
+          "name": "nodia_secret_data_absent",
+          "passed": true
+        },
+        {
+          "name": "exact_discovered_selection",
+          "passed": true,
+          "cli_exit_code": 0,
+          "discovered_count": 6
+        },
+        {
+          "name": "model_preflight_exact_non_generative",
+          "passed": true
+        },
+        {
+          "name": "eof_diagnostic_no_inference",
+          "passed": true
+        },
+        {
+          "name": "mcp_configuration_registered",
+          "passed": true
+        },
+        {
+          "name": "canonical_fresh_profile_no_prior_generation",
+          "passed": true
+        },
+        {
+          "name": "turn_1",
+          "passed": true,
+          "elapsed_seconds": 12.29
+        },
+        {
+          "name": "canonical_fresh_profile_random_recall",
+          "passed": true
+        },
+        {
+          "name": "canonical_fresh_profile_no_callbacks",
+          "passed": true
+        }
+      ],
+      "fixture_only": true,
+      "business_writes": 0,
+      "published_capabilities": 0,
+      "generation_processes": 1,
+      "configured_thinking_level": "high",
+      "baseline": null,
+      "prompt_input": "print",
+      "safety_only": false,
+      "canonical_only": true,
+      "cli_version": "1.3.1",
+      "discovered_fixture_tool_names": [],
+      "eof_discovery": {
+        "exit_code": 0,
+        "events": 1,
+        "fixture_names": 0
+      },
+      "mcp_list_diagnostic": {
+        "exit_code": 0,
+        "stdout_bytes": 262,
+        "fixture_entry_seen": true
+      },
+      "turn_progress": [
+        {
+          "stage": "result",
+          "events": 6,
+          "invalid_lines": 0,
+          "stdout_bytes": 3636,
+          "initialized": true,
+          "document_read_completed": false,
+          "result_seen": true,
+          "last_event_age_ms": 87,
+          "steps": {
+            "user_input:DONE": 1,
+            "agent_response:DONE": 1,
+            "tool:ACTIVE": 1
+          },
+          "fixture_names": [],
+          "result_shape": {
+            "status": "SUCCESS",
+            "structured_type": "dict",
+            "response_nonempty": true,
+            "error_categories": [],
+            "num_turns": 1
+          },
+          "log_read": true,
+          "log_categories": [
+            "mcp_lookup"
+          ],
+          "stderr_bytes": 0,
+          "stderr_categories": [],
+          "tool_steps": [
+            {
+              "name": "finish",
+              "state": "ACTIVE",
+              "argument_keys": [
+                "answer"
+              ],
+              "has_error": false,
+              "error_categories": []
+            }
+          ]
+        }
+      ],
+      "last_result_shape": {
+        "structured_type": "dict",
+        "has_answer": true,
+        "conversation_type": "str",
+        "response_type": "str"
+      },
+      "canonical_fresh_profile_passed": true,
+      "canonical_values_randomized": true,
+      "question_supplies_expected_values": false,
+      "viable": false,
+      "reason": "canonical_only",
+      "mcp_event_counts": {
+        "initialize": 4,
+        "tools_list": 4,
+        "tool_completed": 0,
+        "rpc_received": 20,
+        "rpc_rejected": 4,
+        "cli_arguments_normalized": 0
+      },
+      "mcp_call_attempts": [],
+      "mcp_protocols": [
+        "2025-11-25"
+      ],
+      "hook_counts": {
+        "allowed": 1,
+        "denied": 0
+      },
+      "owned_processes_remaining": 0,
+      "owned_fixture_processes_remaining": 0,
+      "temporary_context_cleanup": true,
+      "temporary_context_removed": true
+    },
+    "exit_code": 1
+  },
+  "recallQuestionsSupplyExpectedValues": false
+}

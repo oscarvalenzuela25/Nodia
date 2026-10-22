@@ -17,6 +17,10 @@ from typing import Mapping
 from service_errors import ServiceError
 
 
+# Transport candidates, not evidence of a working session or MCP/attachment support.
+CHAT_CLI_VERSIONS = frozenset({"1.3.1", "1.4.2"})
+
+
 @dataclass(frozen=True)
 class CliConfig:
     binary: Path
@@ -35,6 +39,9 @@ class CliConfig:
         home = os.environ.get("ANTIGRAVITY_CLI_HOME")
         if len(checksum) != 128 or any(c not in "0123456789abcdef" for c in checksum) or not home:
             raise ValueError("Configure ANTIGRAVITY_CLI_SHA512 and ANTIGRAVITY_CLI_HOME")
+        version = os.environ.get("ANTIGRAVITY_CLI_VERSION", "1.3.1")
+        if version not in CHAT_CLI_VERSIONS:
+            raise ValueError("Unsupported ANTIGRAVITY_CLI_VERSION")
         timeout = float(os.environ.get("ANTIGRAVITY_CLI_TIMEOUT_SECONDS", "240"))
         if not 1 <= timeout <= 240:
             raise ValueError("Invalid CLI timeout")
@@ -49,7 +56,7 @@ class CliConfig:
                 or profile.resolve() in workspace.parents
                 or profile.resolve().is_relative_to(workspace)):
             raise ValueError("Configure absolute CLI paths and a dedicated profile outside Nodia")
-        return cls(binary.resolve(), checksum, profile.resolve(), timeout=timeout)
+        return cls(binary.resolve(), checksum, profile.resolve(), version=version, timeout=timeout)
 
 
 def cli_environment(home: Path, inherited: Mapping[str, str] | None = None) -> dict[str, str]:
@@ -112,8 +119,8 @@ class CliRunner:
         info = self.config.binary.stat()
         self._verified_stat = (info.st_mtime_ns, info.st_size)
         prepare_cli_home(self.config.home)
-        result, _ = await self.run(["--version"], timeout=4)
-        if result.strip() != self.config.version:
+        result, code = await self.run(["--version"], timeout=4)
+        if code != 0 or result.strip() != self.config.version:
             raise ServiceError("agentic_cli_incompatible", "La versión del CLI agéntico no es compatible.")
 
     async def _terminate(self, process: asyncio.subprocess.Process) -> None:
@@ -131,7 +138,8 @@ class CliRunner:
 
     async def run(self, args: list[str], *, stdin: bytes | None = None,
                   cwd: Path | None = None, home: Path | None = None,
-                  timeout: float = 4, stdout_observer: Callable[[bytes], None] | None = None) -> tuple[str, int]:
+                  timeout: float = 4, stdout_observer: Callable[[bytes], None] | None = None,
+                  stderr_observer: Callable[[bytes], None] | None = None) -> tuple[str, int]:
         if self._closed:
             raise ServiceError("agentic_unavailable", "El motor agéntico está detenido.")
         if self._verified_stat is not None:
@@ -198,7 +206,7 @@ class CliRunner:
                 finally:
                     process.stdin.close()
 
-        tasks = [asyncio.create_task(read(process.stdout, stdout_observer)), asyncio.create_task(read(process.stderr)),
+        tasks = [asyncio.create_task(read(process.stdout, stdout_observer)), asyncio.create_task(read(process.stderr, stderr_observer)),
                  asyncio.create_task(write()), asyncio.create_task(process.wait())]
         try:
             output, _, _, code = await asyncio.wait_for(asyncio.gather(*tasks), timeout)

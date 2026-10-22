@@ -1,0 +1,60 @@
+{
+  "stage": "AI-36-C05-R03",
+  "scope": "current_epoch_transport_and_owned_role_qualification_not_business_capability_acceptance",
+  "status": "passed",
+  "source_artifacts_sha256": {
+    "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-canary-report.json": "4e28fd66cf48f15cfa95666dc31147239b8aef6dff6615ad4de5518783101c93",
+    "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-runner-report.json": "0b921d1b45901b9d3735bb0a2968859b9d81eaeadf70b64116bb41f0377fc8f0",
+    "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-original-ai15-report.json": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9",
+    "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-binding.json": "b86cdf1b84c05f5b7e536723882b4a8c5bdde7e9af112e8bbfe2604b0cf97a7f",
+    "docs/evidence/nodia-ai-ai36-c05-r03-build01-report.json": "7332694f79027adaccb3b0b80fb1d808e507d8a03caa0689ecfeb21dbb213af0",
+    "docs/evidence/nodia-ai-ai36-c05-r03-build01-manifest.json": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20"
+  },
+  "source_manifest_sha256": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20",
+  "image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+  "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "image_source_hashes": {
+    "native_mcp_stdio.py": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+    "native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "epoch": {
+    "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T20:30:54.592504609Z"
+  },
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "session_generation_sha256": "36aa2d20b8ad6b9737d043a2bb312e1d39c1400c40f5d26631b8134ffbd11049",
+  "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+  "attempt_id": "60b10d3b-d26b-4dc3-9e0e-16fa2a09f559",
+  "terminal_proof": {
+    "attempt_id": "60b10d3b-d26b-4dc3-9e0e-16fa2a09f559",
+    "terminal_proof_sha256": "2aa05bd652b230efae7b2fdeba9678ca72a23ca08d9b0c0ea2b034dfca2ff7a9",
+    "outcome": "completed",
+    "process_closed": true,
+    "observed_at_utc": "2026-10-19T20:32:02.937498+00:00"
+  },
+  "acknowledgement": {
+    "attempt_id": "60b10d3b-d26b-4dc3-9e0e-16fa2a09f559",
+    "terminal_proof_sha256": "2aa05bd652b230efae7b2fdeba9678ca72a23ca08d9b0c0ea2b034dfca2ff7a9",
+    "acknowledged": true,
+    "request_started_at_utc": "2026-10-19T20:32:03.028Z",
+    "response_received_at_utc": "2026-10-19T20:32:03.032Z"
+  },
+  "diagnostic_nonce_verified": true,
+  "supports_MCP_after": true,
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "business_capabilities_accepted_by_canary": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "derivation_clock_scope": "No local wall-clock timestamp is synthesized; all event timestamps are preserved from their VM source artifacts."
+}

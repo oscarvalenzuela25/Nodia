@@ -1,0 +1,136 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "High_only_runtime_deadline_correction_unit_build_types_publication_not_provider_acceptance",
+  "status": "passed",
+  "server_unit": {
+    "evidence": {
+      "path": ".tmp/ai36-c05-high-deadline-server-unit.json",
+      "sha256": "cf9938832574f2510a7378dca50b4e5eded6975745c63f0629e7aa577ee0c532"
+    },
+    "log": {
+      "path": ".tmp/ai36-c05-high-deadline-server-unit.log",
+      "sha256": "5826e0cbd52c9f3e1be8ceb2faadb9ab3aa7377e0739cbabfd2d32c543ae09bc"
+    },
+    "tests": 4174,
+    "passed": 4174,
+    "failed": 0,
+    "omitted": 0,
+    "files": 232,
+    "max_workers": 2
+  },
+  "focused_unit": [
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "tests": 67,
+      "passed": 67
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.spec.ts",
+      "tests": 37,
+      "passed": 37
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.spec.ts",
+      "tests": 6,
+      "passed": 6
+    }
+  ],
+  "production_types": {
+    "log": {
+      "path": ".tmp/ai36-c05-high-deadline-production-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "exit_code": 0
+  },
+  "global_fixture_types": {
+    "baseline": {
+      "path": ".tmp/ai36-c05-fixture-types-final3.log",
+      "sha256": "11b2024594a62215d4e8f6b0e726735c7fa4a8dd887a6a4e41c8724dfe641051"
+    },
+    "current": {
+      "path": ".tmp/ai36-c05-high-deadline-fixture-types.log",
+      "sha256": "11b2024594a62215d4e8f6b0e726735c7fa4a8dd887a6a4e41c8724dfe641051"
+    },
+    "existing_errors": 192,
+    "added_errors": 0,
+    "normalized_semantic_sha256": "bb66ca2330e1910236bc58539cf1af47787393c4dd807ce4b549afcd62036aed"
+  },
+  "build": {
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-high-deadline-build.log",
+      "sha256": "08ba103f8a7f5d7dcd9a4102bd9bfd62a3d3ce90572e5b03615900b2b69d3715"
+    }
+  },
+  "lint": {
+    "exit_code": 0,
+    "errors": 0,
+    "historical_warnings": 3,
+    "log": {
+      "path": ".tmp/ai36-c05-high-deadline-lint.log",
+      "sha256": "8781c989406de8b052a7f6e13c724d892875487707948b9ec57fb12cd409e7a7"
+    }
+  },
+  "publication": {
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-high-deadline-publication-check.log",
+      "sha256": "fc9991672ed251cc747acc720ffc0dfe732eedf2a539e7173d2c616c5a65715a"
+    },
+    "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+    "counts": {
+      "all_registrable_capabilities": 151,
+      "historical_published_reads_preserved": 67,
+      "newly_published_capabilities": 7,
+      "published_capabilities": 74,
+      "remaining_unpublished_candidates": 77,
+      "technical_descriptors_execution": 7,
+      "technical_descriptors_discovery": 8,
+      "potential_union_descriptors_not_sent_together": 82,
+      "documents": 31,
+      "fragments": 31,
+      "sources": 59,
+      "excluded": 28
+    }
+  },
+  "source_references": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "sha256": "76cc139e7e092caf95400e529bb45dd6067309c8843fac2da13f3dee1d01c0bc"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "sha256": "48afd3a43ba1850d57042a08cdca708357c2efb508ef71e91ae002af1516e981"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.ts",
+      "sha256": "20ad2f7995818b6d1ece3fd36d6c43a094fa978c33349fb04656ce4f9f6a1406"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.spec.ts",
+      "sha256": "f2f864cf8051c9ab365429807a5e66b44407f70464b3f3d0174cdb8671fcde36"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/types/worker.types.ts",
+      "sha256": "135f75240d94f935fadbc3aa8ccc2f436d9080c1e89004af0dae71b636bbc03c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.spec.ts",
+      "sha256": "166cb03c5e71faf8788ec7a2002b2434168f53084220acb5f24ea76fbf48814d"
+    }
+  ],
+  "stage_boundary_tests": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-stage-deadline-unit-validation.json",
+    "sha256": "7f2ba75fec25c8236f77bc066d39ac09327117576f894f0b91859fbba630a4cf"
+  },
+  "compiled_delta": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+    "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+  },
+  "provider_requests": 0,
+  "services_restarted": false,
+  "operational_deployments": 0,
+  "operational_SQL_writes": 0,
+  "modification_of_provider_selection": false,
+  "real_provider_acceptance_added": false
+}

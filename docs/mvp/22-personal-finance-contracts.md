@@ -1,10 +1,20 @@
 # Finanzas personales — contratos para implementación
 
-> Estado: implementado y verificado localmente — revisión documental pendiente
+> AI-08 implementado localmente: [autoridad transversal, invariantes y evidencia](54-nodia-ai-ai08-transversal-authority.md). Destinatario explícito, actor real, barreras de transacción y NI-13 verificados; consumidores/herramientas del chat pendientes. Esta nota sustituye menciones históricas de acceso transversal pendiente, sin aprobar documentos ni invalidar sus reglas nativas.
+
+> Estado: implementación y acceso transversal AI-08 verificados localmente; revisión documental pendiente
 > Fecha: 2026-10-04
 > Dependencias: 03-domain-model-erd.md, 20-personal-finance-interview.md, 21-personal-finance-erd.md
 
 ## Alcance confirmado y decisiones propuestas
+
+Contexto funcional NodiaAI: [ficha de producto](../nodia-ai/knowledge/personal-finance/README.md) y4 funcionalidades, con mínimos, estados, informes, eliminación y pendientes de autoridad/idempotencia. [AI-05](51-nodia-ai-ai05-product-knowledge.md) documenta la revisión estática; fichas draft/unregistered, sin cambiar contratos ni aprobación de este documento.
+
+### Ampliación administrativa confirmada el 2026-10-14
+
+Durante la [entrevista NodiaAI38](38-nodia-ai-research-and-v1-plan.md), el usuario confirmó expresamente que `super_admin` puede consultar y modificar Finanzas de cualquier usuario, conservando vista previa y confirmación en el chat. Sustituye la exclusividad de acceso por propietario para ese rol; propiedad de registros, categorías/obligaciones del mismo usuario, precisión monetaria y reglas de ledger se conservan. Otros roles siguen limitados a sus datos.
+
+AI-08 implementa esta ampliación con owner_id opcional, actor/sesión vigentes y una transacción común; [54](54-nodia-ai-ai08-transversal-authority.md) describe contratos y límites. Los endpoints de herramientas y deduplicación de sus efectos continúan pendientes por familia. No se modifica propiedad histórica ni se aceptan destinatarios ajenos de un usuario ordinario.
 
 Confirmado: datos por usuario; una categoría por movimiento; grupos muchos a muchos como filtros; una obligación opcional por movimiento; amount inicial en obligación; liquidación con pagos parciales sin intereses; pesos enteros; solo created_at/updated_at. Sin purpose, cancellation_reason, currency, occurred_on, pivotes de pagos, intereses ni recurrencias automáticas.
 

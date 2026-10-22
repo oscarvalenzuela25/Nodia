@@ -1,3 +1,4 @@
+import type { EntityManager } from 'typeorm';
 import {
   ConflictException,
   Injectable,
@@ -22,22 +23,39 @@ export class UpdateProviderContactUseCase {
     providerId: string,
     id: string,
     dto: UpdateProviderContactDto | ToggleProviderContactDto,
+    manager?: EntityManager,
   ) {
     validateContactId(providerId);
     validateContactId(id);
     validateVersion(dto.version);
-    const current = await this.service.find(providerId, id);
+    const current = await (manager
+      ? this.service.find(providerId, id, manager)
+      : this.service.find(providerId, id));
     if (!current)
       throw new NotFoundException('Contact not found for this provider');
     const values = normalizeContact(
       'name' in dto ? dto : { ...current, is_active: dto.is_active },
     );
-    if (await this.service.updateVersion(providerId, id, dto.version, values)) {
-      const updated = await this.service.find(providerId, id);
+    if (
+      await (manager
+        ? this.service.updateVersion(
+            providerId,
+            id,
+            dto.version,
+            values,
+            manager,
+          )
+        : this.service.updateVersion(providerId, id, dto.version, values))
+    ) {
+      const updated = await (manager
+        ? this.service.find(providerId, id, manager)
+        : this.service.find(providerId, id));
       if (!updated) throw new NotFoundException('Contact not found');
       return updated;
     }
-    const latest = await this.service.find(providerId, id);
+    const latest = await (manager
+      ? this.service.find(providerId, id, manager)
+      : this.service.find(providerId, id));
     if (
       latest?.version === dto.version + 1 &&
       contactHash(normalizeContact(latest)) === contactHash(values)

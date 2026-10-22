@@ -20,6 +20,11 @@ import { RentalClock } from './rental-clock.js';
     GetRentalAuditEventsUseCase,
     GetRentalOperationUseCase,
   ],
-  exports: [RentalTransactionService, RentalTransportGuard],
+  exports: [
+    RentalClock,
+    RentalTransactionService,
+    RentalTransportGuard,
+    GetRentalAuditEventsUseCase,
+  ],
 })
 export class RentalCommonModule {}

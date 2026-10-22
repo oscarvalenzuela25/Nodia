@@ -1,0 +1,199 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "automatic_selection_actual_compiled_SQL_synthetic_transport",
+  "attempt": "attempt02",
+  "status": "failed",
+  "started_at_utc": "2026-10-19T02:58:16.401896+00:00",
+  "completed_at_utc": "2026-10-19T02:58:31.253483+00:00",
+  "exit_code": 1,
+  "timeout": false,
+  "manifest_sha256": "7d69837c3355caff19f689f2253d4e40c5aadb3f705f6682f5e678f0493410ee",
+  "archive_sha256": "f24092492f1520fbb678718c62c09d003e3adc6fd7b19ca01ad67d83dbf8c0fc",
+  "compiled_files_verified": 2804,
+  "harness_sha256": "a155ac01c5911292b460e355c6d923e8bc622fbe1397d4f05f803c09b137ecc3",
+  "runner_sha256": "41d45cf5479a099fff38581b81f4a74a6979abd742469c531d8f84258e989995",
+  "stdout_sha256": "cc0451fbe0cd305a08242e791cf4cbd4d7e7aca0233a9acf9f58cfde8b6fac23",
+  "stderr_sha256": "1a6b80358d250afd4565efa2998445e207b5130ac6ae26fa514bc4b90071223e",
+  "assertion_result": {
+    "stage": "AI-36-C05",
+    "scope": "automatic_selection_actual_compiled_SQL_synthetic_transport",
+    "status": "failed",
+    "failure": {
+      "name": "AssertionError",
+      "code": "ERR_ASSERTION",
+      "message": "Web and two Agentic generations finish through the real worker state machine"
+    },
+    "checks": 4,
+    "check_names": [
+      "production bundle publishes the seven new candidates without any synthetic publication override",
+      "web_delegated_discovery_ACK_execution_all_seven: discovery exposes selection without business capability descriptors",
+      "web_delegated_discovery_ACK_execution_all_seven: same selection callback returns one durable receipt without granting tools",
+      "web_delegated_discovery_ACK_execution_all_seven: a business callback remains denied in the original discovery generation"
+    ],
+    "scenarios": [
+      {
+        "name": "web_delegated_discovery_ACK_execution_all_seven",
+        "chat": "5ae52f6c-eae4-45a6-bcc4-87ee77ce3f48",
+        "actor": "3",
+        "allHelpers": true,
+        "category": "1",
+        "dispatches": [
+          {
+            "attempt_id": "df4ac449-01a3-4c02-9a1c-07c0b053ee1e",
+            "mode": "token_plan_web",
+            "selection_phase": "discovery",
+            "tools": []
+          },
+          {
+            "attempt_id": "a98350e5-257d-4576-9a3e-3d0fb57a7924",
+            "mode": "token_plan_agentic",
+            "selection_phase": "discovery",
+            "tools": [
+              "nodia_capabilities_describe",
+              "nodia_capabilities_search",
+              "nodia_capabilities_select",
+              "nodia_entities_search",
+              "nodia_knowledge_get",
+              "nodia_knowledge_index",
+              "nodia_reports_describe",
+              "nodia_reports_run"
+            ]
+          }
+        ],
+        "seedExecution": "fac5cfe3-01c1-47dd-aa7c-72399ed3349a",
+        "attachment": "39b75159-0a51-44e6-bfee-f834001e1f59",
+        "run": "f5ee1600-5ba8-4172-8255-824195b8902e",
+        "selectionAttempt": "a98350e5-257d-4576-9a3e-3d0fb57a7924"
+      }
+    ],
+    "runs": [
+      {
+        "id": "f5ee1600-5ba8-4172-8255-824195b8902e",
+        "state": "unknown",
+        "phase": "delegated_inference",
+        "error_code": "nodia_ai:outcome_unknown",
+        "provider_dispatches_used": 2,
+        "delegations_used": 1,
+        "tool_selection": {
+          "phase": "execution",
+          "request": {
+            "profile": {
+              "sha256": "c0c8ec10a23fe0e40705d8b8b872c504e1ee1df08e42adb69a520df5c978ca2a",
+              "revision": 1,
+              "profile_id": "selected_capabilities",
+              "schema_version": 1
+            },
+            "attempt_id": "a98350e5-257d-4576-9a3e-3d0fb57a7924",
+            "tool_call_id": "15b3a7d9-cb8f-4524-b9b9-fe8161dbf99a",
+            "capability_ids": [
+              "nodia_attachments_describe",
+              "nodia_finance_movements_prepare_create",
+              "nodia_operations_get",
+              "nodia_preferences_list",
+              "nodia_preferences_prepare",
+              "nodia_proposals_get",
+              "nodia_workflows_prepare"
+            ],
+            "tool_contracts": {
+              "nodia_reports_run": "4c5306bb915182c8014683b39db48c3a4bba566797cb260359dd3df0c9342a23",
+              "nodia_knowledge_get": "d13e28e50aeeddd8415227546f4ebf8cb86849c3eff6a06b4b0bf3daca7ed1db",
+              "nodia_proposals_get": "dd96b92de5b86bdd807b904947706aaf103fed258122aae7b78a424a6a2e9a79",
+              "nodia_operations_get": "8e8c085c8da7deb90191fbbb74cf5386c4365434d26d89c774c5a8c6b6c64f4a",
+              "nodia_entities_search": "791e87d7ee9e5870686d01303cad29e13c939b64b31647a978ba42b4d8d27ff9",
+              "nodia_knowledge_index": "08960d2580aae54df6c3daafb4fde2d733877633c4315ec2ae65dcc716fd797c",
+              "nodia_preferences_list": "35895fb678b6d02ec4241d8daebbce602826e8c50c3af779bbcf74a98d67a39c",
+              "nodia_reports_describe": "fd7508439c97b6f038056642f3aff9fd85b2b982dd18080d88157dfa3076d6f4",
+              "nodia_workflows_prepare": "3f2de6818c06114ec1715fcb9e8b6dd71ef75cde9691b7e9d4e1184892ac78b2",
+              "nodia_capabilities_search": "dfddeb366490c6f54175db88788d5e384ff7f0061a04bf47351d8e7a5255b1d5",
+              "nodia_preferences_prepare": "a1dd4db24e479b9baffa2848b8e0f8ccb6e21aca425e55346a14dce9ad43b4d1",
+              "nodia_attachments_describe": "38e1fe8ff894526917d47d45a96aa1b6a2ab16cb4c27459291d2583878959ad4",
+              "nodia_capabilities_describe": "b203d01fd7cb879a87f94820e86016bc86166d1a9b1d53be783e14d04f6d4f18",
+              "nodia_finance_movements_prepare_create": "940b53baf8714b1a04cff3ef7fdd59cb126a4457199feeb3993dee9dd023ae54"
+            }
+          },
+          "catalog_hash": "848ad9b04583c9dc10026e913b54ec3aeeb45284598be7141ee6d3db7d36be27",
+          "schema_version": 1
+        }
+      }
+    ],
+    "jobs": [
+      {
+        "id": "a080cb18-45d3-4f0c-8232-d33a3e0e2290",
+        "kind": "execution",
+        "state": "done",
+        "stage_key": "execution_step",
+        "stage_seq": 1,
+        "attempt_count": 1
+      },
+      {
+        "id": "8096d3e3-48fd-4349-9013-fcafee6fa64c",
+        "kind": "turn",
+        "state": "unknown",
+        "stage_key": "delegated_inference",
+        "stage_seq": 5,
+        "attempt_count": 5
+      }
+    ],
+    "attempts": [
+      {
+        "job_id": "a080cb18-45d3-4f0c-8232-d33a3e0e2290",
+        "phase": "completed",
+        "error_code": null,
+        "stage_key": "execution_step",
+        "stage_seq": 1,
+        "routing_phase": null
+      },
+      {
+        "job_id": "8096d3e3-48fd-4349-9013-fcafee6fa64c",
+        "phase": "completed",
+        "error_code": null,
+        "stage_key": "context",
+        "stage_seq": 1,
+        "routing_phase": "base"
+      },
+      {
+        "job_id": "8096d3e3-48fd-4349-9013-fcafee6fa64c",
+        "phase": "completed",
+        "error_code": null,
+        "stage_key": "inference",
+        "stage_seq": 2,
+        "routing_phase": "base"
+      },
+      {
+        "job_id": "8096d3e3-48fd-4349-9013-fcafee6fa64c",
+        "phase": "completed",
+        "error_code": null,
+        "stage_key": "delegated_inference",
+        "stage_seq": 3,
+        "routing_phase": "delegated"
+      },
+      {
+        "job_id": "8096d3e3-48fd-4349-9013-fcafee6fa64c",
+        "phase": "completed",
+        "error_code": null,
+        "stage_key": "tool_selection",
+        "stage_seq": 4,
+        "routing_phase": "base"
+      },
+      {
+        "job_id": "8096d3e3-48fd-4349-9013-fcafee6fa64c",
+        "phase": "unknown",
+        "error_code": "nodia_ai:outcome_unknown",
+        "stage_key": "delegated_inference",
+        "stage_seq": 5,
+        "routing_phase": "base"
+      }
+    ],
+    "actual_provider_generations": 0,
+    "configured_database_used": false,
+    "storage_operations": 0,
+    "services_restarted": false
+  },
+  "actual_provider_generations": 0,
+  "configured_database_used": false,
+  "storage_operations": 0,
+  "services_restarted": false,
+  "synthetic_publication_override": false,
+  "disposable_containers_remaining": 0,
+  "emergency_synthetic_fixture_cleanup": []
+}

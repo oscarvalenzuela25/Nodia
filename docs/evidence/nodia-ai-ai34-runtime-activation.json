@@ -1,0 +1,94 @@
+{
+  "stage": "AI-34",
+  "scope": "additive_M4_measured_context_lab_activation",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T19:54:24Z",
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "r2_object_operations": 0,
+  "configuration_modified": false,
+  "profile_files_copied_or_hashed": false,
+  "migration": {
+    "stage": "AI-34",
+    "scope": "configured_database_exact_additive_M4_snapshot_migration",
+    "status": "passed",
+    "provider_generations": 0,
+    "storage_operations": 0,
+    "credential_values_exported": false,
+    "existing_domain_data_modified": false,
+    "database_backup_created": true,
+    "database_backup_tool": "cached_postgres16_ephemeral_pg_dump",
+    "database_backup_bytes": 302330,
+    "database_backup_sha256": "ba9350d16be36c6dc1312d9a4bcb115e679ce956f09dbf4c46046e1dbe3affb5",
+    "migrations_before": 27,
+    "migrations_after": 28,
+    "applied": [
+      "CreateNodiaAiContextSnapshots1793000000000"
+    ],
+    "schema": {
+      "tables": 21,
+      "columns": 289,
+      "snapshot_columns": 9,
+      "snapshots": 0
+    },
+    "prior_migration_history_preserved": true
+  },
+  "compiled_files_verified": 931,
+  "previous_compiled_files_verified": 923,
+  "changed_paths": [
+    "dist/nodia-ai-adapter/nodia-ai-adapter.service.js",
+    "dist/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.js",
+    "dist/nodia-ai-attachment/nodia-ai-attachment.service.js",
+    "dist/nodia-ai-context/config/knowledge-pin.json",
+    "dist/nodia-ai-context/nodia-ai-processing.module.js",
+    "dist/nodia-ai-context/use-case/build-nodia-ai-context.use-case.js",
+    "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js",
+    "dist/nodia-ai-run/entities/nodia-ai-run.entity.js",
+    "dist/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.js",
+    "dist/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.js",
+    "dist/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.js",
+    "dist/nodia-ai/knowledge/manifest.json"
+  ],
+  "added_output_paths": [
+    "dist/migrations/1793000000000-CreateNodiaAiContextSnapshots.js",
+    "dist/nodia-ai-context-snapshot/entities/nodia-ai-context-snapshot.entity.js",
+    "dist/nodia-ai-context-snapshot/nodia-ai-context-snapshot.module.js",
+    "dist/nodia-ai-context-snapshot/nodia-ai-context-snapshot.service.js",
+    "dist/nodia-ai-context-snapshot/use-case/load-nodia-ai-context-history.use-case.js",
+    "dist/nodia-ai-context/types/nodia-ai-compaction.types.js",
+    "dist/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.js",
+    "dist/nodia-ai-context/use-case/load-nodia-ai-recovery-refs.use-case.js"
+  ],
+  "compiled_manifest_sha256": "4a45f893e8be98b0541a527a410a6291bf0cd593944e56300a59cdad25d12ccd",
+  "backup_directory": "/opt/nodia/verification-backups/ai34-1792353265109",
+  "api_and_worker_restarted": true,
+  "gemini_restarted": true,
+  "native_image_before": "sha256:212cffaeefdd5e93f1abae290c4f387a891ddbd65357c223c6f0a3c0224488f3",
+  "native_image_after": "sha256:51336b00cb766e5e0031c06e1b2d17ce197b9b01c3d0ae6163785b2a567b8e52",
+  "native_mounts_limits_namespace_preserved": true,
+  "nginx_identity_preserved": true,
+  "server_and_native_environment_unchanged": true,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 27
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 28
+  },
+  "native_runtime_artifact_counts": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "configured_chat_preserved": true,
+  "configured_chat_metadata_sha256": "46a9dd312147858f853bc6581056bd9b3d0ccfcc4c48041a78383eec73b9cf0d",
+  "completed_at_utc": "2026-10-18T19:55:02Z"
+}

@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable, ConflictException } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalReservationService } from '../rental-reservation.service.js';
@@ -12,16 +13,17 @@ export class CompleteRentalReservationUseCase {
     private readonly reservations: RentalReservationService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     dto: EmptyRentalCommandDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     assertEmptyCommand(dto);
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'reservation.complete',

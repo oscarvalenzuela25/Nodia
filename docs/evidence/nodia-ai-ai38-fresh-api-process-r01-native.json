@@ -1,0 +1,108 @@
+{
+  "stage": "AI-38",
+  "scope": "real_main_entrypoint_fresh_production_dependencies_disposable_PostgreSQL_Redis",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:59:17.988Z",
+  "checks": [
+    "actual compiled migrations applied to empty disposable PostgreSQL",
+    "real main.js production API returns public HTTP200",
+    "actual global AuthGuard rejects anonymous NodiaAI HTTP401",
+    "actual JWT verification and active SQL session identify fixture owner",
+    "assigned module grants own conversation list and filters other owner",
+    "actual detail returns saved fixture chat without a run or execution",
+    "ordinary actor cannot read foreign conversation",
+    "valid session without destination module remains forbidden",
+    "real guard rejects revoked SQL session with otherwise valid JWT",
+    "read-only HTTP flow admitted no AI runs jobs attempts or executions",
+    "API drained with SIGTERM and both processes used only disposable loopback ports"
+  ],
+  "HTTP_requests": [
+    {
+      "method": "GET",
+      "endpoint": "",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/nodia-ai/conversations",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "endpoint": "/auth/me",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/nodia-ai/conversations",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/nodia-ai/conversations/:uuid",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/nodia-ai/conversations/:uuid",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "endpoint": "/nodia-ai/conversations",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "endpoint": "/auth/me",
+      "status": 401
+    }
+  ],
+  "candidate_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "harness_sha256": "51ac8e0752c33dbd16f4013904ada395f28c18cc42f83439307e4dd43d996df3",
+  "entrypoint": "dist/main.js",
+  "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+  "NODE_ENV": "production",
+  "fresh_production_dependencies": true,
+  "configured_database_used": false,
+  "provider_requests": 0,
+  "storage_operations": 0,
+  "operational_services_modified": false,
+  "adopted": false,
+  "full_Google_login_tested": false,
+  "password_login_exists": false,
+  "fixture_issued_sessions": true,
+  "Nest_testing_used": false,
+  "service_overrides": false,
+  "own_API_stopped": true,
+  "network_guard_sha256": "77a1b9a9bdbe6d121b7a0d75b0fe7a914ca6486c6202bfbc6303036965432816",
+  "disposable_job_counts": {
+    "runs": 0,
+    "jobs": 0,
+    "attempts": 0,
+    "executions": 0
+  },
+  "child_exit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "parent_network": {
+    "postgres_connections": 1,
+    "API_connections": 70,
+    "blocked_sockets": 0,
+    "fetch_requests": 77,
+    "blocked_fetch": 0,
+    "listen_attempts": 0
+  },
+  "API_network": {
+    "postgres_connections": 2,
+    "redis_connections": 2,
+    "blocked_sockets": 0,
+    "fetch_attempts": 0,
+    "API_listeners": 1,
+    "blocked_listeners": 0,
+    "loopback_bind_enforced": true
+  },
+  "network_isolation_verified": true,
+  "finished_at_utc": "2026-10-20T19:59:26.082Z"
+}

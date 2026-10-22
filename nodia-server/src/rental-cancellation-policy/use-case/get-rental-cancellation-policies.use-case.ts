@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalCancellationPolicyService } from '../rental-cancellation-policy.service.js';
@@ -16,7 +17,7 @@ export class GetRentalCancellationPoliciesUseCase {
     private readonly service: RentalCancellationPolicyService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: RentalConfigurationQueryDto,
   ) {
@@ -25,7 +26,7 @@ export class GetRentalCancellationPoliciesUseCase {
       input,
     );
     validateConfigurationQuery(query, 'policy');
-    return this.transactions.read(actorId, propertyId, async (ctx) => {
+    return this.transactions.read(actor, propertyId, async (ctx) => {
       const [rows, total] = await this.service.findPage(
         ctx.manager,
         propertyId,

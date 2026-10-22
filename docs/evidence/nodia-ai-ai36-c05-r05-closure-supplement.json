@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R05",
+  "scope": "derived_closure_not_capability_acceptance_or_native_root_cause",
+  "derived_at_workstation_utc": "2026-10-19T21:17:56.872652+00:00",
+  "derivation_clock_scope": "workstation_clock_not_assumed_synchronized_with_VM",
+  "source_artifacts_sha256": {
+    "nodia-ai-ai36-c05-r05-role-canary01-runner-report.json": "a16747772c59c4cb1abc864f71102fafa44584488ded6572c433c9f0504dd61e",
+    "nodia-ai-ai36-c05-r05-role-canary02-runner-report.json": "a1585239cb14e5835a1ce50a18660b742328f3276848c53e1b033c0e8d7fb207",
+    "nodia-ai-ai36-c05-r05-role-canary02-canary-report.json": "111c7a9a2a7a244b045e942a400cebc48c53880af153c946ab0f0167ac66f900",
+    "nodia-ai-ai36-c05-r05-role-canary02-original-ai15-report.json": "64aee60657aff9b9d3ba9af942e2dcd24fd1adedf4c61379fe2f93e32e8b5740",
+    "nodia-ai-ai36-c05-r05-role-canary02-binding.json": "3f251dc2168d6ff7a4eef90c4cc97676ffda55b34be48726b99e4f4029bb1fbf",
+    "nodia-ai-ai36-c05-r05-role-canary02-restoration-modalities.json": "3a5f569e15860def18ce5d6d0538b31058a56f2eee02ccce6df1fe905928f879",
+    "nodia-ai-ai36-c05-r05-role-restoration01-report.json": "cf6a1bdb0a0a1b7c4d23905a8e3780c0d87a61bafe7a50e248659c3f9193f626",
+    "nodia-ai-ai36-c05-r05-runtime-after.json": "d11b2a92c18374fb0328d9b64227078f9a7bfcd5d33199975aed43e6148ebe62"
+  },
+  "controls": {
+    "canary01_preparation_failed_before_activation": true,
+    "canary01_accepted_native_starts": 0,
+    "compiled_root_dependency_link_missing_observed": true,
+    "compiled_root_dependency_link_added_only": true,
+    "underlying_canary01_child_error_not_retained": true
+  },
+  "canary02": {
+    "attempt_id": "cdb0d411-0971-4708-b385-45650abf635f",
+    "native_start_requests": 1,
+    "accepted_native_starts": 1,
+    "canonical_prompt_sha256": "da2e8a2d1ed3778fec63aa5f8fce621ceb3c2411269f40e593fcad47f7c4fa20",
+    "native_timeout_seconds": 119,
+    "start_request_elapsed_ms": 5227.443715,
+    "start_return_to_cancel_request_ms": 118774.83818600001,
+    "terminal_proof": {
+      "attempt_id": "cdb0d411-0971-4708-b385-45650abf635f",
+      "terminal_proof_sha256": "f812681a88d6af2bcc87d13361b36efc298a98a1023987a03aea0ce81a2d7fe6",
+      "outcome": "abandoned_unknown",
+      "process_closed": true,
+      "observed_at_utc": "2026-10-19T21:22:18.395706+00:00"
+    },
+    "acknowledgement": {
+      "attempt_id": "cdb0d411-0971-4708-b385-45650abf635f",
+      "terminal_proof_sha256": "f812681a88d6af2bcc87d13361b36efc298a98a1023987a03aea0ce81a2d7fe6",
+      "acknowledged": true
+    },
+    "diagnostic_nonce_verified": false,
+    "native_pending_identity": false,
+    "native_WARN_diagnostic": {
+      "retained": false,
+      "reason": "approved_orchestrator_recreated_container_after_exact_reconciliation_and_ACK_before_separate_structural_log_extraction",
+      "former_container_inspect_succeeded": false,
+      "CLI_phase": null,
+      "RPC_messages": null,
+      "callbacks": null,
+      "cause": null
+    },
+    "wire_encoding_observed": null
+  },
+  "finance": {
+    "executed": false,
+    "reason": "canary_completed_nonce_MCP_gate_not_met",
+    "native_start_requests": 0
+  },
+  "actual_provider_generations": 1,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "global_native_accepted_starts_before": 28,
+  "global_native_accepted_starts_after": 29,
+  "new_capabilities_accepted": 0,
+  "accepted_capabilities_preserved": 4,
+  "pending_capabilities": 3,
+  "Python_fix_adopted_operationally": false,
+  "Node_candidate_adopted_operationally": false,
+  "final_runtime_evidence": "nodia-ai-ai36-c05-r05-runtime-after.json",
+  "current_MCP_support": false,
+  "current_binary_configuration": "1.3.1_on_exact061_baseline",
+  "provider_inference_retries": 0,
+  "business_effects": 0,
+  "physical_UI_accepted": false,
+  "production_acceptance": false
+}

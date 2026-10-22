@@ -1,3 +1,4 @@
+import type { EntityManager } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { UpdateProductLogDto } from '../dto/update-product-log.dto.js';
 import { ProductService } from '../product.service.js';
@@ -6,7 +7,7 @@ import { ProductService } from '../product.service.js';
 export class UpdateProductLogUseCase {
   constructor(private readonly productService: ProductService) {}
 
-  async execute(id: string, updateProductLogDto: UpdateProductLogDto) {
-    return this.productService.updateLog(id, updateProductLogDto);
+  async execute(id: string, updateProductLogDto: UpdateProductLogDto, manager?: EntityManager) {
+    return manager ? this.productService.updateLog(id, updateProductLogDto, manager) : this.productService.updateLog(id, updateProductLogDto);
   }
 }

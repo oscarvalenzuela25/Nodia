@@ -1,0 +1,2919 @@
+{
+  "date": "2026-10-14",
+  "verifiedAt": "2026-10-18T20:17:19.864Z",
+  "reconciledThrough": "AI-29",
+  "scope": "ai01_offline_compiled_common_contracts_and_current_ast_baseline",
+  "schemaDefinitionsCompiled": 148,
+  "domainSchemas": {
+    "files": 7,
+    "definitionsCompiled": 184,
+    "closedContractAssertions": 134,
+    "localReadCandidates": 59,
+    "externalReadsImplemented": 5,
+    "artifactReadsImplemented": 3,
+    "runtimePublicationPending": 0,
+    "runtimePublished": 67
+  },
+  "structuralFixtureAssertions": 538,
+  "fixtureNote": "Synthetic values generated in memory; no real identities, models, accounts or service calls",
+  "catalogCounts": {
+    "sourceHandlers": 177,
+    "domainTools": 141,
+    "commonTools": 11,
+    "secureFlowTools": 4,
+    "totalProposedTools": 156,
+    "domainToolKinds": {
+      "prepare_change": 73,
+      "read": 64,
+      "read_artifact": 3,
+      "analyze_attachment": 1
+    },
+    "mergedAdditionalHandlers": 3,
+    "implementedDomainReads": 64,
+    "blockedExternalReads": 0,
+    "blockedReadArtifacts": 0,
+    "implementedReadArtifacts": 3,
+    "runtimePublishedDomainReads": 64,
+    "runtimePublishedReadArtifacts": 3,
+    "runtimeUnpublishedTools": 89
+  },
+  "handlerCoverage": {
+    "domain_tool": 144,
+    "secure_client_flow": 18,
+    "infrastructure_only": 2,
+    "coordinator_internal": 6,
+    "deferred_bulk": 7
+  },
+  "sourceHashesChecked": 848,
+  "localLinksChecked": 1507,
+  "coordinationRoutes": 41,
+  "workflow": {
+    "date": "2026-10-17",
+    "scope": "Dependent sequential native operation sets from uniquely claimed drafts; immutable typed first-bind, pending-only material correction and local receipt reconciliation; MCP preparation publication remains gated",
+    "newControllers": [],
+    "newHandlers": [],
+    "nativeOperations": 26,
+    "maximumStepsPerProposal": 8,
+    "typedOutputBindings": [
+      {
+        "sourceTool": "nodia_providers_prepare_create",
+        "outputKey": "id",
+        "outputType": "provider_id",
+        "targetTool": "nodia_provider_contacts_prepare_create",
+        "targetFieldKey": "provider_id"
+      }
+    ],
+    "databaseMigrations": 1,
+    "newColumns": [
+      {
+        "table": "nodia_ai_execution_steps",
+        "column": "bound_command",
+        "type": "jsonb",
+        "nullable": true
+      },
+      {
+        "table": "nodia_ai_proposals",
+        "column": "prior_execution_id",
+        "type": "uuid",
+        "nullable": true
+      }
+    ],
+    "newTables": 0
+  },
+  "rentalReservation": {
+    "date": "2026-10-17",
+    "scope": "Six internal native reservation lifecycle ports, advisory availability without hold, exact human confirmation and historical receipts; MCP prepare publication remains gated",
+    "newControllers": [],
+    "newHandlers": [],
+    "nativeRentalReservationOperations": 6,
+    "nativeOperations": 38,
+    "databaseMigrations": 0,
+    "newColumns": [],
+    "newTables": 0,
+    "newModules": [
+      "NodiaAiRentalReservationModule"
+    ]
+  },
+  "rentalMoneyOccupancyPreparation": {
+    "date": "2026-10-17",
+    "scope": "Ten internal native money, block and turnover ports; atomic receipts and native idempotency recovery; no MCP prepare publication",
+    "newControllers": [],
+    "newHandlers": [],
+    "nativeRentalMoneyOperations": 6,
+    "nativeRentalCalendarOperations": 4,
+    "nativeOperations": 48,
+    "nativeRentalOperations": 22,
+    "rentalEndpointCoverage": {
+      "total": 44,
+      "publishedReads": 21,
+      "internalWrites": 22,
+      "internalRecovery": 1
+    },
+    "databaseMigrations": 0,
+    "newColumns": [],
+    "newTables": 0,
+    "newModules": [
+      "NodiaAiRentalMoneyModule",
+      "NodiaAiRentalOperationsModule"
+    ]
+  },
+  "coreAdministration": {
+    "date": "2026-10-17",
+    "scope": "Seventeen internal native Core operations under a selected exclusive authority frontier; exact confirmation and atomic minimal receipts; MCP writes unpublished",
+    "newControllers": [],
+    "newHandlers": [],
+    "nativeCoreOperations": 17,
+    "nativeOperations": 65,
+    "databaseMigrations": 0,
+    "newTables": 0,
+    "newColumns": [],
+    "newModules": [
+      "NodiaAiCoreOperationsModule"
+    ]
+  },
+  "aiProviderConfiguration": {
+    "date": "2026-10-17",
+    "scope": "Four internal non-secret AI connection and catalog operation ports; actor ai:manage and exact confirmation, global default and per-mode preferences; no MCP write publication",
+    "newControllers": [],
+    "newHandlers": [],
+    "nativeProviderOperations": 4,
+    "nativeOperations": 69,
+    "databaseMigrations": 0,
+    "newTables": 0,
+    "newColumns": [],
+    "newModules": [
+      "NodiaAiProviderOperationsModule"
+    ]
+  },
+  "secureHumanInteraction": {
+    "date": "2026-10-17",
+    "scope": "Eight single-step human secure flows with private TTL witness and current-session ownership; model receives no credential/native reference; publication separate",
+    "newControllers": [
+      "NodiaAiSecureFlowController"
+    ],
+    "newHandlers": [
+      "NodiaAiSecureFlowController.detail",
+      "NodiaAiSecureFlowController.act"
+    ],
+    "localNativeOperations": 69,
+    "secureFlowPreparers": 8,
+    "totalAdmittedPreparers": 77,
+    "databaseMigrations": 0,
+    "newTables": 0,
+    "newColumns": [],
+    "newModules": [
+      "NodiaAiSecurePreparationModule",
+      "NodiaAiSecureFlowModule",
+      "NodiaAiExecutionStoreModule",
+      "AuthSessionRevocationModule"
+    ]
+  },
+  "currentAstCounts": {
+    "controllers": 46,
+    "handlers": 217,
+    "routes": 336
+  },
+  "files": [
+    {
+      "file": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "b8b029300f93b5cf316e6d34526cd6ae2a7c0c5f090bb0c7296fb3b117aacad0"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-tool-catalog.json",
+      "sha256": "7b0bc3abffedd6c61a21c931bc849b1398c136874f80c82b15c9156a63e43bda"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-current-endpoints.json",
+      "sha256": "23ea3061a74beb31c8960f94dc5d4876166ac73127d65cfea0031e3ffcb20520"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-coordination-api.json",
+      "sha256": "c1431177f75de7d2833ab6849aa8e04dd5f4e8d62f213f730f3f0f4831a73f9a"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+      "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+      "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+      "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+      "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+      "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+      "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+      "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+    }
+  ],
+  "fixtures": [
+    {
+      "schema": "ProtocolId",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "BigintId",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "DomainUuid",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "Hash",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CatalogVersion",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "Selection",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "Scalar",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "EntityRef",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PublicScope",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "SimplePredicate",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "InPredicate",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ContainsPredicate",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "NullPredicate",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "Predicate",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "FilterSet",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "InstantPeriod",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CivilPeriod",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "Period",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "MeasureRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "DimensionRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReportSourceRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReportQueryInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CatalogSearchInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CatalogDescribeInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "EntitySearchInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalGetInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "OperationGetInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReportDescribeInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "AttachmentDescribeInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceListInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowPrepareInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "MessagePart",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "MessageCreateRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationCreateRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "SelectionUpdateRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConfirmationRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CancelRunRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ResumeExecutionRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChangedField",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PublicStep",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PublicProposal",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreparationResult",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "StepStatus",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ExecutionStatus",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "FieldError",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ApiError",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReportColumn",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "SourceProvenance",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReportResult",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CapabilitySummary",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CatalogSearchResult",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CapabilityDescriptor",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReportCatalogItem",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReportCatalog",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "AttachmentMetadata",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceItem",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferencePage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PositiveRevision",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "Sequence",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "Cursor",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "UtcInstant",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PageLimit",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "OrderedField",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReviewArray",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReviewObject",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReviewValue",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationSummary",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationListQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationPage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationUpdateRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunSummary",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationDetail",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "MessageAccepted",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "VisibleMessage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RestrictedMessage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PublicMessage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "MessageListQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "MessagePage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalFieldEdit",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalUpdateRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConfirmationChallengeRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConfirmationChallengeResponse",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalCancelRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ExecutionCancelRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunCancellationResult",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ExecutionCancellationResult",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ExecutionAccepted",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ModelOption",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChatModeSummary",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChatConnectionSummary",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChatConnectionPage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ToolResultRef",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "EventListQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunAcceptedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "AssistantDeltaEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "MessageSealedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunChangedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ToolCompletedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalReadyEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ExecutionChangedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "StepChangedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PublicEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "EventPage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "AttachmentUploadMetadata",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "AttachmentUploadResult",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferencePageQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ApiErrorResponse",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CapabilitySchemas",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ExactSelection",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "AgenticSelection",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RoutingTarget",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RoutingSnapshot",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RoutingUpdateRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunBudgetSnapshot",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunBudgetUsage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunStageProvenance",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunStageChangedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RoutingChangedEvent",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChatConnectionListQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "EffortOption",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChatEligibilityQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChatEligibility",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ResultNavigation",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ToolObservation",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalVersionQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConfirmationToken",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalEditableField",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalReviewMetadata",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceScopeKey",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceKey",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceScope",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceValue",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferencePrepareRequest",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceOptionsQuery",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceCatalog",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceOptionsPage",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "minimal structural fixture",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt api_key_create",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt api_key_update",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt api_key_delete",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt connection_login",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt nodia_logout",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt codex_logout",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt gemini_web_logout",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "closed safe receipt sync_models",
+      "expectedValid": true
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "secret/native reference rejected secret",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "secret/native reference rejected session_id",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "secret/native reference rejected native_reference",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "secret/native reference rejected cookie",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "secret/native reference rejected url",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowReceipt",
+      "label": "secret/native reference rejected confirmation_token",
+      "expectedValid": false
+    },
+    {
+      "schema": "BigintId",
+      "label": "bigint max string preserved",
+      "expectedValid": true
+    },
+    {
+      "schema": "BigintId",
+      "label": "numeric ID rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "BigintId",
+      "label": "zero identity rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "BigintId",
+      "label": "noncanonical identity rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "BigintId",
+      "label": "negative identity rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "BigintId",
+      "label": "shape alone does not enforce arithmetic upper bound",
+      "expectedValid": true
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "non-secret AI ai_providers create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "non-secret AI ai_providers update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "non-secret AI ai_provider_catalog create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "non-secret AI ai_provider_catalog update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"operation\":\"delete\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"resource_key\":\"users\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"resource_id\":1}",
+      "expectedValid": false
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"resource_id\":\"0\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"api_key\":\"synthetic-forbidden\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"fields\":{}}",
+      "expectedValid": false
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"command\":{\"is_default\":true}}",
+      "expectedValid": false
+    },
+    {
+      "schema": "AiProviderEffectReceipt",
+      "label": "AI configuration receipt excludes unrelated identity and data {\"subject_user_id\":\"1\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "minimal financial witness preserves maximum bigint identities as strings",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "receipt resource identity rejects unsafe numeric coercion",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "receipt subject identity is a bigint string",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "receipt cannot add a competing owner identity",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "receipt excludes human approval credentials",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "receipt must identify its financial resource",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialMovementReceipt",
+      "label": "financial movement witness cannot nominate another resource family",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_movements create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_movements update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_movements delete witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_categories create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_categories update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_categories delete witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_category_groups create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_category_groups update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_category_groups delete witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_obligations create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_obligations update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "closed financial finance_obligations delete witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "financial witness rejects unknown operation",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "financial witness rejects unrelated resource",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "new financial witness requires operation",
+      "expectedValid": false
+    },
+    {
+      "schema": "FinancialEffectReceipt",
+      "label": "financial witness excludes executable command",
+      "expectedValid": false
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business businesses witness keeps native identity",
+      "expectedValid": true
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business products witness keeps native identity",
+      "expectedValid": true
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business product_logs witness keeps native identity",
+      "expectedValid": true
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business providers witness keeps native identity",
+      "expectedValid": true
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business provider_contacts witness keeps native identity",
+      "expectedValid": true
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business invoices witness keeps native identity",
+      "expectedValid": true
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business witness cannot expose storage keys",
+      "expectedValid": false
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business witness cannot invent physical deletion",
+      "expectedValid": false
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business witness rejects numeric bigint identity",
+      "expectedValid": false
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business witness requires UUID destination",
+      "expectedValid": false
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business witness excludes executable command",
+      "expectedValid": false
+    },
+    {
+      "schema": "BusinessEffectReceipt",
+      "label": "business witness excludes human approval token",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "closed rental rental_properties create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "closed rental rental_properties update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "closed rental rental_collaborators create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "closed rental rental_collaborators update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "closed rental rental_cancellation_policies create witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "closed rental rental_cancellation_policies update witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "rental receipt rejects unsupported identity operation or content {\"operation\":\"delete\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "rental receipt rejects unsupported identity operation or content {\"property_id\":1}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "rental receipt rejects unsupported identity operation or content {\"resource_key\":\"rental_payments\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "rental receipt rejects unsupported identity operation or content {\"command\":{\"is_active\":false}}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "rental receipt rejects unsupported identity operation or content {\"request_key\":\"00000000-0000-4000-8000-000000000001\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "rental receipt rejects unsupported identity operation or content {\"owner_id\":\"1\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalEditableField",
+      "label": "policy rules use explicit structured review kind",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation lifecycle create historical witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation lifecycle update historical witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation lifecycle confirm historical witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation lifecycle start historical witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation lifecycle complete historical witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation lifecycle cancel historical witness",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_properties cannot acquire reservation transition confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_collaborators cannot acquire reservation transition confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_cancellation_policies cannot acquire reservation transition confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_properties cannot acquire reservation transition start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_collaborators cannot acquire reservation transition start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_cancellation_policies cannot acquire reservation transition start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_properties cannot acquire reservation transition complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_collaborators cannot acquire reservation transition complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_cancellation_policies cannot acquire reservation transition complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_properties cannot acquire reservation transition cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_collaborators cannot acquire reservation transition cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "configuration rental_cancellation_policies cannot acquire reservation transition cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation witness excludes unsupported operation or live agreement {\"operation\":\"delete\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation witness excludes unsupported operation or live agreement {\"operation\":\"pay\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation witness excludes unsupported operation or live agreement {\"reservation_id\":\"1\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation witness excludes unsupported operation or live agreement {\"cancelled_at\":\"2026-10-17T12:00:00Z\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation witness excludes unsupported operation or live agreement {\"refund_amount\":\"0\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "reservation witness excludes unsupported operation or live agreement {\"policy_snapshot\":{}}",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalEditableField",
+      "label": "native signed integer editor metadata is explicit",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/void",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/pay",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_properties/approve_same_day",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/void",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/pay",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_collaborators/approve_same_day",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/void",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/pay",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_cancellation_policies/approve_same_day",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/confirm",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/start",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/complete",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/cancel",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/void",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/pay",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_reservations/approve_same_day",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/update",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/void",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/pay",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_payments/approve_same_day",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/void",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/pay",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_expenses/approve_same_day",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/void",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/pay",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_blocks/approve_same_day",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/create",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/confirm",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/start",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/complete",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/cancel",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/void",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/pay",
+      "expectedValid": false
+    },
+    {
+      "schema": "RentalEffectReceipt",
+      "label": "AI26 exact native resource/operation rental_turnovers/approve_same_day",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt users/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt users/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt users/delete",
+      "expectedValid": false
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt roles/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt roles/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt roles/delete",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt actions/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt actions/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt actions/delete",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt business_actions/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt business_actions/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt business_actions/delete",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt modules/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt modules/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt modules/delete",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt module_groups/create",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt module_groups/update",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "AI27 Core exact receipt module_groups/delete",
+      "expectedValid": true
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "Core receipt excludes invented action scope or payload {\"resource_id\":1}",
+      "expectedValid": false
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "Core receipt excludes invented action scope or payload {\"resource_id\":\"0\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "Core receipt excludes invented action scope or payload {\"resource_key\":\"auth_sessions\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "Core receipt excludes invented action scope or payload {\"operation\":\"execute\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "Core receipt excludes invented action scope or payload {\"command\":{\"roles\":[]}}",
+      "expectedValid": false
+    },
+    {
+      "schema": "CoreEffectReceipt",
+      "label": "Core receipt excludes invented action scope or payload {\"subject_user_id\":\"1\"}",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalEditableField",
+      "label": "Core closed structured editor core_id_list",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalEditableField",
+      "label": "Core closed structured editor core_translations",
+      "expectedValid": true
+    },
+    {
+      "schema": "Selection",
+      "label": "empty model rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "Selection",
+      "label": "missing model has no fallback",
+      "expectedValid": false
+    },
+    {
+      "schema": "MessageCreateRequest",
+      "label": "empty message rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "MessageCreateRequest",
+      "label": "model cannot supply actor",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowPrepareInput",
+      "label": "OAuth code rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowPrepareInput",
+      "label": "API secret rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "SecureFlowPrepareInput",
+      "label": "password rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "PublicProposal",
+      "label": "public proposal excludes approval token",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationRequest",
+      "label": "untyped approval flag rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationRequest",
+      "label": "invalid confirmation revision",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationToken",
+      "label": "canonical random32-byte base64url nonce shape",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConfirmationToken",
+      "label": "short nonce rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationToken",
+      "label": "long nonce rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationToken",
+      "label": "noncanonical trailing base64url bits rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationToken",
+      "label": "padded nonce rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationToken",
+      "label": "ordinary base64 alphabet rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationRequest",
+      "label": "confirmation revision cannot overflow PostgreSQL integer",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationRequest",
+      "label": "human approval derives actor from current session",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConfirmationChallengeRequest",
+      "label": "challenge request cannot nominate its own nonce",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalReviewMetadata",
+      "label": "human review metadata excludes executable commands",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalReviewMetadata",
+      "label": "review metadata never mints or includes challenge token",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalEditableField",
+      "label": "editor cannot accept arbitrary JSON command input",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalEditableField",
+      "label": "typed editor has no arbitrary pointer",
+      "expectedValid": false
+    },
+    {
+      "schema": "ExecutionChangedEvent",
+      "label": "execution observation never borrows model run identity",
+      "expectedValid": false
+    },
+    {
+      "schema": "ExecutionChangedEvent",
+      "label": "execution event requires its own durable identity",
+      "expectedValid": false
+    },
+    {
+      "schema": "ExecutionChangedEvent",
+      "label": "approval credentials never enter outbox",
+      "expectedValid": false
+    },
+    {
+      "schema": "PublicScope",
+      "label": "scope cannot impersonate actor",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReportQueryInput",
+      "label": "raw SQL property rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReportQueryInput",
+      "label": "raw table property rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReportQueryInput",
+      "label": "arbitrary URL property rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReportQueryInput",
+      "label": "unregistered cross-source grand total rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReportQueryInput",
+      "label": "zero query page rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReportQueryInput",
+      "label": "empty report source set rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "MeasureRequest",
+      "label": "unsupported aggregate rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ContainsPredicate",
+      "label": "contains requires text",
+      "expectedValid": false
+    },
+    {
+      "schema": "InPredicate",
+      "label": "empty IN rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "SimplePredicate",
+      "label": "false filter preserved",
+      "expectedValid": true
+    },
+    {
+      "schema": "SimplePredicate",
+      "label": "zero filter preserved",
+      "expectedValid": true
+    },
+    {
+      "schema": "SimplePredicate",
+      "label": "nullable scalar preserved subject to field semantics",
+      "expectedValid": true
+    },
+    {
+      "schema": "CivilPeriod",
+      "label": "invalid civil date rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "InstantPeriod",
+      "label": "instant requires offset datetime",
+      "expectedValid": false
+    },
+    {
+      "schema": "ChangedField",
+      "label": "zero and real null are distinct values",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChangedField",
+      "label": "absent-vs-null metadata required",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "workflow drafts cannot repeat",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "closed draft-to-draft typed future binding shape",
+      "expectedValid": true
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "eight-step sequential workflow structural boundary",
+      "expectedValid": true
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "ninth workflow step rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "duplicate future binding objects rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "future binding cannot carry raw SQL or an executable expression",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "future binding cannot nominate arbitrary command paths",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "future binding source remains a protocol UUID",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "future binding target key is bounded",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "future binding output must be named",
+      "expectedValid": false
+    },
+    {
+      "schema": "WorkflowPrepareInput",
+      "label": "future binding requires an explicit source draft",
+      "expectedValid": false
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "pending correction carries exact execution revision and registered field edit shape",
+      "expectedValid": true
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "pending correction preserves explicit zero",
+      "expectedValid": true
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "material pending correction requires at least one explicit edit",
+      "expectedValid": false
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "pending correction cannot nominate revision zero",
+      "expectedValid": false
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "pending correction revision cannot overflow PostgreSQL integer",
+      "expectedValid": false
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "pending correction derives actor from its authenticated context",
+      "expectedValid": false
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "preparation never accepts human confirmation credentials",
+      "expectedValid": false
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "pending correction cannot inject an arbitrary command pointer",
+      "expectedValid": false
+    },
+    {
+      "schema": "RemainingWorkflowPrepareInput",
+      "label": "pending correction collection is bounded",
+      "expectedValid": false
+    },
+    {
+      "schema": "PublicStep",
+      "label": "declared output binding shape accepted",
+      "expectedValid": true
+    },
+    {
+      "schema": "PublicStep",
+      "label": "output binding rejects raw expression",
+      "expectedValid": false
+    },
+    {
+      "schema": "ExecutionStatus",
+      "label": "uncertain execution representable",
+      "expectedValid": true
+    },
+    {
+      "schema": "ExecutionStatus",
+      "label": "invented state rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "StepStatus",
+      "label": "uncertain step representable",
+      "expectedValid": true
+    },
+    {
+      "schema": "AttachmentMetadata",
+      "label": "real zero metadata preserved",
+      "expectedValid": true
+    },
+    {
+      "schema": "AttachmentMetadata",
+      "label": "unknown metadata preserved",
+      "expectedValid": true
+    },
+    {
+      "schema": "ApiError",
+      "label": "raw stack excluded",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "registered typed category memory",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "AI-33 memory values are closed references false",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "AI-33 memory values are closed references 0",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "AI-33 memory values are closed references null",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "AI-33 memory values are closed references \"free text memory\"",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "AI-33 memory values are closed references {}",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "AI-33 memory values are closed references []",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "no secret, authority, free memory or ambiguous status api_key",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "no secret, authority, free memory or ambiguous status password",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "no secret, authority, free memory or ambiguous status role",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "no secret, authority, free memory or ambiguous status permission",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "no secret, authority, free memory or ambiguous status system_prompt",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "no secret, authority, free memory or ambiguous status payment_status",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "key cannot move to a different product scope",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "supplier memory has an explicit business scope",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "supplier memory cannot be global",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "memory update uses CAS",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "memory update requires the exact revision",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferencePrepareInput",
+      "label": "forgetting is an exact revision proposal",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "closed preference effect create",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "closed preference effect update",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "closed preference effect delete",
+      "expectedValid": true
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "memory receipt contains no content or secrets value",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "memory receipt contains no content or secrets scope",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "memory receipt contains no content or secrets secret",
+      "expectedValid": false
+    },
+    {
+      "schema": "PreferenceEffectReceipt",
+      "label": "memory receipt contains no content or secrets confirmation_token",
+      "expectedValid": false
+    },
+    {
+      "schema": "Selection",
+      "label": "whitespace model has no identity",
+      "expectedValid": false
+    },
+    {
+      "schema": "MessageCreateRequest",
+      "label": "message revision agrees with positive ERD revision",
+      "expectedValid": false
+    },
+    {
+      "schema": "MessageCreateRequest",
+      "label": "revision overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConversationUpdateRequest",
+      "label": "empty metadata patch rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConversationUpdateRequest",
+      "label": "false is a valid explicit metadata edit",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationUpdateRequest",
+      "label": "null resets an unassigned title",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConversationUpdateRequest",
+      "label": "selection has its own endpoint",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConversationUpdateRequest",
+      "label": "metadata cannot transfer chat ownership",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConversationListQuery",
+      "label": "query requires canonical HTTP normalization",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConversationListQuery",
+      "label": "zero page limit rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ConversationListQuery",
+      "label": "cursor syntax rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReviewValue",
+      "label": "tagged phone collection can be reviewed without raw execution JSON",
+      "expectedValid": true
+    },
+    {
+      "schema": "ReviewValue",
+      "label": "untyped object rejected in preview/edit",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReviewValue",
+      "label": "untyped array rejected in preview/edit",
+      "expectedValid": false
+    },
+    {
+      "schema": "ReviewValue",
+      "label": "false zero-string and null remain distinct",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalUpdateRequest",
+      "label": "empty proposal edit rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalUpdateRequest",
+      "label": "raw replacement command rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalUpdateRequest",
+      "label": "arbitrary JSON pointer rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalUpdateRequest",
+      "label": "edit cannot supply actor",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalUpdateRequest",
+      "label": "typed collection edit accepted structurally",
+      "expectedValid": true
+    },
+    {
+      "schema": "ConfirmationChallengeResponse",
+      "label": "human challenge does not expose Nodia session",
+      "expectedValid": false
+    },
+    {
+      "schema": "PublicEvent",
+      "label": "public event excludes approval token",
+      "expectedValid": false
+    },
+    {
+      "schema": "ToolCompletedEvent",
+      "label": "event references a result rather than copying arbitrary data",
+      "expectedValid": false
+    },
+    {
+      "schema": "PublicEvent",
+      "label": "unregistered event kind rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "AssistantDeltaEvent",
+      "label": "bigint sequence is not a JS number",
+      "expectedValid": false
+    },
+    {
+      "schema": "RestrictedMessage",
+      "label": "restricted message cannot contain text",
+      "expectedValid": false
+    },
+    {
+      "schema": "ChatConnectionSummary",
+      "label": "chat connection projection excludes administrative credential JSON",
+      "expectedValid": false
+    },
+    {
+      "schema": "ChatModeSummary",
+      "label": "configuration cannot invent verified inference",
+      "expectedValid": false
+    },
+    {
+      "schema": "ApiErrorResponse",
+      "label": "raw errors do not enter the wire contract",
+      "expectedValid": false
+    },
+    {
+      "schema": "CapabilitySchemas",
+      "label": "resolved schema must be a JSON Schema document",
+      "expectedValid": false
+    },
+    {
+      "schema": "AttachmentUploadMetadata",
+      "label": "storage key is generated by Server",
+      "expectedValid": false
+    },
+    {
+      "schema": "AttachmentUploadMetadata",
+      "label": "upload cannot impersonate owner",
+      "expectedValid": false
+    },
+    {
+      "schema": "ExecutionCancelRequest",
+      "label": "operation cancel revision must be positive",
+      "expectedValid": false
+    },
+    {
+      "schema": "UtcInstant",
+      "label": "server output is UTC; civil domain dates have separate types",
+      "expectedValid": false
+    },
+    {
+      "schema": "PublicStep",
+      "label": "exact duplicate dependencies rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "CatalogSearchInput",
+      "label": "bounded catalog search boundary",
+      "expectedValid": true
+    },
+    {
+      "schema": "CatalogSearchInput",
+      "label": "Unicode query length counts code points",
+      "expectedValid": true
+    },
+    {
+      "schema": "CatalogSearchInput",
+      "label": "catalog query overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "CatalogSearchInput",
+      "label": "catalog module key overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "CatalogSearchInput",
+      "label": "catalog cursor overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "CatalogSearchInput",
+      "label": "discovery cannot supply actor",
+      "expectedValid": false
+    },
+    {
+      "schema": "CatalogDescribeInput",
+      "label": "bounded descriptor identity boundary",
+      "expectedValid": true
+    },
+    {
+      "schema": "CatalogDescribeInput",
+      "label": "descriptor name overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "CatalogDescribeInput",
+      "label": "catalog version overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntitySearchInput",
+      "label": "bounded entity search boundary",
+      "expectedValid": true
+    },
+    {
+      "schema": "EntitySearchInput",
+      "label": "entity term overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntitySearchInput",
+      "label": "entity resource overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntitySearchInput",
+      "label": "entity cursor overflow rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntitySearchInput",
+      "label": "entity scope cannot impersonate actor",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "page of one does not prove unique",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "unique needs one candidate",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "empty cannot contain candidates",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "empty cannot hide later candidates",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "single complete candidate is not ambiguous",
+      "expectedValid": false
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "partial page of one remains ambiguous",
+      "expectedValid": true
+    },
+    {
+      "schema": "EntityCandidates",
+      "label": "multiple complete candidates remain ambiguous",
+      "expectedValid": true
+    },
+    {
+      "schema": "SelectionUpdateRequest",
+      "label": "selection revision must be positive",
+      "expectedValid": false
+    },
+    {
+      "schema": "Selection",
+      "label": "unknown effort remains explicit null",
+      "expectedValid": true
+    },
+    {
+      "schema": "Selection",
+      "label": "empty effort is not a configured identifier",
+      "expectedValid": false
+    },
+    {
+      "schema": "RoutingSnapshot",
+      "label": "enabled routing needs an exact target",
+      "expectedValid": false
+    },
+    {
+      "schema": "RoutingSnapshot",
+      "label": "disabled routing preserves absence without inventing a destination",
+      "expectedValid": true
+    },
+    {
+      "schema": "AgenticSelection",
+      "label": "API is not an automatic destination in v1",
+      "expectedValid": false
+    },
+    {
+      "schema": "RoutingTarget",
+      "label": "routing observations cannot include credentials",
+      "expectedValid": false
+    },
+    {
+      "schema": "RoutingUpdateRequest",
+      "label": "routing change is revisioned",
+      "expectedValid": false
+    },
+    {
+      "schema": "RoutingUpdateRequest",
+      "label": "routing false is not a truthy string",
+      "expectedValid": false
+    },
+    {
+      "schema": "RunBudgetUsage",
+      "label": "used budget cannot be negative",
+      "expectedValid": false
+    },
+    {
+      "schema": "RunBudgetUsage",
+      "label": "real zero budget use is preserved",
+      "expectedValid": true
+    },
+    {
+      "schema": "RunStageProvenance",
+      "label": "failure cannot create an automatic fallback stage",
+      "expectedValid": false
+    },
+    {
+      "schema": "MessageListQuery",
+      "label": "bounded latest window is explicitly selected",
+      "expectedValid": true
+    },
+    {
+      "schema": "MessageListQuery",
+      "label": "arbitrary message query direction is rejected",
+      "expectedValid": false
+    },
+    {
+      "schema": "ChatConnectionListQuery",
+      "label": "connection cursors do not accept message direction",
+      "expectedValid": false
+    },
+    {
+      "schema": "ChatEligibilityQuery",
+      "label": "omitted effort means provider default",
+      "expectedValid": true
+    },
+    {
+      "schema": "ChatEligibilityQuery",
+      "label": "query effort omits null rather than coercing it",
+      "expectedValid": false
+    },
+    {
+      "schema": "ChatEligibility",
+      "label": "public eligibility excludes physical profile identities",
+      "expectedValid": false
+    },
+    {
+      "schema": "EventPage",
+      "label": "event checkpoint and backlog flag are distinct",
+      "expectedValid": true
+    },
+    {
+      "schema": "EventPage",
+      "label": "durable observer needs explicit backlog state",
+      "expectedValid": false
+    },
+    {
+      "schema": "EventPage",
+      "label": "no global delivery flag",
+      "expectedValid": false
+    },
+    {
+      "schema": "VisibleMessage",
+      "label": "legacy message has no fabricated run",
+      "expectedValid": true
+    },
+    {
+      "schema": "ToolObservation",
+      "label": "real zero result counts retained",
+      "expectedValid": true
+    },
+    {
+      "schema": "ToolObservation",
+      "label": "unknown result counts retained",
+      "expectedValid": true
+    },
+    {
+      "schema": "ToolObservation",
+      "label": "metadata never becomes generic result JSON",
+      "expectedValid": false
+    },
+    {
+      "schema": "ResultNavigation",
+      "label": "native historic UUID version preserved",
+      "expectedValid": true
+    },
+    {
+      "schema": "ResultNavigation",
+      "label": "external result destination denied",
+      "expectedValid": false
+    },
+    {
+      "schema": "ResultNavigation",
+      "label": "property cannot navigate into another module",
+      "expectedValid": false
+    },
+    {
+      "schema": "ToolObservation",
+      "label": "arbitrary observation URLs denied",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalVersionQuery",
+      "label": "omitted revision resolves current proposal",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalVersionQuery",
+      "label": "exact historical revision supported",
+      "expectedValid": true
+    },
+    {
+      "schema": "ProposalVersionQuery",
+      "label": "normalized revision is an integer",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalVersionQuery",
+      "label": "revision zero denied",
+      "expectedValid": false
+    },
+    {
+      "schema": "ProposalVersionQuery",
+      "label": "query cannot override proposal ownership",
+      "expectedValid": false
+    }
+  ],
+  "limitations": [
+    "Seven domain libraries are compiled structurally; candidate implementation does not approve or publish knowledge/tools",
+    "No authorization, transaction, DB, inference or UI acceptance proven by structural fixtures",
+    "Per-resource arithmetic bounds, DAG, workflow ownership, report grain/units and state transitions require implementation tests"
+  ]
+}

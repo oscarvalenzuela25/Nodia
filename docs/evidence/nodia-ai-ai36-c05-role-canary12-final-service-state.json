@@ -1,0 +1,13 @@
+{
+  "candidate_container_id": "d7b4510ebe06564004959a6d1fe3ff393d42bc707fbe62818e2f180a7563a7b2",
+  "candidate_image_id": "sha256:3f004c6c170ea79d16a544a788a5189f3afc17d3d68d465cb5092c3099cd0404",
+  "health": "healthy",
+  "service_states": {
+    "nodia-api": "inactive",
+    "nodia-ai-worker": "inactive",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "provider_generations": 0,
+  "scope": "post_canary_read_only_health_supplement"
+}

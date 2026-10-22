@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   ConflictException,
   Injectable,
@@ -15,16 +16,17 @@ export class VoidRentalExpenseUseCase {
     private readonly expenses: RentalExpenseService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: VoidRentalExpenseDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(VoidRentalExpenseDto, input);
     return this.tx.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'expense.void',

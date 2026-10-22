@@ -1,0 +1,148 @@
+{
+  "stage": "AI-36-C02",
+  "status": "four_secure_candidate_contracts_adapters_verified_publication_pending",
+  "server_unit": {
+    "tests": 3937,
+    "files": 226,
+    "failed": 0,
+    "omitted": 0,
+    "max_workers": 2
+  },
+  "quality": {
+    "build": "passed",
+    "production_types": "passed",
+    "lint_errors": 0,
+    "existing_lint_warnings": 3,
+    "global_fixture_types": {
+      "existing_errors": 192,
+      "existing_files": 48,
+      "added_errors": 0,
+      "unchanged_baseline_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+    }
+  },
+  "contracts": {
+    "secure_candidates": 4,
+    "C01_candidates_unchanged": 73,
+    "all_preparation_candidates": 77,
+    "native_rules_reused": true,
+    "publication_added": 0,
+    "analyzer_and_six_common_helpers_pending": true
+  },
+  "sql": {
+    "C02_checks": 31,
+    "C02_human_http_requests": 25,
+    "C01_regression": {
+      "checks": 22,
+      "http_requests": 8,
+      "status": "passed",
+      "same_compiled_execution": true
+    },
+    "migrations": 29,
+    "compiled_outputs_verified": 2750,
+    "real_sql_human_channel_and_crypto": true,
+    "provider_transport": "synthetic",
+    "credential_marker_scan_tables": [
+      "nodia_ai_drafts",
+      "nodia_ai_proposals",
+      "nodia_ai_proposal_steps",
+      "nodia_ai_tool_calls",
+      "nodia_ai_messages",
+      "nodia_ai_events",
+      "nodia_ai_executions",
+      "nodia_ai_execution_steps",
+      "nodia_ai_jobs",
+      "nodia_ai_job_attempts",
+      "nodia_ai_execution_grants"
+    ]
+  },
+  "own_logout": {
+    "resource": "nodia_sessions",
+    "mcp_required_module": "/tools/nodia-ai",
+    "native_destination_routes_and_actions": [],
+    "target_actor_and_session": "backend_authenticated_context_only",
+    "provider_administration_required": false
+  },
+  "publication": {
+    "release_id": "b4a790219b41687d2bc4ac7ad70f436d5b9a3aa83cbdfc812533a06f8027dc23",
+    "domain_reads": 67,
+    "fragments": 27,
+    "added": 0,
+    "readiness": false,
+    "selection_and_provider_acceptance_pending": true
+  },
+  "scope_unchanged": {
+    "tables": true,
+    "migrations": true,
+    "http_routes": true,
+    "ui": true,
+    "native_provider_adapters": true,
+    "C01_schema_bytes_and_contract_hashes": true
+  },
+  "source_inventory": {
+    "modules": 86,
+    "controllers": 46,
+    "handlers": 217,
+    "aliases": 336,
+    "source_hashes": 854
+  },
+  "evidence": {
+    "unit": {
+      "path": ".tmp/ai36-c02-server-final.json",
+      "sha256": "082b90fda0da3e7927a3217355f2707f8f17792ef7416e7f602129f48a75df7f"
+    },
+    "gateway": {
+      "path": ".tmp/ai36-c02-gateway-initial.json",
+      "sha256": "24fe3593abfac558fc75097acc3dae98a9d9a1f5b6e0fc83d888db981f18e321"
+    },
+    "productionTypes": {
+      "path": ".tmp/ai36-c02-adapters-production-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fixtureTypes": {
+      "path": ".tmp/ai36-c02-server-fixture-types-final.log",
+      "sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+    },
+    "lint": {
+      "path": ".tmp/ai36-c02-server-lint-final.log",
+      "sha256": "9b0f5eec3b6d1e8aa9a2855044fc288ac40d960d276d5b24230a32a5f3e08a50"
+    },
+    "build": {
+      "path": ".tmp/ai36-c02-server-build.log",
+      "sha256": "1171c54cc7410a343cf4c65a121c58f5badc27338910901815d060f635759a1e"
+    },
+    "audit": {
+      "path": "docs/evidence/nodia-ai-ai36-c02-secure-contracts.json",
+      "sha256": "1db9adeff203e7b93f19cc55abb7ad794f1da7326296e37a332d2d627b68dce8"
+    },
+    "sql": {
+      "path": "docs/evidence/nodia-ai-ai36-c02-secure-sql-validation.json",
+      "sha256": "b387afd53379576bfc06401620ef86f5631266c63e7ca18e65ce09173503367c"
+    },
+    "sqlManifest": {
+      "path": "docs/evidence/nodia-ai-ai36-c02-secure-sql-manifest.json",
+      "sha256": "b82111052dde40991c2cb7a24f439f3881c8618f079f3edc99203b72895309a5"
+    },
+    "delta": {
+      "path": "docs/evidence/nodia-ai-ai36-c02-catalog-delta.json",
+      "sha256": "dadfb5272107d454974ba6d4e3f3adc1419587a1086819b1aea1b5bdb9e132ba"
+    }
+  },
+  "historical_C01": {
+    "path": "docs/evidence/nodia-ai-ai36-c01-validation.json",
+    "sha256": "581686661ac6b72eb89104e5e05a97c80c12dbd5c823e19275c308b270228d01"
+  },
+  "preserved_fixture_corrections": [
+    "Initial SQL fixture incorrectly required zero slot rows; a free row is legitimate. Final assertion checks no new slot and no occupied resource, without changing production.",
+    "Structural hash comparison uses the same synthetic catalog version as C01, because catalog identity participates in a registry contract hash.",
+    "A final SQL pass strengthens credential-marker checks across the explicitly enumerated model-facing persistence tables; earlier attempts remain separate evidence."
+  ],
+  "limitations": [
+    "No real provider generation, account login, R2 operation, configured domain write, new publication or candidate deployment.",
+    "Credential rejection is structural; this does not prove detection of semantic secrets pasted into free text or scanning of all storage.",
+    "Human login uses a real native bridge with synthetic provider transport; SQL and encryption are real inside a disposable database.",
+    "Client and V8 were not rerun. Historical Client 1773/228 and prior coverage retain their original scope.",
+    "MCP preparation does not confirm or execute. Secure payloads and interaction descriptors belong exclusively to authenticated human endpoints.",
+    "The current transport limit of 74 tools/131072 bytes and independent JSON/context ceilings remain unchanged.",
+    "AI-36 stays open for C03/C04 and publication/provider acceptance; operational deployment remains separate."
+  ]
+}

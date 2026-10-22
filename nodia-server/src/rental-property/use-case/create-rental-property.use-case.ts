@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalPropertyService } from '../rental-property.service.js';
@@ -14,11 +15,13 @@ export class CreateRentalPropertyUseCase {
     private readonly service: RentalPropertyService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     input: CreateRentalPropertyDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await configurationCommand(CreateRentalPropertyDto, input);
+    const ownerId = dto.owner_id ?? actorId;
     const timezone =
       dto.timezone === undefined
         ? (process.env.RENTAL_DEFAULT_TIMEZONE ?? 'America/Santiago')
@@ -31,6 +34,7 @@ export class CreateRentalPropertyUseCase {
     });
     const command = {
       ...configured,
+      owner_id: ownerId,
       timezone,
       check_in_time: dto.check_in_time ?? null,
       check_out_time: dto.check_out_time ?? null,
@@ -45,7 +49,7 @@ export class CreateRentalPropertyUseCase {
       is_active: dto.is_active ?? true,
     };
     return this.transactions.createProperty(
-      actorId,
+      actor,
       requestKey,
       // Deployment defaults are resolved only for persistence. Replaying the
       // same user intent must still work if the internal timezone changes.
@@ -53,13 +57,14 @@ export class CreateRentalPropertyUseCase {
       (manager, now) =>
         this.service.insert(manager, {
           ...command,
-          owner_id: actorId,
+          owner_id: ownerId,
           created_by: actorId,
           updated_by: actorId,
           default_cancellation_policy_id: null,
           created_at: now,
           updated_at: now,
         }),
+      ownerId,
     );
   }
 }

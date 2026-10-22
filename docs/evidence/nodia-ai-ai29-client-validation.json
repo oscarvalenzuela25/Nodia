@@ -1,0 +1,185 @@
+{
+  "stage": "AI-29",
+  "scope": "client_unit_and_synthetic_human_transport_no_database_or_provider",
+  "status": "passed",
+  "verified_at_utc": "2026-10-17T21:33:04.738292+00:00",
+  "full_suite": {
+    "tests": 1636,
+    "files": 208,
+    "workers": 4,
+    "duration_seconds": 365.55,
+    "exit_code": 0
+  },
+  "focused": {
+    "tests": 195,
+    "files": 5,
+    "workers": 2,
+    "duration_seconds": 24.74,
+    "exit_code": 0
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exit_code": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exit_code": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "vite_seconds": 24.42,
+    "exit_code": 0,
+    "historical_large_chunk_warning": true
+  },
+  "checks": [
+    "Eight closed secure intents localized in ES/EN; preview distinguishes confirmation from the separate human action",
+    "Human descriptor loaded only by explicit intent; secrets, OAuth codes, device codes and frames excluded from QueryCache, MutationCache and chat messages",
+    "API create requires a key; update allows empty input to preserve the key and sends an empty payload for confirmed metadata only",
+    "Failed save preserves password, modal and retry input; current authority failure blocks actions until a fresh authorized read",
+    "In-flight guard blocks double dispatch; uncertain response blocks retransmission and keeps observation available",
+    "Native Gemini Agentic authorization and Codex device schemas are bound to the frozen provider and mode; terminal state clears human-only interaction data",
+    "Reopening a pending login offers observation and withholds a second start",
+    "Only successful own-Nodia logout clears Nodia auth; provider logout preserves the app session",
+    "Generic execution resume/cancel withheld during secure waiting; secure cancel owns native reconciliation",
+    "Another owner cannot open secure channel from read-only execution observation",
+    "UUID secure receipts pass the bigint-or-UUID boundary without a BigInt conversion exception; synthetic key completion keeps execution/detail schemas valid",
+    "Historical opaque secure receipt refreshes masked provider/key metadata without declaring inference availability"
+  ],
+  "document_validation": {
+    "status": "passed",
+    "markdown_files": 3,
+    "local_links": 32,
+    "broken_links": [],
+    "approval": "unchanged_null",
+    "new_tools_published": 0,
+    "locales": {
+      "es": {
+        "operation_labels": 8,
+        "flow_statuses": 8
+      },
+      "en": {
+        "operation_labels": 8,
+        "flow_statuses": 8
+      }
+    }
+  },
+  "ui_evidence": "docs/evidence/nodia-ai-ai29-ui-validation.json",
+  "sources": [
+    {
+      "path": "nodia-client/.tmp/ai29-secure-focused-final.log",
+      "sha256": "77f203dc458313b9e8014ff650db629eae641b7d1913bad19a181769fdcf6502"
+    },
+    {
+      "path": "nodia-client/.tmp/ai29-client-full-final.log",
+      "sha256": "57d92b00be32706d08be7ce8e13e4f4f18f118320adeb1a8474a9a0b85a8ae08"
+    },
+    {
+      "path": "nodia-client/.tmp/ai29-client-typecheck-final.log",
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865"
+    },
+    {
+      "path": "nodia-client/.tmp/ai29-client-lint-final.log",
+      "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+    },
+    {
+      "path": "nodia-client/.tmp/ai29-client-build-final.log",
+      "sha256": "6f22fab6575123cc813e0cac7c6eb212107b0c19a406cae8120e8deee9a3d323"
+    }
+  ],
+  "client_source_hashes": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.tsx",
+      "sha256": "9de2327778c7f5ba72a30371c1218e3abb17daa6f6a63e761e6650c5a5bfe834"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ProposalPreview/ProposalPreview.tsx",
+      "sha256": "bb48e83f911256dca1cd0f15eb56c91a41e379435088d709110ce18657b96ecd"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useExecution.ts",
+      "sha256": "0658e2af2cb06d2ad497b629285b1aac723c31593190a3346e9065d4f5187073"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/aiProviderPresentation.ts",
+      "sha256": "656ed479270bd8dc25ca1b4b257b8e6c27baf92bbdda8be9638542ef80af3bbb"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/schemas.ts",
+      "sha256": "40ef5b519a5a60c0d5427b582d1bb1144cecc7c00ddadc63db331f34ea4ffa67"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/secureFlow.ts",
+      "sha256": "4130a6b99e9747ad3826db7ebe3772337d6e624ca57b62264bf51e66cfb341cf"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/securePresentation.ts",
+      "sha256": "15010177c313df18fc742af1a1171ecccf5f7828ab9899d58d951563b8fc19cd"
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "220980759aca5db305d9d809c55af8e70a6f49c08a53bbff0fb1480d67eaa86a"
+    },
+    {
+      "path": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "bf3c2740267ec8ae8898844c2f0d1e12f088e7ae007b89f45e738c9849f7b9cf"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.test.tsx",
+      "sha256": "a0999844fb2c7264f939bfb44d11101e6f6a88fae95608a2feb8a122fec10ca2"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/secureFlow.test.ts",
+      "sha256": "33a13de26608a42965983a1fc476eaa6f88697ab6e0044afcbfa24e338bae491"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/secureManualFixture.test.ts",
+      "sha256": "805992b56fc9a1d087763cd5cb6d15aeeee0b336c4597eb2e7d37f67053d4e88"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/secureFlowFixtures.ts",
+      "sha256": "cd4bc6dc4f5c7f2f854cd699919c2c4e3bb4830924159246c83630bb3f115a39"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai/main.tsx",
+      "sha256": "b68a0b930a9d51f046157327690c93956331122107d156da60ca39e297aa8f3b"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai/secure-fixtures.ts",
+      "sha256": "a496a481e0d602fba8084970f7f130a0db20a2a912a1e45abee4bba5346b2828"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai/README.md",
+      "sha256": "17c14b78cbbaa4eaa90b6b933b5f426a750df2dbf6724d1f4e25b24788c37a52"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/SecureInteraction/index.ts",
+      "sha256": "2f668e4133cb5ae1fda8aa62b29373b0ce4195d9c967f5c8c5fc02148850cc0d"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/SecureInteraction/SecureInteraction.tsx",
+      "sha256": "7fbdf8b59a83b0ed613acee68e365ac4cad8cb14b72ffc2e9aa79f52f212bacd"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/SecureInteraction/styles.ts",
+      "sha256": "db128df24ae2d0c73bdf9378d301186dc77cf1e0b96cda5a2b5ed5a02ab9f8e8"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/SecureInteraction/hooks/useSecureInteraction.ts",
+      "sha256": "e28088c085b400222e37eca93c087949f1a6e95e4a1bb0c05e7622781eb86889"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/SecureInteraction/SecureInteraction.test.tsx",
+      "sha256": "a6138983bdec032c8b5b60a66c195ef40edad44cf9aa9694daedc0ebb9a3c0cf"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/components/ProposalPreview/ProposalPreview.test.tsx",
+      "sha256": "a608eee215c154f473ba0a3b08549ac8edda2082010cdc6264637feee4912dae"
+    }
+  ],
+  "limitations": [
+    "Synthetic transport/jsdom do not certify backend authority, SQL atomicity, native runtime exclusion, login or inference with a real provider",
+    "No account, credential, VM configuration or configured business record was changed by Client tests",
+    "JavaScript does not guarantee physical erasure of transient strings or browser/provider memory; transport cleanup prevents accidental application cache retention",
+    "Browser evidence is separate; no physical-device or production performance acceptance claimed"
+  ]
+}

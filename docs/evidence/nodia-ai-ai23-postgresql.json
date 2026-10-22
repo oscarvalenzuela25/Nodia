@@ -1,0 +1,107 @@
+{
+  "stage": "AI-23",
+  "status": "passed",
+  "checks": 47,
+  "results": [
+    "AI23 migration down and up restore exactly both new nullable columns on an empty workflow journal",
+    "future supplier preview has a registered preceding ID binding without a fabricated ID",
+    "workflow supersedes its individual proposal atomically",
+    "claimed drafts and an old human challenge cannot admit the individual intention again",
+    "first local commit preserves supplier receipt and leaves only the contact queued",
+    "typed first-bind commits actual supplier identity before its native contact effect",
+    "PostgreSQL rejects rewriting a committed first-bind payload",
+    "PostgreSQL rejects rewriting the hash of an existing first-bind witness",
+    "schema rollback refuses to discard live first-bind payloads",
+    "human material review remaps all dependency step identities under a new exact hash",
+    "reviewed dependent workflow executes the updated source and one contact",
+    "stable sequential execution of 2 independent native operations",
+    "stable sequential execution of 3 independent native operations",
+    "stable sequential execution of 4 independent native operations",
+    "stable sequential execution of 5 independent native operations",
+    "stable sequential execution of 6 independent native operations",
+    "stable sequential execution of 7 independent native operations",
+    "stable sequential execution of 8 independent native operations",
+    "rejects duplicate drafts before claiming any draft",
+    "rejects self reference before claiming any draft",
+    "rejects future reference before claiming any draft",
+    "rejects cross chat reference before claiming any draft",
+    "rejects cross chat draft before claiming any draft",
+    "rejects unregistered output before claiming any draft",
+    "rejects unregistered target before claiming any draft",
+    "rejects duplicate binding target before claiming any draft",
+    "rejects unregistered coordinator catalog before claiming any draft",
+    "invalid dependency attempts leave both original drafts unchanged",
+    "concurrent individual confirmation and workflow claim have one winner and one supplier",
+    "SQL contact insert failure keeps the supplier committed and exposes resumable partial state",
+    "duplicate resume keeps native request key supplier ID and immutable first-bind while committing one contact",
+    "material pending correction creates a new proposal and exact hash linked to previous execution",
+    "continuation execution retains the same immutable prior execution lineage as its confirmed proposal",
+    "new human confirmation executes only corrected pending contact and leaves old supplier unchanged",
+    "cancellation between commits keeps supplier receipt and prevents all remaining effects",
+    "material supplier change before first-bind rejects pending contact without guessing or replay",
+    "non-resumable material failure can cancel its pending suffix while preserving the committed supplier receipt",
+    "new material confirmation after supplier change refreshes its snapshot and creates only the remaining contact against the verified supplier ID",
+    "one coordinator release preserves native financial and business contract hashes and receipts",
+    "real worker death after first commit keeps supplier and queues only second step",
+    "death after durable first-bind and before native contact effect permits exact explicit recovery",
+    "process recovery reuses first-bind payload hash and native intent key without another supplier",
+    "lost second-effect commit acknowledgement recovers both receipts without replay",
+    "chat expiry purges completed original and continuation journals while keeping their native supplier and corrected contact",
+    "expiry clears content-bearing first-bind payloads even for a running step before its native effect",
+    "expired first-bound execution is reconciled and erased without replaying supplier or contact",
+    "all workflow verification avoided provider inference"
+  ],
+  "provider_calls": 0,
+  "disposable_postgresql": true,
+  "human_confirmation_http_contract": true,
+  "synthetic_authenticated_fixture": true,
+  "actual_provider": false,
+  "mcp_publication": false,
+  "environment": "private Linux VM, PostgreSQL 16 disposable Docker fixtures only",
+  "stage_directory": "/opt/nodia/verification/ai23-20261017",
+  "configured_database_used": false,
+  "configured_provider_used": false,
+  "production_acceptance": false,
+  "verified_at": "2026-10-17T16:18:36.624067+00:00",
+  "stage_base_archive_sha256": "a88e0937a48c52b0a45e07b4913522b106516e94bbef0a4aea210281a79a0c9a",
+  "knowledge_release_id": "67df82be991496f45536f62528c283b3342975e2351124512d6f232ed442d825",
+  "test_script": {
+    "path": "nodia-server/test/nodia-ai-ai23.integration.mjs",
+    "sha256": "bc9c3eea009703b99698f83369c70aff5b705d5661ef0aae6cda24c10fbf8ad8"
+  },
+  "worker_fixture": {
+    "path": "nodia-server/test/nodia-ai-ai23-worker.fixture.mjs",
+    "sha256": "414944cb013baa7fec1a7ef8030f8c4c69434603b4ddefefe7e05d885d4e06ab"
+  },
+  "source_fixes_verified": [
+    "Execution status accepts the blocked dependent suffix created by confirmation.",
+    "First-bind UPDATE RETURNING is normalized through a SELECT CTE for TypeORM PostgreSQL.",
+    "The same atomic native effect transaction unlocks the next blocked step and queues its delivery.",
+    "Human cancellation closes a non-resumable failed suffix while preserving already committed receipts.",
+    "Material correction after a supplier change creates a newly confirmed contact-only proposal using the verified supplier ID and current domain snapshot; ordinary strict binding still rejects the stale snapshot."
+  ],
+  "earlier_attempts": [
+    {
+      "build": "a19c7e761e89a8c90c3571b9efefa6962d44ceb1455bf182dbb71c18a77cda5b",
+      "result": "failed baseline admission: blocked suffix rejected; no final acceptance"
+    },
+    {
+      "build": "diagnostic-only isolated stage modifications",
+      "result": "identified TypeORM UPDATE result envelope and missing next-step unlock; not acceptance evidence"
+    },
+    {
+      "build": "231c075e89a9aec62def067f7fc4cce8a5f090b986fc306fcb9c87108bfa6886",
+      "result": "harness input corrected to native owner_id and required category key; production validation preserved"
+    }
+  ],
+  "previous_verifications": [
+    {
+      "stage_base_archive_sha256": "231c075e89a9aec62def067f7fc4cce8a5f090b986fc306fcb9c87108bfa6886",
+      "status": "passed",
+      "checks": 45,
+      "verified_at": "2026-10-17T16:10:31.827380+00:00",
+      "evidence_sha256": "5839cd6f015611f2ef498aaecf952fce54a3f060c0409c9f733151ab62a50ee7",
+      "scope": "Earlier successful AI23 verification before final cancellation and remaining-work correction changes."
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "stage": "AI-34",
+  "scope": "aggregate_preserved_real_gemini_synthetic_canaries",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T20:36:43.750Z",
+  "knowledge_release": "72e2d9823d559968836eb36a0a48c7a9afa268f02ba549cb7be9ad930f646896",
+  "observed_knowledge_releases": [
+    "7092b896342022735935d4aaff2783ed300b905f5693d2285b748cd75ac99ffd",
+    "c2d7a6299d5306dacdb094015d1b7dacf6bda126fffea416d4769fb822032980"
+  ],
+  "generation_requests": 9,
+  "successful_compactions": 2,
+  "successful_continuity_answers": 2,
+  "successful_mcp_read_probes": 1,
+  "agentic_acceptance_complete": true,
+  "historical_failed_attempts": 4,
+  "unresolved_attempts": 0,
+  "automatic_inference_retries": 0,
+  "operational_sql_writes": 0,
+  "user_chats_created": 0,
+  "evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai34-live-validation-attempt02.json",
+      "sha256": "0bdbb42bc86c964657be9799b11e2378cf494c534f0bfe2a7c8d22f30b874e2b",
+      "generations": 3,
+      "status": "failed",
+      "knowledge_release": "7092b896342022735935d4aaff2783ed300b905f5693d2285b748cd75ac99ffd",
+      "failure_category": "adapter_result_unknown"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-live-mcp-attempt01.json",
+      "sha256": "54d39dbf8aba8860113e977efa0514ed8fe0a103ce65095a0555210a086d7080",
+      "generations": 1,
+      "status": "failed",
+      "knowledge_release": "7092b896342022735935d4aaff2783ed300b905f5693d2285b748cd75ac99ffd",
+      "failure_category": "mcp_result_unknown"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-live-agentic-instrumented-attempt01.json",
+      "sha256": "cdf642b15f44768c9fc7973a346b76c61091bf65c38e67ccbcd941113cd3c8c8",
+      "generations": 1,
+      "status": "failed",
+      "knowledge_release": "7092b896342022735935d4aaff2783ed300b905f5693d2285b748cd75ac99ffd",
+      "failure_category": "adapter_result_unknown"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-live-agentic-role-attempt01.json",
+      "sha256": "50906287f5d06e0005c608fc6bf2713026499de9becfe115c54679ec5b0cf5f6",
+      "generations": 3,
+      "status": "failed",
+      "knowledge_release": "c2d7a6299d5306dacdb094015d1b7dacf6bda126fffea416d4769fb822032980",
+      "failure_category": "mcp_result_unknown"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-live-mcp-attempt02.json",
+      "sha256": "8aa6e735517605cd80e305c8f6f0113b70c5757cee7cf5faf03242469ef9582e",
+      "generations": 1,
+      "status": "passed",
+      "knowledge_release": "c2d7a6299d5306dacdb094015d1b7dacf6bda126fffea416d4769fb822032980",
+      "failure_category": null
+    }
+  ],
+  "limitations": [
+    "Synthetic account canaries use compiled builders/adapters; worker, SQL persistence, recovery authority and effects are tested separately.",
+    "Each canary retains its executed knowledge pin; aggregate current pin does not rewrite earlier account acceptance or prove a production deployment.",
+    "Earlier timeout and rejected-tool attempts remain failed, reconciled and acknowledged; later probes are explicit independent attempts, never replay.",
+    "The original Web canary had no operations and a historical empty recovery-reference shape; current recovery contracts are established by separate SQL tests.",
+    "Five checked extractive categories do not prove exhaustive semantic recall.",
+    "Text and MCP probes do not renew native attachment-format verification after restart."
+  ]
+}

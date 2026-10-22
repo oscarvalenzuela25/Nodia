@@ -13,5 +13,10 @@ import { GetFinanceGroupSummaryUseCase } from './use-case/get-finance-group-summ
     GetFinanceCategorySummaryUseCase,
     GetFinanceGroupSummaryUseCase,
   ],
+  exports: [
+    GetFinanceOverviewUseCase,
+    GetFinanceCategorySummaryUseCase,
+    GetFinanceGroupSummaryUseCase,
+  ],
 })
 export class FinanceOverviewModule {}

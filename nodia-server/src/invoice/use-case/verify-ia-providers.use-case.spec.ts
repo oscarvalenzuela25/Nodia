@@ -6,6 +6,19 @@ describe('VerifyIaProvidersUseCase', () => {
   let useCase: VerifyIaProvidersUseCase;
   let geminiServiceMock: Partial<GeminiService>;
 
+  it('verifies explicit Web reasoning against observed model profiles and suppresses the legacy flag', async () => {
+    const fields = { selected_model: 'opaque-live-id', enable_extended_thinking: true, thinking_level: 'medium' };
+    const list = { findAllProviders: vi.fn().mockResolvedValue({ data: [{ id: '1', key: 'gemini', is_active: true, mode: 'web_session', fields }] }) };
+    const verifier = new VerifyIaProvidersUseCase(geminiServiceMock as GeminiService, list as never);
+    for (const observed of [{ 'opaque-live-id': ['low', 'medium', 'high'] }, {}, { 'opaque-live-id': ['invalid'] }, null]) {
+      vi.mocked(geminiServiceMock.getModelsAndQuota!).mockResolvedValue({ authenticated: true,
+        models: [{ id: 'opaque-live-id' }], supported_options: { extended_thinking: true, thinking_levels_by_model: observed } });
+      const [result] = await verifier.execute();
+      expect(result.can_use_model).toBe(observed?.['opaque-live-id']?.includes('medium') === true);
+      if (result.can_use_model) expect(result.extended_thinking_enabled).toBe(false);
+    }
+  });
+
   beforeEach(() => {
     geminiServiceMock = {
       verifyProvider: vi.fn(),

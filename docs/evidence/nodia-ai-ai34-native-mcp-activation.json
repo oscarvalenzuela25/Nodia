@@ -1,0 +1,44 @@
+{
+  "stage": "AI-34",
+  "scope": "native_only_mcp_transport_and_closed_error_metadata_activation",
+  "status": "passed",
+  "provider_generations": 0,
+  "schema_migrations_applied": 0,
+  "node_files_written": 0,
+  "settings_changed": false,
+  "observed_at_utc": "2026-10-18T20:36:38Z",
+  "native_image_before": "sha256:b40c3078ed60778d2aaf9089e175ca0d1d350de391afc68605c78c3da23b4a92",
+  "native_image_after": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "backup_directory": "/opt/nodia/verification-backups/ai34-native-mcp-1792355799234",
+  "source_manifest_sha256": "e9e955f093f7c1491b1a856fed0ca782b7a098a48f053f3cc6e7c271871600c5",
+  "source_files_verified": 99,
+  "source_drift_count": 0,
+  "compiled_files_unchanged": 931,
+  "compiled_manifest_sha256": "0d7e3ade11f4a40695ebae89a597c606480f8818d22aca61d42bcb3eff78bc2c",
+  "api_and_worker_restarted": true,
+  "native_restarted": true,
+  "environment_mounts_isolation_preserved": true,
+  "nginx_identity_preserved": true,
+  "configured_chat_preserved": true,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 28
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 28
+  },
+  "native_artifact_counts": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "completed_at_utc": "2026-10-18T20:37:16Z"
+}

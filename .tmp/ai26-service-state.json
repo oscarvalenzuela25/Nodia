@@ -1,0 +1,1 @@
+{"observed_at_utc": "2026-10-17T18:10:29.287930+00:00", "clock_source": "vm_host", "server_units": {"nginx": "active", "worker": "active", "api": "active"}, "containers": ["nodia-gemini-microservice", "nodia-lab-postgres-1", "nodia-lab-redis-1"], "temporary_test_containers_remaining": 0}

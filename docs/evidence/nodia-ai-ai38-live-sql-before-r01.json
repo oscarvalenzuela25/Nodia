@@ -1,0 +1,83 @@
+{
+  "schema": "ai38-live-effect-snapshot-v1",
+  "phase": "before",
+  "status": "observed_not_physical_UI_or_provider_ACK_attestation",
+  "observed_at_VM_utc": "2026-10-21T02:44:14.453Z",
+  "source_sha256": "9591b6ca6ba75d03758782e24cfc9ce12945ccad235666c0bfac731ae9d9f1fe",
+  "connection_runtime_root": "/opt/nodia/releases/nodia-server-ai15-20261016",
+  "transaction": {
+    "read_only": true,
+    "isolation": "repeatable read"
+  },
+  "snapshot_sha256": "f61b81df91b5bc1e240c19bd10521fcb7fb8872bd2f3c8f4229190e7723c1203",
+  "snapshot": {
+    "conversation": {
+      "id": "a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "owner_id": "1",
+      "revision": 2,
+      "retention_epoch": "1",
+      "lifecycle": "active",
+      "selected_connection_id": "2",
+      "selected_mode": "token_plan_agentic",
+      "selected_model_id": "gemini-3.8-flash-high",
+      "selected_effort_id": "high",
+      "routing_revision": 1,
+      "routing_enabled": false,
+      "active_job_id": null,
+      "next_message_seq": "0",
+      "next_event_seq": "0",
+      "last_owner_message_at": null,
+      "expires_at": "2027-01-19T02:41:49.057Z"
+    },
+    "counts": {
+      "conversations": 1,
+      "messages": 0,
+      "runs": 0,
+      "tool_calls": 0,
+      "proposals": 0,
+      "proposal_revisions": 0,
+      "proposal_steps": 0,
+      "executions": 0,
+      "execution_steps": 0,
+      "challenges": 0,
+      "grants": 0,
+      "jobs": 0,
+      "attempts": 0
+    },
+    "category_counts": {
+      "owned_total": 0,
+      "owned_active": 0
+    },
+    "own_active_categories": [],
+    "proposals": [],
+    "proposal_steps": [],
+    "executions": [],
+    "execution_steps": [],
+    "challenges": [],
+    "grants": [],
+    "runs": [],
+    "callbacks": [],
+    "callback_counts": [],
+    "jobs": [],
+    "attempts": [],
+    "marker_count": {
+      "owned_marker_count": 0
+    },
+    "movements": []
+  },
+  "global_quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "configured_SQL_writes": 0,
+  "provider_requests": 0,
+  "chat_payloads_emitted": false,
+  "session_or_confirmation_secrets_emitted": false,
+  "limits": [
+    "SQL callbacks/counters are persisted observations, not native ACK attestation.",
+    "Human gesture, authenticated DOM, exact preview and HTTP calls need independent evidence.",
+    "Counts may legitimately be zero before preparation/confirmation; no phase success is inferred.",
+    "Owned exact marker only; no unrelated financial rows or category names are emitted."
+  ]
+}

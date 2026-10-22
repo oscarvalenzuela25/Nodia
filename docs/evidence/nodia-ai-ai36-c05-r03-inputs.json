@@ -1,0 +1,363 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R03",
+  "baseline": {
+    "report": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+      "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+    },
+    "inputs": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-inputs.json",
+      "sha256": "82b34ef7b7af79b8b28c81f606642763104414c5fad2af1c3c934d5bded020c9"
+    },
+    "consolidator": {
+      "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05-r02.cjs",
+      "sha256": "e8811dd414b6cb119e9367dc5569643ec9247790f0fb1af35c65193853059004"
+    }
+  },
+  "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+  "publication": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-publication-validation.json",
+    "sha256": "85c0efe12c35eb5408662a890fbf85f1e7e810342fcdcf1807d03e90d114e099"
+  },
+  "node_compiled_delta": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+    "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+  },
+  "baseline_accepted_capability_ids": [
+    "nodia_attachments_describe",
+    "nodia_operations_get",
+    "nodia_proposals_get",
+    "nodia_workflows_prepare"
+  ],
+  "baseline_observed_native_starts": 22,
+  "target_capability_ids": [
+    "nodia_finance_movements_prepare_create",
+    "nodia_preferences_list",
+    "nodia_preferences_prepare"
+  ],
+  "case_plan": [
+    "preferences",
+    "finance"
+  ],
+  "maximum_native_start_requests": 5,
+  "required_selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "required_public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+  "producers": {
+    "harness": {
+      "path": "nodia-server/test/nodia-ai-ai36-c05-live.integration.mjs",
+      "sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539"
+    },
+    "case_fixture": {
+      "path": "nodia-server/test/nodia-ai-ai36-c05-independent-cases.fixture.mjs",
+      "sha256": "01e9d5a003e84af302700c7ff3f81011a7ab3424feefc35ce4c7e7c3c5606b2a"
+    },
+    "canary": {
+      "path": "nodia-server/test/nodia-ai-ai36-c05-role-canary.mjs",
+      "sha256": "191877d0165c0bf4577eb836dc510b16db8d6e83a8abd5cf4dcc9b3299d38046"
+    },
+    "existing_canary": {
+      "path": "nodia-server/test/nodia-ai-ai15-live-attest.mjs",
+      "sha256": "604563be962df59a4b4431ad5efb2bf590b67a133a748a0d748cc90cd79ae49c"
+    }
+  },
+  "native_epochs": [
+    {
+      "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+      "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+      "node_compiled_delta": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+        "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+      },
+      "source_manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-manifest.json",
+        "sha256": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20"
+      },
+      "qualification": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-qualification.json",
+        "sha256": "03df56352d34c412f846ded9e62ac0772518f81b021b88d0dbe6bfe11098fec4"
+      },
+      "container_started_at_utc": "2026-10-19T20:30:54.592504609Z"
+    }
+  ],
+  "native_canaries": [
+    {
+      "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-canary-report.json",
+        "sha256": "4e28fd66cf48f15cfa95666dc31147239b8aef6dff6615ad4de5518783101c93"
+      },
+      "binding": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-binding.json",
+        "sha256": "b86cdf1b84c05f5b7e536723882b4a8c5bdde7e9af112e8bbfe2604b0cf97a7f"
+      },
+      "original_report": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-original-ai15-report.json",
+        "sha256": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9"
+      }
+    }
+  ],
+  "cohorts": [
+    {
+      "case_id": "preferences",
+      "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "receipt": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences.json",
+        "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+      },
+      "producer_harness_path": "test/nodia-ai-ai36-c05-live.integration.mjs",
+      "compiled_provenance": {
+        "mode": "current_compiled",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-manifest.json",
+          "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+        },
+        "producer_harness_sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539",
+        "archive_sha256": "aeacdfd1041dea130dc9213a71f30686f9b24165f603c48b1a6f4412a5bb75f3"
+      }
+    },
+    {
+      "case_id": "finance",
+      "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "receipt": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance.json",
+        "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+      },
+      "producer_harness_path": "test/nodia-ai-ai36-c05-live.integration.mjs",
+      "compiled_provenance": {
+        "mode": "current_compiled",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-manifest.json",
+          "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+        },
+        "producer_harness_sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539",
+        "archive_sha256": "aeacdfd1041dea130dc9213a71f30686f9b24165f603c48b1a6f4412a5bb75f3"
+      }
+    }
+  ],
+  "offline_controls": [
+    {
+      "case_id": "preferences",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-preferences.json",
+        "sha256": "13e26bbc1c57e7d10aaaa6cf76131596932d1cf85be7f5e411a2a1341f76ed83"
+      }
+    },
+    {
+      "case_id": "finance",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-finance.json",
+        "sha256": "9493073c6b2b9a60826e4d7ba467cfe3da8b350cc69ca3b622c7a3a9539b0b86"
+      }
+    }
+  ],
+  "metadata_evidence": [],
+  "supplementary_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-report.json",
+      "sha256": "7332694f79027adaccb3b0b80fb1d808e507d8a03caa0689ecfeb21dbb213af0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-manifest.json",
+      "sha256": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-manifest-depth-validation.json",
+      "sha256": "b4941cd4d15a87d32cb701354ef542ae109d71fafb50cda8e5ff421f62701323"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-root-independent.json",
+      "sha256": "c86e01e7649df46fa3f6c640efca854aa0e3819a993c462c7ccf0e09b6ea3665"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-control-pre-fix.json",
+      "sha256": "4d49fcfad2a8783d88fedfdbba512902b0a3039025bfa5153a08ee6e97f4f586"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-control.json",
+      "sha256": "12e2c6a0d7489f2f00cc15bc44905a7db0c0e6312f5f53858ab0658046f90eb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-postfix-attempt04.json",
+      "sha256": "c86e01e7649df46fa3f6c640efca854aa0e3819a993c462c7ccf0e09b6ea3665"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-canary-report.json",
+      "sha256": "4e28fd66cf48f15cfa95666dc31147239b8aef6dff6615ad4de5518783101c93"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-runner-report.json",
+      "sha256": "0b921d1b45901b9d3735bb0a2968859b9d81eaeadf70b64116bb41f0377fc8f0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-original-ai15-report.json",
+      "sha256": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-binding.json",
+      "sha256": "b86cdf1b84c05f5b7e536723882b4a8c5bdde7e9af112e8bbfe2604b0cf97a7f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-quiescence.json",
+      "sha256": "f4cf2920dc5e37e8a1d4469cf72be314f670349e46673df06be297d2d3ed03fc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-native-quiet.json",
+      "sha256": "e17b678fb4ba389e6a5c6aae80a127accd32bf555be30e38eee063c17ef450a0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-selection.json",
+      "sha256": "f4002f1e91c3d665104c5886c16e05f619628efb1f93876c455050f302acc665"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-receipt.json",
+      "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-ai36-c05-cases-live-stage-manifest.json",
+      "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-case-report.json",
+      "sha256": "02e19d791ff818d6d7f9d82e1fcc310bc01df15c07a41fb19e49faa4c60d3634"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-stdout.log",
+      "sha256": "02e19d791ff818d6d7f9d82e1fcc310bc01df15c07a41fb19e49faa4c60d3634"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-native-diagnostics.json",
+      "sha256": "5a0bc0213f3b02a09d525e8384d7b4eda30b40b789687664b15731f199aaf1f8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-timeline.json",
+      "sha256": "482b22257a2bbb19945b92274e8494be9a7161688a32ebf7a3a2ced41e5c0ded"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-quiescence.json",
+      "sha256": "d505bbb119c9b27b2cc88dfbfed6f4b6f5759b87b776f89965cc4b187303d9cc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-native-quiet.json",
+      "sha256": "06bb1d166f6d66d81628c295ebaba13b72bc35d8e9f71b41cc3b0c9998077833"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-receipt.json",
+      "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-ai36-c05-cases-live-stage-manifest.json",
+      "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-case-report.json",
+      "sha256": "126dedfb8b9a6dc1f60755e8254fcf2df38957c0ee071c8e2dacb1485f4d2f84"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-stdout.log",
+      "sha256": "126dedfb8b9a6dc1f60755e8254fcf2df38957c0ee071c8e2dacb1485f4d2f84"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-native-diagnostics.json",
+      "sha256": "ca2e5037f840fe48074fe2b193ee36729645348d55b3c4af2eee325b7d57b0ad"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-timeline.json",
+      "sha256": "b280e83b797bbad031b1f01a5d2c8ce6ef66370090b32eb808723b86b3a5fb79"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-quiescence.json",
+      "sha256": "cfc805f3786ff6997cc77b7f3925453073962e7136d7aa31e359af0e774b4105"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-native-quiet.json",
+      "sha256": "f2258bca986437b5163371c0025c0dcef7402acc85b916d57273a6d2b8e2c130"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-official-cli-research.json",
+      "sha256": "6de25dc1b9384f5c02f83bd21176011f626e4c4c8b4bce955f9759bbb2285de7"
+    }
+  ],
+  "continuation_scope": "Verify a new image and policy with its own native canary, then verify the three pending capabilities through two independent disposable SQL cases. R01/R02 remain immutable environment-layered evidence; no historical result transfers to the R03 native role.",
+  "artifact_aliases": [
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-receipt.json",
+        "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences.json",
+        "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-ai36-c05-cases-live-stage-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-receipt.json",
+        "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance.json",
+        "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-ai36-c05-cases-live-stage-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    }
+  ],
+  "closing_state": {
+    "runtime_receipt": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-receipt.json",
+      "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+    },
+    "SQL_quiet": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-quiescence.json",
+      "sha256": "cfc805f3786ff6997cc77b7f3925453073962e7136d7aa31e359af0e774b4105"
+    },
+    "native_quiet": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-native-quiet.json",
+      "sha256": "f2258bca986437b5163371c0025c0dcef7402acc85b916d57273a6d2b8e2c130"
+    }
+  }
+}

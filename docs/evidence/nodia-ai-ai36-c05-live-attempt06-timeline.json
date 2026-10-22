@@ -1,0 +1,145 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "ab7af5d400391c14e8baf696287af9ce8e2afbe419b3509ea6dd6d9fe5aa1ff9",
+  "source_completed_at_utc": "2026-10-19T17:58:25.774Z",
+  "provider_generations": 1,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T17:56:22.709Z",
+        "monotonic_ms": 8748.094637
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:56:33.154Z",
+        "monotonic_ms": 19193.266331
+      },
+      "elapsed_ms": 10445.171693999999
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T17:56:33.466Z",
+        "monotonic_ms": 19504.380736
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:56:33.472Z",
+        "monotonic_ms": 19510.596098
+      },
+      "elapsed_ms": 6.215362000002642
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T17:56:33.539Z",
+        "monotonic_ms": 19578.283074
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:56:37.300Z",
+        "monotonic_ms": 23338.994992
+      },
+      "elapsed_ms": 3760.711918000001
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T17:56:37.412Z",
+        "monotonic_ms": 23451.155811
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:56:37.418Z",
+        "monotonic_ms": 23456.822467
+      },
+      "elapsed_ms": 5.66665600000124
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "b03b90ab-7bb8-433e-a2cc-8bd05b9dc162",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T17:56:37.472Z",
+        "monotonic_ms": 23510.618804
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:58:23.666Z",
+        "monotonic_ms": 129705.156162
+      },
+      "elapsed_ms": 106194.537358
+    }
+  ],
+  "generations": [
+    {
+      "turn": "financial_preview",
+      "run_id": "3b56ce49-a0b4-437e-9e2f-f3d986a09925",
+      "run_state": "queued",
+      "attempt_id": "b03b90ab-7bb8-433e-a2cc-8bd05b9dc162",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T17:56:37.473Z",
+      "accepted_start_at_utc": "2026-10-19T17:56:37.561Z",
+      "native_start_request_ms": 87.55257300000085,
+      "execute_elapsed_ms": 106194.752061,
+      "terminal_proof_received": true,
+      "terminal_proof_sha256": "9e239bef01cc4f1c5c45c630cd9e6f852b67da90996e2df64daa23bdfeb0c72e",
+      "terminal_proof_outcome": "completed",
+      "process_closed": true,
+      "callbacks": [
+        {
+          "name": "nodia_capabilities_select",
+          "call_id": "cfda8033-4ce1-46e2-b10f-6dd8b3d8aaf0",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T17:58:15.836Z",
+          "completed_at_utc": "2026-10-19T17:58:16.027Z",
+          "start_to_callback_request_ms": 98362.388891,
+          "handler_elapsed_ms": 191.49076899999636,
+          "result_accepted_at_utc": "2026-10-19T17:58:16.034Z",
+          "result_submit_elapsed_ms": 5.584954999998445,
+          "result_accepted_to_terminal_ms": 7632.929323000004,
+          "result_accepted_to_execute_exit_ms": 7632.739220999996
+        }
+      ],
+      "native_ACK": {
+        "attempt_id": "b03b90ab-7bb8-433e-a2cc-8bd05b9dc162",
+        "terminal_proof_sha256": "9e239bef01cc4f1c5c45c630cd9e6f852b67da90996e2df64daa23bdfeb0c72e",
+        "acknowledged_at_utc": "2026-10-19T17:58:23.699Z"
+      },
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 7,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 1,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 2
+          }
+        ],
+        "signature": "24810d48f2976073b0335562e89ab1c062e29bb8a572771431551b8f2c641a23",
+        "at_utc": "2026-10-19T17:58:23.666Z",
+        "monotonic_ms": 129704.738658
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1025,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1025,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

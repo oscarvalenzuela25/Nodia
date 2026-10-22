@@ -1,3 +1,5 @@
+import { actorReference } from '../authorization/authority-transaction.js';
+import type { AuthRequest } from '../auth/types/auth.types.js';
 import {
   Body,
   Controller,
@@ -7,6 +9,8 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  Header,
 } from '@nestjs/common';
 import { CreateAiApiKeyDto } from './dto/create-ai-api-key.dto.js';
 import { UpdateAiApiKeyDto } from './dto/update-ai-api-key.dto.js';
@@ -33,17 +37,31 @@ export class AiApiKeyController {
   }
 
   @Post()
-  create(@Body() createDto: CreateAiApiKeyDto) {
-    return this.createAiApiKeyUseCase.execute(createDto);
+  @Header('Cache-Control', 'no-store')
+  create(@Body() createDto: CreateAiApiKeyDto, @Req() request: AuthRequest) {
+    return this.createAiApiKeyUseCase.execute(
+      createDto,
+      actorReference(request.auth),
+    );
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateDto: UpdateAiApiKeyDto) {
-    return this.updateAiApiKeyUseCase.execute(id, updateDto);
+  @Header('Cache-Control', 'no-store')
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateAiApiKeyDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateAiApiKeyUseCase.execute(
+      id,
+      updateDto,
+      actorReference(request.auth),
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.deleteAiApiKeyUseCase.execute(id);
+  @Header('Cache-Control', 'no-store')
+  remove(@Param('id') id: string, @Req() request: AuthRequest) {
+    return this.deleteAiApiKeyUseCase.execute(id, actorReference(request.auth));
   }
 }

@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-16T20:05:33.154Z",
+  "chat_id": "4e5848a7-36ae-4ccc-82bb-99a38761963a",
+  "read_only": true,
+  "prompt_or_answer_read": false,
+  "runs": [
+    {
+      "state": "running",
+      "phase": "inference",
+      "error_code": null,
+      "deadline_at": "2026-10-16T20:14:08.800Z",
+      "completed_at": null,
+      "provider_dispatches_used": 1,
+      "tool_calls_used": 0,
+      "mcp_rpc_messages_used": 0,
+      "delegations_used": 0
+    }
+  ],
+  "jobs": [
+    {
+      "kind": "turn",
+      "state": "leased",
+      "stage_key": "inference",
+      "attempt_count": 2,
+      "deadline_at": "2026-10-16T20:14:08.800Z"
+    }
+  ],
+  "attempts": [
+    {
+      "phase": "completed",
+      "count": 1,
+      "external_refs": 0,
+      "open_attempts": 0
+    },
+    {
+      "phase": "dispatch_armed",
+      "count": 1,
+      "external_refs": 1,
+      "open_attempts": 1
+    }
+  ],
+  "tool_calls": 0,
+  "pending_jobs": 1
+}

@@ -1,0 +1,214 @@
+{
+  "schema": "ai38-live-effect-snapshot-v1",
+  "phase": "mcp-progress",
+  "status": "observed_not_physical_UI_or_provider_ACK_attestation",
+  "observed_at_VM_utc": "2026-10-21T02:56:51.183Z",
+  "source_sha256": "9591b6ca6ba75d03758782e24cfc9ce12945ccad235666c0bfac731ae9d9f1fe",
+  "connection_runtime_root": "/opt/nodia/releases/nodia-server-ai15-20261016",
+  "transaction": {
+    "read_only": true,
+    "isolation": "repeatable read"
+  },
+  "snapshot_sha256": "007212ccc1736518cfbe3e18f55d7280037674b728b6ff8edf4fc839497d2b55",
+  "snapshot": {
+    "conversation": {
+      "id": "a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "owner_id": "1",
+      "revision": 3,
+      "retention_epoch": "1",
+      "lifecycle": "active",
+      "selected_connection_id": "2",
+      "selected_mode": "token_plan_agentic",
+      "selected_model_id": "gemini-3.8-flash-high",
+      "selected_effort_id": "high",
+      "routing_revision": 1,
+      "routing_enabled": false,
+      "active_job_id": "659ec0b7-49ba-444f-837a-cca35784b363",
+      "next_message_seq": "1",
+      "next_event_seq": "8",
+      "last_owner_message_at": "2026-10-21T02:55:16.437Z",
+      "expires_at": "2027-01-19T02:55:16.437Z"
+    },
+    "counts": {
+      "conversations": 1,
+      "messages": 1,
+      "runs": 1,
+      "tool_calls": 1,
+      "proposals": 0,
+      "proposal_revisions": 0,
+      "proposal_steps": 0,
+      "executions": 0,
+      "execution_steps": 0,
+      "challenges": 0,
+      "grants": 1,
+      "jobs": 1,
+      "attempts": 4
+    },
+    "category_counts": {
+      "owned_total": 1,
+      "owned_active": 1
+    },
+    "own_active_categories": [
+      {
+        "id": "1",
+        "user_id": "1",
+        "is_active": true
+      }
+    ],
+    "proposals": [],
+    "proposal_steps": [],
+    "executions": [],
+    "execution_steps": [],
+    "challenges": [],
+    "grants": [
+      {
+        "id": "4c539975-d8c0-4509-80f9-6519180c285f",
+        "actor_id": "1",
+        "run_id": "ad1d1c79-5658-4649-8261-9f4dc6984fff",
+        "execution_id": null,
+        "command_set_hash": null,
+        "policy_version": "nodia-ai-runtime/1",
+        "expires_at": "2026-10-21T03:05:16.437Z",
+        "revoked_at": null,
+        "created_at": "2026-10-21T02:55:16.437Z"
+      }
+    ],
+    "runs": [
+      {
+        "id": "ad1d1c79-5658-4649-8261-9f4dc6984fff",
+        "actor_id": "1",
+        "connection_id": "2",
+        "selection_snapshot": {
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "connection_id": "2"
+        },
+        "catalog_version": "nodia-ai-ai15-reads/1",
+        "policy_version": "nodia-ai-runtime/1",
+        "revision": 8,
+        "state": "running",
+        "phase": "inference",
+        "error_code": null,
+        "created_at": "2026-10-21T02:55:16.437Z",
+        "completed_at": null,
+        "provider_dispatches_used": 2,
+        "tool_calls_used": 1,
+        "mcp_rpc_messages_used": 13,
+        "compactions_used": 0,
+        "delegations_used": 0
+      }
+    ],
+    "callbacks": [
+      {
+        "id": "6298a765-9519-4324-bf78-03c6ff1bb2d9",
+        "run_id": "ad1d1c79-5658-4649-8261-9f4dc6984fff",
+        "tool_name": "nodia_capabilities_select",
+        "contract_hash": "c84994434a131c277db1391375db7f2b2fcc0de4dc2ff9bac684cd02405ce84e",
+        "state": "completed",
+        "created_at": "2026-10-21T02:56:12.009Z",
+        "completed_at": "2026-10-21T02:56:12.009Z",
+        "preparation_status": "selection_requested",
+        "draft_id": null,
+        "result_proposal_id": null
+      }
+    ],
+    "callback_counts": [
+      {
+        "tool_name": "nodia_capabilities_select",
+        "state": "completed",
+        "count": 1
+      }
+    ],
+    "jobs": [
+      {
+        "id": "659ec0b7-49ba-444f-837a-cca35784b363",
+        "run_id": "ad1d1c79-5658-4649-8261-9f4dc6984fff",
+        "execution_id": null,
+        "kind": "turn",
+        "state": "leased",
+        "stage_key": "inference",
+        "stage_seq": 4,
+        "attempt_count": 4,
+        "fence": "4",
+        "available_at": "2026-10-21T02:56:20.826Z",
+        "deadline_at": "2026-10-21T03:05:16.437Z",
+        "created_at": "2026-10-21T02:55:16.437Z",
+        "updated_at": "2026-10-21T02:56:50.879Z"
+      }
+    ],
+    "attempts": [
+      {
+        "id": "ea987caa-79f2-494d-a484-59e6472a8953",
+        "job_id": "659ec0b7-49ba-444f-837a-cca35784b363",
+        "attempt_no": 1,
+        "fence": "1",
+        "phase": "completed",
+        "stage_key": "context",
+        "stage_seq": 1,
+        "error_code": null,
+        "native_operation_reference_present": false,
+        "started_at": "2026-10-21T02:55:18.140Z",
+        "ended_at": "2026-10-21T02:55:18.630Z"
+      },
+      {
+        "id": "123698d9-74cb-40b3-a20d-668250921c5c",
+        "job_id": "659ec0b7-49ba-444f-837a-cca35784b363",
+        "attempt_no": 2,
+        "fence": "2",
+        "phase": "completed",
+        "stage_key": "inference",
+        "stage_seq": 2,
+        "error_code": null,
+        "native_operation_reference_present": true,
+        "started_at": "2026-10-21T02:55:18.651Z",
+        "ended_at": "2026-10-21T02:56:20.429Z"
+      },
+      {
+        "id": "dd2ea4ca-6fb0-4782-86b3-c5998fe488df",
+        "job_id": "659ec0b7-49ba-444f-837a-cca35784b363",
+        "attempt_no": 3,
+        "fence": "3",
+        "phase": "completed",
+        "stage_key": "tool_selection",
+        "stage_seq": 3,
+        "error_code": null,
+        "native_operation_reference_present": false,
+        "started_at": "2026-10-21T02:56:20.446Z",
+        "ended_at": "2026-10-21T02:56:20.825Z"
+      },
+      {
+        "id": "d6768fa1-5d12-4d0a-aca8-b65af88952db",
+        "job_id": "659ec0b7-49ba-444f-837a-cca35784b363",
+        "attempt_no": 4,
+        "fence": "4",
+        "phase": "dispatch_armed",
+        "stage_key": "inference",
+        "stage_seq": 4,
+        "error_code": null,
+        "native_operation_reference_present": true,
+        "started_at": "2026-10-21T02:56:20.847Z",
+        "ended_at": null
+      }
+    ],
+    "marker_count": {
+      "owned_marker_count": 0
+    },
+    "movements": []
+  },
+  "global_quiet": {
+    "pending_jobs": 1,
+    "open_attempts": 1,
+    "retained_slots": 1
+  },
+  "configured_SQL_writes": 0,
+  "provider_requests": 0,
+  "chat_payloads_emitted": false,
+  "session_or_confirmation_secrets_emitted": false,
+  "limits": [
+    "SQL callbacks/counters are persisted observations, not native ACK attestation.",
+    "Human gesture, authenticated DOM, exact preview and HTTP calls need independent evidence.",
+    "Counts may legitimately be zero before preparation/confirmation; no phase success is inferred.",
+    "Owned exact marker only; no unrelated financial rows or category names are emitted."
+  ]
+}

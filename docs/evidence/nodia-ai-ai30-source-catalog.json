@@ -1,0 +1,2131 @@
+{
+  "stage": "AI-30",
+  "scope": "logical_source_descriptors_only_no_sql_mappings",
+  "catalog_version": "49567d402fd1c2e0221e260d8ead518029b8fb0b16ef5b4e03b0a652dd2684b1",
+  "sources": [
+    {
+      "source_key": "finance_movements",
+      "module_key": "personal_finance",
+      "measure_keys": [
+        "records",
+        "confirmed_amount",
+        "confirmed_expense_amount",
+        "confirmed_income_amount"
+      ],
+      "dimension_keys": [
+        "id",
+        "category_id",
+        "obligation_id",
+        "name",
+        "type",
+        "status",
+        "is_active",
+        "created_at"
+      ],
+      "field_keys": [
+        "id",
+        "category_id",
+        "obligation_id",
+        "name",
+        "type",
+        "status",
+        "recorded_amount",
+        "is_active",
+        "created_at",
+        "category_group_id"
+      ],
+      "relationship_keys": [
+        "category_groups"
+      ],
+      "basis_key": "created_at",
+      "scope_kind": "personal",
+      "grain": "one_finance_movement",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "category_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "category_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "category_id"
+        },
+        {
+          "field_key": "obligation_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": true,
+          "dimension_key": "obligation_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "obligation_id"
+        },
+        {
+          "field_key": "name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "name",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "name"
+        },
+        {
+          "field_key": "type",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "type",
+          "temporal_kind": null,
+          "values": [
+            "income",
+            "expense"
+          ],
+          "semantics": "type"
+        },
+        {
+          "field_key": "status",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "status",
+          "temporal_kind": null,
+          "values": [
+            "pending",
+            "received",
+            "paid",
+            "cancelled"
+          ],
+          "semantics": "status"
+        },
+        {
+          "field_key": "recorded_amount",
+          "value_type": "bigint_integer",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "original_recorded_pesos_before_financial_status_effect"
+        },
+        {
+          "field_key": "is_active",
+          "value_type": "boolean",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "is_active",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "visibility_not_financial_cancellation"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "created_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "server_record_creation_instant"
+        },
+        {
+          "field_key": "category_group_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "active_category_group_membership"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_finance_movement",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "confirmed_amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "peso",
+          "currency": null,
+          "scale": 0,
+          "semantic": "confirmed_finance_movement_amount",
+          "grain": "one_finance_movement",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "confirmed_expense_amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "peso",
+          "currency": null,
+          "scale": 0,
+          "semantic": "paid_personal_expense_amount",
+          "grain": "one_finance_movement",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "confirmed_income_amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "peso",
+          "currency": null,
+          "scale": 0,
+          "semantic": "received_personal_income_amount",
+          "grain": "one_finance_movement",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [
+        {
+          "relationship_key": "category_groups",
+          "cardinality": "one_to_many",
+          "filter_fields": [
+            "category_group_id"
+          ],
+          "semantics": "Active membership filters are semijoins; overlapping groups never duplicate movements."
+        }
+      ],
+      "limitations": [
+        "Only the server creation instant is available; there is no purchase, accrual or payment date.",
+        "There is no commercial supplier relationship.",
+        "Amounts are native integer pesos by the finance contract; no ISO currency is stored or inferred. No conversion or cross-source comparison is authorized.",
+        "Activity is visibility. Inactive records retain their monetary effect unless explicitly filtered."
+      ]
+    },
+    {
+      "source_key": "finance_obligations",
+      "module_key": "personal_finance",
+      "measure_keys": [
+        "records",
+        "principal_amount"
+      ],
+      "dimension_keys": [
+        "id",
+        "name",
+        "key",
+        "type",
+        "is_active",
+        "created_at"
+      ],
+      "field_keys": [
+        "id",
+        "name",
+        "key",
+        "type",
+        "recorded_amount",
+        "is_active",
+        "created_at"
+      ],
+      "relationship_keys": [],
+      "basis_key": "created_at",
+      "scope_kind": "personal",
+      "grain": "one_finance_obligation",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "name",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "name"
+        },
+        {
+          "field_key": "key",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "key",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "key"
+        },
+        {
+          "field_key": "type",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "type",
+          "temporal_kind": null,
+          "values": [
+            "loan",
+            "debt"
+          ],
+          "semantics": "type"
+        },
+        {
+          "field_key": "recorded_amount",
+          "value_type": "bigint_integer",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "original_obligation_principal_pesos_not_remaining_balance"
+        },
+        {
+          "field_key": "is_active",
+          "value_type": "boolean",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "is_active",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "visibility_not_financial_cancellation"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "created_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "server_record_creation_instant"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_finance_obligation",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "principal_amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "peso",
+          "currency": null,
+          "scale": 0,
+          "semantic": "original_obligation_principal_amount",
+          "grain": "one_finance_obligation",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [],
+      "limitations": [
+        "Only the server creation instant is available; there is no purchase, accrual or payment date.",
+        "There is no commercial supplier relationship.",
+        "Amounts are native integer pesos by the finance contract; no ISO currency is stored or inferred. No conversion or cross-source comparison is authorized.",
+        "Activity is visibility. Inactive records retain their monetary effect unless explicitly filtered.",
+        "Principal is the recorded original amount, not remaining balance or cash flow; payments are separate movements."
+      ]
+    },
+    {
+      "source_key": "business_invoices",
+      "module_key": "businesses",
+      "measure_keys": [
+        "records",
+        "invoice_amount"
+      ],
+      "dimension_keys": [
+        "id",
+        "provider_id",
+        "code",
+        "is_active"
+      ],
+      "field_keys": [
+        "id",
+        "provider_id",
+        "code",
+        "is_active",
+        "created_at"
+      ],
+      "relationship_keys": [],
+      "basis_key": "created_at",
+      "scope_kind": "business",
+      "grain": "one_business_invoice",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "provider_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": true,
+          "dimension_key": "provider_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "provider_id"
+        },
+        {
+          "field_key": "code",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "code",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "code"
+        },
+        {
+          "field_key": "is_active",
+          "value_type": "boolean",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "is_active",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "visibility_not_financial_cancellation"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": "local_datetime",
+          "values": null,
+          "semantics": "legacy_creation_timestamp_without_timezone"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_business_invoice",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "invoice_amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "money",
+          "currency": null,
+          "scale": 0,
+          "semantic": "recorded_invoice_total_not_payment",
+          "grain": "one_business_invoice",
+          "nullable": false,
+          "supported": false,
+          "unsupported_reason": "Invoice currency is not typed. A monetary sum cannot assert compatible currency."
+        }
+      ],
+      "relationships": [],
+      "limitations": [
+        "Legacy creation timestamps have no timezone. An instant period requires an explicit domain timezone contract and is unsupported here.",
+        "No typed invoice currency, issue/purchase date or payment status; JSON extraction data is not reportable.",
+        "Count is supported; monetary sum requires a currency contract."
+      ]
+    },
+    {
+      "source_key": "business_products",
+      "module_key": "businesses",
+      "measure_keys": [
+        "records",
+        "stock_units"
+      ],
+      "dimension_keys": [
+        "id",
+        "provider_id",
+        "code",
+        "name",
+        "stock",
+        "is_active"
+      ],
+      "field_keys": [
+        "id",
+        "provider_id",
+        "code",
+        "name",
+        "stock",
+        "is_active",
+        "created_at",
+        "log_name"
+      ],
+      "relationship_keys": [
+        "historical_snapshots"
+      ],
+      "basis_key": "current_snapshot",
+      "scope_kind": "business",
+      "grain": "one_current_product",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "provider_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": true,
+          "dimension_key": "provider_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "provider_id"
+        },
+        {
+          "field_key": "code",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "code",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "code"
+        },
+        {
+          "field_key": "name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "name",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "name"
+        },
+        {
+          "field_key": "stock",
+          "value_type": "integer",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "stock",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "stock"
+        },
+        {
+          "field_key": "is_active",
+          "value_type": "boolean",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "is_active",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "visibility_not_financial_cancellation"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": "local_datetime",
+          "values": null,
+          "semantics": "legacy_creation_timestamp_without_timezone"
+        },
+        {
+          "field_key": "log_name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "log_name"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_current_product",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "stock_units",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "units",
+          "currency": null,
+          "scale": 0,
+          "semantic": "current_recorded_stock_units",
+          "grain": "one_current_product",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [
+        {
+          "relationship_key": "historical_snapshots",
+          "cardinality": "one_to_many",
+          "filter_fields": [
+            "log_name"
+          ],
+          "semantics": "Existence of historical snapshot by name; never a sale or stock event."
+        }
+      ],
+      "limitations": [
+        "Legacy creation timestamps have no timezone. An instant period requires an explicit domain timezone contract and is unsupported here.",
+        "Stock is the current snapshot, not an inventory event ledger. Prices have no typed currency and are not monetary measures."
+      ]
+    },
+    {
+      "source_key": "business_product_logs",
+      "module_key": "businesses",
+      "measure_keys": [
+        "records"
+      ],
+      "dimension_keys": [
+        "id",
+        "product_id",
+        "code",
+        "name"
+      ],
+      "field_keys": [
+        "id",
+        "product_id",
+        "code",
+        "name",
+        "created_at"
+      ],
+      "relationship_keys": [],
+      "basis_key": "created_at",
+      "scope_kind": "business",
+      "grain": "one_historical_product_snapshot",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "uuid",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "product_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "product_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "product_id"
+        },
+        {
+          "field_key": "code",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "code",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "code"
+        },
+        {
+          "field_key": "name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "name",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "name"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": "local_datetime",
+          "values": null,
+          "semantics": "legacy_creation_timestamp_without_timezone"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_historical_product_snapshot",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [],
+      "limitations": [
+        "Legacy creation timestamps have no timezone. An instant period requires an explicit domain timezone contract and is unsupported here.",
+        "Historical snapshots are not sales or inventory movements; stocks across snapshots must not be summed.",
+        "Business is resolved through the current parent product; historic provider ownership is not stored."
+      ]
+    },
+    {
+      "source_key": "business_providers",
+      "module_key": "businesses",
+      "measure_keys": [
+        "records"
+      ],
+      "dimension_keys": [
+        "id",
+        "name",
+        "is_active"
+      ],
+      "field_keys": [
+        "id",
+        "name",
+        "is_active",
+        "created_at",
+        "contact_name",
+        "product_code",
+        "invoice_code"
+      ],
+      "relationship_keys": [
+        "contacts",
+        "products",
+        "invoices"
+      ],
+      "basis_key": "created_at",
+      "scope_kind": "business",
+      "grain": "one_commercial_provider",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "name",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "name"
+        },
+        {
+          "field_key": "is_active",
+          "value_type": "boolean",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "is_active",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "visibility_not_financial_cancellation"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": "local_datetime",
+          "values": null,
+          "semantics": "legacy_creation_timestamp_without_timezone"
+        },
+        {
+          "field_key": "contact_name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "contact_name"
+        },
+        {
+          "field_key": "product_code",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "product_code"
+        },
+        {
+          "field_key": "invoice_code",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "invoice_code"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_commercial_provider",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [
+        {
+          "relationship_key": "contacts",
+          "cardinality": "one_to_many",
+          "filter_fields": [
+            "contact_name"
+          ],
+          "semantics": "Contacts of this commercial provider, irrespective of visibility."
+        },
+        {
+          "relationship_key": "products",
+          "cardinality": "one_to_many",
+          "filter_fields": [
+            "product_code"
+          ],
+          "semantics": "Products of the same provider and business."
+        },
+        {
+          "relationship_key": "invoices",
+          "cardinality": "one_to_many",
+          "filter_fields": [
+            "invoice_code"
+          ],
+          "semantics": "Invoices of the same provider and business; invoiced does not mean paid."
+        }
+      ],
+      "limitations": [
+        "Legacy creation timestamps have no timezone. An instant period requires an explicit domain timezone contract and is unsupported here.",
+        "Provider JSON fields, phone arrays and schedules are not report fields."
+      ]
+    },
+    {
+      "source_key": "rental_reservations",
+      "module_key": "rental_reservations",
+      "measure_keys": [
+        "records",
+        "commercial_amount"
+      ],
+      "dimension_keys": [
+        "id",
+        "channel",
+        "status",
+        "check_in_on",
+        "check_out_on",
+        "is_active",
+        "created_at"
+      ],
+      "field_keys": [
+        "id",
+        "channel",
+        "status",
+        "check_in_on",
+        "check_out_on",
+        "recorded_amount",
+        "is_active",
+        "created_at",
+        "payment_method"
+      ],
+      "relationship_keys": [
+        "confirmed_payments"
+      ],
+      "basis_key": "check_in_on",
+      "scope_kind": "rental",
+      "grain": "one_rental_reservation",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "channel",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "channel",
+          "temporal_kind": null,
+          "values": [
+            "whatsapp",
+            "airbnb",
+            "facebook",
+            "other"
+          ],
+          "semantics": "channel"
+        },
+        {
+          "field_key": "status",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "status",
+          "temporal_kind": null,
+          "values": [
+            "draft",
+            "confirmed",
+            "in_progress",
+            "completed",
+            "cancelled"
+          ],
+          "semantics": "status"
+        },
+        {
+          "field_key": "check_in_on",
+          "value_type": "date",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "check_in_on",
+          "temporal_kind": "civil_date",
+          "values": null,
+          "semantics": "check_in_on"
+        },
+        {
+          "field_key": "check_out_on",
+          "value_type": "date",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "check_out_on",
+          "temporal_kind": "civil_date",
+          "values": null,
+          "semantics": "check_out_on"
+        },
+        {
+          "field_key": "recorded_amount",
+          "value_type": "bigint_integer",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "agreed_gross_total_clp_not_cash_received"
+        },
+        {
+          "field_key": "is_active",
+          "value_type": "boolean",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "is_active",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "visibility_not_financial_cancellation"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "created_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "server_record_creation_instant"
+        },
+        {
+          "field_key": "payment_method",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": true,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "payment_method"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_rental_reservation",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "commercial_amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "money",
+          "currency": "CLP",
+          "scale": 0,
+          "semantic": "reservation_agreed_gross_total_not_cash",
+          "grain": "one_rental_reservation",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [
+        {
+          "relationship_key": "confirmed_payments",
+          "cardinality": "one_to_many",
+          "filter_fields": [
+            "payment_method"
+          ],
+          "semantics": "Confirmed payment existence; does not multiply agreed reservation totals."
+        }
+      ],
+      "limitations": [
+        "Commercial amount includes the explicitly selected statuses and is not collected money, net income or amount due.",
+        "Civil periods use the property calendar timezone; archived reservations preserve their commercial and monetary history."
+      ]
+    },
+    {
+      "source_key": "rental_payments",
+      "module_key": "rental_reservations",
+      "measure_keys": [
+        "records",
+        "amount"
+      ],
+      "dimension_keys": [
+        "id",
+        "reservation_id",
+        "status",
+        "method",
+        "occurred_on",
+        "created_at"
+      ],
+      "field_keys": [
+        "id",
+        "reservation_id",
+        "status",
+        "method",
+        "recorded_amount",
+        "occurred_on",
+        "created_at"
+      ],
+      "relationship_keys": [],
+      "basis_key": "occurred_on",
+      "scope_kind": "rental",
+      "grain": "one_rental_payment",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "reservation_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "reservation_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "reservation_id"
+        },
+        {
+          "field_key": "status",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "status",
+          "temporal_kind": null,
+          "values": [
+            "confirmed",
+            "voided"
+          ],
+          "semantics": "status"
+        },
+        {
+          "field_key": "method",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": true,
+          "dimension_key": "method",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "method"
+        },
+        {
+          "field_key": "recorded_amount",
+          "value_type": "bigint_integer",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "recorded_clp_before_voided_status_effect"
+        },
+        {
+          "field_key": "occurred_on",
+          "value_type": "date",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "occurred_on",
+          "temporal_kind": "civil_date",
+          "values": null,
+          "semantics": "occurred_on"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "created_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "server_record_creation_instant"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_rental_payment",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "money",
+          "currency": "CLP",
+          "scale": 0,
+          "semantic": "confirmed_rental_payment_amount",
+          "grain": "one_rental_payment",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [],
+      "limitations": [
+        "Only confirmed records contribute money; voided records can be counted but contribute zero.",
+        "Payment/refund civil date is the recorded effective date, not reservation check-in or server creation date."
+      ]
+    },
+    {
+      "source_key": "rental_refunds",
+      "module_key": "rental_reservations",
+      "measure_keys": [
+        "records",
+        "amount"
+      ],
+      "dimension_keys": [
+        "id",
+        "reservation_id",
+        "status",
+        "method",
+        "occurred_on",
+        "created_at"
+      ],
+      "field_keys": [
+        "id",
+        "reservation_id",
+        "status",
+        "method",
+        "recorded_amount",
+        "occurred_on",
+        "created_at"
+      ],
+      "relationship_keys": [],
+      "basis_key": "occurred_on",
+      "scope_kind": "rental",
+      "grain": "one_rental_refund",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "reservation_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "reservation_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "reservation_id"
+        },
+        {
+          "field_key": "status",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "status",
+          "temporal_kind": null,
+          "values": [
+            "confirmed",
+            "voided"
+          ],
+          "semantics": "status"
+        },
+        {
+          "field_key": "method",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": true,
+          "dimension_key": "method",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "method"
+        },
+        {
+          "field_key": "recorded_amount",
+          "value_type": "bigint_integer",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "recorded_clp_before_voided_status_effect"
+        },
+        {
+          "field_key": "occurred_on",
+          "value_type": "date",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "occurred_on",
+          "temporal_kind": "civil_date",
+          "values": null,
+          "semantics": "occurred_on"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "created_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "server_record_creation_instant"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_rental_refund",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "money",
+          "currency": "CLP",
+          "scale": 0,
+          "semantic": "confirmed_rental_refund_amount",
+          "grain": "one_rental_refund",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [],
+      "limitations": [
+        "Only confirmed records contribute money; voided records can be counted but contribute zero.",
+        "Payment/refund civil date is the recorded effective date, not reservation check-in or server creation date."
+      ]
+    },
+    {
+      "source_key": "rental_expenses",
+      "module_key": "rental_reservations",
+      "measure_keys": [
+        "records",
+        "amount",
+        "paid_amount"
+      ],
+      "dimension_keys": [
+        "id",
+        "reservation_id",
+        "name",
+        "category",
+        "status",
+        "incurred_on",
+        "paid_on",
+        "created_at"
+      ],
+      "field_keys": [
+        "id",
+        "reservation_id",
+        "name",
+        "category",
+        "status",
+        "recorded_amount",
+        "incurred_on",
+        "paid_on",
+        "created_at"
+      ],
+      "relationship_keys": [],
+      "basis_key": "incurred_on",
+      "scope_kind": "rental",
+      "grain": "one_rental_expense",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "reservation_id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": true,
+          "dimension_key": "reservation_id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "reservation_id"
+        },
+        {
+          "field_key": "name",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "name",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "name"
+        },
+        {
+          "field_key": "category",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": true,
+          "dimension_key": "category",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "category"
+        },
+        {
+          "field_key": "status",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "status",
+          "temporal_kind": null,
+          "values": [
+            "pending",
+            "paid",
+            "voided"
+          ],
+          "semantics": "status"
+        },
+        {
+          "field_key": "recorded_amount",
+          "value_type": "bigint_integer",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": null,
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "recorded_expense_clp_before_voided_status_effect"
+        },
+        {
+          "field_key": "incurred_on",
+          "value_type": "date",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "incurred_on",
+          "temporal_kind": "civil_date",
+          "values": null,
+          "semantics": "incurred_on"
+        },
+        {
+          "field_key": "paid_on",
+          "value_type": "date",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": true,
+          "dimension_key": "paid_on",
+          "temporal_kind": "civil_date",
+          "values": null,
+          "semantics": "paid_on"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "created_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "server_record_creation_instant"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_rental_expense",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "money",
+          "currency": "CLP",
+          "scale": 0,
+          "semantic": "non_voided_incurred_rental_expense_amount",
+          "grain": "one_rental_expense",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        },
+        {
+          "measure_key": "paid_amount",
+          "aggregations": [
+            "sum"
+          ],
+          "unit": "money",
+          "currency": "CLP",
+          "scale": 0,
+          "semantic": "paid_rental_expense_amount",
+          "grain": "one_rental_expense",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [],
+      "limitations": [
+        "Incurred amount is distinct from paid cash. Pending expenses have no paid_on date. No commercial supplier relationship is stored."
+      ]
+    },
+    {
+      "source_key": "rental_blocks",
+      "module_key": "rental_reservations",
+      "measure_keys": [
+        "records"
+      ],
+      "dimension_keys": [
+        "id",
+        "reason",
+        "is_active",
+        "starts_at",
+        "ends_at",
+        "created_at"
+      ],
+      "field_keys": [
+        "id",
+        "reason",
+        "is_active",
+        "starts_at",
+        "ends_at",
+        "created_at"
+      ],
+      "relationship_keys": [],
+      "basis_key": "starts_at",
+      "scope_kind": "rental",
+      "grain": "one_rental_occupancy_block",
+      "fields": [
+        {
+          "field_key": "id",
+          "value_type": "bigint_id",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "id",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "id"
+        },
+        {
+          "field_key": "reason",
+          "value_type": "string",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "contains"
+          ],
+          "nullable": false,
+          "dimension_key": "reason",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "reason"
+        },
+        {
+          "field_key": "is_active",
+          "value_type": "boolean",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null"
+          ],
+          "nullable": false,
+          "dimension_key": "is_active",
+          "temporal_kind": null,
+          "values": null,
+          "semantics": "visibility_not_financial_cancellation"
+        },
+        {
+          "field_key": "starts_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "starts_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "starts_at"
+        },
+        {
+          "field_key": "ends_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "ends_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "ends_at"
+        },
+        {
+          "field_key": "created_at",
+          "value_type": "datetime",
+          "allowed_operators": [
+            "eq",
+            "neq",
+            "in",
+            "is_null",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "nullable": false,
+          "dimension_key": "created_at",
+          "temporal_kind": "instant",
+          "values": null,
+          "semantics": "server_record_creation_instant"
+        }
+      ],
+      "measures": [
+        {
+          "measure_key": "records",
+          "aggregations": [
+            "count"
+          ],
+          "unit": "count",
+          "currency": null,
+          "scale": 0,
+          "semantic": "base_record_count",
+          "grain": "one_rental_occupancy_block",
+          "nullable": false,
+          "supported": true,
+          "unsupported_reason": null
+        }
+      ],
+      "relationships": [],
+      "limitations": [
+        "Counts blocks whose start lies in the selected period; this is not overlap, availability or occupied nights."
+      ]
+    }
+  ],
+  "published_report_tools": 0,
+  "source_hashes": [
+    {
+      "path": "nodia-server/src/nodia-ai-reports/config/report-sources.ts",
+      "sha256": "5d920192d415484a89ad3f982e8e4edbec1ec76555e4940e8882a7acb112e1c5"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/types/report-source.types.ts",
+      "sha256": "00b665dc336c5e27535ac4cc0d837a33f86b96b97686a477ede1dce94953c5bb"
+    }
+  ]
+}

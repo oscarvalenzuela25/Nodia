@@ -23,8 +23,8 @@
           "is_active": true,
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:25.017Z",
-          "updated_at": "2026-10-09T15:27:25.017Z",
+          "created_at": "2026-10-15T22:22:57.050Z",
+          "updated_at": "2026-10-15T22:22:57.050Z",
           "membership": {
             "type": "owner",
             "can_manage_configuration": true,
@@ -62,8 +62,8 @@
       "is_active": true,
       "created_by": "1",
       "updated_by": "1",
-      "created_at": "2026-10-09T15:27:25.017Z",
-      "updated_at": "2026-10-09T15:27:25.017Z",
+      "created_at": "2026-10-15T22:22:57.050Z",
+      "updated_at": "2026-10-15T22:22:57.050Z",
       "membership": {
         "type": "collaborator",
         "can_manage_configuration": false,
@@ -92,7 +92,7 @@
             },
             "approved_turnover_ids": []
           },
-          "created_at": "2026-10-09T15:27:26.174Z"
+          "created_at": "2026-10-15T22:22:58.209Z"
         },
         {
           "id": "20",
@@ -108,7 +108,7 @@
             },
             "total_amount": "200000"
           },
-          "created_at": "2026-10-09T15:27:26.143Z"
+          "created_at": "2026-10-15T22:22:58.178Z"
         },
         {
           "id": "19",
@@ -124,7 +124,7 @@
             },
             "approved_turnover_ids": []
           },
-          "created_at": "2026-10-09T15:27:26.067Z"
+          "created_at": "2026-10-15T22:22:58.111Z"
         },
         {
           "id": "18",
@@ -140,7 +140,7 @@
             },
             "total_amount": "200000"
           },
-          "created_at": "2026-10-09T15:27:26.037Z"
+          "created_at": "2026-10-15T22:22:58.087Z"
         },
         {
           "id": "17",
@@ -156,7 +156,7 @@
             },
             "total_amount": "200000"
           },
-          "created_at": "2026-10-09T15:27:26.006Z"
+          "created_at": "2026-10-15T22:22:58.056Z"
         },
         {
           "id": "16",
@@ -169,10 +169,10 @@
             "type": "payment",
             "amount": "194000",
             "status": "confirmed",
-            "occurred_on": "2026-10-08",
+            "occurred_on": "2026-10-14",
             "reservation_id": "2"
           },
-          "created_at": "2026-10-09T15:27:25.960Z"
+          "created_at": "2026-10-15T22:22:57.995Z"
         },
         {
           "id": "15",
@@ -188,7 +188,7 @@
             },
             "approved_turnover_ids": []
           },
-          "created_at": "2026-10-09T15:27:25.929Z"
+          "created_at": "2026-10-15T22:22:57.964Z"
         },
         {
           "id": "14",
@@ -204,7 +204,7 @@
             },
             "total_amount": "200000"
           },
-          "created_at": "2026-10-09T15:27:25.899Z"
+          "created_at": "2026-10-15T22:22:57.934Z"
         },
         {
           "id": "13",
@@ -219,9 +219,9 @@
               "after": "paid",
               "before": "pending"
             },
-            "paid_on": "2026-10-09"
+            "paid_on": "2026-10-15"
           },
-          "created_at": "2026-10-09T15:27:25.853Z"
+          "created_at": "2026-10-15T22:22:57.886Z"
         },
         {
           "id": "12",
@@ -237,10 +237,10 @@
             "amount": "5000",
             "status": "pending",
             "paid_on": null,
-            "incurred_on": "2026-10-08",
+            "incurred_on": "2026-10-14",
             "reservation_id": null
           },
-          "created_at": "2026-10-09T15:27:25.839Z"
+          "created_at": "2026-10-15T22:22:57.870Z"
         },
         {
           "id": "11",
@@ -253,10 +253,10 @@
             "type": "refund",
             "amount": "12000",
             "status": "confirmed",
-            "occurred_on": "2026-10-09",
+            "occurred_on": "2026-10-15",
             "reservation_id": "1"
           },
-          "created_at": "2026-10-09T15:27:25.777Z"
+          "created_at": "2026-10-15T22:22:57.806Z"
         },
         {
           "id": "10",
@@ -270,10 +270,10 @@
               "after": "cancelled",
               "before": "confirmed"
             },
-            "cancelled_at": "2026-10-09T15:26:25.683Z",
+            "cancelled_at": "2026-10-15T22:21:57.714Z",
             "refund_amount": "20000"
           },
-          "created_at": "2026-10-09T15:27:25.730Z"
+          "created_at": "2026-10-15T22:22:57.758Z"
         },
         {
           "id": "9",
@@ -287,7 +287,7 @@
               "is_active"
             ]
           },
-          "created_at": "2026-10-09T15:27:25.655Z"
+          "created_at": "2026-10-15T22:22:57.681Z"
         },
         {
           "id": "8",
@@ -303,7 +303,7 @@
             },
             "approved_turnover_ids": []
           },
-          "created_at": "2026-10-09T15:27:25.562Z"
+          "created_at": "2026-10-15T22:22:57.597Z"
         },
         {
           "id": "7",
@@ -323,7 +323,7 @@
               }
             ]
           },
-          "created_at": "2026-10-09T15:27:25.502Z"
+          "created_at": "2026-10-15T22:22:57.543Z"
         },
         {
           "id": "6",
@@ -336,10 +336,10 @@
             "type": "payment",
             "amount": "40000",
             "status": "confirmed",
-            "occurred_on": "2026-10-08",
+            "occurred_on": "2026-10-14",
             "reservation_id": "1"
           },
-          "created_at": "2026-10-09T15:27:25.440Z"
+          "created_at": "2026-10-15T22:22:57.481Z"
         },
         {
           "id": "5",
@@ -355,7 +355,7 @@
             },
             "total_amount": "200000"
           },
-          "created_at": "2026-10-09T15:27:25.348Z"
+          "created_at": "2026-10-15T22:22:57.374Z"
         },
         {
           "id": "4",
@@ -367,7 +367,7 @@
           "changes": {
             "default_cancellation_policy_id": "1"
           },
-          "created_at": "2026-10-09T15:27:25.301Z"
+          "created_at": "2026-10-15T22:22:57.313Z"
         },
         {
           "id": "3",
@@ -392,7 +392,7 @@
             ],
             "is_active": true
           },
-          "created_at": "2026-10-09T15:27:25.271Z"
+          "created_at": "2026-10-15T22:22:57.282Z"
         },
         {
           "id": "2",
@@ -408,7 +408,7 @@
             },
             "is_active": true
           },
-          "created_at": "2026-10-09T15:27:25.179Z"
+          "created_at": "2026-10-15T22:22:57.175Z"
         },
         {
           "id": "1",
@@ -420,7 +420,7 @@
           "changes": {
             "created": true
           },
-          "created_at": "2026-10-09T15:27:25.008Z"
+          "created_at": "2026-10-15T22:22:57.042Z"
         }
       ],
       "meta": {
@@ -434,13 +434,13 @@
   {
     "route": "GET /api/v1/rental/properties/{propertyId}/availability",
     "method": "GET",
-    "url": "/api/v1/rental/properties/1/availability?check_in_on=2026-10-19&check_out_on=2026-10-21&check_in_time=15:00&check_out_time=11:00",
+    "url": "/api/v1/rental/properties/1/availability?check_in_on=2026-10-25&check_out_on=2026-10-27&check_in_time=15:00&check_out_time=11:00",
     "status": 200,
     "response": {
       "available": true,
-      "checked_at": "2026-10-09T15:27:25.396Z",
-      "check_in_at": "2026-10-19T18:00:00.000Z",
-      "check_out_at": "2026-10-21T14:00:00.000Z",
+      "checked_at": "2026-10-15T22:22:57.424Z",
+      "check_in_at": "2026-10-25T18:00:00.000Z",
+      "check_out_at": "2026-10-27T14:00:00.000Z",
       "conflicts": [],
       "turnover_requirements": []
     }
@@ -468,28 +468,28 @@
     "response": {
       "id": "1",
       "property_id": "1",
-      "starts_at": "2027-01-07T18:00:00.000Z",
-      "ends_at": "2027-01-09T14:00:00.000Z",
+      "starts_at": "2027-01-13T18:00:00.000Z",
+      "ends_at": "2027-01-15T14:00:00.000Z",
       "reason": "Synthetic repair",
       "notes": null,
       "is_active": true,
       "created_by": "1",
       "updated_by": "1",
-      "created_at": "2026-10-09T15:27:27.384Z",
-      "updated_at": "2026-10-09T15:27:27.384Z"
+      "created_at": "2026-10-15T22:22:59.492Z",
+      "updated_at": "2026-10-15T22:22:59.492Z"
     }
   },
   {
     "route": "GET /api/v1/rental/properties/{propertyId}/calendar",
     "method": "GET",
-    "url": "/api/v1/rental/properties/1/calendar?from_on=2026-10-09&to_on=2026-12-18",
+    "url": "/api/v1/rental/properties/1/calendar?from_on=2026-10-15&to_on=2026-12-24",
     "status": 200,
     "response": {
       "scope": {
         "property_id": "1",
         "timezone": "America/Santiago",
-        "from_on": "2026-10-09",
-        "to_on": "2026-12-18",
+        "from_on": "2026-10-15",
+        "to_on": "2026-12-24",
         "includes_archived_occupancy": true
       },
       "reservations": [
@@ -497,12 +497,12 @@
           "id": "2",
           "property_id": "1",
           "guest_name": "Synthetic guest",
-          "check_in_on": "2026-11-08",
-          "check_out_on": "2026-11-10",
+          "check_in_on": "2026-11-14",
+          "check_out_on": "2026-11-16",
           "check_in_time": "15:00",
           "check_out_time": "11:00",
-          "check_in_at": "2026-11-08T18:00:00.000Z",
-          "check_out_at": "2026-11-10T14:00:00.000Z",
+          "check_in_at": "2026-11-14T18:00:00.000Z",
+          "check_out_at": "2026-11-16T14:00:00.000Z",
           "channel": "airbnb",
           "status": "confirmed",
           "is_active": true
@@ -511,12 +511,12 @@
           "id": "3",
           "property_id": "1",
           "guest_name": "Synthetic guest",
-          "check_in_on": "2026-11-18",
-          "check_out_on": "2026-11-20",
+          "check_in_on": "2026-11-24",
+          "check_out_on": "2026-11-26",
           "check_in_time": "15:00",
           "check_out_time": "11:00",
-          "check_in_at": "2026-11-18T18:00:00.000Z",
-          "check_out_at": "2026-11-20T14:00:00.000Z",
+          "check_in_at": "2026-11-24T18:00:00.000Z",
+          "check_out_at": "2026-11-26T14:00:00.000Z",
           "channel": "airbnb",
           "status": "confirmed",
           "is_active": true
@@ -525,12 +525,12 @@
           "id": "5",
           "property_id": "1",
           "guest_name": "Synthetic guest",
-          "check_in_on": "2026-11-28",
-          "check_out_on": "2026-11-30",
+          "check_in_on": "2026-12-04",
+          "check_out_on": "2026-12-06",
           "check_in_time": "15:00",
           "check_out_time": "11:00",
-          "check_in_at": "2026-11-28T18:00:00.000Z",
-          "check_out_at": "2026-11-30T14:00:00.000Z",
+          "check_in_at": "2026-12-04T18:00:00.000Z",
+          "check_out_at": "2026-12-06T14:00:00.000Z",
           "channel": "airbnb",
           "status": "confirmed",
           "is_active": true
@@ -588,8 +588,8 @@
           "is_active": true,
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:25.273Z",
-          "updated_at": "2026-10-09T15:27:25.504Z",
+          "created_at": "2026-10-15T22:22:57.286Z",
+          "updated_at": "2026-10-15T22:22:57.547Z",
           "rules": [
             {
               "id": "1",
@@ -598,8 +598,8 @@
               "refund_percent": "0.00",
               "created_by": "1",
               "updated_by": "1",
-              "created_at": "2026-10-09T15:27:25.273Z",
-              "updated_at": "2026-10-09T15:27:25.504Z"
+              "created_at": "2026-10-15T22:22:57.286Z",
+              "updated_at": "2026-10-15T22:22:57.547Z"
             }
           ]
         }
@@ -624,8 +624,8 @@
       "is_active": true,
       "created_by": "1",
       "updated_by": "1",
-      "created_at": "2026-10-09T15:27:25.273Z",
-      "updated_at": "2026-10-09T15:27:25.504Z",
+      "created_at": "2026-10-15T22:22:57.286Z",
+      "updated_at": "2026-10-15T22:22:57.547Z",
       "rules": [
         {
           "id": "1",
@@ -634,8 +634,8 @@
           "refund_percent": "0.00",
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:25.273Z",
-          "updated_at": "2026-10-09T15:27:25.504Z"
+          "created_at": "2026-10-15T22:22:57.286Z",
+          "updated_at": "2026-10-15T22:22:57.547Z"
         }
       ]
     }
@@ -676,8 +676,8 @@
           "is_active": true,
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:25.182Z",
-          "updated_at": "2026-10-09T15:27:26.344Z",
+          "created_at": "2026-10-15T22:22:57.179Z",
+          "updated_at": "2026-10-15T22:22:58.383Z",
           "user": {
             "id": "2",
             "name": "Synthetic Member",
@@ -707,14 +707,14 @@
           "name": "Synthetic cleaning",
           "category": null,
           "amount": "5000",
-          "incurred_on": "2026-10-08",
-          "paid_on": "2026-10-09",
+          "incurred_on": "2026-10-14",
+          "paid_on": "2026-10-15",
           "status": "paid",
           "notes": null,
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:25.841Z",
-          "updated_at": "2026-10-09T15:27:25.855Z"
+          "created_at": "2026-10-15T22:22:57.874Z",
+          "updated_at": "2026-10-15T22:22:57.890Z"
         }
       ],
       "meta": {
@@ -737,26 +737,26 @@
       "name": "Synthetic cleaning",
       "category": null,
       "amount": "5000",
-      "incurred_on": "2026-10-08",
-      "paid_on": "2026-10-09",
+      "incurred_on": "2026-10-14",
+      "paid_on": "2026-10-15",
       "status": "paid",
       "notes": null,
       "created_by": "1",
       "updated_by": "1",
-      "created_at": "2026-10-09T15:27:25.841Z",
-      "updated_at": "2026-10-09T15:27:25.855Z"
+      "created_at": "2026-10-15T22:22:57.874Z",
+      "updated_at": "2026-10-15T22:22:57.890Z"
     }
   },
   {
     "route": "GET /api/v1/rental/properties/{propertyId}/operations/{requestKey}",
     "method": "GET",
-    "url": "/api/v1/rental/properties/1/operations/b480c70b-ea27-42ad-bcab-9aedf61deaee",
+    "url": "/api/v1/rental/properties/1/operations/047b0ff5-4d04-46b7-ad43-243e819da8b5",
     "status": 200,
     "response": {
       "body": {
         "status": "confirmed",
         "operation": "payment.create",
-        "updated_at": "2026-10-09T15:27:25.443Z",
+        "updated_at": "2026-10-15T22:22:57.487Z",
         "property_id": "1",
         "resource_id": "1",
         "resource_type": "payment"
@@ -768,19 +768,19 @@
   {
     "route": "GET /api/v1/rental/properties/{propertyId}/overview",
     "method": "GET",
-    "url": "/api/v1/rental/properties/1/overview?from_on=2026-10-04&to_on=2026-10-14",
+    "url": "/api/v1/rental/properties/1/overview?from_on=2026-10-10&to_on=2026-10-20",
     "status": 200,
     "response": {
       "scope": {
         "property_id": "1",
         "timezone": "America/Santiago",
-        "from_on": "2026-10-04",
-        "to_on": "2026-10-14",
+        "from_on": "2026-10-10",
+        "to_on": "2026-10-20",
         "cash_dates": "occurred_on_and_paid_on",
         "includes_archived_history": true,
         "pending_scope": "all_current_property_records"
       },
-      "as_of": "2026-10-09T15:27:25.870Z",
+      "as_of": "2026-10-15T22:22:57.906Z",
       "cash": {
         "received_amount": "40000",
         "refunded_amount": "12000",
@@ -817,15 +817,15 @@
           "reservation_id": "1",
           "type": "refund",
           "amount": "12000",
-          "occurred_on": "2026-10-09",
+          "occurred_on": "2026-10-15",
           "method": null,
           "reference": null,
           "notes": null,
           "status": "confirmed",
           "created_by": "2",
           "updated_by": "2",
-          "created_at": "2026-10-09T15:27:25.780Z",
-          "updated_at": "2026-10-09T15:27:25.780Z"
+          "created_at": "2026-10-15T22:22:57.812Z",
+          "updated_at": "2026-10-15T22:22:57.812Z"
         },
         {
           "id": "3",
@@ -833,15 +833,15 @@
           "reservation_id": "2",
           "type": "payment",
           "amount": "194000",
-          "occurred_on": "2026-10-08",
+          "occurred_on": "2026-10-14",
           "method": null,
           "reference": null,
           "notes": null,
           "status": "confirmed",
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:25.962Z",
-          "updated_at": "2026-10-09T15:27:25.962Z"
+          "created_at": "2026-10-15T22:22:57.999Z",
+          "updated_at": "2026-10-15T22:22:57.999Z"
         }
       ],
       "meta": {
@@ -863,15 +863,15 @@
       "reservation_id": "1",
       "type": "payment",
       "amount": "40000",
-      "occurred_on": "2026-10-08",
+      "occurred_on": "2026-10-14",
       "method": null,
       "reference": null,
       "notes": null,
       "status": "confirmed",
       "created_by": "2",
       "updated_by": "2",
-      "created_at": "2026-10-09T15:27:25.443Z",
-      "updated_at": "2026-10-09T15:27:25.443Z"
+      "created_at": "2026-10-15T22:22:57.487Z",
+      "updated_at": "2026-10-15T22:22:57.487Z"
     }
   },
   {
@@ -889,8 +889,8 @@
           "guests_count": 2,
           "channel": "airbnb",
           "external_reference": "EXTERNAL-BLOCK-RACE",
-          "check_in_on": "2026-11-28",
-          "check_out_on": "2026-11-30",
+          "check_in_on": "2026-12-04",
+          "check_out_on": "2026-12-06",
           "check_in_time": "15:00",
           "check_out_time": "11:00",
           "nightly_rate": "100000",
@@ -907,7 +907,7 @@
             "channel": "airbnb",
             "timezone": "America/Santiago",
             "resolution": "manual_external",
-            "captured_at": "2026-10-09T15:27:26.176Z",
+            "captured_at": "2026-10-15T22:22:58.213Z",
             "schema_version": 1,
             "platform_reference": "POLICY-SYNTHETIC",
             "platform_description": "Synthetic external terms"
@@ -920,11 +920,11 @@
           "is_active": true,
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:26.143Z",
-          "updated_at": "2026-10-09T15:27:26.174Z",
+          "created_at": "2026-10-15T22:22:58.178Z",
+          "updated_at": "2026-10-15T22:22:58.209Z",
           "nights": 2,
-          "check_in_at": "2026-11-28T18:00:00.000Z",
-          "check_out_at": "2026-11-30T14:00:00.000Z",
+          "check_in_at": "2026-12-04T18:00:00.000Z",
+          "check_out_at": "2026-12-06T14:00:00.000Z",
           "expected_amount": "194000",
           "received_amount": "0",
           "refunded_amount": "0",
@@ -942,8 +942,8 @@
           "guests_count": 2,
           "channel": "airbnb",
           "external_reference": "EXTERNAL-RACE-2",
-          "check_in_on": "2026-11-18",
-          "check_out_on": "2026-11-20",
+          "check_in_on": "2026-11-24",
+          "check_out_on": "2026-11-26",
           "check_in_time": "15:00",
           "check_out_time": "11:00",
           "nightly_rate": "100000",
@@ -964,11 +964,11 @@
           "is_active": true,
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:26.037Z",
-          "updated_at": "2026-10-09T15:27:26.037Z",
+          "created_at": "2026-10-15T22:22:58.087Z",
+          "updated_at": "2026-10-15T22:22:58.087Z",
           "nights": 2,
-          "check_in_at": "2026-11-18T18:00:00.000Z",
-          "check_out_at": "2026-11-20T14:00:00.000Z",
+          "check_in_at": "2026-11-24T18:00:00.000Z",
+          "check_out_at": "2026-11-26T14:00:00.000Z",
           "expected_amount": "194000",
           "received_amount": "0",
           "refunded_amount": "0",
@@ -1000,8 +1000,8 @@
       "guests_count": 2,
       "channel": "whatsapp",
       "external_reference": null,
-      "check_in_on": "2026-10-19",
-      "check_out_on": "2026-10-21",
+      "check_in_on": "2026-10-25",
+      "check_out_on": "2026-10-27",
       "check_in_time": "15:00",
       "check_out_time": "11:00",
       "nightly_rate": "100000",
@@ -1029,7 +1029,7 @@
         "timezone": "America/Santiago",
         "policy_id": "1",
         "days_basis": "local_calendar_days",
-        "captured_at": "2026-10-09T15:27:25.443Z",
+        "captured_at": "2026-10-15T22:22:57.487Z",
         "policy_name": "Synthetic policy",
         "refund_basis": "confirmed_received_amount",
         "schema_version": 1
@@ -1042,11 +1042,11 @@
       "is_active": true,
       "created_by": "2",
       "updated_by": "2",
-      "created_at": "2026-10-09T15:27:25.348Z",
-      "updated_at": "2026-10-09T15:27:25.443Z",
+      "created_at": "2026-10-15T22:22:57.374Z",
+      "updated_at": "2026-10-15T22:22:57.487Z",
       "nights": 2,
-      "check_in_at": "2026-10-19T18:00:00.000Z",
-      "check_out_at": "2026-10-21T14:00:00.000Z",
+      "check_in_at": "2026-10-25T18:00:00.000Z",
+      "check_out_at": "2026-10-27T14:00:00.000Z",
       "expected_amount": "200000",
       "received_amount": "40000",
       "refunded_amount": "0",
@@ -1077,8 +1077,8 @@
           "notes": null,
           "created_by": "2",
           "updated_by": "2",
-          "created_at": "2026-10-09T15:27:25.348Z",
-          "updated_at": "2026-10-09T15:27:25.348Z"
+          "created_at": "2026-10-15T22:22:57.374Z",
+          "updated_at": "2026-10-15T22:22:57.374Z"
         },
         {
           "id": "2",
@@ -1093,8 +1093,8 @@
           "notes": null,
           "created_by": "1",
           "updated_by": "1",
-          "created_at": "2026-10-09T15:27:25.899Z",
-          "updated_at": "2026-10-09T15:27:25.899Z"
+          "created_at": "2026-10-15T22:22:57.934Z",
+          "updated_at": "2026-10-15T22:22:57.934Z"
         }
       ],
       "meta": {
@@ -1117,14 +1117,14 @@
       "previous_reservation_id": "6",
       "linen_ready": true,
       "cleaning_status": "pending",
-      "planned_ready_at": "2026-12-10T17:00:00.000Z",
+      "planned_ready_at": "2026-12-16T17:00:00.000Z",
       "ready_at": null,
-      "same_day_approved_at": "2026-10-09T15:27:26.697Z",
+      "same_day_approved_at": "2026-10-15T22:22:58.766Z",
       "notes": null,
       "created_by": "1",
       "updated_by": "1",
-      "created_at": "2026-10-09T15:27:26.586Z",
-      "updated_at": "2026-10-09T15:27:26.695Z",
+      "created_at": "2026-10-15T22:22:58.639Z",
+      "updated_at": "2026-10-15T22:22:58.762Z",
       "current_previous_reservation_id": "6",
       "same_day_required": true,
       "plan_valid": true,
@@ -1147,7 +1147,7 @@
       "resource_type": "property",
       "resource_id": "1",
       "status": "active",
-      "updated_at": "2026-10-09T15:27:25.017Z"
+      "updated_at": "2026-10-15T22:22:57.050Z"
     }
   },
   {
@@ -1155,8 +1155,8 @@
     "method": "POST",
     "url": "/api/v1/rental/properties/1/blocks",
     "request": {
-      "starts_at": "2027-01-07T18:00:00.000Z",
-      "ends_at": "2027-01-09T14:00:00.000Z",
+      "starts_at": "2027-01-13T18:00:00.000Z",
+      "ends_at": "2027-01-15T14:00:00.000Z",
       "reason": "Synthetic repair"
     },
     "status": 201,
@@ -1166,7 +1166,7 @@
       "resource_type": "block",
       "resource_id": "1",
       "status": "active",
-      "updated_at": "2026-10-09T15:27:27.384Z"
+      "updated_at": "2026-10-15T22:22:59.492Z"
     }
   },
   {
@@ -1193,7 +1193,7 @@
       "resource_type": "policy",
       "resource_id": "1",
       "status": "active",
-      "updated_at": "2026-10-09T15:27:25.273Z"
+      "updated_at": "2026-10-15T22:22:57.286Z"
     }
   },
   {
@@ -1211,7 +1211,7 @@
       "resource_type": "collaborator",
       "resource_id": "1",
       "status": "active",
-      "updated_at": "2026-10-09T15:27:25.182Z"
+      "updated_at": "2026-10-15T22:22:57.179Z"
     }
   },
   {
@@ -1221,7 +1221,7 @@
     "request": {
       "name": "Synthetic cleaning",
       "amount": "5000",
-      "incurred_on": "2026-10-08",
+      "incurred_on": "2026-10-14",
       "status": "pending"
     },
     "status": 201,
@@ -1231,7 +1231,7 @@
       "resource_type": "expense",
       "resource_id": "1",
       "status": "pending",
-      "updated_at": "2026-10-09T15:27:25.841Z"
+      "updated_at": "2026-10-15T22:22:57.874Z"
     }
   },
   {
@@ -1239,7 +1239,7 @@
     "method": "POST",
     "url": "/api/v1/rental/properties/1/expenses/1/pay",
     "request": {
-      "paid_on": "2026-10-09"
+      "paid_on": "2026-10-15"
     },
     "status": 200,
     "response": {
@@ -1248,7 +1248,7 @@
       "resource_type": "expense",
       "resource_id": "1",
       "status": "paid",
-      "updated_at": "2026-10-09T15:27:25.855Z"
+      "updated_at": "2026-10-15T22:22:57.890Z"
     }
   },
   {
@@ -1265,7 +1265,7 @@
       "resource_type": "expense",
       "resource_id": "2",
       "status": "voided",
-      "updated_at": "2026-10-09T15:27:27.354Z"
+      "updated_at": "2026-10-15T22:22:59.461Z"
     }
   },
   {
@@ -1276,7 +1276,7 @@
       "reservation_id": "1",
       "type": "payment",
       "amount": "40000",
-      "occurred_on": "2026-10-08"
+      "occurred_on": "2026-10-14"
     },
     "status": 201,
     "response": {
@@ -1285,7 +1285,7 @@
       "resource_type": "payment",
       "resource_id": "1",
       "status": "confirmed",
-      "updated_at": "2026-10-09T15:27:25.443Z"
+      "updated_at": "2026-10-15T22:22:57.487Z"
     }
   },
   {
@@ -1302,7 +1302,7 @@
       "resource_type": "payment",
       "resource_id": "2",
       "status": "voided",
-      "updated_at": "2026-10-09T15:27:27.276Z"
+      "updated_at": "2026-10-15T22:22:59.382Z"
     }
   },
   {
@@ -1314,8 +1314,8 @@
       "guest_contact": "CONTACT-MARKER-private",
       "guests_count": 2,
       "channel": "whatsapp",
-      "check_in_on": "2026-10-19",
-      "check_out_on": "2026-10-21",
+      "check_in_on": "2026-10-25",
+      "check_out_on": "2026-10-27",
       "check_in_time": "15:00",
       "check_out_time": "11:00",
       "nightly_rate": "100000",
@@ -1329,7 +1329,7 @@
       "resource_type": "reservation",
       "resource_id": "1",
       "status": "draft",
-      "updated_at": "2026-10-09T15:27:25.348Z"
+      "updated_at": "2026-10-15T22:22:57.374Z"
     }
   },
   {
@@ -1337,7 +1337,7 @@
     "method": "POST",
     "url": "/api/v1/rental/properties/1/reservations/1/cancel",
     "request": {
-      "cancelled_at": "2026-10-09T15:26:25.683Z",
+      "cancelled_at": "2026-10-15T22:21:57.714Z",
       "expected_refund_amount": "20000"
     },
     "status": 200,
@@ -1347,7 +1347,7 @@
       "resource_type": "reservation",
       "resource_id": "1",
       "status": "cancelled",
-      "updated_at": "2026-10-09T15:27:25.730Z"
+      "updated_at": "2026-10-15T22:22:57.758Z"
     }
   },
   {
@@ -1355,20 +1355,20 @@
     "method": "POST",
     "url": "/api/v1/rental/properties/1/reservations/1/cancellation-preview",
     "request": {
-      "cancelled_at": "2026-10-09T15:26:25.683Z"
+      "cancelled_at": "2026-10-15T22:21:57.714Z"
     },
     "status": 200,
     "response": {
       "reservation_id": "1",
-      "as_of": "2026-10-09T15:27:25.703Z",
-      "check_in_at": "2026-10-19T18:00:00.000Z",
+      "as_of": "2026-10-15T22:22:57.732Z",
+      "check_in_at": "2026-10-25T18:00:00.000Z",
       "cancellation_snapshot": {
         "schema_version": 1,
-        "cancelled_at": "2026-10-09T15:26:25.683Z",
-        "computed_at": "2026-10-09T15:27:25.703Z",
+        "cancelled_at": "2026-10-15T22:21:57.714Z",
+        "computed_at": "2026-10-15T22:22:57.732Z",
         "timezone": "America/Santiago",
-        "check_in_on": "2026-10-19",
-        "cancellation_local_on": "2026-10-09",
+        "check_in_on": "2026-10-25",
+        "cancellation_local_on": "2026-10-15",
         "days_before": 10,
         "received_amount": "40000",
         "kind": "direct",
@@ -1380,7 +1380,7 @@
           "min_days_before": 0
         },
         "payment_count": 1,
-        "payment_ledger_sha256": "e97b3c20495dfe52f87ce493e6356baea61adb699f75aa786d7fcecbc72a31a0",
+        "payment_ledger_sha256": "9865af1035fe2c85e37a786aedf0a4515e4669bade4c5b47b0a4cec9159d524c",
         "refund_amount": "20000",
         "retained_amount": "20000"
       },
@@ -1401,7 +1401,7 @@
       "resource_type": "reservation",
       "resource_id": "8",
       "status": "completed",
-      "updated_at": "2026-10-09T15:27:27.214Z"
+      "updated_at": "2026-10-15T22:22:59.301Z"
     }
   },
   {
@@ -1416,7 +1416,7 @@
       "resource_type": "reservation",
       "resource_id": "1",
       "status": "confirmed",
-      "updated_at": "2026-10-09T15:27:25.562Z"
+      "updated_at": "2026-10-15T22:22:57.597Z"
     }
   },
   {
@@ -1431,7 +1431,7 @@
       "resource_type": "reservation",
       "resource_id": "8",
       "status": "in_progress",
-      "updated_at": "2026-10-09T15:27:27.168Z"
+      "updated_at": "2026-10-15T22:22:59.256Z"
     }
   },
   {
@@ -1446,7 +1446,7 @@
       "resource_type": "turnover",
       "resource_id": "7",
       "status": "pending",
-      "updated_at": "2026-10-09T15:27:26.695Z"
+      "updated_at": "2026-10-15T22:22:58.762Z"
     }
   },
   {
@@ -1463,7 +1463,7 @@
       "resource_type": "property",
       "resource_id": "1",
       "status": "active",
-      "updated_at": "2026-10-09T15:27:25.303Z"
+      "updated_at": "2026-10-15T22:22:57.318Z"
     }
   },
   {
@@ -1480,7 +1480,7 @@
       "resource_type": "block",
       "resource_id": "1",
       "status": "inactive",
-      "updated_at": "2026-10-09T15:27:27.415Z"
+      "updated_at": "2026-10-15T22:22:59.538Z"
     }
   },
   {
@@ -1502,7 +1502,7 @@
       "resource_type": "policy",
       "resource_id": "1",
       "status": "active",
-      "updated_at": "2026-10-09T15:27:25.504Z"
+      "updated_at": "2026-10-15T22:22:57.547Z"
     }
   },
   {
@@ -1519,7 +1519,7 @@
       "resource_type": "collaborator",
       "resource_id": "1",
       "status": "inactive",
-      "updated_at": "2026-10-09T15:27:26.283Z"
+      "updated_at": "2026-10-15T22:22:58.322Z"
     }
   },
   {
@@ -1537,7 +1537,7 @@
       "resource_type": "expense",
       "resource_id": "2",
       "status": "pending",
-      "updated_at": "2026-10-09T15:27:27.306Z"
+      "updated_at": "2026-10-15T22:22:59.413Z"
     }
   },
   {
@@ -1554,7 +1554,7 @@
       "resource_type": "reservation",
       "resource_id": "1",
       "status": "confirmed",
-      "updated_at": "2026-10-09T15:27:25.655Z"
+      "updated_at": "2026-10-15T22:22:57.681Z"
     }
   },
   {
@@ -1563,7 +1563,7 @@
     "url": "/api/v1/rental/properties/1/turnovers/7",
     "request": {
       "linen_ready": true,
-      "planned_ready_at": "2026-12-10T17:00:00.000Z"
+      "planned_ready_at": "2026-12-16T17:00:00.000Z"
     },
     "status": 200,
     "response": {
@@ -1572,7 +1572,7 @@
       "resource_type": "turnover",
       "resource_id": "7",
       "status": "pending",
-      "updated_at": "2026-10-09T15:27:26.632Z"
+      "updated_at": "2026-10-15T22:22:58.685Z"
     }
   }
 ]

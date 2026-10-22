@@ -1,0 +1,23 @@
+{
+  "stage": "AI-35",
+  "scope": "incremental_runtime_packet_preparation",
+  "status": "prepared_not_activated",
+  "previous_compiled_files": 931,
+  "compiled_files": 932,
+  "changed": [
+    "dist/nodia-ai-context/config/knowledge-pin.json",
+    "dist/nodia-ai-conversation/nodia-ai-conversation.service.js",
+    "dist/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.js",
+    "dist/nodia-ai/knowledge/manifest.json"
+  ],
+  "added": [
+    "dist/migrations/1793100000000-AddNodiaAiTextSearchIndex.js"
+  ],
+  "relative_imports_verified": 3158,
+  "sql_manifest_sha256": "bfdbd1316d60cce11559e963794920006a7a6f09cb8231dddfedf9e4e62a1e75",
+  "candidate_manifest_sha256": "d06939fd44e082538efd92479b3994250a802b1ec3471c3be3ba2df40d25a0bf",
+  "packet_sha256": "c1ae2f1fd10c010c099f8af5c68815dd68635e6f4e2a661ed891d90f4e773fed",
+  "native_restart_required": false,
+  "provider_generations": 0,
+  "configured_database_modified": false
+}

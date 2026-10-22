@@ -1,0 +1,58 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "current_epoch_transport_and_owned_role_qualification_not_business_capability_acceptance",
+  "status": "passed",
+  "source_artifacts_sha256": {
+    "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-canary-report.json": "3040ded98df29d08f0e91008e173f4d970179fc6606bb651895d91fa18a95acd",
+    "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-runner-report.json": "a2e20169b9f4934d3bc659bbcc562bbee6e5b1ed975449854927d04520fdb86b",
+    "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-original-ai15-report.json": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9",
+    "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-binding.json": "c26d0087d1f239c686ef8c1c2eaf913a2a21d5d66a7aa86ef80d43a52a4d7c19",
+    "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04.json": "151c182322c08662abdb24f425f5d47949d255c2c0d0b2cbe9d66a64d2eb9d1e",
+    "docs/evidence/nodia-ai-ai36-c05-r02-metadata03-diagnostic-report.json": "22df70e1d14397b49e3a936ff3416c239df8bb2880d2775635dd7b1b57965f57"
+  },
+  "source_manifest_sha256": "5572e21e9466d6592e3ee0427312911551aad50df4dd5f8e5e6db600184be70d",
+  "image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+  "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "image_source_hashes": {
+    "native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "epoch": {
+    "image": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+    "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+    "started_at": "2026-10-19T20:05:13.415129549Z"
+  },
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "session_generation_sha256": "47e317d5b8becf3870956e8c9e409eb15960a1e7e6989d25809b180a82a0dd53",
+  "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+  "attempt_id": "8ef681a1-ebb8-476e-ab11-e9d7fbad78f9",
+  "terminal_proof": {
+    "attempt_id": "8ef681a1-ebb8-476e-ab11-e9d7fbad78f9",
+    "terminal_proof_sha256": "e8fd0aa45730e9c72dec8af496dd6ef1a8446eb5b61a80c6c1f7dc416d107227",
+    "outcome": "completed",
+    "process_closed": true,
+    "observed_at_utc": "2026-10-19T20:09:33.736496+00:00"
+  },
+  "acknowledgement": {
+    "attempt_id": "8ef681a1-ebb8-476e-ab11-e9d7fbad78f9",
+    "terminal_proof_sha256": "e8fd0aa45730e9c72dec8af496dd6ef1a8446eb5b61a80c6c1f7dc416d107227",
+    "acknowledged": true,
+    "request_started_at_utc": "2026-10-19T20:09:33.767Z",
+    "response_received_at_utc": "2026-10-19T20:09:33.772Z"
+  },
+  "diagnostic_nonce_verified": true,
+  "supports_MCP_after": true,
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "business_capabilities_accepted_by_canary": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false
+}

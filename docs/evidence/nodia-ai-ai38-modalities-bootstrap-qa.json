@@ -1,0 +1,21 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_compiled_transport_bootstrap_order_regression_synthetic_fetch_only",
+  "status": "passed",
+  "provider_requests": 0,
+  "configured_database_access": false,
+  "synthetic_fetch_only": true,
+  "helper_source_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+  "wrapper_source_sha256": "6b808e616c35e4ce3fc45a9d138648dac64ccdc3d2673cba24e214638bd622c0",
+  "candidate_two_compiled_dependency_hashes_verified": true,
+  "results": {
+    "legacy_import_before_environment": {
+      "code": "adapter_unconfigured",
+      "calls": 0
+    },
+    "corrected_environment_before_import": {
+      "code": null,
+      "calls": 1
+    }
+  }
+}

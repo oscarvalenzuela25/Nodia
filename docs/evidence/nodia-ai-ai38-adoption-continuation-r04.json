@@ -1,0 +1,9 @@
+{
+  "status": "new_authenticated_UI_window_after_verified_original_restore",
+  "source_sha256": "44201c7d0f5080dd40d926307dbf8d5a045039576466cc6bc73c9eb7fc6bddb1",
+  "pinned_helpers_sha256": "703a068c6dcd1089b12c0961646d4768bc916d7b56c908ba389d902f2c4e2bee",
+  "prior_rollback_sha256": "778bc33b2193e9d9c370b58ecbaf97ab38de8b20ec31528fbfbf528a77317cd8",
+  "prepare_sha256": "ef50f771cedc3d81f02b35c9a0b60a74db299905cfa617d7de452d2c4219312f",
+  "staging_reexecuted": false,
+  "historical_reports_overwritten": false
+}

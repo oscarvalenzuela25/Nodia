@@ -1,0 +1,158 @@
+{
+  "stage": "AI-35",
+  "status": "passed",
+  "scope": "technical_laboratory_closure_not_document_approval_or_production_acceptance",
+  "verification_layers": {
+    "server": {
+      "tests": 3543,
+      "files": 219
+    },
+    "client": {
+      "tests": 1768,
+      "files": 227
+    },
+    "sql": {
+      "checks": 47,
+      "database": "disposable_real_postgresql16",
+      "content": "synthetic",
+      "volume": {
+        "conversations": 20023,
+        "messages": 200017,
+        "parts": 200017,
+        "text_bytes": "84000324"
+      },
+      "measured_search_profiles": {
+        "RareBodyBenchmark": {
+          "before_median_ms": 1169.221,
+          "after_median_ms": 7.925
+        },
+        "RareTitleBenchmark": {
+          "before_median_ms": 1133.168,
+          "after_median_ms": 7.262
+        },
+        "AbsentBenchmarkPhrase": {
+          "before_median_ms": 1195.239,
+          "after_median_ms": 7.096
+        },
+        "Synthetic": {
+          "before_median_ms": 1415.264,
+          "after_median_ms": 1532.811
+        },
+        "searchable message body": {
+          "before_median_ms": 1366.91,
+          "after_median_ms": 1418.277
+        },
+        "xy": {
+          "before_median_ms": 1162.1,
+          "after_median_ms": 1150.214
+        }
+      },
+      "paired_wide_search": {
+        "profiles": {
+          "Synthetic": {
+            "before_median_ms": 3733.768,
+            "after_median_ms": 3732.956,
+            "ratio": 0.9997825253202663
+          },
+          "searchable message body": {
+            "before_median_ms": 1331.326,
+            "after_median_ms": 1287.001,
+            "ratio": 0.9667061260728026
+          }
+        },
+        "initial_regression_reproduced": false,
+        "cause_of_absolute_timing_variation": "unknown"
+      }
+    },
+    "browser": {
+      "evidence": "docs/evidence/nodia-ai-ai35-browser-qa.json",
+      "source": "isolated_synthetic_http_browser_fixture",
+      "profiles": 24,
+      "interaction_checks": 14,
+      "resized_drafts": 6,
+      "older_history_anchor_delta_px": 0.5625
+    },
+    "runtime": {
+      "compiled_files": 932,
+      "migrations": 29,
+      "nodia_ai_tables": 21,
+      "nodia_ai_columns": 289,
+      "native_restart": false
+    },
+    "context_regression": {
+      "checks": 36,
+      "database": "disposable_real_postgresql16",
+      "adapter": "synthetic",
+      "real_inference": false
+    }
+  },
+  "knowledge": {
+    "source_documents": 58,
+    "excluded": 31,
+    "published_documents": 27,
+    "published_fragments": 27,
+    "published_capabilities": 67,
+    "release": "b4a790219b41687d2bc4ac7ad70f436d5b9a3aa83cbdfc812533a06f8027dc23",
+    "new_feature_document_status": "draft",
+    "new_feature_integration_status": "unregistered"
+  },
+  "provider_generations": 0,
+  "new_cloud_storage_operations": 0,
+  "configured_chat_preserved": true,
+  "unresolved_runtime_attempts": 0,
+  "evidence_hashes": {
+    "units": {
+      "file": "docs/evidence/nodia-ai-ai35-unit-validation.json",
+      "sha256": "2329c27a21eafa73165f7820b6eae49c32fdf73c0437c88ed681594d9012a83c"
+    },
+    "sql": {
+      "file": "docs/evidence/nodia-ai-ai35-sql-validation.json",
+      "sha256": "6d37bf1dd870b8c7ea444f8ffd43ff48e31e31fd7422050a2352ead459e8da9a"
+    },
+    "browser": {
+      "file": "docs/evidence/nodia-ai-ai35-browser-qa.json",
+      "sha256": "83bfbd61fe8303a34d40944d565a2d1dab20dae75631b55cecf38b32fb35a599"
+    },
+    "baseline": {
+      "file": "docs/evidence/nodia-ai-ai35-runtime-baseline.json",
+      "sha256": "dd83e9b0f3cafc3de2aef0e6361359f855835dee3ce80e079cf69b382814b972"
+    },
+    "activation": {
+      "file": "docs/evidence/nodia-ai-ai35-runtime-activation.json",
+      "sha256": "22b8b41b45bb4217e57d60066cb755921ce9c5b3213c5a8c91372615ccc43396"
+    },
+    "health": {
+      "file": "docs/evidence/nodia-ai-ai35-final-health.json",
+      "sha256": "c208d2d7a5c1d3454cfc0b56e66949385592cfe69aa1512737861dce8b3e896f"
+    },
+    "catalog": {
+      "file": "docs/evidence/nodia-ai-ai35-catalog-delta.json",
+      "sha256": "f3c71c1e7598559bc8f728d2644d5d539e10eadf7143478b6dce903181c1745e"
+    },
+    "searchPerformance": {
+      "file": "docs/evidence/nodia-ai-ai35-search-performance.json",
+      "sha256": "2aed31fb1ecab03003edfe38e46ab6e5a07e1568943ea248b6cf33131b3e4381"
+    },
+    "fixtureTypes": {
+      "file": "docs/evidence/nodia-ai-ai35-global-fixture-types.json",
+      "sha256": "f0ff75d52cecd6f24c123781a7b88cd5dfee74358ca5ab22485591600dac8cfe"
+    },
+    "contextRegression": {
+      "file": "docs/evidence/nodia-ai-ai35-ai34-regression.json",
+      "sha256": "11d6cc65fc72fafa6b7a1ca220e38ffe48ed9a561eaadf1d11f7e7a8a7cc1177"
+    },
+    "docLinks": {
+      "file": "docs/evidence/nodia-ai-ai35-doc-links.json",
+      "sha256": "bc0519c8f3338e43ce998665a11838fb7c8b7de4473b4d9fc6690eb1163b1e25"
+    }
+  },
+  "limitations": [
+    "SQL corpus and browser HTTP are synthetic. AI-35 does not claim new real Gemini, microphone, native attachment or cloud-storage acceptance.",
+    "Search measurements are warm isolated laboratory samples, not production percentiles, concurrency or an SLA; broad/short terms retain their measured cost for AI-37.",
+    "Index construction is transactional and blocks writers; this laboratory activation stops API/worker admissions and keeps the native provider container running.",
+    "The private PostgreSQL16 backup catalog was verified, but AI-35 does not perform a restore.",
+    "Conversation ordering uses mutable updated_at/id; concurrent organization can move results between pages.",
+    "Existing global test-fixture typing limits, if recorded by unit evidence, remain distinct from the successful production build.",
+    "AI-36..38 and documentary/productive approval remain independent gates."
+  ]
+}

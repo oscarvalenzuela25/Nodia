@@ -1,0 +1,75 @@
+{
+  "stage": "AI-33",
+  "scope": "R05_owner_current_module_and_role_metadata_only",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T18:51:15.204Z",
+  "actor_id": "1",
+  "roles": [
+    {
+      "id": "1",
+      "key": "super_admin",
+      "is_active": true
+    }
+  ],
+  "modules": [
+    {
+      "id": "1",
+      "key": "actions",
+      "route": "/settings/actions",
+      "is_active": true,
+      "group_active": true,
+      "assigned": true
+    },
+    {
+      "id": "2",
+      "key": "roles",
+      "route": "/settings/roles",
+      "is_active": true,
+      "group_active": true,
+      "assigned": true
+    },
+    {
+      "id": "3",
+      "key": "users",
+      "route": "/settings/users",
+      "is_active": true,
+      "group_active": true,
+      "assigned": true
+    },
+    {
+      "id": "4",
+      "key": "modules",
+      "route": "/settings/modules",
+      "is_active": true,
+      "group_active": true,
+      "assigned": true
+    },
+    {
+      "id": "5",
+      "key": "ai_providers",
+      "route": "/settings/ai-providers",
+      "is_active": true,
+      "group_active": true,
+      "assigned": true
+    },
+    {
+      "id": "6",
+      "key": "business",
+      "route": "/tools/business",
+      "is_active": true,
+      "group_active": true,
+      "assigned": true
+    },
+    {
+      "id": "7",
+      "key": "nodia_ai",
+      "route": "/tools/nodia-ai",
+      "is_active": true,
+      "group_active": true,
+      "assigned": true
+    }
+  ],
+  "configuration_modified": false,
+  "provider_generations": 0,
+  "storage_operations": 0
+}

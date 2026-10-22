@@ -1,0 +1,11 @@
+{
+  "source": "Pinned Linux CLI 1.3.1 public binary schema-converter symbol",
+  "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "offset": 34531692,
+  "schema_symbol": "go.shape.struct { ServerName string \"jsonschema:\\\"required\\\" jsonschema_description:\\\"Name of the MCP server.\\\"\"; ToolName string \"jsonschema:\\\"required\\\" jsonschema_description:\\\"Name of the tool to call.\\\"\"; Arguments encoding/json/jsontext.Value \"jsonschema:\\\"required\\\" jsonschema_description:\\\"Arguments to pass to the tool.\\\"\" }]",
+  "provider_generations": 0,
+  "profile_files_read": false,
+  "operational_cli_executed": false,
+  "confirmed_boundary": "The pinned CLI schema converter uses jsontext.Value for required Arguments; it is not declared as string. Before the compatibility fix, Nodia dispatcher gate required a JSON string decoded to an object. The fix accepts an object or a JSON string decoded to an object, using the same bounded parser and rejecting nonfinite numbers, excess size/depth and nonobject shapes. StdioBridge already supported both encodings under its explicit CLI compatibility flag.",
+  "limitations": "The rejected payload was not read. arguments_type+dispatcher only proves Arguments was not a string; it does not distinguish object, array, number, boolean or null. Embedded symbol inspection does not execute the CLI validation path."
+}

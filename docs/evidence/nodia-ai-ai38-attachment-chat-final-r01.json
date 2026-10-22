@@ -1,0 +1,95 @@
+{
+  "schema": "ai38-ui-chat-snapshot-v1",
+  "status": "observed_not_provider_or_UI_acceptance",
+  "observed_at_utc": "2026-10-20T23:09:54.456Z",
+  "transaction": {
+    "read_only": true,
+    "isolation": "repeatable read"
+  },
+  "source_sha256": "897bcf3966cdcf747ba6b2cb0b9b6ea6375f7ca6c5c62aa2b13586d0e5dca30d",
+  "connection_method_reference": "nodia-ai-ai36-c05-live-health.mjs",
+  "connection_method_reference_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395",
+  "private_config_sha256": "63bc843ea102795ffee40cf5d3a7bbe42bb71ea40795b30897c10872ca129105",
+  "package_json_sha256": "b43b8f5e2a299f845429eeba4a3f81f15d6bb9858546fa4f1866ba405e991198",
+  "connection_runtime_root": "/opt/nodia/releases/nodia-server-ai15-20261016",
+  "entity_source_pins": [
+    {
+      "path": "dist/nodia-ai-conversation/entities/nodia-ai-conversation.entity.js",
+      "sha256": "a82796b4f6208d2d9334ee459f810693a10d6a04c5acba65773d6143968e7585"
+    },
+    {
+      "path": "dist/nodia-ai-conversation/entities/nodia-ai-message.entity.js",
+      "sha256": "43b2f57461ad7bdff9c264c1c3cf9cd144981feb8ee9e6c6d60e4151dcd9a475"
+    },
+    {
+      "path": "dist/nodia-ai-conversation/entities/nodia-ai-message-part.entity.js",
+      "sha256": "ddbee6f3dde01130cf6d96f2e8a7ee8f87872212b300b5b8cc092562c2397ba1"
+    },
+    {
+      "path": "dist/nodia-ai-run/entities/nodia-ai-run.entity.js",
+      "sha256": "3a5b2616b0e90c83ae837796dc737ad291d7cf4d13dd09a5351185c4435e18e7"
+    },
+    {
+      "path": "dist/nodia-ai-runtime/entities/nodia-ai-job.entity.js",
+      "sha256": "30f9409311355f3aeeb2d09bfb187a1f2bba9af2160ad26a5eff706ef02a998a"
+    },
+    {
+      "path": "dist/nodia-ai-runtime/entities/nodia-ai-job-attempt.entity.js",
+      "sha256": "b2d8ef8b3526f9460144eaaa6f8827aa849d64739de584363c9bf8add3b4efdd"
+    },
+    {
+      "path": "dist/nodia-ai-runtime/entities/nodia-ai-runtime-slot.entity.js",
+      "sha256": "3eebfe93fa8bf4dc5a03d03aebc0ab28c9554e49c01dc9cb666fcd557ce3f127"
+    }
+  ],
+  "snapshot_sha256": "0ed4995d1951e2f53495ad809beb4e83604773d3f5098d8657fa231e38de5def",
+  "snapshot": {
+    "conversation": {
+      "id": "a69b44aa-5592-4ad7-b69d-b74b48682a56",
+      "revision": 4,
+      "lifecycle": "active",
+      "selected_connection_id": "2",
+      "selected_mode": "token_plan_web",
+      "selected_model_id": "56fdd199312815e2",
+      "selected_effort_id": null,
+      "routing_enabled": false,
+      "routing_revision": 1,
+      "routing_target_selection": null,
+      "active_job_id": null,
+      "next_message_seq": "0",
+      "next_event_seq": "0",
+      "last_owner_message_at": null,
+      "expires_at": "2027-01-18T23:02:38.804Z"
+    },
+    "counts": {
+      "conversations": 1,
+      "messages": 0,
+      "parts": 0,
+      "runs": 0,
+      "jobs": 0,
+      "attempts": 0
+    },
+    "messages": [],
+    "parts": [],
+    "runs": [],
+    "jobs": [],
+    "attempts": []
+  },
+  "global_quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "nonce_requested": false,
+  "expected_nonce_sha256": null,
+  "semantic": null,
+  "configured_SQL_writes": 0,
+  "provider_requests": 0,
+  "plaintext_parts_emitted": false,
+  "limits": [
+    "Known chat only; operator evidence does not replace application authorization.",
+    "No native ACK attestation; completed SQL state alone does not prove provider ACK.",
+    "No HTTP requests or browser action attribution; correlate with bounded nginx observer and actual DOM.",
+    "Same snapshot hash proves equality of these projected fields, not every database column."
+  ]
+}

@@ -39,7 +39,7 @@ Los ejemplos genéricos de las skills no son configuración obligatoria. En part
 
 ## Restricciones locales de IA y estado operativo
 
-- Nodia opera exclusivamente con sesiones Gemini Web y Antigravity; no introducir API keys, rutas de inferencia por key ni consumo pay-as-you-go. Un ejemplo genérico de una skill/SDK no autoriza cambiar esta política.
+- Este microservicio opera exclusivamente con sesiones Gemini Web y Antigravity; no introducir API keys, rutas de inferencia por key ni consumo pay-as-you-go. Un ejemplo genérico de una skill/SDK no autoriza cambiar esta política.
 - Mantener identidad, autenticación, catálogo, configuración y cuotas separados por motor/sesión. La existencia de un perfil/directorio, variable o cliente Web no demuestra sesión Antigravity.
 - Agentic utiliza el CLI oficial autorizado en ADR-016/plan 32. Sin configuración/sesión comprobadas permanece indisponible. Seguir `../docs/mvp/agentic-cli-runbook.md`; evidencia Windows no autentica ni certifica Linux-VPS. Nunca delegar Agentic a Web ni atribuir cuotas/capacidades no observadas.
 - El login Agentic de Ajustes utiliza el flujo remoto oficial con enlace/código, separado de Web. Consultar `../docs/features/ai-providers/gemini-agentic-authentication.md` y ADR-017; conservar sesión compartida explícita, ownership del actor, verificación no generativa y limpieza al cancelar. No exponer terminal ni tokens, purgar credenciales globales o sustituir el adaptador por OAuth no comprobado.
@@ -61,3 +61,34 @@ Los ejemplos genéricos de las skills no son configuración obligatoria. En part
 - Seguir ADR-009 y ADR-016/plan 32: CLI con hash/version/perfil verificados, hooks de documento exacto/finalización y cierre de procesos. Integración real separada (`test/agentic-cli.integration.mjs --live-cli`); nunca sustituir Agentic por Web ni habilitarlo con marcadores/keys.
 - Para cambios de autenticación, probar acceso sin token, token incorrecto y token correcto. Para navegador/sesión, probar cancelación, timeout, persistencia y recuperación sin abrir Chrome real ni usar cookies reales.
 - No dejar procesos de prueba en segundo plano ni ocupar el puerto `8000` al terminar.
+
+
+## Puerta compartida NodiaAI (AI-11/AI-12)
+
+- Toda nueva entrada que use un perfil (chat, OCR, login, refresh, discovery o
+  logout) debe pasar por `ProfileAdmission`; identificar el perfil físico, nunca
+  multiplicar capacidad por `connection_id`. Conservar una instancia/un worker.
+- El login transfiere la reserva a su tarea y la libera al finalizar realmente;
+  cancelar el HTTP o marcar `cancelled` no demuestra cierre del navegador/CLI.
+- Antes de inferencia, armar el marcador mínimo persistente; resultado incierto
+  queda en cuarentena sin reenvío y bloquea también consumidores previos. No limpiar
+  `.unknown` por TTL, borrado de chat, nuevo login o reinicio. Conciliar primero.
+- Web sólo conversa y solicita delegación tipada. Agentic sin herramientas mantiene
+  MCP vacío/hook sólo `finish`; con MCP, aceptar exclusivamente descriptores
+  registrados por Server y callbacks por el loop privado supervisado. No aceptar
+  URLs de callback, shell, archivos, HTTP ni herramientas obtenidas de Markdown.
+  AI-12 sólo incorpora conocimiento técnico; el gateway de negocio requiere AI-14.
+- `supports_mcp` exige prueba explícita real del loop y hook, ligada al perfil,
+  sesión, modelo, esfuerzo, configuración y protocolo; ni auth ni health la crean.
+- Contar cada `tools/call` antes de validar, incluidos rechazos y replays. Conservar
+  `tool_requests` acumulado en eventos RPC y `unforwarded_tool_requests` monotónico
+  en el polling privado; Server reserva su delta oculto y cada callback visible en
+  el mismo presupuesto durable del run, sin doble conteo ni rollback del consumo
+  ante validación fallida. La idempotencia evita duplicar efectos, no el consumo de
+  solicitudes. El intento13 termina el puente sin reenviar herramientas.
+- Emitir prueba terminal mínima sólo después del cierre real del SDK/CLI. Conciliar
+  por identidad exacta; nunca liberar desde un marcador armado sin prueba o uno
+  histórico sin identidad. El acuse posterior al commit SQL elimina el recibo y
+  estado efímero; no convertirlos en auditoría indefinida ni guardar prompts allí.
+- Mantener separadas elegibilidad de transporte e inferencia comprobada. La
+  entrega aislada no actualiza como verificados los adapter_states de una cuenta.

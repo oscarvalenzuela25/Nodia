@@ -1,0 +1,96 @@
+{
+  "stage": "AI-36-C05-R04",
+  "scope": "post_restoration_exact_baseline_public_runtime_metadata_and_fixed_credential_lstat_only",
+  "status": "passed",
+  "observed_at_utc": "2026-10-19T21:03:21.818202+00:00",
+  "epoch": {
+    "id": "9fc4646f13fca9f673443424045de295744db4b56835950cc43d7d6a403d3b4d",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T21:01:16.890774731Z"
+  },
+  "binary": {
+    "configured_version": "1.3.1",
+    "configured_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+    "actual_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+    "CLI_executions": 0,
+    "profile_contents_read": false
+  },
+  "version_evidence_scope": "configured_baseline_version_with_actual_binary_digest_and_native_startup_exact_version_validation_no_additional_CLI_execution",
+  "Node_compiled_files": 932,
+  "Node_manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792",
+  "unit_pairs": {
+    "nodia-api": {
+      "state": "active",
+      "exit_code": 0
+    },
+    "nodia-ai-worker": {
+      "state": "active",
+      "exit_code": 0
+    },
+    "nodia-gemini-lab": {
+      "state": "active",
+      "exit_code": 0
+    },
+    "nginx": {
+      "state": "active",
+      "exit_code": 0
+    }
+  },
+  "SQL_quiet": {
+    "stage": "AI-36-C05",
+    "scope": "post_disposable_live_read_only_operational_quiescence",
+    "status": "passed",
+    "observed_at_utc": "2026-10-19T21:03:21.644Z",
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0,
+    "preserved_r05_chat": 1,
+    "configured_SQL_writes": 0,
+    "provider_requests": 0,
+    "storage_operations": 0,
+    "services_restarted": false,
+    "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+  },
+  "native_quiet": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0,
+    "agentic_home_configured": true,
+    "stage": "AI-32-R04",
+    "scope": "read_only_native_runtime_artifact_counts",
+    "observed_at_utc": "2026-10-19T21:03:21Z",
+    "provider_calls": 0,
+    "configured_database_modified": false,
+    "profile_bytes_read": false
+  },
+  "credential_metadata_after": {
+    "oauth_token": {
+      "exists": true,
+      "mode": 384,
+      "uid": 10001,
+      "gid": 986,
+      "bytes": 1427,
+      "mtime_ns": 1792440472520125618,
+      "inode": 567035,
+      "symlink": false
+    },
+    "installation_identifier": {
+      "exists": true,
+      "mode": 420,
+      "uid": 10001,
+      "gid": 986,
+      "bytes": 36,
+      "mtime_ns": 1791856414103022117,
+      "inode": 566003,
+      "symlink": false
+    }
+  },
+  "credential_contents_read_copied_restored": false,
+  "credential_global_format_migration_compatibility": "unknown_not_established_by_lstat",
+  "current_exact_session_metadata_Web_and_Agentic_available": true,
+  "current_MCP_proof": "unknown_supports_mcp_false_after_restart_no_old_proof_transferred",
+  "provider_generations": 0
+}

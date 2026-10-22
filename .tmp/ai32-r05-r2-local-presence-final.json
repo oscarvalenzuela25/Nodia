@@ -1,0 +1,31 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "r2_configuration_presence_only",
+  "location": "local",
+  "observed_at_utc": "2026-10-18T16:11:16.408Z",
+  "environment_file_present": true,
+  "fields": {
+    "R2_ACCOUNT_ID": {
+      "state": "non_placeholder_candidate"
+    },
+    "R2_ACCESS_KEY_ID": {
+      "state": "non_placeholder_candidate"
+    },
+    "R2_SECRET_ACCESS_KEY": {
+      "state": "non_placeholder_candidate"
+    },
+    "R2_BUCKET_NAME": {
+      "state": "non_placeholder_candidate"
+    },
+    "R2_ENDPOINT": {
+      "state": "absent"
+    }
+  },
+  "all_required_non_placeholder_candidates": true,
+  "credential_validity_verified": false,
+  "endpoint_or_bucket_values_exported": false,
+  "credential_values_or_fingerprints_exported": false,
+  "provider_calls": 0,
+  "configuration_modified": false,
+  "services_restarted": false
+}

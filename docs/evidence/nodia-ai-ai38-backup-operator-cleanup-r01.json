@@ -1,0 +1,21 @@
+{
+  "files": [
+    {
+      "removed": true,
+      "sha256": "913eeb394924d39df60825434b2f4f9d28e847b26cd147de4d2f20a57a8b18b4",
+      "private_acl": true,
+      "name": "nodia-ai-backup-20261020-r01-quarantine.dump",
+      "bytes": 383591
+    },
+    {
+      "removed": true,
+      "sha256": "447a44929d931da53a4c92ab245c2f42dbfb09d21c9e14258416755c2db329d2",
+      "private_acl": false,
+      "name": "nodia-ai-backup-20261020-r01-verification.enc",
+      "bytes": 384388
+    }
+  ],
+  "status": "operator_verification_artifacts_removed",
+  "journal_key_retained_on_operator_host": true,
+  "private_key_retained_on_operator_host": true
+}

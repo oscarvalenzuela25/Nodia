@@ -1,0 +1,27 @@
+{
+  "stage": "AI-29",
+  "previous_release": "fcbb7f79c771ee1a85c02e7d80f21180441f04b85b44bcac33e838c8d22d4ee6",
+  "release": "bbe14af35a6152129b05418ad440b685e88dc354079bd5696c9607bf5a6e7b93",
+  "changed_manifest_fields": [
+    "documents",
+    "registry_sha256",
+    "release_id"
+  ],
+  "document_source_hash_changes": [
+    {
+      "document_id": "general-settings.ai-connections",
+      "path": "nodia-server/src/ai-provider/ai-provider.service.ts",
+      "before_sha256": "ef31e39625241fc048a5a9ca8333be394f0e71a18581bdfb44720770b185545c",
+      "after_sha256": "3dea6e498c78516aca6bfada706f3ca6606dd80c64c8bfa4288e3b98b70e7f42"
+    }
+  ],
+  "published_document_bytes_unchanged": true,
+  "published_fragments_unchanged": true,
+  "capability_contracts_unchanged": true,
+  "new_published_content": false,
+  "reason": "One excluded secure interaction draft, native API-key shared writer and unchanged Web viewer input validator extracted for the trusted durable-reference bridge; no approved document bytes or published tools changed.",
+  "sources": 53,
+  "excluded": 26,
+  "published_capabilities": 67,
+  "published_fragments": 27
+}

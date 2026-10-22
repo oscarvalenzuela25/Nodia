@@ -1,0 +1,12 @@
+{
+  "stage": "AI-25",
+  "tested_archive_sha256": "d36ac0b2a9aeb99d93027cf25c1895db2745fbc7d371c5024e8896559e6d720e",
+  "final_archive_sha256": "869e0ea34896545db736422f54da1435bcf526d7df245d48eb43c3b995b73160",
+  "production_dist_identical": true,
+  "dist_files_checked": 828,
+  "changed_package_files": [
+    "test/nodia-ai-ai25.integration.mjs"
+  ],
+  "reason": "Only test helper changed to generate a unique synthetic external_reference per Airbnb reservation; final harness is the exact tested version.",
+  "final_harness_sha256": "042b52eae21634a8aaeecb4d148bf5ce2f122421d928d59bbd235020a3889e29"
+}

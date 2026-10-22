@@ -1,12 +1,27 @@
 # Panel Kanban — Nodia Parte 1
 
-> Estado: en revisión — ampliaciones auth, Finanzas y Reservas; aprobación histórica del MVP conservada
-> Última actualización: 2026-10-05
+> Estado: en revisión — ampliaciones auth, Finanzas, Reservas y NodiaAI; aprobación histórica del MVP conservada
+> Última actualización: 2026-10-14
 > Dependencias: Documentos 01 al 11 aprobados
 
 ## Objetivo
 
 Derivar la especificación técnica en tickets o tareas funcionales trazables, organizados por épicas, para facilitar la implementación secuencial del MVP.
+
+## Épica nueva: NodiaAI — plan propuesto 2026-10-14
+
+- [x] Inventario39, catálogo40, contratos41 y ERD42/ejecución43 de diseño, con alcance de todos los módulos actuales y bulk/import excluido.
+- [x] [Segunda revisión44](44-nodia-ai-data-model-review.md): simplificaciones del esquema y34 casos de aceptación, sin probar efectos en BD.
+- [x] [Plan45](45-nodia-ai-implementation-plan.md):38 tareas AI-01..38,11 etapas, fichas de productos y compilación/carga selectiva de contexto.
+- [x] AI-01: [contratos/baseline46](46-nodia-ai-ai01-contract-baseline.md), compilación/fixtures/AST offline; ninguna API o inferencia publicada.
+- [x] AI-02/03: spikes reales independientes Web/Agentic; AI-04: [política/configuración50](50-nodia-ai-ai04-runtime-policy.md) validada offline, ocho gates productivos pendientes.
+- [x] AI-05: [fichas51](51-nodia-ai-ai05-product-knowledge.md),4 productos/27 funciones;175 handlers/2 técnicos excluidos,145 candidatos y18 fixtures negativas offline. Borradores sin publicación ni aprobación automática.
+- [x] AI-06: [contrato52](52-nodia-ai-ai06-knowledge-publication-contract.md), frontmatter único37 fichas,19 schemas y compilador/build;52 comprobaciones aisladas y bundle vacío sin aprobación/publicación.
+- [x] AI-07: [módulo/autorización53](53-nodia-ai-ai07-module-authorization.md), catálogo/ruta y política sin caché verificados localmente; no chat o herramientas publicados.
+- [ ] AI-08: transversalidad, NI-13 y barreras compartidas; primera tarea pendiente de45.
+- [ ] Implementación por etapas y pruebas según gates de45; aprobación documental y aceptación operativa pendientes.
+
+Esta épica no cierra pendientes operativos de los productos existentes ni modifica su aprobación histórica. El primer flujo completo propuesto es un gasto personal; no reduce la cobertura final de NodiaAI.
 
 ## Épica nueva: Contactos de proveedores — implementación local 2026-10-05
 

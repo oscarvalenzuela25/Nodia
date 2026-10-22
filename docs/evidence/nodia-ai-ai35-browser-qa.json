@@ -1,0 +1,477 @@
+{
+  "stage": "AI-35",
+  "status": "passed",
+  "scope": "chromium_real_page_isolated_synthetic_http_no_account_or_database",
+  "origin": "http://127.0.0.1:5199",
+  "profiles": [
+    {
+      "lang": "es",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 266,
+          "width": 266
+        }
+      ],
+      "scroll": 310,
+      "width": 320
+    },
+    {
+      "lang": "es",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 336,
+          "width": 336
+        }
+      ],
+      "scroll": 380,
+      "width": 390
+    },
+    {
+      "lang": "es",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 545,
+          "width": 545
+        }
+      ],
+      "scroll": 589,
+      "width": 599
+    },
+    {
+      "lang": "es",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 530,
+          "width": 530
+        }
+      ],
+      "scroll": 590,
+      "width": 600
+    },
+    {
+      "lang": "es",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 534,
+          "width": 534
+        }
+      ],
+      "scroll": 890,
+      "width": 900
+    },
+    {
+      "lang": "es",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 1074,
+          "width": 1074
+        }
+      ],
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "lang": "es",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 266,
+          "width": 266
+        }
+      ],
+      "scroll": 310,
+      "width": 320
+    },
+    {
+      "lang": "es",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 336,
+          "width": 336
+        }
+      ],
+      "scroll": 380,
+      "width": 390
+    },
+    {
+      "lang": "es",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 545,
+          "width": 545
+        }
+      ],
+      "scroll": 589,
+      "width": 599
+    },
+    {
+      "lang": "es",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 530,
+          "width": 530
+        }
+      ],
+      "scroll": 590,
+      "width": 600
+    },
+    {
+      "lang": "es",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 534,
+          "width": 534
+        }
+      ],
+      "scroll": 890,
+      "width": 900
+    },
+    {
+      "lang": "es",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Mensajes del chat",
+          "scroll": 1074,
+          "width": 1074
+        }
+      ],
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 266,
+          "width": 266
+        }
+      ],
+      "scroll": 310,
+      "width": 320
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 336,
+          "width": 336
+        }
+      ],
+      "scroll": 380,
+      "width": 390
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 545,
+          "width": 545
+        }
+      ],
+      "scroll": 589,
+      "width": 599
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 530,
+          "width": 530
+        }
+      ],
+      "scroll": 590,
+      "width": 600
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 534,
+          "width": 534
+        }
+      ],
+      "scroll": 890,
+      "width": 900
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 1074,
+          "width": 1074
+        }
+      ],
+      "scroll": 1430,
+      "width": 1440
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 266,
+          "width": 266
+        }
+      ],
+      "scroll": 310,
+      "width": 320
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 336,
+          "width": 336
+        }
+      ],
+      "scroll": 380,
+      "width": 390
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 545,
+          "width": 545
+        }
+      ],
+      "scroll": 589,
+      "width": 599
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 530,
+          "width": 530
+        }
+      ],
+      "scroll": 590,
+      "width": 600
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 534,
+          "width": 534
+        }
+      ],
+      "scroll": 890,
+      "width": 900
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "regions": [
+        {
+          "name": "Chat messages",
+          "scroll": 1074,
+          "width": 1074
+        }
+      ],
+      "scroll": 1430,
+      "width": 1440
+    }
+  ],
+  "profile_count": 24,
+  "final_console_errors": [],
+  "final_observation_since": "2026-10-18T22:55:23.783Z",
+  "resize_draft_profiles": [
+    {
+      "bodyWidth": 310,
+      "documentWidth": 310,
+      "draft": "Borrador que debe conservarse",
+      "edited": "Borrador propuesta persistente",
+      "regions": [
+        {
+          "label": "Mensajes del chat",
+          "scroll": 266,
+          "width": 266
+        }
+      ],
+      "width": 320
+    },
+    {
+      "bodyWidth": 380,
+      "documentWidth": 380,
+      "draft": "Borrador que debe conservarse",
+      "edited": "Borrador propuesta persistente",
+      "regions": [
+        {
+          "label": "Mensajes del chat",
+          "scroll": 336,
+          "width": 336
+        }
+      ],
+      "width": 390
+    },
+    {
+      "bodyWidth": 589,
+      "documentWidth": 589,
+      "draft": "Borrador que debe conservarse",
+      "edited": "Borrador propuesta persistente",
+      "regions": [
+        {
+          "label": "Mensajes del chat",
+          "scroll": 545,
+          "width": 545
+        }
+      ],
+      "width": 599
+    },
+    {
+      "bodyWidth": 590,
+      "documentWidth": 590,
+      "draft": "Borrador que debe conservarse",
+      "edited": "Borrador propuesta persistente",
+      "regions": [
+        {
+          "label": "Mensajes del chat",
+          "scroll": 530,
+          "width": 530
+        }
+      ],
+      "width": 600
+    },
+    {
+      "bodyWidth": 890,
+      "documentWidth": 890,
+      "draft": "Borrador que debe conservarse",
+      "edited": "Borrador propuesta persistente",
+      "regions": [
+        {
+          "label": "Mensajes del chat",
+          "scroll": 534,
+          "width": 534
+        }
+      ],
+      "width": 900
+    },
+    {
+      "bodyWidth": 1430,
+      "documentWidth": 1430,
+      "draft": "Borrador que debe conservarse",
+      "edited": "Borrador propuesta persistente",
+      "regions": [
+        {
+          "label": "Mensajes del chat",
+          "scroll": 1074,
+          "width": 1074
+        }
+      ],
+      "width": 1440
+    }
+  ],
+  "older_history_anchor": {
+    "before": {
+      "height": 1420,
+      "relative": 112.40625,
+      "top": 0
+    },
+    "after": {
+      "height": 7118,
+      "relative": 112.96875,
+      "top": 5698
+    },
+    "delta_px": 0.5625
+  },
+  "checks": [
+    "24 profiles ES/EN light/dark at320/390/599/600/900/1440: document and message regions without horizontal overflow",
+    "Composer and proposal edited values preserved across six widths",
+    "Search filter survives390 to900 breakpoint change",
+    "Rename503 preserves modal/title; explicit reviewed retry succeeds with one success toast and composer unchanged",
+    "Detail500 preserves previous title/messages/attachment/editor;403 removes private projections",
+    "Explicit synthetic DetailOK revalidation restores content and earlier composer draft; detail+history retry verified separately in component integration",
+    "Proposal editor survives collapse and reopen",
+    "Historical activity ancestor collapse preserves edited proposal",
+    "Partial message label is explicit",
+    "Report renders compatible total, source and unavailable-source warning without invented total",
+    "Dependent steps show completed receipt and failed step; no synthetic resume/cancel pressed",
+    "Unknown execution disables Send",
+    "Configuration320px close/apply buttons44px and visible within viewport; Escape returns focus to Settings",
+    "Older history10messages prepended; original visible message relative position delta under1px"
+  ],
+  "known_limits": [
+    "Synthetic HTTP adapter; no real Gemini generation, R2, SQL business write or physical microphone in these browser checks",
+    "No physical phone or virtual keyboard acceptance",
+    "Earlier duplicate React sibling key warnings were observed and corrected with namespaced keys; final24profile run records zero errors",
+    "Initial scroll test failed; corrected race now restores only after new message DOM commits"
+  ],
+  "fixture": {
+    "html": "nodia-client/src/test/manual/nodia-ai-ai35/index.html",
+    "main": "nodia-client/src/test/manual/nodia-ai-ai35/main.tsx",
+    "html_sha256": "0936605b26f7a61a449cb4ea549d525302ab424878b4e2e29810c0f8e5ced9b4",
+    "main_sha256": "7064b0cf32d2005b144ae206e267dffa1fcd23cde8ea06ad9bbf29c69320a781"
+  },
+  "screenshots": [
+    {
+      "file": "docs/evidence/images/nodia-ai-ai35-desktop.jpg",
+      "sha256": "41fa23760bb981e6c74074c8f14adbd626dc9690e4e09cc9f0937561e50faa70"
+    },
+    {
+      "file": "docs/evidence/images/nodia-ai-ai35-history-mobile.jpg",
+      "sha256": "f21da0f8cdf897bdc76cacdee6f61d64d7071cea54364ba2975dba26a17666ea"
+    },
+    {
+      "file": "docs/evidence/images/nodia-ai-ai35-drawer-mobile.jpg",
+      "sha256": "242b03a9018dc1613dcfd56071baa0e34de73e9f9dbc77bbe8f2eaaf6dab4e93"
+    }
+  ],
+  "provider_generations": 0,
+  "r2_calls": 0,
+  "configured_database_mutations": 0,
+  "real_application_read_only": {
+    "origin": "http://localhost:5174",
+    "chat_preserved": true,
+    "search_existing_synthetic_response_marker_matches": 1,
+    "history_filter_cleared": true,
+    "history_closed": true,
+    "messages_sent": 0,
+    "metadata_mutations": 0,
+    "attachment_downloads": 0
+  }
+}

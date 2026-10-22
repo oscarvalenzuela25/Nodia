@@ -1,0 +1,103 @@
+{
+  "operation": "One user-authorized real UI Agentic request for active businesses",
+  "result": "incomplete_reconciled_without_replay",
+  "bridge_image": "sha256:e1fcee82dd54afbb0d386e406169f85613085a5b1cdb8a3148962409a0b4a695",
+  "native_closed_projection": {
+    "callbacks": 1,
+    "cli": {
+      "denied_count": 0,
+      "document_read_completed": false,
+      "events": 4,
+      "initialized": true,
+      "invalid_lines": 0,
+      "last_event_age_ms": 136,
+      "last_tool": "call_mcp_tool",
+      "result_seen": false,
+      "stage": "other_step",
+      "stderr_bytes": 0,
+      "stdout_bytes": 2424,
+      "terminal_status": "absent",
+      "tool_steps": 1
+    },
+    "cli_log": {
+      "bytes_read": 31471,
+      "http_statuses": [],
+      "interpretation": "text_indicator_not_verified_cause",
+      "lines_scanned": 128,
+      "provider_error_indicators": [],
+      "state": "observed",
+      "transport_indicators": [],
+      "truncated": true
+    },
+    "elapsed_ms": 62057,
+    "exception_type": "CancelledError",
+    "exit_code": null,
+    "gate_verified": false,
+    "hook": null,
+    "phase": "awaiting_server_callback",
+    "rpc_messages": 7,
+    "state": "unknown"
+  },
+  "sql_before_reconciliation": {
+    "checked_at": "2026-10-16T20:42:52.274Z",
+    "run_state": "unknown",
+    "run_phase": "inference",
+    "run_error_code": "nodia_ai:outcome_unknown",
+    "provider_dispatches_used": 1,
+    "tool_calls_used": 1,
+    "mcp_rpc_messages_used": 7,
+    "delegations_used": 0,
+    "job_state": "unknown",
+    "job_stage": "inference",
+    "job_attempt_count": 2,
+    "tool_receipts": 0,
+    "pending_jobs": 1,
+    "attempt_phase": "unknown",
+    "open_attempts": 0,
+    "prompt_or_answer_read": false
+  },
+  "operator_reconciliation": {
+    "existing_cli": true,
+    "existing_real_admin_session_verified": true,
+    "jwt_persisted_or_printed": false,
+    "roles_or_sessions_created": false,
+    "operations": 1,
+    "resolved": true,
+    "cleanup_pending": false,
+    "generation_replayed": false,
+    "pending_jobs": 0,
+    "run_state": "failed",
+    "error_code": "nodia_ai:outcome_unknown",
+    "provider_dispatches_used": 1,
+    "tool_calls_used": 1,
+    "mcp_rpc_messages_used": 7
+  },
+  "worker_api_journal_observation": {
+    "since_utc": "2026-10-16T20:40:00Z",
+    "maximum_entries_per_unit": 200,
+    "units": [
+      "nodia-ai-worker",
+      "nodia-api"
+    ],
+    "classified_warning_or_error_lines": 0,
+    "classified_error_codes": [],
+    "source_stack_frames": [],
+    "raw_messages_exported": false
+  },
+  "diagnostic_bounds": {
+    "native_reader_maximum_lines": 1024,
+    "native_log_input_tail": 400,
+    "native_cli_log_lines_scanned": 128,
+    "native_cli_log_truncated": true,
+    "source_projection": "docs/evidence/scripts/read-nodia-ai-native-diagnostics.py"
+  },
+  "interpretation": "The native process was cancelled after62.057s while waiting for a Server callback, before its provider generation deadline. The Server currently converts an error after durable dispatch to outcome_unknown without preserving its originating exception. The underlying Server cause is unverified; no classified provider or network indicator was observed in the bounded native log.",
+  "mutations": {
+    "additional_generations": 0,
+    "replay": false,
+    "bridge_restarted": false,
+    "provider_configuration_changed": false,
+    "business_records_written": false
+  },
+  "helper_note": "A first adapted reconciliation helper failed JavaScript syntax checking before imports or SQL. It was corrected to bind the unknown state as a SQL parameter, then one authorized existing-CLI reconciliation completed."
+}

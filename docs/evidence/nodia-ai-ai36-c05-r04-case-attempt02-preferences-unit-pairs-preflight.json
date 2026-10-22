@@ -1,0 +1,26 @@
+{
+  "stage": "AI-36-C05-R04",
+  "scope": "supplemental_exact_unit_state_exit_pair_gate_for_frozen_case_runner_v2",
+  "status": "passed",
+  "observed_at_utc": "2026-10-19T20:57:11.320277+00:00",
+  "units": {
+    "nodia-api": {
+      "state": "inactive",
+      "exit_code": 3
+    },
+    "nodia-ai-worker": {
+      "state": "inactive",
+      "exit_code": 3
+    },
+    "nodia-gemini-lab": {
+      "state": "active",
+      "exit_code": 0
+    },
+    "nginx": {
+      "state": "active",
+      "exit_code": 0
+    }
+  },
+  "provider_requests": 0,
+  "services_restarted": false
+}

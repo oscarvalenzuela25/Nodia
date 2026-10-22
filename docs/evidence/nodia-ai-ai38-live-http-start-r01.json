@@ -1,0 +1,14 @@
+{
+  "schema": "ai38-live-ui-http-observer-v1",
+  "action": "start",
+  "status": "cursor_created_no_UI_acceptance",
+  "source_sha256": "1587fd82495866362cc77d88b469ff4a0bc789bbc80d83356eb4223eeff63e9d",
+  "began_at_utc": "2026-10-21T02:44:13.712338+00:00",
+  "device": 2050,
+  "inode": 3673396,
+  "offset": 143363,
+  "acceptance_conversation_sha256": "ceb08fb97c86411d5e49d7ba5ed14a6eee471675b060ee13668b94b8869a96cb",
+  "start_anchor_bytes": 4096,
+  "cursor_sha256": "4f920928c36eff30cf5430239a1b87b5ac8933bb2c91257f9be013ef9ee59b33",
+  "raw_log_saved": false
+}

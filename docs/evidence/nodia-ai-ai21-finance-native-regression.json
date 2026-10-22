@@ -1,0 +1,25 @@
+{
+  "postgres": "16",
+  "synchronize": false,
+  "checks": [
+    "Incremental migration up/down/up; existing synthetic data preserved.",
+    "Finance entity metadata matches the migrated database without automatic synchronization.",
+    "Navigation seed repeatable, four translations, no module assignments.",
+    "Compiled Nest DI/ESM, DTO whitelist, strict booleans, bounds and hostile filters over real HTTP.",
+    "100000 - 20000 - 20000 = 60000; archive retains paid balance; partial payments, principal and cancellation rules.",
+    "Concurrent payments: only one 60/100 succeeds, remaining 40, real PostgreSQL row locks.",
+    "Concurrent pending confirmations and origin cancellation/payment preserve a valid settlement.",
+    "Real rollback of obligation+initial movement and both principal updates after injected DB failures.",
+    "Real PostgreSQL composite FK, CHECK and UNIQUE reject invalid ownership/status/amount/key.",
+    "Historical inactive associations, cancelled-origin null balance, exact sums beyond JS safe integer.",
+    "Exact SUM exceeds both JS safe integer and PostgreSQL per-row bigint range.",
+    "2000-row dataset: total across pages, stable order, exact aggregate and EXPLAIN ANALYZE recorded.",
+    "Committed write recovered by refetch after ignored response; no persistent retry deduplication claimed.",
+    "Deleting confirmed loan/debt repayments increases outstanding from750 to1000; failure on final obligation DELETE restores initial movement and obligation.",
+    "Real PostgreSQL deletion/repayment race, both forced lock orders: deletion first gives 204/404; repayment first gives 201/409, preserving 750 remaining.",
+    "DELETE HTTP/DI/DTO/owner bigint: categories with any movement protected; memberships cleaned without losing categories; ordinary movement and loan/debt initial deletion adjust history; all repayment states prevent obligation deletion; injected delete failure rolls back membership cleanup.",
+    "Synthetic pg_dump backup restored in a second isolated database, finance and previous data verified."
+  ],
+  "routes": 11,
+  "fixtures": "test/fixtures/finance-api.json"
+}

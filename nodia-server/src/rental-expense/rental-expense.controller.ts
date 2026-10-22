@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from '../rental-common/rental-response.schemas.js';
 import { RentalMutationResultDto } from '../rental-common/dto/rental-mutation-result.dto.js';
 import {
@@ -82,7 +83,7 @@ export class RentalExpenseController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.createRentalExpenseUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
       requestKey,
@@ -98,7 +99,7 @@ export class RentalExpenseController {
     @Query() dto: RentalExpenseQueryDto,
   ) {
     return this.getRentalExpensesUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
     );
@@ -111,7 +112,7 @@ export class RentalExpenseController {
     @Param() params: RentalResourceParamsDto,
   ) {
     return this.getRentalExpenseUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
     );
@@ -135,7 +136,7 @@ export class RentalExpenseController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.payRentalExpenseUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -160,7 +161,7 @@ export class RentalExpenseController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.updateRentalExpenseUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -186,7 +187,7 @@ export class RentalExpenseController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.voidRentalExpenseUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,

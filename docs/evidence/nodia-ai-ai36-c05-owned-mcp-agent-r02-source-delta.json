@@ -1,0 +1,27 @@
+{
+  "scope": "owned_MCP_agent_candidate_source_delta_not_deployed",
+  "base_image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "production_files": [
+    {
+      "path": "nodia-gemini-microservice/native_execution_agents.py",
+      "old_sha256": "73f000fdb9915a4ba2a4fad41f10180783464f3b87b9edc186960b8d6e0a7eef",
+      "new_sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+      "previous_candidate_sha256": "634ff3981e81e2bc0b4b14da6d783a5049fee0a76d17f378119b86cd3ae08e87"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+      "old_sha256": "b658fa4d2e0f4fc014346c4f6e8343a5b83ad9eaa406663f1bb36b93a0c54222",
+      "new_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+      "previous_candidate_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c"
+    }
+  ],
+  "compiled_source_files": 2,
+  "diagnostic_parser_included": false,
+  "wire_contract_version_changed": false,
+  "private_MCP_verification_binding_changed": true,
+  "CLI_support_verified": false,
+  "provider_generations": 0,
+  "deployment_performed": false,
+  "correction": "MCP inherited via documented inheritMcp:true; native tool list excludes dispatcher meta-tool",
+  "public_CLI_evidence": "docs/evidence/nodia-ai-ai36-c05-static-mcp-agent-metadata.json"
+}

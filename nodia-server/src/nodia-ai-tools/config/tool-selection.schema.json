@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:nodia:nodia-ai:tool-selection:1",
+  "$defs": {
+    "SelectCapabilitiesInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "catalog_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "capability_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 67,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$" }
+        }
+      },
+      "required": ["catalog_version", "capability_ids"]
+    }
+  }
+}

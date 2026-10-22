@@ -1,0 +1,14 @@
+{
+  "stage": "AI-36-C04",
+  "attempt": "attempt01",
+  "classification": "candidate_publication_kind_contract_gap",
+  "production_change_required": true,
+  "configured_database_used": false,
+  "actual_provider_generations": 0,
+  "disposable_containers_remaining": 0,
+  "stderr_sha256": "704563a1f236e07edce8fa5c5f7804e9a32f2a8f734391d8d34d8ee64eac9417",
+  "reason": "Actual frozen C04 capabilities use prepare_workflow and prepare_preference_change; the strict knowledge publication Capability.kind enum still admits only the five older kinds. Actual loader rejects the synthetic six-helper release before worker dispatch.",
+  "fixture_validation_preserved": true,
+  "resolution": "Authoritative publication Capability.kind enum extended with prepare_workflow and prepare_preference_change, retaining strict schema validation and all previous kinds. Fresh build recomputed provenance release; repository capabilities remain unpublished. The unchanged strict fixture now reaches and passes the compiled C04 scenarios.",
+  "resolution_release_id": "e0af65be46d699fcc79ae12e5fd23206fed98e21c64e42058c1a9b58d10839fb"
+}

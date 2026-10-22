@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable, ConflictException } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { validateRentalDto } from '../../rental-common/rental-validation.js';
@@ -17,15 +18,16 @@ export class CreateRentalReservationUseCase {
     private readonly reservations: RentalReservationService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: CreateRentalReservationDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(CreateRentalReservationDto, input);
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'reservation.create',
@@ -70,21 +72,19 @@ export class CreateRentalReservationUseCase {
           ctx,
           calendarStay(saved, ctx.property.timezone),
         );
-        await ctx.manager
-          .getRepository(RentalTurnover)
-          .save({
-            property_id: propertyId,
-            incoming_reservation_id: saved.id,
-            previous_reservation_id: previous?.id ?? null,
-            linen_ready: null,
-            cleaning_status: 'pending',
-            planned_ready_at: null,
-            ready_at: null,
-            same_day_approved_at: null,
-            notes: null,
-            created_by: actorId,
-            updated_by: actorId,
-          });
+        await ctx.manager.getRepository(RentalTurnover).save({
+          property_id: propertyId,
+          incoming_reservation_id: saved.id,
+          previous_reservation_id: previous?.id ?? null,
+          linen_ready: null,
+          cleaning_status: 'pending',
+          planned_ready_at: null,
+          ready_at: null,
+          same_day_approved_at: null,
+          notes: null,
+          created_by: actorId,
+          updated_by: actorId,
+        });
         return {
           resource_id: saved.id,
           resource_type: 'reservation',

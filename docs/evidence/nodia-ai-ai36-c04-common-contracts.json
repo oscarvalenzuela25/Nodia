@@ -1,0 +1,2037 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C04",
+  "status": "offline_six_closed_common_helper_contracts_verified_not_published",
+  "scope": "actual_candidate_factories_and_closed_schemas_only_no_DB_HTTP_or_generation",
+  "baseline_C01_preserved": {
+    "path": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+    "sha256": "9b790670a5a4195f91d10cb33b3f8fa0220df907448e2ca82fd5f988fe195551"
+  },
+  "baseline_C02_preserved": {
+    "path": "docs/evidence/nodia-ai-ai36-c02-secure-contracts.json",
+    "sha256": "1db9adeff203e7b93f19cc55abb7ad794f1da7326296e37a332d2d627b68dce8"
+  },
+  "baseline_C03_preserved": {
+    "path": "docs/evidence/nodia-ai-ai36-c03-invoice-contracts.json",
+    "sha256": "b58e0e928cbf317f1dcd271019a320bcb35a013819e9af2590e8b6a45a4da3ef"
+  },
+  "prior_knowledge_manifest_preserved": {
+    "path": "docs/evidence/nodia-ai-ai36-c04-prior-knowledge-manifest.json",
+    "sha256": "aa3edb2d9cf7caed720de0d7d907ec9d7d0f5aa72d2aeb0e0add4fc8d69855a6"
+  },
+  "common_helpers": [
+    {
+      "tool_name": "nodia_proposals_get",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "resource_key": "nodia_ai_proposals",
+      "mcp_contract_hash": "7df0e93193a2579daee7474fc626765d38f54b67646b0af72c8fa025a6fe94a5",
+      "input_schema": {
+        "definition": "ProposalGetInput",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/ProposalGetInput"
+      },
+      "output_schema": {
+        "definition": "PublicProposal",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/PublicProposal"
+      },
+      "published": false,
+      "invoked": false
+    },
+    {
+      "tool_name": "nodia_operations_get",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "resource_key": "nodia_ai_operations",
+      "mcp_contract_hash": "087e1bc8afeaa63fdefc64293ba1664db76a7b2a8fc46b8470aada402d20c6e3",
+      "input_schema": {
+        "definition": "OperationGetInput",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/OperationGetInput"
+      },
+      "output_schema": {
+        "definition": "ExecutionStatus",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/ExecutionStatus"
+      },
+      "published": false,
+      "invoked": false
+    },
+    {
+      "tool_name": "nodia_attachments_describe",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "resource_key": "nodia_ai_attachments",
+      "mcp_contract_hash": "246da71d49130b39d1e5268b7b19dc563cf0ef499e1cd401371074f95681ca0d",
+      "input_schema": {
+        "definition": "AttachmentDescribeInput",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/AttachmentDescribeInput"
+      },
+      "output_schema": {
+        "definition": "AttachmentMetadata",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/AttachmentMetadata"
+      },
+      "published": false,
+      "invoked": false
+    },
+    {
+      "tool_name": "nodia_preferences_list",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "resource_key": "nodia_ai_preferences",
+      "mcp_contract_hash": "e42aaaa9ffc71283abc2b7599db3afaa62cfa5b5fde746d71b689a7b5b03917e",
+      "input_schema": {
+        "definition": "PreferenceListInput",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/PreferenceListInput"
+      },
+      "output_schema": {
+        "definition": "PreferencePage",
+        "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c",
+        "ref": "urn:nodia:ai:common-reads:v1#/$defs/PreferencePage"
+      },
+      "published": false,
+      "invoked": false
+    },
+    {
+      "tool_name": "nodia_workflows_prepare",
+      "kind": "prepare_workflow",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "resource_key": "nodia_ai_workflows",
+      "mcp_contract_hash": "7b096f7bf37cfa792cea648c1ba720bc05e4c7b0902d0cf52da688b2375fac50",
+      "input_schema": {
+        "definition": "McpWorkflowPrepareInput",
+        "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22",
+        "ref": "urn:nodia:nodia-ai:common-preparation:1#/$defs/McpWorkflowPrepareInput"
+      },
+      "output_schema": {
+        "definition": "McpWorkflowPreparationResult",
+        "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22",
+        "ref": "urn:nodia:nodia-ai:common-preparation:1#/$defs/McpWorkflowPreparationResult"
+      },
+      "published": false,
+      "invoked": false
+    },
+    {
+      "tool_name": "nodia_preferences_prepare",
+      "kind": "prepare_preference_change",
+      "required_module_routes": [
+        "/tools/nodia-ai"
+      ],
+      "resource_key": "nodia_ai_preferences",
+      "mcp_contract_hash": "edfc6ac9c9ea3a9f646d233b74e55f01ff62f4e13a16618b90f35426c4e918a1",
+      "input_schema": {
+        "definition": "McpPreferencePrepareInput",
+        "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22",
+        "ref": "urn:nodia:nodia-ai:common-preparation:1#/$defs/McpPreferencePrepareInput"
+      },
+      "output_schema": {
+        "definition": "McpPreferencePreparationResult",
+        "sha256": "f6fb6198795002f4378e890f2ff861fe32786e2e3021daa2c12c490449382d22",
+        "ref": "urn:nodia:nodia-ai:common-preparation:1#/$defs/McpPreferencePreparationResult"
+      },
+      "published": false,
+      "invoked": false
+    }
+  ],
+  "common_helpers_verification": {
+    "four_native_reads": true,
+    "two_native_preparations": true,
+    "strict_unknown_actor_context_and_secret_keys_rejected": true,
+    "default_empty_modules_no_imports": true,
+    "composition_keeps_schema_refs_and_resource_ownership": true,
+    "all_84_candidates_compiled": true,
+    "handlers_invoked": false
+  },
+  "structural_comparison_catalog_version": "offline-ai36-c01-not-published",
+  "counts": {
+    "native_factories_and_single_preparer": 13,
+    "native_preparers": 77,
+    "preserved_C01_prepare_change": 73,
+    "preserved_C02_prepare_secure_flow": 4,
+    "candidate_invoice_analysis": 1,
+    "candidate_registrations_checked": 84,
+    "candidate_common_helpers": 6,
+    "native_preference_preparers": 3,
+    "preserved_C03_invoice_analysis": 1,
+    "published_domain_reads": 67,
+    "published_invoice_analysis": 0,
+    "published_fragments": 27
+  },
+  "publication": {
+    "capabilities_changed": false,
+    "compiled_release_id": "e0af65be46d699fcc79ae12e5fd23206fed98e21c64e42058c1a9b58d10839fb",
+    "compiled_catalog_release": "nodia-ai-ai15-reads/1",
+    "compiled_release_changed_since_C02": true,
+    "changed_since_C03_only_for_closed_publication_kind_schema": true,
+    "publication_not_granted": true
+  },
+  "verification": {
+    "two_closed_action_shapes": true,
+    "closed_source_projection": true,
+    "model_actor_URL_and_private_hash_inputs_rejected": true,
+    "private_source_hashes_rejected_from_output": true,
+    "review_required_and_active_generation_source": true,
+    "max_items_100": true,
+    "default_module_no_imports_or_external_factories": true,
+    "preparer_77_hashes_native_hashes_schema_refs_and_bytes_unchanged": true,
+    "network_guard_active": true,
+    "database_connections": 0,
+    "http_calls": 0,
+    "provider_generations": 0,
+    "actual_handler_or_snapshot_execution": false,
+    "SQL_acceptance": false,
+    "Gemini_acceptance": false
+  },
+  "invoice_candidate": {
+    "tool_name": "nodia_invoices_analyze",
+    "kind": "analyze_attachment",
+    "resource_key": "invoices",
+    "required_module_routes": [
+      "/tools/business"
+    ],
+    "action_keys": [],
+    "mcp_contract_hash": "8935077408dedc033810aa25ebb3e27603f4b8d28368dfcc769131b37eccf560",
+    "input_schema": {
+      "definition": "InvoiceAnalysisInput",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d",
+      "ref": "urn:nodia:ai:invoice-analysis:v1#/$defs/InvoiceAnalysisInput"
+    },
+    "output_schema": {
+      "definition": "InvoiceAnalysisResult",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d",
+      "ref": "urn:nodia:ai:invoice-analysis:v1#/$defs/InvoiceAnalysisResult"
+    },
+    "external_prepare_execute_verify": true,
+    "input_actions": [
+      "prepare",
+      "complete"
+    ],
+    "native_contract_port_version": "nodia-ai-invoice-analysis/1",
+    "invoked": false,
+    "published": false,
+    "explicit_forbidden_input_fields": [
+      "url",
+      "file_url",
+      "storage_key",
+      "path",
+      "content_base64",
+      "actor_id",
+      "user_id",
+      "session_id",
+      "connection_id",
+      "mode",
+      "model_id",
+      "effort_id",
+      "selection",
+      "provider_fields",
+      "tax",
+      "confirmed",
+      "native_request",
+      "attempt_id",
+      "run_id",
+      "content_hash",
+      "source_hash",
+      "generation",
+      "retention_epoch",
+      "configuration_generation",
+      "session_generation"
+    ],
+    "explicit_forbidden_output_fields": [
+      "storage_key",
+      "generation",
+      "retention_epoch",
+      "content_hash",
+      "source_hash",
+      "configuration_generation",
+      "session_generation",
+      "attempt_id",
+      "run_id",
+      "native_reference",
+      "provider_fields",
+      "tax"
+    ]
+  },
+  "preserved_preparer_contracts": [
+    {
+      "tool_name": "nodia_actions_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "27861939be57a3bbab8e0a455413ac2d49b69803c250b58b291c6159aa27d152",
+      "mcp_contract_hash": "1933e2a4d6baa095f8ebd192b9af8c7e4ac2a20da9964500e09f93cacb564391",
+      "input_schema": {
+        "definition": "McpWriteInput_ActionsCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ActionsCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_actions_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "70f4e8788f387e6abb835b2292f940ae2e1515280312d8e635f25983c5dc7962",
+      "mcp_contract_hash": "ba6dd4be8839655943db5e5fc7a455e822db8613af4d0edb489105cdeeb943bf",
+      "input_schema": {
+        "definition": "McpWriteInput_ActionsDeletePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ActionsDeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_actions_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "43eb87c05c868d4b569cc84dae055e41cd4320d9d39b1d746f350c1df79cc985",
+      "mcp_contract_hash": "1e68eb4293900e900c84b6e393a7db8fbf66c9879da398ae2ece640139e024bb",
+      "input_schema": {
+        "definition": "McpWriteInput_ActionsUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ActionsUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_catalog_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "a86f715cff7ee10de558614fab94a94795be3ecdd9d143062ba442fb9e3c256e",
+      "mcp_contract_hash": "401932b0717a8cc6433cf94256ab9f3bed054a9a0c15e4f997fc3d1887ff48fc",
+      "input_schema": {
+        "definition": "McpWriteInput_ProviderCatalogCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ProviderCatalogCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_catalog_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "0f940a04366eac9828365ad4ffb5e86574feec5c77074a139b46bd78788a0e35",
+      "mcp_contract_hash": "21989ddfa76d102eb974a6a85882f41a34662939ed700c11ae3d7068d4867af5",
+      "input_schema": {
+        "definition": "McpWriteInput_ProviderCatalogUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ProviderCatalogUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_codex_logout",
+      "kind": "prepare_change",
+      "native_contract_hash": "010368525ea9d0da17b442553ea0acf49c2282da91ef62a84925a23a9a2b087c",
+      "mcp_contract_hash": "c191a3981e86d1aa9ab2cb23296c4cac56753500c47c363a534479eeeb7ac683",
+      "input_schema": {
+        "definition": "McpWriteInput_AiProvidersPrepareCodexLogoutPartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_AiProvidersPrepareCodexLogoutPartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "0cf4df7cf66e9110674fa8c5b82a16bb1db1a4d76f81aac4788b945a945c0575",
+      "mcp_contract_hash": "f8e79d53c17b6634afe456eaa263b31a03cb08f0fb34cc862875c2c000b11b9d",
+      "input_schema": {
+        "definition": "McpWriteInput_ProviderCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ProviderCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_gemini_web_logout",
+      "kind": "prepare_change",
+      "native_contract_hash": "cfc22910ff52889fb02ce8458b9763ec5cde37a4644445b48c11a94159d1b85a",
+      "mcp_contract_hash": "a195cbc904073028fad5285ed36a9bfd1673018f54f87b19f27e403cb18f62e6",
+      "input_schema": {
+        "definition": "McpWriteInput_AiProvidersPrepareGeminiWebLogoutPartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_AiProvidersPrepareGeminiWebLogoutPartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_sync_models",
+      "kind": "prepare_change",
+      "native_contract_hash": "b57ee1e6d8a57a4817479a59035ec5dc3da093e37455599fa3113258494c1b70",
+      "mcp_contract_hash": "6f44fe76a5f672a0771cdd1fe8e50e214a8d9ca641edc873cbdcb6f748258b50",
+      "input_schema": {
+        "definition": "McpWriteInput_AiProvidersPrepareSyncModelsPartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_AiProvidersPrepareSyncModelsPartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "0588b114532819d2d66a7de6a704796855ef2b3ca4eee9ab6eba6f58aa53ef41",
+      "mcp_contract_hash": "808960a2b69ee4e7a3e4874fb55cb8cbd6bb0c9770f2ce62d485aaa2853cc201",
+      "input_schema": {
+        "definition": "McpWriteInput_ProviderUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ProviderUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_api_keys_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "35b191481ad08d8886ba8401978110738d86ce37bbca48e33a00e7eb24c78ff4",
+      "mcp_contract_hash": "6fc4014c00ec43598a7b70389cd1283a89ecaa2d54e3b46e276ccbbdd4cf7727",
+      "input_schema": {
+        "definition": "McpWriteInput_ApiKeysPrepareDeletePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ApiKeysPrepareDeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_business_actions_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "51c792903fe9c14d907934748ccaf769a9dd05bfcfe05997fb436102b7abcaa6",
+      "mcp_contract_hash": "fb73a181fe95954fb9713965d29844aee02a628e3dbb18af2e90adcdb6f481b9",
+      "input_schema": {
+        "definition": "McpWriteInput_BusinessActionsCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_BusinessActionsCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_business_actions_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "09468de96355dffade26eeef340a27220430067d8c64d33db8c236089300a47d",
+      "mcp_contract_hash": "6bb2a42444c248458716e4f05221963c45d449cbed26a39bb2c8b07ff568b8d5",
+      "input_schema": {
+        "definition": "McpWriteInput_BusinessActionsDeletePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_BusinessActionsDeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_business_actions_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "1a14ef5c5ebd3fd3dfbef032ae280ac13a03c059db1974f6d365878bfee3ab2d",
+      "mcp_contract_hash": "2eeefafa1997927eabc1b343097fbb1b2ed9cc3d7511c67c74851e3391f135dd",
+      "input_schema": {
+        "definition": "McpWriteInput_BusinessActionsUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_BusinessActionsUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_businesses_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "8790a9a6fdaff3a0e025f3115a4ce77aef471b8a35496c7a42cc19071573578b",
+      "mcp_contract_hash": "a3946c2016cda66b2f39f0488729e12adfe9b3e7ea15999a0e0d8ca6e3142236",
+      "input_schema": {
+        "definition": "McpWriteInput_businessespreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_businessespreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_businesses_prepare_set_collaborators",
+      "kind": "prepare_change",
+      "native_contract_hash": "ae36199332b167a123754426ae45e7c8837974fc3d8151ef6d2217dadfcb4505",
+      "mcp_contract_hash": "dcc751ab5706f761b3554a4a03d9bbb1ac011229296d2cf9a2e53d0ca786f3b6",
+      "input_schema": {
+        "definition": "McpWriteInput_businessespreparesetcollaboratorsPartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_businessespreparesetcollaboratorsPartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_businesses_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "5d89892010429c9583458fdabd5fc59639f1cca7ba477654763c3b019fc7faea",
+      "mcp_contract_hash": "5671dc1650a56a7370cb5bf011b2c7228d0604388bd89c24852ec416f3a2b631",
+      "input_schema": {
+        "definition": "McpWriteInput_businessesprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_businessesprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_categories_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "8e507d9ccd583ed3391add5158d60fe750252463dd23853672b770bf6ba783c9",
+      "mcp_contract_hash": "faaedb67e9306967f2e4b147e2fdbd8247913c2100095c4c219e8b0046bdb91c",
+      "input_schema": {
+        "definition": "McpWriteInput_financecategoriespreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financecategoriespreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_categories_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "c485fdcc7b9045943dc612a1e8746e55b1726ea81952a6f4e613e514033a7678",
+      "mcp_contract_hash": "7eef18658e6aaab3b0811a2a5c38ddb8a430e5d94b895e3801244896a0f703ce",
+      "input_schema": {
+        "definition": "McpWriteInput_financecategoriespreparedeletePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financecategoriespreparedeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_categories_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "009b9ece8c529da26ce4739428fd4014c5fb7826ec2f9c6861e0dad5b2d5882b",
+      "mcp_contract_hash": "3f6622996b3946988a046fc45fc678ecebcbbd1848a8ac8a01d1b57e4bdcc691",
+      "input_schema": {
+        "definition": "McpWriteInput_financecategoriesprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financecategoriesprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_category_groups_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "961c07d18e577e6d26025ca205bf936fe8a7a45a53eb2570b4d9c826b0f40a97",
+      "mcp_contract_hash": "54f5e0d59a513fa0e3690eb312d68456313084b60ad6e205bac48ebfe2ac7ca2",
+      "input_schema": {
+        "definition": "McpWriteInput_financecategorygroupspreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financecategorygroupspreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_category_groups_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "ef467618367d2b0944916122b9a714a4637b3daefd13b588fe7bc30bb48dcdb9",
+      "mcp_contract_hash": "84946f0657bf0f8c84e9be573af95cc44478c38fe9681844d1c1c118f1d73351",
+      "input_schema": {
+        "definition": "McpWriteInput_financecategorygroupspreparedeletePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financecategorygroupspreparedeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_category_groups_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "2949f3b9bd3fa71fe93f90cfa71b6bf1fe7b861c36bae92c436cf86308e5283a",
+      "mcp_contract_hash": "bf0d23436b7df8564eb0e743c6b77ab06d1d4445f8331e953ea7a0adfc53f539",
+      "input_schema": {
+        "definition": "McpWriteInput_financecategorygroupsprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financecategorygroupsprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_movements_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "63b080f395a438b59b7384de849b7c407335690c839664e87d4794a7800fd88d",
+      "mcp_contract_hash": "2e1b6a37c80917fa5276bd55061e86011fd50f3e1cdc56d8dbe864b22c4ba7ad",
+      "input_schema": {
+        "definition": "McpWriteInput_financemovementspreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financemovementspreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_movements_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "d56cf0091e71a92a630f6ae690caa4727ad83203faee278799656a06f2947df4",
+      "mcp_contract_hash": "90dd0bf379211824b12891ab0fe7b1807177a298b3bd12a4d4f5fd9ee8a3614d",
+      "input_schema": {
+        "definition": "McpWriteInput_financemovementspreparedeletePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financemovementspreparedeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_movements_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "259c22935e1103544262f957b1f1ade4d7c7eb5e8aa8a305d674cb084b0e02e0",
+      "mcp_contract_hash": "fcbc83e08ceb0d4b8354ba08388408f0a1b67ece12c57e15fc22f768a8b5d19d",
+      "input_schema": {
+        "definition": "McpWriteInput_financemovementsprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financemovementsprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_obligations_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "929741880724eadc0220b56ab806bfa3e319e761e043c3dd945a4edcb7198809",
+      "mcp_contract_hash": "0b2e0844b872d762894721380af965c15de9316b85de72925fe378bcf565da9e",
+      "input_schema": {
+        "definition": "McpWriteInput_financeobligationspreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financeobligationspreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_obligations_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "4861dfb3fdc68ca40307c550764c32af54dc289ce0d2b18cef3637c23ee232bd",
+      "mcp_contract_hash": "ce42325b0a48c9f52dcfafc863190366d690e87a32ea5bf12e69cbe73a5617ea",
+      "input_schema": {
+        "definition": "McpWriteInput_financeobligationspreparedeletePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financeobligationspreparedeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_finance_obligations_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "c10e981f067f14b1d7e4ff1953f37dd27b1a3b4c2041c2864b4f61272d02f738",
+      "mcp_contract_hash": "f9a7d6e82ffc6b7f779b306352a9e56d74b63634ef97322e2410cee2caef1e64",
+      "input_schema": {
+        "definition": "McpWriteInput_financeobligationsprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_financeobligationsprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_invoices_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "8f2fb54bf5befe0331c42247e3185a5ee2c609d64dc3e4b0b7c33fa16f99fe48",
+      "mcp_contract_hash": "2a9520498c41ce22145fa3dbc36e75eb504472f09cbd511ff95f9313c15d1b24",
+      "input_schema": {
+        "definition": "McpWriteInput_invoicespreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_invoicespreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_invoices_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "df01e8ef53c63c3e84e2fcca43a391768f9d3adc8f1600f79a942b2c376a02b4",
+      "mcp_contract_hash": "2ad94c8a52af225453d07a03a8a049ca54a31c52bc9a581d9c602295f57ac57c",
+      "input_schema": {
+        "definition": "McpWriteInput_invoicesprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_invoicesprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_module_groups_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "b2db08e40de3ae2de47c38fe78369e8e866d11073b246d09265185aae334cec8",
+      "mcp_contract_hash": "54e156be1d5e2f91e1e0393ec60dfdf0b4d7168b17bd0af5ccc46f093fd89d98",
+      "input_schema": {
+        "definition": "McpWriteInput_ModuleGroupsCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ModuleGroupsCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_module_groups_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "9ed15e695827323c8fc6798c12d3aed0569b2ecc54650aed303749c8209850d5",
+      "mcp_contract_hash": "c637515af56302cf673d62fb993e79a3e4b00711ff09f8ff046bd404ca287911",
+      "input_schema": {
+        "definition": "McpWriteInput_ModuleGroupsDeletePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ModuleGroupsDeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_module_groups_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "fefc8d44de03ee1a7bb36777b2c77eb716150cf2019beae3c745408d39ed1b29",
+      "mcp_contract_hash": "51c097b00b64550cec0cb9ca375493be9cd13f6bb3fcf9b5e6204ea26fe75d84",
+      "input_schema": {
+        "definition": "McpWriteInput_ModuleGroupsUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ModuleGroupsUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_modules_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "8ee87a1a637717e4a9ea802221b25bd0cb75a69e7a18b8b7ab50a1a1a1d2fe3d",
+      "mcp_contract_hash": "36df158e3a36501a1f77e18d4c75b46b67f0a7c58e00bfdd9166279d57ad6c81",
+      "input_schema": {
+        "definition": "McpWriteInput_ModulesCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ModulesCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_modules_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "96090e8a6836c4f7d9be06add6a8b617c8728b0acc0872053d748f3c278451c7",
+      "mcp_contract_hash": "e5164488da3ce8da947550e4f134bfda69073151fc09e69c550777ea210da4a2",
+      "input_schema": {
+        "definition": "McpWriteInput_ModulesDeletePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ModulesDeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_modules_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "7ed68fdc630b2fe01877ec6f3bb8f5459a2a5f5937d58629e41072ad64fbf55d",
+      "mcp_contract_hash": "9f6944b2794a362978f5cc2c8ad530948438f78ddf3cf0bf9441af29ad0cd166",
+      "input_schema": {
+        "definition": "McpWriteInput_ModulesUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_ModulesUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_product_logs_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "a17312ff872ff6cccb284627209922855b1c03d6987aad3eb1bbf436db7c129d",
+      "mcp_contract_hash": "246057635e7b8aababea2f81e6458691ef3504365efe510ba4ffd4c9977ade0e",
+      "input_schema": {
+        "definition": "McpWriteInput_productlogspreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_productlogspreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_product_logs_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "d66f21766d802ac2bfc7b417e85440dc50aff10b41d180f8f82c1b2b20917c63",
+      "mcp_contract_hash": "f419e11c3de55ad66026ae99793c1f1622e6d10cb50a4ef2c4c375cc980ba23e",
+      "input_schema": {
+        "definition": "McpWriteInput_productlogsprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_productlogsprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_products_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "fa1ad271837bc99ac7e8255c46ecebbf78faf258d001ba88e539f21fa059968e",
+      "mcp_contract_hash": "34d78ac7d3d7685d87fabd8d478c38df87b57500cdc4f8b078bc250b17a1694e",
+      "input_schema": {
+        "definition": "McpWriteInput_productspreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_productspreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_products_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "8788151e06c9be9bb58953a833f63c6502eccbbbaa320446397cbfe0ace5c6b0",
+      "mcp_contract_hash": "6e0152695a1c94ab0a8c77b9b8c2dae94598e98476f80334237d3d7c5a4bdc65",
+      "input_schema": {
+        "definition": "McpWriteInput_productsprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_productsprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_provider_contacts_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "91b5bf1e111447544555331411ad394e32cb4a7d00a2ffb924924755b2f6a47e",
+      "mcp_contract_hash": "338d7b74c74ee36767b6035bb120b0e29ac1c897721bb0d8e855e001dc34097f",
+      "input_schema": {
+        "definition": "McpWriteInput_providercontactspreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_providercontactspreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_provider_contacts_prepare_set_active",
+      "kind": "prepare_change",
+      "native_contract_hash": "8777e14497712a24937aee1e20ef16886f8bfa77360c84aa8b09dad0aeaca777",
+      "mcp_contract_hash": "04a5421f0d79d161a05ce67509a629ad6a9284d3d64d1826dbcffbe66fdb9958",
+      "input_schema": {
+        "definition": "McpWriteInput_providercontactspreparesetactivePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_providercontactspreparesetactivePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_provider_contacts_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "42059f617769b27bd523024bc6a16bfdb9248cdd9bc30c9abf49bf50fd57fcb0",
+      "mcp_contract_hash": "b6c980bd98e6554e3067dce5f56cd6ee47acf0cdce10c85812f246d898d84e51",
+      "input_schema": {
+        "definition": "McpWriteInput_providercontactsprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_providercontactsprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_providers_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "00a9a0c8ac3af84a11c5efe4aeb74843dfc55cef241314a07c77823d6c6c2cad",
+      "mcp_contract_hash": "d5a0aef045030e50137ce34f9950a6f03afb829c4ca0617045fcebb58053555e",
+      "input_schema": {
+        "definition": "McpWriteInput_providerspreparecreatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_providerspreparecreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_providers_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "3473b8684924cfe9cc1923d5b7d0f85afb3e64f1a305a216f259fbf8749b695d",
+      "mcp_contract_hash": "43d5151dbfa1f336099f8ff077556c66577f0bcd8855c56d12a2665b4a5dd451",
+      "input_schema": {
+        "definition": "McpWriteInput_providersprepareupdatePartial",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWriteInput_providersprepareupdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "c8c2a35b5b1287c32f12ceb92322af0f084df801a6fc0916527fe048aad3f897",
+        "ref": "https://nodia.local/schemas/write-finance-business/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_blocks_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "fd3ac80f8016ca4ab42b75128de4ef1794e77c9635897d8e239d157ddf8574bb",
+      "mcp_contract_hash": "91babc512f26e17f4090b1a2c4b9bf2bf0f9ff8237c406c42ca03c411ecce63a",
+      "input_schema": {
+        "definition": "McpWriteInput_BlockCreate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_BlockCreate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_blocks_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "6303add0a1b5b35262e2071027b79fd6a36b4606d26767f19b6ba82f3cdcd043",
+      "mcp_contract_hash": "049468818f07ab0a2dfe7b5483eaa51d68b103677e48f6d9bf92f14be6439b26",
+      "input_schema": {
+        "definition": "McpWriteInput_BlockUpdate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_BlockUpdate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_cancellation_policies_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "b7206b5f95464d720c0c34f086cdf0970bc0c6318786ea7c2fc264cffe3ebd75",
+      "mcp_contract_hash": "d6b703b4851f1f89f003cc7e1123ffcaa34de0404d7e7ded0af49c56ab5b06ca",
+      "input_schema": {
+        "definition": "McpWriteInput_CancellationPolicyCreate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_CancellationPolicyCreate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_cancellation_policies_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "7340b635982cc8fb5b7f09704249ab0ea6533236a86b05c725e70a264f90fe89",
+      "mcp_contract_hash": "7c8a42ec6715ca0d2f3d0b658d41c035449a0b6d57429b8b93d7cc66629cd2f0",
+      "input_schema": {
+        "definition": "McpWriteInput_CancellationPolicyUpdate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_CancellationPolicyUpdate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_collaborators_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "850aca8bfbcede701cc9e19ef920bc20ed450bb9f11f81f1e1de4daf2751edb2",
+      "mcp_contract_hash": "f4879edd68fa512c2afa0c592d3af178ea8efbc12d0f97245c90c5b9d9c7de5e",
+      "input_schema": {
+        "definition": "McpWriteInput_CollaboratorCreate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_CollaboratorCreate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_collaborators_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "d1df77c44131f11a7725adf80ac4f91cd0223c305c0815d47c7ddc0d15625a13",
+      "mcp_contract_hash": "cec04cb5eb7c9abc1815ba8394aeed204915421cab0fbf8128018a62bcd43c4c",
+      "input_schema": {
+        "definition": "McpWriteInput_CollaboratorUpdate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_CollaboratorUpdate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "ffc146684a4aac024b1369b1ce3b62e58bc8e6eedd6d7bd604b7bc5b1677a42b",
+      "mcp_contract_hash": "ba6eb2a7dc1516a1e570e3f05e08c985c1821b8ca6a7168e0f9be3c60d4bdb0d",
+      "input_schema": {
+        "definition": "McpWriteInput_ExpenseCreate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ExpenseCreate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_pay",
+      "kind": "prepare_change",
+      "native_contract_hash": "033fbc338fcb4589092e9bf0e006cb944e4c84f0dd71d01bc4a9bf6a9c9921c3",
+      "mcp_contract_hash": "b222b294531ced5f42fa1c54fddd9bc017baacc9d87fd551d9e01bacea0d1e19",
+      "input_schema": {
+        "definition": "McpWriteInput_ExpensePay",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ExpensePay"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "4f4e3cec81b2fd4621b0a9afee0a5ec226d7f1ca1b3be6684cc5d2f883622c9f",
+      "mcp_contract_hash": "465e1168ca3bf138b8e75123267e939f7af37c23a14bdad4a56f795b0b1ceacb",
+      "input_schema": {
+        "definition": "McpWriteInput_ExpenseUpdate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ExpenseUpdate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_expenses_prepare_void",
+      "kind": "prepare_change",
+      "native_contract_hash": "05018e083d107ebf5c04233612d2b052e0aabf235dd8dead1cf5be71ad4b6942",
+      "mcp_contract_hash": "3a27b98d9c10f89ea560f13b7ae152328f4439b8dc62e4402b3b85ef8c504360",
+      "input_schema": {
+        "definition": "McpWriteInput_ExpenseVoid",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ExpenseVoid"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_payments_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "7f94fc1be9643c1e97b49635ddba016ce604f27295685a7e6cfff39325b02afb",
+      "mcp_contract_hash": "598ef20c8616e21272e2127cbd17ceff870358a30d1d624ce1a9ba892b2af062",
+      "input_schema": {
+        "definition": "McpWriteInput_PaymentCreate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_PaymentCreate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_payments_prepare_void",
+      "kind": "prepare_change",
+      "native_contract_hash": "4ebf7036f2d15d28005e0ef6cd179c406b09fb6259f59335484302e2519063ea",
+      "mcp_contract_hash": "2fe502e232f753799298b9bcd34519b49a47be565ff53e9a8e43166303e2685a",
+      "input_schema": {
+        "definition": "McpWriteInput_PaymentVoid",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_PaymentVoid"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_properties_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "6e02eb4ebaadbae2242d9b094c9762930826ff62bb6f51e9bea2a6bf0fd8de99",
+      "mcp_contract_hash": "aa898ba2de67a470a2ed6ddc0322faefd7284484051bc265e43670cfe013cf52",
+      "input_schema": {
+        "definition": "McpWriteInput_PropertyCreate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_PropertyCreate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_properties_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "e53cdd62615c7405de1a8dbdf596e5b4131d246fb2d36c816a06f502790ace19",
+      "mcp_contract_hash": "09236b49182c5c46b8a1eeacb8b7bc529d13b1bbe5d6bfc4aef0fee074ddb89e",
+      "input_schema": {
+        "definition": "McpWriteInput_PropertyUpdate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_PropertyUpdate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_cancel",
+      "kind": "prepare_change",
+      "native_contract_hash": "3963f2cdfc51d19c320fe0c49e02dc2fdd22ad64f9dd7406ba07f23139c211f0",
+      "mcp_contract_hash": "d545a60307d05590ee9270548300c26f3dc752eed5802d1e26fc24336b38d4a1",
+      "input_schema": {
+        "definition": "McpWriteInput_ReservationCancel",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ReservationCancel"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_complete",
+      "kind": "prepare_change",
+      "native_contract_hash": "7aed8510ac7b7e6532e392fb2ca6c5ddf3cceb0e9a100d46df07129ff3e0feed",
+      "mcp_contract_hash": "6d2288032b3cd69e14dd86745d928d2b181a5c8bf282af87b2585ddab4a75d22",
+      "input_schema": {
+        "definition": "McpWriteInput_ReservationComplete",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ReservationComplete"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_confirm",
+      "kind": "prepare_change",
+      "native_contract_hash": "a86e1cba8ea80ba6ae5370aa2f14c88e4f2fb80285c514e5c40f8f0d8d0d3296",
+      "mcp_contract_hash": "ab8a16d350e518bb0b96bec5a77f2b5d0822844bb037b776998f0c30512eeaf4",
+      "input_schema": {
+        "definition": "McpWriteInput_ReservationConfirm",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ReservationConfirm"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "cbb732c4672b82e8ffc1f970947ddbc87fc3a5eafbb2ad87f08ad7b7766029bd",
+      "mcp_contract_hash": "a8c375b198643016169955f03e1cc45814c535c07838dfcd6bead49d4c3ac2f2",
+      "input_schema": {
+        "definition": "McpWriteInput_ReservationCreate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ReservationCreate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_start",
+      "kind": "prepare_change",
+      "native_contract_hash": "31254784b81d791d1e8bd212702716019d6f752e1f3a94c25e5fef3c1d4e37d6",
+      "mcp_contract_hash": "8349f520dab392e6e796827bd9e56db46564324858a4b014d56769bccc4d4875",
+      "input_schema": {
+        "definition": "McpWriteInput_ReservationStart",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ReservationStart"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_reservations_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "14f73b9fadb790942e579f9c160f7af537623a06375c9b906661952136755320",
+      "mcp_contract_hash": "23efaa037933c015468e84ad7e4f437e1891adcbe4c53cdeda6c7c7fce3367f7",
+      "input_schema": {
+        "definition": "McpWriteInput_ReservationUpdate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_ReservationUpdate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_turnovers_prepare_approve_same_day",
+      "kind": "prepare_change",
+      "native_contract_hash": "72667db076251d6e842a88d3a927e3dd7c990eaa93b5fcad1698778fa8ef0380",
+      "mcp_contract_hash": "5684277cd6711d74278d6343db8cfa36d41926abbff5e94201d7faaabe455c38",
+      "input_schema": {
+        "definition": "McpWriteInput_TurnoverApproveSameDay",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_TurnoverApproveSameDay"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_rental_turnovers_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "9463fb11bf7b8ba3b9b6b90b0c2345b37268fcb4c1066d3b56d2d5fc306d1b24",
+      "mcp_contract_hash": "805716e13000ee0e1c7e8eb948919d1dfc29b9742d2c9385af164e23bb776c9a",
+      "input_schema": {
+        "definition": "McpWriteInput_TurnoverUpdate",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWriteInput_TurnoverUpdate"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "14928516b2b79e6e85c41816d2fc35b0998e58c3a481e7d7af5744a45a168e7b",
+        "ref": "https://nodia.local/schemas/write-reservations/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_roles_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "79f9fefbb43f73a93f9bfc2543d6c0906105336876a085c34b144e20f0e3bca3",
+      "mcp_contract_hash": "562b6f4eed97ea68bc73fcfd4e833baf90fe4a3d0d02790374d6cfdc347cbc7d",
+      "input_schema": {
+        "definition": "McpWriteInput_RolesCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_RolesCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_roles_prepare_delete",
+      "kind": "prepare_change",
+      "native_contract_hash": "904f2dc20680dd6bca296492d2b0d2830cf0615835050b65093ed03c07ffcf87",
+      "mcp_contract_hash": "ee68165b29c9dc308ce856dc704d8d92a4cf54f02be142d3621eed6fcf58452f",
+      "input_schema": {
+        "definition": "McpWriteInput_RolesDeletePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_RolesDeletePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_roles_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "59ee1026e759140bcc45b3a40eac9e8c0d2f761baaa1264d1e50e5e354864862",
+      "mcp_contract_hash": "5b7dc8a408d4b1f68dcc9c5d3e404bb1672f734440a614c3d4188adb76b55327",
+      "input_schema": {
+        "definition": "McpWriteInput_RolesUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_RolesUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_secure_flows_prepare_api_key_create",
+      "kind": "prepare_secure_flow",
+      "native_contract_hash": "87428f80b5af8b770dedf45fd1003e4bbd5e46f8febdd79c4eb91e1e8eae5a7f",
+      "mcp_contract_hash": "173790cd21a8c56785cf98920d579fd298641b6a684bbb54237c510dcc103d9b",
+      "input_schema": {
+        "definition": "McpWriteInput_ApiKeyCreatePartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWriteInput_ApiKeyCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_secure_flows_prepare_api_key_update",
+      "kind": "prepare_secure_flow",
+      "native_contract_hash": "a3a64e847137ae1b2d3c247a64d33b5aec1cc035c1b4db60cc87d3a9e7c85ef2",
+      "mcp_contract_hash": "975dc232f0c7b8e6e41c91853907bfe29b79925681a37cb81a0f5a083dbed85c",
+      "input_schema": {
+        "definition": "McpWriteInput_ApiKeyUpdatePartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWriteInput_ApiKeyUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_secure_flows_prepare_connection_login",
+      "kind": "prepare_secure_flow",
+      "native_contract_hash": "b5cdeb98f3ccb90827cad922680f7fde1f0239824e58b9176ed5730bc341ffb1",
+      "mcp_contract_hash": "aea82c62d2d4306f32ad798cb7f89f441360cd213030271045640ed5c04e4f30",
+      "input_schema": {
+        "definition": "McpWriteInput_ConnectionLoginPartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWriteInput_ConnectionLoginPartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_secure_flows_prepare_nodia_logout",
+      "kind": "prepare_secure_flow",
+      "native_contract_hash": "e9c8acf5e258a7ca5b13720cc626d66ca32b0aaa0c61f71ed0e0b6a377104042",
+      "mcp_contract_hash": "6cfe5f3abe821764d2bb6e5d47679c222e9b1c131519269f95880debfbe59252",
+      "input_schema": {
+        "definition": "McpWriteInput_NodiaLogoutPartial",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWriteInput_NodiaLogoutPartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "241e0a6edb14ffb3ff1347974a7834397fdeb77b31c95beebd173d6015997136",
+        "ref": "https://nodia.local/schemas/secure-flows/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_users_prepare_create",
+      "kind": "prepare_change",
+      "native_contract_hash": "a271249af104f12431652a1a2cc8b9af3cbabb917f0cde0c92bbace4f6c73fd9",
+      "mcp_contract_hash": "5ccab1b296dd447bf83c543bb732d13b080ab11fa4b50a64b6ccc344d26c58d5",
+      "input_schema": {
+        "definition": "McpWriteInput_UsersCreatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_UsersCreatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    },
+    {
+      "tool_name": "nodia_users_prepare_update",
+      "kind": "prepare_change",
+      "native_contract_hash": "3a2abee70833994e87272a032e38295d1c283a83b456e193a743ecbc21939fbb",
+      "mcp_contract_hash": "8627be3e5fa665482d4772ab0aec9378b530868f9fe552778867ad61adbc3725",
+      "input_schema": {
+        "definition": "McpWriteInput_UsersUpdatePartial",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWriteInput_UsersUpdatePartial"
+      },
+      "output_schema": {
+        "definition": "McpWritePreparationResult",
+        "sha256": "953563015fdb8e5dcced21ab586edc94a509cd0d6cfa654d622e699d94e05485",
+        "ref": "https://nodia.local/schemas/write-core-provider/1/mcp#/$defs/McpWritePreparationResult"
+      },
+      "compared_with_C01_and_C02": true,
+      "unchanged": true
+    }
+  ],
+  "limits": [
+    "This evidence constructs real factories and compiles actual schemas, but never invokes their SQL/profile/HTTP dependencies.",
+    "Invoice extraction belongs to the active Agentic generation. No second OCR dispatch, provider selection, invoice creation or human confirmation occurs here.",
+    "Candidate schema readiness is separate from publication, account availability, native attachment acceptance and full SQL/worker verification.",
+    "All 77 previous preparer MCP/native hashes and schema references/source bytes are compared using the same structural catalog identity.",
+    "Published capability names remain the historical 67 reads and 27 fragments; a changed registry pin does not publish this draft candidate."
+  ],
+  "sources": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c01-write-contracts.json",
+      "sha256": "9b790670a5a4195f91d10cb33b3f8fa0220df907448e2ca82fd5f988fe195551"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c02-secure-contracts.json",
+      "sha256": "1db9adeff203e7b93f19cc55abb7ad794f1da7326296e37a332d2d627b68dce8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c03-invoice-contracts.json",
+      "sha256": "b58e0e928cbf317f1dcd271019a320bcb35a013819e9af2590e8b6a45a4da3ef"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c04-prior-knowledge-manifest.json",
+      "sha256": "aa3edb2d9cf7caed720de0d7d907ec9d7d0f5aa72d2aeb0e0add4fc8d69855a6"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai36-c04-common-contracts.cjs",
+      "sha256": "2504a3c091fced59d398f0bf0ee936a4156a2e3c5771a9f04833541255a70e69"
+    },
+    {
+      "path": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "b8b029300f93b5cf316e6d34526cd6ae2a7c0c5f090bb0c7296fb3b117aacad0"
+    },
+    {
+      "path": "nodia-gemini-microservice/invoice_mcp_contract.py",
+      "sha256": "17011344639028e005606baa6ad86a2e8cb6ce364adfbbd77e71118b55872640"
+    },
+    {
+      "path": "nodia-gemini-microservice/invoice_parser.py",
+      "sha256": "bee80a80d59f8aabf8d3988d01cd4eec1e7bb3f7dc95a96f3bfa2a4ab3de3dec"
+    },
+    {
+      "path": "nodia-gemini-microservice/schemas.py",
+      "sha256": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.js",
+      "sha256": "05f8c810f94254378dfa86519d95ce53201d1cb17c7942481357c955d18e5d28"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-common-preparation/nodia-ai-common-preparation.module.js",
+      "sha256": "ff354b162e637995b58e797c6a004dd56dde62b9f0a63b9cfeef8d37dd9b305c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-common-preparation/types/common-preparation-contract.types.js",
+      "sha256": "cfc3dea0195e5a14421db3cecbdaa9f858a971a07f84ecca083f09ad3cb528d7"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-common-preparation/use-case/build-nodia-ai-common-preparation-tools.use-case.js",
+      "sha256": "cc4ad4eb5b1e8de326dfbdf0444e18c4e681880994a1af467bdddd55e386f44c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-common-reads/nodia-ai-common-reads.module.js",
+      "sha256": "4e79971439cd41dd015e00ab1163efbe8d5c811c4f9a8d68d881fa2877317067"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-common-reads/types/common-read-tools.types.js",
+      "sha256": "7bcbcfa18ad05acf8b6b1037a4f1b49013b05365d3363c1786e0aad518a7f3a5"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-common-reads/use-case/build-nodia-ai-common-read-tools.use-case.js",
+      "sha256": "3b2ddbc3efe1b871fa14769989e132270bbef9edaba85a9a879187caaf911a09"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-context/config/knowledge-pin.json",
+      "sha256": "1a953a8993a1f6abdb49ddfd9609536b921ae7c757be34173fb68507f61b75c5"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-core-operations/use-case/build-nodia-ai-core-operations.use-case.js",
+      "sha256": "5a1a77f2404322d119ef7958aeba23022e7e9ea1a29f41417c719fbe26cad133"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-finance-catalog/use-case/build-nodia-ai-finance-catalog-operations.use-case.js",
+      "sha256": "9f8b7d97a372276bdcdddc19a9c62cd136b04f30e892f98e981bd969f005c58a"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-finance-ledger/use-case/build-nodia-ai-finance-ledger-operations.use-case.js",
+      "sha256": "17fbeef5fa13421e2ff3cb5e40c2fd3b9668724d204e0ff19c088e321c5e74e1"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-invoice-analysis/adapters/http-nodia-ai-invoice-analysis-contract.js",
+      "sha256": "cd2a2ee10b1a98429046cd83fe13073022934e48e83fe104ca2f8606cc3aa56c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-invoice-analysis/nodia-ai-invoice-analysis.module.js",
+      "sha256": "77328e3341a774e2d7f6617e15d44b17ebe9090ab87cad2490ed948a2f5952e0"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-invoice-analysis/types/invoice-analysis-contract.types.js",
+      "sha256": "a6c9166262c83f55cc1015c5c9b2a57bf4d104ebde197b420469fdaa64d23f43"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-invoice-analysis/use-case/build-nodia-ai-invoice-analysis-tool.use-case.js",
+      "sha256": "dfab5018f49b6738e61e0d2ec4f2583ae6a4b2c5ce0bd8dfef93148c79279f6e"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-invoice-analysis/use-case/snapshot-nodia-ai-invoice-analysis.use-case.js",
+      "sha256": "92db4587a7bed9cd3f0a33cc047d108ca37da830c3d0a7e074077dfdf23445cb"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.js",
+      "sha256": "466cf7f0ce669f62a86a3a3f23f1ed95b7f58c62e89f1f998d36258c697d55f6"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.js",
+      "sha256": "a472f1f11279597b0cae04988be0606370bd7d573462e6921cb45c119337f9f5"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-products/contracts/common-preparation.json",
+      "sha256": "bbc8a57ec61ee342a55f3f56dd3f49e732c17b372c5aaf806d63555cd776099a"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-products/contracts/common-reads.json",
+      "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-products/contracts/invoice-analysis.json",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-products/contracts/secure-flows.json",
+      "sha256": "79e7a608795f5a31feac75daa0a22e6d6ebc776c476f2e5b10c46a231455c82c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-products/contracts/write-core-provider.json",
+      "sha256": "94c89608eb0854ae1397df316a95001a25819a1c66da296a1932f9abc0d47739"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-products/contracts/write-finance-business.json",
+      "sha256": "209cd1b6826ec39198e914c1e8aedbd556138ab9db5ec239160eb6c5d3e18969"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-products/contracts/write-reservations.json",
+      "sha256": "ea4e2ccf7acccaffd8a005e335c718e76bb3134eb651b59f0c410f981009870e"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/types/workflow.types.js",
+      "sha256": "f7b31ef7ad9f757d631c6b721cd7df889c881d055364356961ae6a25aefbf087"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/use-case/canonicalize-nodia-ai-proposal.use-case.js",
+      "sha256": "536874ec622e2effc12ab0a19e0fac6fdd3604deab6206f57e8bca5a7bf36547"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.js",
+      "sha256": "85c9ab3fee1c358a1bb9ec03bd494536bb7aadedb57b9cced713b3afe2f4c622"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.js",
+      "sha256": "3c8802fff0b52ed46976eafdf3b39cf5de68e44f7b5bc772ab2088f64b929564"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.js",
+      "sha256": "0dd21349ea9cd6c847f351b32d4cf988ef0080345abfd907165c724d8d5d8974"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-rental-configuration/use-case/build-nodia-ai-rental-configuration-operations.use-case.js",
+      "sha256": "565d536d4ceeacd8bc64c80f60fe0a8ee86675cc6f3639eec489ae1d05e620f5"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-rental-money/use-case/build-nodia-ai-rental-money-operations.use-case.js",
+      "sha256": "1b6fe199ba05ff9cce9f7958a3c5608b15079e494804b5217dd5da23d58ec7dd"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-rental-operations/use-case/build-nodia-ai-rental-operations.use-case.js",
+      "sha256": "a8cdc07192e8107e6ad0b13115363b77ef38be09fe576af23da8e38d1b42d689"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-rental-reservation/use-case/build-nodia-ai-rental-reservation-operations.use-case.js",
+      "sha256": "f234685e591d2f4827d92b76514ee4e3beefe8e05260e3b0dc1aa312c3920f8a"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-runtime/config/runtime-policy.json",
+      "sha256": "10f108aaf07e738a56b4aeee5732a63806c097efca2346af106bb88a108e8587"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-runtime/use-case/validate-nodia-ai-runtime-policy.use-case.js",
+      "sha256": "e9e80177b149f389b284b0fa27c37b7a42ba95ef6355f9dd1d549133900490ac"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.js",
+      "sha256": "10ef94c636bd3759e95e02e00c50d62774811e3918c2baaf98f8e4c48ba8b19c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.js",
+      "sha256": "e9d52ca2392cf42e8c63f8fef804cbae8440e298c707f9fa0a413e4a9a47c076"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-tools/use-case/compose-nodia-ai-published-families.use-case.js",
+      "sha256": "3c06ee84bb19527f8fb08b8abd65f2c9562a120f54f4b84282872f6c25f9c5d4"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js",
+      "sha256": "871d3c5a27866a0e5659078543af36e542a35859d9b43eea0d9c01c9ddd50776"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-write-tools/types/write-tool-contract.types.js",
+      "sha256": "2fede085e86248eb1c414c4c12f3a7ea009ae5c497431aa509d9cf82758514af"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.js",
+      "sha256": "3342a9ec54c045369a458dae04eb0673b9f7b895d077b4764da663bff384ddf3"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai/knowledge/manifest.json",
+      "sha256": "447c35bb4a66411beefd8ab9f0771b9314900a99d555c186fa446a86f9a597e8"
+    },
+    {
+      "path": "nodia-server/scripts/nodia-ai-knowledge/contracts.schema.json",
+      "sha256": "d9045282b8ffaa175fee7ea2eca8cb810ca20de216246a62456bd62062a146fd"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-business-catalog/use-case/build-nodia-ai-business-catalog-operations.use-case.ts",
+      "sha256": "5496735bef98a2964f3f2cf346610f8a1818454af8a647bae51e3b70af57e6e9"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-common-preparation/nodia-ai-common-preparation.module.ts",
+      "sha256": "8babf366e0ce94f955aabbe0d28a3468155ea4054c53498071590a89e6a31b37"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-common-preparation/types/common-preparation-contract.types.ts",
+      "sha256": "72433caa46b4fce0550bba92492f7ca0d0ecee48415005edce5a5588ef669e3c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-common-preparation/use-case/build-nodia-ai-common-preparation-tools.use-case.ts",
+      "sha256": "c6aae5d28d4e8491a07e80bb60866145b3d372dd43e185cd819ed7272d5a160c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-common-reads/nodia-ai-common-reads.module.ts",
+      "sha256": "f57d7f06407562191d031fdc32f773c9341b9cd7cc148234bc3833ebf8a03aef"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-common-reads/types/common-read-tools.types.ts",
+      "sha256": "bf4653af7285044af06e8ac46c92a7a3524336f4a99b560dc6750d66c4f7412f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-common-reads/use-case/build-nodia-ai-common-read-tools.use-case.ts",
+      "sha256": "d812f7b805c3a33046e91539672c0e7d831df64011a67f80af6f55123e6cfc33"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-core-operations/use-case/build-nodia-ai-core-operations.use-case.ts",
+      "sha256": "54a7348c96a7a703153d893a4c28e81891533257f6318ad0f8dfb4d8359acd73"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-finance-catalog/use-case/build-nodia-ai-finance-catalog-operations.use-case.ts",
+      "sha256": "658265ca84a369a53f0b83923b6289b05b7ee5f4524e5886da07c5104c954208"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-finance-ledger/use-case/build-nodia-ai-finance-ledger-operations.use-case.ts",
+      "sha256": "f4cade60045c78ed99c931512cf4a4dce20e0f6198a1f647db3406fb80272e23"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-analysis/adapters/http-nodia-ai-invoice-analysis-contract.ts",
+      "sha256": "d06fcc7b234be557eae520ad22e324bfdf1540b40b05e814410856dad9e0551a"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-analysis/nodia-ai-invoice-analysis.module.ts",
+      "sha256": "3a58ac3c6a1d10d1116f9285b017d8f0c08b09d89e140c41797897f967d7ec16"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-analysis/types/invoice-analysis-contract.types.ts",
+      "sha256": "481eb326e40218fc4adc7c8aecf91fffcb61d8a8b78d2ce20b8241796e858d5f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-analysis/use-case/build-nodia-ai-invoice-analysis-tool.use-case.ts",
+      "sha256": "323b1c0bbf462294da3035493892c012cd0c82a32cfce876628facc2849169a9"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-analysis/use-case/snapshot-nodia-ai-invoice-analysis.use-case.ts",
+      "sha256": "cde47ffc0f51a54812b0f2ffaccb68d0507e9bf7dc0f9e8994bdacaf5ca3983d"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-invoice-operations/use-case/build-nodia-ai-invoice-operations.use-case.ts",
+      "sha256": "0419529a1f6bec5d66dd8c155712f70dc35094861093fdd16cab9af49463f0e9"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.ts",
+      "sha256": "8d56e89ecc8c0bf6a0193a1df9ed1faac70ae3cfeb6ab84bbb34bf2105a60f37"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/common-preparation.json",
+      "sha256": "bbc8a57ec61ee342a55f3f56dd3f49e732c17b372c5aaf806d63555cd776099a"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/common-reads.json",
+      "sha256": "429791402fb77b88fa6131ca2585d1e0c242d8ae1bd2a3ec5caede1f5582e80c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/invoice-analysis.json",
+      "sha256": "005b8828afba2dcfa21be36eb61f66db947f151bf1afc92f99e8e15d1066bb9d"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/secure-flows.json",
+      "sha256": "79e7a608795f5a31feac75daa0a22e6d6ebc776c476f2e5b10c46a231455c82c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/write-core-provider.json",
+      "sha256": "94c89608eb0854ae1397df316a95001a25819a1c66da296a1932f9abc0d47739"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/write-finance-business.json",
+      "sha256": "209cd1b6826ec39198e914c1e8aedbd556138ab9db5ec239160eb6c5d3e18969"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/write-reservations.json",
+      "sha256": "ea4e2ccf7acccaffd8a005e335c718e76bb3134eb651b59f0c410f981009870e"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/types/workflow.types.ts",
+      "sha256": "d365a23b66f92c7c31133522dc163bb7efe627ea06c33911451ba525a6e7d384"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/use-case/canonicalize-nodia-ai-proposal.use-case.ts",
+      "sha256": "026bbfc8104acbe527243e0e2071190f7ef2d382cc3f59b76f6df312ce60d95d"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/use-case/prepare-nodia-ai-finance-movement.use-case.ts",
+      "sha256": "fd1fccc6db7a9d93c4298a9d529f681770354864aefb3d376d245eb9a875c501"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.ts",
+      "sha256": "01bff87bd1cf4c72191b214988adf9963f861defc498d39be8c94de9f45cfd15"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-provider-operations/use-case/build-nodia-ai-provider-operations.use-case.ts",
+      "sha256": "a3f06829cae8f550b7804a291285fc97020e00d54bc418cce473bf9f90ae7fa6"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-rental-configuration/use-case/build-nodia-ai-rental-configuration-operations.use-case.ts",
+      "sha256": "165698064186e8d7d7804479f4f86d4e845aec7c6ca83181f0cf8fb2dacc3262"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-rental-money/use-case/build-nodia-ai-rental-money-operations.use-case.ts",
+      "sha256": "994220efd7647bd7e31fbb476f240e5025b49dfe8cd31444149c0b3684a26f35"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-rental-operations/use-case/build-nodia-ai-rental-operations.use-case.ts",
+      "sha256": "f56ce545c82b25e3c74918aaf161fdbe3309cafe1a61153771502d21b08e50fc"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-rental-reservation/use-case/build-nodia-ai-rental-reservation-operations.use-case.ts",
+      "sha256": "09d98701fd5ed40a1c0e115b58ba60fe82731f3b57160203cca7390430adba0c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/validate-nodia-ai-runtime-policy.use-case.ts",
+      "sha256": "225990cde9f5fca9a134a2e0e2a4bbcb7876cb79b3393290a883805c8e3819a0"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-secure-preparation/use-case/build-nodia-ai-secure-operations.use-case.ts",
+      "sha256": "b2d8c028b2ec447d884fb2fa11ced94d7a45a598c600f3d0d2bcb76d1145aa4e"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
+      "sha256": "52a229daa2045c2b053f6be02c70c74b2e558f3aef79bf7b9f0c796a662e82d2"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/use-case/compose-nodia-ai-published-families.use-case.ts",
+      "sha256": "d11cfba836889ffb80923149724e9464e4e313c964a64e0012e44a93d2ccdabb"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.ts",
+      "sha256": "14baea168c6a3b5586531c5532b0a841a0c20a87e98bb5c6bcb6276aed118cc2"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/types/write-tool-contract.types.ts",
+      "sha256": "727745bad4d35deb8afab944a8e2dc3308c7a0c2f01357904e520aedd6c2ad6c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
+      "sha256": "a34093fde2c1e03fe48a1c637bb7806afe53690f9535b5339228d94d1051bffa"
+    }
+  ]
+}

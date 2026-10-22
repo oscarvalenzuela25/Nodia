@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "scope": "authorized_explicit_1.4.2_public_package_acquisition_no_execution",
+  "observed_at_utc": "2026-10-19T20:34:42.418828+00:00",
+  "status": "verified_package_not_executed",
+  "manifest_source": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_amd64.json",
+  "manifest_raw_sha256": "7942274fb64e30a5106669af06e09a64e3fa7a1e8bb854d7a9e044a3773b69d2",
+  "manifest": {
+    "version": "1.4.2",
+    "url": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.4.2-4835981233356800/linux-x64/cli_linux_x64.tar.gz",
+    "sha512": "4a393afc1369cee94e817c1b430c9128d02b12ebd4d5703ace5cd47b2333e216d673fb0097cbf7195f757b110163ba9850e9eea3fdbbaddd4b25668b82c03f05"
+  },
+  "package_bytes": 63937290,
+  "package_sha512_verified": true,
+  "binary_path_relative": ".tmp/cache/antigravity-cli-1.4.2-linux-amd64/agy-1.4.2-linux.bin",
+  "binary_bytes": 221286656,
+  "binary_sha512": "f63dd18d9aee3742055452c6eefbc22740ac4cb7bd7ad4c6b5cac2cccbd69d0548058ef5a3f7105d57146f7ce0a3ae07ef9dd89cde84dcac2cba64edc6f8dbdc",
+  "binary_digest_scope": "Computed from the single ELF inside the SHA512-verified package; no separate vendor binary checksum or signature was obtained.",
+  "cache_gitignored": true,
+  "binary_signature_verified": null,
+  "source_script_sha256": "cca2bdde02b84a3c1be31690d74543e33eeca0ca8d6b9005e51d6005130a4371",
+  "installer_executions": 0,
+  "binary_executions": 0,
+  "VM_operations": 0,
+  "profile_access": 0,
+  "configured_selection_changes": 0,
+  "production_source_changes": 0
+}

@@ -10,7 +10,7 @@ import { validateContactId } from './contact-validation.js';
 @Injectable()
 export class GetProviderContactsUseCase {
   constructor(private readonly service: ProviderContactService) {}
-  async execute(providerId: string, query: ContactListDto) {
+  async execute(providerId: string, query: ContactListDto, isActive?: boolean) {
     validateContactId(providerId);
     if (
       !Number.isInteger(query.page) ||
@@ -25,6 +25,8 @@ export class GetProviderContactsUseCase {
       throw new BadRequestException('Invalid pagination');
     if (!(await this.service.providerExists(providerId)))
       throw new NotFoundException('Provider not found');
-    return this.service.list(providerId, query);
+    return isActive === undefined
+      ? this.service.list(providerId, query)
+      : this.service.list(providerId, query, isActive);
   }
 }

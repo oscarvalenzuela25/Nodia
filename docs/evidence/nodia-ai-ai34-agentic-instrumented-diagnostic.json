@@ -1,0 +1,80 @@
+{
+  "stage": "AI-34",
+  "scope": "exact_attempt_read_only_native_structural_diagnostics",
+  "status": "observed",
+  "attempt_id": "f3ad738e-1305-4078-83e8-b14a973a2d94",
+  "window_utc": [
+    "2026-10-18T20:10:50Z",
+    "2026-10-18T20:12:50Z"
+  ],
+  "events": [
+    {
+      "kind": "nodia_ai_chat_failure",
+      "metadata": {
+        "engine": "agentic",
+        "attempt_id": "f3ad738e-1305-4078-83e8-b14a973a2d94",
+        "phase": "generation",
+        "error_type": "ServiceError",
+        "failure_category": "attachment_cli_unexpected_tool",
+        "elapsed_ms": 111261,
+        "agentic_generation": {
+          "execution_phase": "terminal_validation",
+          "model_preflight_elapsed_ms": 2837,
+          "bootstrap_elapsed_ms": 1,
+          "cli_elapsed_ms": 108415,
+          "cli": {
+            "stage": "result",
+            "events": 48,
+            "invalid_lines": 0,
+            "stdout_bytes": 16607,
+            "initialized": true,
+            "document_read_completed": false,
+            "result_seen": true,
+            "last_event_age_ms": 127,
+            "phase": "result",
+            "result_status": "SUCCESS",
+            "denied_actions_count": null,
+            "tool_error_categories": [
+              "hook",
+              "permission"
+            ],
+            "tool_event_counts": {
+              "run_command": 2,
+              "view_file": 2,
+              "finish": 1
+            },
+            "tool_completed_counts": {},
+            "tool_error_counts": {
+              "run_command": 1,
+              "view_file": 1
+            }
+          },
+          "cli_log": {
+            "state": "observed",
+            "interpretation": "text_indicator_not_verified_cause",
+            "bytes_read": 45653,
+            "lines_scanned": 128,
+            "truncated": true,
+            "transport_indicators": [],
+            "provider_error_indicators": [],
+            "http_statuses": []
+          },
+          "hook": {
+            "state": "observed",
+            "decision_count": 3,
+            "rejected_count": 2,
+            "unrecognized_count": 2,
+            "finish_count": 1
+          }
+        }
+      }
+    }
+  ],
+  "provider_generations": 0,
+  "services_restarted": false,
+  "provider_text_exported": false,
+  "raw_logs_exported": false,
+  "limitations": [
+    "Text indicators and missing terminal fields do not independently prove a provider failure cause"
+  ]
+}

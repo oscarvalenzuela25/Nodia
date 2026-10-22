@@ -254,7 +254,7 @@ npm run start:prod
    ```typescript
    import { postgresConfig } from './config/db.config.js'; // ✅ Correcto
    ```
-2. **Entidades TypeORM:** Gracias a `autoLoadEntities: true` en `db.config.ts`, cualquier entidad registrada en un módulo mediante `TypeOrmModule.forFeature([MiEntidad])` será descubierta y sincronizada automáticamente sin necesidad de listarla manualmente en el módulo raíz.
+2. **Entidades TypeORM:** Gracias a `autoLoadEntities: true` en `db.config.ts`, cualquier entidad registrada en un módulo mediante `TypeOrmModule.forFeature([MiEntidad])` será registrada en la metadata sin necesidad de listarla manualmente en el módulo raíz. El esquema sólo cambia mediante migraciones explícitas: `synchronize: false` se conserva en todos los entornos.
 3. **Prefijo de API:** Todas las rutas expuestas por la API responderán bajo el prefijo `/api/v1/*`.
 
 ---
@@ -267,4 +267,21 @@ Este proyecto está bajo la licencia [UNLICENSED](LICENSE). Puedes adaptarlo y u
 
 Google Login, JWT propio de quince minutos, refresh rotativo en cookie HttpOnly y revocación de sesión. Configuración, migración y contrato: [Guía de autenticación](../docs/mvp/14-authentication.md).
 
-Configurar `GOOGLE_CLIENT_ID`, `AUTH_JWT_SECRET` y `AUTH_ALLOWED_ORIGINS` en `.env` antes de arrancar. `npm run migration:run` agrega las tablas/campos de auth sobre una base existente. En producción `synchronize` se desactiva. Los endpoints de negocio ahora requieren Bearer JWT; `authorization/context` utiliza la identidad autenticada.
+Configurar `GOOGLE_CLIENT_ID`, `AUTH_JWT_SECRET` y `AUTH_ALLOWED_ORIGINS` en `.env` antes de arrancar. `npm run migration:run` agrega las tablas/campos de auth sobre una base existente. La sincronización automática permanece desactivada en todos los entornos. Los endpoints de negocio ahora requieren Bearer JWT; `authorization/context` utiliza la identidad autenticada.
+
+## Operación de NodiaAI
+
+El worker se ejecuta por separado con `npm run worker:nodia-ai` después de compilar y aplicar las migraciones mediante el procedimiento habitual. No abre HTTP ni migra al arrancar. La API no inicia esos consumidores automáticamente. Los límites y assets se empaquetan desde la política versionada durante `npm run build`.
+
+Para inspeccionar operaciones de runtime inciertas, ejecutar desde este directorio:
+
+```powershell
+node scripts/reconcile-nodia-ai-runtime.mjs --list
+node scripts/reconcile-nodia-ai-runtime.mjs <job-uuid>
+```
+
+El proceso debe recibir `NODIA_AI_OPERATOR_ACCESS_TOKEN` mediante el entorno seguro del operador; no escribir su valor en el comando, historial, archivos de evidencia o logs. Se exige un access token firmado vigente y una sesión actual de super_admin con acceso a NodiaAI. El comando usa la configuración de BD del entorno, no crea fixtures ni aplica migraciones. Para ensayos, establecer primero una BD y credenciales sintéticas aisladas como hace `test/nodia-ai-ai11.integration.mjs`.
+
+Salida 0 significa cierre o listado comprobado; salida 2 indica que queda el acuse idempotente de limpieza pendiente; salida 1 indica rechazo o indisponibilidad. El worker reintenta ese acuse dentro de los límites de la política. Tras agotar los intentos se conserva un pendiente visible y el comando del UUID permite una intervención autenticada. Nunca borrar manualmente un slot, marcador o recibo `unknown`: la conciliación exige prueba terminal privada ligada al intento original, y no vuelve a generar ni ejecuta operaciones de negocio.
+
+La descripción de garantías, escenarios comprobados y límites está en [AI-11](../docs/mvp/57-nodia-ai-ai11-durable-worker.md); estado integral del adaptador en [AI-12](../docs/mvp/58-nodia-ai-ai12-context-execution.md).

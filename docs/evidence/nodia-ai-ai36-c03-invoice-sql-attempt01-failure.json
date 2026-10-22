@@ -1,0 +1,8 @@
+{
+  "classification": "synthetic_fixture_container_adapter_mismatch",
+  "stderr_sha256": "b6fb186158f53bf01a91a8f3bc5efe3632e0584f31adb85593bca5bc08ddeb4f",
+  "production_change_required": false,
+  "compiled_outputs_identical": true,
+  "reason": "Candidate-family closures were created by a separate Nest testing container before its adapter port was overridden. Their legitimate current-configuration check used the real adapter with the synthetic generation and refused the first request.",
+  "correction": "The initial candidate container receives an explicit verification-only proxy to the same synthetic adapter as the runtime container. All source, actor, configuration, receipt, no-effect and recovery assertions remain enforced."
+}

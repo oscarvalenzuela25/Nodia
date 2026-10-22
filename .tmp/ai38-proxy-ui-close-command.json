@@ -1,0 +1,27 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "phase": "close",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T23:09:10.531477+00:00",
+  "source_sha256": "acb97f99a6f9bd3de56793de6b9e2d2e975e8fef8bb4acf30aab4ea8d6bc11f2",
+  "pinned_helpers_sha256": "703a068c6dcd1089b12c0961646d4768bc916d7b56c908ba389d902f2c4e2bee",
+  "site_before_sha256": "6ffe49fa1ea419cf1e4cf7c450faaf4fca366cee7fe0842096d08c487a6b3b23",
+  "Gemini": {
+    "id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at": "2026-10-20T19:14:35.412657745Z",
+    "descriptor_sha256": "347474b3372e3e6c2cd16ffc793bf5aab2b6cae66bcba758b5cab56436b01e20"
+  },
+  "provider_generations": 0,
+  "configured_SQL_writes": 0,
+  "service_restarts": 0,
+  "site_after_sha256": "2f96d9f04d2bc2eba6e1d8bc126ec7d4a5c5b5202bfa3238d87d23e94c52a857",
+  "services": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "scoped_20MiB_preserved": true,
+  "finished_at_utc": "2026-10-20T23:09:11.118882+00:00"
+}

@@ -1,0 +1,1509 @@
+{
+  "schema_version": 1,
+  "scope": "offline_exact_frozen_production_descriptor_projection_no_execution",
+  "status": "passed",
+  "catalog_sha256": "e080d296391b619d8a238aa5617ce0666e0ce3e1180e7f172fd184f3d8563fa6",
+  "native_catalog_utf8_bytes": 21873,
+  "compact_wire_catalog_utf8_bytes": 20393,
+  "tools": [
+    {
+      "name": "nodia_knowledge_index",
+      "description": "List published Nodia product knowledge fragments authorized for this conversation. This grants no business operation.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      }
+    },
+    {
+      "name": "nodia_knowledge_get",
+      "description": "Read specific published knowledge fragments from the authorized index by exact ID; no business records or executable instructions.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fragment_ids": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          }
+        },
+        "required": [
+          "fragment_ids"
+        ]
+      }
+    },
+    {
+      "name": "nodia_capabilities_search",
+      "description": "Discover verified Nodia capabilities authorized for this conversation; an empty result enables no business operation.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+          },
+          "module_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "required": [],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:nodia:nodia-ai:v1:common-draft",
+        "$defs": {
+          "CatalogSearchInput": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "type": "string",
+                "maxLength": 256,
+                "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+              },
+              "module_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "cursor": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "required": []
+          }
+        }
+      }
+    },
+    {
+      "name": "nodia_capabilities_describe",
+      "description": "Describe one exact authorized capability and its contract. This does not execute a change.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "catalog_version": {
+            "$ref": "#/$defs/CatalogVersion"
+          }
+        },
+        "required": [
+          "tool_name",
+          "catalog_version"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:nodia:nodia-ai:v1:common-draft",
+        "$defs": {
+          "CatalogDescribeInput": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tool_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "catalog_version": {
+                "$ref": "#/$defs/CatalogVersion"
+              }
+            },
+            "required": [
+              "tool_name",
+              "catalog_version"
+            ]
+          },
+          "CatalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Opaque version of structural tool contracts; not an availability observation",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    {
+      "name": "nodia_entities_search",
+      "description": "Resolve an entity using a registered resource resolver. Ambiguous matches require a human choice.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "catalog_version": {
+            "$ref": "#/$defs/CatalogVersion"
+          },
+          "resource_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "term": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+          },
+          "scope": {
+            "$ref": "#/$defs/PublicScope"
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "catalog_version",
+          "resource_key",
+          "term",
+          "scope"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:nodia:nodia-ai:v1:common-draft",
+        "$defs": {
+          "BigintId": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "Canonical positive decimal; runtime BigInt validation must enforce PostgreSQL max 9223372036854775807"
+          },
+          "CatalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Opaque version of structural tool contracts; not an availability observation",
+            "maxLength": 128
+          },
+          "DomainUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID resource identity; actual resource decides representation"
+          },
+          "EntitySearchInput": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "catalog_version": {
+                "$ref": "#/$defs/CatalogVersion"
+              },
+              "resource_key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "term": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+              },
+              "scope": {
+                "$ref": "#/$defs/PublicScope"
+              },
+              "cursor": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              }
+            },
+            "required": [
+              "catalog_version",
+              "resource_key",
+              "term",
+              "scope"
+            ]
+          },
+          "PublicScope": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subject_user_id": {
+                "$ref": "#/$defs/BigintId"
+              },
+              "property_id": {
+                "$ref": "#/$defs/BigintId"
+              },
+              "business_id": {
+                "$ref": "#/$defs/DomainUuid"
+              },
+              "provider_id": {
+                "$ref": "#/$defs/BigintId"
+              }
+            },
+            "required": []
+          }
+        }
+      }
+    },
+    {
+      "name": "nodia_reports_describe",
+      "description": "Describe authorized logical report sources, exact measures, fields, temporal bases and limitations. No SQL or writes.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "module_keys": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:nodia:nodia-ai:v1:common-draft",
+        "$defs": {
+          "ReportDescribeInput": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "module_keys": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "cursor": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": []
+          }
+        }
+      }
+    },
+    {
+      "name": "nodia_reports_run",
+      "description": "Read exact filtered aggregates across described Nodia sources. Preserve source totals separately; compare only verified compatible meanings. Failed sources are unknown. No writes or arbitrary SQL. Use the catalog_version from nodia_reports_describe.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "catalog_version": {
+            "$ref": "#/$defs/CatalogVersion"
+          },
+          "sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/ReportSourceRequest"
+            }
+          },
+          "combine": {
+            "type": "string",
+            "enum": [
+              "separate",
+              "compare_compatible"
+            ]
+          },
+          "page_limit": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "catalog_version",
+          "sources",
+          "combine"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:nodia:nodia-ai:v1:common-draft",
+        "$defs": {
+          "BigintId": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "Canonical positive decimal; runtime BigInt validation must enforce PostgreSQL max 9223372036854775807"
+          },
+          "CatalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Opaque version of structural tool contracts; not an availability observation",
+            "maxLength": 128
+          },
+          "CivilPeriod": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "civil_date"
+              },
+              "dimension_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "from": {
+                "type": "string",
+                "format": "date"
+              },
+              "to_exclusive": {
+                "type": "string",
+                "format": "date"
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1,
+                "description": "IANA of source calendar, validated at runtime"
+              }
+            },
+            "required": [
+              "kind",
+              "dimension_key",
+              "from",
+              "to_exclusive",
+              "timezone"
+            ]
+          },
+          "ContainsPredicate": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operator": {
+                "const": "contains"
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "field_key",
+              "operator",
+              "value"
+            ]
+          },
+          "DimensionRequest": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "dimension_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "output_key": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "dimension_key",
+              "output_key"
+            ]
+          },
+          "DomainUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID resource identity; actual resource decides representation"
+          },
+          "FilterSet": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "all": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Predicate"
+                }
+              },
+              "any": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Predicate"
+                }
+              }
+            },
+            "required": []
+          },
+          "InPredicate": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operator": {
+                "const": "in"
+              },
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/Scalar"
+                }
+              }
+            },
+            "required": [
+              "field_key",
+              "operator",
+              "values"
+            ]
+          },
+          "InstantPeriod": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "const": "instant"
+              },
+              "dimension_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "from": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "to_exclusive": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1,
+                "description": "IANA validated at runtime"
+              }
+            },
+            "required": [
+              "kind",
+              "dimension_key",
+              "from",
+              "to_exclusive",
+              "timezone"
+            ]
+          },
+          "MeasureRequest": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "measure_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "aggregation": {
+                "type": "string",
+                "enum": [
+                  "sum",
+                  "count"
+                ]
+              },
+              "output_key": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "measure_key",
+              "aggregation",
+              "output_key"
+            ]
+          },
+          "NullPredicate": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operator": {
+                "const": "is_null"
+              },
+              "value": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "field_key",
+              "operator",
+              "value"
+            ]
+          },
+          "Period": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/InstantPeriod"
+              },
+              {
+                "$ref": "#/$defs/CivilPeriod"
+              }
+            ]
+          },
+          "Predicate": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/SimplePredicate"
+              },
+              {
+                "$ref": "#/$defs/InPredicate"
+              },
+              {
+                "$ref": "#/$defs/ContainsPredicate"
+              },
+              {
+                "$ref": "#/$defs/NullPredicate"
+              }
+            ]
+          },
+          "PublicScope": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subject_user_id": {
+                "$ref": "#/$defs/BigintId"
+              },
+              "property_id": {
+                "$ref": "#/$defs/BigintId"
+              },
+              "business_id": {
+                "$ref": "#/$defs/DomainUuid"
+              },
+              "provider_id": {
+                "$ref": "#/$defs/BigintId"
+              }
+            },
+            "required": []
+          },
+          "ReportQueryInput": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "catalog_version": {
+                "$ref": "#/$defs/CatalogVersion"
+              },
+              "sources": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/ReportSourceRequest"
+                }
+              },
+              "combine": {
+                "type": "string",
+                "enum": [
+                  "separate",
+                  "compare_compatible"
+                ]
+              },
+              "page_limit": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "cursor": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "catalog_version",
+              "sources",
+              "combine"
+            ]
+          },
+          "ReportSourceRequest": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "alias": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scope": {
+                "$ref": "#/$defs/PublicScope"
+              },
+              "filters": {
+                "$ref": "#/$defs/FilterSet"
+              },
+              "period": {
+                "$ref": "#/$defs/Period"
+              },
+              "measures": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/MeasureRequest"
+                }
+              },
+              "group_by": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/DimensionRequest"
+                }
+              }
+            },
+            "required": [
+              "source_key",
+              "alias",
+              "scope",
+              "measures"
+            ]
+          },
+          "Scalar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "SimplePredicate": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "field_key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operator": {
+                "type": "string",
+                "enum": [
+                  "eq",
+                  "neq",
+                  "lt",
+                  "lte",
+                  "gt",
+                  "gte"
+                ]
+              },
+              "value": {
+                "$ref": "#/$defs/Scalar"
+              }
+            },
+            "required": [
+              "field_key",
+              "operator",
+              "value"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "nodia_preferences_list",
+      "description": "Lista exclusivamente tus preferencias aceptadas con su disponibilidad actual; no las modifica.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "scope_key": {
+            "$ref": "#/$defs/PreferenceScopeKey"
+          },
+          "cursor": {
+            "$ref": "#/$defs/Cursor"
+          },
+          "page_limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "required": [],
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:nodia:ai:common-reads:v1",
+        "$defs": {
+          "Cursor": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque cursor controlled by Server, validated against route, scope, sort and filters. Admission length is bounded by AI-04 policy.",
+            "maxLength": 2048
+          },
+          "PreferenceListInput": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope_key": {
+                "$ref": "#/$defs/PreferenceScopeKey"
+              },
+              "cursor": {
+                "$ref": "#/$defs/Cursor"
+              },
+              "page_limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              }
+            },
+            "required": []
+          },
+          "PreferenceScopeKey": {
+            "enum": [
+              "finance",
+              "business",
+              "rental"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "nodia_preferences_prepare",
+      "description": "Propone crear, actualizar o borrar una preferencia propia de las claves permitidas. La memoria sólo cambia tras confirmar con el botón humano.",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operation": {},
+          "partial": {},
+          "draft_id": {},
+          "expected_draft_revision": {}
+        },
+        "required": [
+          "operation",
+          "partial"
+        ],
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": {
+                "const": "create"
+              },
+              "partial": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "scope_key": {
+                    "enum": [
+                      "finance",
+                      "business",
+                      "rental"
+                    ]
+                  },
+                  "key": {
+                    "enum": [
+                      "expense_category_id",
+                      "income_category_id",
+                      "business_id",
+                      "supplier_id",
+                      "property_id"
+                    ]
+                  },
+                  "scope": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {},
+                        "required": []
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "business_id": {
+                            "$ref": "#/$defs/ProtocolId"
+                          }
+                        },
+                        "required": [
+                          "business_id"
+                        ]
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 36
+                  }
+                },
+                "required": [],
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "key": {
+                          "const": "expense_category_id"
+                        }
+                      },
+                      "required": [
+                        "key"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "scope_key": {
+                          "const": "finance"
+                        },
+                        "value": {
+                          "$ref": "#/$defs/BigintId"
+                        },
+                        "scope": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {},
+                          "required": []
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "key": {
+                          "const": "income_category_id"
+                        }
+                      },
+                      "required": [
+                        "key"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "scope_key": {
+                          "const": "finance"
+                        },
+                        "value": {
+                          "$ref": "#/$defs/BigintId"
+                        },
+                        "scope": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {},
+                          "required": []
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "key": {
+                          "const": "business_id"
+                        }
+                      },
+                      "required": [
+                        "key"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "scope_key": {
+                          "const": "business"
+                        },
+                        "value": {
+                          "$ref": "#/$defs/ProtocolId"
+                        },
+                        "scope": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {},
+                          "required": []
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "key": {
+                          "const": "supplier_id"
+                        }
+                      },
+                      "required": [
+                        "key"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "scope_key": {
+                          "const": "business"
+                        },
+                        "value": {
+                          "$ref": "#/$defs/BigintId"
+                        },
+                        "scope": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "business_id": {
+                              "$ref": "#/$defs/ProtocolId"
+                            }
+                          },
+                          "required": [
+                            "business_id"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "key": {
+                          "const": "property_id"
+                        }
+                      },
+                      "required": [
+                        "key"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "scope_key": {
+                          "const": "rental"
+                        },
+                        "value": {
+                          "$ref": "#/$defs/BigintId"
+                        },
+                        "scope": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {},
+                          "required": []
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "draft_id": {
+                "$ref": "#/$defs/ProtocolId"
+              },
+              "expected_draft_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "operation",
+              "partial"
+            ],
+            "dependentRequired": {
+              "draft_id": [
+                "expected_draft_revision"
+              ],
+              "expected_draft_revision": [
+                "draft_id"
+              ]
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": {
+                "const": "update"
+              },
+              "partial": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/ProtocolId"
+                  },
+                  "expected_revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483646
+                  },
+                  "value": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 36
+                  }
+                },
+                "required": []
+              },
+              "draft_id": {
+                "$ref": "#/$defs/ProtocolId"
+              },
+              "expected_draft_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "operation",
+              "partial"
+            ],
+            "dependentRequired": {
+              "draft_id": [
+                "expected_draft_revision"
+              ],
+              "expected_draft_revision": [
+                "draft_id"
+              ]
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": {
+                "const": "delete"
+              },
+              "partial": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/ProtocolId"
+                  },
+                  "expected_revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483646
+                  }
+                },
+                "required": []
+              },
+              "draft_id": {
+                "$ref": "#/$defs/ProtocolId"
+              },
+              "expected_draft_revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "operation",
+              "partial"
+            ],
+            "dependentRequired": {
+              "draft_id": [
+                "expected_draft_revision"
+              ],
+              "expected_draft_revision": [
+                "draft_id"
+              ]
+            }
+          }
+        ],
+        "$comment": "{\"native_preparers\":[{\"name\":\"nodia_preferences_prepare_create\",\"hash\":\"7a4f2aaa0f3ec9f0d1b8e150cfeae5a6146f0739dd27f9fd3f20a632c6bdeb32\",\"catalog\":\"nodia-ai-ai33-preferences/1\"},{\"name\":\"nodia_preferences_prepare_update\",\"hash\":\"08cee675d1418677cd50d8dd335c52be018843aaf6632c0b56a73b636be63a1a\",\"catalog\":\"nodia-ai-ai33-preferences/1\"},{\"name\":\"nodia_preferences_prepare_delete\",\"hash\":\"8a35be3727ba44dcbfc05d314e16f7a079341bf441822dc7a6a7bf40d752380b\",\"catalog\":\"nodia-ai-ai33-preferences/1\"}]}",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:nodia:nodia-ai:common-preparation:1",
+        "$defs": {
+          "BigintId": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "description": "Canonical positive decimal; runtime BigInt validation must enforce PostgreSQL max 9223372036854775807"
+          },
+          "McpPreferencePrepareInput": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": {},
+              "partial": {},
+              "draft_id": {},
+              "expected_draft_revision": {}
+            },
+            "required": [
+              "operation",
+              "partial"
+            ],
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "operation": {
+                    "const": "create"
+                  },
+                  "partial": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "scope_key": {
+                        "enum": [
+                          "finance",
+                          "business",
+                          "rental"
+                        ]
+                      },
+                      "key": {
+                        "enum": [
+                          "expense_category_id",
+                          "income_category_id",
+                          "business_id",
+                          "supplier_id",
+                          "property_id"
+                        ]
+                      },
+                      "scope": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {},
+                            "required": []
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "business_id": {
+                                "$ref": "#/$defs/ProtocolId"
+                              }
+                            },
+                            "required": [
+                              "business_id"
+                            ]
+                          }
+                        ]
+                      },
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 36
+                      }
+                    },
+                    "required": [],
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "key": {
+                              "const": "expense_category_id"
+                            }
+                          },
+                          "required": [
+                            "key"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "scope_key": {
+                              "const": "finance"
+                            },
+                            "value": {
+                              "$ref": "#/$defs/BigintId"
+                            },
+                            "scope": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {},
+                              "required": []
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "key": {
+                              "const": "income_category_id"
+                            }
+                          },
+                          "required": [
+                            "key"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "scope_key": {
+                              "const": "finance"
+                            },
+                            "value": {
+                              "$ref": "#/$defs/BigintId"
+                            },
+                            "scope": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {},
+                              "required": []
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "key": {
+                              "const": "business_id"
+                            }
+                          },
+                          "required": [
+                            "key"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "scope_key": {
+                              "const": "business"
+                            },
+                            "value": {
+                              "$ref": "#/$defs/ProtocolId"
+                            },
+                            "scope": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {},
+                              "required": []
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "key": {
+                              "const": "supplier_id"
+                            }
+                          },
+                          "required": [
+                            "key"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "scope_key": {
+                              "const": "business"
+                            },
+                            "value": {
+                              "$ref": "#/$defs/BigintId"
+                            },
+                            "scope": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "business_id": {
+                                  "$ref": "#/$defs/ProtocolId"
+                                }
+                              },
+                              "required": [
+                                "business_id"
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "key": {
+                              "const": "property_id"
+                            }
+                          },
+                          "required": [
+                            "key"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "scope_key": {
+                              "const": "rental"
+                            },
+                            "value": {
+                              "$ref": "#/$defs/BigintId"
+                            },
+                            "scope": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {},
+                              "required": []
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "draft_id": {
+                    "$ref": "#/$defs/ProtocolId"
+                  },
+                  "expected_draft_revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "operation",
+                  "partial"
+                ],
+                "dependentRequired": {
+                  "draft_id": [
+                    "expected_draft_revision"
+                  ],
+                  "expected_draft_revision": [
+                    "draft_id"
+                  ]
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "operation": {
+                    "const": "update"
+                  },
+                  "partial": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "$ref": "#/$defs/ProtocolId"
+                      },
+                      "expected_revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 2147483646
+                      },
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 36
+                      }
+                    },
+                    "required": []
+                  },
+                  "draft_id": {
+                    "$ref": "#/$defs/ProtocolId"
+                  },
+                  "expected_draft_revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "operation",
+                  "partial"
+                ],
+                "dependentRequired": {
+                  "draft_id": [
+                    "expected_draft_revision"
+                  ],
+                  "expected_draft_revision": [
+                    "draft_id"
+                  ]
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "operation": {
+                    "const": "delete"
+                  },
+                  "partial": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "$ref": "#/$defs/ProtocolId"
+                      },
+                      "expected_revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 2147483646
+                      }
+                    },
+                    "required": []
+                  },
+                  "draft_id": {
+                    "$ref": "#/$defs/ProtocolId"
+                  },
+                  "expected_draft_revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "operation",
+                  "partial"
+                ],
+                "dependentRequired": {
+                  "draft_id": [
+                    "expected_draft_revision"
+                  ],
+                  "expected_draft_revision": [
+                    "draft_id"
+                  ]
+                }
+              }
+            ],
+            "$comment": "{\"native_preparers\":[{\"name\":\"nodia_preferences_prepare_create\",\"hash\":\"7a4f2aaa0f3ec9f0d1b8e150cfeae5a6146f0739dd27f9fd3f20a632c6bdeb32\",\"catalog\":\"nodia-ai-ai33-preferences/1\"},{\"name\":\"nodia_preferences_prepare_update\",\"hash\":\"08cee675d1418677cd50d8dd335c52be018843aaf6632c0b56a73b636be63a1a\",\"catalog\":\"nodia-ai-ai33-preferences/1\"},{\"name\":\"nodia_preferences_prepare_delete\",\"hash\":\"8a35be3727ba44dcbfc05d314e16f7a079341bf441822dc7a6a7bf40d752380b\",\"catalog\":\"nodia-ai-ai33-preferences/1\"}]}"
+          },
+          "ProtocolId": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "description": "New public protocol reference, not the domain entity primary key"
+          }
+        }
+      }
+    }
+  ],
+  "valid_synthetic_arguments": {
+    "nodia_preferences_list": {},
+    "nodia_preferences_prepare": {
+      "operation": "create",
+      "partial": {
+        "scope_key": "finance",
+        "scope": {},
+        "key": "expense_category_id",
+        "value": "1"
+      }
+    }
+  },
+  "imported_compiled_sha256": {
+    "dist/nodia-ai-runtime/use-case/validate-nodia-ai-runtime-policy.use-case.js": "e9e80177b149f389b284b0fa27c37b7a42ba95ef6355f9dd1d549133900490ac",
+    "dist/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.js": "a472f1f11279597b0cae04988be0606370bd7d573462e6921cb45c119337f9f5",
+    "dist/nodia-ai-proposal/use-case/canonicalize-nodia-ai-proposal.use-case.js": "536874ec622e2effc12ab0a19e0fac6fdd3604deab6206f57e8bca5a7bf36547",
+    "dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.js": "3c8802fff0b52ed46976eafdf3b39cf5de68e44f7b5bc772ab2088f64b929564",
+    "dist/nodia-ai-common-reads/use-case/build-nodia-ai-common-read-tools.use-case.js": "3b2ddbc3efe1b871fa14769989e132270bbef9edaba85a9a879187caaf911a09",
+    "dist/nodia-ai-common-preparation/use-case/build-nodia-ai-common-preparation-tools.use-case.js": "cc4ad4eb5b1e8de326dfbdf0444e18c4e681880994a1af467bdddd55e386f44c",
+    "dist/nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js": "871d3c5a27866a0e5659078543af36e542a35859d9b43eea0d9c01c9ddd50776",
+    "dist/nodia-ai-tools/use-case/discover-nodia-ai-tools.use-case.js": "1577639c6d8292043288aaae6848ee6a148956d1214444af7fff9bab21b491fe",
+    "dist/nodia-ai-tools/use-case/nodia-ai-report-tools.use-case.js": "ffed12c7e167e142206fbde751a809547d20e00c44c85d2dcb20bd5f79e1a1db",
+    "dist/nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.js": "c6e44775824d8c6fb58459afb4e421249f8c89fc43de46580ca3c77e356f12b7",
+    "dist/nodia-ai-adapter/types/nodia-ai-adapter.types.js": "10f2fa362602af99e2f14e979bea7e3ddb08fad27a5989e89c63e0b41fac1320"
+  },
+  "all_frozen_packet_files_verified": 2809,
+  "retained_case_report_sha256": "b05be4511299505bb74b1090bb26d6304ac64dd6129900c6a2a33deb9af5af45",
+  "source_sha256": "94f9f08fffe675dc4021f8121883495363f598f8081b7e84a88558ddc1c3871a",
+  "configured_database_reads": 0,
+  "native_operations": 0,
+  "provider_requests": 0,
+  "business_effects": 0,
+  "schemas_validated_by_production_compiler": true,
+  "synthetic_arguments_validated_by_Ajv": true
+}

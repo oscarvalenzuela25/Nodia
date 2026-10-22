@@ -1,0 +1,909 @@
+{
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://nodia.local/schemas/write-core-provider/1",
+    "$defs": {
+      "BigintId": {
+        "type": "string",
+        "maxLength": 19,
+        "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6]|9223372036854775807)$"
+      },
+      "IdList": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/$defs/BigintId"
+        }
+      },
+      "ActionReference": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/BigintId"
+          },
+          {
+            "type": "string",
+            "maxLength": 255,
+            "pattern": "[^0-9]"
+          }
+        ]
+      },
+      "ActionList": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/$defs/ActionReference"
+        }
+      },
+      "Translation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "es": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "en": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          }
+        },
+        "required": ["key", "es", "en"]
+      },
+      "Translations": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/$defs/Translation"
+        }
+      },
+      "Mode": {
+        "enum": ["api_key", "token_plan_web", "token_plan_agentic"]
+      },
+      "ModelPreference": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "\\S"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "ThinkingPreference": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "UsersCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "El preparador nativo normaliza espacios exteriores y mayúsculas y valida el correo antes de crear una propuesta."
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "roles": {
+            "$ref": "#/$defs/IdList"
+          },
+          "modules": {
+            "$ref": "#/$defs/IdList"
+          }
+        },
+        "required": []
+      },
+      "UsersUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "El preparador nativo normaliza espacios exteriores y mayúsculas y valida el correo antes de crear una propuesta."
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "roles": {
+            "$ref": "#/$defs/IdList"
+          },
+          "modules": {
+            "$ref": "#/$defs/IdList"
+          }
+        },
+        "required": []
+      },
+      "RolesCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "actions": {
+            "$ref": "#/$defs/ActionList"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "RolesUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "actions": {
+            "$ref": "#/$defs/ActionList"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "RolesDeletePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "ActionsCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ActionsUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ActionsDeletePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "BusinessActionsCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "has_description": {
+            "type": "boolean"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "BusinessActionsUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "has_description": {
+            "type": "boolean"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "BusinessActionsDeletePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "ModulesCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "module_group_id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "link": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ModulesUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "module_group_id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "link": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ModulesDeletePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "ModuleGroupsCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ModuleGroupsUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ModuleGroupsDeletePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "ProviderCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "catalog_id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          "use_api_key": {
+            "type": "boolean"
+          },
+          "use_token_plan_web": {
+            "type": "boolean"
+          },
+          "use_token_plan_agentic": {
+            "type": "boolean"
+          },
+          "default_mode": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Mode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "auto_rotate_api_keys": {
+            "type": "boolean"
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ProviderCatalogCreatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "\\S"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          "can_use_api_key": {
+            "type": "boolean"
+          },
+          "can_use_token_plan_web": {
+            "type": "boolean"
+          },
+          "can_use_token_plan_agentic": {
+            "type": "boolean"
+          }
+        },
+        "required": []
+      },
+      "ProviderUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "api_key.selected_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "api_key.ocr_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "api_key.ocr_focus_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "api_key.thinking_level": {
+            "$ref": "#/$defs/ThinkingPreference"
+          },
+          "token_plan_web.selected_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "token_plan_web.ocr_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "token_plan_web.ocr_focus_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "token_plan_web.thinking_level": {
+            "$ref": "#/$defs/ThinkingPreference"
+          },
+          "token_plan_agentic.selected_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "token_plan_agentic.ocr_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "token_plan_agentic.ocr_focus_model": {
+            "$ref": "#/$defs/ModelPreference"
+          },
+          "token_plan_agentic.thinking_level": {
+            "$ref": "#/$defs/ThinkingPreference"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          "use_api_key": {
+            "type": "boolean"
+          },
+          "use_token_plan_web": {
+            "type": "boolean"
+          },
+          "use_token_plan_agentic": {
+            "type": "boolean"
+          },
+          "default_mode": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Mode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "auto_rotate_api_keys": {
+            "type": "boolean"
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "translates": {
+            "$ref": "#/$defs/Translations"
+          }
+        },
+        "required": []
+      },
+      "ProviderCatalogUpdatePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "\\S"
+          },
+          "can_use_api_key": {
+            "type": "boolean"
+          },
+          "can_use_token_plan_web": {
+            "type": "boolean"
+          },
+          "can_use_token_plan_agentic": {
+            "type": "boolean"
+          }
+        },
+        "required": []
+      },
+      "ApiKeysPrepareDeletePartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider_id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "key_id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "AiProvidersPrepareCodexLogoutPartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider_id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "AiProvidersPrepareGeminiWebLogoutPartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider_id": {
+            "$ref": "#/$defs/BigintId"
+          }
+        },
+        "required": []
+      },
+      "AiProvidersPrepareSyncModelsPartial": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider_id": {
+            "$ref": "#/$defs/BigintId"
+          },
+          "mode": {
+            "$ref": "#/$defs/Mode"
+          }
+        },
+        "required": []
+      }
+    }
+  },
+  "tools": [
+    {
+      "tool_name": "nodia_users_prepare_create",
+      "input_definition": "UsersCreatePartial",
+      "resource_key": "users",
+      "description": "Prepara la creación de users para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_users_prepare_update",
+      "input_definition": "UsersUpdatePartial",
+      "resource_key": "users",
+      "description": "Prepara la actualización de users para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_roles_prepare_create",
+      "input_definition": "RolesCreatePartial",
+      "resource_key": "roles",
+      "description": "Prepara la creación de roles para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_roles_prepare_update",
+      "input_definition": "RolesUpdatePartial",
+      "resource_key": "roles",
+      "description": "Prepara la actualización de roles para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_roles_prepare_delete",
+      "input_definition": "RolesDeletePartial",
+      "resource_key": "roles",
+      "description": "Prepara la eliminación de roles para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_actions_prepare_create",
+      "input_definition": "ActionsCreatePartial",
+      "resource_key": "actions",
+      "description": "Prepara la creación de actions para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_actions_prepare_update",
+      "input_definition": "ActionsUpdatePartial",
+      "resource_key": "actions",
+      "description": "Prepara la actualización de actions para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_actions_prepare_delete",
+      "input_definition": "ActionsDeletePartial",
+      "resource_key": "actions",
+      "description": "Prepara la eliminación de actions para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_business_actions_prepare_create",
+      "input_definition": "BusinessActionsCreatePartial",
+      "resource_key": "business_actions",
+      "description": "Prepara la creación de business_actions para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_business_actions_prepare_update",
+      "input_definition": "BusinessActionsUpdatePartial",
+      "resource_key": "business_actions",
+      "description": "Prepara la actualización de business_actions para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_business_actions_prepare_delete",
+      "input_definition": "BusinessActionsDeletePartial",
+      "resource_key": "business_actions",
+      "description": "Prepara la eliminación de business_actions para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_modules_prepare_create",
+      "input_definition": "ModulesCreatePartial",
+      "resource_key": "modules",
+      "description": "Prepara la creación de modules para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_modules_prepare_update",
+      "input_definition": "ModulesUpdatePartial",
+      "resource_key": "modules",
+      "description": "Prepara la actualización de modules para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_modules_prepare_delete",
+      "input_definition": "ModulesDeletePartial",
+      "resource_key": "modules",
+      "description": "Prepara la eliminación de modules para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_module_groups_prepare_create",
+      "input_definition": "ModuleGroupsCreatePartial",
+      "resource_key": "module_groups",
+      "description": "Prepara la creación de module_groups para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_module_groups_prepare_update",
+      "input_definition": "ModuleGroupsUpdatePartial",
+      "resource_key": "module_groups",
+      "description": "Prepara la actualización de module_groups para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_module_groups_prepare_delete",
+      "input_definition": "ModuleGroupsDeletePartial",
+      "resource_key": "module_groups",
+      "description": "Prepara la eliminación de module_groups para revisión humana. Los datos omitidos se aclaran; no ejecuta cambios ni concede confirmación."
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_create",
+      "input_definition": "ProviderCreatePartial",
+      "resource_key": "ai_providers",
+      "description": "Prepara una conexión IA sin secretos para revisión humana. No ejecuta cambios, autentica ni demuestra disponibilidad de modelos."
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_catalog_create",
+      "input_definition": "ProviderCatalogCreatePartial",
+      "resource_key": "ai_provider_catalog",
+      "description": "Prepara la creación de un catálogo IA para revisión humana. Configurar canales no demuestra ejecución y no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_update",
+      "input_definition": "ProviderUpdatePartial",
+      "resource_key": "ai_providers",
+      "description": "Prepara cambios no secretos de una conexión IA y preferencias exactas por modo para revisión humana. No ejecuta cambios, autentica ni demuestra disponibilidad de modelos."
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_catalog_update",
+      "input_definition": "ProviderCatalogUpdatePartial",
+      "resource_key": "ai_provider_catalog",
+      "description": "Prepara la actualización de un catálogo IA para revisión humana. Configurar canales no demuestra ejecución y no ejecuta cambios."
+    },
+    {
+      "tool_name": "nodia_api_keys_prepare_delete",
+      "input_definition": "ApiKeysPrepareDeletePartial",
+      "resource_key": "ai_api_keys",
+      "description": "Prepara la eliminación de una clave por identidad; nunca recibe ni devuelve su secreto para revisión humana. No realiza la operación y necesita el botón de confirmación sobre la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_codex_logout",
+      "input_definition": "AiProvidersPrepareCodexLogoutPartial",
+      "resource_key": "ai_providers",
+      "description": "Prepara el cierre de sesión Codex de la conexión explícita para revisión humana. No realiza la operación y necesita el botón de confirmación sobre la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_gemini_web_logout",
+      "input_definition": "AiProvidersPrepareGeminiWebLogoutPartial",
+      "resource_key": "ai_providers",
+      "description": "Prepara el cierre de sesión Gemini Web de la conexión explícita para revisión humana. No realiza la operación y necesita el botón de confirmación sobre la propuesta exacta."
+    },
+    {
+      "tool_name": "nodia_ai_providers_prepare_sync_models",
+      "input_definition": "AiProvidersPrepareSyncModelsPartial",
+      "resource_key": "ai_providers",
+      "description": "Prepara la sincronización de modelos de la conexión y modo explícitos para revisión humana. No realiza la operación y necesita el botón de confirmación sobre la propuesta exacta."
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { describe, it, expect, vi } from 'vitest';
 import { GetRentalOverviewUseCase } from './get-rental-overview.use-case.js';
@@ -8,21 +9,19 @@ describe('GetRentalOverviewUseCase', () => {
   function fixture() {
     const f = rentalTestFixture();
     const service = new RentalOverviewService();
-    const aggregate = vi
-      .spyOn(service, 'aggregate')
-      .mockResolvedValue({
-        received_amount: '194000',
-        refunded_amount: '12000',
-        paid_expenses_amount: '5000',
-        reservation_balance_amount: '0',
-        refund_amount: '8000',
-        expense_amount: '1000',
-        draft_received_amount: '40000',
-        draft_count: '1',
-        confirmed_reservations: '3',
-        in_progress_reservations: '1',
-        pending_turnovers: '2',
-      });
+    const aggregate = vi.spyOn(service, 'aggregate').mockResolvedValue({
+      received_amount: '194000',
+      refunded_amount: '12000',
+      paid_expenses_amount: '5000',
+      reservation_balance_amount: '0',
+      refund_amount: '8000',
+      expense_amount: '1000',
+      draft_received_amount: '40000',
+      draft_count: '1',
+      confirmed_reservations: '3',
+      in_progress_reservations: '1',
+      pending_turnovers: '2',
+    });
     vi.spyOn(service, 'upcoming').mockResolvedValue([]);
     vi.spyOn(service, 'pendingTurnovers').mockResolvedValue([]);
     return {
@@ -34,7 +33,7 @@ describe('GetRentalOverviewUseCase', () => {
   }
   it('separates actual net cash from approved refunds, pending bills and draft deposits', async () => {
     const f = fixture();
-    const result = await f.useCase.execute('2', '10', {
+    const result = await f.useCase.execute(actorFixture('2'), '10', {
       from_on: '2026-10-01',
       to_on: '2026-11-01',
     });
@@ -69,7 +68,7 @@ describe('GetRentalOverviewUseCase', () => {
       in_progress_reservations: '0',
       pending_turnovers: '0',
     });
-    const result = await f.useCase.execute('1', '10', {
+    const result = await f.useCase.execute(actorFixture('1'), '10', {
       from_on: '2026-10-01',
       to_on: '2026-11-01',
     });
@@ -82,13 +81,13 @@ describe('GetRentalOverviewUseCase', () => {
     const f = fixture();
     f.aggregate.mockRejectedValue(new Error('Synthetic DB failure'));
     await expect(
-      f.useCase.execute('1', '10', {
+      f.useCase.execute(actorFixture('1'), '10', {
         from_on: '2026-10-01',
         to_on: '2026-11-01',
       }),
     ).rejects.toThrow('rental:server_error');
     await expect(
-      f.useCase.execute('3', '10', {
+      f.useCase.execute(actorFixture('3'), '10', {
         from_on: '2026-10-01',
         to_on: '2026-11-01',
       }),
@@ -101,9 +100,9 @@ describe('GetRentalOverviewUseCase', () => {
       { from_on: '2026-01-01', to_on: '2028-01-01' },
       { from_on: '2026-10-01', to_on: '2026-11-01', all: true },
     ])
-      await expect(f.useCase.execute('1', '10', query)).rejects.toThrow(
-        'rental:invalid_input',
-      );
+      await expect(
+        f.useCase.execute(actorFixture('1'), '10', query),
+      ).rejects.toThrow('rental:invalid_input');
     expect(f.aggregate).not.toHaveBeenCalled();
   });
 });

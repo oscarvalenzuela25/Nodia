@@ -1,0 +1,16 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "synthetic_observer_process_transport_controls",
+  "status": "passed",
+  "checks": [
+    "valid",
+    "extra",
+    "category",
+    "throwing_sink"
+  ],
+  "actual_provider_generations": 0,
+  "configured_database_used": false,
+  "docker_invoked": false,
+  "source_sha256": "af58e70db767dca96f12427a308b07db58f02dc8c5863e6020880cacc0638f91",
+  "observer_driver_sha256": "3209d6d27e2d23b46a1d7fdb86f7bffebbe30a748088cb4121e51426b616781c"
+}

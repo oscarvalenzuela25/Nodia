@@ -1,0 +1,1283 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R03",
+  "status": "partial_real_acceptance_AI36_still_open",
+  "inputs": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r03-inputs.json",
+    "sha256": "d403ee0b803c010d03da083127ee9c440ec03d860b94dc2d6417cf97098b5da7"
+  },
+  "baseline": {
+    "report": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+      "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+    },
+    "inputs": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-inputs.json",
+      "sha256": "82b34ef7b7af79b8b28c81f606642763104414c5fad2af1c3c934d5bded020c9"
+    },
+    "consolidator": {
+      "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05-r02.cjs",
+      "sha256": "e8811dd414b6cb119e9367dc5569643ec9247790f0fb1af35c65193853059004"
+    },
+    "immutable_references_verified": 193,
+    "accepted_capability_ids": [
+      "nodia_attachments_describe",
+      "nodia_operations_get",
+      "nodia_proposals_get",
+      "nodia_workflows_prepare"
+    ],
+    "observed_native_starts": 22,
+    "environment_layers": [
+      {
+        "capability_id": "nodia_attachments_describe",
+        "historical_R01_verified": true,
+        "R02_verified": false,
+        "accumulated_verified": true,
+        "R02_receipts": []
+      },
+      {
+        "capability_id": "nodia_finance_movements_prepare_create",
+        "historical_R01_verified": false,
+        "R02_verified": false,
+        "accumulated_verified": false,
+        "R02_receipts": []
+      },
+      {
+        "capability_id": "nodia_operations_get",
+        "historical_R01_verified": true,
+        "R02_verified": false,
+        "accumulated_verified": true,
+        "R02_receipts": []
+      },
+      {
+        "capability_id": "nodia_preferences_list",
+        "historical_R01_verified": false,
+        "R02_verified": false,
+        "accumulated_verified": false,
+        "R02_receipts": []
+      },
+      {
+        "capability_id": "nodia_preferences_prepare",
+        "historical_R01_verified": false,
+        "R02_verified": false,
+        "accumulated_verified": false,
+        "R02_receipts": []
+      },
+      {
+        "capability_id": "nodia_proposals_get",
+        "historical_R01_verified": true,
+        "R02_verified": false,
+        "accumulated_verified": true,
+        "R02_receipts": []
+      },
+      {
+        "capability_id": "nodia_workflows_prepare",
+        "historical_R01_verified": false,
+        "R02_verified": true,
+        "accumulated_verified": true,
+        "R02_receipts": [
+          {
+            "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow.json",
+              "sha256": "df30d7673d4a7d68be7404a6db1a6d5c6b03a5048e4424759df468bd3b4c5ab9"
+            }
+          }
+        ]
+      }
+    ],
+    "scope": "Frozen accumulated R01/R02 evidence with each original Node/native environment; not verification of the R03 epoch."
+  },
+  "inherited_security": {
+    "source": {
+      "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05-r02.cjs",
+      "sha256": "e8811dd414b6cb119e9367dc5569643ec9247790f0fb1af35c65193853059004"
+    },
+    "normalized_function_block_sha256": "10c580375c550903f21d5882fb058f1f8427eac1a62fb5c4abdff0d186fdc59b",
+    "functions_literal_and_controls_unchanged": true
+  },
+  "publication": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-publication-validation.json",
+    "sha256": "85c0efe12c35eb5408662a890fbf85f1e7e810342fcdcf1807d03e90d114e099"
+  },
+  "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+  "node_compiled_delta": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+    "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+  },
+  "native_epochs": [
+    {
+      "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+      "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+      "node_compiled_delta": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+        "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+      },
+      "source_manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-manifest.json",
+        "sha256": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20"
+      },
+      "qualification": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-qualification.json",
+        "sha256": "03df56352d34c412f846ded9e62ac0772518f81b021b88d0dbe6bfe11098fec4"
+      },
+      "container_started_at_utc": "2026-10-19T20:30:54.592504609Z"
+    }
+  ],
+  "native_canaries": [
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-canary-report.json",
+        "sha256": "4e28fd66cf48f15cfa95666dc31147239b8aef6dff6615ad4de5518783101c93"
+      },
+      "binding": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-binding.json",
+        "sha256": "b86cdf1b84c05f5b7e536723882b4a8c5bdde7e9af112e8bbfe2604b0cf97a7f"
+      },
+      "original_report": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-original-ai15-report.json",
+        "sha256": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9"
+      },
+      "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "status": "passed",
+      "native_start_requests": 1,
+      "accepted_native_starts": 1,
+      "exact_terminal_proof_and_ACK": {
+        "attempt_id": "60b10d3b-d26b-4dc3-9e0e-16fa2a09f559",
+        "terminal_proof_sha256": "2aa05bd652b230efae7b2fdeba9678ca72a23ca08d9b0c0ea2b034dfca2ff7a9",
+        "outcome": "completed",
+        "process_closed": true,
+        "observed_at_utc": "2026-10-19T20:32:02.937498+00:00"
+      },
+      "epoch_MCP_qualified": true,
+      "business_capability_acceptance_added": false,
+      "scope": "Fresh image/policy-bound diagnostic canary; never a business capability acceptance."
+    }
+  ],
+  "cohorts": [
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences.json",
+        "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "case_id": "preferences",
+      "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "native_epoch": {
+        "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+        "image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+        "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high"
+        },
+        "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+        "node_compiled_delta": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+          "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+        },
+        "source_manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-manifest.json",
+          "sha256": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20"
+        },
+        "qualification": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-qualification.json",
+          "sha256": "03df56352d34c412f846ded9e62ac0772518f81b021b88d0dbe6bfe11098fec4"
+        },
+        "container_started_at_utc": "2026-10-19T20:30:54.592504609Z"
+      },
+      "producer_stage": "AI-36-C05-R03",
+      "status": "failed",
+      "compiled_provenance": {
+        "mode": "current_compiled",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-manifest.json",
+          "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+        },
+        "producer_harness_sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539",
+        "archive_sha256": "aeacdfd1041dea130dc9213a71f30686f9b24165f603c48b1a6f4412a5bb75f3",
+        "independent_case_fixture": {
+          "archive_member": "test/nodia-ai-ai36-c05-independent-cases.fixture.mjs",
+          "sha256": "01e9d5a003e84af302700c7ff3f81011a7ab3424feefc35ce4c7e7c3c5606b2a"
+        },
+        "compiled_executable_files": 971,
+        "current_compiled_provenance_checked": true,
+        "archive_byte_verification": "recorded_by_frozen_remote_producer_not_repeated_from_retained_archive_bytes"
+      },
+      "native_start_requests": 2,
+      "accepted_native_starts": 2,
+      "evaluated": [
+        {
+          "capability_id": "nodia_preferences_prepare",
+          "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+          "qualifying_completed_turns": [],
+          "real_callback_and_terminal_protocol_verified": false,
+          "semantic_assertions": {
+            "required": [
+              "preference_draft_exact",
+              "preference_unaccepted_before_confirmation",
+              "preference_exact_effect_once_after_confirmation",
+              "preference_atomic_receipt"
+            ],
+            "checks": [
+              {
+                "id": "preference_draft_exact",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "preference_unaccepted_before_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "preference_exact_effect_once_after_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "preference_atomic_receipt",
+                "passed": false,
+                "evidence": null
+              }
+            ]
+          },
+          "valid_operator_confirmation_recorded_where_required": false,
+          "human_confirmation_binding": {
+            "valid_operator_records": [],
+            "finance_public_proposal_identity_correlated": null,
+            "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+          },
+          "representative_real_E2E_verified": false,
+          "complete_semantic_or_productive_acceptance": false
+        },
+        {
+          "capability_id": "nodia_preferences_list",
+          "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+          "qualifying_completed_turns": [],
+          "real_callback_and_terminal_protocol_verified": false,
+          "semantic_assertions": {
+            "required": [
+              "preferences_excludes_unaccepted"
+            ],
+            "checks": [
+              {
+                "id": "preferences_excludes_unaccepted",
+                "passed": false,
+                "evidence": null
+              }
+            ]
+          },
+          "valid_operator_confirmation_recorded_where_required": true,
+          "human_confirmation_binding": null,
+          "representative_real_E2E_verified": false,
+          "complete_semantic_or_productive_acceptance": false
+        }
+      ],
+      "scope": "One directed real-provider turn over disposable SQL; overall cohort status never bypasses individual capability gates."
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance.json",
+        "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "case_id": "finance",
+      "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+      "native_epoch": {
+        "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+        "image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+        "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high"
+        },
+        "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+        "node_compiled_delta": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+          "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+        },
+        "source_manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-manifest.json",
+          "sha256": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20"
+        },
+        "qualification": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-qualification.json",
+          "sha256": "03df56352d34c412f846ded9e62ac0772518f81b021b88d0dbe6bfe11098fec4"
+        },
+        "container_started_at_utc": "2026-10-19T20:30:54.592504609Z"
+      },
+      "producer_stage": "AI-36-C05-R03",
+      "status": "failed",
+      "compiled_provenance": {
+        "mode": "current_compiled",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-manifest.json",
+          "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+        },
+        "producer_harness_sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539",
+        "archive_sha256": "aeacdfd1041dea130dc9213a71f30686f9b24165f603c48b1a6f4412a5bb75f3",
+        "independent_case_fixture": {
+          "archive_member": "test/nodia-ai-ai36-c05-independent-cases.fixture.mjs",
+          "sha256": "01e9d5a003e84af302700c7ff3f81011a7ab3424feefc35ce4c7e7c3c5606b2a"
+        },
+        "compiled_executable_files": 971,
+        "current_compiled_provenance_checked": true,
+        "archive_byte_verification": "recorded_by_frozen_remote_producer_not_repeated_from_retained_archive_bytes"
+      },
+      "native_start_requests": 1,
+      "accepted_native_starts": 1,
+      "evaluated": [
+        {
+          "capability_id": "nodia_finance_movements_prepare_create",
+          "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+          "qualifying_completed_turns": [],
+          "real_callback_and_terminal_protocol_verified": false,
+          "semantic_assertions": {
+            "required": [
+              "finance_preview_exact",
+              "finance_no_effect_before_confirmation",
+              "finance_exact_effect_once_after_confirmation",
+              "finance_atomic_receipt"
+            ],
+            "checks": [
+              {
+                "id": "finance_preview_exact",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "finance_no_effect_before_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "finance_exact_effect_once_after_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "finance_atomic_receipt",
+                "passed": false,
+                "evidence": null
+              }
+            ]
+          },
+          "valid_operator_confirmation_recorded_where_required": false,
+          "human_confirmation_binding": {
+            "valid_operator_records": [],
+            "finance_public_proposal_identity_correlated": null,
+            "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+          },
+          "representative_real_E2E_verified": false,
+          "complete_semantic_or_productive_acceptance": false
+        }
+      ],
+      "scope": "One directed real-provider turn over disposable SQL; overall cohort status never bypasses individual capability gates."
+    }
+  ],
+  "offline_controls": [
+    {
+      "case_id": "preferences",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-preferences.json",
+        "sha256": "13e26bbc1c57e7d10aaaa6cf76131596932d1cf85be7f5e411a2a1341f76ed83"
+      },
+      "checks": 14,
+      "semantic_assertions": [
+        {
+          "capability_id": "nodia_preferences_prepare",
+          "required": [
+            "preference_draft_exact",
+            "preference_unaccepted_before_confirmation",
+            "preference_exact_effect_once_after_confirmation",
+            "preference_atomic_receipt"
+          ],
+          "checks": [
+            {
+              "id": "preference_draft_exact",
+              "passed": true,
+              "evidence": {
+                "id": "preference_draft_exact",
+                "passed": true,
+                "expected": {
+                  "revision": 1,
+                  "partial": {
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                },
+                "observed": {
+                  "revision": 1,
+                  "partial": {
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                }
+              }
+            },
+            {
+              "id": "preference_unaccepted_before_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "preference_unaccepted_before_confirmation",
+                "passed": true,
+                "expected": 0,
+                "observed": 0
+              }
+            },
+            {
+              "id": "preference_exact_effect_once_after_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "preference_exact_effect_once_after_confirmation",
+                "passed": true,
+                "expected": {
+                  "count": 1,
+                  "preference": {
+                    "owner_id": "1",
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                },
+                "observed": {
+                  "count": 1,
+                  "preference": {
+                    "owner_id": "1",
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                }
+              }
+            },
+            {
+              "id": "preference_atomic_receipt",
+              "passed": true,
+              "evidence": {
+                "id": "preference_atomic_receipt",
+                "passed": true,
+                "expected": {
+                  "state": "completed",
+                  "resource_key": "nodia_ai_preferences",
+                  "resource_id": "d07feb9f-ae82-4f7b-9d92-d898a1d684a7"
+                },
+                "observed": {
+                  "state": "completed",
+                  "resource_key": "nodia_ai_preferences",
+                  "resource_id": "d07feb9f-ae82-4f7b-9d92-d898a1d684a7"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "capability_id": "nodia_preferences_list",
+          "required": [
+            "preferences_excludes_unaccepted"
+          ],
+          "checks": [
+            {
+              "id": "preferences_excludes_unaccepted",
+              "passed": true,
+              "evidence": {
+                "id": "preferences_excludes_unaccepted",
+                "passed": true,
+                "expected": {
+                  "items": [],
+                  "next_cursor": null
+                },
+                "observed": {
+                  "items": [],
+                  "next_cursor": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "synthetic_generations": 2,
+      "real_provider_generations": 0,
+      "scope": "Retained same-Node-build SQL controls with synthetic transport, not R03 native-role acceptance."
+    },
+    {
+      "case_id": "finance",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-finance.json",
+        "sha256": "9493073c6b2b9a60826e4d7ba467cfe3da8b350cc69ca3b622c7a3a9539b0b86"
+      },
+      "checks": 13,
+      "semantic_assertions": [
+        {
+          "capability_id": "nodia_finance_movements_prepare_create",
+          "required": [
+            "finance_preview_exact",
+            "finance_no_effect_before_confirmation",
+            "finance_exact_effect_once_after_confirmation",
+            "finance_atomic_receipt"
+          ],
+          "checks": [
+            {
+              "id": "finance_preview_exact",
+              "passed": true,
+              "evidence": {
+                "id": "finance_preview_exact",
+                "passed": true,
+                "expected": {
+                  "owner_id": "1",
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                },
+                "observed": {
+                  "owner_id": "1",
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                }
+              }
+            },
+            {
+              "id": "finance_no_effect_before_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "finance_no_effect_before_confirmation",
+                "passed": true,
+                "expected": 0,
+                "observed": 0
+              }
+            },
+            {
+              "id": "finance_exact_effect_once_after_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "finance_exact_effect_once_after_confirmation",
+                "passed": true,
+                "expected": {
+                  "count": 1,
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                },
+                "observed": {
+                  "count": 1,
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                }
+              }
+            },
+            {
+              "id": "finance_atomic_receipt",
+              "passed": true,
+              "evidence": {
+                "id": "finance_atomic_receipt",
+                "passed": true,
+                "expected": [
+                  {
+                    "state": "completed",
+                    "resource_key": "finance_movements",
+                    "resource_id": "1"
+                  }
+                ],
+                "observed": [
+                  {
+                    "state": "completed",
+                    "resource_key": "finance_movements",
+                    "resource_id": "1"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "synthetic_generations": 2,
+      "real_provider_generations": 0,
+      "scope": "Retained same-Node-build SQL controls with synthetic transport, not R03 native-role acceptance."
+    }
+  ],
+  "metadata_evidence": [],
+  "artifact_aliases": [
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-receipt.json",
+        "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences.json",
+        "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-ai36-c05-cases-live-stage-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-receipt.json",
+        "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance.json",
+        "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-ai36-c05-cases-live-stage-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "scope": "Byte-exact captured R03 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    }
+  ],
+  "supplementary_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-report.json",
+      "sha256": "7332694f79027adaccb3b0b80fb1d808e507d8a03caa0689ecfeb21dbb213af0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-build01-manifest.json",
+      "sha256": "93ee863e0be897aec4afff2fbe87a7a1e47459e61372972c8f3bde4005f91f20"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-manifest-depth-validation.json",
+      "sha256": "b4941cd4d15a87d32cb701354ef542ae109d71fafb50cda8e5ff421f62701323"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-root-independent.json",
+      "sha256": "c86e01e7649df46fa3f6c640efca854aa0e3819a993c462c7ccf0e09b6ea3665"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-control-pre-fix.json",
+      "sha256": "4d49fcfad2a8783d88fedfdbba512902b0a3039025bfa5153a08ee6e97f4f586"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-control.json",
+      "sha256": "12e2c6a0d7489f2f00cc15bc44905a7db0c0e6312f5f53858ab0658046f90eb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-postfix-attempt04.json",
+      "sha256": "c86e01e7649df46fa3f6c640efca854aa0e3819a993c462c7ccf0e09b6ea3665"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-canary-report.json",
+      "sha256": "4e28fd66cf48f15cfa95666dc31147239b8aef6dff6615ad4de5518783101c93"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-runner-report.json",
+      "sha256": "0b921d1b45901b9d3735bb0a2968859b9d81eaeadf70b64116bb41f0377fc8f0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-original-ai15-report.json",
+      "sha256": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-binding.json",
+      "sha256": "b86cdf1b84c05f5b7e536723882b4a8c5bdde7e9af112e8bbfe2604b0cf97a7f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-quiescence.json",
+      "sha256": "f4cf2920dc5e37e8a1d4469cf72be314f670349e46673df06be297d2d3ed03fc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-native-quiet.json",
+      "sha256": "e17b678fb4ba389e6a5c6aae80a127accd32bf555be30e38eee063c17ef450a0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-role-canary01-selection.json",
+      "sha256": "f4002f1e91c3d665104c5886c16e05f619628efb1f93876c455050f302acc665"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-receipt.json",
+      "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-ai36-c05-cases-live-stage-manifest.json",
+      "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-case-report.json",
+      "sha256": "02e19d791ff818d6d7f9d82e1fcc310bc01df15c07a41fb19e49faa4c60d3634"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-stdout.log",
+      "sha256": "02e19d791ff818d6d7f9d82e1fcc310bc01df15c07a41fb19e49faa4c60d3634"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-native-diagnostics.json",
+      "sha256": "5a0bc0213f3b02a09d525e8384d7b4eda30b40b789687664b15731f199aaf1f8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-timeline.json",
+      "sha256": "482b22257a2bbb19945b92274e8494be9a7161688a32ebf7a3a2ced41e5c0ded"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-quiescence.json",
+      "sha256": "d505bbb119c9b27b2cc88dfbfed6f4b6f5759b87b776f89965cc4b187303d9cc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences-native-quiet.json",
+      "sha256": "06bb1d166f6d66d81628c295ebaba13b72bc35d8e9f71b41cc3b0c9998077833"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-receipt.json",
+      "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-ai36-c05-cases-live-stage-manifest.json",
+      "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-case-report.json",
+      "sha256": "126dedfb8b9a6dc1f60755e8254fcf2df38957c0ee071c8e2dacb1485f4d2f84"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-stdout.log",
+      "sha256": "126dedfb8b9a6dc1f60755e8254fcf2df38957c0ee071c8e2dacb1485f4d2f84"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-native-diagnostics.json",
+      "sha256": "ca2e5037f840fe48074fe2b193ee36729645348d55b3c4af2eee325b7d57b0ad"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-timeline.json",
+      "sha256": "b280e83b797bbad031b1f01a5d2c8ce6ef66370090b32eb808723b86b3a5fb79"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-quiescence.json",
+      "sha256": "cfc805f3786ff6997cc77b7f3925453073962e7136d7aa31e359af0e774b4105"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-native-quiet.json",
+      "sha256": "f2258bca986437b5163371c0025c0dcef7402acc85b916d57273a6d2b8e2c130"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-official-cli-research.json",
+      "sha256": "6de25dc1b9384f5c02f83bd21176011f626e4c4c8b4bce955f9759bbb2285de7"
+    }
+  ],
+  "closing_observed_state": {
+    "evidence": {
+      "runtime_receipt": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-receipt.json",
+        "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+      },
+      "SQL_quiet": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-quiescence.json",
+        "sha256": "cfc805f3786ff6997cc77b7f3925453073962e7136d7aa31e359af0e774b4105"
+      },
+      "native_quiet": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance-native-quiet.json",
+        "sha256": "f2258bca986437b5163371c0025c0dcef7402acc85b916d57273a6d2b8e2c130"
+      }
+    },
+    "runtime_receipt_completed_at_utc": "2026-10-19T20:40:29.234854+00:00",
+    "operational_runtime": {
+      "compiled_files": 932,
+      "manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792",
+      "units": {
+        "nodia-api": "active",
+        "nodia-ai-worker": "active",
+        "nodia-gemini-lab": "active",
+        "nginx": "active"
+      },
+      "container": {
+        "id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+        "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+        "started_at": "2026-10-19T20:30:54.592504609Z"
+      }
+    },
+    "SQL_quiet": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-19T20:41:13.383Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    },
+    "native_quiet": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-19T20:41:13Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    },
+    "scope": "Separate observed VM times retained per source; candidate Node2803/971 was tested, while operational Node932 was preserved. No operational adoption of the candidate Node publication is inferred."
+  },
+  "new_target_capability_ids": [
+    "nodia_finance_movements_prepare_create",
+    "nodia_preferences_list",
+    "nodia_preferences_prepare"
+  ],
+  "newly_accepted_capability_ids": [],
+  "historical_accepted_capability_ids": [
+    "nodia_attachments_describe",
+    "nodia_operations_get",
+    "nodia_proposals_get",
+    "nodia_workflows_prepare"
+  ],
+  "accumulated_accepted_capability_ids": [
+    "nodia_attachments_describe",
+    "nodia_operations_get",
+    "nodia_proposals_get",
+    "nodia_workflows_prepare"
+  ],
+  "capability_acceptance_matrix": [
+    {
+      "capability_id": "nodia_attachments_describe",
+      "historical_R01_R02": {
+        "accepted": true,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+          "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+        },
+        "environment_claim": "Only the respective R01/R02 cohort builds and native policies; no result is copied into R03."
+      },
+      "R03": {
+        "in_target_scope": false,
+        "representative_accepted": false,
+        "evidence": []
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_finance_movements_prepare_create",
+      "historical_R01_R02": {
+        "accepted": false,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+          "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+        },
+        "environment_claim": "Only the respective R01/R02 cohort builds and native policies; no result is copied into R03."
+      },
+      "R03": {
+        "in_target_scope": true,
+        "representative_accepted": false,
+        "evidence": [
+          {
+            "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-finance.json",
+              "sha256": "020d1b4074d650192f8c53cd6c417c1ee5ee6a0d21555b55144ca7de0b64ae1d"
+            },
+            "evaluation": {
+              "capability_id": "nodia_finance_movements_prepare_create",
+              "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+              "qualifying_completed_turns": [],
+              "real_callback_and_terminal_protocol_verified": false,
+              "semantic_assertions": {
+                "required": [
+                  "finance_preview_exact",
+                  "finance_no_effect_before_confirmation",
+                  "finance_exact_effect_once_after_confirmation",
+                  "finance_atomic_receipt"
+                ],
+                "checks": [
+                  {
+                    "id": "finance_preview_exact",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "finance_no_effect_before_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "finance_exact_effect_once_after_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "finance_atomic_receipt",
+                    "passed": false,
+                    "evidence": null
+                  }
+                ]
+              },
+              "valid_operator_confirmation_recorded_where_required": false,
+              "human_confirmation_binding": {
+                "valid_operator_records": [],
+                "finance_public_proposal_identity_correlated": null,
+                "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+              },
+              "representative_real_E2E_verified": false,
+              "complete_semantic_or_productive_acceptance": false
+            }
+          }
+        ]
+      },
+      "accumulated_representative_accepted": false,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_operations_get",
+      "historical_R01_R02": {
+        "accepted": true,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+          "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+        },
+        "environment_claim": "Only the respective R01/R02 cohort builds and native policies; no result is copied into R03."
+      },
+      "R03": {
+        "in_target_scope": false,
+        "representative_accepted": false,
+        "evidence": []
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_preferences_list",
+      "historical_R01_R02": {
+        "accepted": false,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+          "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+        },
+        "environment_claim": "Only the respective R01/R02 cohort builds and native policies; no result is copied into R03."
+      },
+      "R03": {
+        "in_target_scope": true,
+        "representative_accepted": false,
+        "evidence": [
+          {
+            "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences.json",
+              "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+            },
+            "evaluation": {
+              "capability_id": "nodia_preferences_list",
+              "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+              "qualifying_completed_turns": [],
+              "real_callback_and_terminal_protocol_verified": false,
+              "semantic_assertions": {
+                "required": [
+                  "preferences_excludes_unaccepted"
+                ],
+                "checks": [
+                  {
+                    "id": "preferences_excludes_unaccepted",
+                    "passed": false,
+                    "evidence": null
+                  }
+                ]
+              },
+              "valid_operator_confirmation_recorded_where_required": true,
+              "human_confirmation_binding": null,
+              "representative_real_E2E_verified": false,
+              "complete_semantic_or_productive_acceptance": false
+            }
+          }
+        ]
+      },
+      "accumulated_representative_accepted": false,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_preferences_prepare",
+      "historical_R01_R02": {
+        "accepted": false,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+          "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+        },
+        "environment_claim": "Only the respective R01/R02 cohort builds and native policies; no result is copied into R03."
+      },
+      "R03": {
+        "in_target_scope": true,
+        "representative_accepted": false,
+        "evidence": [
+          {
+            "epoch_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r03-case-attempt01-preferences.json",
+              "sha256": "ce76eae489ab0f838adfbb1f0427655d1932c0c73406927961aa73788aef3016"
+            },
+            "evaluation": {
+              "capability_id": "nodia_preferences_prepare",
+              "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+              "qualifying_completed_turns": [],
+              "real_callback_and_terminal_protocol_verified": false,
+              "semantic_assertions": {
+                "required": [
+                  "preference_draft_exact",
+                  "preference_unaccepted_before_confirmation",
+                  "preference_exact_effect_once_after_confirmation",
+                  "preference_atomic_receipt"
+                ],
+                "checks": [
+                  {
+                    "id": "preference_draft_exact",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "preference_unaccepted_before_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "preference_exact_effect_once_after_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "preference_atomic_receipt",
+                    "passed": false,
+                    "evidence": null
+                  }
+                ]
+              },
+              "valid_operator_confirmation_recorded_where_required": false,
+              "human_confirmation_binding": {
+                "valid_operator_records": [],
+                "finance_public_proposal_identity_correlated": null,
+                "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+              },
+              "representative_real_E2E_verified": false,
+              "complete_semantic_or_productive_acceptance": false
+            }
+          }
+        ]
+      },
+      "accumulated_representative_accepted": false,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_proposals_get",
+      "historical_R01_R02": {
+        "accepted": true,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+          "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+        },
+        "environment_claim": "Only the respective R01/R02 cohort builds and native policies; no result is copied into R03."
+      },
+      "R03": {
+        "in_target_scope": false,
+        "representative_accepted": false,
+        "evidence": []
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_workflows_prepare",
+      "historical_R01_R02": {
+        "accepted": true,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-validation.json",
+          "sha256": "727c3efee08b0121aab1e66d3ce171abee30b83f2f545c069981c6db3b9e5ef3"
+        },
+        "environment_claim": "Only the respective R01/R02 cohort builds and native policies; no result is copied into R03."
+      },
+      "R03": {
+        "in_target_scope": false,
+        "representative_accepted": false,
+        "evidence": []
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    }
+  ],
+  "native_starts": {
+    "baseline_accepted_starts": 22,
+    "new_native_start_requests": 4,
+    "new_accepted_native_starts": 4,
+    "cumulative_accepted_native_starts": 26,
+    "maximum_new_start_requests": 7,
+    "scope": "Observed accepted native MCP start requests, not tokens or billing measurements.",
+    "automatic_inference_retry_scope": "Any zero recorded in raw automatic_inference_retries fields refers only to Nodia/harness resubmissions. Upstream requests, retries inside the native CLI, tokens and billing are unknown and are not inferred from the accepted-start counter."
+  },
+  "offline_validator_controls": {
+    "positive_isolated_fixtures": 2,
+    "negative_security_fixtures": [
+      "missing_execution_ACK",
+      "another_attempt_ACK",
+      "another_proof_ACK",
+      "cancelled_native_proof",
+      "process_not_closed",
+      "callback_from_another_turn",
+      "foreign_receipt",
+      "result_changed",
+      "incompatible_contract",
+      "foreign_explicit_SQL_run",
+      "foreign_explicit_SQL_call",
+      "missing_SQL_binding_columns",
+      "missing_observed_generation_binding",
+      "another_observed_generation",
+      "duplicated_receipt_identity",
+      "duplicated_callback_identity",
+      "incomplete_terminal_receipt",
+      "execution_before_discovery_ACK",
+      "incomplete_callback_receipt",
+      "domain_not_selected",
+      "selector_not_durable",
+      "overall_pass_cannot_override_unknown_turn",
+      "unresolved_native_state",
+      "simulated_transport",
+      "missing_semantic_check",
+      "false_semantic_check",
+      "wrong_semantic_value",
+      "missing_human_confirmation",
+      "implicit_model_confirmation",
+      "non_idempotent_human_confirmation",
+      "unrelated_known_proposal_confirmation",
+      "bootstrap_confirmation_is_not_capability_confirmation",
+      "independent_case_requires_explicit_confirmation_purpose"
+    ],
+    "historical_real_receipts": [
+      {
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+          "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+        },
+        "accepted_capabilities": []
+      },
+      {
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+          "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+        },
+        "accepted_capabilities": []
+      }
+    ],
+    "fixture_scope": "isolated_validator_inputs_not_provider_results",
+    "cohort_provenance_controls": {
+      "positive_fixtures": 2,
+      "negative_fixtures": [
+        "missing_provenance",
+        "missing_manifest_reference",
+        "unrelated_manifest_path",
+        "changed_manifest_hash",
+        "changed_receipt_manifest",
+        "missing_producer_digest",
+        "unrelated_producer_member",
+        "changed_producer_manifest",
+        "changed_producer_receipt",
+        "changed_archive_receipt",
+        "empty_compiled_manifest",
+        "current_compiled_drift"
+      ]
+    }
+  },
+  "R03_interface_controls": {
+    "positive_fixtures": 5,
+    "negative_fixtures": [
+      "divergent_artifact_alias",
+      "wrong_R03_runner_stage",
+      "foreign_runtime_image",
+      "foreign_runtime_epoch",
+      "foreign_runtime_started_at",
+      "metadata_without_native_start_zero",
+      "positive_native_start_hidden_in_metadata",
+      "accepted_start_hidden_behind_zero_request",
+      "generation_hidden_in_metadata",
+      "conflicting_generation_counter",
+      "missing_ACK_observation",
+      "missing_ACK_timestamp",
+      "invalid_ACK_timestamp",
+      "dispatch_before_canary_ACK",
+      "missing_dispatch_timestamp",
+      "invalid_dispatch_timestamp",
+      "accepted_starts_exceed_requests",
+      "sixth_start_exceeds_authorization"
+    ],
+    "scope": "Isolated R03 interface guards; no invented provider result or inferred cross-clock order."
+  },
+  "boundaries": {
+    "baseline_R01_or_R02_modified": false,
+    "historical_capabilities_transferred_to_R03_epoch": false,
+    "operational_business_database_writes": 0,
+    "physical_UI_accepted": false,
+    "productive_acceptance": false,
+    "AI36_C05_open": true,
+    "remaining_unpublished_candidates": 77
+  },
+  "limitations": [
+    "A successful native canary qualifies only its exact image, policy, configuration and selection; it accepts no business capability.",
+    "Historical and new results are accumulated by capability with explicit environment layers; seven accumulated capabilities would not prove seven under the new native role.",
+    "Human proposal-to-effect linkage retains R01's honest frozen-producer plus same-cohort SQL assertion basis; public callback hashes do not independently reconstruct the entire chain.",
+    "Preparation QA, metadata requests and synthetic controls never imply a successful generation or current provider availability.",
+    "The operational Node runtime remains the 932-output AI35 baseline. The 2803-file/971-asset C05 candidate and its 74 published capability records are acceptance artifacts; this report does not deploy or adopt them operationally.",
+    "Nodia/harness automatic resubmission controls do not observe or prove the absence of internal CLI or upstream retries; historical raw zero fields retain their original producer meaning and are not rewritten."
+  ],
+  "reproducible_consolidator": {
+    "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05-r03.cjs",
+    "sha256": "cdbac60b5095f85d7f50fa3a592be86be53ccc5fe6eca75b297399dcc76a3525"
+  }
+}

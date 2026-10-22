@@ -1,0 +1,29 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "immutable_owned_MCP_role_candidate_build_and_offline_Linux_QA",
+  "started_at_utc": "2026-10-19T19:03:31.852235+00:00",
+  "status": "running",
+  "baseline_container": {
+    "container_id": "c3cdfb9ca3ab71eff4735c344ae0c0d83400b497eb104af21496b593b1bad8af",
+    "image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+    "started_at": "2026-10-18T20:36:40.116324795Z"
+  },
+  "archive_sha256": "b0df8a93e18a4d0c8b5324413ea572e9f127b2f37fadd685ac6360571b045402",
+  "manifest_sha256": "0dd4f487bfd3a533ef157514c4f88453d4148ba9ab55165337aa683d5e5c8fce",
+  "image_source_hashes": {
+    "native_execution_agents.py": "634ff3981e81e2bc0b4b14da6d783a5049fee0a76d17f378119b86cd3ae08e87",
+    "native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "public_test_files": 42,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "candidate_activated": false,
+  "test_sources_mount_only": true,
+  "operational_environment_or_profile_mounts": false,
+  "network": "none",
+  "root_filesystem_read_only": true,
+  "build_exit_code": 1,
+  "operational_container_unchanged": true,
+  "finished_at_utc": "2026-10-19T19:03:32.896084+00:00"
+}

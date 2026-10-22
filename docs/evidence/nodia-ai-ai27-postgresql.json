@@ -1,0 +1,109 @@
+{
+  "observed_at_utc": "2026-10-17T18:31:03.246322+00:00",
+  "stage_directory": "/opt/nodia/verification/ai27-20261017",
+  "compiled_production_archive_sha256": "757c524ddf82df8a7ed055bbaf492061b10ad07413ca1795d29db3bfc95b1a21",
+  "knowledge_pin_sha256": "3dc50f14cba16916c35a7f0fa60fe2ae77a6d5fc323b918ef77a85ba49c68e33",
+  "scope": "Synthetic disposable PostgreSQL only; no configured database mutation, provider inference, MCP write publication or Gemini acceptance.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "command": "node test/nodia-ai-ai27.integration.mjs",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai27.integration.mjs",
+      "sha256": "02d5d5b119a0fe9a2a456168d8410c8fd8af67cb0fd089a652ea318c33925294"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai27-worker.fixture.mjs",
+      "sha256": "70ec39b7fda0714f2d6c50ad530ec4c4c68017996f7766d499dcc51245f2ac03"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    }
+  ],
+  "result": {
+    "stage": "AI-27",
+    "scope": "compiled_http_confirmation_worker_disposable_postgresql_seventeen_core_operations_no_provider",
+    "checks": 36,
+    "exercised_operations": [
+      "actions/create",
+      "actions/delete",
+      "actions/update",
+      "business_actions/create",
+      "business_actions/delete",
+      "business_actions/update",
+      "module_groups/create",
+      "module_groups/delete",
+      "module_groups/update",
+      "modules/create",
+      "modules/delete",
+      "modules/update",
+      "roles/create",
+      "roles/delete",
+      "roles/update",
+      "users/create",
+      "users/update"
+    ],
+    "passed": [
+      "group creation and editing persist native translations atomically",
+      "module identity is immutable while destination metadata and activity remain editable",
+      "action null description and explicit inactive state are preserved",
+      "role action associations are exact deduplicated and atomic",
+      "business-action partial edit cannot reactivate an inactive row",
+      "business-action create upsert previews existing identity without applying new-record defaults",
+      "business-action DELETE deactivates and keeps row translations and historical receipt",
+      "user email normalization associations and activity use the native writer",
+      "user create upsert preserves existing inactive state and exact identity",
+      "role create upsert preserves existing inactive state and action assignments",
+      "role deletion removes native associations translations and leaves recoverable receipt",
+      "action module and group deletion preserve completed historical receipts after records disappear",
+      "all seventeen native administration operations execute with exact receipt recovery",
+      "compiled Core execution takes one exclusive authority frontier before its first read without lock upgrade or native timeout reset",
+      "reserved super-admin identity and the last active super-admin reject unsafe previews",
+      "unknown user role action and module group associations reject before native mutation",
+      "closed schemas reject internal identity fields and imprecise catalog IDs",
+      "material native user edits invalidate an exact confirmed snapshot",
+      "numeric action keys cannot alias or replace canonical action IDs in the native writer",
+      "association labels and activity are material even when the intended IDs are unchanged",
+      "group deletion retains the native child-module invariant",
+      "two concurrently confirmed last-admin changes serialize and retain exactly one active super-admin",
+      "native concurrent writers preserve NI-13 under the same exclusive frontier",
+      "destination module revocation before execution blocks the admitted Core mutation",
+      "session revocation before execution prevents a confirmed administrative write",
+      "exclusive effect waiting behind an uncommitted native revocation reads the subsequent authority snapshot",
+      "self access-loss preview includes affected users and removed destination assignments",
+      "a confirmed self-removal commits exactly and its receipt survives loss and restoration of access",
+      "receipt failure rolls back user fields roles and module replacements atomically",
+      "receipt failure rolls back native role metadata and translations with no independent commit",
+      "native inherited Core writer rejects an active manager without exclusive proof",
+      "real child death after claim leaves no administrative mutation and permits explicit recovery",
+      "duplicate human resume commits one Core catalog row and its exact receipt",
+      "lost Core COMMIT response recovers historical receipt without replaying native creation",
+      "administrative effects never invoke providers or inference slots",
+      "execution attempts and leases finish without orphaned jobs"
+    ]
+  },
+  "previous_attempts_not_acceptance": [
+    {
+      "completed_checks": 23,
+      "reason": "Synthetic cleanup cleared user 2 super-admin before restoring user 3, correctly triggering NI-13.",
+      "resolution": "Restore user 3 before clearing user 2; complete rerun."
+    },
+    {
+      "completed_checks": 23,
+      "reason": "Synthetic single worker dispatch could drain an earlier NI-13 queued job instead of the target revocation job.",
+      "resolution": "Drive the target execution to a terminal state with a bounded loop; complete rerun."
+    },
+    {
+      "completed_checks": 31,
+      "reason": "Execution-only child composition lacked RedisService in the newly imported native Core modules.",
+      "resolution": "CoreOperationsModule explicitly imports RedisModule in the final compiled archive; real child and all regressions rerun successfully."
+    }
+  ]
+}

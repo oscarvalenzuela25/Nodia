@@ -1,24 +1,25 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UpdateUserUseCase } from './update-user.use-case.js';
-import type { UserService } from '../user.service.js';
+import type { SaveUserUseCase } from './save-user.use-case.js';
 import type { UpdateUserDto } from '../dto/update-user.dto.js';
 
 describe('UpdateUserUseCase', () => {
   let useCase: UpdateUserUseCase;
-  let userServiceMock: Partial<UserService>;
+  let userServiceMock: Partial<SaveUserUseCase>;
 
   beforeEach(() => {
     userServiceMock = {
-      update: vi.fn(),
+      execute: vi.fn(),
     };
-    useCase = new UpdateUserUseCase(userServiceMock as UserService);
+    useCase = new UpdateUserUseCase(userServiceMock as SaveUserUseCase);
   });
 
   it('should be defined', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should call userService.update with the provided id and dto and return the updated user', async () => {
+  it('should call userService.execute with the provided id and dto and return the updated user', async () => {
     const id = '1';
     const dto: UpdateUserDto = {
       name: 'John Updated',
@@ -36,16 +37,20 @@ describe('UpdateUserUseCase', () => {
       user_roles: [],
     };
 
-    vi.mocked(userServiceMock.update!).mockResolvedValue(updatedUser as any);
+    vi.mocked(userServiceMock.execute!).mockResolvedValue(updatedUser as any);
 
-    const result = await useCase.execute(id, dto);
+    const result = await useCase.execute(id, dto, actorFixture('1'));
 
-    expect(userServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(userServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(userServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(userServiceMock.execute).toHaveBeenCalledWith(
+      id,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(updatedUser);
   });
 
-  it('should call userService.update with role IDs and return the updated user with new roles', async () => {
+  it('should call userService.execute with role IDs and return the updated user with new roles', async () => {
     const id = '1';
     const dto: UpdateUserDto = {
       roles: ['10', '30'],
@@ -65,16 +70,20 @@ describe('UpdateUserUseCase', () => {
       ],
     };
 
-    vi.mocked(userServiceMock.update!).mockResolvedValue(updatedUser as any);
+    vi.mocked(userServiceMock.execute!).mockResolvedValue(updatedUser as any);
 
-    const result = await useCase.execute(id, dto);
+    const result = await useCase.execute(id, dto, actorFixture('1'));
 
-    expect(userServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(userServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(userServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(userServiceMock.execute).toHaveBeenCalledWith(
+      id,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(updatedUser);
   });
 
-  it('should call userService.update with module IDs and return the updated user with new modules', async () => {
+  it('should call userService.execute with module IDs and return the updated user with new modules', async () => {
     const id = '1';
     const dto: UpdateUserDto = {
       modules: ['5', '8'],
@@ -94,13 +103,16 @@ describe('UpdateUserUseCase', () => {
       ],
     };
 
-    vi.mocked(userServiceMock.update!).mockResolvedValue(updatedUser as any);
+    vi.mocked(userServiceMock.execute!).mockResolvedValue(updatedUser as any);
 
-    const result = await useCase.execute(id, dto);
+    const result = await useCase.execute(id, dto, actorFixture('1'));
 
-    expect(userServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(userServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(userServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(userServiceMock.execute).toHaveBeenCalledWith(
+      id,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(updatedUser);
   });
 });
-

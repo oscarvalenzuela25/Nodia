@@ -1,0 +1,21 @@
+{
+  "scope": "offline_observer_v2_lifecycle_validation",
+  "status": "passed",
+  "windows": {
+    "exit_code": 0,
+    "summary": "........ss.....s..s\n----------------------------------------------------------------------\nRan 19 tests in 1.428s\n\nOK (skipped=4)",
+    "compiled_sources": 2
+  },
+  "linux_evidence": "docs/evidence/nodia-ai-ai36-c05-observer-v2-linux-validation.json",
+  "historical_v1_unchanged": true,
+  "change": "Replace daemon buffered stdin reader with one nonblocking descriptor; no surviving reader thread at interpreter shutdown",
+  "source_sha256": {
+    "docs/evidence/scripts/nodia-ai-ai36-c05-live-owned-log-observer-v2.py": "b6c9cd9ae2b0b5988b600cace089773721bce13340de8a97fd603e1237633e33",
+    "docs/evidence/scripts/test_nodia_ai_ai36_c05_live_owned_log_observer_v2.py": "e4ea0f1334b1495f4a49c8004304e343a7bbf650adc49bee1de282258a2e3830"
+  },
+  "provider_requests": 0,
+  "application_imports": 0,
+  "runtime_mutations": 0,
+  "services_restarted": false,
+  "does_not_prove_native_provider_latency_cause": true
+}

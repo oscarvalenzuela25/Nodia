@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,13 +9,7 @@ import { AiProvider } from './entities/ai-provider.entity.js';
 import { AiApiKey } from './entities/ai-api-key.entity.js';
 import { AiProviderEvent } from './entities/ai-provider-event.entity.js';
 import { AiProviderCatalog } from './entities/ai-provider-catalog.entity.js';
-import { CreateAiProviderDto } from './dto/create-ai-provider.dto.js';
-import { UpdateAiProviderDto } from './dto/update-ai-provider.dto.js';
 import { GetAiProvidersDto } from './dto/get-ai-providers.dto.js';
-import { CreateAiProviderCatalogDto } from './dto/create-ai-provider-catalog.dto.js';
-import { UpdateAiProviderCatalogDto } from './dto/update-ai-provider-catalog.dto.js';
-import { CreateAiApiKeyDto } from './dto/create-ai-api-key.dto.js';
-import { UpdateAiApiKeyDto } from './dto/update-ai-api-key.dto.js';
 import { GetAiApiKeysDto } from './dto/get-ai-api-keys.dto.js';
 import { CreateAiProviderEventDto } from './dto/create-ai-provider-event.dto.js';
 import { GetAiProviderEventsDto } from './dto/get-ai-provider-events.dto.js';
@@ -31,16 +24,10 @@ import {
 } from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { TranslationService } from '../translation/translation.service.js';
-import {
-  encryptSecret,
-  decryptSecret,
-  generateDisplayHint,
-  generateFingerprint,
-} from './helpers/ai-key-crypto.helper.js';
-import {
-  getSupportedProviderByKey,
-  sanitizeProviderFields,
-} from './helpers/supported-providers.helper.js';
+import { decryptSecret } from './helpers/ai-key-crypto.helper.js';
+import { sanitizeProviderFields } from './helpers/supported-providers.helper.js';
+import { resolveAiProviderUpdate } from './use-case/ai-provider-configuration.rules.js';
+import type { DiscoveredModelInfo } from './use-case/sync-ai-provider-models.use-case.js';
 
 @Injectable()
 export class AiProviderService {
@@ -153,244 +140,14 @@ export class AiProviderService {
     return sanitizeProviderFields(result);
   }
 
-  async createProvider(createDto: CreateAiProviderDto): Promise<AiProvider> {
-    const { translates, ...providerData } = createDto;
-
-    let catalog: AiProviderCatalog | null = null;
-    if (providerData.catalog_id) {
-      catalog = await this.aiProviderCatalogRepository.findOne({
-        where: { id: providerData.catalog_id },
-      });
-    } else if (providerData.key) {
-      catalog = await this.aiProviderCatalogRepository.findOne({
-        where: { key: providerData.key },
-      });
-    }
-
-    if (!catalog || catalog.is_active === false) throw new BadRequestException('Seleccione un proveedor activo del catálogo.');
-    const effectiveKey = catalog.key;
-    const effectiveName = providerData.name || catalog?.name || effectiveKey;
-    const supported = getSupportedProviderByKey(effectiveKey);
-    if (!supported) throw new BadRequestException('Este proveedor no tiene una integración implementada.');
-    let mode = providerData.mode;
-    if (!mode && supported) {
-      mode = supported.defaultMode;
-    }
-
-    const fields = providerData.fields ? { ...providerData.fields } : {};
-    // Providers must always be created without models until explicitly synced & configured
-    fields.available_models = [];
-    delete fields.selected_model;
-    delete fields.ocr_model;
-    delete fields.ocr_focus_model;
-
-    const useApiKey = providerData.use_api_key ?? false;
-    const useWeb = providerData.use_token_plan_web ?? false;
-    const useAgentic = providerData.use_token_plan_agentic ?? false;
-
-    if (catalog) {
-      if (useApiKey && !catalog.can_use_api_key) {
-        throw new BadRequestException(
-          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de API Key.`,
-        );
-      }
-      if (useWeb && !catalog.can_use_token_plan_web) {
-        throw new BadRequestException(
-          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Web.`,
-        );
-      }
-      if (useAgentic && !catalog.can_use_token_plan_agentic) {
-        throw new BadRequestException(
-          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Agentic.`,
-        );
-      }
-    }
-
-    let defaultMode = providerData.default_mode;
-    if (!defaultMode) {
-      if (useAgentic) {
-        defaultMode = 'token_plan_agentic';
-      } else if (useWeb) {
-        defaultMode = 'token_plan_web';
-      } else if (useApiKey) {
-        defaultMode = 'api_key';
-      } else {
-        defaultMode = null;
-      }
-    } else {
-      if (defaultMode === 'api_key' && !useApiKey) {
-        throw new BadRequestException(
-          'El modo por defecto "api_key" no puede seleccionarse si dicho canal no está habilitado.',
-        );
-      }
-      if (defaultMode === 'token_plan_web' && !useWeb) {
-        throw new BadRequestException(
-          'El modo por defecto "token_plan_web" no puede seleccionarse si dicho canal no está habilitado.',
-        );
-      }
-      if (defaultMode === 'token_plan_agentic' && !useAgentic) {
-        throw new BadRequestException(
-          'El modo por defecto "token_plan_agentic" no puede seleccionarse si dicho canal no está habilitado.',
-        );
-      }
-    }
-
-    const existingCount = await this.aiProviderRepository.count();
-    const isDefault = providerData.is_default ?? existingCount === 0;
-    if (isDefault) {
-      await this.aiProviderRepository
-        .createQueryBuilder()
-        .update(AiProvider)
-        .set({ is_default: false })
-        .where('is_default = :isDefault', { isDefault: true })
-        .execute();
-    }
-
-    const { key: _k, mode: _m, ...restData } = providerData;
-    const provider = this.aiProviderRepository.create({
-      ...restData,
-      catalog_id: catalog?.id ?? providerData.catalog_id,
-      name: effectiveName,
-      fields,
-      use_api_key: useApiKey,
-      use_token_plan_web: useWeb,
-      use_token_plan_agentic: useAgentic,
-      default_mode: defaultMode,
-      is_default: isDefault,
-    });
-    const saved = await this.aiProviderRepository.save(provider);
-
-    if (translates && translates.length > 0) {
-      await this.translationService.saveTranslations(
-        'ai_providers',
-        saved.id,
-        translates,
-      );
-    }
-
-    return this.findProviderById(saved.id);
-  }
-
-  async updateProvider(
-    id: string,
-    updateDto: UpdateAiProviderDto,
-  ): Promise<AiProvider> {
-    const existing = await this.findProviderById(id);
-    const { translates, ...rest } = updateDto;
-
-    if (rest.catalog_id && rest.catalog_id !== existing.catalog_id) throw new BadRequestException('El proveedor de catálogo de una conexión no se puede cambiar.');
-    const catalogId = rest.catalog_id ?? existing.catalog_id;
-    let key = rest.key ?? existing.key;
-    const name = rest.name ?? existing.name;
-
-    let catalog: AiProviderCatalog | null = null;
-    if (catalogId) {
-      catalog = await this.aiProviderCatalogRepository.findOne({
-        where: { id: catalogId },
-      });
-      if (catalog) {
-        key = catalog.key;
-      }
-    }
-
-    const effectiveUseApiKey =
-      rest.use_api_key !== undefined ? rest.use_api_key : existing.use_api_key;
-    const effectiveUseWeb =
-      rest.use_token_plan_web !== undefined
-        ? rest.use_token_plan_web
-        : existing.use_token_plan_web;
-    const effectiveUseAgentic =
-      rest.use_token_plan_agentic !== undefined
-        ? rest.use_token_plan_agentic
-        : existing.use_token_plan_agentic;
-
-    if (catalog) {
-      if (effectiveUseApiKey && !catalog.can_use_api_key) {
-        throw new BadRequestException(
-          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de API Key.`,
-        );
-      }
-      if (effectiveUseWeb && !catalog.can_use_token_plan_web) {
-        throw new BadRequestException(
-          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Web.`,
-        );
-      }
-      if (effectiveUseAgentic && !catalog.can_use_token_plan_agentic) {
-        throw new BadRequestException(
-          `El catálogo "${catalog.name || catalog.key}" no permite habilitar el canal de Token Plan Agentic.`,
-        );
-      }
-    }
-
-    const effectiveDefaultMode =
-      rest.default_mode !== undefined
-        ? rest.default_mode
-        : existing.default_mode;
-
-    if (effectiveDefaultMode) {
-      if (effectiveDefaultMode === 'api_key' && !effectiveUseApiKey) {
-        throw new BadRequestException(
-          'El modo por defecto "api_key" no puede seleccionarse si dicho canal no está habilitado.',
-        );
-      }
-      if (effectiveDefaultMode === 'token_plan_web' && !effectiveUseWeb) {
-        throw new BadRequestException(
-          'El modo por defecto "token_plan_web" no puede seleccionarse si dicho canal no está habilitado.',
-        );
-      }
-      if (
-        effectiveDefaultMode === 'token_plan_agentic' &&
-        !effectiveUseAgentic
-      ) {
-        throw new BadRequestException(
-          'El modo por defecto "token_plan_agentic" no puede seleccionarse si dicho canal no está habilitado.',
-        );
-      }
-    }
-
-    if (rest.fields) {
-      const updatedFields = { ...existing.fields, ...rest.fields };
-      const dummy = { key: key || existing.key, fields: updatedFields };
-      rest.fields = sanitizeProviderFields(dummy).fields;
-    }
-
-    if (rest.is_default === true) {
-      await this.aiProviderRepository
-        .createQueryBuilder()
-        .update(AiProvider)
-        .set({ is_default: false })
-        .where('is_default = :isDefault AND id != :id', {
-          isDefault: true,
-          id,
-        })
-        .execute();
-    }
-
-    const { key: _ignoredKey, mode: _ignoredMode, ...cleanRest } = rest;
-    await this.aiProviderRepository.update(id, {
-      ...cleanRest,
-      catalog_id: catalogId,
-      name,
-    });
-
-    if (translates !== undefined) {
-      await this.translationService.updateTranslations(
-        'ai_providers',
-        id,
-        translates,
-      );
-    }
-
-    return this.findProviderById(id);
-  }
-
   // ===========================================================================
   // AI PROVIDER CATALOG
   // ===========================================================================
 
-  async findAllCatalogs(): Promise<AiProviderCatalog[]> {
+  async findAllCatalogs(maxRows?: number): Promise<AiProviderCatalog[]> {
     return this.aiProviderCatalogRepository.find({
       order: { id: 'ASC' },
+      ...(maxRows === undefined ? {} : { take: maxRows + 1 }),
     });
   }
 
@@ -400,39 +157,6 @@ export class AiProviderService {
 
   async findCatalogByKey(key: string): Promise<AiProviderCatalog | null> {
     return this.aiProviderCatalogRepository.findOne({ where: { key } });
-  }
-
-  async createCatalog(
-    createDto: CreateAiProviderCatalogDto,
-  ): Promise<AiProviderCatalog> {
-    const normalizedKey = createDto.key.trim().toLowerCase();
-    const existing = await this.findCatalogByKey(normalizedKey);
-    if (existing) {
-      throw new ConflictException(
-        `El proveedor de catálogo con clave "${normalizedKey}" ya existe.`,
-      );
-    }
-
-    const catalog = this.aiProviderCatalogRepository.create({
-      ...createDto,
-      key: normalizedKey,
-    });
-    return this.aiProviderCatalogRepository.save(catalog);
-  }
-
-  async updateCatalog(
-    id: string,
-    updateDto: UpdateAiProviderCatalogDto,
-  ): Promise<AiProviderCatalog> {
-    const catalog = await this.findCatalogById(id);
-    if (!catalog) {
-      throw new NotFoundException(
-        `El elemento de catálogo con ID "${id}" no existe.`,
-      );
-    }
-
-    await this.aiProviderCatalogRepository.update(id, updateDto);
-    return (await this.findCatalogById(id))!;
   }
 
   // ===========================================================================
@@ -454,6 +178,7 @@ export class AiProviderService {
     }
 
     applyRansack(qb, q, 'api_key', RANSACK_POLICIES.api_key);
+    qb.addOrderBy('api_key.sort_order', 'ASC').addOrderBy('api_key.id', 'ASC');
 
     if (all) {
       const rawData = await qb.getMany();
@@ -501,59 +226,6 @@ export class AiProviderService {
     return apiKey;
   }
 
-  async createApiKey(createDto: CreateAiApiKeyDto): Promise<AiApiKey> {
-    const provider = await this.findProviderById(createDto.provider_id);
-    if (provider.catalog?.can_use_api_key !== true) throw new BadRequestException('El catálogo no permite API keys.');
-    const { secret, ...rest } = createDto;
-    if (rest.is_active === false) rest.is_selected = false;
-    const encrypted = { secret_ciphertext: encryptSecret(secret), secret_fingerprint: generateFingerprint(secret), display_hint: generateDisplayHint(secret) };
-    try {
-      return await this.aiApiKeyRepository.manager.transaction(async (manager) => {
-        await manager.getRepository(AiProvider).findOneOrFail({ where: { id: createDto.provider_id }, lock: { mode: 'pessimistic_write' } });
-        const repo = manager.getRepository(AiApiKey);
-        if (rest.is_active !== false && await repo.countBy({ provider_id: createDto.provider_id }) === 0) rest.is_selected = true;
-        if (rest.is_selected) await repo.update({ provider_id: createDto.provider_id, is_selected: true }, { is_selected: false });
-        return repo.save(repo.create({ ...rest, ...encrypted }));
-      });
-    } catch (error) {
-      if (error && typeof error === 'object' && 'code' in error && error.code === '23505') throw new ConflictException('Esta API key ya está registrada en la conexión.');
-      throw error;
-    }
-  }
-
-  async updateApiKey(id: string, updateDto: UpdateAiApiKeyDto): Promise<AiApiKey> {
-    const existing = await this.findApiKeyById(id);
-    const { secret, ...rest } = updateDto;
-    const encrypted = secret ? { secret_ciphertext: encryptSecret(secret), secret_fingerprint: generateFingerprint(secret), display_hint: generateDisplayHint(secret) } : {};
-    try {
-      return await this.aiApiKeyRepository.manager.transaction(async (manager) => {
-        await manager.getRepository(AiProvider).findOneOrFail({ where: { id: existing.provider_id }, lock: { mode: 'pessimistic_write' } });
-        const repo = manager.getRepository(AiApiKey);
-        const current = await repo.findOneOrFail({ where: { id } });
-        if ((rest.is_active ?? current.is_active) && await repo.countBy({ provider_id: existing.provider_id }) === 1) rest.is_selected = true;
-        if (rest.is_selected && !(rest.is_active ?? current.is_active)) throw new BadRequestException('No se puede seleccionar una API key inactiva.');
-        if (rest.is_selected) await repo.update({ provider_id: existing.provider_id, is_selected: true }, { is_selected: false });
-        Object.assign(current, rest, encrypted);
-        if (!current.is_active) current.is_selected = false;
-        return repo.save(current);
-      });
-    } catch (error) {
-      if (error && typeof error === 'object' && 'code' in error && error.code === '23505') throw new ConflictException('Esta API key ya está registrada en la conexión.');
-      throw error;
-    }
-  }
-
-  async deleteApiKey(id: string): Promise<void> {
-    const apiKey = await this.findApiKeyById(id);
-    await this.aiApiKeyRepository.manager.transaction(async (manager) => {
-      await manager.getRepository(AiProvider).findOneOrFail({ where: { id: apiKey.provider_id }, lock: { mode: 'pessimistic_write' } });
-      const repo = manager.getRepository(AiApiKey);
-      await repo.delete({ id });
-      const remaining = await repo.find({ where: { provider_id: apiKey.provider_id }, take: 2 });
-      if (remaining.length === 1 && remaining[0].is_active) await repo.update({ id: remaining[0].id }, { is_selected: true });
-    });
-  }
-
   // ===========================================================================
   // AI PROVIDER EVENTS (Immutable audit log)
   // ===========================================================================
@@ -579,6 +251,7 @@ export class AiProviderService {
     if (!q?.s) {
       qb.orderBy('event.created_at', 'DESC');
     }
+    qb.addOrderBy('event.id', 'DESC');
 
     if (all) {
       const rawData = await qb.getMany();
@@ -618,26 +291,92 @@ export class AiProviderService {
     return this.aiProviderEventRepository.save(event);
   }
 
-  async getEligibleApiKeySecrets(providerId: string, rotate = false): Promise<string[]> {
-    const qb = this.aiApiKeyRepository.createQueryBuilder('key')
-      .addSelect('key.secret_ciphertext').where('key.provider_id = :providerId', { providerId })
-      .andWhere('key.is_active = true')
-      .andWhere('(key.cooldown_until IS NULL OR key.cooldown_until <= :now)', { now: new Date() })
-      .orderBy('key.is_selected', 'DESC').addOrderBy('key.sort_order', 'ASC').addOrderBy('key.id', 'ASC');
-    if (!rotate) qb.andWhere('key.is_selected = true');
-    const entities = await qb.take(rotate ? 20 : 1).getMany();
-    try { return entities.map((key) => decryptSecret(key.secret_ciphertext)); }
-    catch { throw new BadRequestException('No se pudo descifrar la API key configurada. Revise la configuración de cifrado.'); }
+  async getEligibleApiKeySecrets(
+    providerId: string,
+    rotate = false,
+    snapshotKeys?: readonly AiApiKey[],
+  ): Promise<string[]> {
+    const now = new Date();
+    const qb = snapshotKeys
+      ? undefined
+      : this.aiApiKeyRepository
+          .createQueryBuilder('key')
+          .addSelect('key.secret_ciphertext')
+          .where('key.provider_id = :providerId', { providerId })
+          .andWhere('key.is_active = true')
+          .andWhere(
+            '(key.cooldown_until IS NULL OR key.cooldown_until <= :now)',
+            { now },
+          )
+          .orderBy('key.is_selected', 'DESC')
+          .addOrderBy('key.sort_order', 'ASC')
+          .addOrderBy('key.id', 'ASC');
+    if (!rotate) qb?.andWhere('key.is_selected = true');
+    const rows = snapshotKeys ?? (await qb!.take(rotate ? 20 : 1).getMany());
+    // Shared policy for a live SQL selection or an already bounded internal snapshot.
+    const entities = rows
+      .filter(
+        (key) =>
+          key.provider_id === providerId &&
+          key.is_active &&
+          (key.cooldown_until == null ||
+            new Date(key.cooldown_until).getTime() <= now.getTime()) &&
+          (rotate || key.is_selected),
+      )
+      .sort(
+        (a, b) =>
+          Number(b.is_selected) - Number(a.is_selected) ||
+          a.sort_order - b.sort_order ||
+          (BigInt(a.id) < BigInt(b.id)
+            ? -1
+            : BigInt(a.id) > BigInt(b.id)
+              ? 1
+              : 0),
+      )
+      .slice(0, rotate ? 20 : 1);
+    try {
+      return entities.map((key) => decryptSecret(key.secret_ciphertext));
+    } catch {
+      throw new BadRequestException(
+        'No se pudo descifrar la API key configurada. Revise la configuración de cifrado.',
+      );
+    }
   }
 
-  async getActiveApiKeySecret(providerId: string): Promise<string | null> {
-    return (await this.getEligibleApiKeySecrets(providerId))[0] ?? null;
+  async getActiveApiKeySecret(
+    providerId: string,
+    snapshotKeys?: readonly AiApiKey[],
+  ): Promise<string | null> {
+    return (
+      (
+        await this.getEligibleApiKeySecrets(providerId, false, snapshotKeys)
+      )[0] ?? null
+    );
   }
 
-  async updateProviderFields(
+  /** Persist only observations after remote I/O; never replay its stale configuration snapshot. */
+  async mergeDiscoveredModels(
     id: string,
-    fields: Record<string, any>,
+    mode: 'api_key' | 'token_plan_web' | 'token_plan_agentic',
+    models: readonly DiscoveredModelInfo[],
   ): Promise<void> {
-    await this.aiProviderRepository.update(id, { fields });
+    await this.aiProviderRepository.manager.transaction(async (manager) => {
+      await manager.query("SET LOCAL lock_timeout = '2s'");
+      await manager.query("SET LOCAL statement_timeout = '5s'");
+      await manager.query(
+        'LOCK TABLE ai_provider_catalog, ai_providers IN SHARE ROW EXCLUSIVE MODE',
+      );
+      const repository = manager.getRepository(AiProvider);
+      const current = await repository.findOneOrFail({
+        where: { id },
+        relations: { catalog: true },
+      });
+      const resolved = resolveAiProviderUpdate(
+        { fields: { [mode]: { available_models: models } } },
+        current,
+        current.catalog ?? null,
+      );
+      await repository.update(id, { fields: resolved.fields });
+    });
   }
 }

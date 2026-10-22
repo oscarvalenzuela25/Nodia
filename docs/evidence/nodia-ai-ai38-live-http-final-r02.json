@@ -1,0 +1,11 @@
+{
+  "schema": "ai38-live-http-diagnostic-r02",
+  "status": "failed_observation",
+  "source_sha256": "468cf03bb9c455a7454d7c0de6912ad308bd35f229bbe9da276c074d48c44e68",
+  "frozen_observer_sha256": "1587fd82495866362cc77d88b469ff4a0bc789bbc80d83356eb4223eeff63e9d",
+  "failure_reason": "log_rotated_identity_changed",
+  "failure_class": "ValueError",
+  "raw_log_or_credentials_emitted": false,
+  "provider_requests": 0,
+  "source_modified": false
+}

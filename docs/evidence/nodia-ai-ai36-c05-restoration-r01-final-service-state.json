@@ -1,0 +1,19 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "final_exact_b110_restored_services_health_no_native_canary",
+  "observed_at_utc": "2026-10-19T19:24:53.289591+00:00",
+  "image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "container_id": "4efe9f9252149e19757477e0899e81dd78c8ff770e838ca5ed245b6c9a2bd5d1",
+  "started_at_utc": "2026-10-19T19:22:44.590589162Z",
+  "health": "healthy",
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "actual_native_starts_in_R02_or_restoration": 0,
+  "C05_cumulative_native_accepted_starts": 16,
+  "MCP_currently_verified": false,
+  "configured_selection_modified": false
+}

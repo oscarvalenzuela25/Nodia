@@ -1,0 +1,2874 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36",
+  "scope": "current_compiled_SQL_HTTP_domain_and_worker_regressions",
+  "status": "passed",
+  "suites": 30,
+  "suites_passed": 30,
+  "suites_failed": 0,
+  "total_numbered_checks": 1178,
+  "suites_without_numbered_counter": [
+    "ai15-quota-gateway",
+    "ai15-worker-metadata"
+  ],
+  "results": [
+    {
+      "suite": "AI-10",
+      "variant": null,
+      "harness": "ai10",
+      "harness_path": "nodia-server/test/nodia-ai-ai10.integration.mjs",
+      "source_sha256": "45e6be305b99e4957ed26b6816ed31ffb7b6a9686034a2450e90f62f9f09635a",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-10",
+        "scope": "compiled_http_and_disposable_postgresql16_synthetic_preparer",
+        "checks": 49,
+        "passed": [
+          "compiled Nest HTTP creates owned chat without provider dispatch",
+          "oversized JSON is rejected at policy64KiB before DTO processing",
+          "malformed JSON is classified as invalid input",
+          "compressed JSON is rejected before decompression",
+          "HTTP rejects forged owner and unknown fields",
+          "ordinary foreign detail hides chat existence",
+          "super_admin reads foreign chat read-only without changing owner",
+          "foreign administrative read leaves actor/session audit linked to chat",
+          "super_admin inspection cannot send as another owner",
+          "ordinary all-list request is rejected",
+          "explicit super_admin owner-filter returns foreign read-only rows",
+          "concurrent identical message identities converge on one message/run",
+          "one admission atomically creates message/run/job/grant",
+          "new owner message sets exact 90-day retention and busy pointer",
+          "retry recovers before revision/activity/observation and keeps original accepted revision",
+          "duplicate does not renew owner activity or expiration",
+          "same identity with another payload conflicts",
+          "a second message cannot bypass active chat job",
+          "selection cannot change during an active activity",
+          "message page projects canonical text without internal manifest",
+          "HTTP message pagination rejects limits above policy",
+          "malformed cursor cannot reach PostgreSQL casts",
+          "malformed source scope hides text instead of treating absence as permission",
+          "metadata advances revision without renewing retention",
+          "selection preference changes between turns while preserving history",
+          "changing selection preserves prior canonical message",
+          "bounded parameterized title search finds own live chat",
+          "search metacharacters remain literal rather than SQL/wildcards",
+          "conversation cursor preserves PostgreSQL microseconds without skipping a same-millisecond row",
+          "forged cursor UUID is rejected before PostgreSQL type casting",
+          "known own expired chat returns 410 immediately before sweep",
+          "expired foreign chat returns 404 even to super_admin",
+          "expired chats are excluded independently of maintenance scheduling",
+          "saturation exposes the policy Retry-After header",
+          "owner waiting limit is atomically enforced across separate conversations",
+          "saturation does not leave a message without a runnable admission",
+          "concurrent cross-chat admissions do not oversubscribe an owner waiting capacity",
+          "maintenance purges expired chats without browser checks",
+          "settled attempts with historical external refs are deleted rather than archived",
+          "purged own chat becomes 404 without permanent tombstone",
+          "chat audit is removed with expired content",
+          "unknown effect does not prevent chat content purge",
+          "failed object cleanup survives purge with exact storage generation and no expired descriptor content",
+          "unknown job detaches from payload and remains non-dispatchable with higher fence",
+          "runtime stays quarantined and fenced without chat or job reference",
+          "unresolved attempt keeps only operational references and discards model selection",
+          "unknown recovery does not retain messages",
+          "expiry is checked with a fresh clock after waiting on the chat lock",
+          "current database session revocation rejects even a fixture guard identity"
+        ],
+        "configuredDatabaseTouched": false,
+        "providersCalled": false,
+        "syntheticAdapter": true
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai10.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai10.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "1391015eea62c1ee3d0859f30e0b4a2e7ea813c2bdd873803e05c05d999c0d45",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-11",
+      "variant": null,
+      "harness": "ai11",
+      "harness_path": "nodia-server/test/nodia-ai-ai11.integration.mjs",
+      "source_sha256": "48225cdb369c5ce8881534e9abe8acbdfb124a8cabe274141303df7dbeb44f6d",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-11",
+        "scope": "compiled_use_cases_and_disposable_postgresql16",
+        "checks": 60,
+        "passed": [
+          "two consumers admit exactly one stage of one job",
+          "first delivery has a durable worker attempt and fence",
+          "result checkpoint and next stage commit atomically without a live lease",
+          "next stage gets a distinct attempt and newer fence",
+          "old worker cannot commit after another stage claims its job",
+          "physical profile reservation has a monotonic durable fence",
+          "dispatch consumes durable shared budget before remote I/O",
+          "same attempt cannot arm or reserve provider budget twice",
+          "heartbeat renews the existing physical slot rather than acquiring another",
+          "failed result transaction preserves both slot and original stage",
+          "failed response commit does not leave a detached proof-cleanup job",
+          "verified terminal result releases only its slot in the same checkpoint",
+          "known successful response commits detached minimal native-proof cleanup atomically",
+          "finalization closes activity without changing human retention basis",
+          "lease loss before dispatch can recover under a new fence",
+          "late undispatched worker is fenced after recovery",
+          "crash after arming preserves unknown instead of replaying inference",
+          "lease expiry quarantines an unclosed physical runtime",
+          "stale worker cannot free an unknown runtime",
+          "unknown runtime does not become free merely because its lease expired",
+          "concurrent claims obey global and owner capacity",
+          "capacity saturation leaves unclaimed work ready",
+          "SKIP LOCKED can claim another conversation while the oldest row is locked",
+          "rolling worker never interprets an unsupported catalog or policy hash",
+          "module revocation is checked before the next local effect",
+          "provably pre-dispatch failure can requeue the same stage identity",
+          "safe retry preserves stage and absolute admission deadline",
+          "second pre-dispatch retry remains bounded",
+          "third pre-dispatch failure cannot extend the retry budget",
+          "armed inference is never eligible for safe retry",
+          "cancellation before dispatch becomes known cancelled and releases activity",
+          "compiled runner can process a bounded synthetic dispatch stage",
+          "lost response persists unknown without a second send",
+          "second worker does not replay an uncertain remote operation",
+          "two separate Node worker processes share the same durable claim gate",
+          "killing an armed worker process preserves unknown and does not dispatch it again",
+          "crashed worker process cannot lose its physical runtime quarantine",
+          "undispatched queue work is not claimable after its own shorter wait window",
+          "queue deadline fails undispatched work without resetting its run deadline",
+          "known busy or unknown profile leaves inference waiting without consuming an attempt",
+          "a waiting stage becomes claimable when its independent runtime is actually freed",
+          "reconciliation requires a current super_admin before asking native supervisor",
+          "operator list exposes only bounded technical pending identities",
+          "verified terminal native proof closes unknown locally without generating a second response",
+          "settled acknowledgement removes the minimal job and its delivery attempts",
+          "a supervised abandoned outcome closes locally without claiming remote absence or inventing a reply",
+          "mismatched native proof never releases the SQL runtime",
+          "reconciliation rechecks its SQL fence after external proof returns",
+          "legacy unknown without native attempt identity stays quarantined",
+          "expiring unknown purges content but preserves only reconciliation identity",
+          "a detached expired attempt can be reconciled without restoring chat content",
+          "lost acknowledgement retains a bounded idempotent cleanup job instead of reopening generation",
+          "purging during pending proof cleanup retains its exact proof and removes the conversation",
+          "cleanup exhaustion remains visible with proof identity and no automatic retry loop",
+          "authenticated explicit recovery retries acknowledgement without replaying or re-inspecting generation",
+          "crash before durable dispatch releases only its proven undispatched SQL reservation",
+          "operator CLI list validates a real signed access token against current fixture authority",
+          "operator CLI never prints its access token or signing secret",
+          "operator CLI refuses a signed ordinary user without leaking its credential",
+          "operator CLI rejects missing authentication before opening its database"
+        ],
+        "configuredDatabaseTouched": false,
+        "providersCalled": false
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-runtime-fix-attempt05.json",
+        "sha256": "eb78a9c8774df9295b14416df52a093fd4ded337049e15a326aa1d54f9369f23"
+      },
+      "candidate_manifest_sha256": "d5162b527f63975bca311df8428a74d04534f6391521061c3eda1962f2825449",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt05",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai11.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai11.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "4e4a98c76593900c89d754880fcd8b716f2249c2145e8a82285747df0a849a98",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-12",
+      "variant": null,
+      "harness": "ai12",
+      "harness_path": "nodia-server/test/nodia-ai-ai12.integration.mjs",
+      "source_sha256": "fd4d7465b87d34fa1554dc0cbafe55f9926fc9347c3ab14179e1504b340cabbc",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-12",
+        "checks": 22,
+        "passed": [
+          "explicit unpublished release loads no draft documents or tools even when the installed release publishes products",
+          "real admission freezes current release, policy and session grant",
+          "retry recovers the same run before a second provider observation",
+          "first attempt advances context without provider dispatch",
+          "context manifest pins exact history and compiled release",
+          "external call starts only after durable dispatch arming",
+          "shared dispatch budget is durable before provider I/O",
+          "adapter receives canonical history without invented product knowledge",
+          "second attempt completes inference once",
+          "answer, assistant reference and activity close atomically",
+          "successful response releases physical runtime and preserves fence",
+          "background stages and assistant reply do not renew retention",
+          "completed job is never dispatched a second time",
+          "external call starts only after durable dispatch arming",
+          "shared dispatch budget is durable before provider I/O",
+          "adapter receives canonical history without invented product knowledge",
+          "lost response becomes unknown with profile quarantined",
+          "unknown inference does not replay on recovery",
+          "standalone worker composition resolves dependencies without an HTTP listener",
+          "standalone autoLoadEntities registers the run and all eleven M1 entities",
+          "unpublished worker composition instantiates no candidate domain read family",
+          "empty worker setup performs no Redis operation despite later native-effect DI dependencies"
+        ],
+        "external_adapter": "synthetic",
+        "real_inference": false
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-runtime-fix-attempt05.json",
+        "sha256": "eb78a9c8774df9295b14416df52a093fd4ded337049e15a326aa1d54f9369f23"
+      },
+      "candidate_manifest_sha256": "d5162b527f63975bca311df8428a74d04534f6391521061c3eda1962f2825449",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt05",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai12.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai12.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "ee12ade9f8564d03becad6a65f0df1ec6df7ebdce713e8f860207448c41ae687",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-12",
+      "variant": "-routing",
+      "harness": "ai12-routing",
+      "harness_path": "nodia-server/test/nodia-ai-ai12-routing.integration.mjs",
+      "source_sha256": "8cea251e41e29b7d629ec402d7fbcc756d24f990b283363d67f71670311219c9",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-12 routing and technical knowledge",
+        "checks": 38,
+        "passed": [
+          "explicit consent persists the exact configured Agentic target",
+          "dispatch is armed with the actual phase selection",
+          "Web never receives MCP tools or callbacks",
+          "Web terminal seal queues one delegated phase within the same run",
+          "Web profile is released before Agentic can begin",
+          "dispatch is armed with the actual phase selection",
+          "Agentic receives exactly seven current infrastructure and report tools and no unpublished domain capability",
+          "technical callback cannot publish draft knowledge",
+          "one run shares dispatch/delegation/tool/protocol budgets across phases",
+          "base selection stays Web after Agentic completion",
+          "callback idempotency stores one durable result",
+          "completed attempts preserve base/delegated phase provenance",
+          "both native closures enqueue detached acknowledgements",
+          "explicit consent persists the exact configured Agentic target",
+          "dispatch is armed with the actual phase selection",
+          "Web never receives MCP tools or callbacks",
+          "withdrawing consent fences Agentic before profile reservation/dispatch",
+          "disabled run does not strand its conversation active job",
+          "explicit consent persists the exact configured Agentic target",
+          "dispatch is armed with the actual phase selection",
+          "Web never receives MCP tools or callbacks",
+          "exhausted shared delegation budget cannot send another inference",
+          "known pre-arm failure releases the local Agentic slot",
+          "explicit consent persists the exact configured Agentic target",
+          "dispatch is armed with the actual phase selection",
+          "Web never receives MCP tools or callbacks",
+          "exhausted shared provider dispatch budget fails before inference and rolls back the delegated charge",
+          "known provider budget rejection releases its Agentic profile and closes all attempts without quarantine",
+          "explicit consent persists the exact configured Agentic target",
+          "dispatch is armed with the actual phase selection",
+          "Web never receives MCP tools or callbacks",
+          "dispatch is armed with the actual phase selection",
+          "Agentic receives exactly seven current infrastructure and report tools and no unpublished domain capability",
+          "rejected callback commits request cost without a tool receipt",
+          "knowledge read rollback preserves the separately committed request cost",
+          "Native hidden requests share the SQL callback budget and repeated progress does not spend twice",
+          "technical callback cannot publish draft knowledge",
+          "invalid, rolled back, repeated and hidden callbacks share one durable request budget"
+        ],
+        "external_adapter": "synthetic",
+        "real_inference": false
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-final-revalidation.json",
+        "sha256": "317d544e57cef25260a70777637ea8f097be61585d32ebf1fd61e6bf746b22c6"
+      },
+      "candidate_manifest_sha256": "3dc8ac2eabf74deb45909299b4626ed722a9eeb016f24f39f4c9d972bc3a267a",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt07/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt07",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt07/nodia-server/.tmp/routing-only-ai12-routing.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt07/nodia-server/.tmp/routing-only-ai12-routing.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "e37670770234a502d2a29cddf00cdede948cbe267de9ba3aa6558db5ecfcfad4",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-14",
+      "variant": null,
+      "harness": "ai14",
+      "harness_path": "nodia-server/test/nodia-ai-ai14.integration.mjs",
+      "source_sha256": "20d610422f8b6dba31fd7732660821a56ad170b9d841ad9d1372194ff0f22888",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-14",
+        "scope": "compiled_nest_http_postgresql_actual_worker_synthetic_adapter_only",
+        "checks": 40,
+        "passed": [
+          "explicit empty composition publishes no draft capability regardless of the installed publication",
+          "discovery requires authenticated identity",
+          "discovery rejects unbounded unknown query parameters",
+          "unknown capabilities have no executable projection",
+          "ordinary caller without destination assignment cannot discover fixture tools",
+          "destination assignment alone cannot bypass a registered action requirement",
+          "assigned current module and action reveal only explicitly published capabilities",
+          "super admin discovers the same publication without destination assignment or action role",
+          "another ordinary actor sees no capabilities from an unassigned destination",
+          "preparation is described as blocked while its executor is not implemented",
+          "public descriptor identifies exact required and optional fields and contract hash",
+          "public schemas contain no handler, repository, sourceJson, private field or provider secret",
+          "stale catalog version is an explicit HTTP conflict",
+          "describe requires the exact catalog version",
+          "describe and schema share the discovery authorization boundary",
+          "malformed catalog cursors cannot expand discovery",
+          "real worker exposes only grant-frozen read handlers and technical MCP tools",
+          "admission grant freezes verified reads and excludes unimplemented preparation",
+          "typed read uses the checkpoint manager and returns the allowlisted SQL projection",
+          "durable duplicate result rechecks resource authority without repeating the handler",
+          "unknown input fields fail before the domain handler",
+          "invalid handler output commits no public tool result",
+          "all rejected, invalid and replayed requests consume the same durable budget",
+          "completed callback run stores one reusable result despite seven requests",
+          "SQL resource authority revocation prevents cached results",
+          "action revocation prevents replay from the previous grant",
+          "destination module revocation prevents replay from frozen history",
+          "another session cannot reuse the durable execution grant",
+          "changed persisted tool contracts cannot reuse the frozen callback",
+          "registered resolver preserves exact bigint identity and unambiguous cardinality",
+          "multiple actual SQL candidates remain ambiguous rather than selecting the first",
+          "resolver rejects wrong resource projections and uniqueness while another page exists",
+          "resource scopes remain validated filters and unknown resolvers are denied",
+          "direct resolver tool cannot substitute its registered resource before calling the handler",
+          "direct resolver enforces the shared resource, bigint and uniqueness invariants",
+          "valid direct resolver preserves the same authorized entity contract",
+          "durable direct resolver replay also revalidates cached entity provenance",
+          "resolver alias, direct calls and rejected replays share twelve SQL-budgeted requests",
+          "actual SQL budget rejects the thirteenth request without exceeding its frozen bound",
+          "all four actual worker executions remain synthetic with no provider inference"
+        ],
+        "real_business_tools_published": 0
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-revalidation-attempt04.json",
+        "sha256": "b94321c4ed94a6e476e4041b679cdbb03b5444ef340075b74be3f51b881feed1"
+      },
+      "candidate_manifest_sha256": "c1e12fb13b578ecfc3a21790b280977c981d1b7172c93dc295beb71e9ce066ba",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt04",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/foundation-revalidation-ai14.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/foundation-revalidation-ai14.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "20a75f414de68ade19dde5b341e7f1645c660046a2b2c75448a2f4a5d5ed73a1",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-15",
+      "variant": null,
+      "harness": "ai15",
+      "harness_path": "nodia-server/test/nodia-ai-ai15.integration.mjs",
+      "source_sha256": "f2bde5cc9e3eb67eeb2d532019565237b3ba9bdd467478adfcc5ccac5d1e4ff9",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-15",
+        "scope": "compiled_nest_http_actual_domain_ports_postgresql_worker_synthetic_adapter_only",
+        "checks": 41,
+        "passed": [
+          "actual publication composition instantiates all 67 typed read/artifact candidate ports",
+          "all local product families expose only read ports with explicit contracts",
+          "ordinary actor without destination assignments discovers no product tools",
+          "assigned actor discovers all 67 actual read/artifact descriptors through HTTP",
+          "super_admin discovers the same 67 descriptors without destination assignments",
+          "unassigned second ordinary actor cannot discover another actor capabilities",
+          "HTTP exposes closed product schemas and omits executable/private material",
+          "unassigned actor cannot bypass discovery by naming a real product tool",
+          "real product records use UUID businesses/logs and bigint strings above JS safe integer",
+          "actual products list applies active default and bounded page",
+          "explicit all includes active and inactive products without a false activity predicate",
+          "product projection preserves zero stock and bigint without business-owner restriction",
+          "snapshot queries execute real SQL and preserve UUID log IDs",
+          "internal native Ransack log policy accepts UUID identity without adding an HTTP or AI id filter",
+          "invoice projection preserves zero total but excludes storage keys and arbitrary extracted JSON",
+          "provider zero tax and projection exclude arbitrary mapping instructions",
+          "actual contact reader returns public versioned contacts without creation metadata",
+          "business list uses current ownership/collaboration and hides unrelated businesses",
+          "business get enforces native membership even though products are globally accessible",
+          "bigint overflow is rejected before the domain SQL predicate",
+          "finance native scope reads only the current owner ledger",
+          "ordinary finance reader cannot select a different owner",
+          "super_admin can select another real finance owner explicitly",
+          "actual rental property reader uses inherited transaction and public data",
+          "actual reservation reader preserves the requested property and reservation",
+          "Core users list executes native SQL and excludes authentication identifiers",
+          "AI catalog metadata reader executes without live inference or exposing secrets",
+          "all 59 read ports execute native SQL and validate their exact output contract",
+          "all five business resource lists use disjoint stable pages when ten creation timestamps are identical",
+          "all finance and rental readers preserve the inherited three-second SQL deadline and declared isolation",
+          "durable worker receives actual product read descriptors and infrastructure only",
+          "worker real SQL result and durable replay preserve public product projection",
+          "SQL collaboration revocation blocks previously cached business-list output",
+          "destination revocation blocks replay despite a previously frozen run grant",
+          "durable callback rejects unbounded input without creating a result",
+          "one frozen worker turn reads real Finance and Rentals alongside business records",
+          "second durable run preserves the complete current 74-descriptor catalog without truncation",
+          "worker external read completes SQL reservation and reauthorized receipt with durable replay",
+          "worker artifact callback stores a private current-on-download reference without CSV or URL",
+          "per-tool transactions keep Finance repeatable-read and Rentals/business read-committed in the same worker run",
+          "two actual durable worker inference stages use only a synthetic adapter and real product SQL"
+        ],
+        "domain_read_candidates": 64,
+        "domain_artifact_candidates": 3,
+        "domain_reads_executed_and_output_validated": 59,
+        "business_worker_tools": 12,
+        "worker_domain_read_descriptors": 64,
+        "worker_domain_artifact_descriptors": 3,
+        "worker_total_mcp_descriptors": 74,
+        "worker_dispatches": 2,
+        "real_business_tools_published": 0,
+        "provider_inferences": 0,
+        "limits": [
+          "All 67 read/artifact descriptors discovered; all 59 local SQL read outputs validated here. External/artifact execution is tested separately; no live Gemini",
+          "Two worker runs carry all 67 domain capabilities plus five infrastructure tools; the adapter is synthetic and does not prove a real Gemini CLI session"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-full-read-attempt04.json",
+        "sha256": "56c5e17cd027b15d858b5fb862c9deb1db79b13e9dba8d46d5d74f963fbc861e"
+      },
+      "candidate_manifest_sha256": "c1e12fb13b578ecfc3a21790b280977c981d1b7172c93dc295beb71e9ce066ba",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt04",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/full-read-revalidation-ai15.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/full-read-revalidation-ai15.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "b214cbb8377a49d16492fd733b8d819687a4f5a78591f334066a4549ed3bc921",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-15",
+      "variant": "-artifacts",
+      "harness": "ai15-artifacts",
+      "harness_path": "nodia-server/test/nodia-ai-ai15-artifacts.integration.mjs",
+      "source_sha256": "0454eadb687be45a4bd4d29be6fcf809b8ea0d207ecb373dc52aebddcabb60f7",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-15",
+        "verifiedAt": "2026-10-19T00:18:15.074Z",
+        "environment": "compiled Nest HTTP, disposable PostgreSQL, synthetic storage",
+        "realGeminiInference": false,
+        "realR2": false,
+        "checks": 24,
+        "passed": [
+          "real StorageService accepts exact byte boundary without a ContentLength and closes the stream",
+          "real StorageService rejects an oversized ContentLength before consuming and closes the body",
+          "real StorageService bounds bytes incrementally when ContentLength is absent",
+          "real StorageService rejects a body larger than a falsely small ContentLength",
+          "real StorageService cancellation destroys the body without returning a partial buffer",
+          "all three reference issuances store metadata only, never CSV/storage URL/content",
+          "artifact download requires a current authenticated session",
+          "invoice proxy returns private bounded binary with no-store headers",
+          "ordinary destination-assigned user cannot download another owner chat reference",
+          "super_admin can inspect the reference with the existing minimal audit",
+          "product export uses native CSV, formula protection, zero and inactive rows",
+          "reference explicitly regenerates current records instead of falsely promising an old snapshot",
+          "provider export retains native CSV v2, zero tax and inactive supplier",
+          "product export rejects 101 records without returning a truncated file",
+          "provider export bounds legacy JSON bytes before hydration and never emits a partial CSV",
+          "persisted path traversal is rejected before object storage I/O",
+          "destination revocation committed during storage I/O prevents delivering the downloaded bytes",
+          "invoice replacement during storage I/O prevents returning the old file",
+          "chat expiry during storage I/O invalidates the reference before delivery",
+          "session revocation during storage I/O denies the final response",
+          "request cancellation after storage I/O discards bytes without deleting business files or receipts",
+          "real SQL chat purge cascades receipts and discards an in-flight artifact result",
+          "purged CSV references are unavailable without additional storage work",
+          "chat purge preserves independently retained native business records"
+        ],
+        "storageCalls": 8
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai15-artifacts.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai15-artifacts.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "e8b40cd562f2a7b03513218acf6c6c054ec84c47f4bbba5335bf2e6f1ad03d3a",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-15",
+      "variant": "-external",
+      "harness": "ai15-external",
+      "harness_path": "nodia-server/test/nodia-ai-ai15-external.integration.mjs",
+      "source_sha256": "d46b65f459f2cccda881e9a3787405fdb0ed44930fcaedbaa29d62e8d0012ee9",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-15",
+        "scope": "native_sql_snapshots_external_synthetic_adapters_no_inference",
+        "checks": 22,
+        "passed": [
+          "nodia_ai_providers_health: remote observation runs with zero SQL after the snapshot transaction commits",
+          "nodia_ai_providers_health: closed public output excludes arbitrary fields and credentials",
+          "nodia_ai_providers_health: fresh authorized snapshot has the same replay fingerprint without redispatch",
+          "nodia_ai_providers_gemini_engines: remote observation runs with zero SQL after the snapshot transaction commits",
+          "nodia_ai_providers_gemini_engines: closed public output excludes arbitrary fields and credentials",
+          "nodia_ai_providers_gemini_engines: fresh authorized snapshot has the same replay fingerprint without redispatch",
+          "nodia_ai_providers_models: remote observation runs with zero SQL after the snapshot transaction commits",
+          "nodia_ai_providers_models: closed public output excludes arbitrary fields and credentials",
+          "nodia_ai_providers_models: fresh authorized snapshot has the same replay fingerprint without redispatch",
+          "nodia_ai_providers_codex_session: remote observation runs with zero SQL after the snapshot transaction commits",
+          "nodia_ai_providers_codex_session: closed public output excludes arbitrary fields and credentials",
+          "nodia_ai_providers_codex_session: fresh authorized snapshot has the same replay fingerprint without redispatch",
+          "nodia_invoices_eligible_invoice_connections: remote observation runs with zero SQL after the snapshot transaction commits",
+          "nodia_invoices_eligible_invoice_connections: closed public output excludes arbitrary fields and credentials",
+          "nodia_invoices_eligible_invoice_connections: fresh authorized snapshot has the same replay fingerprint without redispatch",
+          "multiple API connections resolve selected encrypted keys from the batched snapshot without N+1 SQL",
+          "native API eligibility reads only synthetic selected secrets without exposing them",
+          "ciphertext rotation invalidates a pending snapshot even without a timestamp change",
+          "configuration changed during observation is rejected by fresh SQL verification",
+          "ordinary target-module revocation wins before final result publication",
+          "a late adapter response after cancellation is discarded",
+          "session revocation wins before final result publication"
+        ],
+        "domain_external_reads": 5,
+        "provider_inferences": 0,
+        "configured_database_changes": 0
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai15-external.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai15-external.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "bc76cf32686ca9d8ab71e2c939a2658396da62f39446cfb9d59b62325ee71880",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-15",
+      "variant": "-quota-gateway",
+      "harness": "ai15-quota-gateway",
+      "harness_path": "nodia-server/test/nodia-ai-ai15-quota-gateway.integration.mjs",
+      "source_sha256": "f31a39640b68fb402fd1b508b0d4057c9a0b91c6ec85fff9122e463aa09b1f4f",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-15",
+        "scope": "zero_inference_native_quota_shape_gateway_regression",
+        "expected_schema_rejection": false,
+        "status": "passed",
+        "native_normalizer_timestamp_type": "number",
+        "native_schema_rejection_observed": false,
+        "gateway_receipts": [
+          {
+            "tool_name": "nodia_ai_providers_health",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_ai_providers_gemini_engines",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_ai_providers_codex_session",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_ai_providers_models",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_invoices_eligible_invoice_connections",
+            "state": "completed"
+          }
+        ],
+        "valid_projections": [
+          {
+            "tool": "nodia_ai_providers_health",
+            "engine": "web",
+            "timestamp_type": "string"
+          },
+          {
+            "tool": "nodia_ai_providers_health",
+            "engine": "agentic",
+            "timestamp_type": "string"
+          },
+          {
+            "tool": "nodia_ai_providers_gemini_engines",
+            "engine": "web",
+            "timestamp_type": "string"
+          },
+          {
+            "tool": "nodia_ai_providers_gemini_engines",
+            "engine": "agentic",
+            "timestamp_type": "string"
+          }
+        ],
+        "provider_inferences": 0,
+        "synthetic_adapter": true,
+        "synthetic_provider_observation": true,
+        "configured_database_modified": false
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-revalidation-attempt04.json",
+        "sha256": "b94321c4ed94a6e476e4041b679cdbb03b5444ef340075b74be3f51b881feed1"
+      },
+      "candidate_manifest_sha256": "c1e12fb13b578ecfc3a21790b280977c981d1b7172c93dc295beb71e9ce066ba",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt04",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/foundation-revalidation-ai15-quota-gateway.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/foundation-revalidation-ai15-quota-gateway.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "35f6443b1490791b66db375bf2f72a292aa569b727f20a10c235c195bba31bf7",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-15",
+      "variant": "-worker-metadata",
+      "harness": "ai15-worker-metadata",
+      "harness_path": "nodia-server/test/nodia-ai-ai15-worker-metadata.integration.mjs",
+      "source_sha256": "b7cb2482b9c79633de39a875a55931eb7dc9f4f3e96e0e176eae14163967bd55",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-15",
+        "scope": "fresh_standalone_worker_metadata_and_native_sql",
+        "status": "passed",
+        "expected_missing_baseline": false,
+        "metadata": [
+          {
+            "entity": "Business",
+            "registered": true
+          },
+          {
+            "entity": "BusinessCollaborator",
+            "registered": true
+          },
+          {
+            "entity": "BusinessAction",
+            "registered": true
+          },
+          {
+            "entity": "Product",
+            "registered": true
+          },
+          {
+            "entity": "ProductLog",
+            "registered": true
+          },
+          {
+            "entity": "Provider",
+            "registered": true
+          },
+          {
+            "entity": "ProviderContact",
+            "registered": true
+          },
+          {
+            "entity": "Invoice",
+            "registered": true
+          },
+          {
+            "entity": "UserRole",
+            "registered": true
+          },
+          {
+            "entity": "Translation",
+            "registered": true
+          },
+          {
+            "entity": "AiProvider",
+            "registered": true
+          },
+          {
+            "entity": "AiApiKey",
+            "registered": true
+          },
+          {
+            "entity": "AiProviderCatalog",
+            "registered": true
+          },
+          {
+            "entity": "AiProviderEvent",
+            "registered": true
+          },
+          {
+            "entity": "FinanceCategory",
+            "registered": true
+          }
+        ],
+        "entity_count": 59,
+        "reads": [
+          {
+            "capability_id": "nodia_businesses_list",
+            "status": "completed",
+            "synthetic_sql_marker_verified": true
+          },
+          {
+            "capability_id": "nodia_finance_categories_list",
+            "status": "completed",
+            "synthetic_sql_marker_verified": true
+          },
+          {
+            "capability_id": "nodia_rental_properties_list",
+            "status": "completed",
+            "synthetic_sql_marker_verified": true
+          },
+          {
+            "capability_id": "nodia_roles_list",
+            "status": "completed",
+            "synthetic_sql_marker_verified": true
+          },
+          {
+            "capability_id": "nodia_ai_providers_list",
+            "status": "completed",
+            "synthetic_sql_marker_verified": true
+          }
+        ],
+        "datasource_explicit_entities_override": false,
+        "app_module_imported": false,
+        "worker_lifecycle_initialized": false,
+        "postgres_read_only": true,
+        "provider_generations": 0,
+        "provider_profiles_read": false,
+        "empty_publication": {
+          "scope": "fresh_worker_empty_publication",
+          "status": "passed",
+          "runtime_initialization": false
+        },
+        "configured_database_modified": false,
+        "disposable_database_removed": true
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai15-worker-metadata.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai15-worker-metadata.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "c26a9a4c9817642cda8f18db25203ac27b32531a8e3b7a659a3f14f66502f968",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-16",
+      "variant": "-events",
+      "harness": "ai16-events",
+      "harness_path": "nodia-server/test/nodia-ai-ai16-events.integration.mjs",
+      "source_sha256": "c72621032197807a24ad635a479ef816233a5a9ef6647a3f78374c938b4c7d11",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "task": "AI-16",
+        "scope": "disposable_postgres_compiled_event_producers",
+        "checks": 19,
+        "passed": [
+          "admission writes one accepted event atomically with the new run",
+          "duplicate admission does not publish another accepted event",
+          "compiled context and inference producers complete the synthetic run exactly once",
+          "state transitions have strictly increasing revisions matching the final run",
+          "conversation event sequence is contiguous bigint text",
+          "callback replay consumes no second receipt or event",
+          "completed tool event references the exact durable receipt without its result or arguments",
+          "message sealing references the committed assistant without duplicating its text",
+          "RPC progress and repeated delivery add no synthetic progress or token events",
+          "reopening stored observation never reexecutes the adapter or tool",
+          "concurrent producers serialize unique contiguous sequences on the conversation row",
+          "concurrent duplicate publication has one identity and one quota cost",
+          "same event key with a different authority manifest is a conflict",
+          "receipt, event and sequence reservation roll back together",
+          "duplicate recovery is allowed before checking exhausted nonterminal quota",
+          "terminal state derives its reserved slot without a caller terminal hint",
+          "terminal transition and derived reservation commit together",
+          "the run event lookup has a dedicated run-sequence index",
+          "chat deletion cascades its event journal and stored tool results without an additional archive"
+        ],
+        "external_adapter": "synthetic",
+        "real_inference": false,
+        "configured_database_used": false
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-revalidation-attempt04.json",
+        "sha256": "b94321c4ed94a6e476e4041b679cdbb03b5444ef340075b74be3f51b881feed1"
+      },
+      "candidate_manifest_sha256": "c1e12fb13b578ecfc3a21790b280977c981d1b7172c93dc295beb71e9ce066ba",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt04",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/foundation-revalidation-ai16-events.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt04/nodia-server/.tmp/foundation-revalidation-ai16-events.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "1caebbfe82e0ee0005a95775f22b193db7b07533283955fec7b61fd49fd927cb",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-16",
+      "variant": "-observation",
+      "harness": "ai16-observation",
+      "harness_path": "nodia-server/test/nodia-ai-ai16-observation.integration.mjs",
+      "source_sha256": "bade4bdcd5c343c9a482facb065048b39672470617e5de592f18d208762b693d",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-16",
+        "scope": "compiled_http_disposable_postgresql_synthetic_receipts_no_provider",
+        "checks": 29,
+        "passed": [
+          "terminal receipt returns the exact domain schema, without metadata wrapper",
+          "metadata uses the closed ToolObservation runtime schema",
+          "metadata carries the original receipt date and native source",
+          "verified business navigation targets the real native record",
+          "metadata does not expose arguments, full output or provider secrets",
+          "known list counts retain their exact native values",
+          "completed run can be observed without jobs, grants, lease or worker",
+          "event page is validated and preserves bigint sequence above JS precision",
+          "independent devices see the same immutable event without a global delivery flag",
+          "paging traverses all actual transitions with unique event IDs",
+          "empty polling retains the observer checkpoint and does not replay the final event",
+          "event query rejects unknown fields, excess limits and invalid cursors",
+          "a forged future sequence is rejected rather than skipping unseen results",
+          "anonymous and ordinary foreign access cannot observe a private chat",
+          "super_admin can inspect without destination assignment and the inspection is audited",
+          "destination revocation denies stored results and explicitly resets cursor visibility",
+          "revoked destination tool references are omitted, not exposed as stale allowed data",
+          "restoring the actual module restores authorized observation without executing the tool",
+          "existing ai:manage action is rechecked for cached results and event refs",
+          "native collaborator revocation invalidates old results and the observer visibility",
+          "current native membership is reauthorized before recovering the same receipt",
+          "new valid session reads completed results but cannot reuse the old session cursor",
+          "logout of the dispatch-era session blocks it without losing the new session result",
+          "all observation GETs preserve rows, admissions, tool results and durable budgets",
+          "a historical or empty run gets an explicit empty durable feed and a checkpoint",
+          "cursor is tied to the requested run as well as actor and session",
+          "expired own content is denied before sweeping and expired foreign inspection stays hidden",
+          "chat purge removes event/result/run content through existing M1 cascade",
+          "no observation executes provider, MCP or native business/AI settings handlers"
+        ],
+        "provider_observations": 0,
+        "provider_executions": 0,
+        "business_handler_calls": 0,
+        "ai_settings_handler_calls": 0
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai16-observation.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai16-observation.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "9e22b2ee2d7c503ceff988f49d9cc1d99200f28160b00fe0346a0fe63f3a365f",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-17",
+      "variant": null,
+      "harness": "ai17",
+      "harness_path": "nodia-server/test/nodia-ai-ai17.integration.mjs",
+      "source_sha256": "737f78e1bce4b4f534edaa23197b2f3922e3d1a3fdad036c9d514a8fbac98952",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-17",
+        "scope": "compiled_http_disposable_postgresql_native_finance_preparation_no_provider_no_domain_writes",
+        "checks": 52,
+        "passed": [
+          "M2 migration runs against disposable PostgreSQL",
+          "AI-17 adds exactly the four currently consumed proposal tables",
+          "logical proposal points to a deferred current revision",
+          "native missing status produces a valid clarification without a proposal",
+          "incomplete draft persists the normalized partial command and clarification",
+          "continuation fills the same draft and creates one ready revision",
+          "ready public proposal uses the strict shared schema",
+          "draft continuation advances revision and links its proposal",
+          "a status-only continuation retains the complete normalized draft and original field provenance",
+          "composite foreign keys prevent moving a claimed draft into another chat",
+          "stale continuation cannot produce a second proposal",
+          "GET reconstructs exactly the frozen projection and hash",
+          "known defaults distinguish absent before, null after and true after",
+          "proposal expiration uses policy and never exceeds chat retention",
+          "public projection excludes internal templates/preconditions/tokens",
+          "ordinary users cannot inspect foreign proposals; super_admin can",
+          "foreign super_admin inspection records the real actor",
+          "foreign inspection never grants editing as the conversation owner",
+          "revision query validates canonical integers and unknown fields",
+          "human edit endpoint rejects managed fields, paths and duplicate semantic edits",
+          "raw JSON boundary follows Express case-insensitive proposal routing",
+          "raw HTTP rejects duplicate top-level and nested JSON keys before they can change a proposal",
+          "raw HTTP rejects escaped duplicate keys, lone surrogates and malformed UTF-8 without revising content",
+          "two-device CAS admits one revision and rejects the stale competitor",
+          "editing appends a new revision and changes the exact content hash",
+          "previous revision content/hash stays unchanged and is superseded",
+          "revising another field preserves default provenance",
+          "reads and edits do not extend owner-message retention",
+          "current destination authorization covers old and current proposal projections",
+          "observation does not recompute frozen values from newer business state",
+          "failed native re-preparation preserves the current revision",
+          "session revocation applies immediately while another valid session can inspect",
+          "direct SQL cannot rewrite a frozen command",
+          "direct SQL cannot delete a frozen step while its revision exists",
+          "direct SQL cannot append hidden steps after ready",
+          "frozen revision hash/content cannot change or reopen to draft",
+          "logical proposal identity cannot be reassigned or individually discarded",
+          "cancellation changes state without changing frozen content and is repeat-safe",
+          "AI-18 confirmation remains unavailable without an executor and public preparation stays absent",
+          "expired chat denies own and foreign proposal access before physical purge",
+          "chat cascade removes all proposal payload despite immutability triggers",
+          "native preparation never creates or edits a business movement",
+          "proposal lifecycle schedules no provider work, tool call, or execution",
+          "source-linked preparation commits a bounded exact proposal_ready reference in the same transaction",
+          "publisher retries preserve event identity and sequence without duplicates",
+          "rollback after preparation leaves no orphan proposal, draft, event or consumed sequence",
+          "authorized observation exposes the exact proposal revision and hash",
+          "private preparer is still absent from published tools and receipt retrieval",
+          "destination revocation resets cursors, hides proposal refs and denies the exact projection",
+          "restored access recovers the same event without preparing or executing again",
+          "linked outbox, source run, receipt and proposal payload all cascade with the chat",
+          "all source-linked checks retain the business sentinel and never call a provider"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai17.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai17.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "f50f8ad916f970ac93896b10c05469af620c12ce1550cff6c5dbf3e82d49f126",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-18",
+      "variant": null,
+      "harness": "ai18",
+      "harness_path": "nodia-server/test/nodia-ai-ai18.integration.mjs",
+      "source_sha256": "27f9568d0612dc208af2769f275a80027c0a2da3ba7589aea6d8e77e865c8ee1",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-18",
+        "scope": "compiled_http_disposable_postgresql_native_preparation_synthetic_execution_admission_no_provider_no_domain_effect",
+        "checks": 37,
+        "passed": [
+          "production review reports unavailable execution without pretending approval can run",
+          "explicit empty executor registry rejects challenge and confirmation without creating work",
+          "AI-18 migration installs all three consumed tables",
+          "human review metadata binds typed editable fields to exact revision and hash",
+          "administrator inspection exposes read-only metadata without approval or edit controls",
+          "challenge is bound to the exact public proposal identity and hash",
+          "database stores only token digest and authenticated session",
+          "challenge expiry obeys 120 seconds and does not exceed proposal lifetime",
+          "foreign ordinary users and omniscient administrator cannot confirm as owner",
+          "same-session token rotates in place while other-device challenge remains independent",
+          "strict human wire rejects unknown fields, coerced revision, malformed token and duplicate JSON keys",
+          "double click admits exactly one execution and returns its identity twice",
+          "lost HTTP response retry recovers admitted work without consuming another challenge",
+          "another device discovers the existing execution after distinct-request conflict",
+          "one atomic confirmation freezes origin, exact approval hash and stable step identity",
+          "grant and typed job refer only to confirmed identity without provider credentials",
+          "human admission commits exactly one execution event without model run or challenge material",
+          "execution event dedup preserves exact target payload and scope while rejecting approval material",
+          "shared journal reserves four terminal slots and rolls back allocation with failed transaction",
+          "confirmed proposal retains exact content and exposes its admitted execution",
+          "reopening the chat observes the admitted execution without resubmitting confirmation",
+          "current-authority operation observation reports queued work without fictional business success",
+          "request identity cannot be rebound to another hash or proposal",
+          "challenge confirmation retry and inspection never renew owner-message retention",
+          "simultaneous different device requests admit one origin and reject the competitor",
+          "old revision and token cannot approve changed content",
+          "expired challenge cannot create execution",
+          "revoked destination module denies fresh admission and prior-result replay immediately",
+          "session revocation blocks result recovery while another current session retains observation",
+          "changed native precondition rejects admission without recomputing approved content",
+          "real per-owner waiting admission limit rejects excess work without consuming approval",
+          "outbox failure rolls back execution steps grant job challenge consumption and proposal state",
+          "same exact user approval remains usable after transactional rollback",
+          "SQL cannot rewrite approval identity, per-step identity or omit execution grant hash",
+          "SQL cannot append a step from another proposal to the confirmed operation",
+          "expired unstarted execution is purged with its challenge grant job steps and events",
+          "all admission and observation cases leave the business sentinel untouched and call no provider"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai18.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai18.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "5b0337fbf4f699cb91653b9b829a9ca63ddeb048c868ee89d51410f32f73cb49",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-19",
+      "variant": null,
+      "harness": "ai19",
+      "harness_path": "nodia-server/test/nodia-ai-ai19.integration.mjs",
+      "source_sha256": "c19cae143846deb4bccec8ada6611bb5cb34037191a89fc6d0d11b81d5c06ccf",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-19",
+        "scope": "compiled_http_disposable_postgresql_real_native_finance_atomic_witness_fixture_only_admission_no_provider",
+        "checks": 32,
+        "passed": [
+          "explicit empty executor registry rejects effect admission and creates no execution",
+          "internal coordinator completes only the approved single financial effect",
+          "native financial movement preserves exact bigint string and confirmed fields",
+          "minimal receipt links the created record and owner while identity stays in stable columns",
+          "effect receipt job completion released conversation and terminal outbox commit together",
+          "lost response is recovered by read without another financial mutation",
+          "explicit execution replay returns the committed witness without creating another movement",
+          "committed receipt command hash and terminal identities cannot be rewritten in SQL",
+          "status projection rejects a forged persisted receipt instead of publishing a false resource",
+          "two concurrent execution invocations serialize to one native movement and receipt",
+          "receipt failure rolls back native movement receipt transitions job and outbox",
+          "explicit exact retry after receipt rollback creates one committed effect",
+          "outbox failure rolls back native movement receipt transitions job and outbox",
+          "explicit exact retry after outbox rollback creates one committed effect",
+          "a lost local COMMIT acknowledgement leaves one durable effect and reports uncertainty",
+          "observation and explicit replay after lost COMMIT acknowledgement never repeat the effect",
+          "grant fence rejects execution before any native effect or receipt",
+          "deadline fence rejects execution before any native effect or receipt",
+          "epoch fence rejects execution before any native effect or receipt",
+          "bound_hash fence rejects execution before any native effect or receipt",
+          "database rejects rewriting approved effect request identity and subject scope",
+          "native effect port rejects amount_number instead of interpreting another command",
+          "native effect port rejects owner_scope instead of interpreting another command",
+          "native effect port rejects unsupported_binding instead of interpreting another command",
+          "changed category after human confirmation rejects execution without effects",
+          "destination module revocation fences an admitted execution before the financial effect",
+          "session revocation prevents dispatch even after a valid human confirmation",
+          "omniscient administrator cannot execute an operation belonging to a foreign chat",
+          "administrator on own chat creates for explicit other owner while preserving actual actor",
+          "AI executor and legacy writer race cannot exceed repayment capacity",
+          "expired chat removes its resolved receipt and execution while financial record remains independent",
+          "all effect checks call no provider or model and use only disposable synthetic data"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai19.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai19.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "dfe6ec905d7f3ef26eea90ee4cb361bd96f3fc80d12a1070cf9b7bc40e815852",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-20",
+      "variant": null,
+      "harness": "ai20",
+      "harness_path": "nodia-server/test/nodia-ai-ai20.integration.mjs",
+      "source_sha256": "2d03a0ccf8ebc71b3e3da57812d0383b2208151ae6197a079c6fb500ad6e6917",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-20",
+        "scope": "compiled_http_standalone_worker_disposable_postgresql_process_crashes_local_native_finance_no_provider",
+        "checks": 36,
+        "passed": [
+          "production registration admits the verified one-step financial command without fixture overrides",
+          "two SQL claimants acquire exactly one execution lease",
+          "claim records one running step and durable attempt without a domain effect",
+          "claimed native effect receipt terminal state and attempt commit together",
+          "replaying a completed claimed identity returns its receipt without repeating native create",
+          "SQL freezes completed receipts command bindings and terminal execution states",
+          "cancel before claim stops the queued command and releases its chat without an effect",
+          "duplicate cancellation is terminal observation without an effect",
+          "cancelling a claimed local command fences the stale claimant before native create",
+          "process death after claim recovers a definite local rollback and offers explicit resume",
+          "expired claimant cannot create an effect after recovery fenced its attempt",
+          "human resume and response-lost replay preserve original execution source native key and command identity",
+          "resumed execution with a new fence commits exactly one original effect",
+          "lost COMMIT acknowledgement is reconciled from its durable receipt without another native effect",
+          "cancel after committed effect reports completed and preserves the created record",
+          "abrupt process death after COMMIT preserves the terminal receipt and cannot reopen the native effect",
+          "process death after native INSERT before COMMIT leaves neither movement nor receipt and is recoverable",
+          "explicit recovery after interrupted effect creates one movement with original identity",
+          "cancellation waits for the in-flight local transaction rather than reporting a false rollback",
+          "concurrent cancel after native COMMIT preserves the exact effect and completed receipt",
+          "material precondition changes produce a known failure requiring a new proposal",
+          "resume never refreshes a changed material snapshot or creates another financial effect",
+          "module revocation after admission prevents dispatch of the pending effect",
+          "permission failure releases the local worker with no false completed receipt",
+          "revoked confirmation session prevents effects while a new valid session can inspect the same failed execution",
+          "explicit resume renews authority under the new session without changing the original effect identity",
+          "foreign users and omniscient administrators cannot cancel a chat owned by another actor",
+          "expiry deletes chat payload while a claimed local execution retains only bounded reconciliation identity",
+          "SQL reconciliation removes the expired local journal after proving its transaction rolled back",
+          "an expired retained execution never reconstructs a command or dispatches another effect",
+          "conversation snapshot exposes the admitted execution before leaving its observation",
+          "production standalone worker claims and commits an admitted financial effect without provider access",
+          "standalone worker drains and its completed effect survives process shutdown and observation",
+          "reopening chat restores the original execution link and the effect is readable through native Finance API",
+          "local confirmed execution never acquires provider runtime slots or invokes model inference",
+          "all SQL claims are terminal with no abandoned open attempt"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "candidate_manifest_sha256": "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt02",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai20.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt02/nodia-server/.tmp/foundation-ai20.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "06726b8b8e07c7e5e2c0d055f34c0af9fb2ca2246082e6c8733ed8633d1bc15d",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-21",
+      "variant": null,
+      "harness": "ai21",
+      "harness_path": "nodia-server/test/nodia-ai-ai21.integration.mjs",
+      "source_sha256": "876722965f74ab0dae5e1fe1d16d0a1e95c58d37dc759a5fb7c22cea3157298a",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-21",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_all_twelve_native_financial_mutations_no_provider",
+        "checks": 47,
+        "exercised_operations": [
+          "categories/create",
+          "categories/delete",
+          "categories/update",
+          "category_groups/create",
+          "category_groups/delete",
+          "category_groups/update",
+          "movements/create",
+          "movements/delete",
+          "movements/update",
+          "obligations/create",
+          "obligations/delete",
+          "obligations/update"
+        ],
+        "native_handlers": [
+          {
+            "method": "GET",
+            "path": "finance/categories//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/categories/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/categories//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/categories/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/categories/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/category-groups//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/category-groups/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/category-groups//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/category-groups/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/category-groups/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/movements//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/movements/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/movements//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/movements/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/movements/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/obligations//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/obligations/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/obligations//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/obligations/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/obligations/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/overview//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/overview/categories"
+          },
+          {
+            "method": "GET",
+            "path": "finance/overview/category-groups"
+          }
+        ],
+        "passed": [
+          "category create commits one native row and historical receipt despite completed replay",
+          "category update archives using the native partial contract",
+          "group create commits its membership with the receipt",
+          "omitted group selection preserves memberships",
+          "explicit empty group selection clears memberships atomically",
+          "movement update confirms pending expense and returns the native amount",
+          "confirmed movement cannot silently reopen to pending",
+          "editing a historical movement preserves an unchanged archived category",
+          "new movements cannot use archived categories",
+          "obligation create atomically creates its initial movement with matching amount and direction",
+          "pending repayment does not reserve or reduce the historical obligation balance",
+          "partial payment confirmation updates exact paid and remaining values",
+          "native payment and principal rules reject overpayment and principal below confirmed repayments",
+          "principal edit atomically updates its initial movement and calculated remaining balance",
+          "native deletion protections cover initial movements obligations with payments and categories with any movements",
+          "archiving a confirmed payment does not change its amortization contribution",
+          "deleting a payment preserves its historical deletion receipt and recalculates obligation balance",
+          "cancelled origin exposes unknown remaining amount rather than a fabricated zero",
+          "cancelled origin prevents new obligation repayments",
+          "deleting obligation without payments removes the obligation and initial movement in the same effect",
+          "loan initial movement uses the opposite direction from debt",
+          "even archived cancelled payments prevent implicit obligation cascade deletion",
+          "deleting an unused category removes group pivots while preserving its group",
+          "group deletion preserves categories and only removes memberships",
+          "all twelve registered financial create update and delete operations commit a verified receipt",
+          "super admin explicit owner creates native data for that owner without impersonating their chat",
+          "ordinary actor cannot target another owner or smuggle a foreign category association",
+          "required group selection is clarified instead of silently defaulting to an empty list",
+          "strict native commands reject unknown ownership fields immutable movement links and malformed money",
+          "largest supported monetary bigint remains an exact decimal string in native data and receipt routing",
+          "same timestamp target edits invalidate the original category proposal before confirmation",
+          "material changes after admission fail without effect and cannot resume the old snapshot",
+          "changed group membership invalidates a frozen deletion preview without relying on group timestamp",
+          "obligation proposal detects a materially changed initial movement even with an unchanged timestamp",
+          "a new pending payment changes the frozen obligation association snapshot before dispatch",
+          "two confirmed payment intents cannot exceed remaining balance under concurrent SQL workers",
+          "native HTTP payment and confirmed worker use the same SQL obligation lock and cannot overpay concurrently",
+          "receipt failure rolls back native group and its membership together rather than leaving an unacknowledged effect",
+          "compiled native inventory contains eleven reads plus twelve mutations and all read routes remain accessible",
+          "cancelled claimed DELETE fences a stale worker and preserves the native record",
+          "real process death before UPDATE proves rollback without altering native data",
+          "explicit UPDATE resume preserves source identity native key and exact payload while committing once",
+          "lost DELETE COMMIT acknowledgement recovers its immutable receipt without requiring the deleted row",
+          "standalone compiled worker claims a new financial operation and commits its native group plus receipt",
+          "worker drains and committed non-movement receipt survives process shutdown",
+          "all financial work avoids provider calls and runtime slots",
+          "all execution attempts terminate without orphan leases"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai21.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai21.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "33ea458918d1ed8f4c1f4c4eda76afca3eebb59ec3381e6bde04e462921dba54",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-22",
+      "variant": null,
+      "harness": "ai22",
+      "harness_path": "nodia-server/test/nodia-ai-ai22.integration.mjs",
+      "source_sha256": "3f88592bf192159396c71235864df4cb14c6fe7f13c8e98db987d444cf2f3b53",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-22",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_all_fourteen_native_business_mutations_no_provider_no_r2",
+        "checks": 57,
+        "exercised_operations": [
+          "businesses/create",
+          "businesses/set_collaborators",
+          "businesses/update",
+          "invoices/create",
+          "invoices/update",
+          "product_logs/create",
+          "product_logs/update",
+          "products/create",
+          "products/update",
+          "provider_contacts/create",
+          "provider_contacts/set_active",
+          "provider_contacts/update",
+          "providers/create",
+          "providers/update"
+        ],
+        "passed": [
+          "business create commits translations and derived description flag with one native receipt",
+          "business update preserves native empty translation-list upsert semantics while updating the derived flag",
+          "explicit empty translation values clear both languages without deleting their stable keys",
+          "collaborator assignment preserves native owner and creates the requested permissions",
+          "empty collaborator actions deactivate the specified collaborator while preserving omitted collaborators",
+          "ordinary actor cannot change a business owned by another user",
+          "provider creation preserves zero false JSON and native lowercase normalization",
+          "provider partial update preserves omitted tax fields and archived state despite DTO create initializers",
+          "contact creation preserves personal casing native values version and omits internal request keys",
+          "native request key replay recovers the AI-created contact and rejects a changed payload",
+          "complete contact replacement explicitly clears optional values and increments version once",
+          "contact status uses native CAS and preserves the other values",
+          "native identical immediate status replay does not increment contact version again",
+          "native changed stale contact payload cannot overwrite the confirmed state",
+          "contact parent scope and backend-owned keys cannot be supplied by model arguments",
+          "product creation commits one native product and matching history snapshot atomically",
+          "product update appends one complete native snapshot while preserving omitted state",
+          "independent history create and update do not mutate the live product",
+          "SQL invoice creation preserves zero false null and cannot invent an object path",
+          "invoice metadata update preserves omitted provider inactive state and zero total",
+          "invoice commands reject arbitrary storage keys and permissive legacy numeric coercion",
+          "all fourteen individual business operations commit exact native receipts",
+          "AI preparation and native provider update both reject transfers leaving linked products or invoices behind",
+          "legacy provider bulk transfer cannot bypass references and rejected batches preserve every selected provider",
+          "legacy bulk product creation rejects incompatible supplier scopes before writing products or logs",
+          "legacy bulk product update rejects mismatched supplier and duplicate targets without partial changes",
+          "native bulk product log failure rolls back every product and appended history row",
+          "human invoice review reparses stored commands preserving explicit integer zero",
+          "human contact review preserves the backend intent key across proposal revisions and creates one native contact",
+          "explicit null clears native product and invoice provider associations without stale ORM relations restoring them",
+          "provider transfer receipt binds the destination while native contacts remain with their parent",
+          "a provider transfer changes contact operation scope and invalidates the former parent business",
+          "same timestamp material product changes invalidate confirmation",
+          "material changes after admission reject old commands before a native effect",
+          "same timestamp supplier changes invalidate a frozen contact proposal",
+          "native global supplier access remains allowed with the target module while business ownership stays unchanged",
+          "super admin can manage a foreign business without transferring its owner",
+          "ordinary actors require the destination business module as well as NodiaAI",
+          "receipt failure rolls back the native product and its appended history together",
+          "real worker death before supplier UPDATE leaves no native effect and permits explicit resume",
+          "resumed supplier UPDATE commits once after duplicate human resume",
+          "lost invoice UPDATE commit acknowledgement reconciles its immutable native receipt",
+          "human cancellation fences a stale business worker before writing",
+          "native HTTP status and confirmed worker share contact CAS without duplicate version increments",
+          "a newly linked native product invalidates the frozen provider-transfer proof before confirmation",
+          "a newly linked native invoice after admission blocks the worker transfer without a receipt or resume",
+          "native product creation and confirmed supplier transfer serialize on the supplier and preserve business associations",
+          "native invoice creation and confirmed supplier transfer serialize on the supplier and preserve business associations",
+          "native bulk product create serializes with confirmed supplier transfer",
+          "native bulk product update serializes with confirmed supplier transfer",
+          "native bulk supplier transfer cannot bypass a confirmed product creation in flight",
+          "valid native bulk supplier transfers remain atomic and preserve requested response order",
+          "standalone compiled worker resolves all native metadata and commits a new business effect",
+          "standalone worker drains with its committed receipt preserved",
+          "all six business resource families remain readable through their native endpoints",
+          "all local business operations avoid AI provider calls and runtime slots",
+          "execution attempts and delivery leases terminate without orphans"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai22.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai22.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "98281d6177fe0510a96bcb0c2c80e2dd61440f2907bde3eadbf86721b7c75b3e",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-23",
+      "variant": null,
+      "harness": "ai23",
+      "harness_path": "nodia-server/test/nodia-ai-ai23.integration.mjs",
+      "source_sha256": "d996954b7eb1c2de6aad8f76754b0e4d9c64c9ea1306fa8946bb762ee29388ea",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-23",
+        "status": "passed",
+        "checks": 47,
+        "results": [
+          "AI23 migration down and up restore exactly both new nullable columns on an empty workflow journal",
+          "future supplier preview has a registered preceding ID binding without a fabricated ID",
+          "workflow supersedes its individual proposal atomically",
+          "claimed drafts and an old human challenge cannot admit the individual intention again",
+          "first local commit preserves supplier receipt and leaves only the contact queued",
+          "typed first-bind commits actual supplier identity before its native contact effect",
+          "PostgreSQL rejects rewriting a committed first-bind payload",
+          "PostgreSQL rejects rewriting the hash of an existing first-bind witness",
+          "schema rollback refuses to discard live first-bind payloads",
+          "human material review remaps all dependency step identities under a new exact hash",
+          "reviewed dependent workflow executes the updated source and one contact",
+          "stable sequential execution of 2 independent native operations",
+          "stable sequential execution of 3 independent native operations",
+          "stable sequential execution of 4 independent native operations",
+          "stable sequential execution of 5 independent native operations",
+          "stable sequential execution of 6 independent native operations",
+          "stable sequential execution of 7 independent native operations",
+          "stable sequential execution of 8 independent native operations",
+          "rejects duplicate drafts before claiming any draft",
+          "rejects self reference before claiming any draft",
+          "rejects future reference before claiming any draft",
+          "rejects cross chat reference before claiming any draft",
+          "rejects cross chat draft before claiming any draft",
+          "rejects unregistered output before claiming any draft",
+          "rejects unregistered target before claiming any draft",
+          "rejects duplicate binding target before claiming any draft",
+          "rejects unregistered coordinator catalog before claiming any draft",
+          "invalid dependency attempts leave both original drafts unchanged",
+          "concurrent individual confirmation and workflow claim have one winner and one supplier",
+          "SQL contact insert failure keeps the supplier committed and exposes resumable partial state",
+          "duplicate resume keeps native request key supplier ID and immutable first-bind while committing one contact",
+          "material pending correction creates a new proposal and exact hash linked to previous execution",
+          "continuation execution retains the same immutable prior execution lineage as its confirmed proposal",
+          "new human confirmation executes only corrected pending contact and leaves old supplier unchanged",
+          "cancellation between commits keeps supplier receipt and prevents all remaining effects",
+          "material supplier change before first-bind rejects pending contact without guessing or replay",
+          "non-resumable material failure can cancel its pending suffix while preserving the committed supplier receipt",
+          "new material confirmation after supplier change refreshes its snapshot and creates only the remaining contact against the verified supplier ID",
+          "one coordinator release preserves native financial and business contract hashes and receipts",
+          "real worker death after first commit keeps supplier and queues only second step",
+          "death after durable first-bind and before native contact effect permits exact explicit recovery",
+          "process recovery reuses first-bind payload hash and native intent key without another supplier",
+          "lost second-effect commit acknowledgement recovers both receipts without replay",
+          "chat expiry purges completed original and continuation journals while keeping their native supplier and corrected contact",
+          "expiry clears content-bearing first-bind payloads even for a running step before its native effect",
+          "expired first-bound execution is reconciled and erased without replaying supplier or contact",
+          "all workflow verification avoided provider inference"
+        ],
+        "provider_calls": 0,
+        "disposable_postgresql": true,
+        "human_confirmation_http_contract": true,
+        "synthetic_authenticated_fixture": true,
+        "actual_provider": false,
+        "mcp_publication": false
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai23.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai23.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "3c745596d16c8ecccb900d16c0db1f6dfcf02781400058c55eccc84edcba6fe6",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-24",
+      "variant": null,
+      "harness": "ai24",
+      "harness_path": "nodia-server/test/nodia-ai-ai24.integration.mjs",
+      "source_sha256": "efea534a68431859e4ef4e333c3ebf9c3464a642bbfdc485ccda3b26a475a066",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-24",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_six_native_rental_configuration_mutations_no_provider",
+        "checks": 36,
+        "exercised_operations": [
+          "rental_cancellation_policies/create",
+          "rental_cancellation_policies/update",
+          "rental_collaborators/create",
+          "rental_collaborators/update",
+          "rental_properties/create",
+          "rental_properties/update"
+        ],
+        "passed": [
+          "property creation preserves exact bigint money zero percent null optional fields and actor ownership",
+          "property update preserves omitted capacity and explicit null without changing its owner",
+          "collaborator create and update preserve identity and support explicit null and revocation",
+          "active collaborators cannot edit configuration or create policies even with destination access",
+          "an inaccessible house yields uniform not found for ordinary actors",
+          "super administrator edits a foreign house with real authorship and no implicit ownership transfer",
+          "only explicit super administrator owner selection can create for another user",
+          "owner mutation and duplicate or owner collaborator creation remain forbidden",
+          "policy create stores all rules atomically with canonical order and decimal percentages",
+          "native idempotency replays canonical rule order and decimal equivalents without duplicate header or rules",
+          "complete rule replacement reuses a retained threshold removes superseded rules and normalizes values",
+          "omitted rules keep existing IDs and values byte for byte",
+          "default policies must be active and belong to their exact house",
+          "policy preparation rejects empty incomplete duplicate and invalid percentage rule sets",
+          "missing required fields produce a clarification without a runnable proposal",
+          "a human challenge cannot confirm a different proposal hash",
+          "material human review keeps the native request key and requires the exact new revision",
+          "a same timestamp material property change invalidates confirmation",
+          "a same timestamp material rule change after admission blocks native dispatch",
+          "ordinary users require the destination module even when they own the house",
+          "destination module revocation after confirmation is rechecked before the writer",
+          "session revocation after confirmation cannot write as the former user",
+          "updating live policy rules never changes a monetary reservation snapshot",
+          "configuration preparation preserves timezone history and the capacity of current confirmed agreements",
+          "archiving a house preserves historical occupancy money policy snapshots and native read access",
+          "rental history exposes no physical delete endpoint",
+          "archived houses permit collaborator removal and require house reactivation before restoring access",
+          "a receipt failure rolls back policy header rules native journal and audit in the same SQL transaction",
+          "a later rule insert failure restores the previous policy header and every threshold without a journal or receipt",
+          "real worker death after claim leaves no rental effect and permits explicit resume",
+          "duplicate human resume produces one native property update journal and receipt",
+          "lost COMMIT response reconciles an immutable rental receipt without replaying the native journal",
+          "known-input operations across houses execute sequentially with independent native receipts",
+          "all six rental configuration operations execute against compiled native writers",
+          "local rental effects never invoke a provider or acquire inference runtime slots",
+          "rental execution attempts and job leases finish without orphans"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai24.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai24.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "21a3c693e559b95b6e84b986cf0fc8a91e086feae80fe638ffbfaac8488c0fc7",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-25",
+      "variant": null,
+      "harness": "ai25",
+      "harness_path": "nodia-server/test/nodia-ai-ai25.integration.mjs",
+      "source_sha256": "042b52eae21634a8aaeecb4d148bf5ce2f122421d928d59bbd235020a3889e29",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-25",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_six_native_booking_lifecycle_mutations_no_provider",
+        "checks": 39,
+        "exercised_operations": [
+          "rental_reservations/cancel",
+          "rental_reservations/complete",
+          "rental_reservations/confirm",
+          "rental_reservations/create",
+          "rental_reservations/start",
+          "rental_reservations/update"
+        ],
+        "passed": [
+          "availability is an observation without hold reservation payment or native journal",
+          "missing required booking fields yield clarification instead of fabricating hours price or deposit",
+          "create commits only a draft and nullable preparation with exact agreement but no money or occupancy",
+          "native replay normalizes explicit defaults and does not duplicate reservation turnover or journal",
+          "draft interval update recomputes agreement and resets preparation using actual actor identity",
+          "a direct booking cannot confirm without a received positive agreed deposit",
+          "first monetary record freezes agreement while harmless guest metadata remains editable",
+          "preparing confirmation neither occupies dates nor changes the native state",
+          "confirmation preserves the paid policy snapshot despite current policy edits and records no extra payment",
+          "an archived confirmed booking still occupies its interval",
+          "conflicting drafts and real payments are allowed but confirmation rejects occupancy",
+          "cancellation preview proposes refund on frozen policy without cancellation journal or refund row",
+          "cancel commits approved frozen refund and monetary ledger hash without paying a refund or collecting remaining balance",
+          "native cancellation replay canonicalizes equivalent instants and preserves its original response and journal",
+          "cancelled occupancy is released while original history and receipt stay available",
+          "cancelled bookings do not reopen and cancellation cannot invent a future effective notice",
+          "a changed payment ledger invalidates exact cancellation even when refund amount is unchanged at zero",
+          "material same timestamp agreement changes invalidate confirmation without relying on updated_at",
+          "failed cancellation receipt restores native phase snapshots money journal and audit atomically",
+          "platform confirmation requires explicit external conditions and no fabricated settlement payment",
+          "platform cancellation records an explicit external resolution and creates no refund payment",
+          "same day turnover availability distinguishes a valid plan from explicit approval",
+          "explicit exact confirmation approves affected same day turnover without fabricating completed cleaning",
+          "new native occupancy after human admission prevents overlapping confirmation at execution",
+          "an inserted preceding guest refreshes and explicitly approves the already confirmed future transition",
+          "a changed real preparation after confirmation prevents start dispatch",
+          "start uses actual preparation and completion waits for checkout even in an archived house",
+          "archived houses reject new agreements and confirmation while retaining cancellation and historical settlement",
+          "a permitted collaborator creates under real authorship without impersonating owner",
+          "super administrator preserves actual authorship on foreign owner resources",
+          "destination module revocation before execution blocks the native writer",
+          "session revocation before execution cannot apply a confirmed update",
+          "receipt failure rolls back draft turnover native operation and audit in the same transaction",
+          "real child process death after claim leaves no booking effect and allows explicit resume",
+          "duplicate human resume commits one native agreement edit and receipt",
+          "lost cancellation COMMIT response recovers its exact receipt without duplicate journal or effects",
+          "all six commercial reservation operations execute through compiled native writers",
+          "local effects never invoke a provider or acquire inference slots",
+          "execution attempts and leases finish without orphans"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai25.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai25.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "c0c2e337a7d58a64976065c1a842bc0c777f33877af5ba08411c5892a2858f42",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-26",
+      "variant": null,
+      "harness": "ai26",
+      "harness_path": "nodia-server/test/nodia-ai-ai26.integration.mjs",
+      "source_sha256": "e7a3dd323c4d465d99644e4f56efb647c4b0cf193b58dd0f41efc55fe9d9f98f",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-26",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_ten_money_block_turnover_operations_no_provider",
+        "checks": 44,
+        "exercised_operations": [
+          "rental_blocks/create",
+          "rental_blocks/update",
+          "rental_expenses/create",
+          "rental_expenses/pay",
+          "rental_expenses/update",
+          "rental_expenses/void",
+          "rental_payments/create",
+          "rental_payments/void",
+          "rental_turnovers/approve_same_day",
+          "rental_turnovers/update"
+        ],
+        "passed": [
+          "real required monetary block and expense fields are clarified without fabricating amounts states or dates",
+          "payment creation commits exact house cash and captures policy without creating a Finance movement",
+          "voiding draft payment retains monetary history and frozen policy while removing cash contribution",
+          "payment void cannot underfund the agreed deposit after direct confirmation",
+          "a real native payment after preview invalidates exact payment preconditions without timestamp assumptions",
+          "money contracts reject overpayment future dates zero and foreign associations",
+          "partial refunds reduce approved liability without changing original receipts or retained amount",
+          "voided refund remains in history and restores remaining refund liability",
+          "cumulative refunds cannot exceed approved cancellation and cancelled payments cannot be voided",
+          "expense creates pending exact amount with normalized nullable notes and no automatic payment",
+          "expense edit and pay use native association and explicit payment date",
+          "paid amount remains immutable while metadata corrections and void retain history",
+          "voided expense cannot pay again and associations zero or future money dates fail closed",
+          "paid expense creation preserves amounts above JavaScript safe integer exactly",
+          "a confirmed block reason change preserves unrelated concurrent notes without spurious reconfirmation",
+          "active whole-house block is visible to real availability and rejects overlapping blocks",
+          "deactivating a block releases dates while preserving its record",
+          "native confirmed occupancy between admission and execution defeats a stale block without overlapping calendar",
+          "concurrent admitted overlapping block writers serialize on the house and commit exactly one",
+          "preparation accepts unknown linen separately from false and normalizes blank notes",
+          "false linen blocks approval and future actual readiness is rejected without changing cleaning facts",
+          "future same-day plan approval remains stable across clock time and does not fabricate cleaning or readiness",
+          "a block cannot silently invalidate an explicitly approved same-day transition",
+          "changing a material plan clears previous approval",
+          "block preview discloses the exact preparation records its native writer will reset",
+          "failed block receipt restores native preparation invalidation block journal and audit atomically",
+          "block effect resets native actual preparation without inventing approval",
+          "late but real readiness is recordable and remains distinct from punctual planned readiness",
+          "same-timestamp material preparation edits invalidate an earlier preview",
+          "turnover associations and server-owned approval fields cannot be forged",
+          "archived house blocks new calendar use but keeps real expense and existing reservation settlement",
+          "super administrator writes under actual actor identity and does not impersonate foreign owner",
+          "native journal recovery belongs only to original actor while SA can observe foreign execution receipt",
+          "SA observation does not grant confirming or resuming another actors proposal execution",
+          "a module-authorized collaborator retains actual native authorship",
+          "destination module revocation before execution prevents expense writer",
+          "session revocation before execution cannot apply confirmed expense update",
+          "payment receipt failure rolls back native monetary effect policy journal and audit atomically",
+          "real child death after claim leaves no native effect and permits explicit recovery",
+          "duplicate human resume commits a single expense edit receipt and native journal",
+          "lost pay COMMIT response recovers exact receipt without duplicating expense cash or journal",
+          "all ten monetary calendar and preparation operations execute via compiled native writers",
+          "local effects never invoke provider or acquire inference slots",
+          "execution attempts and leases finish without orphaned jobs"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai26.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai26.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "eb6eb10d80236e000806337c9b527d9a63fe1c399edd3989669c07cfa81a3e18",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-27",
+      "variant": null,
+      "harness": "ai27",
+      "harness_path": "nodia-server/test/nodia-ai-ai27.integration.mjs",
+      "source_sha256": "02d5d5b119a0fe9a2a456168d8410c8fd8af67cb0fd089a652ea318c33925294",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-27",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_seventeen_core_operations_no_provider",
+        "checks": 36,
+        "exercised_operations": [
+          "actions/create",
+          "actions/delete",
+          "actions/update",
+          "business_actions/create",
+          "business_actions/delete",
+          "business_actions/update",
+          "module_groups/create",
+          "module_groups/delete",
+          "module_groups/update",
+          "modules/create",
+          "modules/delete",
+          "modules/update",
+          "roles/create",
+          "roles/delete",
+          "roles/update",
+          "users/create",
+          "users/update"
+        ],
+        "passed": [
+          "group creation and editing persist native translations atomically",
+          "module identity is immutable while destination metadata and activity remain editable",
+          "action null description and explicit inactive state are preserved",
+          "role action associations are exact deduplicated and atomic",
+          "business-action partial edit cannot reactivate an inactive row",
+          "business-action create upsert previews existing identity without applying new-record defaults",
+          "business-action DELETE deactivates and keeps row translations and historical receipt",
+          "user email normalization associations and activity use the native writer",
+          "user create upsert preserves existing inactive state and exact identity",
+          "role create upsert preserves existing inactive state and action assignments",
+          "role deletion removes native associations translations and leaves recoverable receipt",
+          "action module and group deletion preserve completed historical receipts after records disappear",
+          "all seventeen native administration operations execute with exact receipt recovery",
+          "compiled Core execution takes one exclusive authority frontier before its first read without lock upgrade or native timeout reset",
+          "reserved super-admin identity and the last active super-admin reject unsafe previews",
+          "unknown user role action and module group associations reject before native mutation",
+          "closed schemas reject internal identity fields and imprecise catalog IDs",
+          "material native user edits invalidate an exact confirmed snapshot",
+          "numeric action keys cannot alias or replace canonical action IDs in the native writer",
+          "association labels and activity are material even when the intended IDs are unchanged",
+          "group deletion retains the native child-module invariant",
+          "two concurrently confirmed last-admin changes serialize and retain exactly one active super-admin",
+          "native concurrent writers preserve NI-13 under the same exclusive frontier",
+          "destination module revocation before execution blocks the admitted Core mutation",
+          "session revocation before execution prevents a confirmed administrative write",
+          "exclusive effect waiting behind an uncommitted native revocation reads the subsequent authority snapshot",
+          "self access-loss preview includes affected users and removed destination assignments",
+          "a confirmed self-removal commits exactly and its receipt survives loss and restoration of access",
+          "receipt failure rolls back user fields roles and module replacements atomically",
+          "receipt failure rolls back native role metadata and translations with no independent commit",
+          "native inherited Core writer rejects an active manager without exclusive proof",
+          "real child death after claim leaves no administrative mutation and permits explicit recovery",
+          "duplicate human resume commits one Core catalog row and its exact receipt",
+          "lost Core COMMIT response recovers historical receipt without replaying native creation",
+          "administrative effects never invoke providers or inference slots",
+          "execution attempts and leases finish without orphaned jobs"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai27.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai27.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "d85f89626b0d79ace434148f6258add0eb607acac72283c60ce20897b06f40b4",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-28",
+      "variant": null,
+      "harness": "ai28",
+      "harness_path": "nodia-server/test/nodia-ai-ai28.integration.mjs",
+      "source_sha256": "d05cf4fdb99c6a45c05841f02ddbe48302bed06552764ec0d5f2130794ddf5a9",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-28",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_four_provider_operations_no_provider",
+        "checks": 25,
+        "exercised_operations": [
+          "ai_provider_catalog/create",
+          "ai_provider_catalog/update",
+          "ai_providers/create",
+          "ai_providers/update"
+        ],
+        "passed": [
+          "catalog create normalizes key and update preserves key while changing independent activity/channel flags",
+          "native ES2023 partial DTO response preserves every omitted catalog flag and activity",
+          "connection creation has no assigned models and only its first-connection default",
+          "connection translations commit with native record",
+          "four exact preparer/executor identities exercise native create/update and replay receipts",
+          "preview and stored payload exclude arbitrary historical credentials",
+          "exact dynamic model and per-model effort update preserve OCR other modes and hidden historical data",
+          "closed AI contracts reject arbitrary fields credentials catalog reassignment and unknown models",
+          "legacy flat settings survive first scoped update without copying hidden data to another mode",
+          "post-network discovery merges only observed catalog and preserves confirmed configuration",
+          "historical configured model remains editable without silently selecting the first discovered model",
+          "native REST change invalidates an earlier exact proposal",
+          "concurrent native defaults serialize to one global default with both records intact",
+          "concurrent native catalog creation produces one normalized key and one explicit conflict",
+          "catalog capability is independent of enabled connection and runtime availability",
+          "live ai:manage revocation prevents a previously confirmed provider effect",
+          "inherited active SQL manager without actual authority locks is rejected before writing",
+          "reused QueryRunner cannot retain a previous authority frontier",
+          "receipt failure rolls back provider name defaults and translations atomically",
+          "rollback preserves original hidden configuration bytes",
+          "real child death after claim leaves no administrative mutation and permits explicit recovery",
+          "duplicate human resume commits one provider catalog row and its exact receipt",
+          "lost provider COMMIT response recovers historical receipt without replaying native creation",
+          "administrative effects never invoke providers or inference slots",
+          "execution attempts and leases finish without orphaned jobs"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai28.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai28.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "17db7fdeff6f4a6c2ce3e8ffa792cfdf080b93bc6b41c2878593e5286e8820ef",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-29",
+      "variant": null,
+      "harness": "ai29",
+      "harness_path": "nodia-server/test/nodia-ai-ai29.integration.mjs",
+      "source_sha256": "a4cb168936dc990dfe326accff826a8a4ac42d0b314a0a23c37021654b5b1ed1",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-29",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_eight_secure_operations_mocked_native_login_no_credentials",
+        "checks": 55,
+        "exercised_operations": [
+          "api_key_create",
+          "api_key_delete",
+          "api_key_update",
+          "codex_logout",
+          "connection_login",
+          "gemini_web_logout",
+          "nodia_logout",
+          "sync_models"
+        ],
+        "native_start_calls": 12,
+        "native_private_http_fixture_requests": 2,
+        "known_limitations": [
+          "Native transport simulated; real durable supervisors and provider accounts verified separately"
+        ],
+        "passed": [
+          "worker establishes waiting_for_user without provider calls or native session dispatch",
+          "human pause closes attempt and releases SQL worker lease and inference slots",
+          "human flow exposes only opaque reference and exact frozen metadata",
+          "another module-enabled manager cannot inspect another owners secure interaction",
+          "same user in a different authenticated session cannot control this flow",
+          "human key submission commits encrypted native key and opaque receipt atomically",
+          "proposal steps execution receipts events and recovery witnesses never persist the entered secret",
+          "same human request after committed result recovers without creating another key",
+          "key replacement retains native key identity and updates the frozen label",
+          "metadata-only key edit preserves ciphertext and applies only confirmed public fields",
+          "native REST concurrent selection still serializes to one selected active key",
+          "human key deletion and sole-active selection commit with the same opaque receipt",
+          "cancel before human dispatch closes job and retains no domain key",
+          "native key metadata change invalidates the exact confirmed proposal",
+          "human can cancel a stale proposal without requiring unchanged domain fields",
+          "failed receipt rolls back native encrypted key and keeps human flow reviewable",
+          "explicit retry after proven SQL rollback creates exactly one native key",
+          "lost key COMMIT acknowledgement recovers completed receipt without a second encrypted key",
+          "revoking ai:manage after confirmation prevents the human credential effect",
+          "expired human interaction refuses dispatch and persists no credential",
+          "expiry sweep closes a never dispatched human flow and releases queue capacity",
+          "login starts only from the authenticated human channel after worker pause",
+          "private native login reference is absent from public operation and flow projections",
+          "viewer frame remains exclusively in the dedicated no-store human channel",
+          "viewer input is never persisted in descriptors events or transcripts",
+          "only observed native login success completes the human pause",
+          "Agentic authorization code travels only through the human/native bridge",
+          "native cancellation closes only its owning human flow",
+          "Codex login remains independent and targets the exact configured connection",
+          "device codes and authorization URLs are returned only in human interaction and excluded from durable records",
+          "occupied native profile preserves its armed request as uncertain without changing mode",
+          "fenced busy request is never restarted; a separately confirmed fresh login uses no inference slot",
+          "observing and cancelling a known login remains possible after disabling its connection and channel",
+          "an authorized human can explicitly log out an already disabled connection",
+          "disabling the channel still prevents preparing a new native login",
+          "Web and Codex logout use their separate real native bridge operations",
+          "remote discovery merges observed models only in the final receipt transaction",
+          "preparers reject secrets rather than accepting model authored credentials",
+          "a separate Node process observes a durable Web login through the actual authenticated private HTTP transport",
+          "a worker without an in-memory Web login owner cancels exactly the native owned job over private HTTP",
+          "real child death before human pause produces no credential or native login",
+          "explicit duplicate resume reuses the execution and commits exactly one encrypted key",
+          "authority revocation during native login cancels only the owned job and reconciles the paused execution",
+          "expiry reconciliation records a natively completed login without resending its start",
+          "chat retention purges messages and keeps only unresolved native interaction identity",
+          "detached native cleanup cancels the exact owned login after chat purge without replay",
+          "late native success after chat purge reconciles and removes the detached witness without recreating chat",
+          "Nodia logout revokes only the confirmed current session atomically with its receipt",
+          "missing/corrupted native proof preserves unknown instead of inventing cancellation",
+          "lost native start response remains unknown and never silently replays login",
+          "lost start without a native reference retains a minimal unknown witness after chat deletion",
+          "retention reconciles a lost start by durable request identity without restarting login",
+          "all eight secure operation contracts were exercised through real confirmation HTTP and PostgreSQL",
+          "secure pause does not invoke model inference or acquire nested inference runtime slots",
+          "completed human effects leave no worker lease or unfinished claim attempt"
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai29.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai29.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "bc72f49a09a544b83b1747c315c36efea0344e12ea537a50b126a7c1a495f692",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-29",
+      "variant": "-r01",
+      "harness": "ai29-r01",
+      "harness_path": "nodia-server/test/nodia-ai-ai29-r01.integration.mjs",
+      "source_sha256": "e380335d4c3ff98c86b40b9d038c756086597270edc29523a87a4a6234bfb4bf",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-29-R01",
+        "scope": "real_postgresql_confirmation_http_sigkill_restarted_node_and_authenticated_private_transport_synthetic_native_journal",
+        "checks": 15,
+        "profile_start_calls": 4,
+        "native_private_http_requests": 23,
+        "passed": [
+          "a fresh compiled coordinator recovers a native login after SIGKILL without a second profile start",
+          "the immutable native request remains private and independent of the human request ID",
+          "cancellation by request creates a native tombstone before delayed admission and prevents the profile from starting",
+          "a cancelled uncertain start releases the SQL owner without fabricating a completed receipt",
+          "TTL expiry fences an armed request that never returned a native reference",
+          "authority revocation cancels only the persisted native request without a new login",
+          "chat purge keeps the minimal durable target even when no native job reference was returned",
+          "post-purge native cancellation proof removes the detached SQL witness and never restarts login",
+          "a terminal success from the native request is reconciled atomically after coordinator restart",
+          "lost post-commit ACK preserves only a detached terminal outbox when its chat expires",
+          "maintenance retries the terminal ACK and retires its detached witness without another effect",
+          "chat purge handles a completed ACK outbox alongside its newer active execution without violating unique admission",
+          "all real private HTTP requests kept service authentication and exact actor/provider identity",
+          "completed recovery leaves no leased SQL job, live attempt or nested inference slot",
+          "native authorization material is absent from every durable execution witness"
+        ],
+        "limitations": [
+          "The HTTP native service is synthetic; durable Python/Codex supervisors and real provider sessions require separate evidence."
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai29-r01.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai29-r01.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "c43e001551462edb26df990c5a99eda4c491f2babe4f3377a7739937f384677f",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-30",
+      "variant": null,
+      "harness": "ai30",
+      "harness_path": "nodia-server/test/nodia-ai-ai30.integration.mjs",
+      "source_sha256": "0b4e014d7e9137f06ffb189a1e3ee5baac7cd77350b6ef45237a644737779a4a",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-30",
+        "scope": "compiled_report_use_cases_real_disposable_postgresql_synthetic_records",
+        "checks": 147,
+        "report_sql_queries": 118,
+        "passed": [
+          "compiled Nest module describes every registered current source without exposing physical SQL mappings",
+          "registered source finance_movements executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field finance_movements.id at its declared relation grain",
+          "SQL resolves registered field finance_movements.category_id at its declared relation grain",
+          "SQL resolves registered field finance_movements.obligation_id at its declared relation grain",
+          "SQL resolves registered field finance_movements.name at its declared relation grain",
+          "SQL resolves registered field finance_movements.type at its declared relation grain",
+          "SQL resolves registered field finance_movements.status at its declared relation grain",
+          "SQL resolves registered field finance_movements.recorded_amount at its declared relation grain",
+          "SQL resolves registered field finance_movements.is_active at its declared relation grain",
+          "SQL resolves registered field finance_movements.created_at at its declared relation grain",
+          "SQL resolves registered field finance_movements.category_group_id at its declared relation grain",
+          "SQL resolves every supported measure of finance_movements and emits genuine zero totals for a known empty population",
+          "registered source finance_obligations executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field finance_obligations.id at its declared relation grain",
+          "SQL resolves registered field finance_obligations.name at its declared relation grain",
+          "SQL resolves registered field finance_obligations.key at its declared relation grain",
+          "SQL resolves registered field finance_obligations.type at its declared relation grain",
+          "SQL resolves registered field finance_obligations.recorded_amount at its declared relation grain",
+          "SQL resolves registered field finance_obligations.is_active at its declared relation grain",
+          "SQL resolves registered field finance_obligations.created_at at its declared relation grain",
+          "SQL resolves every supported measure of finance_obligations and emits genuine zero totals for a known empty population",
+          "registered source business_invoices executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field business_invoices.id at its declared relation grain",
+          "SQL resolves registered field business_invoices.provider_id at its declared relation grain",
+          "SQL resolves registered field business_invoices.code at its declared relation grain",
+          "SQL resolves registered field business_invoices.is_active at its declared relation grain",
+          "SQL resolves every supported measure of business_invoices and emits genuine zero totals for a known empty population",
+          "registered source business_products executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field business_products.id at its declared relation grain",
+          "SQL resolves registered field business_products.provider_id at its declared relation grain",
+          "SQL resolves registered field business_products.code at its declared relation grain",
+          "SQL resolves registered field business_products.name at its declared relation grain",
+          "SQL resolves registered field business_products.stock at its declared relation grain",
+          "SQL resolves registered field business_products.is_active at its declared relation grain",
+          "SQL resolves registered field business_products.log_name at its declared relation grain",
+          "SQL resolves every supported measure of business_products and emits genuine zero totals for a known empty population",
+          "registered source business_product_logs executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field business_product_logs.id at its declared relation grain",
+          "SQL resolves registered field business_product_logs.product_id at its declared relation grain",
+          "SQL resolves registered field business_product_logs.code at its declared relation grain",
+          "SQL resolves registered field business_product_logs.name at its declared relation grain",
+          "SQL resolves every supported measure of business_product_logs and emits genuine zero totals for a known empty population",
+          "registered source business_providers executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field business_providers.id at its declared relation grain",
+          "SQL resolves registered field business_providers.name at its declared relation grain",
+          "SQL resolves registered field business_providers.is_active at its declared relation grain",
+          "SQL resolves registered field business_providers.contact_name at its declared relation grain",
+          "SQL resolves registered field business_providers.product_code at its declared relation grain",
+          "SQL resolves registered field business_providers.invoice_code at its declared relation grain",
+          "SQL resolves every supported measure of business_providers and emits genuine zero totals for a known empty population",
+          "registered source rental_reservations executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field rental_reservations.id at its declared relation grain",
+          "SQL resolves registered field rental_reservations.channel at its declared relation grain",
+          "SQL resolves registered field rental_reservations.status at its declared relation grain",
+          "SQL resolves registered field rental_reservations.check_in_on at its declared relation grain",
+          "SQL resolves registered field rental_reservations.check_out_on at its declared relation grain",
+          "SQL resolves registered field rental_reservations.recorded_amount at its declared relation grain",
+          "SQL resolves registered field rental_reservations.is_active at its declared relation grain",
+          "SQL resolves registered field rental_reservations.created_at at its declared relation grain",
+          "SQL resolves registered field rental_reservations.payment_method at its declared relation grain",
+          "SQL resolves every supported measure of rental_reservations and emits genuine zero totals for a known empty population",
+          "registered source rental_payments executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field rental_payments.id at its declared relation grain",
+          "SQL resolves registered field rental_payments.reservation_id at its declared relation grain",
+          "SQL resolves registered field rental_payments.status at its declared relation grain",
+          "SQL resolves registered field rental_payments.method at its declared relation grain",
+          "SQL resolves registered field rental_payments.recorded_amount at its declared relation grain",
+          "SQL resolves registered field rental_payments.occurred_on at its declared relation grain",
+          "SQL resolves registered field rental_payments.created_at at its declared relation grain",
+          "SQL resolves every supported measure of rental_payments and emits genuine zero totals for a known empty population",
+          "registered source rental_refunds executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field rental_refunds.id at its declared relation grain",
+          "SQL resolves registered field rental_refunds.reservation_id at its declared relation grain",
+          "SQL resolves registered field rental_refunds.status at its declared relation grain",
+          "SQL resolves registered field rental_refunds.method at its declared relation grain",
+          "SQL resolves registered field rental_refunds.recorded_amount at its declared relation grain",
+          "SQL resolves registered field rental_refunds.occurred_on at its declared relation grain",
+          "SQL resolves registered field rental_refunds.created_at at its declared relation grain",
+          "SQL resolves every supported measure of rental_refunds and emits genuine zero totals for a known empty population",
+          "registered source rental_expenses executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field rental_expenses.id at its declared relation grain",
+          "SQL resolves registered field rental_expenses.reservation_id at its declared relation grain",
+          "SQL resolves registered field rental_expenses.name at its declared relation grain",
+          "SQL resolves registered field rental_expenses.category at its declared relation grain",
+          "SQL resolves registered field rental_expenses.status at its declared relation grain",
+          "SQL resolves registered field rental_expenses.recorded_amount at its declared relation grain",
+          "SQL resolves registered field rental_expenses.incurred_on at its declared relation grain",
+          "SQL resolves registered field rental_expenses.paid_on at its declared relation grain",
+          "SQL resolves registered field rental_expenses.created_at at its declared relation grain",
+          "SQL resolves every supported measure of rental_expenses and emits genuine zero totals for a known empty population",
+          "registered source rental_blocks executes its actual SQL mapping and exact record count",
+          "SQL resolves registered field rental_blocks.id at its declared relation grain",
+          "SQL resolves registered field rental_blocks.reason at its declared relation grain",
+          "SQL resolves registered field rental_blocks.is_active at its declared relation grain",
+          "SQL resolves registered field rental_blocks.starts_at at its declared relation grain",
+          "SQL resolves registered field rental_blocks.ends_at at its declared relation grain",
+          "SQL resolves registered field rental_blocks.created_at at its declared relation grain",
+          "SQL resolves every supported measure of rental_blocks and emits genuine zero totals for a known empty population",
+          "a single authorized SQL snapshot computes exact global amount and count over both January boundaries",
+          "report output carries logical provenance, period, exact string amounts and bounded rows",
+          "overlapping one-to-many memberships preserve two separate equal amounts without SUM DISTINCT or multiplied records",
+          "inactive related memberships produce real zero totals and zero matches",
+          "bigint money above MAX SAFE INTEGER reaches the result as its exact decimal string",
+          "a recorded amount predicate compares exact bigint decimal strings inside PostgreSQL",
+          "flat filter sets evaluate AND all with OR any, without broadening the authorized population",
+          "the first group page is bounded while totals and matches include the complete filtered population",
+          "keyset pagination visits the remaining group with the same global totals and no duplicate group",
+          "a cursor bound to other filters cannot execute another report query",
+          "an ordinary actor cannot request another finance owner",
+          "super admin can explicitly inspect another owner without changing attribution",
+          "a cursor from one owner cannot be reused by another owner even by super admin",
+          "rental owner reports use native property authority",
+          "registered date and text dimensions preserve civil dates and scalar string result types",
+          "an active collaborator can report a shared property while a nullable dimension remains null",
+          "a hidden property cannot be read by naming its report scope",
+          "super admin reports a hidden property with the same native policy",
+          "nullable effective dates are filtered explicitly rather than coerced into an invented payment date",
+          "collaborator revocation is reevaluated before a later report",
+          "business reporting preserves the approved global authenticated resource policy",
+          "a zero-value invoice is still a real counted record",
+          "invoice money without a typed currency is unsupported instead of silently assuming CLP",
+          "a legacy invoice timestamp is not presented as an instant with an invented timezone",
+          "an omitted rental scope asks for clarification rather than expanding to every property",
+          "an unknown source fails explicitly without manufacturing a zero total",
+          "an obsolete source catalog cannot execute a current mapping",
+          "multiple separate sources await AI31 instead of pretending to share a snapshot",
+          "multiple historical snapshots preserve equal current stock values and a real zero-stock product",
+          "bigint group IDs above MAX SAFE INTEGER survive JSON projection and keyset continuation exactly",
+          "invalid SQL properties never reaches the report SQL executor",
+          "invalid SQL identifiers never reaches the report SQL executor",
+          "invalid recursive filter expressions never reaches the report SQL executor",
+          "invalid unregistered relations never reaches the report SQL executor",
+          "invalid related dimensions which would multiply rows never reaches the report SQL executor",
+          "invalid duplicate output keys never reaches the report SQL executor",
+          "invalid unknown IANA timezone never reaches the report SQL executor",
+          "invalid invalid civil date never reaches the report SQL executor",
+          "invalid wrong temporal kind never reaches the report SQL executor",
+          "invalid wrong property timezone never reaches the report SQL executor",
+          "invalid unbounded page never reaches the report SQL executor",
+          "invalid incompatible cross-source combination reserved for AI31 never reaches the report SQL executor",
+          "a SQL-shaped string remains a bound literal and cannot broaden the result",
+          "revoking the destination module stops a previously admitted source before report execution",
+          "source discovery removes every source from a revoked destination module",
+          "super admin discovery retains current sources without destination assignments",
+          "revoking NodiaAI blocks all reports independently of target modules",
+          "a revoked authenticated session cannot describe report sources"
+        ],
+        "cleanup_completed": true,
+        "configured_database_used": false,
+        "provider_inference": false,
+        "elapsed_seconds": 2.42,
+        "limitations": [
+          "Single-source restricted reports only. Cross-source composition and presentation remain AI-31.",
+          "No provider generation, MCP publication or production database is exercised."
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "candidate_manifest_sha256": "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt01",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai30.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt01/.tmp/priority-ai30.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "a5ef4dac6424224f336acee1c2c4260f8b4f987849f74618cb67f6807c94c54f",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-31",
+      "variant": null,
+      "harness": "ai31",
+      "harness_path": "nodia-server/test/nodia-ai-ai31.integration.mjs",
+      "source_sha256": "5b8ee9230cf902125b83f6a51600d00cf03c0614ed4b7b28d05e86a5dd5ab290",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-31",
+        "scope": "compiled_cross_source_report_use_cases_real_disposable_postgresql_synthetic_records",
+        "checks": 57,
+        "report_sql_queries": 27,
+        "passed": [
+          "compiled Context and Reports modules expose two versioned strict technical read ports",
+          "technical report discovery exposes exactly the currently authorized logical sources",
+          "technical discovery also honors frozen run modules instead of expanding to all current assignments",
+          "a cancelled report does not begin any source aggregate",
+          "a report whose deadline already expired does not begin any source aggregate",
+          "stored report authority can be rechecked with native scope checks without recomputing aggregates",
+          "separate cross-product report preserves exact full-filter totals for personal and property expenses",
+          "cross-source provenance explicitly declares independent SQL observations instead of a simultaneous snapshot",
+          "no combined grand total is inferred across personal pesos and property CLP",
+          "source blocks retain source-specific temporal basis and zone with no invented economic date",
+          "table projection has closed scalar rows whose width matches declared columns",
+          "super admin inspects another owner report with original attribution and current authority without recomputing it",
+          "actual durable worker exposes the report ports frozen into its Agentic tool grant",
+          "actual report callback describes the authorized catalog through checkpoint admission",
+          "actual duplicate report callback recovers the immutable receipt without repeating source aggregates",
+          "actual durable inference stage completes with one synthetic adapter dispatch and real report SQL",
+          "report callback commits exactly one completed durable receipt despite callback replay",
+          "owner and super admin recover the exact report via the chat observation boundary without executing SQL aggregates",
+          "report observation emits typed report metadata for the client result reference",
+          "another ordinary user cannot inspect the report receipt from a foreign chat",
+          "chat report observation rejects newly revoked destination access without replaying report SQL",
+          "equal financial amounts and overlapping category memberships keep two facts without fan-out",
+          "cross-source composition preserves money beyond MAX SAFE INTEGER as an exact decimal string",
+          "incompatible currency/unit comparison fails before any source aggregate is executed",
+          "comparison refuses independently truncated source pages that would fabricate missing groups or split alignment",
+          "compatible property measures compare independently across the same civil month without summing houses",
+          "a known zero group remains zero and an actual nullable grouping remains null",
+          "comparison preserves an absent source group as null alongside a known zero from the other source",
+          "runtime result validation rejects row width instead of trusting a static wire type",
+          "runtime result validation rejects scalar type instead of trusting a static wire type",
+          "runtime result validation rejects duplicate provenance instead of trusting a static wire type",
+          "runtime result validation rejects status inconsistent with source errors instead of trusting a static wire type",
+          "runtime result validation rejects unknown top-level fields instead of trusting a static wire type",
+          "runtime result validation rejects invented monetary unit instead of trusting a static wire type",
+          "runtime result validation rejects unknown amount in successful source instead of trusting a static wire type",
+          "incompatible periods cannot be compared as the same month",
+          "paid and incurred expense measures are not silently treated as the same economic meaning",
+          "duplicate aliases cannot collapse source provenance",
+          "an invalid logical field in the second source is rejected before executing the valid first source",
+          "a global row limit smaller than the number of sources is rejected before SQL",
+          "an obsolete catalog never reaches source SQL",
+          "all known empty populations produce genuine zero totals and status empty without errors",
+          "cross-source pages respect the global bound while retaining totals of every filtered record",
+          "composite cursors continue each source without repeating any returned source group",
+          "a cursor cannot be transferred to different source filters",
+          "a cursor cannot be transferred to another actor/session",
+          "a cursor cannot change the global page size",
+          "an inaccessible property becomes an explicit failed source without fabricated totals or matched records",
+          "property access is reauthorized on every cross-source invocation and revoked data is not replayed",
+          "stored report recovery rejects a revoked destination before returning recorded results",
+          "destination module revocation preserves other authorized sources but removes the revoked population",
+          "an unavailable source stays explicit on subsequent pages instead of becoming a false complete report",
+          "revocation after the first source committed prevents its data from escaping after the second source",
+          "a genuine first-source SQL failure does not poison the following independent source transaction",
+          "failed source diagnostics contain no SQL, table names, credential details or invented zero amount",
+          "NodiaAI module revocation blocks the entire report rather than returning misleading partial success",
+          "revoked sessions cannot obtain even partial report data"
+        ],
+        "cleanup_completed": true,
+        "configured_database_used": false,
+        "provider_inference": false,
+        "elapsed_seconds": 5.68,
+        "limitations": [
+          "No provider generation, MCP publication or production database is exercised.",
+          "Each source uses an independent authorized SQL observation; no cross-source grand total is inferred."
+        ]
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-runtime-fix-attempt05.json",
+        "sha256": "eb78a9c8774df9295b14416df52a093fd4ded337049e15a326aa1d54f9369f23"
+      },
+      "candidate_manifest_sha256": "d5162b527f63975bca311df8428a74d04534f6391521061c3eda1962f2825449",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt05",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai31.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai31.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "414d088b43269a81d71c2ebf24a041ef93e577232768ce213fd1da0f8ec9dfdf",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-33",
+      "variant": null,
+      "harness": "ai33",
+      "harness_path": "nodia-server/test/nodia-ai-ai33.integration.mjs",
+      "source_sha256": "61201138ea2aece0adc06ce3079a9ea7734f0f756cd05a480711869ea32abf8c",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-33",
+        "scope": "compiled_preference_confirmation_effect_disposable_sql",
+        "checks": 36,
+        "passed": [
+          "own preference list starts empty",
+          "preference table follows the12-column ERD",
+          "both nullable consent origins have cleanup indexes",
+          "a proposed memory has no effect before exact confirmation",
+          "a different preview hash cannot obtain a human challenge",
+          "duplicate human confirmation reuses the same admitted execution",
+          "accepted preference binds owner value revision and human step",
+          "minimal preference receipt identifies the exact committed revision",
+          "completed preference replay leaves one row and the same revision",
+          "duplicate keys and invalid revision cannot silently overwrite accepted memory",
+          "two approved updates cannot both pass the same CAS revision",
+          "closed keys scalar reference types and derived ownership reject secrets before persistence",
+          "real product ownership and supplier business relation reject foreign references",
+          "favorite business options preserve native membership while supplier scope discovery remains global",
+          "durable worker executes a confirmed preference without model dispatch",
+          "all five registered reference keys commit through the same confirmation contract",
+          "ordinary and omniscient actors list only their own personal preferences",
+          "public preference labels omit private provider fields",
+          "bounded preference pagination preserves filter and actor authority",
+          "super_admin cross-product reference authority does not transfer memory ownership",
+          "business membership revocation hides its accepted label and removes it from assembled context",
+          "supplier reference preserves native global visibility with its exact business scope",
+          "revocation after confirmation fences the preference effect and hides reference labels",
+          "owner can forget an unavailable preference without the revoked product module",
+          "inactive reference remains forgettable but exposes no stale label",
+          "receipt failure atomically rolls back preference value revision and consent provenance",
+          "lost COMMIT response recovers the existing receipt without applying the memory update twice",
+          "chat retention preserves accepted memory while both origin references become NULL",
+          "explicit forget and its receipt replay never recreate or double-delete memory",
+          "concurrent worker claims serialize two confirmed additions admitted from49 and enforce the50-row cap",
+          "preference effects never invoke a provider or acquire a profile slot",
+          "all execution attempts close without leased work",
+          "unrelated accepted product references remain intact",
+          "reference change after assembly is rejected inside the real arming transaction before budget or attempt arming",
+          "known pre-dispatch failure releases the claimed slot without quarantine or provider dispatch",
+          "cancellation while real arming SQL is pending preserves uncertainty and never dispatches a late provider request"
+        ],
+        "provider_generations": 0,
+        "synthetic_adapter_observations": 4,
+        "configured_database_used": false,
+        "storage_operations": 0,
+        "synthetic_http_identity": true
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-runtime-fix-attempt05.json",
+        "sha256": "eb78a9c8774df9295b14416df52a093fd4ded337049e15a326aa1d54f9369f23"
+      },
+      "candidate_manifest_sha256": "d5162b527f63975bca311df8428a74d04534f6391521061c3eda1962f2825449",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt05",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai33.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai33.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "7214d3af72195718b3a05416c4a91dc2561fbdb74709e2fb5875fe24d49a94e2",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    },
+    {
+      "suite": "AI-34",
+      "variant": null,
+      "harness": "ai34",
+      "harness_path": "nodia-server/test/nodia-ai-ai34.integration.mjs",
+      "source_sha256": "565078e152ab0cc51723095fb4e2e95a827c7f0fffe5d0e522be8ec9425dc992",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "assertion_result": {
+        "stage": "AI-34",
+        "scope": "compiled_context_compaction_disposable_postgresql",
+        "checks": 36,
+        "passed": [
+          "M4 adds exactly the nine-column snapshot table and nullable run reference",
+          "empty snapshot migration rolls back without removing independent preferences",
+          "empty snapshot migration can be applied again",
+          "SQL history loader bounds an ordered prefix before transferring content to Node",
+          "SQL history loader can load 240 ordered messages without the former collection cap",
+          "SQL source fingerprint changes when an earlier canonical text changes",
+          "rolling back a source mutation restores its exact SQL fingerprint",
+          "history beyond the former collection limit completes via one compacting dispatch and one answer",
+          "snapshot pins a nonempty canonical prefix with an exact source hash and builder contract",
+          "compaction keeps the exact Web selection and has no hidden mode or model fallback",
+          "answer receives cited memory and current text within the canonical adapter budget",
+          "original history remains intact and compaction never renews retention",
+          "completed compacting turn is never replayed",
+          "subsequent turn reuses the validated snapshot without another compaction",
+          "history larger than the canonical byte ceiling completes from one bounded compaction window and the remaining tail",
+          "changing connection mode and model preserves canonical memory without replaying prior turns",
+          "rollback refuses populated snapshots rather than silently discarding memory",
+          "snapshot reads require the caller transaction",
+          "deferred composite foreign key rejects a cross-chat snapshot reference",
+          "concurrent snapshot append serializes durable revisions without overwriting an artifact",
+          "chat and owner storage admission counts every persisted snapshot summary and scope byte",
+          "invalid compaction output fails explicitly without creating a snapshot or replaying generation",
+          "a source mutation after compaction dispatch cannot publish a stale snapshot or start an answer",
+          "an exhausted compacting budget rejects before generation without a hidden retry",
+          "source fingerprint is checked inside arming before dispatch budget is consumed",
+          "authorized scoped source can be compacted while its module is assigned",
+          "revocation never reuses a snapshot or source payload from a lost module",
+          "current module revocation is applied inside the SQL history projection before content transfer",
+          "chat purge cascades snapshots and their same-chat runs without a deferred FK conflict",
+          "the independent accepted-preference table is preserved by snapshot lifecycle changes",
+          "many terminal proposals remain inspectable through bounded references without blocking a chat",
+          "operation references contain identity state and hashes without replayable commands or confirmation tokens",
+          "each retained operation reference is reauthorized and becomes restricted after module revocation",
+          "too many live pending proposals fail explicitly rather than silently dropping a required confirmation",
+          "a lost compacting response is unknown and cannot trigger another generation",
+          "unknown compacting run retains bounded snapshot and answer reservations until reconciliation"
+        ],
+        "synthetic_dispatches": 13,
+        "synthetic_compactions": 6,
+        "real_inference": false,
+        "configured_database_used": false,
+        "storage_operations": 0
+      },
+      "cleanup": {
+        "orphan_disposable_containers_removed": 0,
+        "new_disposable_containers_remaining": 0
+      },
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-runtime-fix-attempt05.json",
+        "sha256": "eb78a9c8774df9295b14416df52a093fd4ded337049e15a326aa1d54f9369f23"
+      },
+      "candidate_manifest_sha256": "d5162b527f63975bca311df8428a74d04534f6391521061c3eda1962f2825449",
+      "candidate_manifest_remote": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/ai36-regressions-stage-manifest.json",
+      "attempt": "attempt05",
+      "raw_logs_remote": {
+        "stdout": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai34.stdout",
+        "stderr": "/opt/nodia/verification/ai36-regressions-attempt05/nodia-server/.tmp/runtime-fix-revalidation-ai34.stderr"
+      },
+      "raw_log_sha256": {
+        "stdout": "642436be50da0694d1546a875165c2ff02c44c67e748d4b6565e614e632c0c1f",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "raw_log_validation_scope": "Runner hashes are preserved; raw historical logs remain in private remote staging."
+    }
+  ],
+  "prior_failed_attempts": [
+    {
+      "harness": "ai31",
+      "attempt": "attempt01",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai33",
+      "attempt": "attempt01",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-priority-attempt01.json",
+        "sha256": "224dbff5843778fa9d3bb939a8e379abdc6b0db5531581213839367feacf0be5"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai12",
+      "attempt": "attempt02",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai12-routing",
+      "attempt": "attempt02",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai14",
+      "attempt": "attempt02",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai15",
+      "attempt": "attempt02",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai15-quota-gateway",
+      "attempt": "attempt02",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai16-events",
+      "attempt": "attempt02",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-attempt02.json",
+        "sha256": "62a35c65bb1a0349060a4b47459be3eebf9e4c6d41d4837b5ad26d934b4963b6"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai15",
+      "attempt": "attempt03",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-context-diagnostic-attempt03.json",
+        "sha256": "7facf96eb67ec39a9997d42507de2df5f40c60f299a51aac67c797439ae6853f"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai12-routing",
+      "attempt": "attempt04",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-foundation-revalidation-attempt04.json",
+        "sha256": "b94321c4ed94a6e476e4041b679cdbb03b5444ef340075b74be3f51b881feed1"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai12-routing",
+      "attempt": "attempt05",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-runtime-fix-attempt05.json",
+        "sha256": "eb78a9c8774df9295b14416df52a093fd4ded337049e15a326aa1d54f9369f23"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    },
+    {
+      "harness": "ai12-routing",
+      "attempt": "attempt06",
+      "source_report": {
+        "file": "docs/evidence/nodia-ai-ai36-regressions-routing-attempt06.json",
+        "sha256": "47b266a66eb2a5880673995045ea3d106ebc2a984957a26068f966e1ed2b8c0a"
+      },
+      "error_category": "AssertionError",
+      "superseded_by_pass": true
+    }
+  ],
+  "native_budget_measurement": {
+    "file": "docs/evidence/nodia-ai-ai36-native-budget-validation.json",
+    "sha256": "7a9efbb8b58f3df7919076efaac07ddccb695dc7100667bd59e40e079b7afbd0"
+  },
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_cloud_operations": 0,
+  "services_restarted": false,
+  "limitations": [
+    "Authentication transport, providers and object storage are synthetic; actual authorization SQL and native domain writers execute.",
+    "A suite with no numbered counter contributes zero to total_numbered_checks; its actual output remains linked.",
+    "A failed or superseded execution contributes no successful check count.",
+    "Passing internal effects does not publish MCP preparers, execute a real account or constitute product approval."
+  ],
+  "compiled_candidate_manifests": [
+    "facd103c35cc7ac4ec3853e5d702fc16af05a7fea567286448b3c8ccf2f1c142",
+    "d5162b527f63975bca311df8428a74d04534f6391521061c3eda1962f2825449",
+    "3dc8ac2eabf74deb45909299b4626ed722a9eeb016f24f39f4c9d972bc3a267a",
+    "c1e12fb13b578ecfc3a21790b280977c981d1b7172c93dc295beb71e9ce066ba",
+    "28bd270db8eae4c877ace1c2e9ce271460429ab0b0ce6b7ef527ef220ede1727"
+  ],
+  "all_suites_executed_same_compiled_candidate": false,
+  "runtime_fix_revalidated_suites": [
+    "ai11",
+    "ai12",
+    "ai12-routing",
+    "ai31",
+    "ai33",
+    "ai34"
+  ]
+}

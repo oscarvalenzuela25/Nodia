@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "stage": "AI-34",
+  "before_inventory_sha256": "9d9863761a93f0a5ea93038051de34038f0ff7002b85fcaa08a0103cce069870",
+  "after_inventory_sha256": "23ea3061a74beb31c8960f94dc5d4876166ac73127d65cfea0031e3ffcb20520",
+  "before_coordination_sha256": "9db93c7aa6cb4442ca1ca9067bf9308ed76b97827500908572d2cab2c81f7213",
+  "after_coordination_sha256": "c1431177f75de7d2833ab6849aa8e04dd5f4e8d62f213f730f3f0f4831a73f9a",
+  "historical_stage_metadata_sha256": "d832378e23950777c6fdefac3f57ad4395314632f88f40596a91088597fde729",
+  "before_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 84,
+    "publicOperations": 5,
+    "staticallyComposedModules": 79,
+    "conditionalModules": 5
+  },
+  "after_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 85,
+    "publicOperations": 5,
+    "staticallyComposedModules": 80,
+    "conditionalModules": 5
+  },
+  "before_source_count": 840,
+  "after_source_count": 848,
+  "source_hash_changes": [
+    {
+      "file": "nodia-server/src/migrations/1793000000000-CreateNodiaAiContextSnapshots.ts",
+      "before_sha256": null,
+      "after_sha256": "5a5e9309b4f4007c9625902e2a56ae518528fe311cb54bf4d507f01f212dadaf",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-adapter/nodia-ai-adapter.service.ts",
+      "before_sha256": "4eca1a2631afd1c65357b8f6a08f08afea8517a52b0924c38ee37d3814baf948",
+      "after_sha256": "b7a92046306cd77e0f60b126956cfee0e9f7f5ebb95abdf8706098725bc1cb4b",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-adapter/types/nodia-ai-adapter.types.ts",
+      "before_sha256": "61ecd20e06f92d3e5fcde43a43e375d5dc4ababca75074312bb1650d977bb7ae",
+      "after_sha256": "eb69e5872ca9b5da7244cea0821b97c78418142248a4306e388791ec3be7c0d7",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.ts",
+      "before_sha256": "57f9b9dd8d8cc7391d00ea5ca22cb595b9006569b41d49d2e8f170a1f3ff4f67",
+      "after_sha256": "03c12e913c569670e1666702a520ba9b6087925b2ec7f7a4e5453cbe133adec1",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-attachment/nodia-ai-attachment.service.ts",
+      "before_sha256": "53bc7674be99fc772ae896bf34a544efef2dc15bd7f336042cef00f458efb75b",
+      "after_sha256": "1239060430a1f3d2467c7cd0eab316a7b5c540417e0db2db17b7ded1b2e3e728",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context-snapshot/entities/nodia-ai-context-snapshot.entity.ts",
+      "before_sha256": null,
+      "after_sha256": "10d00599a1d8091ac48ae155441de243011e9a9948befd63238f97d4cf9edf8d",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context-snapshot/nodia-ai-context-snapshot.module.ts",
+      "before_sha256": null,
+      "after_sha256": "f7622ec80150152fff8e6e55e56f722bfd61ca3115a3ed6364eae03e6c97eee8",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context-snapshot/nodia-ai-context-snapshot.service.ts",
+      "before_sha256": null,
+      "after_sha256": "2d0bd16b76d4306e6d0d81a66efa094175032dcd20c274daf0860846f1bea385",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context-snapshot/use-case/load-nodia-ai-context-history.use-case.ts",
+      "before_sha256": null,
+      "after_sha256": "4340df037907da04117cd9845ab910c436ee4d16b0581ffd50d6984da979b17e",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/nodia-ai-processing.module.ts",
+      "before_sha256": "7adaf8cc8c92c6bea65fb0cd2fcfd2dfb0a63fe4e9926b9dd644ea8f66efebd0",
+      "after_sha256": "5e315747eb8d88522e96001a26a5f3beb58b11eb11b396885f402025e6401bae",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/types/nodia-ai-compaction.types.ts",
+      "before_sha256": null,
+      "after_sha256": "973c77950b80557c00e7fafbf6bb3a4800d95cfb24eda6dae4a282ad6505d246",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-compaction.use-case.ts",
+      "before_sha256": null,
+      "after_sha256": "f47bbcef2dc125af780c663fe7c4c658ea8fd4a5a61ad7df6863b9c34b358273",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
+      "before_sha256": "aaa199e463327128429ce86500ebebd21f58609ec1ce175cec5c58a2c1576b6f",
+      "after_sha256": "9daa7ba05b23776604e6e8c3d43d81b55462639ae322e3f0fb844ec6e1643c77",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/load-nodia-ai-recovery-refs.use-case.ts",
+      "before_sha256": null,
+      "after_sha256": "a94cbd45896db9de05df5fde1656627e54ca290e22f4197d77bdd0cf3dad4dd5",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "before_sha256": "ab16ce3b4bd73844c5b4b2beff47ac5ad9388d373bbc3afbec16c0c204760c68",
+      "after_sha256": "124f8abc7b1004c785a5b61098f7cd99f4049fcf7875f470b11eb432799a1a2c",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-run/entities/nodia-ai-run.entity.ts",
+      "before_sha256": "eab41fb85513d24b0f3d45f7e64d62c7395f841b332d551aa39f7fce548e866f",
+      "after_sha256": "1b032c0654ff4f00a99f3f22228d896ca7033a8d0a74c82bfbe187b30e39ac84",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/types/worker.types.ts",
+      "before_sha256": "1f0b697a41b6767cf08b85950f5637f46556e2a53d09bb0df91845dfb1e74f5b",
+      "after_sha256": "b7eed0868bb703fee2b94600ec1c0a7043b1d2541b676fa6b4bd1e7126bb9be8",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+      "before_sha256": "3c0a39d4372cc602010c59069fb44706883a0b03775e6e02583fd8064d3bc484",
+      "after_sha256": "e88a760b3fb69a83770a29a123c27bc0c08116385e7e28d9dbf58ce01f034dac",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.ts",
+      "before_sha256": "865c19481997e0172a4964b6af51316f001ba46a43a409c770ad56f9c963b92f",
+      "after_sha256": "1cc05155e3f84aaa4c7fa68f118deb58f36c88201da4cfe8e81d6b5c1cc273a7",
+      "provenance": "AI-34"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.ts",
+      "before_sha256": "e89dd7047700c930e10865deaec1c46c071310baa824d6c1fcccfeebe3991d5c",
+      "after_sha256": "bfebbf151b907a13a975eea18ca1ce98f9e58b42a63e87205af194a061a7209d",
+      "provenance": "AI-34"
+    }
+  ],
+  "new_controller": null,
+  "new_handlers": [],
+  "unchanged_prior_handler_operations": 217,
+  "domain_handler_coverage_unchanged": 177,
+  "coordination_routes": 41,
+  "runtime_verified": false,
+  "database_applied": false,
+  "provider_generations": 0,
+  "limitations": [
+    "AST and source provenance only; no operational database write, real inference, deployment or document approval",
+    "Every previous public/app route, domain handler coverage and historical stage fact is preserved; native measurement endpoint is private adapter transport"
+  ]
+}

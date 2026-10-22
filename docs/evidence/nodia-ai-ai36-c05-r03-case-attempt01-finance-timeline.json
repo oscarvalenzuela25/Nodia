@@ -1,0 +1,147 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "126dedfb8b9a6dc1f60755e8254fcf2df38957c0ee071c8e2dacb1485f4d2f84",
+  "source_completed_at_utc": "2026-10-19T20:40:29.053Z",
+  "provider_generations": 1,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T20:38:16.519Z",
+        "monotonic_ms": 9666.147356
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:38:25.525Z",
+        "monotonic_ms": 18672.159888
+      },
+      "elapsed_ms": 9006.012531999999
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T20:38:25.833Z",
+        "monotonic_ms": 18980.250272
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:38:25.840Z",
+        "monotonic_ms": 18986.431006
+      },
+      "elapsed_ms": 6.180733999997756
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T20:38:25.909Z",
+        "monotonic_ms": 19055.427403
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:38:29.583Z",
+        "monotonic_ms": 22730.106434
+      },
+      "elapsed_ms": 3674.6790309999997
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T20:38:29.695Z",
+        "monotonic_ms": 22841.584542
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T20:38:29.700Z",
+        "monotonic_ms": 22846.839556
+      },
+      "elapsed_ms": 5.255013999998482
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "206fe2c3-16bf-42e5-b5d8-19ea20fc67ef",
+      "started": {
+        "at_utc": "2026-10-19T20:38:29.730Z",
+        "monotonic_ms": 22877.052708
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-19T20:40:29.751Z",
+      "finished": {
+        "at_utc": "2026-10-19T20:38:29.751Z",
+        "monotonic_ms": 22898.157064
+      },
+      "elapsed_ms": 21.104355999999825
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "206fe2c3-16bf-42e5-b5d8-19ea20fc67ef",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T20:38:29.753Z",
+        "monotonic_ms": 22899.523994
+      },
+      "status": "rejected",
+      "error_code": "mcp_result_unknown",
+      "finished": {
+        "at_utc": "2026-10-19T20:40:28.816Z",
+        "monotonic_ms": 141962.54212
+      },
+      "elapsed_ms": 119063.018126
+    }
+  ],
+  "generations": [
+    {
+      "turn": "independent_finance",
+      "run_id": "f757976f-8222-4b73-b20d-0d7d9edbf53c",
+      "run_state": "unknown",
+      "attempt_id": "206fe2c3-16bf-42e5-b5d8-19ea20fc67ef",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T20:38:29.754Z",
+      "accepted_start_at_utc": "2026-10-19T20:38:29.764Z",
+      "native_start_request_ms": 10.415525000000343,
+      "execute_elapsed_ms": 119063.167929,
+      "terminal_proof_received": false,
+      "terminal_proof_sha256": null,
+      "terminal_proof_outcome": null,
+      "process_closed": null,
+      "callbacks": [],
+      "native_ACK": {
+        "attempt_id": "206fe2c3-16bf-42e5-b5d8-19ea20fc67ef",
+        "terminal_proof_sha256": "bf1e5ad333bd35856807b42bf9b18262270799ca1f9f681226e0e8186a554117",
+        "acknowledged_at_utc": "2026-10-19T20:40:28.860Z"
+      },
+      "latest_poll": {
+        "state": "unknown",
+        "rpc_messages": 6,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 0,
+        "event_kinds": {
+          "other": 1
+        },
+        "event_identities": [
+          {
+            "kind": "other",
+            "seq": 1
+          }
+        ],
+        "signature": "0e3a04f09bd6b89c2ffaf172914fafbe7a7409ffcbe2d1cc9000d489ef15b371",
+        "at_utc": "2026-10-19T20:40:28.813Z",
+        "monotonic_ms": 141960.019671
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1152,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1152,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

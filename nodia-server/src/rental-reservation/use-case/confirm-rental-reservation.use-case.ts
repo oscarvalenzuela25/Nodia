@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   Injectable,
   BadRequestException,
@@ -26,16 +27,17 @@ export class ConfirmRentalReservationUseCase {
     private readonly reservations: RentalReservationService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: ConfirmRentalReservationDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(ConfirmRentalReservationDto, input);
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'reservation.confirm',

@@ -1,0 +1,120 @@
+{
+  "stage": "AI-38",
+  "scope": "C05_three_pending_capabilities_same_epoch_delta_not_historical_reacceptance",
+  "status": "three_of_three_pending_capabilities_accepted",
+  "epoch": {
+    "container_id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at": "2026-10-20T19:14:35.412657745Z"
+  },
+  "context_pin": {
+    "schema_version": 1,
+    "release_id": "c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36",
+    "catalog_release": "nodia-ai-ai15-reads/1",
+    "schema_sha256": "d9045282b8ffaa175fee7ea2eca8cb810ca20de216246a62456bd62062a146fd",
+    "manifest_sha256": "3f58cc23f9b09e2afd4e60b01cb40889ca58517a1927b3f574837530abead5a2",
+    "registry_sha256": "31add4d121c6452e1b3cf406503803fadb9bca26f5a4fa681e49b72bf281e824"
+  },
+  "current_epoch_newly_accepted_capability_ids": [
+    "nodia_preferences_prepare",
+    "nodia_preferences_list",
+    "nodia_finance_movements_prepare_create"
+  ],
+  "historical_accepted_capability_ids_not_reexecuted": [
+    "nodia_attachments_describe",
+    "nodia_operations_get",
+    "nodia_proposals_get",
+    "nodia_workflows_prepare"
+  ],
+  "accumulated_accepted_capability_ids_across_cohorts": [
+    "nodia_attachments_describe",
+    "nodia_operations_get",
+    "nodia_proposals_get",
+    "nodia_workflows_prepare",
+    "nodia_preferences_prepare",
+    "nodia_preferences_list",
+    "nodia_finance_movements_prepare_create"
+  ],
+  "accumulated_accepted_count": 7,
+  "C05_target_capabilities": 7,
+  "native_start_requests_this_delta": 4,
+  "accepted_native_starts_this_delta": 4,
+  "native_ACKs_this_delta": 4,
+  "per_case": {
+    "preferences": {
+      "status": "accepted_in_disposable_SQL_with_real_High",
+      "accepted_capabilities": {
+        "nodia_preferences_prepare": {
+          "contract_hash": "a1dd4db24e479b9baffa2848b8e0f8ccb6e21aca425e55346a14dce9ad43b4d1",
+          "successful_callbacks": 1,
+          "semantic_assertions_passed": 4
+        },
+        "nodia_preferences_list": {
+          "contract_hash": "35895fb678b6d02ec4241d8daebbce602826e8c50c3af779bbcf74a98d67a39c",
+          "successful_callbacks": 1,
+          "semantic_assertions_passed": 1
+        }
+      },
+      "native_start_requests": 2,
+      "accepted_native_starts": 2,
+      "native_ACKs": 2,
+      "disposable_business_counts": {
+        "finance_movements": 0,
+        "accepted_preferences": 1
+      },
+      "confirmation_layer": "operator_HTTP_fixture_not_physical_UI",
+      "post_case_fixture_removed": true
+    },
+    "finance": {
+      "status": "accepted_in_disposable_SQL_with_real_High",
+      "accepted_capabilities": {
+        "nodia_finance_movements_prepare_create": {
+          "contract_hash": "940b53baf8714b1a04cff3ef7fdd59cb126a4457199feeb3993dee9dd023ae54",
+          "successful_callbacks": 1,
+          "semantic_assertions_passed": 4
+        }
+      },
+      "native_start_requests": 2,
+      "accepted_native_starts": 2,
+      "native_ACKs": 2,
+      "disposable_business_counts": {
+        "finance_movements": 1,
+        "accepted_preferences": 0
+      },
+      "confirmation_layer": "operator_HTTP_fixture_not_physical_UI",
+      "post_case_fixture_removed": true
+    }
+  },
+  "configured_SQL_writes": 0,
+  "operational_business_effects": 0,
+  "operational_publication_modified": false,
+  "unpublished_candidates_remaining": 77,
+  "AI36_complete": false,
+  "standalone_worker_accepted": false,
+  "physical_UI_accepted": false,
+  "successful_fixtures_retained": false,
+  "provider_unknown_timeout_cause_resolved": false,
+  "boundaries": [
+    "Three current-epoch acceptances plus four historical acceptances; not seven current-epoch reruns.",
+    "Native Stage/Claim/Execute and exact HTTP confirmation were driven inline against disposable PostgreSQL.",
+    "No operational Node adoption, global publication, physical UI or standalone-worker acceptance is implied.",
+    "The prior timeout has no demonstrated root cause; successful runs do not establish a diagnostic-code fix."
+  ],
+  "sources": {
+    "docs/evidence/nodia-ai-ai36-c05-r05-validation.json": "25f3ee4a8a82f778522c55ff88922905acc6a22d40f2e74617ba6791baf236c4",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-driver.json": "ceef4ea7466affb3ad2f5dbdde260e02a23f3085bc0f2168fe1a13fabed4a2ec",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-case.json": "82c6079367e6ce221195ac66f117cdb503c63f5f49452f5cc581642fe6a2746f",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-guard.json": "f1ded12aad0461d1541dd2512c2f99df0dc454009984b9ea6139d8ace342d0d1",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-capture.json": "72cda5f5821061a84ed9f46a80992b648243e2641aa424dc40c12ad37b4941c7",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-receipt.json": "5d43068cacdbfb95e81aefd0c3300b94f8917f37376a89b393c8309617140b6f",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-driver.json": "6c6f8b9712042113cecb2e4f733319339d85f2cebfa0234dc556d768d1f33139",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-case.json": "56c87fc3f5e3118012bf9819ccd8971b6af4b454c4ea94000d5fdeef508fe204",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-guard.json": "842143e9ba841a6722a7318cc7aaafcb682754e569eb4313a97b28580a50ed9e",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-capture.json": "b8a6c4f7f24d7c63f99492ac25fbe82b40101e31fd8d91b0c6a3f4debdb50c13",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-finance-r01-receipt.json": "b5a7a20a3922a22e6ba487d93f5a24629d082b053de467dfe077a93f040b17b1"
+  },
+  "consolidator": {
+    "path": "docs/evidence/scripts/nodia-ai-ai38-capabilities-consolidate.cjs",
+    "sha256": "09221714b367fc254fd32c213e53ba74d82bc76192af75f25c36fa0ec283a218"
+  }
+}

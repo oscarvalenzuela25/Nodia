@@ -1,0 +1,28 @@
+const fs=require('node:fs'),crypto=require('node:crypto'),ts=require('../nodia-server/node_modules/typescript');
+const target='docs/mvp/nodia-ai-current-endpoints.json';
+const inv=JSON.parse(fs.readFileSync(target,'utf8'));
+const file='nodia-server/src/nodia-ai-observation/nodia-ai-observation.controller.ts';
+const sf=ts.createSourceFile(file,fs.readFileSync(file,'utf8'),ts.ScriptTarget.Latest,true);
+const decs=n=>ts.canHaveDecorators(n)?ts.getDecorators(n)||[]:[];
+const line=n=>sf.getLineAndCharacterOfPosition(n.getStart(sf)).line+1;
+const values=n=>n.arguments.map(a=>ts.isStringLiteral(a)?a.text:a.getText(sf));
+const c=sf.statements.find(n=>ts.isClassDeclaration(n)&&n.name?.text==='NodiaAiObservationController');
+const operations=c.members.filter(ts.isMethodDeclaration).map(m=>{
+ const http=decs(m).find(d=>ts.isCallExpression(d.expression)&&d.expression.expression.getText(sf)==='Get');
+ const handler=m.name.getText(sf);
+ const inputs=m.parameters.map(p=>({name:p.name.getText(sf),type:p.type.getText(sf),optional:!!p.questionToken,decorators:decs(p).map(d=>({name:d.expression.expression.getText(sf),args:values(d.expression)})),references:[]}));
+ const calls=[];const scan=n=>{if(ts.isCallExpression(n)&&ts.isPropertyAccessExpression(n.expression)&&ts.isPropertyAccessExpression(n.expression.expression)&&n.expression.expression.expression.kind===ts.SyntaxKind.ThisKeyword){const property=n.expression.expression.name.text,method=n.expression.name.text;if(['runs','results'].includes(property))calls.push({property,method,dependency:{type:property==='runs'?'ObserveNodiaAiRunUseCase':'GetNodiaAiToolResultUseCase',file:`nodia-server/src/nodia-ai-observation/use-case/${property==='runs'?'observe-nodia-ai-run':'get-nodia-ai-tool-result'}.use-case.ts`},line:line(n)});}ts.forEachChild(n,scan);};scan(m);
+ return {operationId:c.name.text+'.'+handler,method:'GET',handler,line:line(http),paths:['/api/v1/nodia-ai/'+values(http.expression)[0]],summary:null,public:false,requireAction:null,metadata:[{name:'Header',args:['Cache-Control','no-store']}],inputs,calls,nodiaAiProposal:{category:'A',mutates:false,reason:'Authenticated durable observation; never model-facing MCP or a replay.',implementedInNodiaAi:true,implementationStage:'AI-16'}};
+});
+const controller={name:c.name.text,file,line:line(c),registered:true,bases:['nodia-ai'],tags:['NodiaAI observation'],classMetadata:[],operations,family:'NodiaAI — coordinación conversacional',proposedTargetModuleRoute:'/tools/nodia-ai'};
+inv.controllers=inv.controllers.filter(c=>c.name!==controller.name);inv.controllers.push(controller);inv.controllers.sort((a,b)=>a.name.localeCompare(b.name));
+const moduleFile='nodia-server/src/nodia-ai-observation/nodia-ai-observation.module.ts';
+inv.modules=inv.modules.filter(m=>m.module!=='NodiaAiObservationModule');
+inv.modules.push({module:'NodiaAiObservationModule',file:moduleFile,line:10,controllers:[controller.name],imports:['NodiaAiAuthorizationModule','NodiaAiConversationModule','NodiaAiContextModule','NodiaAiToolRegistryModule','NodiaAiRuntimePolicyModule']});
+const nodia=inv.modules.find(m=>m.module==='NodiaAiModule');if(!nodia.imports.includes('NodiaAiObservationModule'))nodia.imports.push('NodiaAiObservationModule');
+inv.counts.controllerFiles=inv.controllers.length;inv.counts.registeredControllers=inv.controllers.filter(c=>c.registered).length;inv.counts.handlerOperations=inv.controllers.flatMap(c=>c.operations).length;inv.counts.httpMethodPathPairs=inv.controllers.flatMap(c=>c.operations.flatMap(o=>o.paths)).length;inv.counts.localModules=inv.modules.length;inv.counts.staticallyComposedModules=inv.modules.filter(m=>!m.conditional).length;
+for(const added of [file,moduleFile,'nodia-server/src/nodia-ai-observation/use-case/observe-nodia-ai-run.use-case.ts','nodia-server/src/nodia-ai-observation/use-case/get-nodia-ai-tool-result.use-case.ts'])if(!inv.sourceChecksums.some(s=>s.file===added))inv.sourceChecksums.push({file:added,sha256:''});
+for(const source of inv.sourceChecksums)source.sha256=crypto.createHash('sha256').update(fs.readFileSync(source.file)).digest('hex');
+inv.ai16={date:'2026-10-16',scope:'AST current source observation delta; runtime verification is separate',newController:controller.name,newHandlers:operations.map(o=>o.operationId)};
+fs.writeFileSync(target,JSON.stringify(inv,null,2)+'\n');
+console.log(JSON.stringify({counts:inv.counts,checksums:inv.sourceChecksums.length}));

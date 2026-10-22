@@ -1,4 +1,7 @@
 {
+  "nodia_ai_title": "NodiaAI",
+  "nodia_ai_unavailable": "El chat todavía no está disponible.",
+  "nodia_ai_preparation": "Este espacio se habilitará cuando estén listas las conversaciones y sus herramientas.",
   "active_filter": {
     "label": "Estado de actividad",
     "active": "Activo",
@@ -69,5 +72,8 @@
   "date_time_time": "{{label}} · Hora",
   "phone_country": "País / prefijo",
   "date_label": "Fecha",
-  "time_label": "Hora"
+  "time_label": "Hora",
+  "data_owner": "Usuario propietario de los datos",
+  "search_owner_email": "Buscar por correo",
+  "invalid_input": "Los datos enviados no son válidos."
 }

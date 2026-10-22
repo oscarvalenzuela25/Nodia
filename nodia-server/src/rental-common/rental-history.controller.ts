@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from './rental-response.schemas.js';
 import {
   Controller,
@@ -41,7 +42,11 @@ export class RentalHistoryController {
     @Param() params: RentalPropertyParamsDto,
     @Query() query: RentalAuditQueryDto,
   ) {
-    return this.audit.execute(request.auth.user.id, params.propertyId, query);
+    return this.audit.execute(
+      actorReference(request.auth),
+      params.propertyId,
+      query,
+    );
   }
   @Get('operations/:requestKey')
   @ApiOperation({ summary: 'Recover a confirmed intent owned by this actor' })
@@ -51,7 +56,7 @@ export class RentalHistoryController {
     @Param() params: RentalOperationParamsDto,
   ) {
     return this.operation.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.requestKey,
     );

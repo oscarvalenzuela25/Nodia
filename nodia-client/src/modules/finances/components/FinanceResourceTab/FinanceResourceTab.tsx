@@ -1,3 +1,4 @@
+import { useFinanceScopeLock } from "../../infrastructure/FinanceOwnerContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -93,6 +94,9 @@ function ResourceView<R extends FinanceResource>({
   const [toToggle, setToToggle] = useState<FinanceRecordMap[R] | null>(null);
   const [toDelete, setToDelete] = useState<FinanceRecordMap[R] | null>(null);
   const [payment, setPayment] = useState<FinanceObligation | null>(null);
+  useFinanceScopeLock(
+    Boolean(modal || toToggle || toDelete || payment) || mutation.isUncertain,
+  );
   const selected = useFinanceRecord(resource, modal?.id, Boolean(modal?.id));
   const submittingToggle = useRef(false);
   const busy =

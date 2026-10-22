@@ -1,0 +1,91 @@
+{
+  "stage": "AI-31",
+  "date": "2026-10-17",
+  "status": "passed_synthetic_browser",
+  "browser": "ChatGPT in-app browser (Chromium)",
+  "origin": "http://127.0.0.1:5195",
+  "fixture": "nodia-client/src/test/manual/ai31/main.tsx",
+  "configured_data_used": false,
+  "real_api_calls": 0,
+  "provider_calls": 0,
+  "layouts": [
+    {
+      "frame": 320,
+      "viewport": 310,
+      "document": 310,
+      "table_client": 263,
+      "table_scroll": 650
+    },
+    {
+      "frame": 390,
+      "viewport": 380,
+      "document": 380,
+      "table_client": 333,
+      "table_scroll": 650
+    },
+    {
+      "frame": 599,
+      "viewport": 599,
+      "document": 599,
+      "table_client": 552,
+      "table_scroll": 650
+    },
+    {
+      "frame": 600,
+      "viewport": 600,
+      "document": 600,
+      "table_client": 537,
+      "table_scroll": 650
+    },
+    {
+      "frame": 900,
+      "viewport": 900,
+      "document": 900,
+      "table_client": 821,
+      "table_scroll": 821
+    },
+    {
+      "frame": 1440,
+      "viewport": 1440,
+      "document": 1440,
+      "table_client": 1021,
+      "table_scroll": 1021
+    }
+  ],
+  "checks": [
+    "Totals remain exact above Number.MAX_SAFE_INTEGER in ES and EN.",
+    "Each source retains its own total, scope, time basis and observed_at.",
+    "Partial source remains unknown instead of zero.",
+    "Source group expansion uses saved results and preserves original totals.",
+    "All six measured frames keep document width equal to client width after expansion.",
+    "Narrow group tables retain 650px width with local horizontal scroll.",
+    "Expanded groups stay open across frame width changes.",
+    "Transport failure preserves the visible historical result and expanded groups.",
+    "403 access rejection hides stored totals and groups and offers local retry.",
+    "Compatible comparison shows source measures independently, with zero distinct from missing measure.",
+    "Final dimension null is Sin valor; missing comparison measure is Unknown.",
+    "ES/light and EN/dark presentations inspected visually.",
+    "Tab from the expanded detail button focuses the accessible local table region."
+  ],
+  "corrected_findings": [
+    "Expanded grouped table originally widened the document; constrained report/Skeleton/details and corrected isolated harness width, then repeated measurements."
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/images/nodia-ai-ai31-report-es.png",
+      "sha256": "5b5ede8e4d305c04e87c2938aad01cb6f1a9027924110ed64f680f0a9cf4e403",
+      "synthetic": true
+    },
+    {
+      "path": "docs/evidence/images/nodia-ai-ai31-report-en-dark.png",
+      "sha256": "7ac2e90c9fd094a5fa4943412dae2c7979a6feaccea9e0e9a5dc0172f5c801a1",
+      "synthetic": true
+    }
+  ],
+  "limitations": [
+    "Synthetic browser harness, not configured app data or real provider inference.",
+    "Iframe width changes are not physical phone or touch/virtual-keyboard validation.",
+    "No laboratory performance gain, LCP score or production acceptance is inferred."
+  ],
+  "temporary_qa_server_stopped": true
+}

@@ -1,0 +1,127 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "43b8ad2d80d0682f60708437400f75a50c097a04b84cb1baad78473bf4f6d56e",
+  "source_completed_at_utc": "2026-10-19T17:34:45.481Z",
+  "provider_generations": 1,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T17:32:31.273Z",
+        "monotonic_ms": 8774.658607
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:32:44.844Z",
+        "monotonic_ms": 22345.77426
+      },
+      "elapsed_ms": 13571.115652999999
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T17:32:45.173Z",
+        "monotonic_ms": 22674.499885
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:32:45.180Z",
+        "monotonic_ms": 22680.90224
+      },
+      "elapsed_ms": 6.402354999998352
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T17:32:45.245Z",
+        "monotonic_ms": 22746.357902
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:32:48.812Z",
+        "monotonic_ms": 26313.553853
+      },
+      "elapsed_ms": 3567.1959510000015
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T17:32:48.919Z",
+        "monotonic_ms": 26420.151369
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T17:32:48.924Z",
+        "monotonic_ms": 26425.278913
+      },
+      "elapsed_ms": 5.127543999999034
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "4fc1f751-23ff-40a3-a586-65dacfc9f02a",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T17:32:48.975Z",
+        "monotonic_ms": 26476.713955
+      },
+      "status": "rejected",
+      "error_code": "adapter_transport_unavailable",
+      "finished": {
+        "at_utc": "2026-10-19T17:34:45.275Z",
+        "monotonic_ms": 142776.526014
+      },
+      "elapsed_ms": 116299.812059
+    }
+  ],
+  "generations": [
+    {
+      "turn": "financial_preview",
+      "run_id": "e5c1cc2a-13b2-4fb7-9da0-649f27589404",
+      "run_state": "unknown",
+      "attempt_id": "4fc1f751-23ff-40a3-a586-65dacfc9f02a",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T17:32:48.977Z",
+      "accepted_start_at_utc": "2026-10-19T17:32:48.987Z",
+      "native_start_request_ms": 10.146687000000384,
+      "execute_elapsed_ms": 116300.005861,
+      "terminal_proof_received": false,
+      "terminal_proof_sha256": null,
+      "terminal_proof_outcome": null,
+      "process_closed": null,
+      "callbacks": [],
+      "native_ACK": {
+        "attempt_id": "4fc1f751-23ff-40a3-a586-65dacfc9f02a",
+        "terminal_proof_sha256": "ad22764ff2adeb4ce88da2457dc8cdde895e0722e93b028dee5e1b24d6f2b264",
+        "acknowledged_at_utc": "2026-10-19T17:34:45.303Z"
+      },
+      "latest_poll": {
+        "state": "running",
+        "rpc_messages": 6,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 0,
+        "event_kinds": {},
+        "event_identities": [],
+        "signature": "595fbe023a9eac20d6902baf279e4121ca6343c68953d1615742c6db94b593fb",
+        "at_utc": "2026-10-19T17:34:45.124Z",
+        "monotonic_ms": 142625.063332
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1126,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1125,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {
+        "mcp/events": 1
+      }
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

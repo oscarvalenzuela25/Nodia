@@ -1,0 +1,134 @@
+{
+  "stage": "AI-36-C05-R04",
+  "scope": "immutable_explicit_CLI142_transport_candidate_build_and_offline_Linux_QA",
+  "started_at_utc": "2026-10-19T20:48:07.350642+00:00",
+  "status": "passed",
+  "baseline_container": {
+    "container_id": "ebb3c7b7dbf98bdf56e4d0f3ebea756e48911361b126bae7ac28babbf1b92c99",
+    "image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T20:30:54.592504609Z"
+  },
+  "archive_sha256": "75a475a76c4aebbd17355891628ed2dd18e34f30220c322f32697ac06ac5889b",
+  "manifest_sha256": "4b6d1c1518810c8514a4ba17341aced43f7e0734d0283b074e2ce2ae53b69a41",
+  "image_source_hashes": {
+    "agentic_cli.py": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff",
+    "nodia_ai_chat.py": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c",
+    "agentic_service.py": "5ef14b9491d689df4080e2b8ab7c7fba31d2e951d68d7040dcac91b60f24f48e"
+  },
+  "public_test_files": 43,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "candidate_activated": false,
+  "test_sources_mount_only": true,
+  "operational_environment_or_profile_mounts": false,
+  "network": "none",
+  "root_filesystem_read_only": true,
+  "excluded_C03_test_file": {
+    "path": "test_invoice_mcp_contract.py",
+    "sha256": "c4ff2aebc8ec12b10a2f8d0abb63628230d080df1e0d06799b24ef8258b1ce35",
+    "methods": 15,
+    "reason": "C03_invoice_MCP_contract_absent_from_approved_base_and_candidate_image"
+  },
+  "expected_applicable_tests": 447,
+  "source_runner_sha256": "e32e2965518aa52e1ab289d14bf99e02a4b3b3c227113c3bf43a428d6966f680",
+  "build_exit_code": 0,
+  "candidate_image_id": "sha256:9482df4c8ad2db5d591e3f1ac76e2c7cdc2a8fe7b296fa76374dc139c234a47e",
+  "runtime_image_config_unchanged": true,
+  "added_image_layers": 1,
+  "public_source_delta": {
+    "agentic_cli.py": {
+      "old_sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+      "new_sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff"
+    },
+    "agentic_service.py": {
+      "old_sha256": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e",
+      "new_sha256": "5ef14b9491d689df4080e2b8ab7c7fba31d2e951d68d7040dcac91b60f24f48e"
+    },
+    "nodia_ai_chat.py": {
+      "old_sha256": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0",
+      "new_sha256": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c"
+    }
+  },
+  "public_source_files_compared": 47,
+  "production_dependency_comparison": {
+    "native_context_budget.py": {
+      "local_sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+      "candidate_sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+      "equal": true
+    },
+    "nodia_ai_chat.py": {
+      "local_sha256": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c",
+      "candidate_sha256": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c",
+      "equal": true
+    },
+    "agentic_cli.py": {
+      "local_sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff",
+      "candidate_sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff",
+      "equal": true
+    },
+    "native_mcp_stdio.py": {
+      "local_sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+      "candidate_sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+      "equal": true
+    },
+    "agentic_progress.py": {
+      "local_sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+      "candidate_sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+      "equal": true
+    },
+    "native_attachments.py": {
+      "local_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+      "candidate_sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+      "equal": true
+    },
+    "native_attempts.py": {
+      "local_sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+      "candidate_sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+      "equal": true
+    },
+    "profile_admission.py": {
+      "local_sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+      "candidate_sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+      "equal": true
+    },
+    "run_tests.py": {
+      "local_sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+      "candidate_sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+      "equal": true
+    },
+    "native_execution_agents.py": {
+      "local_sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+      "candidate_sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+      "equal": true
+    },
+    "native_mcp_sessions.py": {
+      "local_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+      "candidate_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+      "equal": true
+    },
+    "native_cli_diagnostics.py": {
+      "local_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+      "candidate_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+      "equal": true
+    },
+    "agentic_service.py": {
+      "local_sha256": "5ef14b9491d689df4080e2b8ab7c7fba31d2e951d68d7040dcac91b60f24f48e",
+      "candidate_sha256": "5ef14b9491d689df4080e2b8ab7c7fba31d2e951d68d7040dcac91b60f24f48e",
+      "equal": true
+    }
+  },
+  "exact_public_source_diff_sha256": "4996d70e8ecc10d8687264dd45ea57d4a828317ad4055108023da11b9241d976",
+  "MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "QA_exit_code": 0,
+  "Linux_tests_total": 447,
+  "Linux_test_seconds": 7.905,
+  "Linux_skips": 0,
+  "QA_logs": {
+    "qa-stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa-stderr.log": "5bb91e02169e46b43bb46a65828cb2f7120d0a5fa7cbeb85e9bab1bfe2d12a24",
+    "build-stdout.log": "56e5f98ec6e35be37828f28208d8fd7b0d13ef4b8588aa93897a92e2bc68f539",
+    "build-stderr.log": "ec34a09e033b515c85951f12dbaa17dc3090601dd78ed912c6b4548ce882034a"
+  },
+  "operational_container_unchanged": true,
+  "finished_at_utc": "2026-10-19T20:48:20.808095+00:00"
+}

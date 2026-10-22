@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { BusinessActionService } from '../business-action.service.js';
+import { SaveBusinessActionUseCase } from './save-business-action.use-case.js';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 
 @Injectable()
 export class DeleteBusinessActionUseCase {
-  constructor(private readonly businessActionService: BusinessActionService) {}
+  constructor(private readonly writer: SaveBusinessActionUseCase) {}
 
-  async execute(id: string) {
-    return this.businessActionService.remove(id);
+  async execute(id: string, actor: ActorReference) {
+    await this.writer.execute(id, { is_active: false }, actor);
+    return {
+      message: `BusinessAction with ID "${id}" has been deactivated successfully`,
+    };
   }
 }

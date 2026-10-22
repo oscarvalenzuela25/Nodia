@@ -22,6 +22,7 @@ function endpoint(path: string): string {
 
 export function serializeFinanceQuery(query: FinanceQuery): string {
   const params = new URLSearchParams();
+  if (query.owner_id !== undefined) params.set("owner_id", query.owner_id);
   params.set("active", query.active ?? "active");
   params.set("page", String(query.page ?? 1));
   params.set("limit", String(query.limit ?? 10));
@@ -61,10 +62,11 @@ export async function getFinanceRecord<R extends FinanceResource>(
   resource: R,
   id: string,
   signal?: AbortSignal,
+  ownerId?: string,
 ): Promise<FinanceRecordMap[R]> {
   const { data } = await mainInstance.get<unknown>(
     endpoint(`/${resource}/${encodeURIComponent(id)}`),
-    { signal },
+    { signal, params: ownerId ? { owner_id: ownerId } : undefined },
   );
   return recordSchema(resource).parse(data);
 }
@@ -72,14 +74,27 @@ export async function getFinanceRecord<R extends FinanceResource>(
 export async function saveFinanceRecord<R extends FinanceResource>(
   resource: R,
   input: FinanceMutationInput<R>,
+  ownerId?: string,
 ): Promise<FinanceRecordMap[R]> {
   const response =
     input.id === undefined
-      ? await mainInstance.post<unknown>(endpoint(`/${resource}`), input.data)
-      : await mainInstance.put<unknown>(
-          endpoint(`/${resource}/${encodeURIComponent(input.id)}`),
-          input.data,
-        );
+      ? ownerId
+        ? await mainInstance.post<unknown>(
+            endpoint("/" + resource),
+            input.data,
+            { params: { owner_id: ownerId } },
+          )
+        : await mainInstance.post<unknown>(endpoint("/" + resource), input.data)
+      : ownerId
+        ? await mainInstance.put<unknown>(
+            endpoint("/" + resource + "/" + encodeURIComponent(input.id)),
+            input.data,
+            { params: { owner_id: ownerId } },
+          )
+        : await mainInstance.put<unknown>(
+            endpoint("/" + resource + "/" + encodeURIComponent(input.id)),
+            input.data,
+          );
   return recordSchema(resource).parse(response.data);
 }
 
@@ -98,8 +113,17 @@ export async function getFinanceOverview(
 export async function deleteFinanceRecord(
   resource: FinanceResource,
   id: string,
+  ownerId?: string,
 ): Promise<void> {
-  await mainInstance.delete(endpoint(`/${resource}/${encodeURIComponent(id)}`));
+  if (ownerId)
+    await mainInstance.delete(
+      endpoint(`/${resource}/${encodeURIComponent(id)}`),
+      { params: { owner_id: ownerId } },
+    );
+  else
+    await mainInstance.delete(
+      endpoint(`/${resource}/${encodeURIComponent(id)}`),
+    );
 }
 
 export async function getFinanceSummary(

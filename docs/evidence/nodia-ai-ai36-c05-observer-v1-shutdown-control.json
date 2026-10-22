@@ -1,0 +1,29 @@
+{
+  "scope": "offline_owned_observer_lifecycle_with_synthetic_files_only",
+  "helper_sha256": "7b5962f6c8e8f7f5e41763714c7d91e77e457c28e17cac43b747f0b2b0420c30",
+  "parser_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+  "ownership_ended_stdin_open": {
+    "exit_code": -6,
+    "normalized_shell_exit_code": 134,
+    "stderr_bytes": 303,
+    "buffered_stdin_shutdown_error": true,
+    "fatal_python_error": true,
+    "daemon_thread_shutdown_indicator": true,
+    "result_reason": "ownership_ended",
+    "stdin_was_kept_open": true
+  },
+  "explicit_stop": {
+    "exit_code": 0,
+    "normalized_shell_exit_code": 0,
+    "stderr_bytes": 0,
+    "buffered_stdin_shutdown_error": false,
+    "fatal_python_error": false,
+    "daemon_thread_shutdown_indicator": false,
+    "result_reason": "requested_stop",
+    "stdin_was_kept_open": true
+  },
+  "provider_requests": 0,
+  "application_imports": 0,
+  "runtime_mutations": 0,
+  "raw_stderr_emitted": false
+}

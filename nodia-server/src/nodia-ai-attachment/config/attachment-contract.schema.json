@@ -1,0 +1,354 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/contracts/nodia-ai/attachments-v1",
+  "description": "AI-32 concrete human coordination contract; UTF-8 byte limits also enforced by DTO/use cases. Provider binary transport is private and separate.",
+  "type": "object",
+  "$defs": {
+    "Kind": {
+      "enum": [
+        "image",
+        "pdf",
+        "audio"
+      ]
+    },
+    "Interpretation": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32768
+        },
+        "origin": {
+          "enum": [
+            "user_reviewed",
+            "provider",
+            "extracted"
+          ]
+        },
+        "reviewed": {
+          "type": "boolean"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "text",
+        "origin",
+        "reviewed",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "attachment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "conversation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "$ref": "#/$defs/Kind"
+        },
+        "state": {
+          "enum": [
+            "uploading",
+            "ready",
+            "rejected",
+            "expired"
+          ]
+        },
+        "file_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "byte_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 20971520
+        },
+        "page_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 100
+        },
+        "duration_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 300
+        },
+        "interpretation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Interpretation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "attachment_id",
+        "conversation_id",
+        "kind",
+        "state",
+        "file_name",
+        "media_type",
+        "byte_count",
+        "page_count",
+        "duration_seconds",
+        "interpretation"
+      ],
+      "additionalProperties": false
+    },
+    "CreateIntent": {
+      "type": "object",
+      "properties": {
+        "conversation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "client_request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "$ref": "#/$defs/Kind"
+        },
+        "byte_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20971520
+        },
+        "file_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "conversation_id",
+        "client_request_id",
+        "kind",
+        "byte_count",
+        "file_name"
+      ],
+      "additionalProperties": false
+    },
+    "UploadIntent": {
+      "type": "object",
+      "properties": {
+        "attachment": {
+          "$ref": "#/$defs/Metadata"
+        },
+        "upload": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "const": "PUT"
+            },
+            "path": {
+              "type": "string",
+              "pattern": "^/nodia-ai/attachments/[0-9a-f-]{36}/content$"
+            },
+            "expires_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "method",
+            "path",
+            "expires_at"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "attachment",
+        "upload"
+      ],
+      "additionalProperties": false
+    },
+    "ReviewInput": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32768
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "text",
+        "expected_revision"
+      ],
+      "additionalProperties": false
+    },
+    "DiscardResult": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "const": true
+        }
+      },
+      "required": [
+        "deleted"
+      ],
+      "additionalProperties": false
+    },
+    "Capabilities": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "type": "object",
+          "properties": {
+            "file_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "files_per_message": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "message_files_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "audio_seconds": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "pdf_pages": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "image_pixels": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "file_bytes",
+            "files_per_message",
+            "message_files_bytes",
+            "audio_seconds",
+            "pdf_pages",
+            "image_pixels"
+          ],
+          "additionalProperties": false
+        },
+        "reviewed_text": {
+          "const": true
+        },
+        "native_modalities": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "enum": [
+                true,
+                null
+              ]
+            },
+            "pdf": {
+              "enum": [
+                true,
+                null
+              ]
+            },
+            "audio": {
+              "enum": [
+                true,
+                null
+              ]
+            }
+          },
+          "required": [
+            "image",
+            "pdf",
+            "audio"
+          ],
+          "additionalProperties": false
+        },
+        "native_media_types": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp",
+              "application/pdf",
+              "audio/wav",
+              "audio/ogg",
+              "audio/webm",
+              "audio/mpeg",
+              "audio/mp4"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 9
+        }
+      },
+      "required": [
+        "limits",
+        "reviewed_text",
+        "native_modalities",
+        "native_media_types"
+      ],
+      "additionalProperties": false
+    },
+    "OutputFilePart": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/Kind"
+        },
+        "attachment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 32768
+        }
+      },
+      "required": [
+        "kind",
+        "attachment_id",
+        "text"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

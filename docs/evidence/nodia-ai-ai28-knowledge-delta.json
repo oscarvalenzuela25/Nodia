@@ -1,0 +1,27 @@
+{
+  "stage": "AI-28",
+  "previous_release": "3dc50f14cba16916c35a7f0fa60fe2ae77a6d5fc323b918ef77a85ba49c68e33",
+  "release": "fcbb7f79c771ee1a85c02e7d80f21180441f04b85b44bcac33e838c8d22d4ee6",
+  "changed_manifest_fields": [
+    "documents",
+    "registry_sha256",
+    "release_id"
+  ],
+  "document_source_hash_changes": [
+    {
+      "document_id": "general-settings.ai-connections",
+      "path": "nodia-server/src/ai-provider/ai-provider.service.ts",
+      "before_sha256": "23f25867c02902550833992c47463fc56def98c667ed9110193c1a02ce41dd93",
+      "after_sha256": "ef31e39625241fc048a5a9ca8333be394f0e71a18581bdfb44720770b185545c"
+    }
+  ],
+  "published_document_bytes_unchanged": true,
+  "published_fragments_unchanged": true,
+  "capability_contracts_unchanged": true,
+  "new_published_content": false,
+  "reason": "One excluded draft path and provenance of native AI-provider service now sharing local writers and merging model observations; no published content or tools added.",
+  "sources": 52,
+  "excluded": 25,
+  "published_capabilities": 67,
+  "published_fragments": 27
+}

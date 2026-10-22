@@ -1,3 +1,5 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
@@ -17,6 +19,7 @@ describe('Personal categories application rules', () => {
     FinanceCategoryService.prototype,
   ) as FinanceCategoryService;
   beforeEach(() => {
+    service.withScope = financeScopeFixture(manager);
     service.transaction = vi.fn(async (work) => work(manager));
     service.findOwned = vi.fn(async () =>
       Object.assign(new FinanceCategory(), {
@@ -35,7 +38,7 @@ describe('Personal categories application rules', () => {
 
   it('archives a category while preserving key/name and returning the authenticated owner ID', async () => {
     const result = await new UpdateFinanceCategoryUseCase(service).execute(
-      '1',
+      actorFixture('1'),
       '10',
       { is_active: false },
     );
@@ -53,19 +56,23 @@ describe('Personal categories application rules', () => {
   it('does not modify a category missing from the authenticated scope', async () => {
     service.findOwned = vi.fn(async () => null);
     await expect(
-      new UpdateFinanceCategoryUseCase(service).execute('2', '10', {
-        name: 'Overwrite',
-      }),
+      new UpdateFinanceCategoryUseCase(service).execute(
+        actorFixture('2'),
+        '10',
+        {
+          name: 'Overwrite',
+        },
+      ),
     ).rejects.toThrow('finance:category_not_found');
     expect(service.save).not.toHaveBeenCalled();
     await expect(
-      new GetFinanceCategoryUseCase(service).execute('2', '10'),
+      new GetFinanceCategoryUseCase(service).execute(actorFixture('2'), '10'),
     ).rejects.toThrow('finance:category_not_found');
   });
 
   it('creates under authenticated ownership and maps a uniqueness race safely', async () => {
     const result = await new CreateFinanceCategoryUseCase(service).execute(
-      '1',
+      actorFixture('1'),
       { name: 'Food', key: 'food' },
     );
     expect(result.is_active).toBe(true);
@@ -79,7 +86,7 @@ describe('Personal categories application rules', () => {
       throw Object.assign(new Error('sensitive SQL'), { code: '23505' });
     });
     await expect(
-      new CreateFinanceCategoryUseCase(service).execute('1', {
+      new CreateFinanceCategoryUseCase(service).execute(actorFixture('1'), {
         name: 'Food',
         key: 'food',
       }),

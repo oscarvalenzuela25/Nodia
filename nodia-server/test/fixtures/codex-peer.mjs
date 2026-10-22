@@ -26,7 +26,12 @@ for await (const line of createInterface({ input: process.stdin })) {
       ? { config: CODEX_SETTINGS }
       : request.method === 'peer/env'
         ? Object.keys(process.env)
-        : request.params;
+        : request.method === 'peer/keyringEnvironment'
+          ? {
+              bus: process.env.DBUS_SESSION_BUS_ADDRESS ?? null,
+              runtime: process.env.XDG_RUNTIME_DIR ?? null,
+            }
+          : request.params;
   const bytes = Buffer.from(JSON.stringify({ id: request.id, result }) + '\n');
   for (let offset = 0; offset < bytes.length; offset += 7) {
     await new Promise((resolve) =>

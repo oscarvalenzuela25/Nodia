@@ -1,0 +1,19 @@
+{
+  "status": "compiler_fixtures_and_authorized_ai15_current_release_verified",
+  "checks": 53,
+  "unavailable": 0,
+  "fixtureChecks": 52,
+  "sourceDocuments": 52,
+  "excludedDocuments": 25,
+  "publishedDocuments": 27,
+  "publishedFragments": 27,
+  "publishedCapabilities": 67,
+  "releaseId": "fcbb7f79c771ee1a85c02e7d80f21180441f04b85b44bcac33e838c8d22d4ee6",
+  "schemaDefinitions": 19,
+  "localLinksChecked": 901,
+  "wroteEvidence": false,
+  "approvalsChanged": false,
+  "servicesStarted": false,
+  "providerCalls": 0,
+  "businessWrites": 0
+}

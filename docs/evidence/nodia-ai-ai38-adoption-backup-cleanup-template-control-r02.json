@@ -1,0 +1,15 @@
+{
+  "status": "passed_offline_only",
+  "scope": "frozen_expiry_template_matches_and_strict_guard_regression",
+  "new_helper_sha256": "d624755ff65dcbf3ed4131f5a9ea0a34de0720fe11059262ff0eb8ca4170c1ea",
+  "frozen_backup_sha256": "f66e2a7643d4f04d738a0eb752f090dc2fb7828bf8c26973bc07dc63f729af57",
+  "valid_template_passed": true,
+  "negative_template_mutations_rejected": 5,
+  "symlink_rejected": true,
+  "only_expected_template_import_changed": true,
+  "old_frozen_helper_unchanged": true,
+  "test_fixture_note": "first_offline_attempt_used_Windows_Path_for_Posix_template_rejected_before_report_then_fixture_corrected_to_PurePosixPath",
+  "provider_requests": 0,
+  "VM_mutations": 0,
+  "external_calls": 0
+}

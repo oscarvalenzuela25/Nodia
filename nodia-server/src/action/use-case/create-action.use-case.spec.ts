@@ -1,31 +1,36 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CreateActionUseCase } from './create-action.use-case.js';
-import type { ActionService } from '../action.service.js';
+import type { SaveActionUseCase } from './save-action.use-case.js';
 import type { CreateActionDto } from '../dto/create-action.dto.js';
 
 describe('CreateActionUseCase', () => {
   let useCase: CreateActionUseCase;
-  let actionServiceMock: Partial<ActionService>;
+  let actionServiceMock: Partial<SaveActionUseCase>;
 
   beforeEach(() => {
     actionServiceMock = {
-      create: vi.fn(),
+      execute: vi.fn(),
     };
-    useCase = new CreateActionUseCase(actionServiceMock as ActionService);
+    useCase = new CreateActionUseCase(actionServiceMock as SaveActionUseCase);
   });
 
   it('should be defined', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should call actionService.create with dto and return the created action', async () => {
+  it('should call actionService.execute with dto and return the created action', async () => {
     const dto: CreateActionDto = {
       key: 'roles.delete',
       description: 'Delete roles',
       is_active: true,
       translates: [
         { key: 'key', es: 'Eliminar roles', en: 'Delete roles' },
-        { key: 'comment', es: 'Permite eliminar roles del sistema', en: 'Allows deleting system roles' },
+        {
+          key: 'comment',
+          es: 'Permite eliminar roles del sistema',
+          en: 'Allows deleting system roles',
+        },
       ],
     };
 
@@ -39,16 +44,26 @@ describe('CreateActionUseCase', () => {
       action_roles: [],
       translates: [
         { key: 'key', es: 'Eliminar roles', en: 'Delete roles' },
-        { key: 'comment', es: 'Permite eliminar roles del sistema', en: 'Allows deleting system roles' },
+        {
+          key: 'comment',
+          es: 'Permite eliminar roles del sistema',
+          en: 'Allows deleting system roles',
+        },
       ],
     };
 
-    vi.mocked(actionServiceMock.create!).mockResolvedValue(createdAction as any);
+    vi.mocked(actionServiceMock.execute!).mockResolvedValue(
+      createdAction as any,
+    );
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(dto, actorFixture('1'));
 
-    expect(actionServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(actionServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(actionServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(actionServiceMock.execute).toHaveBeenCalledWith(
+      undefined,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(createdAction);
   });
 });

@@ -1,0 +1,56 @@
+{
+  "stage": "AI-36-C05-R05",
+  "scope": "frozen_owned_role_candidate_one_original_MCP_canary",
+  "status": "failed_control_or_canary_no_retry",
+  "started_at_utc": "2026-10-19T21:19:02.107479+00:00",
+  "maximum_native_start_requests": 1,
+  "native_start_requests": 0,
+  "accepted_native_starts": 0,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "Node_deployed": false,
+  "source_sha256": "44dc54d046e3f9613982e20c39d41e171b4254d8cc8ba77e3e82a35f5417ab59",
+  "automatic_inference_retries": 0,
+  "post_canary_quiet": {
+    "SQL": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-19T21:19:02.544Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    },
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-19T21:19:02Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    },
+    "safe_to_restore": true
+  },
+  "restoration": "baseline_untouched_four_services_active_no_restart_needed",
+  "service_states_after": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "finished_at_utc": "2026-10-19T21:19:02.595891+00:00"
+}

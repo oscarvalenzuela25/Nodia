@@ -1,0 +1,16 @@
+import json
+from pathlib import Path
+root=Path('C:/Users/Oscar/Desktop/Nodia/nodia-client/src/translate')
+fields={
+'guest_name':('Nombre del huésped','Guest name'),'guest_contact':('Contacto del huésped','Guest contact'),'guests_count':('Cantidad de huéspedes','Guest count'),'channel':('Canal','Channel'),'external_reference':('Referencia externa','External reference'),
+'check_in_on':('Fecha de entrada','Check-in date'),'check_out_on':('Fecha de salida','Check-out date'),'nightly_rate':('Tarifa por noche','Nightly rate'),'cleaning_fee':('Cargo de limpieza','Cleaning fee'),'discount_amount':('Descuento','Discount'),'commission_amount':('Comisión','Commission'),'deposit_amount':('Anticipo acordado','Agreed deposit'),'deposit_due_at':('Vencimiento del anticipo','Deposit due date'),'balance_due_at':('Vencimiento del saldo','Balance due date'),'cancellation_policy_id':('Política de cancelación','Cancellation policy'),'status':('Estado de la reserva','Reservation status'),'total_amount':('Total acordado','Agreed total'),
+'same_day_approvals':('Preparaciones aprobadas para el mismo día','Approved same-day turnovers'),'platform_policy':('Condiciones de la plataforma','Platform terms'),'reference':('Referencia','Reference'),'description':('Descripción','Description'),'cancelled_at':('Fecha efectiva de cancelación','Effective cancellation date'),'refund_amount':('Devolución aprobada','Approved refund'),'expected_refund_amount':('Devolución calculada esperada','Expected calculated refund'),'resolution_note':('Resolución de la devolución','Refund resolution'),'retained_amount':('Importe retenido','Retained amount'),'refund_due_after_cancellation':('Devolución pendiente tras cancelar','Refund due after cancellation'),'received_amount':('Importe neto recibido','Net amount received'),'balance_due_after_cancellation':('Saldo pendiente tras cancelar','Balance due after cancellation')}
+effects={'create':('Crear borrador de reserva','Create reservation draft'),'update':('Actualizar reserva','Update reservation'),'confirm':('Confirmar reserva','Confirm reservation'),'start':('Iniciar estadía','Start stay'),'complete':('Completar estadía','Complete stay'),'cancel':('Cancelar reserva','Cancel reservation')}
+for idx,lang in enumerate(['es','en']):
+ p=root/lang/'nodiaAi.json'; data=json.loads(p.read_text(encoding='utf-8'))
+ data['proposal']['rental_fields'].update({k:v[idx] for k,v in fields.items()})
+ data['proposal']['rental_effects'].update({'nodia_rental_reservations_prepare_'+k:v[idx] for k,v in effects.items()})
+ data['execution']['rental_resources']['rental_reservations']=('Reserva' if lang=='es' else 'Reservation')
+ data['proposal']['rental_values']={'status':dict(zip(['draft','confirmed','in_progress','completed','cancelled'],['Borrador','Confirmada','En curso','Completada','Cancelada'] if lang=='es' else ['Draft','Confirmed','In progress','Completed','Cancelled'])),'channel':{'whatsapp':'WhatsApp','airbnb':'Airbnb','facebook':'Facebook','other':'Otro' if lang=='es' else 'Other'}}
+ data['proposal']['rental_timezone_unavailable']='No pudimos verificar la zona horaria de este campo. Recupera la propuesta antes de editarlo.' if lang=='es' else 'We could not verify this field’s timezone. Recover the proposal before editing it.'
+ p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

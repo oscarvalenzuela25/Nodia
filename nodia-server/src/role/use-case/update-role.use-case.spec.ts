@@ -1,24 +1,25 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UpdateRoleUseCase } from './update-role.use-case.js';
-import type { RoleService } from '../role.service.js';
+import type { SaveRoleUseCase } from './save-role.use-case.js';
 import type { UpdateRoleDto } from '../dto/update-role.dto.js';
 
 describe('UpdateRoleUseCase', () => {
   let useCase: UpdateRoleUseCase;
-  let roleServiceMock: Partial<RoleService>;
+  let roleServiceMock: Partial<SaveRoleUseCase>;
 
   beforeEach(() => {
     roleServiceMock = {
-      update: vi.fn(),
+      execute: vi.fn(),
     };
-    useCase = new UpdateRoleUseCase(roleServiceMock as RoleService);
+    useCase = new UpdateRoleUseCase(roleServiceMock as SaveRoleUseCase);
   });
 
   it('should be defined', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should call roleService.update with id and dto and return updated role', async () => {
+  it('should call roleService.execute with id and dto and return updated role', async () => {
     const id = '1';
     const dto: UpdateRoleDto = {
       key: 'manager_updated',
@@ -34,16 +35,20 @@ describe('UpdateRoleUseCase', () => {
       actions: [],
     };
 
-    vi.mocked(roleServiceMock.update!).mockResolvedValue(updatedRole as any);
+    vi.mocked(roleServiceMock.execute!).mockResolvedValue(updatedRole as any);
 
-    const result = await useCase.execute(id, dto);
+    const result = await useCase.execute(id, dto, actorFixture('1'));
 
-    expect(roleServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(roleServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(roleServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.execute).toHaveBeenCalledWith(
+      id,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(updatedRole);
   });
 
-  it('should call roleService.update with actions array and return role with synced actions', async () => {
+  it('should call roleService.execute with actions array and return role with synced actions', async () => {
     const id = '1';
     const dto: UpdateRoleDto = {
       actions: ['10', '30'],
@@ -61,16 +66,20 @@ describe('UpdateRoleUseCase', () => {
       ],
     };
 
-    vi.mocked(roleServiceMock.update!).mockResolvedValue(updatedRole as any);
+    vi.mocked(roleServiceMock.execute!).mockResolvedValue(updatedRole as any);
 
-    const result = await useCase.execute(id, dto);
+    const result = await useCase.execute(id, dto, actorFixture('1'));
 
-    expect(roleServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(roleServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(roleServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.execute).toHaveBeenCalledWith(
+      id,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(updatedRole);
   });
 
-  it('should call roleService.update with translates and return role with updated translates', async () => {
+  it('should call roleService.execute with translates and return role with updated translates', async () => {
     const id = '1';
     const dto: UpdateRoleDto = {
       translates: [
@@ -90,13 +99,16 @@ describe('UpdateRoleUseCase', () => {
       ],
     };
 
-    vi.mocked(roleServiceMock.update!).mockResolvedValue(updatedRole as any);
+    vi.mocked(roleServiceMock.execute!).mockResolvedValue(updatedRole as any);
 
-    const result = await useCase.execute(id, dto);
+    const result = await useCase.execute(id, dto, actorFixture('1'));
 
-    expect(roleServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(roleServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(roleServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(roleServiceMock.execute).toHaveBeenCalledWith(
+      id,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(updatedRole);
   });
 });
-

@@ -1,0 +1,52 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "pre_acceptance_historical_receipts_and_application_sources",
+  "status": "passed",
+  "sources": [
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-validation.json",
+      "sha256": "c4285455a2561658f80a2e8586d4a204a3f1ada626dbae3b32ddb1e947883e3d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-validation.json",
+      "sha256": "cb07f2d706c6580d6741db9767b96edea7ddab73ff6c46d0b02bfcc0fdf70ead"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r06-validation.json",
+      "sha256": "8828963b12e1f65cb13b1dc9bb8c2acdb3a7265d7d558a5a15b4b0b22d5f196d"
+    },
+    {
+      "path": "docs/mvp/50-nodia-ai-ai04-runtime-policy.md",
+      "sha256": "2831f27d11e0971bf384422d017aaca574aec5c4ca4b10473ac1902d6beed1db"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/styles.ts",
+      "sha256": "e0b528a5a79978c207a20d8ec4901d267e047ee7479f3bd48a763886281439f9"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "87185f312cdf988d6689062436290967491ac3cf4991280de3cb899579988f95"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+      "sha256": "dc6b5255cb440b6c4cb83e19f8adf9ba5323823606fdb79a083662e88abbae9d"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+      "sha256": "eb3405c1828bdbaf006d1779d9fe371bc6b0d837c97b0f49223e5d3772d12307"
+    },
+    {
+      "path": "nodia-server/src/common/storage/storage.service.ts",
+      "sha256": "e96ebb11e22943d2f8d2acb60ed8d75db8ed78504550ad62f7617bf3cb21ac94"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.ts",
+      "sha256": "97c4b9700a94b65b5388e4565e6363bdcc5ed881b21dbed16ac638cd2f52af0f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai/knowledge/manifest.json",
+      "sha256": "e1337639a871f880f734c771f61ad65e2a435f3464e04883bab308af44522ed9"
+    }
+  ],
+  "knowledge_release": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50"
+}

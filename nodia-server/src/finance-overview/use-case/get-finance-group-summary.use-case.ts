@@ -1,3 +1,4 @@
+import type { FinanceActor } from '../../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import type { FinanceQueryDto } from '../../finance-common/dto/finance-query.dto.js';
 import { financePage } from '../../finance-common/finance-query.js';
@@ -14,17 +15,24 @@ export class GetFinanceGroupSummaryUseCase {
   constructor(private readonly service: FinanceOverviewService) {}
 
   async execute(
-    userId: string,
+    actor: FinanceActor,
     query: FinanceQueryDto,
   ): Promise<FinanceSummaryPage> {
-    const { catalogue, movements } = splitSummaryQuery(query, true);
-    const result = await this.service.snapshot((manager) =>
-      this.service.summary(userId, catalogue, movements, true, manager),
+    return this.service.withScope(
+      actor,
+      async ({ manager: scopedManager, ownerId: userId }) => {
+        const { catalogue, movements } = splitSummaryQuery(query, true);
+        const result = await this.service.snapshot(
+          (manager) =>
+            this.service.summary(userId, catalogue, movements, true, manager),
+          scopedManager,
+        );
+        return {
+          ...financePage(result.rows.map(mapSummary), result.total, catalogue),
+          scope: overviewScope(movements),
+          overlapping_groups: true,
+        };
+      },
     );
-    return {
-      ...financePage(result.rows.map(mapSummary), result.total, catalogue),
-      scope: overviewScope(movements),
-      overlapping_groups: true,
-    };
   }
 }

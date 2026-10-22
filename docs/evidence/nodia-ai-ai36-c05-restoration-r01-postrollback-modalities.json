@@ -1,0 +1,51 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "pre_maintenance_current_exact_modality_gates_non_generative",
+  "status": "passed",
+  "observed_at_utc": "2026-10-19T19:23:53.302Z",
+  "source_sha256": "afdec44c75f0f2b17ec1a5edd95f68f921f335aef743384fadc717e24d093ae5",
+  "observations": [
+    {
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_web",
+        "model_id": "56fdd199312815e2",
+        "effort_id": null
+      },
+      "available": true,
+      "reason": null,
+      "supports_mcp": false,
+      "observed_at_utc": "2026-10-19T19:23:41.262Z",
+      "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+      "session_generation_sha256": "554957949532c5c5ef1216d72abfb6c8fd6492b57baf1402a083aaee4641f505",
+      "verified_modalities": [],
+      "verified_attachment_media_types": []
+    },
+    {
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "available": false,
+      "reason": "agentic_unavailable",
+      "supports_mcp": false,
+      "observed_at_utc": "2026-10-19T19:23:41.275Z",
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "session_generation_sha256": "a328bdba8fd267db4160cb6ffb8ab58bcb5c5b96cab851e27aafd322e994cec0",
+      "verified_modalities": [],
+      "verified_attachment_media_types": []
+    }
+  ],
+  "quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "metadata_requests": 2,
+  "modality_canaries_executed": 0,
+  "services_restarted": false
+}

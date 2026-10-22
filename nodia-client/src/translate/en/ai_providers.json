@@ -1,4 +1,11 @@
 {
+  "web_account": {
+    "change": "Change account",
+    "confirm_title": "Change Gemini Web account",
+    "confirm_message": "This will sign out the session shared by all Nodia Gemini Web connections and clear its saved browser. You can then sign in with another account. If you cancel the new login, Web will remain disconnected. API keys, Gemini Agentic and Codex keep their sessions.",
+    "confirm_action": "Clear session and continue",
+    "disconnected": "Gemini Web session disconnected"
+  },
   "agentic_login": {
     "title": "Sign in to Gemini Agentic",
     "manage": "Authenticate Agentic session",
@@ -204,19 +211,29 @@
     "title": "Remote Browser Session Renewal",
     "service_name": "Google Gemini web session",
     "service_type": "Private server browser",
-    "local_description": "In development, sign in opens Chrome on the computer running the Python microservice.",
-    "local_instruction": "Keep this panel open and complete sign in in the local Chrome window. The Nodia browser only checks status through Nodia Server.",
-    "unavailable": "Remote sign in is not enabled yet. The browser cannot call the private microservice directly.",
-    "operator_instruction": "An operator must renew the session from the server's private environment. Renewal from Nodia will become available after a secure administrative flow is implemented.",
-    "open_browser": "Start local browser",
+    "local_description": "The private browser is displayed here whether the service runs on your computer, a VM or a VPS.",
+    "local_instruction": "Keep this panel open. Complete sign-in in the viewer; the attempt ends after five minutes.",
+    "open_browser": "Open Gemini viewer",
     "started": "Gemini browser started",
-    "status_pending": "Waiting for sign in in Chrome...",
+    "status_pending": "Waiting for sign-in in the viewer...",
     "status_success": "Gemini session started successfully",
     "error_title": "Could not sign in to Gemini",
-    "error_desc": "Sign in did not complete. Check the Chrome window and try again.",
+    "error_desc": "Sign-in was not completed. Check the viewer and start a new attempt.",
     "cancel": "Cancel sign in",
     "cancelled": "Sign in cancelled",
-    "close": "Close"
+    "close": "Close",
+    "viewer_instruction": "Click the destination field on the screen, type below and send the text. Use the eye icon to show or hide what you type.",
+    "viewer_error": "The screen could not be updated. It will retry automatically; your text is preserved and will not be sent on its own.",
+    "screen": "Interactive Gemini screen",
+    "screen_alt": "Google Gemini browser screen",
+    "viewer_starting": "Preparing the browser screen...",
+    "text_label": "Text for the selected field",
+    "text_help": "Maximum 2048 characters. Check the screen before repeating an action.",
+    "send_text": "Send text",
+    "show_text": "Show text",
+    "hide_text": "Hide text",
+    "action_sent": "Action sent to the browser",
+    "refresh_viewer": "Refresh viewer"
   },
   "modal_sync_models": {
     "title": "Sync & configure models",
@@ -484,7 +501,13 @@
     "quota_pro_label": "Gemini Pro",
     "quota_5h_label": "5h quota",
     "quota_weekly_label": "Weekly quota",
-    "agentic_reasoning_preference": "Configure Low, Medium or High. Saving a preference does not enable the adapter or verify reasoning."
+    "agentic_reasoning_preference": "Configure Low, Medium or High. Saving a preference does not enable the adapter or verify reasoning.",
+    "web_level_low": "Low",
+    "web_level_medium": "Medium",
+    "web_level_high": "High",
+    "web_reasoning_preference": "Set a reasoning level for each model. Availability depends on the model and session.",
+    "web_legacy_reasoning": "This connection retains a legacy extended-thinking preference. Choose a level to replace it explicitly; it has not been converted automatically.",
+    "reasoning_model_label": "Reasoning for {{model}}"
   },
   "engine_selection": {
     "title": "Execution Engine",

@@ -1,0 +1,35 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "status": "passed",
+  "observed_at_utc_VM": "2026-10-20T23:09:25Z",
+  "owned_R2_objects_remaining": 0,
+  "SQL_and_native_pending": 0,
+  "original_services_active": 4,
+  "Gemini_restarts": 0,
+  "original_Node932_unchanged": true,
+  "owned_tunnel_and_tab_closed": true,
+  "owned_tunnel_pid": 95496,
+  "owned_tunnel_identity_and_loopback_listener_verified": true,
+  "port_5174_listeners_remaining": 0,
+  "unrelated_processes_stopped": 0,
+  "temporary_viewport_override_reset": true,
+  "final_proxy_site_sha256": "2f96d9f04d2bc2eba6e1d8bc126ec7d4a5c5b5202bfa3238d87d23e94c52a857",
+  "original_database_restored": false,
+  "API_or_worker_restarts": 0,
+  "private_owned_R2_ledger_removed": true,
+  "chat_archived_not_deleted": true,
+  "chat_new_messages": 0,
+  "chat_new_runs": 0,
+  "runtime_receipt": {
+    "path": "docs/evidence/nodia-ai-ai38-proxy-runtime-final-r01.json",
+    "sha256": "06268cd7e9083860fea9300f363e4ff3c87860777b2d2d4b0477d7acac008ad1"
+  },
+  "cleanup_receipt": {
+    "path": "docs/evidence/nodia-ai-ai38-attachment-ledger-cleanup-r01.json",
+    "sha256": "1c341a4e17836ea09eaf4616bf117da230a1e8a449d77f85cc84141913c76a40"
+  },
+  "limits": [
+    "Normal archived chat/expired attachment metadata retain their ordinary retention; all test cloud objects and private observation ledgers are removed.",
+    "The durable scoped 20m proxy change remains; only the temporary Client root serving was reverted to404."
+  ]
+}

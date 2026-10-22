@@ -1,0 +1,33 @@
+{
+  "stage": "AI-18",
+  "scope": "private_local_vm_lab",
+  "activated_at_utc": "2026-10-17T04:39:50Z",
+  "backup": "/opt/nodia/verification-backups/ai18-before-confirmation-1792211984",
+  "backup_bytes": 251045,
+  "backup_sha256": "290e249d403c2cb649c043c09b437310e133de917d6c7b93bea42314ef198c8b",
+  "migration": {
+    "migration": "CreateNodiaAiConfirmationPersistence1792500000000",
+    "applied": 1
+  },
+  "http_health": 200,
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active"
+  },
+  "configured_provider_environment_dependencies_unchanged": true,
+  "gemini_container_restarted": false,
+  "private_profile_unchanged": true,
+  "knowledge_capabilities": 67,
+  "knowledge_fragments": 27,
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 23
+  },
+  "real_inferences_by_deployment": 0,
+  "business_writes": 0,
+  "new_tables": 3,
+  "new_columns": 44,
+  "existing_columns_added": 4
+}

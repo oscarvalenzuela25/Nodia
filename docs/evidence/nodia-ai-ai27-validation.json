@@ -1,0 +1,203 @@
+{
+  "task": "AI-27",
+  "status": "implemented_and_verified_private_lab_mcp_write_publication_pending",
+  "verified_at_utc": "2026-10-17T18:36:53.380577+00:00",
+  "clock_source": "windows_host",
+  "remote_runtime_and_deployment_clocks": "vm_host_not_normalized_against_windows",
+  "implementation": {
+    "new_native_operations": 17,
+    "resources": {
+      "users": [
+        "create",
+        "update"
+      ],
+      "roles": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "actions": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "business_actions": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "modules": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "module_groups": [
+        "create",
+        "update",
+        "delete"
+      ]
+    },
+    "native_executors_total": 65,
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_migrations": 0,
+    "new_endpoints": 0,
+    "user_delete_or_individual_get_added": false,
+    "business_action_delete": "native_soft_deactivate",
+    "exact_human_confirmation_and_atomic_effect_receipt": true,
+    "core_authority_exclusive_before_first_execution_read": true,
+    "authority_hint_not_authorization_and_stale_share_hint_rejected": true,
+    "native_manager_and_timeouts_inherited_without_reset": true,
+    "authority_transaction_proof_scoped_to_callback": true,
+    "cache_invalidation_outside_sql_best_effort": true,
+    "upsert_receipt_identity_matches_resolved_target": true,
+    "bigint_ids_remain_strings": true,
+    "new_future_output_bindings": false
+  },
+  "server": {
+    "full_suite": {
+      "passed": true,
+      "tests": 2760,
+      "files": 194,
+      "duration_seconds": 263.73,
+      "log": ".tmp/ai27-server-tests-final.log",
+      "log_sha256": "f4c87789cd3fde36e28a4b310d46102f7d5b9bb3bd19cee22086abd638284fd6",
+      "max_workers": 2
+    },
+    "build": {
+      "passed": true,
+      "log": ".tmp/ai27-server-build-final.log",
+      "log_sha256": "c323946c3d2ebb3230f9d558e0926f6fc36056c5de113f8f4ccd3fcda28bcb37"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": ".tmp/ai27-server-lint-final.log",
+      "log_sha256": "1b4fb96a3858ce000a340e2c7fd5f7e5e143ab2a8afde9b9e10fe73ac0ea9fa9"
+    },
+    "native_core_focused": {
+      "passed": true,
+      "tests": 112,
+      "files": 22
+    },
+    "new_operation_factory": {
+      "passed": true,
+      "tests": 71,
+      "files": 1
+    },
+    "independent_read_only_review": {
+      "blocking_findings": 0,
+      "scope": [
+        "identity and receipt coherence",
+        "DI composition",
+        "exclusive frontier and stale hint rejection",
+        "transaction proof lifetime",
+        "post-SQL cache invalidation"
+      ]
+    }
+  },
+  "client": {
+    "full_suite": {
+      "passed": true,
+      "tests": 1571,
+      "files": 205,
+      "duration_seconds": 454.42,
+      "log": "nodia-client/.tmp/ai27-client-full-release.log",
+      "log_sha256": "3784b64cf05c7dc64c53168e807dee6bf9d00d4ac3f509ec152d2bc731706557",
+      "max_workers": 2
+    },
+    "focused_suite": {
+      "passed": true,
+      "tests": 280,
+      "files": 7,
+      "duration_seconds": 38.86,
+      "log": "nodia-client/.tmp/ai27-client-focused-final.log",
+      "log_sha256": "6f893403b6499a7bb3aada4b77ffba542b39576911a9a1d3de4ac7a105cfa661",
+      "max_workers": 2
+    },
+    "build_and_typecheck": {
+      "passed": true,
+      "build_log": "nodia-client/.tmp/ai27-client-build-final.log",
+      "typecheck_log": "nodia-client/.tmp/ai27-client-typecheck-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "log": "nodia-client/.tmp/ai27-client-lint-final.log"
+    },
+    "evidence": "docs/evidence/nodia-ai-ai27-client-validation.json"
+  },
+  "postgresql": {
+    "new_checks": 36,
+    "regression_checks": 371,
+    "total_numbered_checks": 407,
+    "native_http_requests": 389,
+    "evidence": [
+      "docs/evidence/nodia-ai-ai27-postgresql.json",
+      "docs/evidence/nodia-ai-ai27-regressions.json"
+    ],
+    "tested_archive_sha256": "757c524ddf82df8a7ed055bbaf492061b10ad07413ca1795d29db3bfc95b1a21",
+    "final_harness_sha256": "02d5d5b119a0fe9a2a456168d8410c8fd8af67cb0fd089a652ea318c33925294",
+    "release_parity": "docs/evidence/nodia-ai-ai27-tested-release-parity.json",
+    "configured_business_database_used": false,
+    "real_ai_inferences": 0,
+    "temporary_test_containers_remaining": 0
+  },
+  "ui": {
+    "evidence": "docs/evidence/nodia-ai-ai27-ui-validation.json",
+    "transport": "isolated_synthetic",
+    "checks": 11,
+    "screenshots": 6,
+    "qa_5194_stopped": true,
+    "real_tab_5174_modified": false
+  },
+  "deployment": {
+    "activation": "docs/evidence/nodia-ai-ai27-lab-activation.json",
+    "runtime": "docs/evidence/nodia-ai-ai27-lab-runtime.json",
+    "dist_equality": "docs/evidence/nodia-ai-ai27-deployed-equality.json",
+    "services": "docs/evidence/nodia-ai-ai27-services.json",
+    "archive_sha256": "779ed98c0168a0ca9865d6fcfd7e55aa9b208d175dc62f2df76beb49d36a8484",
+    "archive_files": 887,
+    "dist_files": 843,
+    "migrations": 25,
+    "nodia_ai_tables": 18,
+    "nodia_ai_columns": 241,
+    "registered_native_executors": 65,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "knowledge": {
+    "sources": 51,
+    "excluded_drafts": 24,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "release_id": "3dc50f14cba16916c35a7f0fa60fe2ae77a6d5fc323b918ef77a85ba49c68e33",
+    "approved_document_bytes_fragments_and_read_contracts_unchanged": true,
+    "native_writer_provenance_hashes_updated": 4,
+    "delta_evidence": "docs/evidence/nodia-ai-ai27-knowledge-delta.json",
+    "compiler_current_corpus_checks": 53,
+    "validation_evidence": "docs/evidence/nodia-ai-ai27-knowledge-validation.json",
+    "core_write_prepare_published": false
+  },
+  "static_validation": {
+    "schema_definitions": 137,
+    "domain_definitions": 184,
+    "closed_domain_contracts": 134,
+    "source_hashes": 733,
+    "fixtures": 477,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json",
+    "data_model": {
+      "proposed_tables": 23,
+      "proposed_columns": 298,
+      "foreign_keys": 62,
+      "source_hashes_checked": 8,
+      "negative_fixtures": 16
+    }
+  },
+  "limits_and_pending": [
+    "MCP preparation/write publication and Gemini write acceptance remain pending.",
+    "AI-15/22 external/R2/routing gates and AI-32 attachments remain independent.",
+    "Knowledge remains draft/unregistered, document73 in review and ADR-051 proposed; no automatic approval.",
+    "AI-28 is the next implementation step for non-secret AI configuration."
+  ]
+}

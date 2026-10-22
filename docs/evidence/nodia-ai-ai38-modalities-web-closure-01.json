@@ -1,0 +1,44 @@
+{
+  "stage": "AI-38",
+  "scope": "post_Web_modalities_read_only_native_SQL_operational_closure",
+  "status": "passed",
+  "observed_at_utc": "2026-10-20T19:57:47.361084+00:00",
+  "source_sha256": "b2a7c1cd0313e153ba28911146435987020ddbed89f1046102916a52758a192e",
+  "cohort_sha256": "7f8999b63a292d74e156fb5e0943b6e6c6a908b07e9a4ec8868643974dd0cee5",
+  "helper_sha256": {
+    "native": "a42831dce6f458af03f8a405014ebd8de8aafda6d39ca60fb00cd24829c243b7",
+    "SQL": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+  },
+  "native": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "SQL": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "epoch": {
+    "id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at_utc": "2026-10-20T19:14:35.412657745Z",
+    "running": true
+  },
+  "service_states_unchanged": {
+    "nodia-api": "inactive",
+    "nodia-ai-worker": "inactive",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "Node_outputs": 932,
+  "Node_manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792",
+  "provider_generations": 0,
+  "configured_SQL_writes": 0,
+  "profile_bytes_read": false,
+  "services_restarted_or_reconfigured": false,
+  "logout_or_session_reset": false
+}

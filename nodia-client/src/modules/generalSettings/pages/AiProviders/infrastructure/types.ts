@@ -419,7 +419,8 @@ export interface GeminiEngineInfo {
   quota?: GeminiEngineQuota | null;
   quota_source?: string | null;
   quota_observed_at?: number | null;
-  supported_options?: { extended_thinking: boolean | null } | null;
+  supported_options?: { extended_thinking: boolean | null; thinking_level?: boolean | null;
+    thinking_levels_by_model?: Record<string, ('low' | 'medium' | 'high')[]> | null } | null;
 }
 
 export interface GeminiDualEngineStatus {

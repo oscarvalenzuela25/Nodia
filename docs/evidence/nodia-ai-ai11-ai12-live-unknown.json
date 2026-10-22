@@ -1,0 +1,26 @@
+{
+  "task": "AI-11/AI-12",
+  "phase": "unknown",
+  "checks": 13,
+  "passed": [
+    "Agentic session/catalog eligible without inferring MCP support",
+    "real CLI makes both closed MCP fixture callbacks",
+    "real Agentic answer incorporates random callback data",
+    "real MCP loop publishes exact verified support",
+    "unknown diagnostic requires exact verified MCP selection",
+    "real MCP callback cancellation is observed before any result delivery",
+    "cancelled live dispatch preserves SQL unknown without a fabricated answer",
+    "cancelled live dispatch quarantines the exact shared SQL slot",
+    "unknown jobs are not replayed by another worker claim",
+    "native cancellation proves the exact CLI process closed without replay",
+    "operator reconciliation commits and acknowledges the real native proof",
+    "reconciliation releases capacity and removes its minimal receipt delivery job",
+    "native profile is reusable after verified reconciliation without inference replay"
+  ],
+  "adapterDispatchRequests": 2,
+  "maximumAdapterDispatchRequests": 6,
+  "real_inference": true,
+  "configured_business_database_modified": false,
+  "business_writes": 0,
+  "selection_source": "Read-only configured Gemini connection; new synthetic database for all chat/worker state"
+}

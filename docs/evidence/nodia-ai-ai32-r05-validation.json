@@ -1,0 +1,302 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "r2_microphone_app_flow_and_responsive_composer",
+  "status": "passed",
+  "provider_generations": 1,
+  "provider_mode": "token_plan_web",
+  "automatic_inference_replays": 0,
+  "business_effects": 0,
+  "physical_microphone_and_response_confirmed_by_user": true,
+  "quality": {
+    "client_tests": 56,
+    "client_test_files": 7,
+    "server_use_case_tests": 50,
+    "server_use_case_files": 5,
+    "sdk_http_checks": 12,
+    "full_historical_suites_reexecuted": false,
+    "python_sources_changed": false
+  },
+  "runtime": {
+    "node_compiled_files": 909,
+    "gemini_source_files": 92,
+    "gemini_restarted": false,
+    "migration_count": 26,
+    "open_jobs_attempts_slots": 0,
+    "observed_ack_count": null
+  },
+  "knowledge": {
+    "release_id": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50",
+    "publication_changed": false,
+    "document_approval_changed": false
+  },
+  "limitations": [
+    "real_chat_expiry_and_janitor_deletion",
+    "real_r2_invoice_promotion_or_legacy_transfer",
+    "production_acceptance",
+    "other_native_media_formats",
+    "agentic_generation_in_this_run"
+  ],
+  "evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-private-download-hashes.json",
+      "bytes": 379,
+      "sha256": "af673a302b5a5ee9e0b2730e1c94d0a824168f4a54c35ac7a0f6f359168f1215"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-app-after-run.json",
+      "bytes": 4334,
+      "sha256": "6290a1f98fdfa2b8360cc1a13d4c7ee3e012a50126472feadeaeb50fb3cbd90a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-app-final-metadata.json",
+      "bytes": 4829,
+      "sha256": "723eafe5c4c3d7e1e9d4bebd8c9411e17820932921c5926fe9c6865f94ea9dbe"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-app-uploads.json",
+      "bytes": 3326,
+      "sha256": "9006e18ce768e551caec9149a3802a1f85df35259c399f66f27b9cef24e5be9c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-base-dist-manifest.json",
+      "bytes": 118086,
+      "sha256": "a1922536a3882e36b333e556abeddfd80d24a4bb9c3373055f3d1dfa7497bbf3"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-canary-before-single-attempt.json",
+      "bytes": 1587,
+      "sha256": "e42f0f2ba808fb1bba11d6cb5790181f5669fce89c20e03918e1a608aefed0d6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-canary-final.json",
+      "bytes": 1642,
+      "sha256": "63abfbef597c8ba94c1e97e3d8e9e67efd178aa6aad109dc6fb69b84de2060d7"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-configuration.json",
+      "bytes": 1160,
+      "sha256": "67e53086152121b33f49d1798f2547ccae852101c71d921e8b39d919ad9aa49b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-dist-manifest.json",
+      "bytes": 118602,
+      "sha256": "0293d34fe9d320be6b9f696ebdc094e839d5cf5919f25091aa480ee262dfc3b5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-final-health.json",
+      "bytes": 1381,
+      "sha256": "964accd1778c86b465f6b4487df2b19cb5a04d1b4bc30685738c399ada26ecb4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-local-presence.json",
+      "bytes": 836,
+      "sha256": "a5eccd7d935314540527f1279a60a2bc8bbc56820fe7c47f3b12dcec46b8db53"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-node-observation.json",
+      "bytes": 3325,
+      "sha256": "a9513d9c182706d384e0edbc793202b4ca205ecb7b7880540300b6f38eb96763"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-operation-source-manifest.json",
+      "bytes": 2143,
+      "sha256": "36f7cbf4e816dc26c3c601f94d2f98fb471ac3c2af6d2b6318b3022e3f395328"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-storage-activation-attempt01.json",
+      "bytes": 391,
+      "sha256": "ad9370b9ed5e45cae9ca388d75c055e470450ca80272e7b2e24ed44358099570"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-storage-activation.json",
+      "bytes": 1572,
+      "sha256": "6517a21892c42c7e0704d8ede950a3c60087c9cbc3255ab43e0693e124ec207f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-vm-health-after.json",
+      "bytes": 529,
+      "sha256": "293fb31ef03e31e711bed6072b20ce822fecaf7a31062ca9868848d1718bc9ac"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-vm-health-before.json",
+      "bytes": 529,
+      "sha256": "cebf466eecf07c6d07f452f702411e5455d2539aeebd37dfa1e7a0f58c5f6351"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-vm-presence-after.json",
+      "bytes": 833,
+      "sha256": "aa7d7532de61fff9691ea7875ad2b1ed88a37afcc660c546c4d6c54ba2462d56"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-vm-presence-before.json",
+      "bytes": 754,
+      "sha256": "06e9562e5e22b7debff2149302b9eacf79268f8f39e32e846091c8445f7e298f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-storage-code-validation.json",
+      "bytes": 1977,
+      "sha256": "8ca2eb310dea057755455ee214137a98795f5f5b7ebb8624251d992356b99e23"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-ui-before.json",
+      "bytes": 952,
+      "sha256": "da1a41cd436587525243d47b5853f4c40f46b0fe00cf34317a7eaff453ca489b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-ui-fixed.jpg",
+      "bytes": 36809,
+      "sha256": "60e4c09b85844e541bb793e63168d4a9b344096127640ac3282106360f103103"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-ui-flow.json",
+      "bytes": 2768,
+      "sha256": "c4eb65e9ff2ffb85a7714119935a2c3fefac8bbf25a50549e4047ea8178f0b8e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-ui-layout.json",
+      "bytes": 4854,
+      "sha256": "94496533b8b044c7449a1bb111e7c12a17d76ebf98b3d1f07f1cf1ec889c54c4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-ui-response.jpg",
+      "bytes": 36734,
+      "sha256": "651f2d42d831f6b76400af07aaa7fd7382e50ef010a8c63d5c2eb1069036de6e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-ui-result.jpg",
+      "bytes": 35190,
+      "sha256": "b9e99e65ea5b4787ab2d909a796d811d3592f18d95e4d0bb82cbd0c9e2b29211"
+    }
+  ],
+  "sources": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "bytes": 25444,
+      "sha256": "87185f312cdf988d6689062436290967491ac3cf4991280de3cb899579988f95"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+      "bytes": 4081,
+      "sha256": "dc6b5255cb440b6c4cb83e19f8adf9ba5323823606fdb79a083662e88abbae9d"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/Attachments/styles.ts",
+      "bytes": 652,
+      "sha256": "e0b528a5a79978c207a20d8ec4901d267e047ee7479f3bd48a763886281439f9"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+      "bytes": 34148,
+      "sha256": "eb3405c1828bdbaf006d1779d9fe371bc6b0d837c97b0f49223e5d3772d12307"
+    },
+    {
+      "path": "nodia-server/src/common/storage/storage.service.ts",
+      "bytes": 6506,
+      "sha256": "e96ebb11e22943d2f8d2acb60ed8d75db8ed78504550ad62f7617bf3cb21ac94"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.ts",
+      "bytes": 972,
+      "sha256": "97c4b9700a94b65b5388e4565e6363bdcc5ed881b21dbed16ac638cd2f52af0f"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai32-storage-retry.integration.mjs",
+      "bytes": 8568,
+      "sha256": "3b96911b0fe55f19a1853c6b08f559492c1a44a632286fd2d405bd5e44c5b576"
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/mvp/README.md",
+      "bytes": 48803,
+      "sha256": "576bacf34762a48719940b01202aea2beaed8f877e809e210cde2f1f9dbd91fc"
+    },
+    {
+      "path": "docs/mvp/00-progress.md",
+      "bytes": 207655,
+      "sha256": "a750fb875a7bc35b074efe27fb0c1781acc53a09fb8bd3f9627459026b30e752"
+    },
+    {
+      "path": "docs/mvp/45-nodia-ai-implementation-plan.md",
+      "bytes": 55275,
+      "sha256": "82cb4b0d7852d4548ab9364c9a905964d6b30bad17287d6f8e36022c6b208cfb"
+    },
+    {
+      "path": "docs/mvp/78-nodia-ai-ai32-attachments-voice.md",
+      "bytes": 57667,
+      "sha256": "fece6e2dca5ff86e403ab4acb3e2f9bd637e576e2adfe2f15302f8408d09b593"
+    },
+    {
+      "path": "docs/mvp/vps-local-vm-lab.md",
+      "bytes": 11272,
+      "sha256": "81a407c956f8859e8882e66bac72f209f1fa50db6be4bbbb66ce2034e7695f84"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-057-nodia-ai-attachment-lifecycle.md",
+      "bytes": 7085,
+      "sha256": "049d5e2af247882dada7d2f467fc5c5baec013b2036ebfd4e28ae45b1b4e05fc"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/README.md",
+      "bytes": 24602,
+      "sha256": "8b603e5d4a9bc13829b78e7bd499ddc097e38ec1f5f59b6588ee2eeee49fbfa8"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+      "bytes": 28324,
+      "sha256": "61eb81e2ca61c9ac7bf1ace6dbd84c74fd05bf96d52b3aee85afc1499f6de30d"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "bytes": 12060,
+      "sha256": "df38b45ba00d8815cb451657934619b33fbec44376be9e6031d0bf66a9f15e6d"
+    },
+    {
+      "path": "nodia-client/DESIGN.md",
+      "bytes": 55715,
+      "sha256": "5f6a04a675dadad445ef964e26fa1a21fa3753700bf28e57fa05d9fa106e697b"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".tmp/ai32-r05-client-layout-regression.log",
+      "bytes": 244,
+      "sha256": "265373860b49cbf7c02fa928f91f048912e032110bedb229f3bd5a93c3664d7d"
+    },
+    {
+      "path": ".tmp/ai32-r05-client-layout-contract-regression.log",
+      "bytes": 238,
+      "sha256": "43b7c2eea4e99d0ff2c5156be9bf52651c59c672b478ece53bb041ef8c7fff3b"
+    },
+    {
+      "path": ".tmp/ai32-r05-client-layout-typecheck-final.log",
+      "bytes": 46,
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865"
+    },
+    {
+      "path": ".tmp/ai32-r05-client-layout-lint-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".tmp/ai32-r05-client-build-final.log",
+      "bytes": 14119,
+      "sha256": "c945f4de6d0093b34de2e9501d396445346ce0408e71ed8230415eef8d6488a3"
+    },
+    {
+      "path": ".tmp/ai32-r05-storage-retry.log",
+      "bytes": 444,
+      "sha256": "52a9b5b5bfb228a5f3558f2974ee07a7a1b76228ef471590820f3d780b7bec2a"
+    }
+  ],
+  "historical_r04": {
+    "path": "docs/evidence/nodia-ai-ai32-r04-validation.json",
+    "bytes": 62044,
+    "sha256": "c4285455a2561658f80a2e8586d4a204a3f1ada626dbae3b32ddb1e947883e3d"
+  },
+  "reconciler": {
+    "path": "docs/evidence/scripts/reconcile-nodia-ai-ai32-r05-validation.cjs",
+    "bytes": 10073,
+    "sha256": "8e9c29c6f7b551a5a15f154d0ced4033fcfd9c5b80652156a595186c23d5eedb"
+  }
+}

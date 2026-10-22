@@ -1,0 +1,12 @@
+{
+  "stage": "AI-38",
+  "scope": "pre_adoption_clock_observation_not_adjustment",
+  "VM_observed_at_utc": "2026-10-20T20:45:57Z",
+  "Windows_midpoint_utc": "2026-10-20T20:39:34.482408+00:00",
+  "VM_minus_Windows_seconds": 382.518,
+  "round_trip_seconds": 0.38,
+  "VM_datetime_precision_seconds": 1,
+  "clocks_or_tolerance_changed": false,
+  "job_and_backup_processes_execute_on_VM": true,
+  "browser_clock_limitation_recorded": true
+}

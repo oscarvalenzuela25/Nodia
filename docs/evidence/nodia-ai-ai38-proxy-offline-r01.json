@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "checks": [
+    "exact_raw_file_limit_matches_runtime_policy",
+    "message_aggregate_is_separate_from_upload_body",
+    "global_limit_preserved",
+    "only_owned_block_added",
+    "no_public_listener_or_new_upstream",
+    "valid_UUIDv4_route_selected",
+    "case_insensitive_route_preserves_Express_contract",
+    "no_scope_widening_to_other_API",
+    "no_scope_widening_to_intent_JSON",
+    "no_scope_widening_to_review",
+    "no_suffix_or_child_route",
+    "no_invalid_UUID_version",
+    "no_invalid_UUID_variant",
+    "refuse_duplicate_owned_block",
+    "refuse_unknown_global_limit",
+    "refuse_missing_API_location",
+    "HTTP_contract_is_raw_PUT",
+    "backend_intent_still_enforces_dynamic_file_limit",
+    "backend_stream_still_enforces_reserved_length"
+  ],
+  "check_count": 19,
+  "script_sha256": "bf51cfd468e19eb4620d9244186f1a3de00ceb9e4cb9c2414e7210f0797961eb",
+  "snippet_sha256": "01055ee0da4c03ba7ecac0d36226a9da5ca9ce26f198ec3d73a8b67af93b683e",
+  "scope": "offline_only_no_nginx_or_authenticated_upload_acceptance"
+}

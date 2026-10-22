@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { CreateRentalBlockUseCase } from './create-rental-block.use-case.js';
@@ -36,7 +37,12 @@ describe('Rental block use cases', () => {
   }
   it('records a whole-house block with canonical instants and replays equivalent offsets', async () => {
     const f = fixture();
-    const first = await f.create.execute('2', '10', input, rentalKey);
+    const first = await f.create.execute(
+      actorFixture('2'),
+      '10',
+      input,
+      rentalKey,
+    );
     expect(f.table(RentalBlock)[0]).toMatchObject({
       starts_at: new Date('2026-10-10T13:00:00Z'),
       is_active: true,
@@ -44,7 +50,7 @@ describe('Rental block use cases', () => {
     });
     expect(
       await f.create.execute(
-        '2',
+        actorFixture('2'),
         '10',
         {
           ...input,
@@ -62,34 +68,39 @@ describe('Rental block use cases', () => {
     const f = fixture();
     await expect(
       f.create.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { ...input, ends_at: input.starts_at },
         rentalKey,
       ),
     ).rejects.toThrow('rental:invalid_input');
-    await expect(f.create.execute('3', '10', input, rentalKey)).rejects.toThrow(
-      'rental:not_found',
-    );
+    await expect(
+      f.create.execute(actorFixture('3'), '10', input, rentalKey),
+    ).rejects.toThrow('rental:not_found');
     f.table(RentalProperty)[0].is_active = false;
-    await expect(f.create.execute('1', '10', input, rentalKey)).rejects.toThrow(
-      'rental:invalid_transition',
-    );
+    await expect(
+      f.create.execute(actorFixture('1'), '10', input, rentalKey),
+    ).rejects.toThrow('rental:invalid_transition');
     expect(f.table(RentalBlock)).toHaveLength(0);
   });
   it('runs the shared availability rule against DB-reported occupation before saving', async () => {
     const f = fixture();
     f.queryExists(RentalReservation, true);
-    await expect(f.create.execute('1', '10', input, rentalKey)).rejects.toThrow(
-      'rental:availability_conflict',
-    );
+    await expect(
+      f.create.execute(actorFixture('1'), '10', input, rentalKey),
+    ).rejects.toThrow('rental:availability_conflict');
     expect(f.table(RentalBlock)).toHaveLength(0);
   });
   it('can archive to release availability, but a fresh activation rechecks conflicts', async () => {
     const f = fixture();
-    const result = await f.create.execute('1', '10', input, rentalKey);
+    const result = await f.create.execute(
+      actorFixture('1'),
+      '10',
+      input,
+      rentalKey,
+    );
     await f.update.execute(
-      '1',
+      actorFixture('1'),
       '10',
       result.resource_id,
       { is_active: false },
@@ -99,7 +110,7 @@ describe('Rental block use cases', () => {
     f.queryExists(RentalReservation, true);
     await expect(
       f.update.execute(
-        '1',
+        actorFixture('1'),
         '10',
         result.resource_id,
         { is_active: true },
@@ -110,7 +121,12 @@ describe('Rental block use cases', () => {
   });
   it('does not invalidate a prepared transition for a metadata-only edit', async () => {
     const f = fixture();
-    const result = await f.create.execute('1', '10', input, rentalKey);
+    const result = await f.create.execute(
+      actorFixture('1'),
+      '10',
+      input,
+      rentalKey,
+    );
     const plan = f.seed(RentalTurnover, {
       id: '60',
       property_id: '10',
@@ -124,7 +140,7 @@ describe('Rental block use cases', () => {
     });
     f.queryRows(RentalTurnover, [plan]);
     await f.update.execute(
-      '1',
+      actorFixture('1'),
       '10',
       result.resource_id,
       { reason: 'Changed label' },
@@ -135,9 +151,9 @@ describe('Rental block use cases', () => {
   it('rolls back block/neighbor changes when persisting the intention fails', async () => {
     const f = fixture();
     f.failOn(RentalOperation);
-    await expect(f.create.execute('1', '10', input, rentalKey)).rejects.toThrow(
-      'rental:server_error',
-    );
+    await expect(
+      f.create.execute(actorFixture('1'), '10', input, rentalKey),
+    ).rejects.toThrow('rental:server_error');
     expect(f.table(RentalBlock)).toHaveLength(0);
   });
 });

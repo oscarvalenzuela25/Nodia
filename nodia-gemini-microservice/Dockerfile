@@ -20,7 +20,8 @@ COPY . .
 
 # Crear directorios necesarios
 RUN useradd --uid 10001 --create-home nodia && \
-    mkdir -p browser_profile session_state temp_uploads /home/nodia/agentic_profile && \
+    mkdir -p browser_profile session_state temp_uploads /home/nodia/agentic_profile /run/nodia-login-cgroups && \
+    chown nodia:nodia /run/nodia-login-cgroups && \
     chown nodia:nodia /home/nodia/agentic_profile && \
     chown -R nodia:nodia /app
 
@@ -30,4 +31,4 @@ USER nodia
 EXPOSE 8000
 
 # Comando de inicio
-CMD ["python", "run.py"]
+CMD ["xvfb-run", "--auto-servernum", "--server-args=-screen 0 1280x850x24 -nolisten tcp", "python", "run.py"]

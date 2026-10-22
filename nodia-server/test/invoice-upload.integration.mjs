@@ -11,7 +11,7 @@ import { NestFactory } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-const container = `nodia_invoice_upload_test_${process.pid}_${randomBytes(4).toString('hex')}`;
+const container = `template_invoice_upload_test_${process.pid}_${randomBytes(4).toString('hex')}`;
 const password = randomBytes(20).toString('hex');
 const docker = (...args) =>
   execFileSync('docker', args, {

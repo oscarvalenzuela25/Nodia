@@ -1,0 +1,26 @@
+{
+  "task": "AI-11/AI-12",
+  "phase": "concurrency",
+  "checks": 13,
+  "passed": [
+    "Agentic session/catalog eligible without inferring MCP support",
+    "agentic discovery cannot enter a profile held by the live chat",
+    "agentic login cannot enter a profile held by the live chat",
+    "agentic OCR cannot enter a profile held by the live chat",
+    "independent Web profile remains available while Agentic holds its profile",
+    "real CLI makes both closed MCP fixture callbacks",
+    "real Agentic answer incorporates random callback data",
+    "real MCP loop publishes exact verified support",
+    "real Web dispatch holds the shared native profile",
+    "web discovery cannot enter a profile held by the live chat",
+    "web login cannot enter a profile held by the live chat",
+    "web OCR cannot enter a profile held by the live chat",
+    "real provider turn seals exactly once"
+  ],
+  "adapterDispatchRequests": 2,
+  "maximumAdapterDispatchRequests": 6,
+  "real_inference": true,
+  "configured_business_database_modified": false,
+  "business_writes": 0,
+  "selection_source": "Read-only configured Gemini connection; new synthetic database for all chat/worker state"
+}

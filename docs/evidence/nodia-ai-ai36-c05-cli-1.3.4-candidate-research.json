@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "scope": "read_only_public_release_metadata_and_local_compatibility_review_no_binary_download",
+  "consulted_at_utc": "2026-10-19T20:33:48.643931+00:00",
+  "release": {
+    "candidate_version": "1.3.4",
+    "release_date": "2026-10-13",
+    "current_reviewed_version": "1.3.1",
+    "source": "https://www.antigravity.google/docs/changelog/",
+    "exact_excerpt": "waits at most 30 seconds between automatic retries instead of up to 4 minutes.",
+    "finding": "First documented later release explicitly fixing that long-backoff behavior. The notes do not establish a retry occurred in our attempts.",
+    "other_relevant_changes": [
+      "Pinned unknown agents now fail headless startup rather than selecting the default agent.",
+      "Base model selection without explicit effort gains a default; keep exact High ID and explicit effort.",
+      "Remote MCP OAuth failure handling and ADC thinking-option handling also change.",
+      "No explicit stream-json event or hook-wire change identified in 1.3.4 notes; compatibility remains unverified."
+    ]
+  },
+  "provenance": {
+    "official_installer_source": "https://antigravity.google/cli/install.sh",
+    "installer_text_bytes": 7643,
+    "installer_source_sha256": "62966c07365423bd4dc209355060744058fb30d60f5323e2d360e39de64e5042",
+    "script_executed": false,
+    "artifact_verification_documented_in_source": "Installer reads version/url/sha512 from a public HTTPS manifest, downloads payload, compares SHA512. No detached signature or signing-key verification found in inspected installer.",
+    "official_installer_manifest": "https://antigravity-cli-auto-updater-974169037036.us-central1.run.app/manifests/linux_amd64.json",
+    "observed_manifest_sha256": "7942274fb64e30a5106669af06e09a64e3fa7a1e8bb854d7a9e044a3773b69d2",
+    "observed_version": "1.4.2",
+    "observed_latest_URL": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.4.2-4835981233356800/linux-x64/cli_linux_x64.tar.gz",
+    "observed_latest_package_sha512": "4a393afc1369cee94e817c1b430c9128d02b12ebd4d5703ace5cd47b2333e216d673fb0097cbf7195f757b110163ba9850e9eea3fdbbaddd4b25668b82c03f05",
+    "candidate_1_3_4_URL": null,
+    "candidate_1_3_4_package_sha512": null,
+    "candidate_1_3_4_binary_sha512": null,
+    "candidate_signature_verification": null,
+    "checked_release_listing": "https://www.antigravity.google/releases",
+    "listing_scope": "App/IDE entries; no versioned CLI artifact/checksum found",
+    "public_bucket_metadata_listing_http_status": 401,
+    "outcome": "blocked_pending_verified_historical 1.3.4_artifact_metadata; latest must not substitute"
+  },
+  "local_gates_requiring_review": [
+    {
+      "path": "nodia-gemini-microservice/agentic_cli.py",
+      "line": 25,
+      "finding": "Default CliConfig.version 1.3.1; initialize verifies actual version against it."
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "line": 249,
+      "finding": "observe accepts only reviewed CLI 1.3.1."
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "line": 318,
+      "finding": "Attachment runtime gate is pinned 1.3.1."
+    },
+    {
+      "path": "nodia-gemini-microservice/native_attachments.py",
+      "line": 178,
+      "finding": "Attachment proof identity includes fixed antigravity-cli/1.3.1."
+    },
+    {
+      "path": "nodia-gemini-microservice/antigravity-cli.lock.json",
+      "finding": "Only 1.3.1 artifact provenance is pinned."
+    }
+  ],
+  "proposed_reversible_experiment_not_authorized_or_executed": [
+    "Obtain exact 1.3.4 official artifact metadata; stop if unavailable. Keep 1.3.1 pin/image intact.",
+    "After separate authorization, download only pinned official payload into a new version directory/image and verify package/binary hashes; never run the remote installer.",
+    "Offline candidate QA first, no profile/network. Verify exact version, argument handling and current protocol fixtures.",
+    "For any account test, stop consumers and previous profile owner, preserve deployment descriptor, verify quiet, and keep one owner. Profile/cache migration compatibility is unknown; do not promise rollback solely from image replacement.",
+    "Retain High ID/effort, 120s provider deadline, exact prompts/tools and no application resend. New process/session must not inherit old MCP proof.",
+    "Run one frozen original MCP canary with nonce, exact init model/agent, gate proof, completed terminal, processclosed and ACK. Stop on unknown and reconcile. Any business acceptance requires its separate gate.",
+    "Rollback exact prior image/version/hash/descriptor under drainage; profile compatibility and credentials must be checked separately without exporting private state."
+  ],
+  "interpretation": "A version experiment can test whether a documented fix affects this path. A single success cannot prove the old timeout was retry backoff, and accepted native starts do not count internal vendor requests.",
+  "actions": {
+    "binary_downloads": 0,
+    "installer_or_CLI_executions": 0,
+    "VM_operations": 0,
+    "profile_access": 0,
+    "configuration_changes": 0,
+    "production_source_changes": 0
+  }
+}

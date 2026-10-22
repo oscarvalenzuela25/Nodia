@@ -1,24 +1,27 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UpdateModuleGroupUseCase } from './update-module-group.use-case.js';
-import type { ModuleGroupService } from '../module-group.service.js';
+import type { SaveModuleGroupUseCase } from './save-module-group.use-case.js';
 import type { UpdateModuleGroupDto } from '../dto/update-module-group.dto.js';
 
 describe('UpdateModuleGroupUseCase', () => {
   let useCase: UpdateModuleGroupUseCase;
-  let moduleGroupServiceMock: Partial<ModuleGroupService>;
+  let moduleGroupServiceMock: Partial<SaveModuleGroupUseCase>;
 
   beforeEach(() => {
     moduleGroupServiceMock = {
-      update: vi.fn(),
+      execute: vi.fn(),
     };
-    useCase = new UpdateModuleGroupUseCase(moduleGroupServiceMock as ModuleGroupService);
+    useCase = new UpdateModuleGroupUseCase(
+      moduleGroupServiceMock as SaveModuleGroupUseCase,
+    );
   });
 
   it('should be defined', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should call moduleGroupService.update with id and UpdateModuleGroupDto and return updated group', async () => {
+  it('should call moduleGroupService.execute with id and UpdateModuleGroupDto and return updated group', async () => {
     const id = '1';
     const dto: UpdateModuleGroupDto = {
       key: 'settings_updated',
@@ -38,12 +41,18 @@ describe('UpdateModuleGroupUseCase', () => {
       ],
     };
 
-    vi.mocked(moduleGroupServiceMock.update!).mockResolvedValue(mockUpdatedGroup as any);
+    vi.mocked(moduleGroupServiceMock.execute!).mockResolvedValue(
+      mockUpdatedGroup as any,
+    );
 
-    const result = await useCase.execute(id, dto);
+    const result = await useCase.execute(id, dto, actorFixture('1'));
 
-    expect(moduleGroupServiceMock.update).toHaveBeenCalledTimes(1);
-    expect(moduleGroupServiceMock.update).toHaveBeenCalledWith(id, dto);
+    expect(moduleGroupServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(moduleGroupServiceMock.execute).toHaveBeenCalledWith(
+      id,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(mockUpdatedGroup);
   });
 });

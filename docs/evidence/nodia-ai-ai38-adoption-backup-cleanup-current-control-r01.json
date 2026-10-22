@@ -1,0 +1,12 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_synthetic_generic_owned_backup_cleanup_controls",
+  "status": "passed",
+  "helper_sha256": "923add43cfc47e09b38e1c201847ab79b1b209c232feecf3deffb2874706ffc7",
+  "valid_path_and_receipts": true,
+  "unsafe_paths_rejected": 7,
+  "unsafe_receipts_rejected": 8,
+  "VM_mutations": false,
+  "provider_requests": 0,
+  "external_processes": 0
+}

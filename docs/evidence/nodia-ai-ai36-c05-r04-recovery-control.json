@@ -1,0 +1,48 @@
+{
+  "stage": "AI-36-C05-R04",
+  "scope": "real_rollback_program_with_synthetic_transport_and_private_fixture_files",
+  "status": "passed",
+  "results": [
+    {
+      "case": "pre_quiet_failure",
+      "passed": true,
+      "consumer_resume_calls": 0,
+      "provider_or_VM_commands": 0,
+      "synthetic_transport_only": true
+    },
+    {
+      "case": "native_start_failure",
+      "passed": true,
+      "consumer_resume_calls": 0,
+      "provider_or_VM_commands": 0,
+      "synthetic_transport_only": true
+    },
+    {
+      "case": "descriptor_failure",
+      "passed": true,
+      "consumer_resume_calls": 0,
+      "provider_or_VM_commands": 0,
+      "synthetic_transport_only": true
+    },
+    {
+      "case": "post_quiet_failure",
+      "passed": true,
+      "consumer_resume_calls": 0,
+      "provider_or_VM_commands": 0,
+      "synthetic_transport_only": true
+    },
+    {
+      "case": "success",
+      "passed": true,
+      "consumer_resume_calls": 1,
+      "provider_or_VM_commands": 0,
+      "synthetic_transport_only": true
+    }
+  ],
+  "source_sha256": "8c699cbca31d9e3b9f2cd4e17056ae7fe02482fd550bd92f57d00d0a0275a190",
+  "control_sha256": "61a1c832c7e52284c08f7297cc167eff85dd3eaa840f99a782322763bbe26cf1",
+  "only_fixture_pin_substitution": "dropin_digest_synthetic_bytes_never_operational_data",
+  "provider_inferences": 0,
+  "VM_operations": 0,
+  "operational_profile_access": false
+}

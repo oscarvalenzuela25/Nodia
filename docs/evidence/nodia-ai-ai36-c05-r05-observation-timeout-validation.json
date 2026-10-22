@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R05",
+  "scope": "outer_shared_metadata_timeout_reason_offline_Python_regression_validation",
+  "status": "passed_local_offline_only",
+  "created_at_utc": "2026-10-19T21:00:35.454832+00:00",
+  "clock_scope": "Windows_local_test_and_derivation_clock_not_VM_provider_observation",
+  "production_delta": [
+    {
+      "path": "nodia-gemini-microservice/agentic_service.py",
+      "old_sha256": "5ef14b9491d689df4080e2b8ab7c7fba31d2e951d68d7040dcac91b60f24f48e",
+      "sha256": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200"
+    }
+  ],
+  "new_tests": [
+    {
+      "path": "nodia-gemini-microservice/tests/test_agentic_observation_timeout.py",
+      "sha256": "61ac25b286dcddeaac483eeecebaf6e7b34f4ef1be5cad64baf36ff131de28ec"
+    }
+  ],
+  "source_diff": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r05-observation-timeout-source.diff",
+    "sha256": "9f2f356929f7d427a4a02f67100bcd9235416ab055da653930fc369481b9b83c"
+  },
+  "Windows_official_suite": {
+    "command": ".venv/Scripts/python.exe run_tests.py",
+    "cwd": "nodia-gemini-microservice",
+    "total": 467,
+    "passed": 465,
+    "skipped": 2,
+    "seconds": 14.231,
+    "baseline_total": 462,
+    "added_regressions": 5,
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-r05-python-full-attempt02.log",
+      "sha256": "b362c8003f0863a91a9c163b80aaeeadf471d24240cb1a2ef5b0ce7161b72d23"
+    }
+  },
+  "Windows_focused_suite": {
+    "total": 5,
+    "passed": 5,
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-r05-python-focused.log",
+      "sha256": "429da2f32c19d7ff4eeb298aad3588c4ba2727c6126aa9ee0f04f028dd7a1e3b"
+    }
+  },
+  "pre_fix_regression": {
+    "source_sha256": "5ef14b9491d689df4080e2b8ab7c7fba31d2e951d68d7040dcac91b60f24f48e",
+    "test": "outer_shared_timeout_waits_for_cleanup_and_invalidates_stale_snapshot",
+    "expected_failure": "agentic_unavailable != agentic_timeout",
+    "exit_code": 1,
+    "log": {
+      "path": ".tmp/ai36-c05-r05-python-before-attempt02.log",
+      "sha256": "ddc997d3f06199f1ecefa6ac1cc3ddfa026b238ac0b355b549328dccf78a8252"
+    }
+  },
+  "preserved_intermediate_failures": {
+    "helper_attempt01": "SyntaxError before test execution; not semantic regression evidence",
+    "helper_log": {
+      "path": ".tmp/ai36-c05-r05-python-before-attempt01-parser-failure.log",
+      "sha256": "889ee8384bc8116df8e953bcb8d141f52a001e80dc0e399498401fdcf1c2dd2d"
+    },
+    "full_suite_attempt01": {
+      "total": 467,
+      "failed": 1,
+      "skipped": 2,
+      "test": "test_real_stdio_two_callback_loop_is_bounded_and_fixture_only",
+      "observed": "callbacks0 expected2",
+      "log": {
+        "path": ".tmp/ai36-c05-r05-python-full.log",
+        "sha256": "98ef869800fccbe4b47fd3320a3acd7dfc2979b97cd07a61ad0d986bf0a34d37"
+      },
+      "followup": "unchanged native_MCP42 tests passed alone; complete467 suite then passed with no intervening source changes; no verified cause for initial failure"
+    },
+    "native_MCP_recheck": {
+      "total": 42,
+      "passed": 42,
+      "log": {
+        "path": ".tmp/ai36-c05-r05-native-mcp-recheck.log",
+        "sha256": "9d552834d687272fa00f595b1a266ce28a1f50e057fd46806168a912b3d641cd"
+      }
+    }
+  },
+  "compile_checks": {
+    "python_files": [
+      "nodia-gemini-microservice/agentic_service.py",
+      "nodia-gemini-microservice/tests/test_agentic_observation_timeout.py"
+    ],
+    "exit_code": 0
+  },
+  "guarantees": {
+    "external_shared_usage_models_TimeoutError_reason": "agentic_timeout",
+    "runner_ServiceError_code_preserved": true,
+    "OSError_reason": "agentic_unavailable",
+    "stale_snapshot_cleared_on_timeout": true,
+    "caller_cancellation_propagated_after_shared_task_cleanup": true,
+    "cleanup_test_layer": "isolated_async_transport_lock_and_cleanup_barrier_not_official_provider_process",
+    "legacy_success_zero_quota_and_cached_copy_preserved": true,
+    "no_auth_model_effort_deadline_retry_or_CLI_changes": true
+  },
+  "preserved_R04_sources": [
+    {
+      "path": "nodia-gemini-microservice/agentic_cli.py",
+      "sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff"
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "sha256": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_stdio.py",
+      "sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_execution_agents.py",
+      "sha256": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+      "sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c"
+    }
+  ],
+  "actions": {
+    "provider_inferences": 0,
+    "actual_CLI_executions": 0,
+    "VM_operations": 0,
+    "operational_database_access": 0,
+    "profile_access": 0,
+    "deployment_or_restart": 0
+  }
+}

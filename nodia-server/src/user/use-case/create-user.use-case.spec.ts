@@ -1,24 +1,25 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CreateUserUseCase } from './create-user.use-case.js';
-import type { UserService } from '../user.service.js';
+import type { SaveUserUseCase } from './save-user.use-case.js';
 import type { CreateUserDto } from '../dto/create-user.dto.js';
 
 describe('CreateUserUseCase', () => {
   let useCase: CreateUserUseCase;
-  let userServiceMock: Partial<UserService>;
+  let userServiceMock: Partial<SaveUserUseCase>;
 
   beforeEach(() => {
     userServiceMock = {
-      create: vi.fn(),
+      execute: vi.fn(),
     };
-    useCase = new CreateUserUseCase(userServiceMock as UserService);
+    useCase = new CreateUserUseCase(userServiceMock as SaveUserUseCase);
   });
 
   it('should be defined', () => {
     expect(useCase).toBeDefined();
   });
 
-  it('should call userService.create with the provided dto and return the created user', async () => {
+  it('should call userService.execute with the provided dto and return the created user', async () => {
     const dto: CreateUserDto = {
       name: 'John Doe',
       email: 'john@example.com',
@@ -34,16 +35,20 @@ describe('CreateUserUseCase', () => {
       user_roles: [],
     };
 
-    vi.mocked(userServiceMock.create!).mockResolvedValue(createdUser as any);
+    vi.mocked(userServiceMock.execute!).mockResolvedValue(createdUser as any);
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(dto, actorFixture('1'));
 
-    expect(userServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(userServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(userServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(userServiceMock.execute).toHaveBeenCalledWith(
+      undefined,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(createdUser);
   });
 
-  it('should call userService.create with role IDs and return the user with assigned roles', async () => {
+  it('should call userService.execute with role IDs and return the user with assigned roles', async () => {
     const dto: CreateUserDto = {
       name: 'Jane Doe',
       email: 'jane@example.com',
@@ -65,16 +70,20 @@ describe('CreateUserUseCase', () => {
       ],
     };
 
-    vi.mocked(userServiceMock.create!).mockResolvedValue(createdUser as any);
+    vi.mocked(userServiceMock.execute!).mockResolvedValue(createdUser as any);
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(dto, actorFixture('1'));
 
-    expect(userServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(userServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(userServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(userServiceMock.execute).toHaveBeenCalledWith(
+      undefined,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(createdUser);
   });
 
-  it('should call userService.create with module IDs and return the user with assigned modules', async () => {
+  it('should call userService.execute with module IDs and return the user with assigned modules', async () => {
     const dto: CreateUserDto = {
       name: 'Alice Doe',
       email: 'alice@example.com',
@@ -96,13 +105,16 @@ describe('CreateUserUseCase', () => {
       ],
     };
 
-    vi.mocked(userServiceMock.create!).mockResolvedValue(createdUser as any);
+    vi.mocked(userServiceMock.execute!).mockResolvedValue(createdUser as any);
 
-    const result = await useCase.execute(dto);
+    const result = await useCase.execute(dto, actorFixture('1'));
 
-    expect(userServiceMock.create).toHaveBeenCalledTimes(1);
-    expect(userServiceMock.create).toHaveBeenCalledWith(dto);
+    expect(userServiceMock.execute).toHaveBeenCalledTimes(1);
+    expect(userServiceMock.execute).toHaveBeenCalledWith(
+      undefined,
+      dto,
+      actorFixture('1'),
+    );
     expect(result).toEqual(createdUser);
   });
 });
-

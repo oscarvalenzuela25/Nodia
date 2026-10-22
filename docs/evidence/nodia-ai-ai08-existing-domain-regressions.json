@@ -1,0 +1,95 @@
+{
+  "task": "AI-08",
+  "scope": "legacy_full_http_regressions_with_valid_synthetic_sessions_disposable_postgresql16",
+  "configuredDatabaseTouched": false,
+  "providersCalled": false,
+  "reports": {
+    "finance": {
+      "postgres": "16",
+      "synchronize": false,
+      "checks": [
+        "Incremental migration up/down/up; existing synthetic data preserved.",
+        "Finance entity metadata matches the migrated database without automatic synchronization.",
+        "Navigation seed repeatable, four translations, no module assignments.",
+        "Compiled Nest DI/ESM, DTO whitelist, strict booleans, bounds and hostile filters over real HTTP.",
+        "100000 - 20000 - 20000 = 60000; archive retains paid balance; partial payments, principal and cancellation rules.",
+        "Concurrent payments: only one 60/100 succeeds, remaining 40, real PostgreSQL row locks.",
+        "Concurrent pending confirmations and origin cancellation/payment preserve a valid settlement.",
+        "Real rollback of obligation+initial movement and both principal updates after injected DB failures.",
+        "Real PostgreSQL composite FK, CHECK and UNIQUE reject invalid ownership/status/amount/key.",
+        "Historical inactive associations, cancelled-origin null balance, exact sums beyond JS safe integer.",
+        "Exact SUM exceeds both JS safe integer and PostgreSQL per-row bigint range.",
+        "2000-row dataset: total across pages, stable order, exact aggregate and EXPLAIN ANALYZE recorded.",
+        "Committed write recovered by refetch after ignored response; no persistent retry deduplication claimed.",
+        "Deleting confirmed loan/debt repayments increases outstanding from750 to1000; failure on final obligation DELETE restores initial movement and obligation.",
+        "Real PostgreSQL deletion/repayment race, both forced lock orders: deletion first gives 204/404; repayment first gives 201/409, preserving 750 remaining.",
+        "DELETE HTTP/DI/DTO/owner bigint: categories with any movement protected; memberships cleaned without losing categories; ordinary movement and loan/debt initial deletion adjust history; all repayment states prevent obligation deletion; injected delete failure rolls back membership cleanup.",
+        "Synthetic pg_dump backup restored in a second isolated database, finance and previous data verified."
+      ],
+      "routes": 11,
+      "fixtures": "test/fixtures/finance-api.json"
+    },
+    "rental": {
+      "requests": 282,
+      "checks": [
+        "Migration up/down/up preserves existing synthetic data.",
+        "Eleven entities match migration metadata without synchronize.",
+        "Navigation seed is idempotent and does not assign modules to users.",
+        "Accommodations omit timezone and legacy times; rollback refuses to invent missing times.",
+        "Failure while persisting the intent and backend termination before commit leave no effect/audit/operation.",
+        "Statement cancellation and total transaction deadline return safe failures only after rollback.",
+        "1003-row pagination keeps SQL statement count constant; numeric sums, EXPLAIN and pg_dump restoration verified.",
+        "Turnover approvals invalidate after plan/neighbor changes; actual readiness gates start; controlled clock verifies complete.",
+        "SQL faults roll back effects/history; composite FKs, UNIQUE and CHECK reject invalid rows; aggregate CLP exceeds bigint exactly.",
+        "A PostgreSQL lock barrier verifies membership again after committed revocation.",
+        "HTTP workflow: authority, drafts, payments, snapshots, confirmation, cancellation, refund budget, expenses and Airbnb net cash.",
+        "Concurrent same-key house/payment writes, overlapping confirmations and reservation-block races preserve invariants.",
+        "Every successful HTTP operation matches its response schema; all 42 house routes reject outsiders, revoked members and anonymous callers.",
+        "Compiled ESM/Nest dependency injection and 44 Swagger operations match the contract."
+      ]
+    },
+    "module": {
+      "result": "passed",
+      "requests": 46,
+      "invalidations": 5,
+      "checks": [
+        "aliases and auth boundary",
+        "bigint IDs",
+        "active filters",
+        "active and inactive group associations",
+        "assignment and translation cleanup",
+        "transaction rollback",
+        "both concurrent association orders"
+      ]
+    },
+    "role": {
+      "result": "passed",
+      "requests": 35,
+      "invalidations": 7,
+      "checks": [
+        "compiled aliases and synthetic auth",
+        "reserved role active/inactive",
+        "rename protection",
+        "exact bigint",
+        "server filters without narrowing assignments",
+        "selective cleanup",
+        "delete and update rollback",
+        "both FK race orders for users and actions"
+      ]
+    },
+    "action": {
+      "result": "passed",
+      "requests": 26,
+      "invalidations": 4,
+      "checks": [
+        "compiled DI and aliases",
+        "synthetic auth boundary",
+        "exact bigint IDs",
+        "both active filters",
+        "assignment and translation cleanup",
+        "rollback",
+        "both concurrent association orders"
+      ]
+    }
+  }
+}

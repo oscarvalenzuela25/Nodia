@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38-MCP-R01",
+  "scope": "closed_terminal_projection_receipt",
+  "files": {
+    "docs/evidence/scripts/nodia-ai-ai38-mcp-r01-terminal-capture.py": "54e894bc1fe14c3a45fb3b76b81bd17a125611679625adb41f813f4409e0bdc5",
+    "docs/evidence/nodia-ai-ai38-mcp-r01-terminal-capture.json": "4e4afd7f877bb4dff3e4d697f4a4d78278ccb384f7e2a110cdda8a74d907fd94"
+  },
+  "provider_requests": 0,
+  "services_restarted": false,
+  "raw_log_emitted": false
+}

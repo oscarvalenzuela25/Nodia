@@ -3,6 +3,13 @@ import { ProviderService } from '../provider.service.js';
 import { ExportProvidersCsvDto } from '../dto/export-providers-csv.dto.js';
 import { validateContactId } from '../../provider-contact/use-case/contact-validation.js';
 
+/** Internal consumer ceilings; the public HTTP DTO remains unchanged. */
+export interface ProviderCsvExportLimits {
+  readonly maxRows: number;
+  readonly maxBytes: number;
+  readonly signal?: AbortSignal;
+}
+
 @Injectable()
 export class ExportProvidersCsvUseCase {
   constructor(private readonly providerService: ProviderService) {}
@@ -30,7 +37,10 @@ export class ExportProvidersCsvUseCase {
     return { value: '', instructions: '' };
   }
 
-  async execute(dto: ExportProvidersCsvDto): Promise<string> {
+  async execute(dto: ExportProvidersCsvDto, limits?: ProviderCsvExportLimits): Promise<string> {
+    limits?.signal?.throwIfAborted();
+    if (limits && (!Number.isSafeInteger(limits.maxRows) || limits.maxRows < 1 || limits.maxRows > 1000 || !Number.isSafeInteger(limits.maxBytes) || limits.maxBytes < 1))
+      throw new BadRequestException('Export resource limits are invalid');
     const isEn = dto.lang?.toLowerCase().startsWith('en');
 
     const header = isEn
@@ -38,7 +48,12 @@ export class ExportProvidersCsvUseCase {
       : 'Nombre (name),Impuesto % (tax),Activo (is_active),Columna Código (field_code),Instrucciones Código (instructions_code),Columna Costo Neto (field_cost_price),Instrucciones Costo Neto (instructions_cost_price),Columna Costo IVA (field_cost_price_tax),Instrucciones Costo IVA (instructions_cost_price_tax),Columna Bultos (field_packages),Instrucciones Bultos (instructions_packages),Columna Unidades por Bulto (field_units_per_package),Instrucciones Unidades por Bulto (instructions_units_per_package),ID (id)';
 
     dto.ids?.forEach(validateContactId);
-    const { providers, contacts } = await this.providerService.findForExport(dto);
+    const { providers, contacts } = limits
+      ? await this.providerService.findForExport(dto, { maxRows: limits.maxRows, maxBytes: Math.min(2 * 1024 * 1024, limits.maxBytes) })
+      : await this.providerService.findForExport(dto);
+    limits?.signal?.throwIfAborted();
+    if (limits && providers.length > limits.maxRows)
+      throw new BadRequestException('Export exceeds row limit; narrow the view');
     const grouped = new Map<string, typeof contacts>();
     for (const contact of contacts) {
       const list = grouped.get(contact.provider_id) ?? [];
@@ -48,8 +63,12 @@ export class ExportProvidersCsvUseCase {
     }
     const suffix = isEn ? ',Contacts JSON (contacts),Extra Mapping JSON (fields_json),CSV Version (csv_version)' : ',Contactos JSON (contacts),Mapeo adicional JSON (fields_json),Versión CSV (csv_version)';
     const lines = [header + suffix];
+    let bytes = Buffer.byteLength(lines[0], 'utf8');
+    if (bytes > Math.min(2 * 1024 * 1024, limits?.maxBytes ?? 2 * 1024 * 1024))
+      throw new BadRequestException('CSV exceeds byte limit; narrow the view');
 
     for (const provider of providers) {
+      limits?.signal?.throwIfAborted();
       const fields = provider.fields || {};
       const codeField = this.extractField(fields.code);
       const costPriceField = this.extractField(fields.cost_price);
@@ -76,6 +95,9 @@ export class ExportProvidersCsvUseCase {
         this.escapeCsvValue(JSON.stringify(fields)),
         '2',
       ].join(',');
+      bytes += Buffer.byteLength(row, 'utf8') + 1;
+      if (bytes > Math.min(2 * 1024 * 1024, limits?.maxBytes ?? 2 * 1024 * 1024))
+        throw new BadRequestException('CSV exceeds byte limit; narrow the view');
       lines.push(row);
     }
 

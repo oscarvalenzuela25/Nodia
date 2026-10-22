@@ -1,0 +1,17 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "action": "discover",
+  "status": "passed",
+  "observed_at_utc": "2026-10-20T23:05:02.520Z",
+  "source_sha256": "7654e04fc5edf908477e3f6214a037ac74ce99126d2f2a503fdc3860081eba3b",
+  "conversation_id": "a69b44aa-5592-4ad7-b69d-b74b48682a56",
+  "expected_file_name": "ai38-boundary-over20MiB.pdf",
+  "sql_read_only": true,
+  "configured_sql_writes": 0,
+  "provider_requests": 0,
+  "storage_operations": 0,
+  "storage_keys_or_secrets_emitted": false,
+  "chat_attachment_count": 0,
+  "matching_attachment_count": 0,
+  "attachments": []
+}

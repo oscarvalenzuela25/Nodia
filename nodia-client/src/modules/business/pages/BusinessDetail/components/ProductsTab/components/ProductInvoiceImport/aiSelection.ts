@@ -79,7 +79,7 @@ export const resolveInvoiceAiConfiguration = (
     thinkingEnabled && (discoveredThinking || (!hasScopedConfiguration && provider?.supports_thinking === true)),
   );
   const levels = asRecord(modeFields.thinking_levels);
-  const level = provider?.key === "openai" && mode === "token_plan_agentic" && Object.hasOwn(levels, model)
+  const level = (mode === "token_plan_web" || provider?.key === "openai" && mode === "token_plan_agentic") && Object.hasOwn(levels, model)
     ? levels[model] : levels[model] ?? modeFields.thinking_level;
   const thinkingLevel = provider?.key === "openai" && mode === "token_plan_agentic"
     ? typeof level === "string" && /^[a-z][a-z0-9_-]{0,31}$/.test(level) ? level : undefined

@@ -1,0 +1,136 @@
+{
+  "task": "AI-08",
+  "date": "2026-10-15",
+  "status": "implemented_locally_runtime_ports_pending",
+  "server": {
+    "files": 118,
+    "tests": 912,
+    "build": "passed",
+    "lint": "passed_with_two_preexisting_provider_unused_import_warnings"
+  },
+  "client": {
+    "files": 192,
+    "tests": 1205,
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed_with_existing_chunk_size_warning"
+  },
+  "integration": {
+    "file": "docs/evidence/nodia-ai-ai08-postgres-integration.json",
+    "checks": 39,
+    "postgres": "16",
+    "configuredDatabaseTouched": false,
+    "providersCalled": false
+  },
+  "browser": {
+    "file": "docs/evidence/nodia-ai-ai08-browser-qa.json",
+    "cases": 16,
+    "syntheticHttp": true
+  },
+  "knowledge": {
+    "sourceDocuments": 39,
+    "draftUnregistered": 39,
+    "publishedDocuments": 0,
+    "publishedCapabilities": 0,
+    "releaseId": "4b25e45a93062b4e6c7e585daa9523c4b603cbb0ab1265f268ab51b31a92cc89"
+  },
+  "limitations": [
+    "Disposable database and synthetic authenticated guard; no configured database changed or real JWT login",
+    "No deployment, production throughput or physical phone acceptance",
+    "No tools or chat runtime published; Core MCP ports require exclusive composition in AI-27",
+    "Coarse global authority barrier; contention and maintenance cost require deployment measurement",
+    "Rental MCP bridge inherited deadline/error mapping remains AI-24 before publication; native REST guarantees verified"
+  ],
+  "evidence": [
+    "docs/mvp/54-nodia-ai-ai08-transversal-authority.md",
+    "docs/architecture/decisions/ADR-039-shared-authority-transactions.md"
+  ],
+  "regressions": {
+    "file": "docs/evidence/nodia-ai-ai08-existing-domain-regressions.json",
+    "passed": [
+      "finance",
+      "rental",
+      "module",
+      "role",
+      "action"
+    ]
+  },
+  "commands": {
+    "server": [
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "node test/nodia-ai-ai08.integration.mjs",
+      "node test/finance.integration.mjs",
+      "node test/rental.integration.mjs",
+      "node test/module-catalog.integration.mjs",
+      "node test/role-catalog.integration.mjs",
+      "node test/action-catalog.integration.mjs"
+    ],
+    "client": [
+      "npm test -- --run",
+      "npm run typecheck",
+      "npm run lint",
+      "npm run build"
+    ],
+    "offline": [
+      "validate-nodia-ai-catalog-contracts.cjs",
+      "validate-nodia-ai-design.mjs",
+      "validate-nodia-ai-ai02.cjs",
+      "validate-nodia-ai-ai03.cjs",
+      "validate-nodia-ai-ai04.cjs",
+      "validate-nodia-ai-ai05.cjs",
+      "validate-nodia-ai-ai06.cjs"
+    ]
+  },
+  "sourceChecksums": [
+    {
+      "file": "nodia-server/src/authorization/authority-transaction.ts",
+      "sha256": "609c1d605d5161ecdc039b186fa4f73e9d31244417cac1f5be0429eade6346e7"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/use-case/execute-authorized-nodia-ai.use-case.ts",
+      "sha256": "c44ccb86a876af38922004033c80ce6e409d8e76494d22fc2f5834916d2fb18a"
+    },
+    {
+      "file": "nodia-server/src/user/use-case/user-authority.rules.ts",
+      "sha256": "77f871343beba55a1e3ba3832bd7eb4020475a0cc5e545936ed1861c6680c7bb"
+    },
+    {
+      "file": "nodia-server/src/user/use-case/save-user.use-case.ts",
+      "sha256": "dfca2497ec9d7ce0752654213007c5d483c72168ca776d3c5e12e5005dc74d5d"
+    },
+    {
+      "file": "nodia-server/src/role/use-case/save-role.use-case.ts",
+      "sha256": "7e58d025170c15c1cdd8d67d8eb79d81f626797abf289466c2fa440173fd92b8"
+    },
+    {
+      "file": "nodia-server/src/module/use-case/save-module.use-case.ts",
+      "sha256": "758fd3363ab391493d3946a65e18e0cb190ccf108366082903f8db4dd41f7d63"
+    },
+    {
+      "file": "nodia-server/src/module-group/use-case/save-module-group.use-case.ts",
+      "sha256": "441904d4d3ead1999bf5ee331e2583fbf5e0c9cad3cc7e78d40d7568c7030953"
+    },
+    {
+      "file": "nodia-server/src/action/use-case/save-action.use-case.ts",
+      "sha256": "0156c62d14f5db1f545d4ccfcc4446e563b50a3df41a3124dbda02bb2a9227e2"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai08.integration.mjs",
+      "sha256": "9cc9aa9bf1dced26add769b7a6cda7715f52339fce0b9784b2610d4b4b5cbb08"
+    },
+    {
+      "file": "nodia-server/test/fixtures/authority.integration.mjs",
+      "sha256": "4fdcb9fb81ab5a0994e18f6b94c5d6a4e17f049d339755b48825341635f12b27"
+    },
+    {
+      "file": "nodia-client/src/components/UserScopeSelect/UserScopeSelect.tsx",
+      "sha256": "0bbab595637be49636a6f6252738214490c507f87793fa370d1cbcfdae01c1e1"
+    },
+    {
+      "file": "nodia-client/src/modules/finances/infrastructure/FinanceOwnerContext.ts",
+      "sha256": "e14f4714a9d444e123e45a82b007ff1d087e17b81739bd15bf69280a589b277d"
+    }
+  ]
+}

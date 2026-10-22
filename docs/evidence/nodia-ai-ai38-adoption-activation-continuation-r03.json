@@ -1,0 +1,11 @@
+{
+  "stage": "AI-38",
+  "status": "explicit_R02_to_R03_activation_continuation",
+  "activation_source_sha256": "703a068c6dcd1089b12c0961646d4768bc916d7b56c908ba389d902f2c4e2bee",
+  "prior_continuation_sha256": "47695760738115b07ff78f5c56a7957a1796318fbc2a83f1d43f218a272b4301",
+  "prior_prepare_sha256": "ef50f771cedc3d81f02b35c9a0b60a74db299905cfa617d7de452d2c4219312f",
+  "prior_quiesce_sha256": "f358e46df21d96393a6480c92e19cd74b71f6aa970d4c4f3cc975e53d02bac1e",
+  "staging_or_quiesce_reexecuted": false,
+  "provider_requests": 0,
+  "prior_reports_overwritten": false
+}

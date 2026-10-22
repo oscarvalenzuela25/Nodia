@@ -1,0 +1,1 @@
+{"stage": "AI-38", "status": "staged_not_activated", "release": "/opt/nodia/releases/nodia-server-ai38-journal-r02", "archive_sha256": "c90effd03a6a0a7f8f95ec807f04435756eb94183d705129ac5b422d4abe9945", "manifest_sha256": "c8f49aa3adb21f63da4d75f84a811ab3b758e90ce57fe8aff2e8d2fc498256ae", "members": 3880, "service_changes": 0, "configured_SQL_writes": 0, "provider_requests": 0}

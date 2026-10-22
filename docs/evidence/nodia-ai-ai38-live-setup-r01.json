@@ -1,0 +1,140 @@
+{
+  "schema": "ai38-live-setup-r01",
+  "status": "current_setup_observed_read_only",
+  "observed_at_VM_utc": "2026-10-21T02:57:00.153Z",
+  "transaction": {
+    "read_only": true,
+    "isolation": "repeatable read"
+  },
+  "source_sha256": "5c4272e9216bb95ed87a50659c5c5d762ec8d5caf143eefc73442ad9698355be",
+  "connection_runtime_root": "/opt/nodia/releases/nodia-server-ai15-20261016",
+  "snapshot_sha256": "6c6529ba692a0637d9d851325197bb85d50440eebb667e54b318d542fa9d1f65",
+  "snapshot": {
+    "counts": {
+      "users_total": 1,
+      "subject_users": 1,
+      "finances_groups": 1,
+      "personal_finance_modules": 1,
+      "subject_module_assignments": 8,
+      "personal_finance_assignments_all_users": 1,
+      "subject_acceptance_categories": 1,
+      "known_owned_conversation": 1,
+      "public_base_tables": 62,
+      "migrations": 29
+    },
+    "subject": [
+      {
+        "id": "1",
+        "is_active": true
+      }
+    ],
+    "roles": [
+      {
+        "user_id": "1",
+        "role_id": "1",
+        "key": "super_admin",
+        "assignment_active": true,
+        "role_active": true
+      }
+    ],
+    "groups": [
+      {
+        "id": "4",
+        "key": "finances",
+        "is_active": true
+      }
+    ],
+    "modules": [
+      {
+        "id": "8",
+        "module_group_id": "4",
+        "key": "personal_finance",
+        "link": "/tools/finances-personal",
+        "is_active": true
+      }
+    ],
+    "subject_module_assignments": [
+      {
+        "id": "8",
+        "user_id": "1",
+        "module_id": "1",
+        "is_active": true
+      },
+      {
+        "id": "9",
+        "user_id": "1",
+        "module_id": "2",
+        "is_active": true
+      },
+      {
+        "id": "10",
+        "user_id": "1",
+        "module_id": "3",
+        "is_active": true
+      },
+      {
+        "id": "11",
+        "user_id": "1",
+        "module_id": "4",
+        "is_active": true
+      },
+      {
+        "id": "12",
+        "user_id": "1",
+        "module_id": "5",
+        "is_active": true
+      },
+      {
+        "id": "13",
+        "user_id": "1",
+        "module_id": "6",
+        "is_active": true
+      },
+      {
+        "id": "14",
+        "user_id": "1",
+        "module_id": "7",
+        "is_active": true
+      },
+      {
+        "id": "15",
+        "user_id": "1",
+        "module_id": "8",
+        "is_active": true
+      }
+    ],
+    "finance_assignment_count": 1,
+    "other_subject_assignment_count": 7,
+    "categories": [
+      {
+        "id": "1",
+        "user_id": "1",
+        "key": "ai38_acceptance",
+        "is_active": true
+      }
+    ],
+    "conversation": {
+      "id": "a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "owner_id": "1",
+      "selected_connection_id": "2",
+      "selected_mode": "token_plan_agentic",
+      "selected_model_id": "gemini-3.8-flash-high",
+      "selected_effort_id": "high",
+      "revision": 3,
+      "lifecycle": "active"
+    },
+    "financial_marker_count": {
+      "owned_marker_movements": 0
+    }
+  },
+  "configured_SQL_writes": 0,
+  "provider_requests": 0,
+  "private_config_or_identity_labels_emitted": false,
+  "deployed_sources_changed": false,
+  "provenance": [
+    "This is a new SQL observation of current state, not a reconstructed before snapshot.",
+    "UI creation and preservation of seven earlier assignments are operator history requiring independent UI evidence.",
+    "The current other-assignment count observes seven if present; it does not prove their prior identities or history.",
+    "No names, email addresses, sessions, chat content or credentials are selected."
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "stage": "AI-38",
+  "scope": "compiled_standalone_worker_disposable_PG_Redis_no_provider",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:38:41.611314+00:00",
+  "runner_sha256": "4295622c31a3eebcbb2862e06728e38b04dcbcfea0f52a5dabff0b73832ab5d9",
+  "harness_sha256": "9f86e2c211bd5f17f0d0c8a0de5e12754fe733d7e4163ef43362165a53f7bd03",
+  "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "provider_generations": 0,
+  "configured_database_used": false,
+  "storage_operations": 0,
+  "operational_services_modified": false,
+  "dependency_installation_reused": true,
+  "npm_ci_executed": false,
+  "timeout_seconds": 300,
+  "exit_code": 0,
+  "native_result": {
+    "stage": "AI-38",
+    "scope": "actual_compiled_standalone_worker_confirmed_finance_disposable_SQL_Redis",
+    "status": "passed",
+    "started_at_utc": "2026-10-20T19:38:41.958Z",
+    "checks": [
+      "HTTP confirmation admits exact queued execution without an inline financial effect",
+      "actual standalone worker commits financial effect and receipt with terminal job",
+      "worker preserves exact approved financial fields",
+      "receipt retains resource owner and immutable bound command",
+      "standalone process drains after SIGTERM without forced kill",
+      "real worker connected only to disposable PostgreSQL and Redis",
+      "returning HTTP client observes saved execution and receipt",
+      "returning client sees worker-created movement through actual finance endpoint",
+      "repeated exact HTTP confirmation returns the same execution",
+      "one effect one receipt and no pending SQL identities remain",
+      "fixture API never requested provider or storage"
+    ],
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+    "configured_database_access": false,
+    "provider_generations": 0,
+    "storage_operations": 0,
+    "operational_services_touched": false,
+    "fixture_HTTP_actor": true,
+    "physical_UI_or_generative_acceptance": false,
+    "inline_claim_or_execution": false,
+    "child_entrypoint": "dist/nodia-ai-worker.js",
+    "HTTP_requests": [
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirmation-challenge",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirm",
+        "status": 202
+      },
+      {
+        "method": "GET",
+        "endpoint": "/nodia-ai/operations/:uuid",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "endpoint": "/finance/movements/:id",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "endpoint": "/nodia-ai/proposals/:uuid/confirm",
+        "status": 202
+      }
+    ],
+    "worker_network": {
+      "postgres_connections": 5,
+      "redis_connections": 1,
+      "blocked_sockets": 0,
+      "fetch_attempts": 0,
+      "listen_attempts": 0
+    },
+    "own_child_stopped": true,
+    "disposable_cleanup_complete": true,
+    "redis_image_id": "sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+    "fixture_API_closed_before_worker": true,
+    "worker_entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+    "network_guard_sha256": "84db406332ab00904d9e6131dba82be2a84b7b70f40acd4c62d0c58f571fed1f",
+    "worker_pid": 2204469,
+    "child_exit": {
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    "disposable_final": {
+      "effects": 1,
+      "receipts": 1,
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "finished_at_utc": "2026-10-20T19:39:02.946Z"
+  },
+  "own_process_group_remaining": false,
+  "emergency_owned_containers_removed": [],
+  "owned_containers_remaining": 0,
+  "finished_at_utc": "2026-10-20T19:39:03.100463+00:00",
+  "private_log_hashes": {
+    "private-stdout.log": "c48a4fc7724f6983c64607a77bc6e71ca8e465a03f924bf379382329f779432a",
+    "private-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

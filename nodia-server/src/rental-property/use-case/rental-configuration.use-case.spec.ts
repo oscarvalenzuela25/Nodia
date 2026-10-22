@@ -1,6 +1,8 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { DataSource, EntityManager } from 'typeorm';
+import { QueryFailedError, type DataSource, type EntityManager } from 'typeorm';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalClock } from '../../rental-common/rental-clock.js';
 import { RentalProperty } from '../entities/rental-property.entity.js';
@@ -43,7 +45,10 @@ const creation: CreateRentalPropertyDto = {
   check_in_time: '15:00',
   check_out_time: '11:00',
 };
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.useRealTimers();
+});
 const page = {
   page: 1,
   limit: 10,
@@ -58,6 +63,8 @@ describe('Rental house, collaboration and cancellation application', () => {
   let collaborators: RentalCollaboratorService;
   let policies: RentalCancellationPolicyService;
   let manager: EntityManager;
+  let source: DataSource;
+  let superAdmin: boolean;
   let hasHistory: boolean;
   let maxGuests: number;
   let transitions: Row[];
@@ -76,6 +83,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     });
 
   beforeEach(() => {
+    superAdmin = false;
     hasHistory = false;
     maxGuests = 0;
     transitions = [];
@@ -164,7 +172,21 @@ describe('Rental house, collaboration and cancellation application', () => {
     });
     manager = {
       getRepository,
-      query: vi.fn(async (sql: string) => {
+      query: vi.fn(async (sql: string, params: string[] = []) => {
+        if (sql.includes('AS "actorId"')) {
+          const user = rows(User).find(
+            (row) => row.id === params[0] && row.is_active,
+          );
+          return user
+            ? [
+                {
+                  actorId: params[0],
+                  sessionId: params[1],
+                  isSuperAdmin: superAdmin,
+                },
+              ]
+            : [];
+        }
         if (sql.includes('AS found')) return [{ found: hasHistory }];
         if (sql.includes('max(guests_count)'))
           return [{ max_guests: maxGuests }];
@@ -172,9 +194,9 @@ describe('Rental house, collaboration and cancellation application', () => {
         return [];
       }),
     } as unknown as EntityManager;
-    const source = {
+    source = {
       manager,
-      createQueryRunner: () => {
+      createQueryRunner: vi.fn(() => {
         let snapshot: Map<unknown, Row[]>;
         return {
           manager,
@@ -199,7 +221,7 @@ describe('Rental house, collaboration and cancellation application', () => {
             this.isTransactionActive = false;
           },
         };
-      },
+      }),
     } as unknown as DataSource;
     transactions = new RentalTransactionService(source, new RentalClock());
     properties = new RentalPropertyService();
@@ -222,11 +244,345 @@ describe('Rental house, collaboration and cancellation application', () => {
     });
   });
 
+  const nativeOperations = [
+    'property.create',
+    'property.update',
+    'collaborator.create',
+    'collaborator.update',
+    'policy.create',
+    'policy.update',
+  ] as const;
+  type ConfigurationOperation = (typeof nativeOperations)[number];
+
+  const invokeConfigurationWriter = (
+    operation: ConfigurationOperation,
+    actor: ActorReference,
+  ) => {
+    switch (operation) {
+      case 'property.create':
+        return new CreateRentalPropertyUseCase(
+          transactions,
+          properties,
+        ).execute(actor, creation, key);
+      case 'property.update':
+        return new UpdateRentalPropertyUseCase(
+          transactions,
+          properties,
+        ).execute(actor, '10', { name: 'Updated house' }, key);
+      case 'collaborator.create':
+        return new CreateRentalCollaboratorUseCase(
+          transactions,
+          collaborators,
+        ).execute(actor, '10', { user_id: '3', position: 'Manager' }, key);
+      case 'collaborator.update':
+        return new UpdateRentalCollaboratorUseCase(
+          transactions,
+          collaborators,
+        ).execute(actor, '10', '20', { position: 'Manager' }, key);
+      case 'policy.create':
+        return new CreateRentalCancellationPolicyUseCase(
+          transactions,
+          policies,
+        ).execute(
+          actor,
+          '10',
+          {
+            name: 'Policy',
+            rules: [{ min_days_before: 0, refund_percent: '0' }],
+          },
+          key,
+        );
+      case 'policy.update':
+        return new UpdateRentalCancellationPolicyUseCase(
+          transactions,
+          policies,
+        ).execute(actor, '10', '30', { name: 'Updated policy' }, key);
+    }
+  };
+
+  const existingTransactionActor = (active = true): ActorReference => {
+    const query = manager.query;
+    const runner = {
+      isTransactionActive: active,
+      query,
+      commitTransaction: vi.fn(),
+      rollbackTransaction: vi.fn(),
+      release: vi.fn(),
+    };
+    Object.defineProperty(manager, 'queryRunner', {
+      value: runner,
+      configurable: true,
+    });
+    manager.query = vi.fn((...args: Parameters<EntityManager['query']>) =>
+      runner.query(...args),
+    );
+    return {
+      ...actorFixture('1'),
+      transaction: manager,
+      statementTimeoutMs: 37,
+    };
+  };
+
+  const putPolicy = () =>
+    put(RentalCancellationPolicy, {
+      id: '30',
+      property_id: '10',
+      name: 'Previous policy',
+      is_active: true,
+      created_by: '1',
+      updated_by: '1',
+      created_at: now,
+      updated_at: now,
+    });
+
+  it.each(nativeOperations)(
+    'joins the active caller transaction for %s with native journal, audit and replay',
+    async (operation) => {
+      putPolicy();
+      const actor = existingTransactionActor();
+      const result = await invokeConfigurationWriter(operation, actor);
+      const replay = await invokeConfigurationWriter(operation, actor);
+      expect(replay).toEqual(result);
+      expect(result.operation).toBe(operation);
+      expect(rows(RentalOperation)).toHaveLength(1);
+      expect(rows(RentalOperation)[0]).toMatchObject({
+        actor_id: '1',
+        property_id: result.property_id,
+        operation,
+        request_key: key,
+      });
+      expect(rows(RentalAuditEvent)).toHaveLength(1);
+      expect(rows(RentalAuditEvent)[0]).toMatchObject({
+        actor_id: '1',
+        action: operation,
+        resource_id: result.resource_id,
+      });
+      expect(source.createQueryRunner).not.toHaveBeenCalled();
+      expect(manager.query).toHaveBeenCalledWith(
+        "SET LOCAL statement_timeout = '37ms'",
+      );
+      expect(manager.queryRunner?.isTransactionActive).toBe(true);
+    },
+  );
+
+  it.each(nativeOperations)(
+    'rejects an inactive caller transaction for %s without starting another',
+    async (operation) => {
+      putPolicy();
+      const before = structuredClone([...tables.values()]);
+      await expect(
+        invokeConfigurationWriter(operation, existingTransactionActor(false)),
+      ).rejects.toThrow('authorization:transaction_required');
+      expect([...tables.values()]).toEqual(before);
+      expect(source.createQueryRunner).not.toHaveBeenCalled();
+      expect(manager.query).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(nativeOperations)(
+    'enforces the caller SQL ceiling before touching data for %s',
+    async (operation) => {
+      putPolicy();
+      const actor = {
+        ...existingTransactionActor(),
+        statementTimeoutMs: 0,
+      };
+      await expect(invokeConfigurationWriter(operation, actor)).rejects.toThrow(
+        'authorization:statement_timeout',
+      );
+      expect(rows(RentalOperation)).toHaveLength(0);
+      expect(rows(RentalAuditEvent)).toHaveLength(0);
+      expect(source.createQueryRunner).not.toHaveBeenCalled();
+      expect(manager.query).not.toHaveBeenCalled();
+    },
+  );
+
+  it('rechecks owner-only authority and revocation inside the caller transaction', async () => {
+    const actor = { ...existingTransactionActor(), ...actorFixture('2') };
+    await expect(
+      invokeConfigurationWriter('property.update', actor),
+    ).rejects.toThrow('rental:owner_required');
+    rows(RentalCollaborator)[0].is_active = false;
+    await expect(
+      invokeConfigurationWriter('collaborator.create', actor),
+    ).rejects.toThrow('rental:not_found');
+    expect(rows(RentalOperation)).toHaveLength(0);
+    expect(rows(RentalAuditEvent)).toHaveLength(0);
+    expect(source.createQueryRunner).not.toHaveBeenCalled();
+  });
+
+  it('keeps super administrator authorship distinct from an explicit property owner', async () => {
+    superAdmin = true;
+    const actor = { ...existingTransactionActor(), ...actorFixture('4') };
+    const created = await new CreateRentalPropertyUseCase(
+      transactions,
+      properties,
+    ).execute(actor, { ...creation, owner_id: '1' }, key);
+    const createdProperty = rows(RentalProperty).find(
+      (row) => row.id === created.resource_id,
+    );
+    expect(createdProperty).toMatchObject({
+      owner_id: '1',
+      created_by: '4',
+      updated_by: '4',
+    });
+    await new UpdateRentalPropertyUseCase(transactions, properties).execute(
+      actor,
+      created.resource_id,
+      { is_active: false },
+      otherKey,
+    );
+    expect(
+      rows(RentalProperty).find((row) => row.id === created.resource_id),
+    ).toMatchObject({
+      owner_id: '1',
+      created_by: '4',
+      updated_by: '4',
+      is_active: false,
+    });
+    expect(rows(RentalOperation).every((row) => row.actor_id === '4')).toBe(
+      true,
+    );
+    expect(rows(RentalAuditEvent).every((row) => row.actor_id === '4')).toBe(
+      true,
+    );
+    expect(source.createQueryRunner).not.toHaveBeenCalled();
+  });
+
+  it('propagates a joined writer failure to the caller without committing its transaction', async () => {
+    const actor = existingTransactionActor();
+    policies.replaceRules = vi.fn(async () => {
+      throw new Error('synthetic rule persistence failure');
+    });
+    await expect(
+      invokeConfigurationWriter('policy.create', actor),
+    ).rejects.toThrow('rental:server_error');
+    expect(rows(RentalOperation)).toHaveLength(0);
+    expect(rows(RentalAuditEvent)).toHaveLength(0);
+    // These doubles do not perform caller rollback. The real outer SQL
+    // transaction owns both the staged policy and its eventual receipt.
+    expect(manager.queryRunner?.isTransactionActive).toBe(true);
+    expect(source.createQueryRunner).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['23505', 'rental:conflict'],
+    ['23503', 'rental:conflict'],
+    ['55P03', 'rental:temporarily_busy'],
+    ['57014', 'rental:temporarily_busy'],
+  ])(
+    'maps joined native SQL error %s without taking ownership of rollback',
+    async (code, message) => {
+      const actor = existingTransactionActor(),
+        runner = manager.queryRunner!,
+        originalQuery = runner.query;
+      properties.save = vi.fn(async () => {
+        throw new QueryFailedError(
+          'synthetic operation',
+          [],
+          Object.assign(new Error('private SQL failure'), { code }),
+        );
+      });
+      await expect(
+        invokeConfigurationWriter('property.update', actor),
+      ).rejects.toThrow(message);
+      expect(runner.query).toBe(originalQuery);
+      expect(runner.isTransactionActive).toBe(true);
+      expect(runner.rollbackTransaction).not.toHaveBeenCalled();
+      expect(runner.commitTransaction).not.toHaveBeenCalled();
+      expect(runner.release).not.toHaveBeenCalled();
+      expect(rows(RentalOperation)).toHaveLength(0);
+    },
+  );
+
+  it('bounds each joined statement by the native remaining deadline and stops before the next SQL', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(0);
+    const actor = { ...existingTransactionActor(), statementTimeoutMs: 5000 },
+      runner = manager.queryRunner!,
+      originalQuery = runner.query;
+    properties.save = vi.fn(async () => {
+      vi.setSystemTime(9800);
+      await manager.query('SELECT synthetic_before_deadline');
+      vi.setSystemTime(10000);
+      await manager.query('SELECT synthetic_after_deadline');
+      throw new Error('unreachable');
+    });
+    await expect(
+      invokeConfigurationWriter('property.update', actor),
+    ).rejects.toThrow('rental:temporarily_busy');
+    expect(originalQuery).toHaveBeenCalledWith(
+      "SET LOCAL statement_timeout = '200ms'",
+    );
+    expect(originalQuery).toHaveBeenCalledWith(
+      'SELECT synthetic_before_deadline',
+    );
+    expect(originalQuery).not.toHaveBeenCalledWith(
+      'SELECT synthetic_after_deadline',
+    );
+    expect(runner.query).toBe(originalQuery);
+    expect(runner.rollbackTransaction).not.toHaveBeenCalled();
+    expect(runner.commitTransaction).not.toHaveBeenCalled();
+    expect(runner.isTransactionActive).toBe(true);
+    expect(rows(RentalOperation)).toHaveLength(0);
+  });
+
+  it('rejects a joined operation that returns after the native deadline, leaving rollback to its caller', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(0);
+    const actor = existingTransactionActor(),
+      runner = manager.queryRunner!,
+      originalQuery = runner.query;
+    const save = properties.save.bind(properties);
+    properties.save = vi.fn(async (manager, row) => {
+      vi.setSystemTime(10001);
+      return save(manager, row);
+    });
+    await expect(
+      invokeConfigurationWriter('property.update', actor),
+    ).rejects.toThrow('rental:temporarily_busy');
+    expect(runner.query).toBe(originalQuery);
+    expect(runner.rollbackTransaction).not.toHaveBeenCalled();
+    expect(runner.commitTransaction).not.toHaveBeenCalled();
+    expect(runner.isTransactionActive).toBe(true);
+  });
+
+  it('restores nested joined wrappers in order and preserves an existing caller query wrapper', async () => {
+    const actor = existingTransactionActor(),
+      runner = manager.queryRunner!,
+      base = runner.query;
+    const callerWrapper = vi.fn((...args: Parameters<typeof runner.query>) =>
+      base.apply(runner, args),
+    );
+    runner.query = callerWrapper;
+    const save = properties.save.bind(properties);
+    properties.save = vi.fn(async (manager, row) => {
+      const outerWrapper = runner.query;
+      await transactions.read(
+        actor,
+        '10',
+        async () => {
+          await manager.query('SELECT synthetic_nested');
+          return true;
+        },
+        true,
+      );
+      expect(runner.query).toBe(outerWrapper);
+      return save(manager, row);
+    });
+    await invokeConfigurationWriter('property.update', actor);
+    expect(runner.query).toBe(callerWrapper);
+    expect(callerWrapper).toHaveBeenCalledWith('SELECT synthetic_nested');
+    expect(rows(RentalOperation)).toHaveLength(1);
+    expect(runner.rollbackTransaction).not.toHaveBeenCalled();
+    expect(runner.commitTransaction).not.toHaveBeenCalled();
+  });
+
   it('creates ownership and null policy from the principal and replays exactly once', async () => {
     const useCase = new CreateRentalPropertyUseCase(transactions, properties);
-    const first = await useCase.execute('1', creation, key);
+    const first = await useCase.execute(actorFixture('1'), creation, key);
     const replay = await useCase.execute(
-      '1',
+      actorFixture('1'),
       { ...creation, notes: '', minimum_turnover_minutes: 0, is_active: true },
       key,
     );
@@ -241,7 +597,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     expect(rows(RentalAuditEvent)).toHaveLength(1);
     expect(first).not.toHaveProperty('name');
     await expect(
-      useCase.execute('1', { ...creation, name: 'Otra' }, key),
+      useCase.execute(actorFixture('1'), { ...creation, name: 'Otra' }, key),
     ).rejects.toThrow('rental:idempotency_conflict');
   });
 
@@ -249,7 +605,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     vi.stubEnv('RENTAL_DEFAULT_TIMEZONE', 'America/Santiago');
     const useCase = new CreateRentalPropertyUseCase(transactions, properties);
     const first = await useCase.execute(
-      '1',
+      actorFixture('1'),
       { name: 'Alojamiento', max_guests: 4 },
       key,
     );
@@ -259,7 +615,7 @@ describe('Rental house, collaboration and cancellation application', () => {
       check_out_time: null,
     });
     const projected = await new GetRentalPropertyUseCase(transactions).execute(
-      '1',
+      actorFixture('1'),
       first.resource_id,
     );
     expect(projected).toMatchObject({
@@ -268,7 +624,11 @@ describe('Rental house, collaboration and cancellation application', () => {
     });
     vi.stubEnv('RENTAL_DEFAULT_TIMEZONE', 'Europe/Madrid');
     expect(
-      await useCase.execute('1', { name: 'Alojamiento', max_guests: 4 }, key),
+      await useCase.execute(
+        actorFixture('1'),
+        { name: 'Alojamiento', max_guests: 4 },
+        key,
+      ),
     ).toEqual(first);
     expect(rows(RentalProperty)[1].timezone).toBe('America/Santiago');
   });
@@ -277,7 +637,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     vi.stubEnv('RENTAL_DEFAULT_TIMEZONE', 'invalid-zone');
     await expect(
       new CreateRentalPropertyUseCase(transactions, properties).execute(
-        '1',
+        actorFixture('1'),
         { name: 'Alojamiento', max_guests: 4 },
         key,
       ),
@@ -287,7 +647,7 @@ describe('Rental house, collaboration and cancellation application', () => {
   });
 
   it.each([
-    { owner_id: '3' },
+    { owner_id: '0' },
     { max_guests: 0 },
     { max_guests: '6' },
     { timezone: '+03:00' },
@@ -300,7 +660,7 @@ describe('Rental house, collaboration and cancellation application', () => {
   ])('rejects invalid house data before persistence %j', async (extra) => {
     await expect(
       new CreateRentalPropertyUseCase(transactions, properties).execute(
-        '1',
+        actorFixture('1'),
         { ...creation, ...extra } as CreateRentalPropertyDto,
         key,
       ),
@@ -311,7 +671,7 @@ describe('Rental house, collaboration and cancellation application', () => {
 
   it('preserves CLP above Number safe range and explicit 0 percent', async () => {
     await new UpdateRentalPropertyUseCase(transactions, properties).execute(
-      '1',
+      actorFixture('1'),
       '10',
       {
         default_nightly_rate: '9007199254740993',
@@ -329,30 +689,48 @@ describe('Rental house, collaboration and cancellation application', () => {
 
   it('projects membership for owner and collaborator and rejects outsiders', async () => {
     const read = new GetRentalPropertyUseCase(transactions);
-    expect((await read.execute('1', '10')).membership).toMatchObject({
+    expect(
+      (await read.execute(actorFixture('1'), '10')).membership,
+    ).toMatchObject({
       type: 'owner',
       can_manage_configuration: true,
     });
-    expect((await read.execute('2', '10')).membership).toMatchObject({
+    expect(
+      (await read.execute(actorFixture('2'), '10')).membership,
+    ).toMatchObject({
       type: 'collaborator',
       can_manage_configuration: false,
     });
-    await expect(read.execute('3', '10')).rejects.toThrow('rental:not_found');
+    await expect(read.execute(actorFixture('3'), '10')).rejects.toThrow(
+      'rental:not_found',
+    );
     rows(RentalCollaborator)[0].is_active = false;
-    await expect(read.execute('2', '10')).rejects.toThrow('rental:not_found');
+    await expect(read.execute(actorFixture('2'), '10')).rejects.toThrow(
+      'rental:not_found',
+    );
   });
 
   it('owner-only authority is enforced by real transaction access, including archived replay', async () => {
     const update = new UpdateRentalPropertyUseCase(transactions, properties);
     await expect(
-      update.execute('2', '10', { name: 'Changed' }, key),
+      update.execute(actorFixture('2'), '10', { name: 'Changed' }, key),
     ).rejects.toThrow('rental:owner_required');
-    const first = await update.execute('1', '10', { is_active: false }, key);
-    expect(await update.execute('1', '10', { is_active: false }, key)).toEqual(
-      first,
+    const first = await update.execute(
+      actorFixture('1'),
+      '10',
+      { is_active: false },
+      key,
     );
+    expect(
+      await update.execute(actorFixture('1'), '10', { is_active: false }, key),
+    ).toEqual(first);
     expect(rows(RentalAuditEvent)).toHaveLength(1);
-    await update.execute('1', '10', { is_active: true }, otherKey);
+    await update.execute(
+      actorFixture('1'),
+      '10',
+      { is_active: true },
+      otherKey,
+    );
     expect(property().is_active).toBe(true);
   });
 
@@ -360,9 +738,19 @@ describe('Rental house, collaboration and cancellation application', () => {
     hasHistory = true;
     const update = new UpdateRentalPropertyUseCase(transactions, properties);
     await expect(
-      update.execute('1', '10', { timezone: 'Europe/Madrid' }, key),
+      update.execute(
+        actorFixture('1'),
+        '10',
+        { timezone: 'Europe/Madrid' },
+        key,
+      ),
     ).rejects.toThrow('rental:agreement_immutable');
-    await update.execute('1', '10', { timezone: 'America/Santiago' }, key);
+    await update.execute(
+      actorFixture('1'),
+      '10',
+      { timezone: 'America/Santiago' },
+      key,
+    );
     expect(property().timezone).toBe('America/Santiago');
   });
 
@@ -370,11 +758,11 @@ describe('Rental house, collaboration and cancellation application', () => {
     maxGuests = 5;
     const update = new UpdateRentalPropertyUseCase(transactions, properties);
     await expect(
-      update.execute('1', '10', { max_guests: 4 }, key),
+      update.execute(actorFixture('1'), '10', { max_guests: 4 }, key),
     ).rejects.toThrow('rental:invalid_transition');
     expect(property().max_guests).toBe(6);
     expect(rows(RentalOperation)).toHaveLength(0);
-    await update.execute('1', '10', { max_guests: 5 }, key);
+    await update.execute(actorFixture('1'), '10', { max_guests: 5 }, key);
     expect(property().max_guests).toBe(5);
   });
 
@@ -389,9 +777,19 @@ describe('Rental house, collaboration and cancellation application', () => {
     ];
     const update = new UpdateRentalPropertyUseCase(transactions, properties);
     await expect(
-      update.execute('1', '10', { minimum_turnover_minutes: 181 }, key),
+      update.execute(
+        actorFixture('1'),
+        '10',
+        { minimum_turnover_minutes: 181 },
+        key,
+      ),
     ).rejects.toThrow('rental:turnover_required');
-    await update.execute('1', '10', { minimum_turnover_minutes: 180 }, key);
+    await update.execute(
+      actorFixture('1'),
+      '10',
+      { minimum_turnover_minutes: 180 },
+      key,
+    );
     expect(property().minimum_turnover_minutes).toBe(180);
   });
 
@@ -403,22 +801,32 @@ describe('Rental house, collaboration and cancellation application', () => {
     });
     const update = new UpdateRentalPropertyUseCase(transactions, properties);
     await expect(
-      update.execute('1', '10', { default_cancellation_policy_id: '30' }, key),
+      update.execute(
+        actorFixture('1'),
+        '10',
+        { default_cancellation_policy_id: '30' },
+        key,
+      ),
     ).rejects.toThrow('rental:not_found');
     rows(RentalCancellationPolicy)[0].property_id = '10';
     rows(RentalCancellationPolicy)[0].is_active = false;
     await expect(
-      update.execute('1', '10', { default_cancellation_policy_id: '30' }, key),
+      update.execute(
+        actorFixture('1'),
+        '10',
+        { default_cancellation_policy_id: '30' },
+        key,
+      ),
     ).rejects.toThrow('rental:invalid_transition');
     rows(RentalCancellationPolicy)[0].is_active = true;
     await update.execute(
-      '1',
+      actorFixture('1'),
       '10',
       { default_cancellation_policy_id: '30' },
       key,
     );
     await update.execute(
-      '1',
+      actorFixture('1'),
       '10',
       { default_cancellation_policy_id: null, notes: null },
       otherKey,
@@ -434,7 +842,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     async (input) => {
       await expect(
         new UpdateRentalPropertyUseCase(transactions, properties).execute(
-          '1',
+          actorFixture('1'),
           '10',
           input as unknown as UpdateRentalPropertyDto,
           key,
@@ -451,23 +859,26 @@ describe('Rental house, collaboration and cancellation application', () => {
       ],
     );
     const useCase = new GetRentalPropertiesUseCase(transactions, properties);
-    expect((await useCase.execute('1', page)).meta.total_items).toBe(1);
+    expect(
+      (await useCase.execute(actorFixture('1'), page)).meta.total_items,
+    ).toBe(1);
     expect(properties.findPage).toHaveBeenCalledWith(
       manager,
       '1',
       expect.objectContaining({ active: 'active' }),
+      false,
     );
     await expect(
-      useCase.execute('1', { ...page, q: { owner_id_eq: '3' } }),
+      useCase.execute(actorFixture('1'), { ...page, q: { owner_id_eq: '3' } }),
     ).rejects.toThrow();
     await expect(
-      useCase.execute('1', {
+      useCase.execute(actorFixture('1'), {
         ...page,
         all: true,
       } as RentalConfigurationQueryDto),
     ).rejects.toThrow();
     await expect(
-      useCase.execute('1', { ...page, limit: 101 }),
+      useCase.execute(actorFixture('1'), { ...page, limit: 101 }),
     ).rejects.toThrow();
   });
 
@@ -477,27 +888,27 @@ describe('Rental house, collaboration and cancellation application', () => {
       collaborators,
     );
     await expect(
-      create.execute('1', '10', { user_id: '1' }, key),
+      create.execute(actorFixture('1'), '10', { user_id: '1' }, key),
     ).rejects.toThrow('rental:invalid_transition');
     await expect(
-      create.execute('1', '10', { user_id: '2' }, key),
+      create.execute(actorFixture('1'), '10', { user_id: '2' }, key),
     ).rejects.toThrow('rental:invalid_transition');
     rows(User).find((user) => user.id === '3')!.is_active = false;
     await expect(
-      create.execute('1', '10', { user_id: '3' }, key),
+      create.execute(actorFixture('1'), '10', { user_id: '3' }, key),
     ).rejects.toThrow('rental:not_found');
     await expect(
-      create.execute('2', '10', { user_id: '4' }, key),
+      create.execute(actorFixture('2'), '10', { user_id: '4' }, key),
     ).rejects.toThrow('rental:owner_required');
     const first = await create.execute(
-      '1',
+      actorFixture('1'),
       '10',
       { user_id: '4', position: ' Encargado ' },
       key,
     );
     expect(
       await create.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { user_id: '4', position: 'Encargado' },
         key,
@@ -517,12 +928,21 @@ describe('Rental house, collaboration and cancellation application', () => {
       transactions,
       collaborators,
     );
-    await update.execute('1', '10', '20', { is_active: false }, key);
+    await update.execute(
+      actorFixture('1'),
+      '10',
+      '20',
+      { is_active: false },
+      key,
+    );
     await expect(
-      new GetRentalPropertyUseCase(transactions).execute('2', '10'),
+      new GetRentalPropertyUseCase(transactions).execute(
+        actorFixture('2'),
+        '10',
+      ),
     ).rejects.toThrow('rental:not_found');
     await update.execute(
-      '1',
+      actorFixture('1'),
       '10',
       '20',
       { is_active: true, position: null },
@@ -542,7 +962,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     property().is_active = false;
     await expect(
       new CreateRentalCollaboratorUseCase(transactions, collaborators).execute(
-        '1',
+        actorFixture('1'),
         '10',
         { user_id: '4' },
         key,
@@ -552,9 +972,21 @@ describe('Rental house, collaboration and cancellation application', () => {
       transactions,
       collaborators,
     );
-    await update.execute('1', '10', '20', { is_active: false }, key);
+    await update.execute(
+      actorFixture('1'),
+      '10',
+      '20',
+      { is_active: false },
+      key,
+    );
     await expect(
-      update.execute('1', '10', '20', { is_active: true }, otherKey),
+      update.execute(
+        actorFixture('1'),
+        '10',
+        '20',
+        { is_active: true },
+        otherKey,
+      ),
     ).rejects.toThrow('rental:invalid_transition');
   });
 
@@ -573,16 +1005,16 @@ describe('Rental house, collaboration and cancellation application', () => {
       limit: 20,
     } as RentalCollaboratorCandidatesQueryDto;
     expect(
-      (await candidates.execute('1', '10', input)).data[0],
+      (await candidates.execute(actorFixture('1'), '10', input)).data[0],
     ).not.toHaveProperty('email');
-    await expect(candidates.execute('2', '10', input)).rejects.toThrow(
-      'rental:owner_required',
-    );
     await expect(
-      candidates.execute('1', '10', { ...input, search: 'ab' }),
+      candidates.execute(actorFixture('2'), '10', input),
+    ).rejects.toThrow('rental:owner_required');
+    await expect(
+      candidates.execute(actorFixture('1'), '10', { ...input, search: 'ab' }),
     ).rejects.toThrow('rental:invalid_input');
     await expect(
-      candidates.execute('1', '10', { ...input, limit: 21 }),
+      candidates.execute(actorFixture('1'), '10', { ...input, limit: 21 }),
     ).rejects.toThrow('rental:invalid_input');
   });
 
@@ -600,7 +1032,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     const result = await new GetRentalCollaboratorsUseCase(
       transactions,
       collaborators,
-    ).execute('2', '10', page);
+    ).execute(actorFixture('2'), '10', page);
     expect(result.data[0].user).toEqual({
       id: '2',
       name: 'User 2',
@@ -621,13 +1053,13 @@ describe('Rental house, collaboration and cancellation application', () => {
         { min_days_before: 0, refund_percent: '0' },
       ],
     };
-    await expect(create.execute('2', '10', command, key)).rejects.toThrow(
-      'rental:owner_required',
-    );
-    const first = await create.execute('1', '10', command, key);
+    await expect(
+      create.execute(actorFixture('2'), '10', command, key),
+    ).rejects.toThrow('rental:owner_required');
+    const first = await create.execute(actorFixture('1'), '10', command, key);
     expect(
       await create.execute(
-        '1',
+        actorFixture('1'),
         '10',
         {
           ...command,
@@ -644,7 +1076,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     const detail = await new GetRentalCancellationPolicyUseCase(
       transactions,
       policies,
-    ).execute('2', '10', first.resource_id);
+    ).execute(actorFixture('2'), '10', first.resource_id);
     expect(detail.rules.map((rule) => rule.refund_percent)).toEqual([
       '0.00',
       '33.33',
@@ -674,7 +1106,12 @@ describe('Rental house, collaboration and cancellation application', () => {
         new CreateRentalCancellationPolicyUseCase(
           transactions,
           policies,
-        ).execute('1', '10', { name: 'Invalid', rules } as never, key),
+        ).execute(
+          actorFixture('1'),
+          '10',
+          { name: 'Invalid', rules } as never,
+          key,
+        ),
       ).rejects.toThrow('rental:invalid_input');
       expect(rows(RentalCancellationPolicy)).toHaveLength(0);
       expect(rows(RentalAuditEvent)).toHaveLength(0);
@@ -686,7 +1123,7 @@ describe('Rental house, collaboration and cancellation application', () => {
       transactions,
       policies,
     ).execute(
-      '1',
+      actorFixture('1'),
       '10',
       { name: 'Policy', rules: [{ min_days_before: 0, refund_percent: '0' }] },
       key,
@@ -698,7 +1135,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     );
     await expect(
       update.execute(
-        '1',
+        actorFixture('1'),
         '10',
         created.resource_id,
         { is_active: false },
@@ -707,7 +1144,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     ).rejects.toThrow('rental:invalid_transition');
     const ruleId = rows(RentalCancellationRule)[0].id;
     await update.execute(
-      '1',
+      actorFixture('1'),
       '10',
       created.resource_id,
       { name: 'Renamed' },
@@ -722,7 +1159,7 @@ describe('Rental house, collaboration and cancellation application', () => {
       transactions,
       policies,
     ).execute(
-      '1',
+      actorFixture('1'),
       '10',
       {
         name: 'Policy',
@@ -738,7 +1175,7 @@ describe('Rental house, collaboration and cancellation application', () => {
       transactions,
       policies,
     ).execute(
-      '1',
+      actorFixture('1'),
       '10',
       created.resource_id,
       {
@@ -768,7 +1205,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     });
     await expect(
       new CreateRentalCancellationPolicyUseCase(transactions, policies).execute(
-        '1',
+        actorFixture('1'),
         '10',
         {
           name: 'Policy',
@@ -790,7 +1227,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     });
     await expect(
       new GetRentalCancellationPolicyUseCase(transactions, policies).execute(
-        '1',
+        actorFixture('1'),
         '10',
         '30',
       ),
@@ -801,7 +1238,7 @@ describe('Rental house, collaboration and cancellation application', () => {
     const result = await new GetRentalCancellationPoliciesUseCase(
       transactions,
       policies,
-    ).execute('2', '10', page);
+    ).execute(actorFixture('2'), '10', page);
     expect(result).toEqual({
       data: [],
       meta: { page: 1, limit: 10, total_items: 0, total_pages: 0 },

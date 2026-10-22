@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "scope": "external deletion journal and encrypted seven-day backup catalog in local Linux lab",
+  "status": "implemented_verified_and_adopted_R02_AI38_still_partial",
+  "final_unit_passed": 4387,
+  "final_unit_files": 244,
+  "production_typecheck_exit": 0,
+  "build_exit": 0,
+  "lint_errors": 0,
+  "historical_lint_warnings": 3,
+  "actual_SQL_cases": 17,
+  "same_SQL_cases_reused_with_real_R2": 17,
+  "reused_cases_are_additional": false,
+  "additional_set_reconciliation_SQL_checks": 5,
+  "real_R2_CAS_checks": 9,
+  "real_R2_synthetic_rotation_checks": 5,
+  "production_backup_decrypt_restore": {
+    "tables": 62,
+    "migrations": 29,
+    "private_key_left_operator_host": false,
+    "full_AI_quarantine_consumer_on_this_operational_copy": false
+  },
+  "external_coverage_from": "2026-10-20T23:52:27.154Z",
+  "catalog_ready_backups": 3,
+  "timers_active": true,
+  "external_unconfirmed": 0,
+  "provider_requests": 0,
+  "configured_SQL_writes": 0,
+  "business_effects": 0,
+  "production_migrations": 0,
+  "legacy_29_dumps_managed": false,
+  "seven_days_elapsed_observed": false,
+  "physical_provider_deletion_guaranteed": false,
+  "conditional_R2_DELETE_supported": false,
+  "Gemini_unchanged": true,
+  "nginx_unchanged": true,
+  "original_932_outputs_unchanged_but_not_active": true,
+  "new_publication_or_approval": false,
+  "runtime_source_drift_from_adopted_package": false,
+  "documentation_only_post_freeze_delta": [
+    {
+      "path": "ops/nodia-ai-backups/journal.md",
+      "packaged_sha256": "b3956ab442f4175d33aa1642cf36528b930dbcccca6056dc22341533dd317072",
+      "current_sha256": "d61f1728f57836b6847fed4553dbfd9ec07149493f4a6cd524efe39182ec192e"
+    }
+  ],
+  "knowledge_release": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+  "remaining_gates": [
+    "legacy dumps and external copies/version inventory and disposition",
+    "continuous seven-day retention/24h cleanup observation including outages",
+    "public origin/HTTPS and other environment scopes",
+    "remaining capability publication and full generative/business acceptance on exact package"
+  ],
+  "sources_sha256": {
+    "nodia-server/src/nodia-ai-recovery/nodia-ai-external-recovery.factory.ts": "9a6a2a5993d40b70d3b2146a1e9dd28fe758a654dd0e6a7d7dc053f0861ceee2",
+    "nodia-server/src/nodia-ai-recovery/nodia-ai-journal.module.ts": "b05a442aebbe0552091068f4b73f1b1b29d840c28d058ca4c57234dd4e519a7d",
+    "nodia-server/src/nodia-ai-recovery/types/deletion-journal.ts": "69043e1dc30145381da5c43c18de9fe86c0258c2b1c5498e2894a67f7ce578d6",
+    "nodia-server/src/nodia-ai-recovery/types/nodia-ai-backup.types.ts": "bb03adbd44cf9ce28be78f5a3272058064fcca85fa3e359dad94d930f719df66",
+    "nodia-server/src/nodia-ai-recovery/use-case/encrypt-nodia-ai-backup.use-case.spec.ts": "9bbb767aae46c9cbd6bfe2827caf6d4d3dc1518690e0afae27200f74d33efb34",
+    "nodia-server/src/nodia-ai-recovery/use-case/encrypt-nodia-ai-backup.use-case.ts": "e1c783218433576f163908259af0ef37d1589fe798f8d3abb317c8552d80e523",
+    "nodia-server/src/nodia-ai-recovery/use-case/manage-nodia-ai-backups.use-case.spec.ts": "ce9c411ae7312c116c0a77684410e913af3d16aa03d8c7bb1d3be7a8b4e350cd",
+    "nodia-server/src/nodia-ai-recovery/use-case/manage-nodia-ai-backups.use-case.ts": "42db73a261196006c96d6d17f9ca80a34b447402303b395c37819fb93eec292e",
+    "nodia-server/src/nodia-ai-recovery/use-case/prepare-nodia-ai-restore.use-case.spec.ts": "5e4e10938af7bc3871fc1468ecdddc85d822f7718b3a06a55d5fd422b19e379b",
+    "nodia-server/src/nodia-ai-recovery/use-case/prepare-nodia-ai-restore.use-case.ts": "3a7238ec3729384822b921215972aea313c9974530474edcc17e19a4f05f7320",
+    "nodia-server/src/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.spec.ts": "23a96826d774bf4a1121fb380c5d9c3e9f35b8e9aeb67a8d1320845e9a10c3b2",
+    "nodia-server/src/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.ts": "659c47682a367ded6212f4fbfa49c60b04ae0f30e68d1a5cc4c2e2d6390cd43c",
+    "nodia-server/src/nodia-ai-recovery/use-case/update-nodia-ai-external-state.use-case.spec.ts": "334f44861ad26ebe1ec3f236c51f857b78b47b19a2f1160d3c30d4ee9bdcf752",
+    "nodia-server/src/nodia-ai-recovery/use-case/update-nodia-ai-external-state.use-case.ts": "8000ae0c708b9fe55eb07e1d9d7416701817145969a2b1bdd4c1204ff575a726",
+    "nodia-server/src/nodia-ai-recovery/use-case/validate-nodia-ai-restore.use-case.spec.ts": "9c870c321e6fd55797b8143564822bada84437e7b1aab40a930b964d3fdd71db",
+    "nodia-server/src/nodia-ai-recovery/use-case/validate-nodia-ai-restore.use-case.ts": "c263a1416f683ee300d7aaf72ce42fac5b5e339541a54cfb8eea27203a50dcae",
+    "nodia-server/scripts/nodia-ai-backups.mjs": "54a7244d31b94281783965114f301dbf07c937eb53957cb6de0c653957e7abeb",
+    "nodia-server/scripts/nodia-ai-journal.mjs": "c675014a129a00a55f74a9794607c5bc064dd90e6bad0e3d3bbc409af446d8dd",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-decrypt.mjs": "2b7ee1bdb5b092d2688733a397f14079dfa68bdc7456e1e8ce23acf8a18bc494",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-deparser-readonly-r02.py": "e2a179bd4f4f6b8a78ecb554bd2c72705df1e7c79a2d8f2d5aeaa4ca6d934806",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-deparser-readonly.py": "bfb3a639d1f52e5962debc2f62d82536e4b625dfb067b6b788d3d4258ebe118d",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-download.mjs": "59546bc654c35c711edfa405a3858a4b58378d2bd7c9adb4e16b29a84df57d34",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-live-rotation.mjs": "b71dd88ed78ddcb14bb22e69e8c3768960bfc6499189a83243e013c39f2d818f",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-restore.py": "b752aa1bce70593536839edab8f7a5c390065bddf99c85d6ebb7d78e8db1475a",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-schema-only-control-r02.py": "4d188edd6999229d55395928dbdf741693c2dfe3af94882e9c7c32597f57416f",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-schema-only-control.py": "e91f4d25f47d8625d45ee1fbd321155dd49240d5624873a0ce8107bd016d8226",
+    "docs/evidence/scripts/nodia-ai-ai38-backup-service-acceptance.py": "2e3afce21a8c637f03b1f71d35a148c0b6952a4261140a7b83b3749e32002347",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-activate.py": "56fb7fc00dd4e741e924cef6eee69527543aab4407adeed776a5cfb08aff016b",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-combined-stage.py": "2427ccb6564b38d2e39d8be03e60228ffece3ab3d2bedf0cb5df700a1bc93200",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-final.py": "f16dc3608e4e500a8add04f51bbbaae695384fa45eb856e88e0a356c801ed157",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-live-cas.mjs": "6e026a72519997396a37be29a6f5997166edbe822e203bf03814a9876a2194ad",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-provision-r02.py": "eac259d4b41f4f6f801d81595ec41da4c8f3d80ad767820d85b8ebb57c651224",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-provision.py": "376634fcf97e12c3b0116024409c7731e08cf49dbf9b3d281e887dee716f4536",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-r2-probe.mjs": "0b5c9aa3473ff5e134e73f63fba120c48a3418e1ab27a6bc57f4bd74e98be0ef",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-resume.py": "0025d4b47cea5c4d3fde279a49961aac39c09fc72e53fd805a090f44752678e0",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-stage-r02.py": "514ed51641990766782897c4ec68db0cf65bdfc06ac00b3ae550cb9403135497",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-stage.py": "948d2292ce75d8d282288e2528496155d73090991816bd2941235b99b73f11b8",
+    "docs/evidence/scripts/nodia-ai-ai38-journal-upgrade-r02.py": "c88404b6cd33154f2daed015e36cc9284d7c63e56e6669d93d460fd98d267ad8",
+    "docs/evidence/scripts/__pycache__/nodia-ai-ai38-backup-deparser-readonly.cpython-313.pyc": "8aa7e9ab4a2e44e4b309e4edca25cec9ddde274fe149900f46014c9732d5303c",
+    "docs/evidence/scripts/__pycache__/nodia-ai-ai38-backup-schema-only-control-r02.cpython-313.pyc": "6e29aef574c449937d23da017a029eccb09ab2c5914c2712ea05ce03fa80c770",
+    "docs/evidence/scripts/__pycache__/nodia-ai-ai38-backup-schema-only-control.cpython-313.pyc": "03189ba0d99e4f7e3b74ec97d54bf541db459b75b69e52d4fcf0c399a498c44d",
+    "docs/evidence/scripts/__pycache__/nodia-ai-ai38-journal-activate.cpython-313.pyc": "9a19e12ef311674ee55f1419ca3039ee43cf27c7882fda277fe4796ccf3d3653",
+    "docs/evidence/scripts/__pycache__/nodia-ai-ai38-journal-provision-r02.cpython-313.pyc": "1a09a11045d0d03dd7fc3f2abfa528143c388dc5ba6c9178515b95f15f471838"
+  },
+  "evidence_receipts": [
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-activation-r01.json",
+      "sha256": "cd79fb2f5e7c05264691b165578ea30836c66265626f25ab8b7cd2dcce2a8e81",
+      "bytes": 333
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-combined-r01.json",
+      "sha256": "cd5bd5adf74e1a21d2da008732d5f7d2598aef045ff96f45075106f3721922a4",
+      "bytes": 2310
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-combined-stage-r01.json",
+      "sha256": "c5f00bd0b287d97bb402ed29eb47fff3b200bd813602ab7f570a5eb3f6fdb706",
+      "bytes": 109
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-entry-environment-r01.json",
+      "sha256": "b1b552ff1bb32f2b191d643e36c41d3025c6186cef76ceb4ff02f597657f01a9",
+      "bytes": 3210
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-live-cas-r01.json",
+      "sha256": "89435d3c2b600f54474e75c23e675d124959893a03ddae0d458bec3bd5dee14a",
+      "bytes": 535
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-operational-final-r01.json",
+      "sha256": "64e416f5aab57d6873afd6cb02c694eb53870b3daebc102a20fa17abe8895b76",
+      "bytes": 3089
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-package-delta-r02.json",
+      "sha256": "24562fe37215d640f3957802e57b43d9a7a01a3739588fb8e2e9e81ca9c06e74",
+      "bytes": 3348
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-package-r01.json",
+      "sha256": "fb4c52fc19c82a9cdb0aa610e7b0a5d3b97641de78980cb76900381cad6bc3d0",
+      "bytes": 513924
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-package-r02.json",
+      "sha256": "c8f49aa3adb21f63da4d75f84a811ab3b758e90ce57fe8aff2e8d2fc498256ae",
+      "bytes": 514677
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-provision-r01.json",
+      "sha256": "2039d8585b31a7660539071b873fec489d632c1b1941ccddacea4353a601dfb0",
+      "bytes": 393
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-qa-r02.json",
+      "sha256": "c64e1b0e877a9384e701e1b88659254ab611a129136daf7659aecfe8e5139788",
+      "bytes": 36375
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-r2-probe-r01.json",
+      "sha256": "7ac1df44c449606c9fb9248eb274b5052083afef079c343ed198311287fbddb9",
+      "bytes": 519
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-reconcile-sql-r02.json",
+      "sha256": "c30c49441d36b14bf96a90f1809a4a2724793c01296e2cced7005fe0eaad3216",
+      "bytes": 813
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-registry-before.json",
+      "sha256": "be5dba960f773d9df1c3defdd0e111f963305bba5727e8b492e4532bc3af9c05",
+      "bytes": 154033
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-registry-delta.json",
+      "sha256": "7759ed50054f8eb66bb0b7fd15400ecd3216bb9a5b5f76e5cdae3c79526d2959",
+      "bytes": 1154
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-resumed-r01.json",
+      "sha256": "85c0891456dce1ec8518084a04fa659d0163a2dd1ee0cf4d557c5811e3b69d1d",
+      "bytes": 3723
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-sql-r01.json",
+      "sha256": "1081315663f7af179bd98b01af9784b9a7caa1db29b613175f54a9bd94fa54ed",
+      "bytes": 1624
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-stage-r01.json",
+      "sha256": "908b2c748adaf3dc7f7733ab7ca193dac3df02953ab5305b2855b9bcf8262930",
+      "bytes": 381
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-stage-r02.json",
+      "sha256": "ca2d622ee0399273cd4a78cb01efbc2307fcbb1ce4df73ec994fb24266958ef5",
+      "bytes": 381
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-start-diagnostic-r01.json",
+      "sha256": "69076612b1ee0171a3d03d2e910d588fcf594bc4f8e92a4d6f742610cd53d7d8",
+      "bytes": 745
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-journal-upgrade-r02.json",
+      "sha256": "0c7204fc554997a4007e8a79f9e2602d2d2b84aec9b8ac22490ea379cf3e13a1",
+      "bytes": 2992
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-create-r01.json",
+      "sha256": "e9e9ca6c16cc1b3a53c88f825fcde46f252d0e0f49c6ee2f6de9338d1fdc5fb7",
+      "bytes": 463
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-decrypt-r01.json",
+      "sha256": "beb1d25086421eed95497e89cae8f85a8c3ed907f4d46e570c91afda0ec8669a",
+      "bytes": 141
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-live-rotation-r01.json",
+      "sha256": "3cb44e50105e67d0d63d94e9f665adc03e9a7ebdff0f93914fb84b42cc09d44b",
+      "bytes": 1206
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-operator-cleanup-r01.json",
+      "sha256": "c7aebbab5d2c9a234b976f64ee509e2f0a49bdade3e08a6a1429220bf6d3e3da",
+      "bytes": 658
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-restore-r01.json",
+      "sha256": "450248634524d09adbf00312e5fb84264a0d67a99c388ecf5d5e131fbe4da935",
+      "bytes": 497
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-schema-only-control-r01.json",
+      "sha256": "146d34cc08cea4e87d825081780583bde31725362c9d350a25383978e63db7c1",
+      "bytes": 7275
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-schema-only-control-r02.json",
+      "sha256": "cc73c9e647af0073972b63e7dafe3761c7041100cb5c35069b1979d9f07c012f",
+      "bytes": 12303
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-backup-service-acceptance-r01.json",
+      "sha256": "a3d6192e48079480fb30dbbdead2ed9a8178344586408e3bdba925298c032f04",
+      "bytes": 2277
+    }
+  ],
+  "knowledge_post_documentation_check": {
+    "exit": 0,
+    "log_sha256": "aa39245d48901c3aeba98037d9040100ff0221eb258d9e37e8d11ed7e6cfbbd9",
+    "release_preserved": true
+  },
+  "documentation_sha256": {
+    "docs/mvp/README.md": "a606daa3044aa9a5aea214b98c512e84f32616b290815839e49497f1153578b6",
+    "docs/mvp/00-progress.md": "0649ca95c9bddaa175105066ca04aee89a18abcc157fdc3e94707d63139be2a6",
+    "docs/mvp/84-nodia-ai-ai38-environment-acceptance.md": "cea05acf7fe2ecc7413d4a4cd277615cea973429de56204543f18995a16fd4fa",
+    "docs/evidence/nodia-ai-ai38-journal-r01.md": "4c504d6d6d77af2a95ba7b47014cbc3d0aa4aec54075d3632620a5f3c365e8c7",
+    "docs/architecture/decisions/ADR-070-external-deletion-journal-and-encrypted-backups.md": "1d6784e07b194d4f3a43a651638fa5451ee3ae4ce5809ddf43441b2ec29aed59",
+    "ops/nodia-ai-backups/journal.md": "d61f1728f57836b6847fed4553dbfd9ec07149493f4a6cd524efe39182ec192e",
+    "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md": "35f8a80cafb56d3d81da506607b7f5315f9f19e3dbcd8d1a38413f877200f86e"
+  },
+  "preserved_runtime_policy_revision_11": {
+    "path": "docs/evidence/nodia-ai-ai38-journal-runtime-policy-before.md",
+    "sha256": "4a49792dd45f7e67c55ffef3c1db9c13aa82642c9d329241ce3ac596fe7f65b3"
+  },
+  "notes": [
+    "Metadata evidence_paths remains bounded to32 by consolidation; rev11 snapshot and prose retain historical references.",
+    "Docs-only post-freeze delta is ops journal guide; code/package sources remain identical.",
+    "Full unit suite ran again because production changes after review justified regression."
+  ]
+}

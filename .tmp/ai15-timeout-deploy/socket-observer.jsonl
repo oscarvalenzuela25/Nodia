@@ -1,0 +1,31 @@
+{"event": "ready", "pid": 249745, "max_seconds": 140}
+{"event": "snapshot", "elapsed_ms": 25, "processes": []}
+{"event": "snapshot", "elapsed_ms": 15232, "processes": [{"pid": 250402, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 1}}]}
+{"event": "snapshot", "elapsed_ms": 15759, "processes": [{"pid": 250402, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 4}}]}
+{"event": "snapshot", "elapsed_ms": 16285, "processes": [{"pid": 250402, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 6}}]}
+{"event": "snapshot", "elapsed_ms": 17862, "processes": [{"pid": 250402, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 5}}]}
+{"event": "snapshot", "elapsed_ms": 18919, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 3}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 19448, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 4}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 19978, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 6}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 21561, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 5}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 23673, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 9}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 24729, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 8}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 25786, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 7}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 89685, "processes": [{"pid": 250540, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 6}}, {"pid": 250567, "ppid": 250540, "kind": "descendant", "tcp_states": {}}]}
+{"event": "snapshot", "elapsed_ms": 100775, "processes": []}
+{"event": "snapshot", "elapsed_ms": 101300, "processes": [{"pid": 254082, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 4}}]}
+{"event": "snapshot", "elapsed_ms": 102878, "processes": [{"pid": 254082, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 7}}]}
+{"event": "snapshot", "elapsed_ms": 103404, "processes": [{"pid": 254082, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 6}}]}
+{"event": "snapshot", "elapsed_ms": 103933, "processes": [{"pid": 254082, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 5}}]}
+{"event": "snapshot", "elapsed_ms": 104985, "processes": [{"pid": 254082, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 6}}]}
+{"event": "snapshot", "elapsed_ms": 105510, "processes": [{"pid": 254082, "ppid": 246787, "kind": "cli", "tcp_states": {"established": 6}}]}
+{"event": "snapshot", "elapsed_ms": 106036, "processes": [{"pid": 254335, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 4}}]}
+{"event": "snapshot", "elapsed_ms": 107092, "processes": [{"pid": 254335, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 7}}]}
+{"event": "snapshot", "elapsed_ms": 107618, "processes": [{"pid": 254335, "ppid": 246787, "kind": "cli", "tcp_states": {"established": 7}}]}
+{"event": "snapshot", "elapsed_ms": 108145, "processes": [{"pid": 254427, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 1}}]}
+{"event": "snapshot", "elapsed_ms": 108671, "processes": [{"pid": 254427, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 4}}]}
+{"event": "snapshot", "elapsed_ms": 109197, "processes": [{"pid": 254427, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 7}}]}
+{"event": "snapshot", "elapsed_ms": 109723, "processes": [{"pid": 254427, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 6}}]}
+{"event": "snapshot", "elapsed_ms": 110249, "processes": [{"pid": 254427, "ppid": 246787, "kind": "cli", "tcp_states": {"listen": 2, "established": 5}}]}
+{"event": "snapshot", "elapsed_ms": 111300, "processes": []}
+{"event": "terminal", "reason": "bounded_duration"}

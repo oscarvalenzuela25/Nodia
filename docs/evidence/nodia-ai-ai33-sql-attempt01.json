@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "stage": "AI-33",
+  "scope": "first_compiled_disposable_postgresql_preference_confirmation_effect_integration",
+  "status": "failed",
+  "compiled_manifest_sha256": "2c39c7bf498e154c7e199afc908272fe4f9abc62e87c887fabf4fb7828a7560c",
+  "archive_sha256": "4177aa2a3ea201d884398a03818c7aa2efe76087e0e75ea1f03d53a2facfe1b1",
+  "test_sha256": "7467a9d566caf6bf025cec8a94e309631c4a21550ddf9fd2eaa766208f1f91f1",
+  "compiled_files": 2703,
+  "completed_checks": 5,
+  "error_category": "nodia_ai:invalid_persisted_state",
+  "observed_failure": "First confirmed preference effect reaches GetNodiaAiExecutionUseCase receipt projection. ValidateNodiaAiConfirmationUseCase has no compiled PreferenceEffectReceipt definition and rejects the persisted projection.",
+  "failure_phase": "confirmed_effect_receipt_projection",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_deployed": false,
+  "production_services_restarted": false,
+  "disposable_fixture_removed": true,
+  "limitations": [
+    "Failure evidence from isolated PostgreSQL and compiled modules; not an operational database migration or deployment.",
+    "The initial SSH shell wrapper returned an incorrect zero exit status because of shell expansion. Failure classification uses the actual Node exception and completed-check report; the replacement runner records subprocess.returncode directly."
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    "AI-11",
+    "AI-12"
+  ],
+  "checked_at_utc": "2026-10-16T03:05:22Z",
+  "checked_on_santiago": "2026-10-16",
+  "technical_status": "verified_in_linux_lab_scope",
+  "documentation_approved": false,
+  "live_checks": 32,
+  "adapter_dispatches": 8,
+  "phases": [
+    {
+      "file": "nodia-ai-ai11-ai12-live-agentic-worker.json",
+      "sha256": "353742187dc31ed38c5c4ed340d42c682ffda91bca084ebd4dd03991ba59b6e5",
+      "task": "AI-11/AI-12",
+      "phase": "agentic",
+      "checks": 9,
+      "passed": [
+        "Agentic session/catalog eligible without inferring MCP support",
+        "real CLI makes both closed MCP fixture callbacks",
+        "real Agentic answer incorporates random callback data",
+        "real MCP loop publishes exact verified support",
+        "standalone compiled worker completes the real Agentic run",
+        "standalone worker performs one dispatch and bounded technical MCP",
+        "standalone worker releases every reserved SQL runtime slot",
+        "standalone worker shuts down without another inference",
+        "standalone worker terminal receipts are acknowledged and removed"
+      ],
+      "adapterDispatchRequests": 2,
+      "maximumAdapterDispatchRequests": 6,
+      "real_inference": true,
+      "configured_business_database_modified": false,
+      "business_writes": 0,
+      "selection_source": "Read-only configured Gemini connection; new synthetic database for all chat/worker state"
+    },
+    {
+      "file": "nodia-ai-ai11-ai12-live-routing.json",
+      "sha256": "9f0b391d63739403e7d5303482927af4cbe8ba9e2fdfb358e5728058dde4d951",
+      "task": "AI-11/AI-12",
+      "phase": "routing",
+      "checks": 10,
+      "passed": [
+        "Agentic session/catalog eligible without inferring MCP support",
+        "real CLI makes both closed MCP fixture callbacks",
+        "real Agentic answer incorporates random callback data",
+        "real MCP loop publishes exact verified support",
+        "real provider turn seals exactly once",
+        "real Web delegates once to the exact opted-in Agentic target",
+        "delegated Agentic uses technical knowledge MCP",
+        "delegation preserves the base Web selection",
+        "real provider turn seals exactly once",
+        "next turn starts in Web without another delegation"
+      ],
+      "adapterDispatchRequests": 4,
+      "maximumAdapterDispatchRequests": 6,
+      "real_inference": true,
+      "configured_business_database_modified": false,
+      "business_writes": 0,
+      "selection_source": "Read-only configured Gemini connection; new synthetic database for all chat/worker state"
+    },
+    {
+      "file": "nodia-ai-ai11-ai12-live-unknown.json",
+      "sha256": "579bf494acfea64c8f9b511066cd8d9334b37f5107746e06340069dff1ea633a",
+      "task": "AI-11/AI-12",
+      "phase": "unknown",
+      "checks": 13,
+      "passed": [
+        "Agentic session/catalog eligible without inferring MCP support",
+        "real CLI makes both closed MCP fixture callbacks",
+        "real Agentic answer incorporates random callback data",
+        "real MCP loop publishes exact verified support",
+        "unknown diagnostic requires exact verified MCP selection",
+        "real MCP callback cancellation is observed before any result delivery",
+        "cancelled live dispatch preserves SQL unknown without a fabricated answer",
+        "cancelled live dispatch quarantines the exact shared SQL slot",
+        "unknown jobs are not replayed by another worker claim",
+        "native cancellation proves the exact CLI process closed without replay",
+        "operator reconciliation commits and acknowledges the real native proof",
+        "reconciliation releases capacity and removes its minimal receipt delivery job",
+        "native profile is reusable after verified reconciliation without inference replay"
+      ],
+      "adapterDispatchRequests": 2,
+      "maximumAdapterDispatchRequests": 6,
+      "real_inference": true,
+      "configured_business_database_modified": false,
+      "business_writes": 0,
+      "selection_source": "Read-only configured Gemini connection; new synthetic database for all chat/worker state"
+    }
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/execute-nodia-ai-knowledge-tool.use-case.ts",
+      "sha256": "2b8e1cfb7c02e6dcaacfcd785001c7ebf65f31c2a5f34884928de6bd59e8a1ce"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "sha256": "dc624e661a8e489c652e5977553866716fb56c9905aa8d94c69f37882c59866e"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.ts",
+      "sha256": "8c73bffdcc3169ca2408e78c5ff9730c569213c53ffd4e4ca734f62fd07b2ca7"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+      "sha256": "0419e04b12a73d08a2d9bef011a7552a4fb8f34c4d01409914cfbe8057983538"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_stdio.py",
+      "sha256": "4957d0f1733dd9324d055054caace244357826054006f8743af1ec5f10da89e2"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-live.integration.mjs",
+      "sha256": "8f16648fa74dc8f2e95fd340edef55eb5ffd58da74c0a8f6a329f1c34991ce95"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-live-worker.fixture.mjs",
+      "sha256": "c88a4fa9ec1652c32b4d28c98147cef8e5c5960ca06105ced2bbb03bbe909a08"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-live-unknown.fixture.mjs",
+      "sha256": "4f240fc7e60b75c09781cc788f56ddd2d976904c558857d171989640c3ed2c84"
+    }
+  ],
+  "server": {
+    "unit_tests": 1240,
+    "files": 142,
+    "postgres_routing_checks": 33,
+    "postgres_context_checks": 20,
+    "adapter_reconciliation_tests": 55,
+    "build": "passed"
+  },
+  "python": {
+    "linux_passed": 235,
+    "linux_network": "none",
+    "linux_account_mounts": false,
+    "windows_passed": 233,
+    "windows_skipped": 2
+  },
+  "runtime": {
+    "vm": "nodia-vps-lab",
+    "gemini_image": "sha256:c3782df1ecd1b94f6a259c02e4529f33b54a87e96d96e2430235ba0925c0be69",
+    "api_gemini_nginx": "active",
+    "remaining_test_containers": 0,
+    "active_mcp_directories": 0,
+    "unknown_profile_markers": 0,
+    "native_receipts": 0,
+    "standalone_worker_test_processes": 0,
+    "web_authenticated": true,
+    "agentic_session_observed_valid": true,
+    "last_native_observation_at": "2026-10-16T03:10:59.777063+00:00",
+    "frontend": "http://localhost:5174",
+    "services_left_running": true
+  },
+  "limits": {
+    "configured_business_database_modified": false,
+    "business_writes": 0,
+    "business_tools_published": 0,
+    "published_knowledge_documents": 0,
+    "excluded_drafts": 43,
+    "scope": "One configured Gemini Web/Agentic selection, account and Linux VM; not general provider or production acceptance",
+    "provider_internal_inference_count": "unknown",
+    "historical_web_and_concurrency": "Separate evidence from earlier session, 5 and 13 checks; not rerun in this final matrix",
+    "operational_observation": "One routing preflight was rejected before any generation, then explicitly readmitted after non-generative verification; one final session observation was unavailable and a subsequent non-generative check succeeded; no uncertain generation replay",
+    "pending": [
+      "AI-13 page and drawer UI",
+      "AI-14+ business tools",
+      "API mode, attachments and compaction in their planned stages",
+      "Production deployment, backup/restore and remaining policy50 gates"
+    ]
+  }
+}

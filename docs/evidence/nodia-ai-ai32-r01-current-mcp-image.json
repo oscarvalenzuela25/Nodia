@@ -1,0 +1,51 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "real_agentic_mcp_and_attachment_synthetic_canary",
+  "status": "passed",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "callbacks": 1,
+  "business_writes": 0,
+  "configured_database_modified": false,
+  "provider_response_text_stored": false,
+  "credentials_logged": false,
+  "native_acknowledged": true,
+  "observation_http_status": 200,
+  "observed_at_utc": "2026-10-18T03:50:53Z",
+  "attempt_id": "b7b5de19-4ba6-4f7c-abe4-eb24a06f4b07",
+  "reference": {
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "83a67e6290da482f82cc14e6c14890a8",
+    "operation_ref": "b7b5de19-4ba6-4f7c-abe4-eb24a06f4b07"
+  },
+  "model_id": "gemini-3.8-flash-high",
+  "effort_id": "high",
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "kind": "image",
+  "file_sha256": "e2d956d67e640beb97e212d6ded1eba5a11b95f8b1351afa313b4a74b3618922",
+  "file_bytes": 11697,
+  "expected_answer_sha256": "8c3ec36feb3b14e94cea2f638756f2545564afc660c56510941e1ae125004090",
+  "start_http_status": 200,
+  "native_start_accepted": true,
+  "answer_sha256": "8c3ec36feb3b14e94cea2f638756f2545564afc660c56510941e1ae125004090",
+  "semantic_canary_matches": true,
+  "native_hook_file_and_mcp_attested": true,
+  "native_outcome": "completed",
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "verified_modalities": [
+      "image",
+      "pdf",
+      "audio"
+    ],
+    "supports_mcp": true
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T03:52:34Z"
+}

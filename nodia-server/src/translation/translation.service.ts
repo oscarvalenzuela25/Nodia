@@ -81,22 +81,30 @@ export class TranslationService {
   async attachTranslationsToOne<T extends { id: string }>(
     sourceEntity: string,
     item: T,
+    manager?: EntityManager,
   ): Promise<T & EntityTranslations> {
     if (!item) return item as any;
-    const [result] = await this.attachTranslations(sourceEntity, [item]);
+    const [result] = await this.attachTranslations(
+      sourceEntity,
+      [item],
+      manager,
+    );
     return result;
   }
 
   async attachTranslations<T extends { id: string }>(
     sourceEntity: string,
     items: T[],
+    manager?: EntityManager,
   ): Promise<Array<T & EntityTranslations>> {
     if (!items || items.length === 0) return items as any;
 
     const ids = items.map((i) => String(i.id)).filter(Boolean);
     if (ids.length === 0) return items as any;
 
-    const translations = await this.translationRepository.find({
+    const translations = await (
+      manager?.getRepository(Translation) ?? this.translationRepository
+    ).find({
       where: {
         source_entity: sourceEntity,
         source_id: In(ids),

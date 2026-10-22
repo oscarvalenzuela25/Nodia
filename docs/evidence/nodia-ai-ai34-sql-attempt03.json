@@ -1,0 +1,28 @@
+{
+  "stage": "AI-34",
+  "scope": "compiled_compaction_disposable_postgresql",
+  "attempt": "attempt03",
+  "started_at_utc": "2026-10-18T19:23:06.512075+00:00",
+  "completed_at_utc": "2026-10-18T19:23:11.489547+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "b64fefc0374d6281478a83b64c2c7636b41dde815e8685ba6cbcb6d54dfc38af",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "assertion_result": {
+    "stage": "AI-34",
+    "completed_checks": 7,
+    "last_checks": [
+      "SQL history loader bounds an ordered prefix before transferring content to Node",
+      "SQL history loader can load 240 ordered messages without the former collection cap",
+      "SQL source fingerprint changes when an earlier canonical text changes",
+      "rolling back a source mutation restores its exact SQL fingerprint"
+    ]
+  },
+  "error_category": "AssertionError",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "4669017a919a94acaafdbbd3adcf18d8b596b0c014db1c98769a6d9d2b1a1323"
+}

@@ -5,7 +5,9 @@ import { BusinessService } from '../business.service.js';
 export class GetBusinessByIdUseCase {
   constructor(private readonly businessService: BusinessService) {}
 
-  async execute(id: string, userId: string) {
-    return this.businessService.findOne(id, userId);
+  async execute(id: string, userId: string, includeSummary?: boolean) {
+    return includeSummary === undefined
+      ? this.businessService.findOne(id, userId)
+      : this.businessService.findOne(id, userId, includeSummary);
   }
 }

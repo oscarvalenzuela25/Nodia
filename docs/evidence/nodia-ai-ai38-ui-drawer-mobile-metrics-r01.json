@@ -1,0 +1,41 @@
+{
+  "actions": [
+    {
+      "bottom": 60,
+      "label": "Cerrar configuración",
+      "top": 16,
+      "visible": true,
+      "width": 44
+    },
+    {
+      "bottom": 828,
+      "label": "Cancelar",
+      "top": 784,
+      "visible": true,
+      "width": 358
+    },
+    {
+      "bottom": 776,
+      "label": "Aplicar configuración",
+      "top": 732,
+      "visible": true,
+      "width": 358
+    }
+  ],
+  "dialog": [
+    {
+      "height": 844,
+      "scrollHeight": 844,
+      "scrollWidth": 390,
+      "width": 390
+    }
+  ],
+  "document": {
+    "scrollWidth": 390,
+    "width": 390
+  },
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

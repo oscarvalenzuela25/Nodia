@@ -1,3 +1,4 @@
+import type { ProviderReadExecution } from '../types/provider-read-execution.types.js';
 import { Injectable, Optional } from '@nestjs/common';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { AiProviderService } from '../ai-provider.service.js';
@@ -88,10 +89,11 @@ export class GetSelectableModelsUseCase {
   constructor(private readonly aiProviderService: AiProviderService, private readonly geminiService: GeminiService, @Optional() private readonly apiService?: ApiProviderService,
     @Optional() private readonly codex?: CodexRuntimeService) {}
 
-  async execute(dto: GetSelectableModelsDto = {}): Promise<ProviderSelectableModelsResult[]> {
-    const response = await this.aiProviderService.findAllProviders({ all: true, includes: true });
+  async execute(dto: GetSelectableModelsDto = {}, execution?: ProviderReadExecution): Promise<ProviderSelectableModelsResult[]> {
+    const response = execution ? { data: execution.providers } : await this.aiProviderService.findAllProviders({ all: true, includes: true });
     const results: ProviderSelectableModelsResult[] = [];
     for (const provider of response.data ?? []) {
+      execution?.signal.throwIfAborted();
       const key = provider.catalog?.key ?? provider.key ?? '';
       if (dto.provider && key.toLowerCase() !== dto.provider.toLowerCase()) continue;
       if (dto.provider_id && String(provider.id) !== dto.provider_id) continue;
@@ -112,15 +114,15 @@ export class GetSelectableModelsUseCase {
         planType: tokenMode ? 'token_plan' as const : 'api_key' as const,
         isSelected: provider.is_default === true, isActive: provider.is_active === true, selectedModel };
       if (actualMode === 'api_key' && enabled && provider.is_active && provider.catalog?.is_active !== false && provider.catalog?.can_use_api_key === true && this.apiService) {
-        const secret = await this.aiProviderService.getActiveApiKeySecret(String(provider.id));
-        const models = secret ? await this.apiService.listModels(key, secret) : [];
+        const secret = await (execution ? execution.selectedSecret(String(provider.id)) : this.aiProviderService.getActiveApiKeySecret(String(provider.id)));
+        const models = secret ? await this.apiService.listModels(key, secret, ...(execution ? [execution.signal] : [])) : [];
         results.push({ ...base, models, models_source: secret ? 'provider' : 'unavailable', models_observed_at: secret ? new Date().toISOString() : null });
         continue;
       }
       if (key.toLowerCase() === 'openai' && actualMode === 'token_plan_agentic' && this.codex && enabled
         && provider.is_active && provider.catalog?.is_active !== false && provider.catalog?.can_use_token_plan_agentic === true) {
-        const session = await this.codex.observe(String(provider.id));
-        const models = session.authenticated ? await this.codex.listModels(String(provider.id)) : [];
+        const session = await this.codex.observe(String(provider.id), ...(execution ? [execution.signal] : []));
+        const models = session.authenticated ? await this.codex.listModels(String(provider.id), ...(execution ? [execution.signal] : [])) : [];
         results.push({ ...base, models, models_source: session.authenticated ? 'provider' : 'unavailable', models_observed_at: session.authenticated ? new Date().toISOString() : null,
           tokenPlan: session.planType ? { tier: session.planType, planLabel: session.planType, authenticated: session.authenticated === true } : null });
         continue;
@@ -130,7 +132,7 @@ export class GetSelectableModelsUseCase {
         continue;
       }
       const engine = actualMode === 'token_plan_agentic' ? 'agentic' : 'web';
-      const discovery = await this.geminiService.getModelsAndQuota(engine);
+      const discovery = await this.geminiService.getModelsAndQuota(engine, ...(execution ? [execution.signal] : []));
       const authenticated = engine === 'agentic'
         ? discovery?.available === true && discovery?.authenticated === true
         : discovery?.authenticated === true;

@@ -1,0 +1,423 @@
+{
+  "schema_version": 1,
+  "stage": "AI-29 R01",
+  "scope": "Content-free Web ModelOutput shape, yield timings and normal upstream EOF diagnostics; offline verification only",
+  "checked_at": "2026-10-18T00:52:24.201696+00:00",
+  "status": "passed",
+  "environment": {
+    "windows_runner": "local .venv Python unittest",
+    "linux_image": "sha256:16830964869e9827d1b320c8ae6f913dce1ead37474bce279f53897845dc8c7a",
+    "linux_container": "ephemeral ai29-r01-native-offline-diagnostics, automatically removed",
+    "network": "none",
+    "uid": 10001,
+    "read_only_image": true,
+    "memory_limit_bytes": 805306368,
+    "pids_limit": 256,
+    "real_profile_mounts": false,
+    "operational_credentials_used": false,
+    "provider_network_calls": 0,
+    "configured_service_modified": false
+  },
+  "unit_tests": {
+    "windows": {
+      "discovered": 291,
+      "passed": 289,
+      "skipped": 2,
+      "duration_seconds": 11.124,
+      "command": "python run_tests.py"
+    },
+    "linux": {
+      "discovered": 291,
+      "passed": 291,
+      "skipped": 0,
+      "duration_seconds": 6.916,
+      "command": "python run_tests.py"
+    },
+    "diagnostics_focused": {
+      "passed": 17,
+      "skipped": 0
+    },
+    "reader_fixtures": {
+      "passed": 7,
+      "skipped": 0,
+      "command": "python docs/evidence/scripts/verify-nodia-ai-web-diagnostics-reader.py"
+    }
+  },
+  "quality": {
+    "py_compile_passed": true,
+    "git_diff_check_passed": true
+  },
+  "checks": [
+    "Thoughts-only, present-but-empty and absent thoughts remain distinct without exporting content",
+    "Text and delta booleans, chosen-candidate media counts and candidate counts contain no provider payloads",
+    "First/last yield and first text timings do not change native output ordering or return the first partial candidate",
+    "Malformed objects and getter-bearing unknown classes remain unclassified without evaluation or serialization",
+    "Upstream EOF is recorded only after normal iterator exhaustion, never after error, cancellation or consumer close",
+    "Historical snapshots and the complete extended schema are accepted; extra or malformed fields are rejected",
+    "Reader discards malformed native lines without copying raw payloads into its output"
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-gemini-microservice/web_generation_diagnostics.py",
+      "sha256": "7c5e587f4495e6db124648ef63887999f0da23f684cae8f5574c6b0de65be79f"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_web_generation_diagnostics.py",
+      "sha256": "ff4e98852f5d731e65ee5bd6cdd63be0990bd6343f3a05ea9c1603d2c53344bc"
+    },
+    {
+      "path": "docs/evidence/scripts/read-nodia-ai-web-diagnostics.py",
+      "sha256": "82af1dba18943f9357c5dda20a3748e65ec007dd578b6037018b54700a11d1a6"
+    },
+    {
+      "path": "docs/evidence/scripts/verify-nodia-ai-web-diagnostics-reader.py",
+      "sha256": "cc9c4bd291dd38ddf44e7edef03c6f7d45e0e9b145349eee2a5ac70d00610cd8"
+    }
+  ],
+  "linux_overlay": {
+    "source_file_count": 81,
+    "archive_sha256": "b596a91c936dbb7644b8bf6611a028a810986fa77c24ced1fce2700157934e85",
+    "file_hashes": [
+      {
+        "path": ".dockerignore",
+        "sha256": "7e4cf214735dbe8b3174106f832287dafc75834ce081facd665967ecb7760bcb"
+      },
+      {
+        "path": "agentic_cli.py",
+        "sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08"
+      },
+      {
+        "path": "agentic_login.py",
+        "sha256": "10e080d2e8c55bd1bf6c1a4926cdbb195cecaed26c0d208fd2551338f0379225"
+      },
+      {
+        "path": "agentic_login_terminal.py",
+        "sha256": "4586051b5b4cbf158869f15b2c9bffc2bb9b0582a2a8b0deea3c32ebc0ba18c2"
+      },
+      {
+        "path": "agentic_observation.py",
+        "sha256": "4eb2887a5b912cf495ca20ef96d08a34d9e37e98422be2757d351400de98caeb"
+      },
+      {
+        "path": "agentic_process_launcher.py",
+        "sha256": "8741c527bbf250f9b20013f67bbd688bd118e83cfad8541a49df45fa62b56f16"
+      },
+      {
+        "path": "agentic_progress.py",
+        "sha256": "233ab80f1bd41ddd5c90ec2ecdb561d2e0a16bc8bf48baacb9c09a1b2b0b4fc9"
+      },
+      {
+        "path": "agentic_service.py",
+        "sha256": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e"
+      },
+      {
+        "path": "agentic_tool_gate.py",
+        "sha256": "d4fbbd7462ba5771a43166635112af8db95d20941fcf1deb702c4f0b921eb9bd"
+      },
+      {
+        "path": "analysis_observations.py",
+        "sha256": "fa20fb6bebd75d7a72427a5af06ff4a470a6f7a2a4a6716c7eb944b0ba7702c3"
+      },
+      {
+        "path": "antigravity-cli.lock.json",
+        "sha256": "540c77a421530b75b06270485a0990b66bb13022a700a31feab83d4efeeb68ba"
+      },
+      {
+        "path": "auth.py",
+        "sha256": "27bb7d617a2315cd6899ec67db8caf24dea741779abea9662b1f35c423ce0eca"
+      },
+      {
+        "path": "browser_manager.py",
+        "sha256": "10fa3fae6a51ac943041d8a85d8442d28015d697db70a6afc2f22bf8f3a262e8"
+      },
+      {
+        "path": "Dockerfile",
+        "sha256": "d0b45ead1d60b9b3304f5bba09bf0d6bed398042a4c2a776decef1458fb24221"
+      },
+      {
+        "path": "durable_login.py",
+        "sha256": "4bf6ba19617f8a23724f10928da7fb12d971911a1aed30f9a66fab604724e2bf"
+      },
+      {
+        "path": "durable_login_routes.py",
+        "sha256": "8000a67577c49adc79ea4891196833e1c0206793a5d668896bd80ab7a11abb87"
+      },
+      {
+        "path": "experiments/nodia_ai_agentic_diagnostics.py",
+        "sha256": "33bc1ef664b11e10933a7b727d7e84a0968db59333d9b1ed7bca1d35f76e375a"
+      },
+      {
+        "path": "experiments/nodia_ai_agentic_gate.py",
+        "sha256": "9f6acfda20be05a680dd83c0d1e14236595790de388f62da5b17a0777da93bbd"
+      },
+      {
+        "path": "experiments/nodia_ai_mcp_fixture.py",
+        "sha256": "8ef578567e89834361383a63a208b82850783d720f42ab4ba7f0896801e20daf"
+      },
+      {
+        "path": "experiments/nodia_ai_web_protocol.py",
+        "sha256": "5b5f38ee4fcad59103299aa19e437e4a150581d37b69b5894c050679fc0809ba"
+      },
+      {
+        "path": "experiments/probe_live_reasoning.py",
+        "sha256": "584c8d5d85efdda56074b3f3c9d724489e10e8be7b3fbe93bb99e368e041c812"
+      },
+      {
+        "path": "experiments/probe_nodia_ai_agentic.py",
+        "sha256": "ff81a5e4af3f82d904a6d823b1f371e0f00a1aa66cbc936a34b5fd93e4794d28"
+      },
+      {
+        "path": "experiments/probe_nodia_ai_web.py",
+        "sha256": "75bd69e40c723f28992ad48b89c7c0b1f7b0406cec3e7b76140593405df2249b"
+      },
+      {
+        "path": "gemini_service.py",
+        "sha256": "900e3c4feffe08f6e4951bd1e97f98cf1d371e2bb969998fc239b7023aeac08b"
+      },
+      {
+        "path": "interactive_login.py",
+        "sha256": "38e8ae229d39764394c96fa3f0daaee0b2adb65aa4dba11fbfd977c72c309848"
+      },
+      {
+        "path": "invoice_parser.py",
+        "sha256": "bee80a80d59f8aabf8d3988d01cd4eec1e7bb3f7dc95a96f3bfa2a4ab3de3dec"
+      },
+      {
+        "path": "login_cgroups.py",
+        "sha256": "117c73f407e35c6c63c583311257835fad49d3742d9eb42f17ea2c589e772088"
+      },
+      {
+        "path": "login_request_store.py",
+        "sha256": "de522f93e6e5fe44ededf7a86c1c140360d7a86034b092086725569d43539f61"
+      },
+      {
+        "path": "login_supervisor.py",
+        "sha256": "8859645ee2dde0543348ee34f38bc2bb0c1410e9a2723529aa13a2e38d7a4317"
+      },
+      {
+        "path": "login_viewer.py",
+        "sha256": "b79b69e3effed5dcda9b54d44b26f9140d99f1e0f0c3373a66ec862ea82e8c96"
+      },
+      {
+        "path": "main.py",
+        "sha256": "4c7668984af6db1672efca8dbbe21bfff38ca090b9539c44ab4339b27f77e55d"
+      },
+      {
+        "path": "native_attempts.py",
+        "sha256": "42d2aa5d446f981d1c810a818c0ccb8c24e37a77fc1d9f4159914c553dcc934f"
+      },
+      {
+        "path": "native_mcp_sessions.py",
+        "sha256": "bb810824ee7f1d5b0d08ee189c8ae0c514ebeb113e59536363f8b131e9b2f2fb"
+      },
+      {
+        "path": "native_mcp_stdio.py",
+        "sha256": "7ff0ab17d34ca96b72604f60f30c2458bc7e0c548a3002f8452991bbd5d1c885"
+      },
+      {
+        "path": "nodia_ai_chat.py",
+        "sha256": "3ebfe16dae7ec9859fed03ac934d7ab6f008af8701224bef42b7edc7c70b43c2"
+      },
+      {
+        "path": "nodia_ai_tool_gate.py",
+        "sha256": "6b8cf92bd464ee20aca966fd8934d2fcfc515891ac5a9fc35a47307f18f3abbc"
+      },
+      {
+        "path": "profile_admission.py",
+        "sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb"
+      },
+      {
+        "path": "request_guard.py",
+        "sha256": "e2d261187fa1ef22095cb1f89ef53ee77cfa53117df6da5eaa813ed4b30153ce"
+      },
+      {
+        "path": "requirements.txt",
+        "sha256": "2b22d47f61e545112b715a417944553eb34e3598f2c376e62b749a6b5d883a8a"
+      },
+      {
+        "path": "run.py",
+        "sha256": "b405f408ae3a990c2928859004a8f1feb9472d8a769ca7fd159335e347f346af"
+      },
+      {
+        "path": "run_tests.py",
+        "sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc"
+      },
+      {
+        "path": "schemas.py",
+        "sha256": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320"
+      },
+      {
+        "path": "scripts/agentic_http_probe.py",
+        "sha256": "f7703863e4c1ec4a67a38d352cece9a668e049bd12714d52e526bb6e1886f2b7"
+      },
+      {
+        "path": "scripts/install_agentic_cli.py",
+        "sha256": "8aeacdac9743984732f298f3aac5b592b0d59ff397c7e3dea6c5026d6fe1511a"
+      },
+      {
+        "path": "scripts/verify_durable_login.py",
+        "sha256": "038368156ae506ea372fcfad9ac565ceaac631a5a9b544006b7c174115d803bd"
+      },
+      {
+        "path": "service_auth.py",
+        "sha256": "2524177ca00df67c9163f8e55a3e95f06082a66a24c3edd8fc5d78fd88b924cb"
+      },
+      {
+        "path": "service_errors.py",
+        "sha256": "4876a8bf47e3a2bd882a21d9dd5ad19d6aea22967f6875ef29c956d327e55068"
+      },
+      {
+        "path": "session_store.py",
+        "sha256": "dd4c37825a3e21f5909067a8d984685be016bead021dcc89ae285933739839e6"
+      },
+      {
+        "path": "tests/fixtures/login_api_fixture.py",
+        "sha256": "5ff390f050fc8dc5603515c0188dd50b59e4f164d26da72934b9a40b8f7fe326"
+      },
+      {
+        "path": "tests/fixtures/login_cli_fixture.py",
+        "sha256": "abd688c22004d1af8d388506d4181d59f4f4c39db63b630780952be13c5f32c6"
+      },
+      {
+        "path": "tests/fixtures/login_supervisor_fixture.py",
+        "sha256": "72951a49de8c5c1bf5e0f03a795cf00abd27456a98629612c1f9b489670ee421"
+      },
+      {
+        "path": "tests/fixtures/nodia-ai-ai15-mcp-tools.json",
+        "sha256": "3ba0f6d6fd2934900a21c5689814340854ab465c31e42a88b02f8e64bcaec9dc"
+      },
+      {
+        "path": "tests/test_agentic_cli.py",
+        "sha256": "ad755fe20d9ee08761ab192c6e88ce2693aa3b3f654b3182f025938880391316"
+      },
+      {
+        "path": "tests/test_agentic_login.py",
+        "sha256": "93be42f472a6adf1e3cd620308275189d8e1fafc54d3e4751a4e4a6c66c8451b"
+      },
+      {
+        "path": "tests/test_agentic_progress.py",
+        "sha256": "fae9d5cfda0d4318f6e5723820f99ab60d9aa614466aeb9f64dbbec9cc7ba1ae"
+      },
+      {
+        "path": "tests/test_analysis_observations.py",
+        "sha256": "9284342d5c6ea94a321f2b24dac2d6d37a96db9ae95e5eff6b6268731652401d"
+      },
+      {
+        "path": "tests/test_browser_manager.py",
+        "sha256": "420cf0878637adbf216d7784722934116cdc0fd44a7b32f23607a8dd7cf7e5d3"
+      },
+      {
+        "path": "tests/test_dual_engine.py",
+        "sha256": "d92f54ef3af5019425236f945c2c8653848db5e8f424ad66710232eaa3da270d"
+      },
+      {
+        "path": "tests/test_durable_login.py",
+        "sha256": "34e80c73d51b658f6f581d62081df162c1927e7aa445848c1edf6e2d325a7d02"
+      },
+      {
+        "path": "tests/test_extraction.py",
+        "sha256": "55b182c36251f68ac8209a9411ac7c5a156f7956fd4da1f5c9570a134c243ba1"
+      },
+      {
+        "path": "tests/test_interactive_login.py",
+        "sha256": "13bb6f682729911e9629ac0738bb8188755be4886d91110195fbf33fb18a265a"
+      },
+      {
+        "path": "tests/test_login_viewer.py",
+        "sha256": "cb320f1ed1392d9d7a859ae2f20ff14a3dd97d75c18fc7ea2fd2c4436f131360"
+      },
+      {
+        "path": "tests/test_native_attempts.py",
+        "sha256": "7096d4e554e57e63d165469a6d1252929923b9eb580ce749f83980e6d8f105dc"
+      },
+      {
+        "path": "tests/test_native_mcp.py",
+        "sha256": "6e84645957779b51632dc90345952f3cf8e785033d6a43a0dc879225786674f0"
+      },
+      {
+        "path": "tests/test_nodia_ai_agentic_diagnostics.py",
+        "sha256": "d3ea8e560ce8cb690ab85ff6272f114256ad8720a8f4a2020d890b1d08a11fa7"
+      },
+      {
+        "path": "tests/test_nodia_ai_chat.py",
+        "sha256": "8dcee1392a2a05c3762897a5d13da88eb5e45b0bd86db12d727eb9aebeb7a35d"
+      },
+      {
+        "path": "tests/test_nodia_ai_mcp_fixture.py",
+        "sha256": "c6db00c34bbb1ae907e41e1e4a6145143237cf8b487922bc21886ac14db3e8aa"
+      },
+      {
+        "path": "tests/test_nodia_ai_web_admission.py",
+        "sha256": "dcd03a40cbb194ff56f6a451e2d547580d1183092fc20456437545b52e5440c9"
+      },
+      {
+        "path": "tests/test_nodia_ai_web_protocol.py",
+        "sha256": "a7dbf858daf82e0be02d8c85f2ad714f724521fb600b93cacbbd5d73693b2c0d"
+      },
+      {
+        "path": "tests/test_request_guard.py",
+        "sha256": "a273aa28cb004dff736f34b04166376b749639cf8eaaeccc930a449d5e805d85"
+      },
+      {
+        "path": "tests/test_service_auth.py",
+        "sha256": "dc1a6183510423fe13d51189d501f79ca776bdf16a06da7e83f378fc65f782d2"
+      },
+      {
+        "path": "tests/test_session_lifecycle.py",
+        "sha256": "0d958bb300ef852363a3e98db6dbc393483e805eefef4ba92c6517285310f7a9"
+      },
+      {
+        "path": "tests/test_support.py",
+        "sha256": "f5bdfa0bed7b78cd9812a676b210a13cb29766fb2514bb0efbcfbd8a5dd6d0f3"
+      },
+      {
+        "path": "tests/test_web_adapter.py",
+        "sha256": "cf5068f7391f79effe327a950776e401cb1f9abd324f9581c34e0941e85f17bd"
+      },
+      {
+        "path": "tests/test_web_generation_diagnostics.py",
+        "sha256": "ff4e98852f5d731e65ee5bd6cdd63be0990bd6343f3a05ea9c1603d2c53344bc"
+      },
+      {
+        "path": "tests/test_web_logout.py",
+        "sha256": "7925b28d7f8fd37e1fec9021675b6a8daccb617cd97df9c3f3dc7c968a0931b3"
+      },
+      {
+        "path": "tests/test_web_reasoning_adapter.py",
+        "sha256": "000030ecb82eca86e00c29c5e1069b4b6c57a123034d1644e94cbf77606f5170"
+      },
+      {
+        "path": "web_generation_diagnostics.py",
+        "sha256": "7c5e587f4495e6db124648ef63887999f0da23f684cae8f5574c6b0de65be79f"
+      },
+      {
+        "path": "web_reasoning_adapter.py",
+        "sha256": "4e2d535c82393d2da1bb339819a54411afafcb0ccf9c5acd1461c9abff5c3171"
+      },
+      {
+        "path": "web_session_cleanup.py",
+        "sha256": "22a25a74a4f5372983a0bd6123d1f870347db11dda0774c29d5fd5176883312e"
+      },
+      {
+        "path": "windows_process_job.py",
+        "sha256": "4a4d6c235dd56e02f4a5d245ac1c5977ca318c996fff0938b92ba864e73992b1"
+      }
+    ]
+  },
+  "logs": [
+    {
+      "path": ".tmp/ai29-r01-python-diagnostics-tests.log",
+      "sha256": "73ce33c0a9fb524e4abc2f70427453e61006654b1c0abe3f132842e00bce951a"
+    },
+    {
+      "path": ".tmp/ai29-r01-web-diagnostics-linux-tests.log",
+      "sha256": "1f5cb0480d6db5bcd4ca02295ad935c2a5e8e333154e59fae6d7eeff22bb0234"
+    }
+  ],
+  "limitations": [
+    "No provider request, real account, login, inference or browser was used in these tests.",
+    "Linux used current source/test overlays on the pinned prior image with no profile or session mounts. Runtime deployment and live diagnosis are separate evidence.",
+    "This artifact does not replace or rehash the historical Chromium/native-login evidence in nodia-ai-ai29-r01-gemini-native.json.",
+    "The summary observes installed SDK ModelOutput yields and transport EOF, not upstream undocumented frame terminal flags or final-answer correctness."
+  ]
+}

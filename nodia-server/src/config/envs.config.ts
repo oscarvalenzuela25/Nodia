@@ -45,10 +45,11 @@ export const hasR2Config = (): boolean => {
 };
 
 export const canUseGemini = (): boolean => {
+  // Extraction streams the validated file to the private adapter. R2 belongs
+  // to attachment persistence, not to this in-memory draft operation.
   return Boolean(
     envs.GEMINI_MICROSERVICE_URL &&
-    /^[0-9a-fA-F]{64}$/.test(envs.GEMINI_SERVICE_TOKEN) &&
-    hasR2Config(),
+    /^[0-9a-fA-F]{64}$/.test(envs.GEMINI_SERVICE_TOKEN),
   );
 };
 

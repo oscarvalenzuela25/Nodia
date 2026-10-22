@@ -1,0 +1,167 @@
+{
+  "$defs": {
+    "Answer": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "answer",
+          "title": "Kind",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "text"
+      ],
+      "title": "Answer",
+      "type": "object"
+    },
+    "AvailabilityArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "const": "fixture-house",
+          "title": "Property Id",
+          "type": "string"
+        },
+        "start_date": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Start Date",
+          "type": "string"
+        },
+        "end_date": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "title": "End Date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_id",
+        "start_date",
+        "end_date"
+      ],
+      "title": "AvailabilityArgs",
+      "type": "object"
+    },
+    "ExpenseArgs": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Name",
+          "type": "string"
+        },
+        "amount": {
+          "pattern": "^[1-9][0-9]{0,8}$",
+          "title": "Amount",
+          "type": "string"
+        },
+        "category_id": {
+          "const": "fixture-food",
+          "title": "Category Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "paid",
+            "pending"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "amount",
+        "category_id",
+        "status"
+      ],
+      "title": "ExpenseArgs",
+      "type": "object"
+    },
+    "PrepareRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "tool_request",
+          "title": "Kind",
+          "type": "string"
+        },
+        "call_id": {
+          "pattern": "^[a-zA-Z0-9_-]{1,40}$",
+          "title": "Call Id",
+          "type": "string"
+        },
+        "tool": {
+          "const": "fixture.expense.prepare",
+          "title": "Tool",
+          "type": "string"
+        },
+        "arguments": {
+          "$ref": "#/$defs/ExpenseArgs"
+        }
+      },
+      "required": [
+        "kind",
+        "call_id",
+        "tool",
+        "arguments"
+      ],
+      "title": "PrepareRequest",
+      "type": "object"
+    },
+    "ReadRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "tool_request",
+          "title": "Kind",
+          "type": "string"
+        },
+        "call_id": {
+          "pattern": "^[a-zA-Z0-9_-]{1,40}$",
+          "title": "Call Id",
+          "type": "string"
+        },
+        "tool": {
+          "const": "fixture.availability.read",
+          "title": "Tool",
+          "type": "string"
+        },
+        "arguments": {
+          "$ref": "#/$defs/AvailabilityArgs"
+        }
+      },
+      "required": [
+        "kind",
+        "call_id",
+        "tool",
+        "arguments"
+      ],
+      "title": "ReadRequest",
+      "type": "object"
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/ReadRequest"
+    },
+    {
+      "$ref": "#/$defs/PrepareRequest"
+    },
+    {
+      "$ref": "#/$defs/Answer"
+    }
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Generated from experiments.nodia_ai_web_protocol.ADAPTER, synthetic harness only; not registered domain tools. Date validity/order additionally validated by Pydantic."
+}

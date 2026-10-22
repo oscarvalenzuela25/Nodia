@@ -1,0 +1,10 @@
+{
+  "stage": "AI-27",
+  "tested_archive_sha256": "757c524ddf82df8a7ed055bbaf492061b10ad07413ca1795d29db3bfc95b1a21",
+  "final_archive_sha256": "779ed98c0168a0ca9865d6fcfd7e55aa9b208d175dc62f2df76beb49d36a8484",
+  "production_dist_identical": true,
+  "dist_files_checked": 843,
+  "changed_package_files": [],
+  "reason": "Final package file hashes match the SQL-tested manifest; archive digest may change with tar metadata. Production dist and the SQL harness are identical.",
+  "final_harness_sha256": "02d5d5b119a0fe9a2a456168d8410c8fd8af67cb0fd089a652ea318c33925294"
+}

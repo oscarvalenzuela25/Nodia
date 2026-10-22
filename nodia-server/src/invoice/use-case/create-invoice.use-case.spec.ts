@@ -6,6 +6,8 @@ import type { InvoiceService } from '../invoice.service.js';
 import type { StorageService } from '../../common/storage/storage.service.js';
 import type { CreateInvoiceDto } from '../dto/create-invoice.dto.js';
 import type { Invoice } from '../entities/invoice.entity.js';
+import { InvoiceService as RealInvoiceService } from '../invoice.service.js';
+import type { Repository } from 'typeorm';
 
 describe('CreateInvoiceUseCase', () => {
   const dto: CreateInvoiceDto = {
@@ -45,7 +47,7 @@ describe('CreateInvoiceUseCase', () => {
       if (sql.includes('DELETE')) operations.push('remove-intent');
       return [];
     });
-    manager = { query: managerQuery } as unknown as EntityManager;
+    manager = { query: managerQuery, queryRunner: { isTransactionActive: true } } as unknown as EntityManager;
     invoiceService = {
       createInvoice: vi.fn(async () => {
         operations.push('invoice');
@@ -94,6 +96,51 @@ describe('CreateInvoiceUseCase', () => {
     expect(query).not.toHaveBeenCalled();
     expect(storage.uploadFile).not.toHaveBeenCalled();
     expect(transaction).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])('native creation rejects a provider from another business (inherited manager: %s)', async inherited => {
+    const query = vi.fn(async (sql: string) => sql.includes('FROM businesses') ? [{ id: dto.business_id }] : [{ id: '1', business_id: '22222222-2222-4222-8222-222222222222' }]);
+    const repository = { create: vi.fn(), save: vi.fn() };
+    const nativeTransaction = { query, getRepository: () => repository, queryRunner: { isTransactionActive: true } } as unknown as EntityManager;
+    const globalRepository = { manager: { transaction: vi.fn(async (work: (transaction: EntityManager) => unknown) => work(nativeTransaction)) } } as unknown as Repository<Invoice>;
+    const real = new CreateInvoiceUseCase(new RealInvoiceService(globalRepository), storage as unknown as StorageService, {} as DataSource, recovery as unknown as RecoverInvoiceUploadsUseCase);
+    await expect(real.execute(dto, undefined, inherited ? nativeTransaction : undefined)).rejects.toThrow('must belong to the invoice business');
+    expect(repository.save).not.toHaveBeenCalled(); expect(repository.create).not.toHaveBeenCalled(); expect(storage.uploadFile).not.toHaveBeenCalled();
+  });
+
+  it('native creation locks the business before the provider and saves with the inherited manager', async () => {
+    const operations: string[] = [];
+    const query = vi.fn(async (sql: string) => {
+      operations.push(sql.includes('FROM businesses') ? 'business-share' : 'provider-share');
+      return sql.includes('FROM businesses') ? [{ id: dto.business_id }] : [{ id: '1', business_id: dto.business_id }];
+    });
+    const repository = { create: vi.fn((value: CreateInvoiceDto) => value), save: vi.fn(async (value: CreateInvoiceDto) => { operations.push('save'); return { ...value, id: '9' }; }) };
+    const nativeTransaction = { query, getRepository: () => repository, queryRunner: { isTransactionActive: true } } as unknown as EntityManager;
+    const real = new CreateInvoiceUseCase(new RealInvoiceService({} as Repository<Invoice>), storage as unknown as StorageService, {} as DataSource, recovery as unknown as RecoverInvoiceUploadsUseCase);
+    await expect(real.execute(dto, undefined, nativeTransaction)).resolves.toMatchObject({ id: '9', provider_id: '1', business_id: dto.business_id });
+    expect(operations).toEqual(['business-share', 'provider-share', 'save']); expect(storage.uploadFile).not.toHaveBeenCalled();
+  });
+
+  it('joins the inherited SQL transaction without running storage or its own transaction', async () => {
+    await expect(useCase.execute(dto, undefined, manager)).resolves.toBe(invoice);
+    expect(invoiceService.createInvoice).toHaveBeenCalledWith({ ...dto, path_storage: '' }, manager);
+    expect(storage.uploadFile).not.toHaveBeenCalled();
+    expect(transaction).not.toHaveBeenCalled();
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('rejects a new upload inside an inherited effect transaction before registering or uploading', async () => {
+    await expect(useCase.execute(dto, file, manager)).rejects.toThrow('separate storage phase');
+    expect(invoiceService.createInvoice).not.toHaveBeenCalled();
+    expect(storage.uploadFile).not.toHaveBeenCalled();
+    expect(query).not.toHaveBeenCalled();
+    expect(transaction).not.toHaveBeenCalled();
+  });
+
+  it('rejects an inactive inherited transaction before any SQL or storage side effect', async () => {
+    await expect(useCase.execute(dto, undefined, {} as EntityManager)).rejects.toThrow('active transaction');
+    expect(invoiceService.createInvoice).not.toHaveBeenCalled();
+    expect(query).not.toHaveBeenCalled(); expect(storage.uploadFile).not.toHaveBeenCalled();
   });
 
   it('preserves a historical storage path on creation without a new upload', async () => {

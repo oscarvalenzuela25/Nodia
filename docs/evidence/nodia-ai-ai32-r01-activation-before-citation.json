@@ -1,0 +1,44 @@
+{
+  "stage": "AI-32",
+  "scope": "private_gemini_lab_activation",
+  "observed_at_utc": "2026-10-18T03:37:37Z",
+  "old_image": "sha256:1ff72b498a675a4c6af09b6005ebbe1f95fd4aaa9e3c0221a664f4eed03174cb",
+  "new_image": "sha256:7c7b85f6c44978743eeaf26fb8db3e213dedf0df27d50a149b93192324379892",
+  "backup": "/opt/nodia/verification-backups/ai32-r01-before-gemini-1792294625",
+  "container_restarted": true,
+  "credential_bytes_owner_mode_preserved": true,
+  "docker_limits_mounts_network_capabilities_namespace_preserved": true,
+  "host_proof_verified_as_service_uid": true,
+  "health_http": 200,
+  "provider_login_logout_or_inference_requested_by_activation": false,
+  "profile_files_copied_or_hashed": false,
+  "database_modified": false,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 26
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 26
+  },
+  "native_quiet_before": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "native_quiet_after": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  }
+}

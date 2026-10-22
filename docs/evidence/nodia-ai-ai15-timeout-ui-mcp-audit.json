@@ -1,0 +1,31 @@
+{
+  "task": "AI-15",
+  "scope": "real_ui_agentic_business_read_audit",
+  "status": "incomplete",
+  "configured_database_read_only": true,
+  "configured_database_modified": false,
+  "provider_generations": 0,
+  "run_state": "failed",
+  "provider_dispatches": 1,
+  "tool_calls": 1,
+  "rpc_messages": 7,
+  "checks": {
+    "run_completed": false,
+    "assistant_sealed": false,
+    "actual_agentic_selection": true,
+    "actor_may_access_chat": true,
+    "current_authority_allowed": true,
+    "business_receipt_present": false,
+    "comparisons_passed": false,
+    "no_pending_work": true
+  },
+  "comparisons": [],
+  "other_receipt_count": 0,
+  "pending": {
+    "jobs": 0,
+    "attempts": 0,
+    "runtime_slots": 0
+  },
+  "private_rows_exported": false,
+  "private_message_content_exported": false
+}

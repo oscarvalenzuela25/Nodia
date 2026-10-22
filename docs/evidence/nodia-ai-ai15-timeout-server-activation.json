@@ -1,0 +1,45 @@
+{
+  "ready_at_utc": "2026-10-16T20:55:13Z",
+  "server_archive_sha256": "dc867fc4434a6f8ef91d776ab3237e3527ca36eb5621eb5e95243b21b45ae537",
+  "server_files": 746,
+  "backup": "/opt/nodia/verification-backups/ai15-server-timeout-diagnostic-1792184008/dist-before",
+  "api_health_http": 200,
+  "api_health_path": "/api/v1/",
+  "active_pids": {
+    "nodia-api": 265517,
+    "nodia-ai-worker": 265518
+  },
+  "service_identities": {
+    "nodia-api": {
+      "identity": "nodia",
+      "group": "nodia",
+      "runtime_directory": "nodia-runtime",
+      "home_and_bus_match": true
+    },
+    "nodia-ai-worker": {
+      "identity": "nodia",
+      "group": "nodia",
+      "runtime_directory": "nodia-ai-worker",
+      "home_and_bus_match": true
+    }
+  },
+  "release_dist_matches_manifest": true,
+  "environment_bytes_match_preserved_legacy_env": true,
+  "environment_owner_mode_preserved": true,
+  "dependencies_unchanged": true,
+  "bridge_container_image_start_unchanged": true,
+  "bridge_restarted": false,
+  "knowledge_pin": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+  "capabilities": 67,
+  "fragments": 27,
+  "quiet_before_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 20
+  },
+  "migrations_executed": false,
+  "generations": 0,
+  "restarts_per_server_unit": 1,
+  "operational_note": "Initial post-start health guard requested unprefixed /, which correctly returned404. Correct /api/v1/ returned200; no further restart or swap was performed."
+}

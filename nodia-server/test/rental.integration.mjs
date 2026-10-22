@@ -1,3 +1,4 @@
+import { installAuthorityFixture } from './fixtures/authority.integration.mjs';
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
 import { randomBytes, randomUUID } from 'node:crypto';
@@ -134,6 +135,7 @@ try {
   checks.push(
     'Navigation seed is idempotent and does not assign modules to users.',
   );
+  const testAuthority = await installAuthorityFixture(db, ['1','2','3']);
   class SyntheticIdentityGuard {
     canActivate(context) {
       const request = context.switchToHttp().getRequest();
@@ -148,7 +150,7 @@ try {
           image_url: null,
           roles: id === '3' ? ['superadmin'] : [],
         },
-        sessionId: 'synthetic-session',
+        sessionId: testAuthority.actor(id).sessionId,
       };
       return true;
     }
@@ -249,7 +251,7 @@ try {
     assert.equal((await malformed.json()).message, 'rental:invalid_input');
     assert.equal(
       (await request('POST', api, { ...propertyInput, owner_id: '3' })).status,
-      400,
+      403,
     );
     assert.equal(
       (await request('POST', api, { ...propertyInput, max_guests: '6' }))
@@ -843,7 +845,7 @@ try {
     await assert.rejects(
       tx.mutate(
         {
-          actorId: '1',
+          actor: testAuthority.actor('1'),
           propertyId,
           requestKey: rollbackKey,
           operation: 'property.update',
@@ -1189,7 +1191,7 @@ try {
     await assert.rejects(
       tx.mutate(
         {
-          actorId: '1',
+          actor: testAuthority.actor('1'),
           propertyId,
           requestKey: randomUUID(),
           operation: 'property.update',
@@ -1211,7 +1213,7 @@ try {
     assert.equal((await get(house)).name, propertyInput.name);
     const deadlineStarted = Date.now();
     await assert.rejects(
-      tx.read('1', propertyId, async (ctx) => {
+      tx.read(testAuthority.actor('1'), propertyId, async (ctx) => {
         for (let i = 0; i < 3; i++)
           await ctx.manager.query('SELECT pg_sleep(3.6)');
       }),

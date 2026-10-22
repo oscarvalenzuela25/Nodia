@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "status": "artifact_integrity_verified_not_environment_acceptance",
+  "scope": "artifact",
+  "context": {
+    "environment_id": "linux_lab",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "candidate": {
+    "reference": {
+      "path": "docs/evidence/nodia-ai-ai38-candidate01.json",
+      "sha256": "bdb9b27b0983adaca01b5dcc73d11428fa3c6c31c1a4fdcd2b417b5a0d8d552d"
+    },
+    "manifest": {
+      "path": ".tmp/ai38-node-candidate01/nodia-server/manifest.json",
+      "sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+    },
+    "all_listed_files_verified": 2933,
+    "production_sources_verified": 924,
+    "compiled_outputs": 2827,
+    "runtime_assets": 979,
+    "knowledge_release_id": "c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36",
+    "capability_contracts": 74,
+    "documents": 31,
+    "fragments": 31,
+    "package_lock_sha256": "da6aa3011319ef898404fe1cbca16d740b8aebf05ac4be341d95dba1cc4d12bd",
+    "dependency_installation_or_runtime_verified": false
+  },
+  "operational_antecedent": {
+    "reference": {
+      "path": "docs/evidence/nodia-ai-ai38-delivery-inventory-r02.json",
+      "sha256": "8019059c3636ed50ae1eefc45b07db156f14e9384a016de1990e60f0011e7d2d"
+    },
+    "observed_at_utc": "2026-10-20T16:45:40.570686+00:00",
+    "active_package_is_candidate": false,
+    "operational_node": {
+      "root": "/opt/nodia/releases/nodia-server-ai15-20261016",
+      "compiled_files": 932,
+      "manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792"
+    },
+    "no_new_provider_availability_claim": true
+  },
+  "source_script": {
+    "path": "docs/evidence/scripts/nodia-ai-ai38-delivery-preflight.cjs",
+    "sha256": "4f62bc17f867203f790d6e2e35684afd2ada92d11493899299237be7d32d0760"
+  },
+  "boundaries": {
+    "environment_activation_performed": false,
+    "configured_database_read": false,
+    "configured_database_writes": false,
+    "provider_requests": 0,
+    "storage_operations": 0,
+    "deployment": false,
+    "release_authorized": false,
+    "gates_evaluator": "docs/evidence/scripts/nodia-ai-ai38-gates.cjs",
+    "acceptance_required_separately": true
+  }
+}

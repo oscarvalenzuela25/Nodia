@@ -56,6 +56,7 @@
     "token_plan_web": "Web",
     "token_plan_agentic": "Agéntico",
     "session_ready": "Sesión disponible; no acredita inferencia",
+    "configured": "API key configurada",
     "healthy": "Estado saludable comprobado",
     "needs_review": "Necesita revisión",
     "unverified": "Sin verificar; revisar estado",

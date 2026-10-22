@@ -120,6 +120,7 @@
     "export_logs": "Data Export"
   },
   "routes": {
+    "nodia_ai": "NodiaAI",
     "home": "Home",
     "business": "Businesses",
     "users": "Users",
@@ -183,5 +184,6 @@
     "previous": "Previous page",
     "first": "First page",
     "last": "Last page"
-  }
+  },
+  "immutable_key": "The module key cannot be changed."
 }

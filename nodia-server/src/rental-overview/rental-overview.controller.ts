@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from '../rental-common/rental-response.schemas.js';
 import {
   Controller,
@@ -45,7 +46,7 @@ export class RentalOverviewController {
     @Query() dto: RentalOverviewQueryDto,
   ) {
     return this.getRentalOverviewUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
     );

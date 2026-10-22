@@ -1,0 +1,131 @@
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import useAuthStore from "../../../../../store/authStore";
+import { useAttachmentDrafts } from "../../../../../modules/nodiaAi/components/Attachments/hooks/useAttachmentDrafts";
+import * as services from "../../../../../modules/nodiaAi/infrastructure/attachmentServices";
+import { chatId, messageId, conversation } from "../../infrastructure/fixtures";
+import type { NodiaAiAttachment } from "../../../../../modules/nodiaAi/infrastructure/attachmentSchemas";
+
+vi.mock("sileo", () => ({ sileo: { error: vi.fn(), success: vi.fn() } }));
+vi.mock("../../../../../modules/nodiaAi/infrastructure/attachmentServices", () => ({ createAttachment: vi.fn(), getAttachment: vi.fn(), getAttachmentCapabilities: vi.fn(), uploadAttachment: vi.fn(), reviewAttachment: vi.fn(), deleteAttachment: vi.fn() }));
+const attachment: NodiaAiAttachment = { attachment_id: "77777777-7777-4777-8777-777777777777", conversation_id: chatId, kind: "pdf", state: "uploading", media_type: null, byte_count: null, file_name: "synthetic.pdf", page_count: null, duration_seconds: null, interpretation: null };
+let client: QueryClient;
+const wrapper = ({ children }: { children: ReactNode }) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+beforeEach(() => {
+  vi.resetAllMocks();
+  client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  useAuthStore.setState({ user: { id: "9", name: "Synthetic owner" }, token: "synthetic-only", expiresAt: Date.now() + 600000, sessionStatus: "authenticated", sessionVersion: 1 });
+  vi.mocked(services.createAttachment).mockResolvedValue({ attachment, upload: { method: "PUT", path: `/nodia-ai/attachments/${attachment.attachment_id}/content`, expires_at: conversation.expires_at } });
+  vi.mocked(services.uploadAttachment).mockResolvedValue({ ...attachment, state: "ready", media_type: "application/pdf", byte_count: 9 });
+  vi.mocked(services.getAttachmentCapabilities).mockResolvedValue({ limits: { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 50, image_pixels: 40000000 }, reviewed_text: true, native_modalities: { image: null, pdf: null, audio: null } });
+  vi.mocked(services.getAttachment).mockResolvedValue({ ...attachment, state: "ready" });
+});
+afterEach(() => { client.clear(); useAuthStore.setState({ user: null, token: null, sessionStatus: "anonymous" }); });
+function add(result: { current: ReturnType<typeof useAttachmentDrafts> }) { act(() => result.current.add([new File(["synthetic"], "synthetic.pdf", { type: "application/pdf" })])); return result.current.entries[0]!.localId; }
+describe("per conversation attachment drafts", () => {
+  it("keeps local files across chat changes and releases them only after accepted admission", () => {
+    const { result, rerender } = renderHook(({ id }) => useAttachmentDrafts(id), { initialProps: { id: chatId }, wrapper });
+    const id = add(result);
+    rerender({ id: messageId });
+    expect(result.current.entries).toEqual([]);
+    rerender({ id: chatId });
+    expect(result.current.entries[0]?.localId).toBe(id);
+    act(() => result.current.clear(chatId));
+    expect(result.current.entries).toEqual([]);
+  });
+  it("recovers an uncertain PUT through metadata without repeating binary upload", async () => {
+    vi.mocked(services.uploadAttachment).mockRejectedValueOnce(new Error("Synthetic connection lost"));
+    const { result } = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    const id = add(result);
+    await act(() => result.current.upload(id));
+    expect(result.current.entries[0]?.uncertain).toBe(true);
+    expect(result.current.entries[0]?.file.name).toBe("synthetic.pdf");
+    await act(() => result.current.upload(id));
+    expect(services.uploadAttachment).toHaveBeenCalledTimes(1);
+    expect(services.getAttachment).toHaveBeenCalledOnce();
+    expect(result.current.entries[0]?.attachment?.state).toBe("ready");
+  });
+  it("preserves text on failed review and serializes only exact accepted references", async () => {
+    const { result } = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    const id = add(result);
+    await act(() => result.current.upload(id));
+    act(() => result.current.edit(id, "Reviewed synthetic amount: 0"));
+    vi.mocked(services.reviewAttachment).mockRejectedValueOnce(new Error("Synthetic review failure"));
+    await act(() => result.current.review(id));
+    expect(result.current.entries[0]?.text).toBe("Reviewed synthetic amount: 0");
+    expect(result.current.ready).toBe(false);
+    vi.mocked(services.reviewAttachment).mockResolvedValue({ ...attachment, state: "ready", interpretation: { origin: "user_reviewed", reviewed: true, revision: 1, text: "Reviewed synthetic amount: 0" } });
+    await act(() => result.current.review(id));
+    expect(result.current.parts).toEqual([{ kind: "pdf", attachment_id: attachment.attachment_id }]);
+    expect(result.current.ready).toBe(true);
+    act(() => result.current.edit(id, "Changed after approval"));
+    expect(result.current.parts).toEqual([]);
+    expect(result.current.ready).toBe(false);
+  });
+  it("prefills only actual extracted PDF text and still requires review", async () => {
+    vi.mocked(services.uploadAttachment).mockResolvedValue({ ...attachment, state: "ready", interpretation: { text: "Real synthetic extraction", origin: "extracted", reviewed: false, revision: 1 } });
+    const { result } = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    const id = add(result);
+    await act(() => result.current.upload(id));
+    expect(result.current.entries[0]?.text).toBe("Real synthetic extraction");
+    expect(result.current.parts).toEqual([]);
+  });
+  it("late upload updates its original chat without contaminating the new draft", async () => {
+    let resolve!: (value: NodiaAiAttachment) => void;
+    vi.mocked(services.uploadAttachment).mockImplementation(() => new Promise(done => { resolve = done; }));
+    const { result, rerender } = renderHook(({ id }) => useAttachmentDrafts(id), { initialProps: { id: chatId }, wrapper });
+    const id = add(result);
+    let pending!: Promise<void>;
+    await act(async () => { pending = result.current.upload(id); await Promise.resolve(); });
+    rerender({ id: messageId });
+    await act(async () => { resolve({ ...attachment, state: "ready" }); await pending; });
+    expect(result.current.entries).toEqual([]);
+    rerender({ id: chatId });
+    expect(result.current.entries[0]?.attachment?.state).toBe("ready");
+  });
+  it("permits an original file only on exact verified native capability and blocks after revocation", async () => {
+    const limits = { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 50, image_pixels: 40000000 };
+    vi.mocked(services.getAttachmentCapabilities).mockResolvedValue({ limits, reviewed_text: true, native_modalities: { image: null, pdf: true, audio: null }, native_media_types: ["application/pdf"] });
+    const { result } = renderHook(() => useAttachmentDrafts(chatId, 1), { wrapper });
+    const id = add(result);
+    await act(() => result.current.upload(id));
+    await waitFor(() => expect(result.current.ready).toBe(true));
+    expect(result.current.entries[0]?.text).toBe("");
+    expect(result.current.parts).toEqual([{ kind: "pdf", attachment_id: attachment.attachment_id }]);
+    act(() => result.current.edit(id, "Unaccepted correction"));
+    expect(result.current.ready).toBe(false);
+    act(() => result.current.resetReview(id));
+    expect(result.current.entries[0]?.text).toBe("");
+    expect(result.current.ready).toBe(true);
+    vi.mocked(services.getAttachmentCapabilities).mockResolvedValue({ limits, reviewed_text: true, native_modalities: { image: null, pdf: null, audio: null } });
+    await act(() => client.invalidateQueries({ queryKey: ["nodia-ai"] }));
+    await waitFor(() => expect(result.current.ready).toBe(false));
+    expect(result.current.entries[0]?.attachment?.state).toBe("ready");
+    expect(result.current.entries[0]?.text).toBe("");
+  });
+  it("does not promote category-only or different-MIME evidence to a ready original", async () => {
+    const limits = { file_bytes: 20971520, files_per_message: 4, message_files_bytes: 41943040, audio_seconds: 300, pdf_pages: 50, image_pixels: 40000000 };
+    vi.mocked(services.getAttachmentCapabilities).mockResolvedValue({ limits, reviewed_text: true, native_modalities: { image: null, pdf: true, audio: null }, native_media_types: ["audio/wav"] });
+    const { result } = renderHook(() => useAttachmentDrafts(chatId, 1), { wrapper });
+    const id = add(result);
+    await act(() => result.current.upload(id));
+    expect(result.current.ready).toBe(false);
+    expect(result.current.parts).toEqual([]);
+    vi.mocked(services.getAttachmentCapabilities).mockResolvedValue({ limits, reviewed_text: true, native_modalities: { image: null, pdf: true, audio: null } });
+    await act(() => client.invalidateQueries({ queryKey: ["nodia-ai"] }));
+    expect(result.current.ready).toBe(false);
+    expect(result.current.entries[0]?.attachment?.state).toBe("ready");
+  });
+  it("counts accepted attachment text as UTF-8 bytes for the total message budget", async () => {
+    const { result } = renderHook(() => useAttachmentDrafts(chatId), { wrapper });
+    const id = add(result);
+    await act(() => result.current.upload(id));
+    act(() => result.current.edit(id, "€"));
+    expect(result.current.reviewedTextBytes).toBe(0);
+    vi.mocked(services.reviewAttachment).mockResolvedValue({ ...attachment, state: "ready", interpretation: { origin: "user_reviewed", reviewed: true, revision: 1, text: "€" } });
+    await act(() => result.current.review(id));
+    expect(result.current.reviewedTextBytes).toBe(3);
+  });
+});

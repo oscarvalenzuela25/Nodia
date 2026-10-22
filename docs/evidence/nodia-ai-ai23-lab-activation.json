@@ -1,0 +1,33 @@
+{
+  "stage": "AI-23",
+  "scope": "private_local_vm_lab",
+  "activated_at_utc": "2026-10-17T16:25:28Z",
+  "backup": "/opt/nodia/verification-backups/ai23-before-dependent-workflows-1792254323",
+  "backup_bytes": 280896,
+  "backup_sha256": "f72fb6615b9288fe65483706f5eaa41a084326a98432758bce1853541acfca84",
+  "migration": {
+    "migration": "AddNodiaAiWorkflowBindings1792700000000",
+    "applied": 1
+  },
+  "http_health": 200,
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active"
+  },
+  "configured_provider_environment_dependencies_unchanged": true,
+  "gemini_container_restarted": false,
+  "private_profile_unchanged": true,
+  "knowledge_capabilities": 67,
+  "knowledge_fragments": 27,
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 25
+  },
+  "real_inferences_by_deployment": 0,
+  "business_writes": 0,
+  "new_tables": 0,
+  "new_columns": 2,
+  "existing_columns_added": 2
+}

@@ -1,0 +1,816 @@
+{"version": "2.1.1", "source": "/usr/local/lib/python3.12/dist-packages/gemini_webapi/client.py", "generate_signature": "(self, prompt: str, files: list[str | pathlib.Path | bytes | _io.BytesIO] | None = None, model: gemini_webapi.types.availablemodel.AvailableModel | gemini_webapi.constants.Model | str | dict | None = None, gem: gemini_webapi.types.gem.Gem | str | None = None, chat: Optional[ForwardRef('ChatSession')] = None, temporary: bool = False, deep_research: bool = False, extended_thinking: bool = False, **kwargs) -> gemini_webapi.types.modeloutput.ModelOutput"}
+    async def generate_content(
+        self,
+        prompt: str,
+        files: list[str | Path | bytes | io.BytesIO] | None = None,
+        model: AvailableModel | Model | str | dict | None = None,
+        gem: Gem | str | None = None,
+        chat: Optional["ChatSession"] = None,
+        temporary: bool = False,
+        deep_research: bool = False,
+        extended_thinking: bool = False,
+        **kwargs,
+    ) -> ModelOutput:
+        """Generates contents with prompt.
+
+        Parameters
+        ----------
+        prompt: `str`
+            Text prompt provided by user.
+        files: `list[str | Path | bytes | io.BytesIO]`, optional
+            List of file paths or byte streams to be attached.
+        model: `AvailableModel | str | dict`, optional
+            Specify the model to use for generation. Pass a model name, alias or id string, or an
+            `gemini_webapi.types.AvailableModel` from `list_models()`. Omit it to let Google use
+            the account's default model. The `gemini_webapi.constants.Model` enum is deprecated
+            and still accepted, with a warning.
+        gem: `Gem | str`, optional
+            Specify a gem to use as system prompt for the chat session.
+            Pass either a `gemini_webapi.types.Gem` object or a gem id string.
+        chat: `ChatSession`, optional
+            Chat data to retrieve conversation history.
+            If None, will automatically generate a new chat id when sending post request.
+        temporary: `bool`, optional
+            If set to `True`, the ongoing conversation will not show up in Gemini history.
+        deep_research: `bool`, optional
+            If set to `True`, will enable deep research mode and start creating a deep research plan.
+        extended_thinking: `bool`, optional
+            If set to `True`, will enable extended thinking mode, default to standard.
+        kwargs: `dict`, optional
+            Additional arguments which will be passed to the post request.
+            Refer to `curl_cffi.requests.AsyncSession.request` for more information.
+
+        Returns
+        -------
+        :class:`ModelOutput`
+            Output data from gemini.google.com.
+
+        Raises
+        ------
+        `AssertionError`
+            If prompt is empty.
+        `gemini_webapi.TimeoutError`
+            If request timed out.
+        `gemini_webapi.GeminiError`
+            If no reply candidate found in response.
+        `gemini_webapi.APIError`
+            - If request failed with status code other than 200.
+            - If response structure is invalid and failed to parse.
+
+        """
+        if self.auto_close:
+            await self.reset_close_task()
+
+        if any([files, gem, deep_research]):
+            self._check_account_status(raise_error=True)
+
+        file_data = None
+        if files:
+            await self._sync_activity()
+
+            uploaded_urls = await asyncio.gather(
+                *(
+                    upload_file(
+                        file,
+                        client=self._live_client,
+                        push_id=self.push_id,
+                        verbose=self.verbose,
+                    )
+                    for file in files
+                )
+            )
+            file_data = [
+                [[url], parse_file_name(file)]
+                for url, file in zip(uploaded_urls, files, strict=True)
+            ]
+
+        try:
+            await self._sync_activity()
+
+            session_state = {
+                "last_texts": {},
+                "last_thoughts": {},
+            }
+            output = None
+            async for chunk in self._generate(
+                prompt=prompt,
+                req_file_data=file_data,
+                model=model,
+                gem=gem,
+                chat=chat,
+                temporary=temporary,
+                session_state=session_state,
+                deep_research=deep_research,
+                extended_thinking=extended_thinking,
+                **kwargs,
+            ):
+                output = chunk
+
+            if output is None:
+                raise GeminiError("Failed to generate contents. No output data found in response.")
+
+            if isinstance(chat, ChatSession):
+                output.metadata = chat.metadata
+                chat.last_output = output
+
+            return output
+
+        finally:
+            if files:
+                for file in files:
+                    if isinstance(file, io.BytesIO):
+                        file.close()
+
+    @running(retry=5)
+    async def _generate(
+        self,
+        prompt: str,
+        req_file_data: list[Any] | None = None,
+        model: AvailableModel | Model | str | dict | None = None,
+        gem: Gem | str | None = None,
+        chat: Optional["ChatSession"] = None,
+        temporary: bool = False,
+        session_state: dict[str, Any] | None = None,
+        deep_research: bool = False,
+        extended_thinking: bool = False,
+        **kwargs,
+    ) -> AsyncGenerator[ModelOutput, None]:
+        """Internal method which actually sends content generation requests.
+
+        When a model header is present, its JSPB model selector is extended with
+        the current client session id before the streaming request is sent, and
+        the model number from that selector is mirrored into the request body. The
+        streaming response parser keeps partial frame state internally to avoid
+        repeated scans of large cumulative response frames.
+        """
+        assert prompt, "Prompt cannot be empty."
+
+        # Resolved down to one of two things: a model this account offers, or None for "let
+        # Google pick", so nothing below has to know which form the caller passed.
+        selected: AvailableModel | None
+        if model is None or isinstance(model, AvailableModel):
+            selected = model
+        elif isinstance(model, str):
+            selected = self._resolve_model_by_name(model)
+        elif isinstance(model, dict):
+            selected = AvailableModel.from_dict(model)
+        elif isinstance(model, Model):
+            warn_deprecated_model(f"Passing {model} to generate_content()")
+            selected = self._resolve_enum_model(model)
+        else:
+            raise TypeError(
+                f"'model' must be an `AvailableModel`, string, dictionary or None; "
+                f"got `{type(model).__name__}`"
+            )
+
+        model_label = selected.model_name if selected else "the default model"
+
+        if selected is not None and not selected.is_available:
+            raise GeminiError(
+                f"{model_label} is not available for use. Account status: {self.account_status.name} - {self.account_status.description}"
+            )
+
+        _reqid = self._reqid
+        self._reqid += 100000
+
+        gem_id = gem.id if isinstance(gem, Gem) else gem
+
+        chat_backup: dict[str, Any] | None = None
+        if chat:
+            chat_backup = {
+                "metadata": (
+                    chat.metadata if getattr(chat, "metadata", None) else DEFAULT_METADATA
+                ),
+                "cid": getattr(chat, "cid", ""),
+                "rid": getattr(chat, "rid", ""),
+                "rcid": getattr(chat, "rcid", ""),
+            }
+
+        if session_state is None:
+            session_state = {
+                "last_texts": {},
+                "last_thoughts": {},
+            }
+
+        # Bound once outside the retry loop, they are the same dicts on every attempt
+        last_texts: dict[str, str] = session_state["last_texts"]
+        last_thoughts: dict[str, str] = session_state["last_thoughts"]
+
+        has_generated_text = False
+        sleep_time = 10
+
+        message_content = [
+            prompt,
+            0,
+            None,
+            req_file_data,
+            None,
+            None,
+            0,
+        ]
+
+        params: dict[str, Any] = {"hl": self.language, "_reqid": _reqid, "rt": "c"}
+        if self.build_label:
+            params["bl"] = self.build_label
+        if self.session_id:
+            params["f.sid"] = self.session_id
+
+        while True:
+            try:
+                inner_req_list: list[Any] = [None] * 81
+                inner_req_list[0] = message_content
+                inner_req_list[1] = [self.language]
+                inner_req_list[2] = chat.metadata if chat else DEFAULT_METADATA
+                if deep_research:
+                    inner_req_list[3] = f"!{secrets.token_urlsafe(2600)}"
+                    inner_req_list[4] = uuid.uuid4().hex
+                inner_req_list[6] = [1]
+                inner_req_list[STREAMING_FLAG_INDEX] = 1
+                inner_req_list[10] = 1
+                inner_req_list[11] = 0
+                inner_req_list[17] = [[0]]
+                inner_req_list[18] = 0
+                if gem_id:
+                    inner_req_list[GEM_FLAG_INDEX] = gem_id
+                inner_req_list[27] = 1
+                inner_req_list[30] = [4]
+                inner_req_list[41] = [1]
+                if temporary:
+                    inner_req_list[TEMPORARY_CHAT_FLAG_INDEX] = 1
+                if deep_research:
+                    inner_req_list[49] = 1
+                inner_req_list[53] = 0
+                if deep_research:
+                    inner_req_list[54] = [[[[[1]]]]]
+                    inner_req_list[55] = [[1]]
+                inner_req_list[61] = []
+                inner_req_list[68] = 1
+                inner_req_list[79] = 1
+                inner_req_list[80] = 2 if extended_thinking else 1
+
+                uuid_val = str(uuid.uuid4()).upper()
+
+                inner_req_list[59] = uuid_val
+
+                model_headers = selected.model_header.copy() if selected else {}
+                if MODEL_HEADER_KEY in model_headers:
+                    model_header = json.loads(model_headers[MODEL_HEADER_KEY])
+                    model_number = model_header[-1] if model_header else None
+                    if isinstance(model_number, int):
+                        inner_req_list[79] = model_number
+                    model_header.append(2 if extended_thinking else 1)
+                    model_header.append(self._sessionid)
+                    model_headers[MODEL_HEADER_KEY] = json.dumps(model_header).decode("utf-8")
+
+                request_headers = {
+                    **Headers.GEMINI.value,
+                    **model_headers,
+                    "x-goog-ext-525005358-jspb": f'["{uuid_val}",1]',
+                    **Headers.SAME_DOMAIN.value,
+                }
+
+                request_data = {
+                    "at": self.access_token or "",  # Guest sessions have no SNlM0e token
+                    "f.req": json.dumps(
+                        [
+                            None,
+                            json.dumps(inner_req_list).decode("utf-8"),
+                        ]
+                    ).decode("utf-8"),
+                }
+
+                async with self._live_client.stream(
+                    "POST",
+                    Endpoint.GENERATE,
+                    params=params,
+                    headers=request_headers,
+                    data=request_data,
+                    **kwargs,
+                ) as response:
+                    if self.verbose:
+                        logger.debug(
+                            f"HTTP Request: POST {Endpoint.GENERATE} [{response.status_code}] (HTTP/{format_http_version(response.http_version)})"
+                        )
+                    if response.status_code != 200:
+                        await self.close()
+                        raise APIError(
+                            f"Failed to generate contents. Status: {response.status_code}"
+                        )
+
+                    stream_parser = StreamingFrameParser()
+                    _raw_response_parts = []
+                    decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+
+                    last_progress_time: float = time.time()
+
+                    is_thinking = False
+                    is_queueing = False
+                    has_candidates = False
+                    is_completed = False  # Check if this conversation turn has been fully answered.
+                    is_final_chunk = False  # Check if this turn is saved to history and marked complete or still pending (e.g., video generation).
+                    cid = chat.cid if chat else ""
+                    rid = chat.rid if chat else ""
+
+                    async def _process_parts(
+                        parts: list[Any],
+                    ) -> AsyncGenerator[ModelOutput, None]:
+                        nonlocal \
+                            is_thinking, \
+                            is_queueing, \
+                            has_candidates, \
+                            is_completed, \
+                            is_final_chunk, \
+                            cid, \
+                            rid
+                        for part in parts:
+                            # Check for fatal error codes
+                            error_code = get_nested_value(part, [5, 2, 0, 1, 0])
+                            if error_code:
+                                await self.close()
+                                match error_code:
+                                    case ErrorCode.USAGE_LIMIT_EXCEEDED:
+                                        raise UsageLimitExceededError(
+                                            f"Usage limit exceeded for model '{model_label}'.{self._quota_reset_hint()} "
+                                            "You can switch to a different model (e.g., Gemini Flash), "
+                                            "or check your account limits on gemini.google.com."
+                                        )
+                                    case ErrorCode.MODEL_INCONSISTENT:
+                                        raise ModelInvalidError(
+                                            "The specified model is inconsistent with the conversation history. "
+                                            "Please ensure you are using the same 'model' parameter throughout the entire ChatSession."
+                                        )
+                                    case ErrorCode.MODEL_HEADER_INVALID:
+                                        raise ModelInvalidError(
+                                            f"The model '{model_label}' is currently unavailable or the request structure is outdated. "
+                                            "Please update 'gemini_webapi' to the latest version or report this on GitHub if the problem persists."
+                                        )
+                                    case ErrorCode.IP_TEMPORARILY_BLOCKED:
+                                        raise TemporarilyBlockedError(
+                                            "Your IP address has been temporarily flagged or blocked by Google. "
+                                            "Please try using a proxy, a different network, or wait for a while before retrying."
+                                        )
+                                    case ErrorCode.TEMPORARY_ERROR_1013:
+                                        raise APIError(
+                                            "Gemini encountered a temporary error (1013). Retrying..."
+                                        )
+                                    case _:
+                                        raise APIError(
+                                            f"Failed to generate contents (stream). Unknown API error code: {error_code}. "
+                                            "This might be a temporary Google service issue."
+                                        )
+
+                            # Check for queueing status
+                            status = get_nested_value(part, [5])
+                            if isinstance(status, list) and status and not is_thinking:
+                                is_queueing = True
+                                if not has_candidates:
+                                    logger.debug("Model is in a waiting state (queueing)...")
+
+                            inner_json_str = get_nested_value(part, [2])
+                            if inner_json_str:
+                                try:
+                                    part_json = json.loads(inner_json_str)
+                                    m_data = get_nested_value(part_json, [1])
+                                    if m_data:
+                                        _new_cid = get_nested_value(m_data, [0])
+                                        _new_rid = get_nested_value(m_data, [1])
+                                        if _new_cid:
+                                            cid = _new_cid
+                                        if _new_rid:
+                                            rid = _new_rid
+
+                                        if isinstance(chat, ChatSession):
+                                            chat.metadata = m_data
+
+                                    # Check for busy analyzing data
+                                    tool_name = get_nested_value(part_json, [6, 1, 0])
+                                    if tool_name == "data_analysis_tool":
+                                        is_thinking = True
+                                        is_queueing = False
+                                        if not has_candidates:
+                                            logger.debug("Model is active (thinking/analyzing)...")
+
+                                    context_str = get_nested_value(part_json, [25])
+                                    if isinstance(context_str, str):
+                                        is_final_chunk = True
+                                        is_thinking = False
+                                        is_queueing = False
+                                        if isinstance(chat, ChatSession):
+                                            chat.metadata = [None] * 9 + [context_str]
+
+                                    timestamp_data = get_nested_value(part_json, [27, 0, 0, 3])
+                                    timestamp = time.time()
+                                    if (
+                                        isinstance(timestamp_data, list)
+                                        and len(timestamp_data) >= 2
+                                    ):
+                                        seconds = timestamp_data[0]
+                                        nanos = timestamp_data[1]
+                                        timestamp = float(seconds) + (float(nanos) / 1e9)
+
+                                    candidates_list = get_nested_value(part_json, [4], [])
+                                    if candidates_list:
+                                        output_candidates = []
+                                        for i, candidate_data in enumerate(candidates_list):
+                                            rcid = get_nested_value(candidate_data, [0])
+                                            if not rcid:
+                                                continue
+                                            if isinstance(chat, ChatSession):
+                                                chat.rcid = rcid
+
+                                            (
+                                                text,
+                                                thoughts,
+                                                web_images,
+                                                generated_images,
+                                                generated_videos,
+                                                generated_media,
+                                                citations,
+                                            ) = self._parse_candidate(
+                                                candidate_data, cid, rid, rcid
+                                            )
+
+                                            deep_research_plan = None
+                                            deep_research_document = None
+                                            if deep_research:
+                                                plan_data = extract_deep_research_plan(
+                                                    candidate_data,
+                                                    fallback_text=text,
+                                                )
+
+                                                if plan_data:
+                                                    deep_research_plan = DeepResearchPlan(
+                                                        **plan_data,
+                                                        cid=getattr(chat, "cid", None),
+                                                    )
+
+                                                # The report is an inline document, not text
+                                                if doc_data := extract_deep_research_document(
+                                                    candidate_data
+                                                ):
+                                                    deep_research_document = DeepResearchDocument(
+                                                        **doc_data
+                                                    )
+
+                                            # Check if this frame represents the complete state of the message
+                                            indicator = get_nested_value(candidate_data, [8, 0])
+                                            is_completed = indicator == 2
+
+                                            # Save this conversation turn to recent chats whenever it is stored in history.
+                                            if is_final_chunk and (
+                                                cid and isinstance(self._recent_chats, list)
+                                            ):
+                                                chat_title = f"Chat({cid})"
+                                                is_pinned = False
+                                                for c in self._recent_chats:
+                                                    if c.cid == cid:
+                                                        chat_title = c.title
+                                                        is_pinned = c.is_pinned
+                                                        break
+
+                                                expected_idx = (
+                                                    0
+                                                    if is_pinned
+                                                    else sum(
+                                                        bool(c.cid != cid and c.is_pinned)
+                                                        for c in self._recent_chats
+                                                    )
+                                                )
+
+                                                if not (
+                                                    len(self._recent_chats) > expected_idx
+                                                    and self._recent_chats[expected_idx].cid == cid
+                                                    and self._recent_chats[expected_idx].title
+                                                    == chat_title
+                                                    and self._recent_chats[expected_idx].timestamp
+                                                    == timestamp
+                                                ):
+                                                    self._recent_chats = [
+                                                        c
+                                                        for c in self._recent_chats
+                                                        if c.cid != cid
+                                                    ]
+                                                    self._recent_chats.insert(
+                                                        expected_idx,
+                                                        ChatInfo(
+                                                            cid=cid,
+                                                            title=chat_title,
+                                                            is_pinned=is_pinned,
+                                                            timestamp=timestamp,
+                                                        ),
+                                                    )
+
+                                            last_sent_text = last_texts.get(rcid) or last_texts.get(
+                                                f"idx_{i}", ""
+                                            )
+                                            text_delta, new_full_text = get_delta_by_fp_len(
+                                                text,
+                                                last_sent_text,
+                                                is_final=is_completed or indicator is None,
+                                            )
+                                            last_sent_thought = last_thoughts.get(
+                                                rcid
+                                            ) or last_thoughts.get(f"idx_{i}", "")
+                                            if thoughts:
+                                                thoughts_delta, new_full_thought = (
+                                                    get_delta_by_fp_len(
+                                                        thoughts,
+                                                        last_sent_thought,
+                                                        is_final=is_completed or indicator is None,
+                                                    )
+                                                )
+                                            else:
+                                                thoughts_delta = ""
+                                                new_full_thought = ""
+
+                                            if (
+                                                text_delta
+                                                or thoughts_delta
+                                                or web_images
+                                                or generated_images
+                                                or generated_videos
+                                                or generated_media
+                                                or deep_research_plan
+                                            ):
+                                                has_candidates = True
+
+                                            # Update state with the provider's cleaned state to handle drift
+                                            last_texts[rcid] = last_texts[f"idx_{i}"] = (
+                                                new_full_text
+                                            )
+
+                                            last_thoughts[rcid] = last_thoughts[f"idx_{i}"] = (
+                                                new_full_thought
+                                            )
+
+                                            output_candidates.append(
+                                                Candidate(
+                                                    rcid=rcid,
+                                                    text=text,
+                                                    text_delta=text_delta,
+                                                    thoughts=thoughts or None,
+                                                    thoughts_delta=thoughts_delta,
+                                                    web_images=web_images,
+                                                    generated_images=generated_images,
+                                                    generated_videos=generated_videos,
+                                                    generated_media=generated_media,
+                                                    citations=citations,
+                                                    deep_research_plan=deep_research_plan,
+                                                    deep_research_document=deep_research_document,
+                                                )
+                                            )
+
+                                        if output_candidates:
+                                            is_thinking = False
+                                            is_queueing = False
+                                            yield ModelOutput(
+                                                metadata=[cid, rid],
+                                                candidates=output_candidates,
+                                            )
+                                except json.JSONDecodeError:
+                                    continue
+
+                    chunk_iterator = response.aiter_content().__aiter__()
+                    while True:
+                        stall_threshold = (
+                            self.timeout
+                            if (is_thinking or is_queueing)
+                            else min(self.timeout, self.watchdog_timeout)
+                        )
+                        try:
+                            chunk = await asyncio.wait_for(
+                                chunk_iterator.__anext__(), timeout=stall_threshold + 5
+                            )
+                        except StopAsyncIteration:
+                            break
+                        except builtins.TimeoutError:
+                            logger.debug(
+                                f"[Watchdog] Socket idle for {stall_threshold + 5}s. Refreshing connection..."
+                            )
+                            await self.close()
+                            break
+
+                        decoded_chunk = decoder.decode(chunk, final=False)
+                        if self.verbose:
+                            _raw_response_parts.append(decoded_chunk)
+                        parsed_parts = stream_parser.feed(decoded_chunk)
+
+                        got_update = False
+                        async for out in _process_parts(parsed_parts):
+                            has_generated_text = True
+                            yield out
+                            got_update = True
+
+                        if got_update:
+                            last_progress_time = time.time()
+                        else:
+                            stall_threshold = (
+                                self.timeout
+                                if (is_thinking or is_queueing)
+                                else min(self.timeout, self.watchdog_timeout)
+                            )
+                            if (time.time() - last_progress_time) > stall_threshold:
+                                if is_thinking:
+                                    logger.debug(
+                                        f"[Watchdog] Model is taking its time thinking ({int(time.time() - last_progress_time)}s). Reconnecting to poll..."
+                                    )
+                                    break
+                                else:
+                                    logger.debug(
+                                        f"[Watchdog] Connection idle for {stall_threshold}s (queueing={is_queueing}). "
+                                        "Attempting recovery..."
+                                    )
+                                    await self.close()
+                                    break
+
+                    final_decoded = decoder.decode(b"", final=True)
+                    if self.verbose:
+                        _raw_response_parts.append(final_decoded)
+                    parsed_parts = stream_parser.feed(final_decoded)
+                    parsed_parts.extend(stream_parser.flush())
+                    async for out in _process_parts(parsed_parts):
+                        has_generated_text = True
+                        yield out
+
+                    if not is_completed or is_thinking or is_queueing:
+                        # A known cid means the context was saved, but reading it back needs
+                        # an account: a guest session has no history, so `read_chat` would
+                        # refuse and surface the dropped stream as a "Permission denied"
+                        # GeminiError - misleading, and not retryable. Guests fall through
+                        # to the retryable branch below instead.
+                        if cid and self._check_account_status():
+                            logger.debug(
+                                f"Stream incomplete. Checking conversation history for {cid}..."
+                            )
+
+                            # `is_final_chunk` is the strong signal that a turn was
+                            # persisted, but not a necessary one: a capability refusal (e.g.
+                            # video generation on an ineligible plan) ends the stream with a
+                            # complete answer already in the conversation and no marker, and
+                            # refusing to recover there made `@running(retry=5)` re-send the
+                            # prompt six times for an answer that was already there. So
+                            # recover on any known cid, on a short leash without the marker
+                            # so a genuine abort still fails fast.
+                            recovery_deadline = (
+                                self.timeout
+                                if is_final_chunk
+                                else min(self.timeout, self.watchdog_timeout)
+                            )
+
+                            poll_start_time = time.time()
+
+                            while True:
+                                if (time.time() - poll_start_time) > recovery_deadline:
+                                    logger.warning(
+                                        f"[Recovery] Polling for {cid} timed out after {recovery_deadline}s."
+                                    )
+                                    await self.close()
+                                    if has_generated_text:
+                                        raise GeminiError(
+                                            "The connection to Gemini was lost while generating the response, and recovery timed out. "
+                                            "Please try sending your prompt again."
+                                        )
+                                    else:
+                                        raise APIError(
+                                            "read_chat polling timed out waiting for the model to finish. "
+                                            "The original request may have been silently aborted by Google."
+                                        )
+                                await self._sync_activity()
+                                recovered_history = await self.read_chat(cid)
+                                if (
+                                    recovered_history
+                                    and recovered_history.turns
+                                    and recovered_history.turns[0].role == "model"
+                                ):
+                                    recovered = recovered_history.turns[0].model_output
+                                    if (
+                                        recovered
+                                        and recovered.candidates
+                                        and (
+                                            recovered.text
+                                            or recovered.thoughts
+                                            or recovered.images
+                                            or recovered.videos
+                                            or recovered.media
+                                        )
+                                    ):
+                                        rec_rcid = recovered.rcid
+                                        prev_rcid = chat_backup["rcid"] if chat_backup else ""
+                                        current_expected_rcid = (
+                                            getattr(chat, "rcid", "") if chat else ""
+                                        )
+
+                                        is_new_turn = rec_rcid != prev_rcid
+
+                                        if is_new_turn:
+                                            logger.debug(
+                                                f"[Recovery] Successfully recovered response for CID: {cid} (RCID: {rec_rcid})"
+                                            )
+                                            if chat:
+                                                recovered.metadata = chat.metadata
+                                                chat.rcid = rec_rcid
+
+                                            # `read_chat` builds candidates whose delta is
+                                            # the whole answer, which would replay text the
+                                            # stream consumer already printed - so rebase
+                                            # each delta on what was sent. `generate_content`
+                                            # is unaffected: it reads `.text` and ignores
+                                            # deltas entirely.
+                                            for i, candidate in enumerate(recovered.candidates):
+                                                sent_text = last_texts.get(
+                                                    candidate.rcid
+                                                ) or last_texts.get(f"idx_{i}", "")
+                                                sent_thoughts = last_thoughts.get(
+                                                    candidate.rcid
+                                                ) or last_thoughts.get(f"idx_{i}", "")
+
+                                                candidate.text_delta, _ = get_delta_by_fp_len(
+                                                    candidate.text, sent_text, is_final=True
+                                                )
+                                                candidate.thoughts_delta, _ = get_delta_by_fp_len(
+                                                    candidate.thoughts or "",
+                                                    sent_thoughts,
+                                                    is_final=True,
+                                                )
+
+                                            yield recovered
+                                            break
+                                        else:
+                                            logger.debug(
+                                                f"[Recovery] Recovered turn is not the target turn (target: {current_expected_rcid or 'NEW'}, got {rec_rcid}). Waiting..."
+                                            )
+
+                                logger.debug(
+                                    f"[Recovery] Response not ready, waiting {sleep_time}s..."
+                                )
+                                await asyncio.sleep(sleep_time)
+                            break
+                        elif deep_research and cid:
+                            # Confirming a research plan legitimately ends the stream without
+                            # completing the turn: the task was accepted and now runs
+                            # server-side. Retrying here re-submits the research.
+                            logger.debug(
+                                f"Deep research accepted for {cid}; the task now runs "
+                                "server-side. Not retrying the request."
+                            )
+                        else:
+                            reason = (
+                                "This session cannot read history, so the turn cannot be recovered"
+                                if cid
+                                else "No CID found to recover"
+                            )
+                            logger.debug(
+                                f"Stream suspended (completed={is_completed}, final_chunk={is_final_chunk}, thinking={is_thinking}, queueing={is_queueing}). "
+                                f"{reason}. (Request ID: {_reqid})"
+                            )
+                            # Close so the retry is a real refresh: `@running` re-runs
+                            # `init()` only when the client is stopped, and `init()` is what
+                            # picks a new backend, opening a new session and regenerating
+                            # the session id, `f.sid` and `_reqid` that decide routing. The
+                            # watchdog and the recovery timeout already close; a stream that
+                            # simply ends does not, which re-sent the prompt six times over
+                            # the same connection to the backend that just refused it.
+                            await self.close()
+                            raise APIError(
+                                "The original request may have been silently aborted by Google."
+                            )
+
+                    if self.verbose:
+                        _raw_response = "".join(_raw_response_parts)
+                        debug_parser = StreamingFrameParser()
+                        _parsed_full = debug_parser.feed(_raw_response)
+                        _parsed_full.extend(debug_parser.flush())
+                        logger.debug(
+                            f"Full raw response received (parsed into {len(_parsed_full)} parts)"
+                        )
+
+                break
+
+            except ReadTimeout:
+                raise TimeoutError(
+                    "The request timed out while waiting for Gemini to respond. This often happens with very long prompts "
+                    "or complex file analysis. Try increasing the 'timeout' value when initializing GeminiClient."
+                ) from None
+            except (UsageLimitExceededError, GeminiError, APIError):
+                if not has_generated_text and chat and chat_backup:
+                    chat.metadata = chat_backup["metadata"]
+                    chat.cid = chat_backup["cid"]
+                    chat.rid = chat_backup["rid"]
+                    chat.rcid = chat_backup["rcid"]
+                raise
+            except Exception as e:
+                if not has_generated_text and chat and chat_backup:
+                    chat.metadata = chat_backup["metadata"]
+                    chat.cid = chat_backup["cid"]
+                    chat.rid = chat_backup["rid"]
+                    chat.rcid = chat_backup["rcid"]
+                logger.debug(
+                    "Stream parsing interrupted. Attempting to recover conversation context..."
+                )
+                raise APIError(
+                    f"Failed to parse response body from Google ({type(e).__name__}: {e!r}). This might be a temporary API change or invalid data."
+                ) from e
+
+        # Refresh usage info after generation to update remaining credits and usage level
+        await self._fetch_usage_info()
+

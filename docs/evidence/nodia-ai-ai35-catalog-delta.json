@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "stage": "AI-35",
+  "before_inventory_sha256": "23ea3061a74beb31c8960f94dc5d4876166ac73127d65cfea0031e3ffcb20520",
+  "after_inventory_sha256": "e4a515b6a9af80b10d0c09f0ddc5a88e87e0b17f457a2a50f3692f8d835532c1",
+  "before_coordination_sha256": "c1431177f75de7d2833ab6849aa8e04dd5f4e8d62f213f730f3f0f4831a73f9a",
+  "after_coordination_sha256": "dc14082f762b7d0b78fcc60088ecb8d480cddc097d81f5a50a023144ef1af7bf",
+  "historical_stage_metadata_sha256": "3d142a4b2698a2c89619c7a53034c77b2481cb258c1eae71cb4e87979efa691f",
+  "before_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 85,
+    "publicOperations": 5,
+    "staticallyComposedModules": 80,
+    "conditionalModules": 5
+  },
+  "after_counts": {
+    "controllerFiles": 46,
+    "registeredControllers": 46,
+    "unregisteredControllers": 0,
+    "handlerOperations": 217,
+    "httpMethodPathPairs": 336,
+    "localModules": 85,
+    "publicOperations": 5,
+    "staticallyComposedModules": 80,
+    "conditionalModules": 5
+  },
+  "before_source_count": 848,
+  "after_source_count": 849,
+  "source_hash_changes": [
+    {
+      "file": "nodia-server/src/migrations/1793100000000-AddNodiaAiTextSearchIndex.ts",
+      "before_sha256": null,
+      "after_sha256": "f06131207f8c3a258894f910c978d933f231d03d6224c531b126bef17772ee32",
+      "provenance": "AI-35"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/nodia-ai-conversation.service.ts",
+      "before_sha256": "a4fe0b84bc0e2be78e2ad9392f282bd99e1471601f788f1881e84f3193c420d6",
+      "after_sha256": "096d82c0e7d81edf292f9dd3a265e723e61cde57cf3a89cd38045f0c7c3ebbe9",
+      "provenance": "AI-35"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.ts",
+      "before_sha256": "cebe02673d87e4444048bbf5c0298f95f7aacb830633de93cfbdc8988d1fdf9a",
+      "after_sha256": "915ffa82443b3731e8997c4c785fc87ab617a5be22b9f8786894371f2ba3ed01",
+      "provenance": "AI-35"
+    }
+  ],
+  "new_controller": null,
+  "new_handlers": [],
+  "unchanged_prior_handler_operations": 217,
+  "domain_handler_coverage_unchanged": 177,
+  "coordination_routes": 41,
+  "runtime_verified": false,
+  "database_applied": false,
+  "provider_generations": 0,
+  "limitations": [
+    "AST and source provenance only; no operational database write, real inference, deployment or document approval",
+    "Every previous public/app route, domain handler coverage and historical stage fact is preserved; AI-35 uses existing coordination routes and introduces no new MCP tools"
+  ]
+}

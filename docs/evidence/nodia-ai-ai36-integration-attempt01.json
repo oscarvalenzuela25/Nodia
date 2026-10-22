@@ -1,0 +1,18 @@
+{
+  "stage": "AI-36",
+  "scope": "compiled_cross_product_http_sql",
+  "attempt": "attempt01",
+  "started_at_utc": "2026-10-19T00:05:28.611530+00:00",
+  "completed_at_utc": "2026-10-19T00:05:35.398355+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "03788067b30f4405c8360ba38031c706c422da34062794a461d7f1890c11ffc1",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "error_category": "unclassified_fixture_failure",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "31b1a5dee6d77043c25388094acc5265cf2764d8c54947f8bce32780be8ec5c8"
+}

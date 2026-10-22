@@ -1,0 +1,28 @@
+{
+  "stage": "AI-33",
+  "checked_on": "2026-10-18T18:46:29.124Z",
+  "status": "passed",
+  "scope": "Existing authenticated application, read-only preference list/catalog inspection after VM activation",
+  "checks": {
+    "real_preference_list_empty": true,
+    "real_catalog_allowed_keys": [
+      "business_id",
+      "supplier_id"
+    ],
+    "real_five_key_catalog_expected": false,
+    "configuration_evidence": "docs/evidence/nodia-ai-ai33-catalog-authority.json",
+    "reason": "The lab database has no Finance or Reservations destination module. Current module authorization correctly exposes only Business preferences.",
+    "new_preference_or_proposal_saved": false,
+    "provider_generation_requested": false,
+    "chat_or_selection_mutated": false,
+    "panel_closed_at_end": true,
+    "composer_empty_and_enabled_at_end": true,
+    "user_tab_preserved": true
+  },
+  "screenshot": "docs/evidence/nodia-ai-ai33-ui-real.png",
+  "observations": [
+    "Initial opening coincided with a permissions-updated session notification and panel remount; reopened and verified the loaded panel.",
+    "Synthetic full five-key UI catalog and compiled PostgreSQL tests are separate from these two actually eligible keys.",
+    "Closing was verified visually after using the native accessible Close control."
+  ]
+}

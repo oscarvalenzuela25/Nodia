@@ -181,7 +181,7 @@ const property = shape(
     check_in_time: nullable(field('check_in_time')),
     check_out_time: nullable(field('check_out_time')),
     membership: object({
-      type: enumeration('owner', 'collaborator'),
+      type: enumeration('owner', 'collaborator', 'super_admin'),
       can_manage_configuration: boolean,
       can_manage_collaborators: boolean,
     }),

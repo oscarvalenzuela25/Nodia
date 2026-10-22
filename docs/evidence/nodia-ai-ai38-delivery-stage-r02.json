@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "scope": "isolated_packet_stage_not_deployment",
+  "context": {
+    "environment_id": "linux_lab",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "root": "/opt/nodia/verification/ai38-node-candidate01/nodia-server",
+  "archive_sha256": "b7492afeeb31b9bb65fb0ec3a41ea1caf016d65b3f09af3ac3f487727782fabb",
+  "verified_packet_files": 2934,
+  "compiled_outputs": 2827,
+  "dependency_directory": "/opt/nodia/nodia-server/node_modules",
+  "dependencies_present": true,
+  "dependency_lock_installation_verified": false,
+  "environment_included": false,
+  "provider_requests": 0,
+  "database_operations": 0,
+  "services_restarted": false,
+  "release_authorized": false
+}

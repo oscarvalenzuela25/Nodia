@@ -1,0 +1,40 @@
+{
+  "stage": "AI-29-R01",
+  "scope": "isolated_ephemeral_docker_cgroup_v2_host_attachment",
+  "checks": 12,
+  "passed": [
+    "an existing unprivileged private container is attached without resource/configuration changes",
+    "repeating attachment of the same generation is idempotent",
+    "UID10001 can close setsid descendants by cgroup.kill and kernel populated zero",
+    "service UID cannot kill the container root cgroup",
+    "public proof is root-owned read-only under a root-owned run directory",
+    "private host state is root-only and contains no profile or credential material",
+    "a different still-running old Docker ID cannot be attested closed",
+    "stopped old Docker generation plus removed/empty cgroup produces exact closure proof",
+    "same Docker ID restart certifies only former roots and never the live current root",
+    "unreferenced operational generations are pruned without touching profile data",
+    "replacement container retains network isolation and original capability/namespace/limits",
+    "no configured container, provider, model, credential or database was changed"
+  ],
+  "real_kernel": true,
+  "network": "none",
+  "configured_gemini_container_changed": false,
+  "native_provider_calls": 0,
+  "database_used": false,
+  "credentials_used": false,
+  "observed_at_utc": "2026-10-17T22:20:09.612615+00:00",
+  "source_hashes": [
+    {
+      "path": "docs/evidence/scripts/attach-nodia-gemini-login-cgroup.py",
+      "sha256": "e8b525c777446c69e0c67a90db29c0932a565b288cca7f88c422d28032c6a463"
+    },
+    {
+      "path": "docs/evidence/scripts/verify-nodia-gemini-login-cgroup-host.py",
+      "sha256": "134755b47181d1593a1f70bfd25e65500bd208b347ea20380ed0e42eff970fc8"
+    }
+  ],
+  "root_process_umask": "0077",
+  "public_proof_mode": "0444",
+  "private_directory_mode": "0700",
+  "private_state_mode": "0600"
+}

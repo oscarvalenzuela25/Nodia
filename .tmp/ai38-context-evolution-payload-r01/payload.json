@@ -1,0 +1,12 @@
+{
+  "files": {
+    "test/nodia-ai-ai38-context-evolution.mjs": "96556766a8d1af85fb26b857c664ac9ead36cc59d2b3c8f8d325a8f86b26a621",
+    "test/nodia-ai.integration.fixture.mjs": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+    "scripts/nodia-ai-knowledge/compiler.mjs": "554781fda5d29d7f54b62a3279be9874567a027b832da1037504b2530f874aad",
+    "scripts/nodia-ai-knowledge/frontmatter.cjs": "9732526dc6f1e59620d0f9155a3d435a9b624b895735e962cdf122019b2e40a7",
+    "scripts/nodia-ai-knowledge/contracts.schema.json": "d9045282b8ffaa175fee7ea2eca8cb810ca20de216246a62456bd62062a146fd",
+    "fixture-contract-sources/nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c",
+    "fixture-contract-sources/nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+  },
+  "tar_sha256": "784614955de0b2ae0d3a07150d1bbac43d3b46e16af5dbacdce3d49a9aa4c496"
+}

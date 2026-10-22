@@ -1,0 +1,844 @@
+{
+  "schema_version": 1,
+  "stage": "AI-30",
+  "status": "technically_closed_local_lab",
+  "stage_closed": true,
+  "scope": "Eleven internal registered logical sources; restricted single-source reports. No report MCP/HTTP publication or cross-source presentation.",
+  "user_facing_date": "2026-10-17",
+  "clock_domains": "VM observed_at_utc chronology; desktop receipts separate. No host clock equivalence is assumed.",
+  "commands": [
+    {
+      "command": "npm test",
+      "log": ".tmp/ai30-server-tests-complete.log",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".tmp/ai30-server-tests-complete.log",
+        "sha256": "c241f605a69cf1c07ac27a5dfa4752e8ba6404c21fda3a3ea68f8dc5594d1e59",
+        "bytes": 25383
+      }
+    },
+    {
+      "command": "npm run build",
+      "log": ".tmp/ai30-build-formatted.log",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".tmp/ai30-build-formatted.log",
+        "sha256": "3b159f40dc6675d4962dcebc5bac606882f57caba02c2499fbc683155d2dc578",
+        "bytes": 2101
+      }
+    },
+    {
+      "command": "npm run lint",
+      "log": ".tmp/ai30-lint-formatted.log",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".tmp/ai30-lint-formatted.log",
+        "sha256": "1b4fb96a3858ce000a340e2c7fd5f7e5e143ab2a8afde9b9e10fe73ac0ea9fa9",
+        "bytes": 601
+      }
+    },
+    {
+      "command": "npx tsc --noEmit -p tsconfig.build.json",
+      "log": ".tmp/ai30-types-final.log",
+      "exit_code": 0,
+      "evidence": {
+        "path": ".tmp/ai30-types-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "server_tests": {
+    "passed": 3202,
+    "files": 202,
+    "report_use_case_tests": 89,
+    "report_files": 4,
+    "focused_evidence": {
+      "path": ".tmp/ai30-report-tests.json",
+      "sha256": "61f2e79b90be1afb03d04fcaf8bf072651246b98df375cb6af3718cb10877f81",
+      "bytes": 31206
+    }
+  },
+  "lint": {
+    "errors": 0,
+    "historical_warnings": 3
+  },
+  "sql": {
+    "checks": 147,
+    "report_sql_queries": 118,
+    "receipt": {
+      "stage": "AI-30",
+      "exit_code": 0,
+      "observed_at_utc": "2026-10-18T01:24:03Z",
+      "elapsed_seconds": 9.814,
+      "dist_files": 882,
+      "dist_tree_sha256": "cb652d958c15bc8e3f5704ed3c5306538f44562f33ad35be8e4d7398f48a4876",
+      "dist_tree_hash_algorithm": "sha256 of compact sorted-key JSON path/sha256 array from Python sorted(Path.rglob('*'))",
+      "dist_unchanged_during_verification": true,
+      "fixture_containers_remaining": 0,
+      "cleanup_completed_without_reported_failure": true,
+      "source_hashes": [
+        {
+          "path": "nodia-server/test/nodia-ai-ai30.integration.mjs",
+          "sha256": "0b4e014d7e9137f06ffb189a1e3ee5baac7cd77350b6ef45237a644737779a4a"
+        },
+        {
+          "path": "nodia-server/test/nodia-ai-ai30.fixture.mjs",
+          "sha256": "e13346385d86ca886fb6cf963d88d45276f8506d509f7e092784191a7a93bf69"
+        }
+      ],
+      "provider_inference": false,
+      "configured_database_used": false,
+      "desktop_started_at_utc": "2026-10-18T01:17:37.2614300Z",
+      "desktop_observed_at_utc": "2026-10-18T01:17:48.3570110Z",
+      "log": ".tmp/ai30-sql-main.log"
+    },
+    "result": {
+      "stage": "AI-30",
+      "scope": "compiled_report_use_cases_real_disposable_postgresql_synthetic_records",
+      "checks": 147,
+      "report_sql_queries": 118,
+      "passed": [
+        "compiled Nest module describes every registered current source without exposing physical SQL mappings",
+        "registered source finance_movements executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field finance_movements.id at its declared relation grain",
+        "SQL resolves registered field finance_movements.category_id at its declared relation grain",
+        "SQL resolves registered field finance_movements.obligation_id at its declared relation grain",
+        "SQL resolves registered field finance_movements.name at its declared relation grain",
+        "SQL resolves registered field finance_movements.type at its declared relation grain",
+        "SQL resolves registered field finance_movements.status at its declared relation grain",
+        "SQL resolves registered field finance_movements.recorded_amount at its declared relation grain",
+        "SQL resolves registered field finance_movements.is_active at its declared relation grain",
+        "SQL resolves registered field finance_movements.created_at at its declared relation grain",
+        "SQL resolves registered field finance_movements.category_group_id at its declared relation grain",
+        "SQL resolves every supported measure of finance_movements and emits genuine zero totals for a known empty population",
+        "registered source finance_obligations executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field finance_obligations.id at its declared relation grain",
+        "SQL resolves registered field finance_obligations.name at its declared relation grain",
+        "SQL resolves registered field finance_obligations.key at its declared relation grain",
+        "SQL resolves registered field finance_obligations.type at its declared relation grain",
+        "SQL resolves registered field finance_obligations.recorded_amount at its declared relation grain",
+        "SQL resolves registered field finance_obligations.is_active at its declared relation grain",
+        "SQL resolves registered field finance_obligations.created_at at its declared relation grain",
+        "SQL resolves every supported measure of finance_obligations and emits genuine zero totals for a known empty population",
+        "registered source business_invoices executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field business_invoices.id at its declared relation grain",
+        "SQL resolves registered field business_invoices.provider_id at its declared relation grain",
+        "SQL resolves registered field business_invoices.code at its declared relation grain",
+        "SQL resolves registered field business_invoices.is_active at its declared relation grain",
+        "SQL resolves every supported measure of business_invoices and emits genuine zero totals for a known empty population",
+        "registered source business_products executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field business_products.id at its declared relation grain",
+        "SQL resolves registered field business_products.provider_id at its declared relation grain",
+        "SQL resolves registered field business_products.code at its declared relation grain",
+        "SQL resolves registered field business_products.name at its declared relation grain",
+        "SQL resolves registered field business_products.stock at its declared relation grain",
+        "SQL resolves registered field business_products.is_active at its declared relation grain",
+        "SQL resolves registered field business_products.log_name at its declared relation grain",
+        "SQL resolves every supported measure of business_products and emits genuine zero totals for a known empty population",
+        "registered source business_product_logs executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field business_product_logs.id at its declared relation grain",
+        "SQL resolves registered field business_product_logs.product_id at its declared relation grain",
+        "SQL resolves registered field business_product_logs.code at its declared relation grain",
+        "SQL resolves registered field business_product_logs.name at its declared relation grain",
+        "SQL resolves every supported measure of business_product_logs and emits genuine zero totals for a known empty population",
+        "registered source business_providers executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field business_providers.id at its declared relation grain",
+        "SQL resolves registered field business_providers.name at its declared relation grain",
+        "SQL resolves registered field business_providers.is_active at its declared relation grain",
+        "SQL resolves registered field business_providers.contact_name at its declared relation grain",
+        "SQL resolves registered field business_providers.product_code at its declared relation grain",
+        "SQL resolves registered field business_providers.invoice_code at its declared relation grain",
+        "SQL resolves every supported measure of business_providers and emits genuine zero totals for a known empty population",
+        "registered source rental_reservations executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field rental_reservations.id at its declared relation grain",
+        "SQL resolves registered field rental_reservations.channel at its declared relation grain",
+        "SQL resolves registered field rental_reservations.status at its declared relation grain",
+        "SQL resolves registered field rental_reservations.check_in_on at its declared relation grain",
+        "SQL resolves registered field rental_reservations.check_out_on at its declared relation grain",
+        "SQL resolves registered field rental_reservations.recorded_amount at its declared relation grain",
+        "SQL resolves registered field rental_reservations.is_active at its declared relation grain",
+        "SQL resolves registered field rental_reservations.created_at at its declared relation grain",
+        "SQL resolves registered field rental_reservations.payment_method at its declared relation grain",
+        "SQL resolves every supported measure of rental_reservations and emits genuine zero totals for a known empty population",
+        "registered source rental_payments executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field rental_payments.id at its declared relation grain",
+        "SQL resolves registered field rental_payments.reservation_id at its declared relation grain",
+        "SQL resolves registered field rental_payments.status at its declared relation grain",
+        "SQL resolves registered field rental_payments.method at its declared relation grain",
+        "SQL resolves registered field rental_payments.recorded_amount at its declared relation grain",
+        "SQL resolves registered field rental_payments.occurred_on at its declared relation grain",
+        "SQL resolves registered field rental_payments.created_at at its declared relation grain",
+        "SQL resolves every supported measure of rental_payments and emits genuine zero totals for a known empty population",
+        "registered source rental_refunds executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field rental_refunds.id at its declared relation grain",
+        "SQL resolves registered field rental_refunds.reservation_id at its declared relation grain",
+        "SQL resolves registered field rental_refunds.status at its declared relation grain",
+        "SQL resolves registered field rental_refunds.method at its declared relation grain",
+        "SQL resolves registered field rental_refunds.recorded_amount at its declared relation grain",
+        "SQL resolves registered field rental_refunds.occurred_on at its declared relation grain",
+        "SQL resolves registered field rental_refunds.created_at at its declared relation grain",
+        "SQL resolves every supported measure of rental_refunds and emits genuine zero totals for a known empty population",
+        "registered source rental_expenses executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field rental_expenses.id at its declared relation grain",
+        "SQL resolves registered field rental_expenses.reservation_id at its declared relation grain",
+        "SQL resolves registered field rental_expenses.name at its declared relation grain",
+        "SQL resolves registered field rental_expenses.category at its declared relation grain",
+        "SQL resolves registered field rental_expenses.status at its declared relation grain",
+        "SQL resolves registered field rental_expenses.recorded_amount at its declared relation grain",
+        "SQL resolves registered field rental_expenses.incurred_on at its declared relation grain",
+        "SQL resolves registered field rental_expenses.paid_on at its declared relation grain",
+        "SQL resolves registered field rental_expenses.created_at at its declared relation grain",
+        "SQL resolves every supported measure of rental_expenses and emits genuine zero totals for a known empty population",
+        "registered source rental_blocks executes its actual SQL mapping and exact record count",
+        "SQL resolves registered field rental_blocks.id at its declared relation grain",
+        "SQL resolves registered field rental_blocks.reason at its declared relation grain",
+        "SQL resolves registered field rental_blocks.is_active at its declared relation grain",
+        "SQL resolves registered field rental_blocks.starts_at at its declared relation grain",
+        "SQL resolves registered field rental_blocks.ends_at at its declared relation grain",
+        "SQL resolves registered field rental_blocks.created_at at its declared relation grain",
+        "SQL resolves every supported measure of rental_blocks and emits genuine zero totals for a known empty population",
+        "a single authorized SQL snapshot computes exact global amount and count over both January boundaries",
+        "report output carries logical provenance, period, exact string amounts and bounded rows",
+        "overlapping one-to-many memberships preserve two separate equal amounts without SUM DISTINCT or multiplied records",
+        "inactive related memberships produce real zero totals and zero matches",
+        "bigint money above MAX SAFE INTEGER reaches the result as its exact decimal string",
+        "a recorded amount predicate compares exact bigint decimal strings inside PostgreSQL",
+        "flat filter sets evaluate AND all with OR any, without broadening the authorized population",
+        "the first group page is bounded while totals and matches include the complete filtered population",
+        "keyset pagination visits the remaining group with the same global totals and no duplicate group",
+        "a cursor bound to other filters cannot execute another report query",
+        "an ordinary actor cannot request another finance owner",
+        "super admin can explicitly inspect another owner without changing attribution",
+        "a cursor from one owner cannot be reused by another owner even by super admin",
+        "rental owner reports use native property authority",
+        "registered date and text dimensions preserve civil dates and scalar string result types",
+        "an active collaborator can report a shared property while a nullable dimension remains null",
+        "a hidden property cannot be read by naming its report scope",
+        "super admin reports a hidden property with the same native policy",
+        "nullable effective dates are filtered explicitly rather than coerced into an invented payment date",
+        "collaborator revocation is reevaluated before a later report",
+        "business reporting preserves the approved global authenticated resource policy",
+        "a zero-value invoice is still a real counted record",
+        "invoice money without a typed currency is unsupported instead of silently assuming CLP",
+        "a legacy invoice timestamp is not presented as an instant with an invented timezone",
+        "an omitted rental scope asks for clarification rather than expanding to every property",
+        "an unknown source fails explicitly without manufacturing a zero total",
+        "an obsolete source catalog cannot execute a current mapping",
+        "multiple separate sources await AI31 instead of pretending to share a snapshot",
+        "multiple historical snapshots preserve equal current stock values and a real zero-stock product",
+        "bigint group IDs above MAX SAFE INTEGER survive JSON projection and keyset continuation exactly",
+        "invalid SQL properties never reaches the report SQL executor",
+        "invalid SQL identifiers never reaches the report SQL executor",
+        "invalid recursive filter expressions never reaches the report SQL executor",
+        "invalid unregistered relations never reaches the report SQL executor",
+        "invalid related dimensions which would multiply rows never reaches the report SQL executor",
+        "invalid duplicate output keys never reaches the report SQL executor",
+        "invalid unknown IANA timezone never reaches the report SQL executor",
+        "invalid invalid civil date never reaches the report SQL executor",
+        "invalid wrong temporal kind never reaches the report SQL executor",
+        "invalid wrong property timezone never reaches the report SQL executor",
+        "invalid unbounded page never reaches the report SQL executor",
+        "invalid incompatible cross-source combination reserved for AI31 never reaches the report SQL executor",
+        "a SQL-shaped string remains a bound literal and cannot broaden the result",
+        "revoking the destination module stops a previously admitted source before report execution",
+        "source discovery removes every source from a revoked destination module",
+        "super admin discovery retains current sources without destination assignments",
+        "revoking NodiaAI blocks all reports independently of target modules",
+        "a revoked authenticated session cannot describe report sources"
+      ],
+      "cleanup_completed": true,
+      "configured_database_used": false,
+      "provider_inference": false,
+      "elapsed_seconds": 1.58,
+      "limitations": [
+        "Single-source restricted reports only. Cross-source composition and presentation remain AI-31.",
+        "No provider generation, MCP publication or production database is exercised."
+      ]
+    }
+  },
+  "regressions": {
+    "checks": 135,
+    "suites": [
+      {
+        "desktop_started_at_utc": "2026-10-18T01:15:05.8286419Z",
+        "exit_code": 0,
+        "elapsed_seconds": 6.4462773,
+        "vm_observed_at_utc": "2026-10-18T01:21:27Z",
+        "log": ".tmp/ai30-sql-regression-14.log",
+        "configured_database_used": false,
+        "cleanup_completed_without_reported_failure": true,
+        "file": "test/nodia-ai-ai14.integration.mjs",
+        "stage": "14",
+        "source_hashes": [
+          {
+            "sha256": "03704419a20096da8926f7166cc61ec5844093db594d4d815cb1ef9e23bd312e",
+            "path": "nodia-server/test/nodia-ai-ai14.integration.mjs"
+          },
+          {
+            "sha256": "fefb8a307773faf6f24dd421b1ded08e434cfeac70161f16a20cba92fd1f666f",
+            "path": "nodia-server/test/nodia-ai-ai14.fixture.mjs"
+          },
+          {
+            "sha256": "f2b67cd3d6206587958e5c8194ef1aa85b41c06fc956db302872dcc204c09ee2",
+            "path": "nodia-server/test/nodia-ai-ai15.integration.mjs"
+          },
+          {
+            "sha256": "89b23a1d87bc191015507bbc2db2459ef4eac4670979248dec9a759e152a9138",
+            "path": "nodia-server/test/nodia-ai-ai15.fixture.mjs"
+          },
+          {
+            "sha256": "63937a9fe25c64e6c7c49cbad7edda99e93652b14a7fb121c92b55f903806b61",
+            "path": "nodia-server/test/nodia-ai-ai15-domain-seeds.fixture.mjs"
+          },
+          {
+            "sha256": "6fc71fca386f7e0f2f6247c22f622e189c0ca8cef98cce3a847726780afd8e84",
+            "path": "nodia-server/test/nodia-ai-unpublished.fixture.mjs"
+          },
+          {
+            "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+            "path": "nodia-server/test/nodia-ai.integration.fixture.mjs"
+          },
+          {
+            "sha256": "1a1717851da2561d355599e5b56c7bd4c40ed0589f5f488adc5e975d1881016f",
+            "path": "nodia-server/test/nodia-ai-ai08.integration.mjs"
+          },
+          {
+            "sha256": "e380335d4c3ff98c86b40b9d038c756086597270edc29523a87a4a6234bfb4bf",
+            "path": "nodia-server/test/nodia-ai-ai29-r01.integration.mjs"
+          },
+          {
+            "sha256": "b0a8a58f9d2250ce6e6342ac6d7e7ef717e126132f2459309c00d4c20768f458",
+            "path": "nodia-server/test/nodia-ai-ai29-r01-worker.fixture.mjs"
+          },
+          {
+            "sha256": "47495d544c3c952a9b33b692db6eadd2911a714184ba3e0b150c972077b66767",
+            "path": "docs/mvp/nodia-ai-v1-common-contracts.schema.json"
+          }
+        ],
+        "provider_inference": false,
+        "desktop_observed_at_utc": "2026-10-18T01:15:12.4621905Z",
+        "result": {
+          "stage": "AI-14",
+          "scope": "compiled_nest_http_postgresql_actual_worker_synthetic_adapter_only",
+          "checks": 40,
+          "passed": [
+            "explicit empty composition publishes no draft capability regardless of the installed publication",
+            "discovery requires authenticated identity",
+            "discovery rejects unbounded unknown query parameters",
+            "unknown capabilities have no executable projection",
+            "ordinary caller without destination assignment cannot discover fixture tools",
+            "destination assignment alone cannot bypass a registered action requirement",
+            "assigned current module and action reveal only explicitly published capabilities",
+            "super admin discovers the same publication without destination assignment or action role",
+            "another ordinary actor sees no capabilities from an unassigned destination",
+            "preparation is described as blocked while its executor is not implemented",
+            "public descriptor identifies exact required and optional fields and contract hash",
+            "public schemas contain no handler, repository, sourceJson, private field or provider secret",
+            "stale catalog version is an explicit HTTP conflict",
+            "describe requires the exact catalog version",
+            "describe and schema share the discovery authorization boundary",
+            "malformed catalog cursors cannot expand discovery",
+            "real worker exposes only grant-frozen read handlers and technical MCP tools",
+            "admission grant freezes verified reads and excludes unimplemented preparation",
+            "typed read uses the checkpoint manager and returns the allowlisted SQL projection",
+            "durable duplicate result rechecks resource authority without repeating the handler",
+            "unknown input fields fail before the domain handler",
+            "invalid handler output commits no public tool result",
+            "all rejected, invalid and replayed requests consume the same durable budget",
+            "completed callback run stores one reusable result despite seven requests",
+            "SQL resource authority revocation prevents cached results",
+            "action revocation prevents replay from the previous grant",
+            "destination module revocation prevents replay from frozen history",
+            "another session cannot reuse the durable execution grant",
+            "changed persisted tool contracts cannot reuse the frozen callback",
+            "registered resolver preserves exact bigint identity and unambiguous cardinality",
+            "multiple actual SQL candidates remain ambiguous rather than selecting the first",
+            "resolver rejects wrong resource projections and uniqueness while another page exists",
+            "resource scopes remain validated filters and unknown resolvers are denied",
+            "direct resolver tool cannot substitute its registered resource before calling the handler",
+            "direct resolver enforces the shared resource, bigint and uniqueness invariants",
+            "valid direct resolver preserves the same authorized entity contract",
+            "durable direct resolver replay also revalidates cached entity provenance",
+            "resolver alias, direct calls and rejected replays share twelve SQL-budgeted requests",
+            "actual SQL budget rejects the thirteenth request without exceeding its frozen bound",
+            "all four actual worker executions remain synthetic with no provider inference"
+          ],
+          "real_business_tools_published": 0
+        }
+      },
+      {
+        "desktop_observed_at_utc": "2026-10-18T01:15:50.4322058Z",
+        "source_hashes": [
+          {
+            "sha256": "03704419a20096da8926f7166cc61ec5844093db594d4d815cb1ef9e23bd312e",
+            "path": "nodia-server/test/nodia-ai-ai14.integration.mjs"
+          },
+          {
+            "sha256": "fefb8a307773faf6f24dd421b1ded08e434cfeac70161f16a20cba92fd1f666f",
+            "path": "nodia-server/test/nodia-ai-ai14.fixture.mjs"
+          },
+          {
+            "sha256": "f2b67cd3d6206587958e5c8194ef1aa85b41c06fc956db302872dcc204c09ee2",
+            "path": "nodia-server/test/nodia-ai-ai15.integration.mjs"
+          },
+          {
+            "sha256": "89b23a1d87bc191015507bbc2db2459ef4eac4670979248dec9a759e152a9138",
+            "path": "nodia-server/test/nodia-ai-ai15.fixture.mjs"
+          },
+          {
+            "sha256": "63937a9fe25c64e6c7c49cbad7edda99e93652b14a7fb121c92b55f903806b61",
+            "path": "nodia-server/test/nodia-ai-ai15-domain-seeds.fixture.mjs"
+          },
+          {
+            "sha256": "6fc71fca386f7e0f2f6247c22f622e189c0ca8cef98cce3a847726780afd8e84",
+            "path": "nodia-server/test/nodia-ai-unpublished.fixture.mjs"
+          },
+          {
+            "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+            "path": "nodia-server/test/nodia-ai.integration.fixture.mjs"
+          },
+          {
+            "sha256": "1a1717851da2561d355599e5b56c7bd4c40ed0589f5f488adc5e975d1881016f",
+            "path": "nodia-server/test/nodia-ai-ai08.integration.mjs"
+          },
+          {
+            "sha256": "e380335d4c3ff98c86b40b9d038c756086597270edc29523a87a4a6234bfb4bf",
+            "path": "nodia-server/test/nodia-ai-ai29-r01.integration.mjs"
+          },
+          {
+            "sha256": "b0a8a58f9d2250ce6e6342ac6d7e7ef717e126132f2459309c00d4c20768f458",
+            "path": "nodia-server/test/nodia-ai-ai29-r01-worker.fixture.mjs"
+          },
+          {
+            "sha256": "47495d544c3c952a9b33b692db6eadd2911a714184ba3e0b150c972077b66767",
+            "path": "docs/mvp/nodia-ai-v1-common-contracts.schema.json"
+          }
+        ],
+        "exit_code": 0,
+        "configured_database_used": false,
+        "vm_observed_at_utc": "2026-10-18T01:22:05Z",
+        "cleanup_completed_without_reported_failure": true,
+        "elapsed_seconds": 10.1567691,
+        "desktop_started_at_utc": "2026-10-18T01:15:40.0737755Z",
+        "stage": "15",
+        "log": ".tmp/ai30-sql-regression-15.log",
+        "provider_inference": false,
+        "file": "test/nodia-ai-ai15.integration.mjs",
+        "result": {
+          "stage": "AI-15",
+          "scope": "compiled_nest_http_actual_domain_ports_postgresql_worker_synthetic_adapter_only",
+          "checks": 41,
+          "passed": [
+            "actual publication composition instantiates all 67 typed read/artifact candidate ports",
+            "all local product families expose only read ports with explicit contracts",
+            "ordinary actor without destination assignments discovers no product tools",
+            "assigned actor discovers all 67 actual read/artifact descriptors through HTTP",
+            "super_admin discovers the same 67 descriptors without destination assignments",
+            "unassigned second ordinary actor cannot discover another actor capabilities",
+            "HTTP exposes closed product schemas and omits executable/private material",
+            "unassigned actor cannot bypass discovery by naming a real product tool",
+            "real product records use UUID businesses/logs and bigint strings above JS safe integer",
+            "actual products list applies active default and bounded page",
+            "explicit all includes active and inactive products without a false activity predicate",
+            "product projection preserves zero stock and bigint without business-owner restriction",
+            "snapshot queries execute real SQL and preserve UUID log IDs",
+            "internal native Ransack log policy accepts UUID identity without adding an HTTP or AI id filter",
+            "invoice projection preserves zero total but excludes storage keys and arbitrary extracted JSON",
+            "provider zero tax and projection exclude arbitrary mapping instructions",
+            "actual contact reader returns public versioned contacts without creation metadata",
+            "business list uses current ownership/collaboration and hides unrelated businesses",
+            "business get enforces native membership even though products are globally accessible",
+            "bigint overflow is rejected before the domain SQL predicate",
+            "finance native scope reads only the current owner ledger",
+            "ordinary finance reader cannot select a different owner",
+            "super_admin can select another real finance owner explicitly",
+            "actual rental property reader uses inherited transaction and public data",
+            "actual reservation reader preserves the requested property and reservation",
+            "Core users list executes native SQL and excludes authentication identifiers",
+            "AI catalog metadata reader executes without live inference or exposing secrets",
+            "all 59 read ports execute native SQL and validate their exact output contract",
+            "all five business resource lists use disjoint stable pages when ten creation timestamps are identical",
+            "all finance and rental readers preserve the inherited three-second SQL deadline and declared isolation",
+            "durable worker receives actual product read descriptors and infrastructure only",
+            "worker real SQL result and durable replay preserve public product projection",
+            "SQL collaboration revocation blocks previously cached business-list output",
+            "destination revocation blocks replay despite a previously frozen run grant",
+            "durable callback rejects unbounded input without creating a result",
+            "one frozen worker turn reads real Finance and Rentals alongside business records",
+            "second durable run preserves the complete 72-descriptor catalog without truncation",
+            "worker external read completes SQL reservation and reauthorized receipt with durable replay",
+            "worker artifact callback stores a private current-on-download reference without CSV or URL",
+            "per-tool transactions keep Finance repeatable-read and Rentals/business read-committed in the same worker run",
+            "two actual durable worker inference stages use only a synthetic adapter and real product SQL"
+          ],
+          "domain_read_candidates": 64,
+          "domain_artifact_candidates": 3,
+          "domain_reads_executed_and_output_validated": 59,
+          "business_worker_tools": 12,
+          "worker_domain_read_descriptors": 64,
+          "worker_domain_artifact_descriptors": 3,
+          "worker_total_mcp_descriptors": 72,
+          "worker_dispatches": 2,
+          "real_business_tools_published": 0,
+          "provider_inferences": 0,
+          "limits": [
+            "All 67 read/artifact descriptors discovered; all 59 local SQL read outputs validated here. External/artifact execution is tested separately; no live Gemini",
+            "Two worker runs carry all 67 domain capabilities plus five infrastructure tools; the adapter is synthetic and does not prove a real Gemini CLI session"
+          ]
+        }
+      },
+      {
+        "desktop_observed_at_utc": "2026-10-18T01:15:54.5059885Z",
+        "source_hashes": [
+          {
+            "sha256": "03704419a20096da8926f7166cc61ec5844093db594d4d815cb1ef9e23bd312e",
+            "path": "nodia-server/test/nodia-ai-ai14.integration.mjs"
+          },
+          {
+            "sha256": "fefb8a307773faf6f24dd421b1ded08e434cfeac70161f16a20cba92fd1f666f",
+            "path": "nodia-server/test/nodia-ai-ai14.fixture.mjs"
+          },
+          {
+            "sha256": "f2b67cd3d6206587958e5c8194ef1aa85b41c06fc956db302872dcc204c09ee2",
+            "path": "nodia-server/test/nodia-ai-ai15.integration.mjs"
+          },
+          {
+            "sha256": "89b23a1d87bc191015507bbc2db2459ef4eac4670979248dec9a759e152a9138",
+            "path": "nodia-server/test/nodia-ai-ai15.fixture.mjs"
+          },
+          {
+            "sha256": "63937a9fe25c64e6c7c49cbad7edda99e93652b14a7fb121c92b55f903806b61",
+            "path": "nodia-server/test/nodia-ai-ai15-domain-seeds.fixture.mjs"
+          },
+          {
+            "sha256": "6fc71fca386f7e0f2f6247c22f622e189c0ca8cef98cce3a847726780afd8e84",
+            "path": "nodia-server/test/nodia-ai-unpublished.fixture.mjs"
+          },
+          {
+            "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+            "path": "nodia-server/test/nodia-ai.integration.fixture.mjs"
+          },
+          {
+            "sha256": "1a1717851da2561d355599e5b56c7bd4c40ed0589f5f488adc5e975d1881016f",
+            "path": "nodia-server/test/nodia-ai-ai08.integration.mjs"
+          },
+          {
+            "sha256": "e380335d4c3ff98c86b40b9d038c756086597270edc29523a87a4a6234bfb4bf",
+            "path": "nodia-server/test/nodia-ai-ai29-r01.integration.mjs"
+          },
+          {
+            "sha256": "b0a8a58f9d2250ce6e6342ac6d7e7ef717e126132f2459309c00d4c20768f458",
+            "path": "nodia-server/test/nodia-ai-ai29-r01-worker.fixture.mjs"
+          },
+          {
+            "sha256": "47495d544c3c952a9b33b692db6eadd2911a714184ba3e0b150c972077b66767",
+            "path": "docs/mvp/nodia-ai-v1-common-contracts.schema.json"
+          }
+        ],
+        "exit_code": 0,
+        "configured_database_used": false,
+        "vm_observed_at_utc": "2026-10-18T01:22:09Z",
+        "cleanup_completed_without_reported_failure": true,
+        "elapsed_seconds": 3.8829347,
+        "desktop_started_at_utc": "2026-10-18T01:15:50.4440444Z",
+        "stage": "08",
+        "log": ".tmp/ai30-sql-regression-08.log",
+        "provider_inference": false,
+        "file": "test/nodia-ai-ai08.integration.mjs",
+        "result": {
+          "task": "AI-08",
+          "scope": "compiled_http_and_domain_ports_disposable_postgresql16",
+          "checks": 39,
+          "passed": [
+            "admin create preserves recipient ownership",
+            "ordinary recipient spoofing denied",
+            "admin without recipient stays in own scope",
+            "admin detail reads explicit recipient",
+            "edit never transfers historical owner",
+            "owner cannot be changed through an update payload",
+            "admin movement belongs to recipient",
+            "cross-owner category association remains rejected",
+            "summary aggregates requested owner only",
+            "admin own summary does not inherit recipient",
+            "admin preserves catalog deletion safeguards",
+            "admin house create separates owner and audit actor",
+            "ordinary unrelated house still hidden",
+            "ordinary cannot create house for another owner",
+            "admin discovers foreign house",
+            "admin update preserves owner and writes real actor",
+            "house ownership is immutable",
+            "rental journal attributes admin effect",
+            "reserved role cannot be disabled",
+            "reserved role key cannot be changed",
+            "reserved role cannot be deleted",
+            "module key immutable in REST update",
+            "module alias shares key protection",
+            "failed associations roll back the preceding user update",
+            "role revocation blocks behind an admitted effect",
+            "revoked admin cannot perform the next foreign effect",
+            "rental transversal access also disappears after role revocation",
+            "waiting repeatable-read query observes preceding revocation",
+            "snapshot port rejects an inherited weaker isolation",
+            "snapshot port preserves repeatable-read isolation in its parent",
+            "NodiaAI port commits under the same actor and transaction",
+            "outer failure rolls back the domain port effect",
+            "worker module revocation fails before invoking its port",
+            "concurrent deactivations preserve one active super administrator",
+            "last-admin association removal rejects the entire update",
+            "create-upsert cannot bypass last-admin protection",
+            "revoked session rejected inside the shared finance boundary",
+            "revoked session rejected inside rental boundary",
+            "revoked session rejected inside administrative write boundary"
+          ],
+          "configuredDatabaseTouched": false,
+          "providersCalled": false
+        }
+      },
+      {
+        "desktop_observed_at_utc": "2026-10-18T01:16:16.9254490Z",
+        "source_hashes": [
+          {
+            "sha256": "03704419a20096da8926f7166cc61ec5844093db594d4d815cb1ef9e23bd312e",
+            "path": "nodia-server/test/nodia-ai-ai14.integration.mjs"
+          },
+          {
+            "sha256": "fefb8a307773faf6f24dd421b1ded08e434cfeac70161f16a20cba92fd1f666f",
+            "path": "nodia-server/test/nodia-ai-ai14.fixture.mjs"
+          },
+          {
+            "sha256": "f2b67cd3d6206587958e5c8194ef1aa85b41c06fc956db302872dcc204c09ee2",
+            "path": "nodia-server/test/nodia-ai-ai15.integration.mjs"
+          },
+          {
+            "sha256": "89b23a1d87bc191015507bbc2db2459ef4eac4670979248dec9a759e152a9138",
+            "path": "nodia-server/test/nodia-ai-ai15.fixture.mjs"
+          },
+          {
+            "sha256": "63937a9fe25c64e6c7c49cbad7edda99e93652b14a7fb121c92b55f903806b61",
+            "path": "nodia-server/test/nodia-ai-ai15-domain-seeds.fixture.mjs"
+          },
+          {
+            "sha256": "6fc71fca386f7e0f2f6247c22f622e189c0ca8cef98cce3a847726780afd8e84",
+            "path": "nodia-server/test/nodia-ai-unpublished.fixture.mjs"
+          },
+          {
+            "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df",
+            "path": "nodia-server/test/nodia-ai.integration.fixture.mjs"
+          },
+          {
+            "sha256": "1a1717851da2561d355599e5b56c7bd4c40ed0589f5f488adc5e975d1881016f",
+            "path": "nodia-server/test/nodia-ai-ai08.integration.mjs"
+          },
+          {
+            "sha256": "e380335d4c3ff98c86b40b9d038c756086597270edc29523a87a4a6234bfb4bf",
+            "path": "nodia-server/test/nodia-ai-ai29-r01.integration.mjs"
+          },
+          {
+            "sha256": "b0a8a58f9d2250ce6e6342ac6d7e7ef717e126132f2459309c00d4c20768f458",
+            "path": "nodia-server/test/nodia-ai-ai29-r01-worker.fixture.mjs"
+          },
+          {
+            "sha256": "47495d544c3c952a9b33b692db6eadd2911a714184ba3e0b150c972077b66767",
+            "path": "docs/mvp/nodia-ai-v1-common-contracts.schema.json"
+          }
+        ],
+        "exit_code": 0,
+        "configured_database_used": false,
+        "vm_observed_at_utc": "2026-10-18T01:22:31Z",
+        "cleanup_completed_without_reported_failure": true,
+        "elapsed_seconds": 22.0111465,
+        "desktop_started_at_utc": "2026-10-18T01:15:54.5084540Z",
+        "stage": "29-r01",
+        "log": ".tmp/ai30-sql-regression-29-r01.log",
+        "provider_inference": false,
+        "file": "test/nodia-ai-ai29-r01.integration.mjs",
+        "result": {
+          "stage": "AI-29-R01",
+          "scope": "real_postgresql_confirmation_http_sigkill_restarted_node_and_authenticated_private_transport_synthetic_native_journal",
+          "checks": 15,
+          "profile_start_calls": 4,
+          "native_private_http_requests": 23,
+          "passed": [
+            "a fresh compiled coordinator recovers a native login after SIGKILL without a second profile start",
+            "the immutable native request remains private and independent of the human request ID",
+            "cancellation by request creates a native tombstone before delayed admission and prevents the profile from starting",
+            "a cancelled uncertain start releases the SQL owner without fabricating a completed receipt",
+            "TTL expiry fences an armed request that never returned a native reference",
+            "authority revocation cancels only the persisted native request without a new login",
+            "chat purge keeps the minimal durable target even when no native job reference was returned",
+            "post-purge native cancellation proof removes the detached SQL witness and never restarts login",
+            "a terminal success from the native request is reconciled atomically after coordinator restart",
+            "lost post-commit ACK preserves only a detached terminal outbox when its chat expires",
+            "maintenance retries the terminal ACK and retires its detached witness without another effect",
+            "chat purge handles a completed ACK outbox alongside its newer active execution without violating unique admission",
+            "all real private HTTP requests kept service authentication and exact actor/provider identity",
+            "completed recovery leaves no leased SQL job, live attempt or nested inference slot",
+            "native authorization material is absent from every durable execution witness"
+          ],
+          "limitations": [
+            "The HTTP native service is synthetic; durable Python/Codex supervisors and real provider sessions require separate evidence."
+          ]
+        }
+      }
+    ]
+  },
+  "knowledge": {
+    "sources": 54,
+    "excluded": 27,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "release_id": "9e57cbe2a469543df6f2d9db5a400e549268fb68012c59c34878ab2b996e2cfd",
+    "draft_report_document_published": false
+  },
+  "knowledge_validation": {
+    "status": "compiler_fixtures_and_authorized_ai15_current_release_verified",
+    "checks": 53,
+    "unavailable": 0,
+    "fixtureChecks": 52,
+    "sourceDocuments": 54,
+    "excludedDocuments": 27,
+    "publishedDocuments": 27,
+    "publishedFragments": 27,
+    "publishedCapabilities": 67,
+    "releaseId": "9e57cbe2a469543df6f2d9db5a400e549268fb68012c59c34878ab2b996e2cfd",
+    "schemaDefinitions": 19,
+    "localLinksChecked": 910,
+    "wroteEvidence": false,
+    "approvalsChanged": false,
+    "servicesStarted": false,
+    "providerCalls": 0,
+    "businessWrites": 0
+  },
+  "knowledge_delta": {
+    "path": "docs/evidence/nodia-ai-ai30-knowledge-delta.json",
+    "sha256": "1af946df1fac6aa96ce821d1559ea17b47ff8ea8005996235cb3cb31c0b2aa9c",
+    "bytes": 4753
+  },
+  "logical_catalog": {
+    "path": "docs/evidence/nodia-ai-ai30-source-catalog.json",
+    "sha256": "4b3d0cfe9653ba096683d31f1bac0a9d3326b385a67b14da37db4154f1a2081d",
+    "bytes": 55345
+  },
+  "catalog_version": "49567d402fd1c2e0221e260d8ead518029b8fb0b16ef5b4e03b0a652dd2684b1",
+  "activation": {
+    "path": "docs/evidence/nodia-ai-ai30-lab-activation.json",
+    "sha256": "7eda5de4936377306bd53b701c974b89b0dded7b605ca8bb08fba727475b6479",
+    "bytes": 1315
+  },
+  "final_health": {
+    "path": "docs/evidence/nodia-ai-ai30-final-health.json",
+    "sha256": "205dc9c1bcca5f9e6fcfcc6203b7c2eb9d9c96d5297147b77d79119606e79561",
+    "bytes": 1575
+  },
+  "verified_compiled_dist_files": 882,
+  "verified_compiled_dist_tree_sha256": "cb652d958c15bc8e3f5704ed3c5306538f44562f33ad35be8e4d7398f48a4876",
+  "schema_growth": {
+    "migrations": 0,
+    "tables": 0,
+    "columns": 0
+  },
+  "provider_inferences": 0,
+  "configured_business_writes": 0,
+  "new_http_routes": 0,
+  "published_report_tools": 0,
+  "source_hashes": [
+    {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai30-knowledge.cjs",
+      "sha256": "73d39361788cb59ec23a13e96abddfc670b1ef83e64d84927a397329ed1f9ce8"
+    },
+    {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai30-validation.cjs",
+      "sha256": "7d034ec7dda8175134be7cfe1d7d8fa1f12e7739abb2bafcf8cc8cc8247a1d5a"
+    },
+    {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai30.cjs",
+      "sha256": "a14638023985f9a7f41b568d6c3a035225ee35fc07cbffc945683df171c0406d"
+    },
+    {
+      "path": "docs/evidence/scripts/validate-nodia-ai-ai06.cjs",
+      "sha256": "e742b8771bbc556a43ae4205fb961ff59035925ced414ca977c539cd01e721cf"
+    },
+    {
+      "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "sha256": "016317954ddaf9f953483f3082eda42dadd3c7755de3e75363fb11369c4111e5"
+    },
+    {
+      "path": "nodia-server/scripts/package-nodia-ai-lab-release.mjs",
+      "sha256": "237ef41128e1ef4542956524cb89d2c6d23cddaca1d3ed9ec43ff1178d3031b6"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/config/report-sources.ts",
+      "sha256": "5d920192d415484a89ad3f982e8e4edbec1ec76555e4940e8882a7acb112e1c5"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/nodia-ai-reports.module.ts",
+      "sha256": "09dfc7859ce215d7fcaaf7739879fc2400530d863d72aaadced834f0195f6c43"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/types/report-query.types.ts",
+      "sha256": "205d9490071a0face6ac9f3fec012c9e3eb96634c164292e58116d1ccfd6ad89"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/types/report-result.types.ts",
+      "sha256": "40dfc56ba14b8538245ea57e78e6878c745e519a0d282800fad8109887876395"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/types/report-source.types.ts",
+      "sha256": "00b665dc336c5e27535ac4cc0d837a33f86b96b97686a477ede1dce94953c5bb"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/compile-nodia-ai-report.use-case.spec.ts",
+      "sha256": "9b2a34096a870c9fd95a5b1faa79325c2a6d2413e5a7965977e4f757916b800c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/compile-nodia-ai-report.use-case.ts",
+      "sha256": "e5c88d76d0d7f5bc6f5beea307d915e93eaf356e429cd04b0c09bfabd38b7f50"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/describe-nodia-ai-reports.use-case.spec.ts",
+      "sha256": "82c7f170ea17f96bbdf850a0e7c9d558ac17e0c765b6d7eac47ab8b34662c8a5"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/describe-nodia-ai-reports.use-case.ts",
+      "sha256": "e64c1b432079b9968c95a090b5b526a8e89dea4bf040877278aa4879fb24329d"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/nodia-ai-report-registry.use-case.spec.ts",
+      "sha256": "19397c53a26523bda7535aba27b05bdc0ec25b1fe23b48ec31c0f76f80ecdd9e"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/nodia-ai-report-registry.use-case.ts",
+      "sha256": "cd4fe7c8dc1a1b8e19d311300e04c5a7542c71f2fc4777c96657d22c9222e9a7"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/run-nodia-ai-report.use-case.spec.ts",
+      "sha256": "092f0af2b7f6595b24afc77cb2f868805a679131892866c825ed6f60bdc7be6b"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-reports/use-case/run-nodia-ai-report.use-case.ts",
+      "sha256": "7b26830f8a22e34a7dbc0e288def687002bc9baa0f71131a1ec51fc5699cecd0"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/nodia-ai-tools.module.ts",
+      "sha256": "dee6689926ece75abde57843b378dd419e46c697536b6ed2aa09c6ad48e25aa0"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai30.fixture.mjs",
+      "sha256": "e13346385d86ca886fb6cf963d88d45276f8506d509f7e092784191a7a93bf69"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai30.integration.mjs",
+      "sha256": "0b4e014d7e9137f06ffb189a1e3ee5baac7cd77350b6ef45237a644737779a4a"
+    }
+  ],
+  "open_gates": [],
+  "limitations": [
+    "AI-31 owns multi-source results, comparison, partial provenance and presentation.",
+    "No report tool was published to MCP; no Gemini generation was requested.",
+    "Pagination is reauthorized per request and does not retain a cross-page snapshot.",
+    "Production load/latency is not certified by synthetic PostgreSQL records.",
+    "Finance native pesos have no ISO currency; invoice monetary sums and legacy timestamps without timezone remain unsupported.",
+    "Document approval remains independent; new feature is draft/unregistered and ADR-055 proposed."
+  ]
+}

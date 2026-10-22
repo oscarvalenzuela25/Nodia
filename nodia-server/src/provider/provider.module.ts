@@ -27,6 +27,11 @@ import { ProviderContact } from '../provider-contact/entities/provider-contact.e
     ExportProvidersCsvUseCase,
     ImportProvidersUseCase,
   ],
-  exports: [ProviderService, ExportProvidersCsvUseCase],
+  exports: [
+    ProviderService,
+    ExportProvidersCsvUseCase,
+    CreateProviderUseCase,
+    UpdateProviderUseCase,
+  ],
 })
 export class ProviderModule {}

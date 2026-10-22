@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import { randomBytes } from 'node:crypto';
+const runtime='/opt/nodia/releases/nodia-server-ai15-20261016';
+const require=createRequire(runtime+'/package.json');
+const privateConfig=require('dotenv').parse(fs.readFileSync(runtime+'/.env'));
+process.env.GEMINI_MICROSERVICE_URL=privateConfig.GEMINI_MICROSERVICE_URL;
+process.env.GEMINI_SERVICE_TOKEN=privateConfig.GEMINI_SERVICE_TOKEN;
+process.env.NODIA_AI29_REAL_GEMINI='1';
+process.env.NODIA_AI29_REAL_RESTART='yes';
+process.env.SECRET_SEED=randomBytes(32).toString('hex');
+process.env.AI_SECRET_MASTER_KEY=randomBytes(32).toString('hex');
+process.env.DOTENV_CONFIG_PATH='/dev/null';
+process.env.NODE_ENV='test';
+await import('/opt/nodia/verification/ai29-r01-20261017/test/nodia-ai-ai29-gemini-real.integration.mjs');

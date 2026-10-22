@@ -1,0 +1,109 @@
+{
+  "stage": "AI-36-C05-R05",
+  "scope": "current_061_to_metadata_timeout_fix_single_owner_activation",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T21:19:35.616581+00:00",
+  "original_image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+  "candidate_image_id": "sha256:1a483f3f72de21374e9ba2546dba2df5e07e5a5e7bd4a159a5ee6ca7a444a3fb",
+  "provider_generations": 0,
+  "Node_runtime_files_modified": 0,
+  "configured_selection_modified": false,
+  "private_original_descriptor_preserved": true,
+  "private_original_unit_preserved": true,
+  "original_bind_mounts": [
+    {
+      "destination": "/app/.env",
+      "read_write": false,
+      "type": "bind"
+    },
+    {
+      "destination": "/app/browser_profile",
+      "read_write": true,
+      "type": "bind"
+    },
+    {
+      "destination": "/app/session_state",
+      "read_write": true,
+      "type": "bind"
+    },
+    {
+      "destination": "/app/config/web_reasoning_profiles.json",
+      "read_write": false,
+      "type": "bind"
+    },
+    {
+      "destination": "/home/nodia/agentic_profile",
+      "read_write": true,
+      "type": "bind"
+    },
+    {
+      "destination": "/run/user/10001",
+      "read_write": false,
+      "type": "bind"
+    }
+  ],
+  "original_bind_source_hashes": {
+    "/app/.env": "054c150c9feace6b6c7836b650b42220ed9f02cd9e17c10d8769bb0bca1cd2c1",
+    "/app/browser_profile": "47352faae73dba99fa610e8a4e51072a868523d10d1e00f50919aa15d64d1001",
+    "/app/session_state": "df92478c1c4cd518e179b7372d0428f80dea184a1fdda50c94b647908e6c8576",
+    "/app/config/web_reasoning_profiles.json": "98595776ca7cbd03d888ae8f81ba2f2f120f856ade9f909989c6ddcaa71efb2c",
+    "/home/nodia/agentic_profile": "5031cefb37fff2bb35c150fb5aa141157ac9df451ad3442af4c8a8982eeed0dd",
+    "/run/user/10001": "5a8774a40e46729d6b694ea45974d27d13e3bec032ae436934073c1eccb2645a"
+  },
+  "original_environment_paths_only": [
+    "/opt/nodia/nodia-gemini-microservice/.env"
+  ],
+  "original_container_id": "9fc4646f13fca9f673443424045de295744db4b56835950cc43d7d6a403d3b4d",
+  "service_states_before": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active"
+  },
+  "steps": [
+    "API_and_worker_paused",
+    "original_unique_Gemini_owner_stopped",
+    "candidate_unique_Gemini_owner_started"
+  ],
+  "binary_version_selected_by_baseline_config": "1.3.1",
+  "binary_sha512_selected_by_baseline_config": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "external_CLI_1_4_2_mount": false,
+  "quiet_after_consumers_paused": {
+    "SQL": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-19T21:19:35.841Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    },
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-19T21:19:35Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    }
+  },
+  "systemd_override_sha256": "db501276d79788937750471bea876e288624c975b41aa50d743814b268430354",
+  "compose_override_sha256": "5aa1188f919dc3e70792e76a1b3d21214bed0ab10b7c38925703d78bdfc8d0f4",
+  "candidate_container_id": "e7c6189c3882037830a60adba03ecd4a49145a388210528de400b0513f211da7",
+  "candidate_started_at_utc": "2026-10-19T21:19:36.614440711Z",
+  "environment_mounts_UID_port_resources_unchanged": true,
+  "API_and_worker_remain_paused_for_R05_canary_and_Finance": true,
+  "finished_at_utc": "2026-10-19T21:20:07.428296+00:00"
+}

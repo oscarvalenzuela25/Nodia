@@ -1,0 +1,80 @@
+{
+  "stage": "AI-32-R02",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "gates_open",
+  "observed_at_utc": "2026-10-18T04:25:25Z",
+  "harness_sha256": "8d91f4cc9f4064caeb0da7dc88a32d65265f4b8fad29f5ab79fa178a3007eb68",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "verification_semantics": "this_canary_semantic_match_and_completed_ack_and_exact_cached_media_type",
+  "probe": {
+    "engine": "web",
+    "kind": "pdf",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null,
+    "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+    "reference": {
+      "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "session_generation": "16b2a6330cc94bddadc7ebe974bd93fb",
+      "operation_ref": "4177cc2c-a6a2-460b-b272-0fd16c01a27a"
+    },
+    "attempt_id": "4177cc2c-a6a2-460b-b272-0fd16c01a27a",
+    "file_bytes": 672,
+    "media_type": "application/pdf",
+    "file_sha256": "0501f0adf3b69c1cbeb2e21fe107f12b548acca3981b97f327684cdb981d4c68",
+    "expected_answer_sha256": "11822815b2ef763f291b8543e42222273807bbe326061b8cd5f57883bcf839c7",
+    "answer_normalization": "literal",
+    "native_acknowledged": true,
+    "verified": false,
+    "fixture": "synthetic_known_canary",
+    "http_status": 502,
+    "error_code": "chat_result_unknown",
+    "elapsed_seconds": 120.12,
+    "reconciliation_http_status": 200,
+    "reconciliation_code": null,
+    "native_outcome": "abandoned_unknown",
+    "cached_modality_verified": false,
+    "exact_format_verified": false
+  },
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [],
+    "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+    "session_generation": "a90a81ff2f6d4e9bbdb7393c7b7e2601",
+    "supports_mcp": false,
+    "verified_attachment_media_types": []
+  },
+  "diagnostics": [
+    {
+      "engine": "web",
+      "attempt_id": "4177cc2c-a6a2-460b-b272-0fd16c01a27a",
+      "phase": "generation",
+      "error_type": "TimeoutError",
+      "failure_category": null,
+      "elapsed_ms": 120004,
+      "reply_format": {},
+      "generation": {
+        "http_status": 200,
+        "upstream_eof_seen": false,
+        "upstream_eof_elapsed_ms": null,
+        "candidate_outputs": 0,
+        "recovery_calls": 0,
+        "client_close_calls": 1,
+        "text_outputs": 0
+      }
+    }
+  ],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T04:27:30Z"
+}

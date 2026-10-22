@@ -1,0 +1,45 @@
+{
+  "stage": "AI-27",
+  "previous_release": "46e4950b15ac9b89903341bbdd9cee47c578654b0ef9fc039eff32b21d2a2d0c",
+  "release": "3dc50f14cba16916c35a7f0fa60fe2ae77a6d5fc323b918ef77a85ba49c68e33",
+  "changed_manifest_fields": [
+    "documents",
+    "registry_sha256",
+    "release_id"
+  ],
+  "document_source_hash_changes": [
+    {
+      "document_id": "general-settings.actions-and-business-actions",
+      "path": "nodia-server/src/action/use-case/save-action.use-case.ts",
+      "before_sha256": "0156c62d14f5db1f545d4ccfcc4446e563b50a3df41a3124dbda02bb2a9227e2",
+      "after_sha256": "a75883b88ecc3afeff6ae92af6099613bbb27d5d7c392a6b7f2b073dce0c95c5"
+    },
+    {
+      "document_id": "general-settings.modules-and-groups",
+      "path": "nodia-server/src/module/use-case/save-module.use-case.ts",
+      "before_sha256": "758fd3363ab391493d3946a65e18e0cb190ccf108366082903f8db4dd41f7d63",
+      "after_sha256": "f89017a385cb1950f69bc32278ced9fdc5dde824ae370238d06719f69f5aad03"
+    },
+    {
+      "document_id": "general-settings.roles",
+      "path": "nodia-server/src/role/use-case/save-role.use-case.ts",
+      "before_sha256": "7e58d025170c15c1cdd8d67d8eb79d81f626797abf289466c2fa440173fd92b8",
+      "after_sha256": "f31ecf3afd9380eaba562060f1d0c14cf0a9ae28c9417079a51df6adbb775ad3"
+    },
+    {
+      "document_id": "general-settings.users",
+      "path": "nodia-server/src/user/use-case/save-user.use-case.ts",
+      "before_sha256": "dfca2497ec9d7ce0752654213007c5d483c72168ca776d3c5e12e5005dc74d5d",
+      "after_sha256": "68d581a8464a6c3b8b891dedc706cb4d2b9f008ef8492f5ace5a2cb6fcc237cd"
+    }
+  ],
+  "published_document_bytes_unchanged": true,
+  "published_fragments_unchanged": true,
+  "capability_contracts_unchanged": true,
+  "new_published_content": false,
+  "reason": "One excluded draft path plus provenance hashes for four native Core writers now sharing the exclusive transaction; approved document bytes and all published fragments/read contracts stay identical",
+  "sources": 51,
+  "excluded": 24,
+  "published_capabilities": 67,
+  "published_fragments": 27
+}

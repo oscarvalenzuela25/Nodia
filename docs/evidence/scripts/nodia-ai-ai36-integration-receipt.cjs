@@ -1,0 +1,21 @@
+// Link the final cross-product execution to locally retained immutable evidence.
+const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto'), assert = require('node:assert/strict');
+const root = path.resolve(__dirname, '../../..');
+const sha = file => crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex');
+const read = file => JSON.parse(fs.readFileSync(path.join(root,file),'utf8').replace(/^\uFEFF/,''));
+const source = 'docs/evidence/nodia-ai-ai36-regressions-runtime-fix-attempt05.json';
+const group = read(source), item = group.results.find(result => result.harness === 'ai36');
+const stageSource = 'docs/evidence/nodia-ai-ai36-regressions-stage05.json', stage = read(stageSource);
+assert.equal(item.status, 'passed'); assert.equal(item.exit_code, 0);
+assert.equal(sha('.tmp/ai36-final-sql.stdout'), item.stdout_sha256);
+assert.equal(sha('.tmp/ai36-final-sql.stderr'), item.stderr_sha256);
+assert.equal(sha('.tmp/ai36-final-sql-manifest.json'), group.manifest_sha256);
+assert.equal(sha('nodia-server/test/nodia-ai-ai36.integration.mjs'), item.test_sha256);
+const native = read('docs/evidence/nodia-ai-ai36-native-budget-validation.json');
+assert.equal(sha(native.payload_source_local), native.payload_sha256);
+assert.equal(sha(native.extractor_script_path), native.extractor_script_sha256);
+const report = {stage:'AI-36', scope:'compiled_cross_product_http_sql', attempt:group.attempt, started_at_utc:item.started_at_utc, completed_at_utc:item.completed_at_utc, status:item.status, exit_code:item.exit_code, stdout_sha256:item.stdout_sha256, stdout_source_local:'.tmp/ai36-final-sql.stdout', stderr_sha256:item.stderr_sha256, stderr_source_local:'.tmp/ai36-final-sql.stderr', manifest_sha256:group.manifest_sha256, manifest_source_local:'.tmp/ai36-final-sql-manifest.json', source_report_local:source, source_report_sha256:sha(source), test_source_local:'nodia-server/test/nodia-ai-ai36.integration.mjs', test_sha256:item.test_sha256, assertion_result:item.assertion_result, disposable_containers_remaining:item.new_disposable_containers_remaining, configured_database_used:false, provider_generations:0, storage_operations:0, production_services_restarted:false, note:'The fixture itself did not restart services. The subsequent scoped lab activation is recorded separately.'};
+fs.writeFileSync(path.join(root,'docs/evidence/nodia-ai-ai36-integration-validation.json'),JSON.stringify(report,null,2)+'\n');
+const stageReport = {...stage, workflow_fixture_source_sha256: stage.test_sha256, test_sha256:item.test_sha256, test_source_local:report.test_source_local, source_stage_report_local:stageSource, source_stage_report_sha256:sha(stageSource)};
+fs.writeFileSync(path.join(root,'docs/evidence/nodia-ai-ai36-integration-stage.json'),JSON.stringify(stageReport,null,2)+'\n');
+console.log(JSON.stringify({stage:'AI-36',status:'passed',checks:report.assertion_result.checks,manifest_sha256:group.manifest_sha256}));

@@ -1,0 +1,205 @@
+{
+  "task": "AI-29",
+  "status": "local_implementation_verified_native_durable_reconciliation_gate_open",
+  "verified_at_utc": "2026-10-17T21:39:56.148525+00:00",
+  "scope": "Eight internal secure preparation ports, exact human channel, paused worker and conservative recovery; no MCP write publication or real provider account acceptance.",
+  "implementation": {
+    "internal_secure_preparers": 8,
+    "local_domain_executors": 69,
+    "total_admitted_preparers": 77,
+    "new_modules": [
+      "NodiaAiSecurePreparationModule",
+      "NodiaAiSecureFlowModule",
+      "NodiaAiExecutionStoreModule",
+      "AuthSessionRevocationModule"
+    ],
+    "human_routes": 2,
+    "human_ttl_seconds": 300,
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_migrations": 0,
+    "single_step_only": true,
+    "sql_effect_and_receipt_atomic": true,
+    "network_outside_sql": true,
+    "typed_human_payload_before_external_witness": true,
+    "owner_and_exact_session_current_authority": true,
+    "no_automatic_replay_of_unknown_effect": true,
+    "no_new_inference_runtime_slot_for_pause": true
+  },
+  "server": {
+    "full_suite": {
+      "tests": 3072,
+      "files": 197,
+      "duration_seconds": 171.16,
+      "passed": true,
+      "log": ".tmp/ai29-server-tests-final.log",
+      "log_sha256": "d20a7d32c3def424c5a2dc971106a32e52f1f3bda93e484c72385827471a1957"
+    },
+    "root_focused": {
+      "tests": 78,
+      "files": 3,
+      "duration_seconds": 24.13,
+      "passed": true,
+      "log": ".tmp/ai29-root-focused-final.log",
+      "log_sha256": "e789adeaa5396e84befe4921e2c1e3d97413fc335684d8b1768e7e14331fb998"
+    },
+    "build": {
+      "passed": true,
+      "log": ".tmp/ai29-server-build-final.log",
+      "log_sha256": "7db55b18129ec0df3d976ff046293093b161baeb5157fc8bf8b3f91b4ee064b1"
+    },
+    "production_typecheck": {
+      "passed": true,
+      "log": ".tmp/ai29-server-typecheck-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": ".tmp/ai29-server-lint-final.log"
+    },
+    "review_fixes": [
+      "Freeze selection normalization and preview from one safe snapshot; never combine two READ COMMITTED key pools.",
+      "Use one shared execution store across modules, verified by restored lost-COMMIT fault injection.",
+      "Reject empty key replacement disguised as unchanged automatic selection.",
+      "Grant policy/operations/modules/scope and frozen linkage checked on every human action.",
+      "Expired chat preserves only unresolved native identity until terminal cleanup.",
+      "Web trusted bridge uses native Python ownership rather than an API-process owner map."
+    ]
+  },
+  "client": {
+    "full_suite": {
+      "tests": 1636,
+      "files": 208,
+      "workers": 4,
+      "duration_seconds": 365.55,
+      "exit_code": 0
+    },
+    "focused": {
+      "tests": 195,
+      "files": 5,
+      "workers": 2,
+      "duration_seconds": 24.74,
+      "exit_code": 0
+    },
+    "build": {
+      "command": "npm run build",
+      "vite_seconds": 24.42,
+      "exit_code": 0,
+      "historical_large_chunk_warning": true
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exit_code": 0
+    },
+    "lint": {
+      "command": "npm run lint",
+      "exit_code": 0
+    },
+    "evidence": "docs/evidence/nodia-ai-ai29-client-validation.json"
+  },
+  "postgresql": {
+    "new_checks": 55,
+    "regression_checks": 432,
+    "total_numbered_checks": 487,
+    "additional_uncounted_passing_suites": [
+      "api",
+      "agentic"
+    ],
+    "native_regression_http_requests": 389,
+    "new_private_web_http_fixture_requests": 2,
+    "compiled_worker_and_separate_web_client_process": true,
+    "configured_business_database_used_for_tests": false,
+    "real_ai_inferences": 0,
+    "real_credentials_used": false,
+    "evidence": [
+      "docs/evidence/nodia-ai-ai29-postgresql.json",
+      "docs/evidence/nodia-ai-ai29-regressions.json"
+    ],
+    "archive_sha256": "a09fe2df4829b5d1b33c5cfb366c742def6b9272d944ed9e0a2319de7dc899ba",
+    "temporary_test_containers_remaining": 0
+  },
+  "ui": {
+    "checks": 9,
+    "screenshots": 4,
+    "evidence": "docs/evidence/nodia-ai-ai29-ui-validation.json",
+    "synthetic_only": true,
+    "user_tab_untouched": true
+  },
+  "deployment": {
+    "activation": "docs/evidence/nodia-ai-ai29-lab-activation.json",
+    "runtime": "docs/evidence/nodia-ai-ai29-lab-runtime.json",
+    "dist_equality": "docs/evidence/nodia-ai-ai29-deployed-equality.json",
+    "services": "docs/evidence/nodia-ai-ai29-services.json",
+    "release_parity": "docs/evidence/nodia-ai-ai29-tested-release-parity.json",
+    "archive_sha256": "a09fe2df4829b5d1b33c5cfb366c742def6b9272d944ed9e0a2319de7dc899ba",
+    "archive_files": 916,
+    "dist_files": 868,
+    "migrations": 25,
+    "nodia_ai_tables": 18,
+    "nodia_ai_columns": 241,
+    "registered_local_executors": 69,
+    "registered_secure_preparers": 8,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "environment_and_dependencies_preserved": true,
+    "gemini_container_restarted": false,
+    "provider_login_logout_or_inference_requested_by_activation": false,
+    "profile_bytes_hashed": false,
+    "post_start_restarts": 0
+  },
+  "knowledge": {
+    "sources": 53,
+    "excluded_drafts": 26,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "release_id": "bbe14af35a6152129b05418ad440b685e88dc354079bd5696c9607bf5a6e7b93",
+    "approved_document_bytes_fragments_and_read_contracts_unchanged": true,
+    "native_writer_provenance_hashes_updated": 1,
+    "delta_evidence": "docs/evidence/nodia-ai-ai29-knowledge-delta.json",
+    "compiler_checks": 53,
+    "validation_evidence": "docs/evidence/nodia-ai-ai29-knowledge-validation.json",
+    "secure_prepare_published": false
+  },
+  "static_validation": {
+    "common_definitions": 139,
+    "domain_definitions": 184,
+    "closed_domain_contracts": 134,
+    "source_hashes": 771,
+    "fixtures": 505,
+    "controllers": 44,
+    "handlers": 206,
+    "routes": 325,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json"
+  },
+  "open_gates": [
+    {
+      "id": "AI-29-R01",
+      "status": "open",
+      "scope": "Native durable terminal witness and real provider acceptance",
+      "detail": "Codex jobs are API-process local; lost initial native reference, lost native job or missing terminal proof remain unknown/quarantined. API/worker or native restart does not prove cancellation; no retry or invented success. Unknown work can block owner admission until verified reconciliation."
+    },
+    {
+      "id": "MCP-publication",
+      "status": "open",
+      "scope": "Secure/write preparation tools remain unpublished; documentation does not grant capabilities."
+    }
+  ],
+  "limits_and_pending": [
+    "No account login/logout, provider key or inference was performed against a real provider. Native responses are synthetic; private Web transport is verified against authenticated loopback only.",
+    "AI-28-R01 external sync/logout protocol is implemented locally; external acceptance and durable missing-proof recovery remain gated.",
+    "AI-15/22 R2 and provider gates and AI-32 attachments remain independent.",
+    "Document75 in review, fiche draft/unregistered and ADR-053 proposed; no automatic approval.",
+    "AI-29 remains open for R01. AI-30 reporting source registry is the next independent implementation block."
+  ],
+  "clock_note": "Windows evidence and VM runtime keep their own UTC clock observations; cross-host event ordering is established by the tool sequence, not timestamp comparison.",
+  "final_checks": {
+    "git_diff_check_errors": 0,
+    "client_hashed_sources_rechecked": {
+      "sources": 5,
+      "client_source_hashes": 22
+    },
+    "knowledge_release_matches_deployed": true,
+    "schema_growth": false
+  }
+}

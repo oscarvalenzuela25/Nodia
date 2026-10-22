@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-14",
+  "status": "static_pass",
+  "scope": "design_manifest_integrity_and_scenario_task_traceability_not_runtime_validation",
+  "designRevision": 5,
+  "counts": {
+    "newTables": 23,
+    "reusedTables": 3,
+    "columns": 298,
+    "foreignKeys": 62
+  },
+  "fullV1Tables": 22,
+  "conditionalTables": [
+    "nodia_ai_adapter_states"
+  ],
+  "checks": {
+    "tableColumnKeyUniqueness": true,
+    "foreignKeyArityTypesUniqueTargets": true,
+    "setNullNullability": true,
+    "cascadeAcyclic": true,
+    "conversationPayloadCascade": true,
+    "unresolvedReceiptsPreferencesRuntimeSurviveChat": true,
+    "auditPurgesWithChat": true,
+    "dbmlTablesColumnsRelationsMatch": true,
+    "commonProtocolStateSetsMatch": 4,
+    "boundedStageMetadataPresent": true,
+    "redundantOrdinaryIndexesAbsent": true,
+    "knowledgeManifestPresent": true
+  },
+  "cascadeSummary": {
+    "purged": 16,
+    "cascadeEdges": 18
+  },
+  "cascadeNote": "Table-level reachability; only run-linked grant rows cascade. Execution grant rows have run_id null and follow separate operational policy.",
+  "negativeDesignFixtures": [
+    "duplicate table rejected",
+    "duplicate column rejected",
+    "nullable PK rejected",
+    "unknown FK table rejected",
+    "FK arity mismatch rejected",
+    "FK type mismatch rejected",
+    "nonunique FK target rejected",
+    "SET NULL nonnullable rejected",
+    "receipt chat cascade rejected",
+    "preference chat cascade rejected",
+    "missing content cascade rejected",
+    "missing indexed column rejected",
+    "redundant index rejected",
+    "cascade cycle rejected",
+    "missing knowledge provenance rejected",
+    "unconditional opaque state rejected"
+  ],
+  "sourceHashesChecked": 8,
+  "localLinksChecked": 647,
+  "erdDiagramEdgesChecked": 43,
+  "reviewScenarios": {
+    "count": 34,
+    "assessment": "design reasoning against repository contracts; NOT executed domain use cases",
+    "mappedToImplementationTasks": true
+  },
+  "implementationTasks": {
+    "count": 38,
+    "markedCompletedInPlan": [
+      "AI-01",
+      "AI-02",
+      "AI-03",
+      "AI-04",
+      "AI-05",
+      "AI-06",
+      "AI-07",
+      "AI-08",
+      "AI-09",
+      "AI-10",
+      "AI-11",
+      "AI-12",
+      "AI-13",
+      "AI-14",
+      "AI-16",
+      "AI-17",
+      "AI-18",
+      "AI-19",
+      "AI-20"
+    ],
+    "runtimeTasksVerifiedByThisStaticCheck": 0
+  },
+  "artifacts": [
+    {
+      "file": "docs/mvp/nodia-ai-v1-data-model.json",
+      "sha256": "d5f6173c508feb3ea79668f7676da7486836de8c6868606a865636fd1065a778"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-data-model.dbml",
+      "sha256": "2345030ae5b2fd08cc9027ba0fdcbc07499a3884367f063e8e2040fe0925d456"
+    },
+    {
+      "file": "docs/mvp/42-nodia-ai-erd.md",
+      "sha256": "523be44d543cec161698c15359d059dbf16b692502274c198d5b1d2dca6483bd"
+    },
+    {
+      "file": "docs/mvp/43-nodia-ai-execution-architecture.md",
+      "sha256": "768753344560b5c55c6d05ce7603e2d37cbab797eca87d77e880d56da0851536"
+    },
+    {
+      "file": "docs/mvp/44-nodia-ai-data-model-review.md",
+      "sha256": "afa61aa597b6a8c62b5acbcb98b17b0b591ed165718d46beddaa73d8bf233e12"
+    },
+    {
+      "file": "docs/mvp/45-nodia-ai-implementation-plan.md",
+      "sha256": "0fe1624e312f3b801a48365e3e70eee61f4182678790ccb9ed56430a6c5ee49d"
+    },
+    {
+      "file": "docs/architecture/decisions/ADR-035-nodia-ai-bounded-persistence-and-knowledge.md",
+      "sha256": "f715ebd8de71798c8815331a164568b7bfae24564faa8cef9071d66ac8ea9583"
+    },
+    {
+      "file": "docs/evidence/scripts/validate-nodia-ai-design.mjs",
+      "sha256": "46f79ef715fd88f60a0024a15939fb7f7bceed26cb572034634d1421d70e3a1a"
+    }
+  ],
+  "limitations": [
+    "No SQL migrations, locks, real jobs, storage, UI or provider inference executed",
+    "DBML textual parity checked; grammar/visual rendering not validated with a renderer",
+    "JSONB semantics, immutability, authority, idempotency and performance require real implementation and isolated runtime tests",
+    "Scenario mapping does not demonstrate scenario execution or acceptance"
+  ]
+}

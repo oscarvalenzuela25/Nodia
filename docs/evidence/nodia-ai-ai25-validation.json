@@ -1,0 +1,150 @@
+{
+  "task": "AI-25",
+  "status": "implemented_and_verified_private_lab_mcp_write_publication_pending",
+  "verified_at_utc": "2026-10-17T17:44:45.876070+00:00",
+  "implementation": {
+    "native_reservation_operations": 6,
+    "resource": "rental_reservations",
+    "operations": [
+      "create",
+      "update",
+      "confirm",
+      "start",
+      "complete",
+      "cancel"
+    ],
+    "native_executors_total": 38,
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_migrations": 0,
+    "availability_is_advisory_without_hold": true,
+    "create_only_draft_without_payment_or_occupancy": true,
+    "cancellation_does_not_register_refund": true,
+    "exact_human_confirmation_and_atomic_native_effect_receipt_journal_audit": true,
+    "real_actor_preserved": true,
+    "action_specific_material_snapshots": true,
+    "irrelevant_payments_and_neighbors_do_not_prevent_completion_or_metadata_edit": true,
+    "native_dto_transformations_frozen_before_preview": true,
+    "native_clock_shared": true,
+    "same_day_preparation_and_approvals_use_native_rules": true,
+    "historical_occupancy_and_money_preserved": true,
+    "new_future_reservation_output_bindings": false,
+    "native_bug_fixed": "Interval update passes actor.userId, not ActorReference object, to rental_turnovers.updated_by SQL."
+  },
+  "server": {
+    "full_suite": {
+      "passed": true,
+      "tests": 2487,
+      "files": 192,
+      "duration_seconds": 197.53,
+      "log": ".tmp/ai25-server-tests.log",
+      "max_workers": 2
+    },
+    "build": {
+      "passed": true,
+      "log": ".tmp/ai25-server-build-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": ".tmp/ai25-server-lint.log"
+    },
+    "coordinator_focused": {
+      "passed": true,
+      "tests": 101,
+      "files": 2,
+      "duration_seconds": 28.81,
+      "log": ".tmp/ai25-root-focused.log"
+    }
+  },
+  "client": {
+    "full_suite": {
+      "passed": true,
+      "tests": 1488,
+      "files": 203,
+      "duration_seconds": 420.9,
+      "log": "nodia-client/.tmp/ai25-client-full-release.log",
+      "max_workers": 2
+    },
+    "focused_suite": {
+      "passed": true,
+      "tests": 222,
+      "files": 5,
+      "duration_seconds": 19.43,
+      "log": "nodia-client/.tmp/ai25-client-focused-final.log"
+    },
+    "build_and_typecheck": {
+      "passed": true,
+      "build_log": "nodia-client/.tmp/ai25-client-build-final.log",
+      "typecheck_log": "nodia-client/.tmp/ai25-client-typecheck-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "log": "nodia-client/.tmp/ai25-client-lint-final.log"
+    },
+    "evidence": "docs/evidence/nodia-ai-ai25-client-validation.json"
+  },
+  "postgresql": {
+    "new_checks": 39,
+    "regression_checks": 227,
+    "total_numbered_checks": 266,
+    "native_http_requests": 282,
+    "evidence": [
+      "docs/evidence/nodia-ai-ai25-postgresql.json",
+      "docs/evidence/nodia-ai-ai25-regressions.json"
+    ],
+    "tested_archive_sha256": "d36ac0b2a9aeb99d93027cf25c1895db2745fbc7d371c5024e8896559e6d720e",
+    "final_harness_sha256": "042b52eae21634a8aaeecb4d148bf5ce2f122421d928d59bbd235020a3889e29",
+    "release_parity": "docs/evidence/nodia-ai-ai25-tested-release-parity.json",
+    "configured_business_database_used": false,
+    "real_ai_inferences": 0,
+    "temporary_test_containers_remaining": 0
+  },
+  "ui": {
+    "evidence": "docs/evidence/nodia-ai-ai25-ui-validation.json",
+    "transport": "isolated_synthetic",
+    "qa_5194_stopped": true,
+    "real_tab_5174_modified": false
+  },
+  "deployment": {
+    "activation": "docs/evidence/nodia-ai-ai25-lab-activation.json",
+    "runtime": "docs/evidence/nodia-ai-ai25-lab-runtime.json",
+    "dist_equality": "docs/evidence/nodia-ai-ai25-deployed-equality.json",
+    "services": "docs/evidence/nodia-ai-ai25-services.json",
+    "archive_sha256": "869e0ea34896545db736422f54da1435bcf526d7df245d48eb43c3b995b73160",
+    "archive_files": 868,
+    "dist_files": 828,
+    "migrations": 25,
+    "nodia_ai_tables": 18,
+    "nodia_ai_columns": 241,
+    "registered_native_executors": 38,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "knowledge": {
+    "sources": 48,
+    "excluded_drafts": 21,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "release_id": "fe96f76311b45096287f600108c242477146150653c4720687a11f6de230834f",
+    "published_content_and_contracts_unchanged": true,
+    "delta_evidence": "docs/evidence/nodia-ai-ai25-knowledge-delta.json",
+    "compiler_current_corpus_checks": 53,
+    "validation_evidence": "docs/evidence/nodia-ai-ai25-knowledge-validation.json",
+    "rental_write_prepare_published": false
+  },
+  "static_validation": {
+    "schema_definitions": 136,
+    "domain_definitions": 184,
+    "source_hashes": 688,
+    "fixtures": 378,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json"
+  },
+  "limits_and_pending": [
+    "MCP preparation/write publication and Gemini write acceptance remain pending.",
+    "Money, blocks and turnover operations remain AI-26.",
+    "AI-15/22 external/R2/routing gates and AI-32 attachments remain independent.",
+    "New knowledge remains draft/unregistered and document71 in review; no automatic approval."
+  ]
+}

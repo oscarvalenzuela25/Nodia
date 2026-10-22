@@ -1,0 +1,35 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "offline_synthetic_ui_attachment_fixtures",
+  "provider_calls": 0,
+  "private_user_data_used": false,
+  "marker": "NODIA-R05-C532A7FF",
+  "expected_text_lines": [
+    "NODIA-R05-C532A7FF",
+    "Archivo sintetico de prueba",
+    "La torre azul guarda flores."
+  ],
+  "files": {
+    "png": {
+      "path": "C:/Users/Oscar/Desktop/Nodia/.tmp/ai32-r05-synthetic.png",
+      "bytes": 29076,
+      "sha256": "e66411ae91976c0626a45a1b5e151cb49e76b0b60aac135a59395bccf20d78d7",
+      "media_type": "image/png"
+    },
+    "pdf": {
+      "path": "C:/Users/Oscar/Desktop/Nodia/.tmp/ai32-r05-synthetic.pdf",
+      "bytes": 765,
+      "sha256": "3597b3465cad3b2770a88929eb5b39366aa0b324c7283de84ebc56501157485d",
+      "media_type": "application/pdf"
+    }
+  },
+  "png": {
+    "width": 1280,
+    "height": 520,
+    "mode": "RGB"
+  },
+  "pdf": {
+    "pages": 1,
+    "text_extraction_verified": true
+  }
+}

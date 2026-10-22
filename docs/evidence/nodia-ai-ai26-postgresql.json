@@ -1,0 +1,108 @@
+{
+  "observed_at_utc": "2026-10-17T18:02:44.971309+00:00",
+  "stage_directory": "/opt/nodia/verification/ai26-20261017",
+  "compiled_production_archive_sha256": "985059cc1f77d40d78d60b30d732132383982f7df7cfff974a9e6c10c4cefe45",
+  "knowledge_pin_sha256": "46e4950b15ac9b89903341bbdd9cee47c578654b0ef9fc039eff32b21d2a2d0c",
+  "scope": "Synthetic disposable PostgreSQL only; no configured database mutation, provider inference, MCP write publication or Gemini acceptance.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "command": "node test/nodia-ai-ai26.integration.mjs",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai26.integration.mjs",
+      "sha256": "e7a3dd323c4d465d99644e4f56efb647c4b0cf193b58dd0f41efc55fe9d9f98f"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai26-worker.fixture.mjs",
+      "sha256": "2c1d4a18593c9c49c59931ae24af5e9248369c3c0c08603a0838a9011737d80f"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    }
+  ],
+  "result": {
+    "stage": "AI-26",
+    "scope": "compiled_http_confirmation_worker_disposable_postgresql_ten_money_block_turnover_operations_no_provider",
+    "checks": 44,
+    "exercised_operations": [
+      "rental_blocks/create",
+      "rental_blocks/update",
+      "rental_expenses/create",
+      "rental_expenses/pay",
+      "rental_expenses/update",
+      "rental_expenses/void",
+      "rental_payments/create",
+      "rental_payments/void",
+      "rental_turnovers/approve_same_day",
+      "rental_turnovers/update"
+    ],
+    "passed": [
+      "real required monetary block and expense fields are clarified without fabricating amounts states or dates",
+      "payment creation commits exact house cash and captures policy without creating a Finance movement",
+      "voiding draft payment retains monetary history and frozen policy while removing cash contribution",
+      "payment void cannot underfund the agreed deposit after direct confirmation",
+      "a real native payment after preview invalidates exact payment preconditions without timestamp assumptions",
+      "money contracts reject overpayment future dates zero and foreign associations",
+      "partial refunds reduce approved liability without changing original receipts or retained amount",
+      "voided refund remains in history and restores remaining refund liability",
+      "cumulative refunds cannot exceed approved cancellation and cancelled payments cannot be voided",
+      "expense creates pending exact amount with normalized nullable notes and no automatic payment",
+      "expense edit and pay use native association and explicit payment date",
+      "paid amount remains immutable while metadata corrections and void retain history",
+      "voided expense cannot pay again and associations zero or future money dates fail closed",
+      "paid expense creation preserves amounts above JavaScript safe integer exactly",
+      "a confirmed block reason change preserves unrelated concurrent notes without spurious reconfirmation",
+      "active whole-house block is visible to real availability and rejects overlapping blocks",
+      "deactivating a block releases dates while preserving its record",
+      "native confirmed occupancy between admission and execution defeats a stale block without overlapping calendar",
+      "concurrent admitted overlapping block writers serialize on the house and commit exactly one",
+      "preparation accepts unknown linen separately from false and normalizes blank notes",
+      "false linen blocks approval and future actual readiness is rejected without changing cleaning facts",
+      "future same-day plan approval remains stable across clock time and does not fabricate cleaning or readiness",
+      "a block cannot silently invalidate an explicitly approved same-day transition",
+      "changing a material plan clears previous approval",
+      "block preview discloses the exact preparation records its native writer will reset",
+      "failed block receipt restores native preparation invalidation block journal and audit atomically",
+      "block effect resets native actual preparation without inventing approval",
+      "late but real readiness is recordable and remains distinct from punctual planned readiness",
+      "same-timestamp material preparation edits invalidate an earlier preview",
+      "turnover associations and server-owned approval fields cannot be forged",
+      "archived house blocks new calendar use but keeps real expense and existing reservation settlement",
+      "super administrator writes under actual actor identity and does not impersonate foreign owner",
+      "native journal recovery belongs only to original actor while SA can observe foreign execution receipt",
+      "SA observation does not grant confirming or resuming another actors proposal execution",
+      "a module-authorized collaborator retains actual native authorship",
+      "destination module revocation before execution prevents expense writer",
+      "session revocation before execution cannot apply confirmed expense update",
+      "payment receipt failure rolls back native monetary effect policy journal and audit atomically",
+      "real child death after claim leaves no native effect and permits explicit recovery",
+      "duplicate human resume commits a single expense edit receipt and native journal",
+      "lost pay COMMIT response recovers exact receipt without duplicating expense cash or journal",
+      "all ten monetary calendar and preparation operations execute via compiled native writers",
+      "local effects never invoke provider or acquire inference slots",
+      "execution attempts and leases finish without orphaned jobs"
+    ]
+  },
+  "test_harness_change_after_compiled_archive": "Only the concurrent-worker test was corrected to drain an admitted second job left queued by the per-actor claim limit. Production dist was not patched. Current test source hash was verified on the VM.",
+  "previous_attempts_not_acceptance": [
+    {
+      "completed_checks": 18,
+      "original_harness_sha256": "bafc8dbd45eb7b3a2f8121fd17035dc6af367f09b004e45a732050d1a01e73bc",
+      "reason": "The synthetic concurrent-worker assertion expected both jobs terminal immediately, although a per-actor claim can leave the second queued until the first finishes.",
+      "resolution": "Drain the queued second job after concurrent dispatch; complete suite rerun successfully with exactly one overlapping block committed.",
+      "log_sha256": "9bff98671a561637cf0a174c33d052da8029a6f514ce90f7bf74d713cc712ce5"
+    }
+  ],
+  "status": "passed",
+  "verification_log": {
+    "path": ".tmp/ai26-sql-main.log",
+    "sha256": "eb6eb10d80236e000806337c9b527d9a63fe1c399edd3989669c07cfa81a3e18"
+  }
+}

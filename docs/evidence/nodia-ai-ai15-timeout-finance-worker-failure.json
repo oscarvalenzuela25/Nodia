@@ -1,0 +1,138 @@
+{
+  "operation": "One new user-authorized real UI Agentic request for active financial categories; distinct from the preceding incomplete business request",
+  "outcome": "incomplete_reconciled_without_replay",
+  "worker_closed_diagnostics": [
+    {
+      "error_code": null,
+      "error_type": "EntityMetadataNotFoundError",
+      "event": "nodia_ai_tool_execution_failed",
+      "phase": "native_read",
+      "sql_state": null
+    },
+    {
+      "dispatched": true,
+      "error_code": null,
+      "error_type": "EntityMetadataNotFoundError",
+      "event": "nodia_ai_stage_execution_failed",
+      "lost_lease": false,
+      "phase": "handler",
+      "signal_aborted": false,
+      "sql_state": null
+    }
+  ],
+  "native_closed_projection": {
+    "callbacks": 4,
+    "cli": {
+      "denied_count": 0,
+      "document_read_completed": false,
+      "events": 13,
+      "initialized": true,
+      "invalid_lines": 0,
+      "last_event_age_ms": 164,
+      "last_tool": "call_mcp_tool",
+      "result_seen": false,
+      "stage": "other_step",
+      "stderr_bytes": 0,
+      "stdout_bytes": 5619,
+      "terminal_status": "absent",
+      "tool_steps": 7
+    },
+    "cli_log": {
+      "bytes_read": 31219,
+      "http_statuses": [],
+      "interpretation": "text_indicator_not_verified_cause",
+      "lines_scanned": 128,
+      "provider_error_indicators": [],
+      "state": "observed",
+      "transport_indicators": [],
+      "truncated": true
+    },
+    "elapsed_ms": 48565,
+    "exception_type": "CancelledError",
+    "exit_code": null,
+    "gate_verified": false,
+    "hook": null,
+    "phase": "awaiting_server_callback",
+    "rpc_messages": 10,
+    "state": "unknown"
+  },
+  "sql_before_reconciliation": {
+    "checked_at": "2026-10-16T20:57:34.830Z",
+    "state": "unknown",
+    "phase": "inference",
+    "error_code": "nodia_ai:outcome_unknown",
+    "provider_dispatches_used": 1,
+    "tool_calls_used": 4,
+    "mcp_rpc_messages_used": 10,
+    "delegations_used": 0,
+    "tool_receipts": 3,
+    "pending_jobs": 1,
+    "job_stage": "inference",
+    "job_attempt_count": 2,
+    "prompt_or_answer_read": false
+  },
+  "operator_reconciliation": {
+    "existing_cli": true,
+    "existing_real_admin_session_verified": true,
+    "jwt_persisted_or_printed": false,
+    "roles_or_sessions_created": false,
+    "operations": 1,
+    "resolved": true,
+    "cleanup_pending": false,
+    "generation_replayed": false,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migration_rows": 20,
+    "run_state": "failed",
+    "error_code": "nodia_ai:outcome_unknown",
+    "provider_dispatches_used": 1,
+    "tool_calls_used": 4,
+    "mcp_rpc_messages_used": 10
+  },
+  "metadata_reproduction": {
+    "method": "Import the compiled worker module decorators, obtain its default forFeature entity registry, build TypeORM metadata without initializing a Nest application or connecting a DataSource, then check known entity targets.",
+    "for_feature_entities": 37,
+    "built_metadatas": 37,
+    "database_connected": false,
+    "nest_application_initialized": false,
+    "worker_started": false,
+    "business_rows_read": false,
+    "has_metadata_false": [
+      "Business",
+      "BusinessCollaborator",
+      "Product",
+      "ProductLog",
+      "Provider",
+      "ProviderContact",
+      "Invoice",
+      "AiProvider",
+      "AiApiKey",
+      "AiProviderCatalog"
+    ],
+    "has_metadata_true": [
+      "BusinessAction",
+      "UserRole",
+      "Translation",
+      "FinanceCategory"
+    ],
+    "limitation": "The metadata reproduction identifies missing worker entity registrations. It does not identify which entity target the interrupted callback requested. FinanceCategory itself is registered."
+  },
+  "diagnostic_bounds": {
+    "journal_since_utc": "2026-10-16T20:55:13Z",
+    "journal_tail_entries": 400,
+    "native_log_tail_lines": 400,
+    "native_reader_maximum_lines": 1024,
+    "native_cli_log_lines_scanned": 128,
+    "native_cli_log_truncated": true
+  },
+  "interpretation": "The native read raised EntityMetadataNotFoundError in the Server handler after durable provider dispatch, with signal_aborted=false and lost_lease=false. The Server then cancelled the native call while it awaited its callback. This observed failure is independent of provider connectivity and does not demonstrate a provider timeout.",
+  "mutations": {
+    "additional_generations": 0,
+    "replay": false,
+    "bridge_restarted": false,
+    "configuration_changed": false,
+    "migrations_executed": false,
+    "business_records_written": false
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "one_controlled_HTTP_High_observation_no_new_CLI_owner",
+  "status": "passed",
+  "observed_at_utc": "2026-10-19T20:08:03.842Z",
+  "source_sha256": "ba6ec0ff625478f461033623d824e9524accf60dd3387321827d09746b99010e",
+  "observations": [
+    {
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "available": true,
+      "reason": null,
+      "supports_mcp": false,
+      "elapsed_ms": 11754.717786,
+      "observed_at_utc": "2026-10-19T20:07:52.111Z",
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "session_generation_sha256": "47e317d5b8becf3870956e8c9e409eb15960a1e7e6989d25809b180a82a0dd53",
+      "verified_modalities": [],
+      "verified_attachment_media_types": []
+    }
+  ],
+  "quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "metadata_requests": 1,
+  "request_timings": [
+    {
+      "started": {
+        "at_utc": "2026-10-19T20:07:52.090Z",
+        "monotonic_ms": 320.25905
+      },
+      "finished": {
+        "at_utc": "2026-10-19T20:08:03.833Z",
+        "monotonic_ms": 12062.995114
+      },
+      "returned": true
+    }
+  ],
+  "eligible_for_future_MCP_probe": true,
+  "modality_canaries_executed": 0,
+  "services_restarted": false
+}

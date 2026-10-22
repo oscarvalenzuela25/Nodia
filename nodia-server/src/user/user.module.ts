@@ -1,3 +1,4 @@
+import { SaveUserUseCase } from './use-case/save-user.use-case.js';
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service.js';
 import { UserController } from './user.controller.js';
@@ -13,6 +14,7 @@ import { TranslationModule } from '../translation/translation.module.js';
 @Module({
   controllers: [UserController],
   providers: [
+    SaveUserUseCase,
     UserService,
     GetAllUsersUseCase,
     CreateUserUseCase,
@@ -22,5 +24,6 @@ import { TranslationModule } from '../translation/translation.module.js';
     TypeOrmModule.forFeature([User, UserRole, UserModuleEntity]),
     TranslationModule,
   ],
+  exports: [UserService, GetAllUsersUseCase, SaveUserUseCase],
 })
 export class UserModule {}

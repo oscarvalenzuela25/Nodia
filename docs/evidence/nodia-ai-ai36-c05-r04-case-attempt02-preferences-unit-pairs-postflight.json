@@ -1,0 +1,23 @@
+{
+  "stage": "AI-36-C05-R04",
+  "observed_at_utc": "2026-10-19T20:59:36.514494+00:00",
+  "units": {
+    "nodia-api": {
+      "state": "inactive",
+      "exit_code": 3
+    },
+    "nodia-ai-worker": {
+      "state": "inactive",
+      "exit_code": 3
+    },
+    "nodia-gemini-lab": {
+      "state": "active",
+      "exit_code": 0
+    },
+    "nginx": {
+      "state": "active",
+      "exit_code": 0
+    }
+  },
+  "provider_requests": 0
+}

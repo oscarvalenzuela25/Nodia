@@ -1,0 +1,32 @@
+{
+  "stage": "AI-36-C05",
+  "cohort": "03",
+  "scope": "single_point_host_and_gemini_container_resource_observation",
+  "observed_at_utc": "2026-10-19T17:23:41.584496+00:00",
+  "host": {
+    "load_average_1_5_15_minutes": [
+      0.31,
+      0.13,
+      0.04
+    ],
+    "uptime_seconds": 154187.68,
+    "memory": {
+      "MemTotal_kib": 8131120,
+      "MemAvailable_kib": 6531644,
+      "SwapTotal_kib": 4194300,
+      "SwapFree_kib": 4194300
+    }
+  },
+  "container": {
+    "CPUPerc": "2.47%",
+    "MemUsage": "174.4MiB / 2GiB",
+    "MemPerc": "8.52%",
+    "PIDs": "14"
+  },
+  "provider_requests": 0,
+  "profiles_or_process_arguments_read": false,
+  "limitations": [
+    "Single observation does not establish or exclude resource contention during any prior interval.",
+    "CPU and memory observations do not establish provider quota, network health or timeout cause."
+  ]
+}

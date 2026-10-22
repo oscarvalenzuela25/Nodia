@@ -1,3 +1,6 @@
+import { Req } from '@nestjs/common';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
 import {
   Controller,
   Get,
@@ -32,8 +35,14 @@ export class ModuleController {
   ) {}
 
   @Post()
-  create(@Body() createModuleDto: CreateModuleDto) {
-    return this.createModuleUseCase.execute(createModuleDto);
+  create(
+    @Body() createModuleDto: CreateModuleDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.createModuleUseCase.execute(
+      createModuleDto,
+      actorReference(request.auth),
+    );
   }
 
   @Get()
@@ -47,21 +56,37 @@ export class ModuleController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateModuleDto: UpdateModuleDto) {
-    return this.updateModuleUseCase.execute(id, updateModuleDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateModuleDto: UpdateModuleDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateModuleUseCase.execute(
+      id,
+      updateModuleDto,
+      actorReference(request.auth),
+    );
   }
 
   @Patch(':id')
   updatePatch(
     @Param('id') id: string,
     @Body() updateModuleDto: UpdateModuleDto,
+    @Req() request: AuthRequest,
   ) {
-    return this.updateModuleUseCase.execute(id, updateModuleDto);
+    return this.updateModuleUseCase.execute(
+      id,
+      updateModuleDto,
+      actorReference(request.auth),
+    );
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param() params: CatalogIdDto) {
-    return this.deleteModuleUseCase.execute(params.id);
+  remove(@Param() params: CatalogIdDto, @Req() request: AuthRequest) {
+    return this.deleteModuleUseCase.execute(
+      params.id,
+      actorReference(request.auth),
+    );
   }
 }

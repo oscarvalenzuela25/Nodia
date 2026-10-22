@@ -1,0 +1,11 @@
+[Unit]
+Description=Nodia five-minute backup expiry reconciliation
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+Unit=nodia-ai-backup-rotate.service
+
+[Install]
+WantedBy=timers.target
+

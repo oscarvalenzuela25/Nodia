@@ -1,0 +1,12 @@
+const fs = require('node:fs');
+const { createRequire } = require('node:module');
+const req = createRequire(process.cwd() + '/nodia-server/package.json');
+const Ajv = req('ajv/dist/2020.js').default;
+const addFormats = req('ajv-formats').default;
+const schema = JSON.parse(fs.readFileSync('nodia-server/scripts/nodia-ai-knowledge/contracts.schema.json','utf8'));
+const parser = require('../nodia-server/scripts/nodia-ai-knowledge/frontmatter.cjs');
+const ajv = new Ajv({strict:true,allErrors:true}); addFormats(ajv); ajv.addSchema(schema);
+const validate = ajv.getSchema(schema.$id+'#/$defs/Metadata');
+const file='docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md';
+const doc=parser.parseDocument(fs.readFileSync(file,'utf8'));
+console.log(JSON.stringify({file,valid:validate(doc.metadata),errors:validate.errors}));

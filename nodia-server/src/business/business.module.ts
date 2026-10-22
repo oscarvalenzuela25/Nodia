@@ -37,6 +37,6 @@ import { TranslationModule } from '../translation/translation.module.js';
     UpdateBusinessUseCase,
     AssignBusinessCollaboratorsUseCase,
   ],
-  exports: [BusinessService],
+  exports: [BusinessService, CreateBusinessUseCase, UpdateBusinessUseCase, AssignBusinessCollaboratorsUseCase],
 })
 export class BusinessModule {}

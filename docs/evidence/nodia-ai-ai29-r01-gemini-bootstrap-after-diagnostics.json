@@ -1,0 +1,80 @@
+{
+  "task": "AI-15",
+  "phase": "bootstrap",
+  "status": "passed",
+  "checks": 7,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader",
+    "fresh native MCP diagnostic completes and includes unpredictable callback data",
+    "exact Agentic configuration now has observed MCP support",
+    "bootstrap performs exactly one diagnostic inference and no product chat",
+    "all real native runtime slots released after acknowledgement"
+  ],
+  "turns": [],
+  "downloads": [],
+  "external_observations": [],
+  "dispatches": [],
+  "eligibility": [
+    {
+      "available": true,
+      "supports_mcp": false,
+      "reason": null
+    }
+  ],
+  "adapter_dispatch_requests": 1,
+  "maximum_adapter_dispatch_requests": 1,
+  "candidate_release_id": "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+  "domain_capabilities": 67,
+  "mcp_catalog_tools": 72,
+  "real_gemini_inference": true,
+  "adapter_mocked": false,
+  "product_readers_mocked": false,
+  "synthetic_sql_database": true,
+  "synthetic_http_identity": true,
+  "configured_business_database_modified": false,
+  "configured_provider_selection_modified": false,
+  "storage_objects_created": 0,
+  "invoice_content_download_verified": false,
+  "cleanup": {
+    "completed": true,
+    "pending": {
+      "jobs": 0,
+      "attempts": 0,
+      "runtime_slots": 0,
+      "diagnostic_requests": 0,
+      "diagnostic_proofs": 0
+    },
+    "disposable_database_removed": true,
+    "inference_replayed": false
+  },
+  "stage": "AI-29-R01",
+  "scope": "real_gemini_bootstrap_synthetic_postgresql",
+  "elapsed_seconds": 53.49,
+  "observed_at_utc": "2026-10-18T00:58:36Z",
+  "process_exit_code": 0,
+  "provenance": {
+    "dist_files": 873,
+    "dist_tree_sha256": "5e5d25640bf441cfe50b071b25d0caae2d9fdb9fad14f37cd6bfea1e5e82d225",
+    "dist_tree_hash_algorithm": "sha256 of compact sorted-key JSON path/sha256 array from Python sorted(Path.rglob('*'))",
+    "knowledge_release_id": "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+    "live_harness_sha256": "0923d2b918fd4377932a6394fbc02d6b5d19d027d94d0dd12f796e3958d9ca47",
+    "selection_observer_sha256": "02bfd0aac44b295efdf8fa0ddd27c2d68cdc44873133bca72ad4e5766f300b79",
+    "selection_observation_readonly": true,
+    "selection_observer_user": "nodia",
+    "actual_model_resolved_from_configured_selection": true,
+    "web_generation_requested": false,
+    "provider_logout_requested": false
+  },
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai15-live.integration.mjs",
+      "sha256": "0923d2b918fd4377932a6394fbc02d6b5d19d027d94d0dd12f796e3958d9ca47"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_generation_diagnostics.py",
+      "sha256": "7c5e587f4495e6db124648ef63887999f0da23f684cae8f5574c6b0de65be79f"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { installAuthorityFixture } from './fixtures/authority.integration.mjs';
 // Compiled NestJS + disposable PostgreSQL. No configured DB, Redis or real identity.
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
@@ -93,6 +94,7 @@ try {
     INSERT INTO user_roles(user_id,role_id,is_active) VALUES(1,9007199254740993,true),(1,9007199254740993,false),(1,101,true);
     INSERT INTO translations(source_entity,source_id,source_key,locale,value) VALUES ('roles','9007199254740993','key','es','Synthetic role'),('actions','9007199254740993','key','es','Other namespace'),('roles','101','key','es','Preserve');
   `);
+  const testAuthority = await installAuthorityFixture(db, ['1']);
   const redis = {
     delByPattern: async (pattern) => {
       assert.equal(pattern, 'auth:context:*');
@@ -112,6 +114,7 @@ try {
         'fixture'
       )
         throw new UnauthorizedException();
+      context.switchToHttp().getRequest().auth = testAuthority.principal();
       return true;
     }
   }
@@ -271,7 +274,7 @@ try {
         actions: ['999999'],
       })
     ).status,
-    500,
+    400,
   );
   assert.equal(
     (await db.query('SELECT key FROM roles WHERE id=200'))[0].key,
@@ -346,7 +349,7 @@ try {
         return work(manager);
       });
     try {
-      const deletion = app.get(DeleteRoleUseCase).execute(String(id));
+      const deletion = app.get(DeleteRoleUseCase).execute(String(id), testAuthority.actor());
       await locked;
       const associating = db
         .query(`INSERT INTO ${table}(${column},role_id) VALUES(1,$1)`, [id])

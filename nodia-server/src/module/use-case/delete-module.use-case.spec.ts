@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { NotFoundException } from '@nestjs/common';
 import { describe, it, expect, vi } from 'vitest';
 import type { DataSource, EntityManager } from 'typeorm';
@@ -7,6 +8,11 @@ import type { RedisService } from '../../common/redis/redis.service.js';
 
 function fixture() {
   const manager = {
+    query: vi.fn(async (sql: string, values: string[] = []) =>
+      sql.includes('AS "actorId"')
+        ? [{ actorId: values[0], sessionId: values[1], isSuperAdmin: false }]
+        : [],
+    ),
     findOne: vi.fn().mockResolvedValue({ id: '7' }),
     exists: vi.fn().mockResolvedValue(false),
     delete: vi.fn().mockResolvedValue({ affected: 1 }),
@@ -35,7 +41,7 @@ describe('DeleteModuleUseCase', () => {
     '999999999999999999999',
   ])('rejects invalid bigint ID %s before persistence', async (id) => {
     const { useCase, dataSource, redis } = fixture();
-    await expect(useCase.execute(id)).rejects.toMatchObject({
+    await expect(useCase.execute(id, actorFixture('1'))).rejects.toMatchObject({
       message: 'modules:invalid_id',
     });
     expect(dataSource.transaction).not.toHaveBeenCalled();
@@ -43,7 +49,7 @@ describe('DeleteModuleUseCase', () => {
   });
   it('preserves exact bigint IDs without Number coercion', async () => {
     const { useCase, manager } = fixture();
-    await useCase.execute('9007199254740993');
+    await useCase.execute('9007199254740993', actorFixture('1'));
     expect(manager.findOne).toHaveBeenCalledWith(Module, {
       where: { id: '9007199254740993' },
       lock: { mode: 'pessimistic_write' },
@@ -55,9 +61,9 @@ describe('DeleteModuleUseCase', () => {
   it('returns 404 without cleanup or cache invalidation when absent', async () => {
     const { useCase, manager, redis } = fixture();
     manager.findOne.mockResolvedValue(null);
-    await expect(useCase.execute('7')).rejects.toBeInstanceOf(
-      NotFoundException,
-    );
+    await expect(
+      useCase.execute('7', actorFixture('1')),
+    ).rejects.toBeInstanceOf(NotFoundException);
     expect(manager.delete).not.toHaveBeenCalled();
     expect(redis.delByPattern).not.toHaveBeenCalled();
   });
@@ -67,7 +73,7 @@ describe('DeleteModuleUseCase', () => {
       expect(redis.delByPattern).not.toHaveBeenCalled();
       return { affected: 1 };
     });
-    await useCase.execute('7');
+    await useCase.execute('7', actorFixture('1'));
     expect(redis.delByPattern).toHaveBeenCalledOnce();
     expect(redis.delByPattern).toHaveBeenCalledWith('auth:context:*');
   });
@@ -76,14 +82,14 @@ describe('DeleteModuleUseCase', () => {
     manager.delete.mockRejectedValueOnce(
       new Error('Synthetic database failure'),
     );
-    await expect(useCase.execute('7')).rejects.toThrow(
+    await expect(useCase.execute('7', actorFixture('1'))).rejects.toThrow(
       'Synthetic database failure',
     );
     expect(redis.delByPattern).not.toHaveBeenCalled();
   });
   it('removes only its assignments and translations before the catalog entry', async () => {
     const { useCase, manager } = fixture();
-    await useCase.execute('7');
+    await useCase.execute('7', actorFixture('1'));
     expect(manager.delete.mock.calls.map(([, criteria]) => criteria)).toEqual([
       { module_id: '7' },
       { source_entity: 'modules', source_id: '7' },

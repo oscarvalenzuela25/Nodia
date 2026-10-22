@@ -1,0 +1,42 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "local_owned_MCP_agent_corrected_inheritance_r02_isolated_Windows_validation",
+  "status": "passed",
+  "Windows_tests_total": 445,
+  "Windows_tests_passed": 443,
+  "historical_skips": 2,
+  "compiled_sources": 5,
+  "sources": {
+    "nodia-gemini-microservice/native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "nodia-gemini-microservice/native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "nodia-gemini-microservice/tests/test_native_context_budget.py": "b93b871718ad3f35f58c579ffa2b885ffd59542e87ec67dcef8f66425269f569",
+    "nodia-gemini-microservice/tests/test_native_mcp.py": "dfab624b9f8d8bdc64daa83d5e987caa93728b2ae9adc5dfa90556c44a96aea7",
+    "nodia-gemini-microservice/tests/test_agentic_native_attachments.py": "e17ecab7994ed66cb3fcbd76aa63534db933e4484031a09dae7b0d490f1599a1"
+  },
+  "test_log": ".tmp/ai36-c05-owned-mcp-agent-r02-python-windows.log",
+  "test_log_sha256": "f9fcd9af1d2cfcb6fb8a99e66aeb0ca0a433384784d481a78367ddfaa81efece",
+  "public_CLI_evidence": "docs/evidence/nodia-ai-ai36-c05-static-mcp-agent-metadata.json",
+  "source_delta_evidence": "docs/evidence/nodia-ai-ai36-c05-owned-mcp-agent-r02-source-delta.json",
+  "MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "native_role_document_UTF8_bytes": {
+    "False": 822,
+    "True": 893
+  },
+  "native_tools_without_attachments": [
+    "finish"
+  ],
+  "native_tools_with_attachments": [
+    "finish",
+    "view_file"
+  ],
+  "inheritMcp": true,
+  "stdio_fixture_checks_owned_config_has_only_nodia_runtime": true,
+  "foreign_root_profile_MCP_config_not_inherited": true,
+  "previous_policy_MCP_proofs_ineligible": true,
+  "original_QA445_and_canary12_evidence_unchanged": true,
+  "wire_changes": 0,
+  "real_CLI_executions": 0,
+  "provider_requests": 0,
+  "deployments": 0,
+  "CLI_support_and_resolution_of_12_unknown_tool_still_unverified": true
+}

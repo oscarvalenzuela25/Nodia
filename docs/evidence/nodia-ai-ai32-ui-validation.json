@@ -1,0 +1,51 @@
+{
+  "stage": "AI-32",
+  "status": "passed_synthetic_browser_qa",
+  "scope": "isolated_CUA_browser_iframe_real_components_synthetic_HTTP_no_provider_or_database",
+  "languages_themes": [
+    "es/dark",
+    "en/light"
+  ],
+  "widths": [
+    320,
+    390,
+    599,
+    600,
+    900,
+    1440
+  ],
+  "document_width_matches_frame_at_all_widths": true,
+  "checks": [
+    "Add synthetic PDF and durable upload metadata",
+    "Actual UI extraction prefill reviewable (synthetic parser fixture identified)",
+    "Edited interpretation survives a failed mutation; toast + local error",
+    "Resize across six widths preserves draft and retry state",
+    "Explicit accepted interpretation enables sending only kind/attachment_id",
+    "History requests private metadata only on intent",
+    "English acceptance/labels and known zero rendered",
+    "Microphone recording not requested in browser; lifecycle covered by synthetic component tests"
+  ],
+  "screenshots": [
+    {
+      "file": "docs/evidence/images/nodia-ai-ai32-draft-error-es-320.png",
+      "sha256": "23234a4ac284f58d954298d96b5556da7da8fef920d41e747f81e5709e8c6aa0"
+    },
+    {
+      "file": "docs/evidence/images/nodia-ai-ai32-accepted-es-390.png",
+      "sha256": "48f59d3f71f059da5076485a9053d0c7c29e3c844714a254b55ebbce4a7691cd"
+    },
+    {
+      "file": "docs/evidence/images/nodia-ai-ai32-accepted-en-390.png",
+      "sha256": "edc02b437336bcebb4cbf85258e59d7c06697a57e748b6e3761ccfbabbacd886"
+    }
+  ],
+  "limitations": [
+    "No physical phone or real microphone recording",
+    "No R2/provider inference through synthetic UI",
+    "Development HMR reset a draft in an earlier interrupted attempt; final checks ran after source freeze",
+    "No comparative performance claim"
+  ],
+  "temporary_qa_server_stopped": true,
+  "agent_created_qa_tab_closed": true,
+  "user_tab_untouched": true
+}

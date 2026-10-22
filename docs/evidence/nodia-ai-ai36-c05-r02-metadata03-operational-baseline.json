@@ -1,0 +1,36 @@
+{
+  "SQL_baseline": {
+    "stage": "AI-36-C05-R02",
+    "scope": "readonly_SQL_exact_configured_High_baseline",
+    "status": "passed",
+    "observed_at_utc": "2026-10-19T20:07:51.338Z",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1
+    },
+    "configured_SQL_writes": 0,
+    "provider_requests": 0,
+    "source_sha256": "323f519af1e0d1572449cb2054a4707cf4e53eb2c4f3562cafda56ca4213f27d"
+  },
+  "container": {
+    "image": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+    "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+    "started_at": "2026-10-19T20:05:13.415129549Z"
+  },
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  }
+}

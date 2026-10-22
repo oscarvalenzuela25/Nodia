@@ -1,0 +1,26 @@
+{
+  "stage": "AI-34",
+  "scope": "isolated_native_diagnostics_candidate_build_and_linux_unit",
+  "status": "passed",
+  "candidate_image": "sha256:d54315b1d373250063a3644b13a5fad4115d084fffdc85d66efe27528b832850",
+  "source_files": 98,
+  "source_manifest_sha256": "0e158ec637506da3a2f3791f25ba4b99f9ac04c0780850886b11307b36086566",
+  "linux_tests": 415,
+  "linux_seconds": 8.029,
+  "linux_test_log_sha256": "8a96c9c62bf444e38be361be93b34116861955d224fbef7787060098910a9484",
+  "build_log_sha256": "11d080c759a1c877955a17fa1edacff767a3a479e40147b6b22f4ae3c12a3ac0",
+  "native_image_source_files_verified": 98,
+  "native_image_source_drift": 0,
+  "isolated_network": "none",
+  "read_only_root": true,
+  "memory_bytes": 536870912,
+  "cpu_limit": 1,
+  "active_tag_modified": false,
+  "services_restarted": false,
+  "configured_database_used": false,
+  "profile_or_credential_files_copied": false,
+  "provider_generations": 0,
+  "limitations": [
+    "Offline synthetic tests prove diagnostic adapter contracts; they do not establish the Agentic timeout cause or successful real inference"
+  ]
+}

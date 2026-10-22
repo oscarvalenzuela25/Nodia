@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "status": "environment_acceptance_incomplete",
+  "environment": {
+    "environment_id": null,
+    "package_manifest_sha256": null
+  },
+  "gates": [
+    {
+      "gate_id": "package_integrity",
+      "required_scope": "artifact",
+      "requirement": "Build, hashes, dependencies, policy/catalogue/knowledge pins and immutable package.",
+      "source": "52 §§Build; AI-38",
+      "status": "unknown",
+      "reason": "AI-37 candidate04 remains immutable. Its bde release predates a documentation-only provenance change to c703; a fresh official build/package must pin its actual current release.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai37-documentation-finalization.json",
+          "sha256": "66b47a546cc640237f491f9d0232569d0590f0144773061a99d469f015f8d281"
+        }
+      ]
+    },
+    {
+      "gate_id": "isolated_UI_API_SQL",
+      "required_scope": "isolated",
+      "requirement": "Page against isolated API/database; results and errors come from the actual API.",
+      "source": "45 AI-38; NI-12",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    },
+    {
+      "gate_id": "authority_and_revocation",
+      "required_scope": "isolated",
+      "requirement": "Ordinary owner/destination modules, super_admin, revoked access and exact human confirmation.",
+      "source": "41; 43; 45 AI-38",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    },
+    {
+      "gate_id": "leave_return_and_effects",
+      "required_scope": "isolated",
+      "requirement": "Leave/return, durable result and confirmed effects visible through native application reads.",
+      "source": "45 AI-38",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    },
+    {
+      "gate_id": "product_context_evolution",
+      "required_scope": "isolated",
+      "requirement": "Next turn uses the expected published context without rewriting an in-flight command or receipt.",
+      "source": "40 §Cómo conoce; 52 §Evolución; AI-38",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    },
+    {
+      "gate_id": "provider_text_and_routing",
+      "required_scope": "live_environment",
+      "requirement": "Exact configured Web/Agentic selection and opt-in same-connection delegation; no fallback.",
+      "source": "48; 50; 45 AI-38",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    },
+    {
+      "gate_id": "provider_modalities",
+      "required_scope": "live_environment",
+      "requirement": "Each claimed MIME/model/mode has a real completed response on the delivered runtime.",
+      "source": "45 AI-38; AI-32 acceptance",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    },
+    {
+      "gate_id": "published_domain_acceptance",
+      "required_scope": "live_environment",
+      "requirement": "Acceptance by published domain/capability; historical 4/7 is not acceptance on a new runtime.",
+      "source": "45 AI36-C05 and AI-38",
+      "status": "unknown",
+      "reason": "C05 accumulated 4/7 capabilities; 77 other candidates remain unpublished. No capability is accepted for a new AI-38 runtime by inheriting this history.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
+          "sha256": "25f3ee4a8a82f778522c55ff88922905acc6a22d40f2e74617ba6791baf236c4"
+        }
+      ]
+    },
+    {
+      "gate_id": "deployment_and_rollback",
+      "required_scope": "infrastructure",
+      "requirement": "Per-environment immutable deployment, startup pins, drain, rollback and reconciliation runbook rehearsed.",
+      "source": "43; 52; 45 AI-38",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    },
+    {
+      "gate_id": "retention_backup_restore",
+      "required_scope": "infrastructure",
+      "requirement": "Actual isolation, encrypted/rotated backups, trusted deletion journal, object/version inventory and restore reconciliation.",
+      "source": "50; 83 §Gates; AI-38",
+      "status": "unknown",
+      "reason": "No AI-38 evidence supplied for this environment and package.",
+      "evidence": []
+    }
+  ],
+  "counts": {
+    "passed": 0,
+    "failed": 0,
+    "unknown": 10
+  },
+  "historical_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
+      "sha256": "25f3ee4a8a82f778522c55ff88922905acc6a22d40f2e74617ba6791baf236c4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-validation.json",
+      "sha256": "6837001444fc6230c6f8b35dc7a4dc11868b485d0b70d392292ac17c55fd625d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-documentation-finalization.json",
+      "sha256": "66b47a546cc640237f491f9d0232569d0590f0144773061a99d469f015f8d281"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-operational-state.json",
+      "sha256": "beaced2473754a857b16129f9be5a0bf01d1b4f0a22e8dedcbb6c48e0536a30d"
+    }
+  ],
+  "excluded_modes": [
+    "api_key",
+    "openai_codex_agentic"
+  ],
+  "knowledge_provenance_note": "The AI-37 addendum records a source_hash-only change, with identical approved content, capability contracts, bindings and fragments. A fresh build/package pin is required; no new knowledge approval or capability publication follows from that source-only hash change. Subsequent source changes must be classified from their actual diff.",
+  "boundaries": {
+    "offline_only": true,
+    "release_authorized": false,
+    "deployment_performed": false,
+    "productive_acceptance": false,
+    "provider_calls": 0,
+    "SQL_access": false,
+    "historical_acceptance_transferred": false,
+    "new_knowledge_approval": false,
+    "semantic_review": "Checksums/context prevent accidental reassignment; they do not prove a producer is honest or its asserted success is semantically correct."
+  },
+  "input": {
+    "path": "docs/evidence/nodia-ai-ai38-gates-input.json",
+    "sha256": "fe88e84b9cc7fbfd07766de69fb758b38fee836efef00bf2ba9d1c58baa50703"
+  },
+  "validator": {
+    "path": "docs/evidence/scripts/nodia-ai-ai38-gates.cjs",
+    "sha256": "489f9657556089e7ea0d22a3413bfac222ccff38854b849c5dcb2e80cf251f99"
+  }
+}

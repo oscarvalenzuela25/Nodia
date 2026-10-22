@@ -1,0 +1,83 @@
+{
+  "stage": "AI-16",
+  "scope": "configured_local_lab_real_ui_agentic_mcp_read_only",
+  "checked_at": "2026-10-16T23:16:07.750Z",
+  "conversation_id": "d4f0be72-b593-4dc2-80f5-bc5e1dc5db63",
+  "run": {
+    "id": "68cca213-69b5-457e-b1db-7852a25a5aba",
+    "state": "completed",
+    "phase": "inference",
+    "error_code": null,
+    "revision": 5,
+    "created_at": "2026-10-16T23:09:38.825Z",
+    "completed_at": "2026-10-16T23:10:56.738Z",
+    "assistant_sealed": true,
+    "tool_calls": 1,
+    "rpc_messages": 7,
+    "provider_dispatches": 1
+  },
+  "events": [
+    {
+      "id": "e55c3344-205a-4c33-8bea-8187c5dafcfc",
+      "seq": "1",
+      "kind": "run_accepted"
+    },
+    {
+      "id": "1f3d5dbd-06d4-4126-b3d6-6314aaa0fde5",
+      "seq": "2",
+      "kind": "run_changed"
+    },
+    {
+      "id": "033d7af3-9420-446f-8c52-5ac35e9f9fcf",
+      "seq": "3",
+      "kind": "run_changed"
+    },
+    {
+      "id": "59c9f827-8de0-4639-85de-f9625d22eb46",
+      "seq": "4",
+      "kind": "run_changed"
+    },
+    {
+      "id": "32280c19-8b26-429a-8863-8b5090d6f4b4",
+      "seq": "5",
+      "kind": "tool_completed"
+    },
+    {
+      "id": "4269f9bd-be08-4ef9-bd36-9753b85888a4",
+      "seq": "6",
+      "kind": "message_sealed"
+    },
+    {
+      "id": "d028197e-2668-4de3-a3ea-d2a80cc07cca",
+      "seq": "7",
+      "kind": "run_changed"
+    }
+  ],
+  "tool_receipts": [
+    {
+      "id": "65576ab2-d58d-46c2-a2d5-e04b4513507a",
+      "name": "nodia_businesses_list",
+      "state": "completed",
+      "contract_hash": "2d0ebe4b1939e185c5c8ee92ccd03828d6e0406482c740be633618f23cafccac",
+      "completed_at": "2026-10-16T23:10:33.930Z"
+    }
+  ],
+  "comparison": {
+    "filters": {
+      "activity": "inactive",
+      "all_businesses": false,
+      "page": 1,
+      "limit": 25,
+      "additional_filter_keys": []
+    },
+    "receipt_total": "0",
+    "returned": 0,
+    "current_sql_total": "0",
+    "matches": true
+  },
+  "event_refs_match_receipts": true,
+  "pending_jobs": 0,
+  "generations_by_auditor": 0,
+  "handlers_executed_by_auditor": 0,
+  "business_writes": 0
+}

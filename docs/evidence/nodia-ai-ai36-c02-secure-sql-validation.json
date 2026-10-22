@@ -1,0 +1,112 @@
+{
+  "stage": "AI-36-C02",
+  "scope": "candidate_mcp_secure_preparation_native_human_channel_isolated_sql",
+  "status": "passed",
+  "checks": 31,
+  "http_requests": 25,
+  "postgresql_migrations": 29,
+  "c01_regression": {
+    "checks": 22,
+    "http_requests": 8,
+    "status": "passed",
+    "same_compiled_execution": true
+  },
+  "compiled_outputs_verified": 2750,
+  "compiled_execution_files": 947,
+  "compiled_execution_manifest_sha256": "316068a5f18b24720473c30d715211d386dca61b60cd18783455c4aca75c0183",
+  "manifest_sha256": "b82111052dde40991c2cb7a24f439f3881c8618f079f3edc99203b72895309a5",
+  "source_sha256": "e55168cb4a73f0a0ae764481ecd61df592cc6154691dc0f69441615fd3b5c4fc",
+  "candidate_tools": 4,
+  "synthetic_published_tools": 4,
+  "synthetic_provider_dispatches": 8,
+  "native_login_starts_in_mock": 1,
+  "actual_provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "configured_database_used": false,
+  "storage_operations": 0,
+  "services_restarted": false,
+  "production_publication": false,
+  "candidate_deployed": false,
+  "disposable_containers_remaining": 0,
+  "scanned_coordination_tables": [
+    "nodia_ai_drafts",
+    "nodia_ai_proposals",
+    "nodia_ai_proposal_steps",
+    "nodia_ai_tool_calls",
+    "nodia_ai_messages",
+    "nodia_ai_events",
+    "nodia_ai_executions",
+    "nodia_ai_execution_steps",
+    "nodia_ai_jobs",
+    "nodia_ai_job_attempts",
+    "nodia_ai_execution_grants"
+  ],
+  "limits": {
+    "mcp_wire_json_depth": 16,
+    "native_typed_json_decoded_depth": 8,
+    "json_collection_items": 128,
+    "tool_arguments_utf8_bytes": 65536,
+    "tool_result_utf8_bytes": 65536,
+    "assembled_context_utf8_bytes": 262144
+  },
+  "attempts": [
+    {
+      "attempt": "attempt01",
+      "status": "failed",
+      "manifest_sha256": "29d75ca5f849894f4e239536e3eb777c918fcc1b2ee9803f94acd9bae63ff372",
+      "archive_sha256": "09fee86a0b643cc421fd8ce22d7855847368121d8e3d93912410b05f5bc96d24",
+      "source_sha256": "df204c8eb2a5d22de86cf82d1f10abfc3b72ba11519824112f14f2a0bdfc5723",
+      "compiled_execution_identical": true,
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c02-secure-sql-attempt01.json"
+    },
+    {
+      "attempt": "attempt02",
+      "status": "passed",
+      "manifest_sha256": "054c8fc4d1c6eeb948d959f29de3abbe52b1a3dcae367ad0621598866e21a649",
+      "archive_sha256": "2fe0931f91bac58d7e36806d6285c4bfc3780a34ae31978272a8bf1839ce06cc",
+      "source_sha256": "72f933248de5d055bcdc1c4a317e89dbe6e720b12fe43f5ecd480e8d2ed143f2",
+      "compiled_execution_identical": true,
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c02-secure-sql-attempt02.json"
+    },
+    {
+      "attempt": "attempt03",
+      "status": "passed",
+      "manifest_sha256": "b82111052dde40991c2cb7a24f439f3881c8618f079f3edc99203b72895309a5",
+      "archive_sha256": "6367e2af09eea4c9b1fee470f87a51a11eed6059557fec10257e70bcec3f8363",
+      "source_sha256": "e55168cb4a73f0a0ae764481ecd61df592cc6154691dc0f69441615fd3b5c4fc",
+      "compiled_execution_identical": true,
+      "evidence_path": "docs/evidence/nodia-ai-ai36-c02-secure-sql-attempt03.json"
+    }
+  ],
+  "layers": {
+    "mcp_callback": "Actual compiled ExecuteNodiaAiToolUseCase and four secure candidate adapters",
+    "native_preparation": "Actual compiled native secure preparers and CAS draft/proposal persistence",
+    "authorization": "Actual SQL module/action/current-session ownership; replay reauthorization",
+    "confirmation": "Separate human-channel HTTP challenge and exact proposal confirmation",
+    "worker": "Actual execution worker establishes waiting_for_user and frees leases without a new inference slot",
+    "human_key": "Actual encrypted native key writer and atomic opaque receipt with synthetic key in disposable SQL",
+    "native_login": "Actual native session bridge authorization; synthetic GeminiService transport only",
+    "publication": "Private synthetic four-tool manifest; compiled production publication untouched"
+  },
+  "limits_of_evidence": [
+    "No real provider account, inference, device authorization or UI acceptance is credited.",
+    "Closed named input fields prevent those fields from carrying credentials; this is not DLP for arbitrary user text or metadata.",
+    "Rejected synthetic marker and human-entered synthetic key are searched across the eleven listed coordination tables; the actual encrypted value belongs only to ai_api_keys.",
+    "Human flow references and native references remain private to authenticated human channels and private recovery data; no human channel is exported as an MCP action.",
+    "The historical operating runtime was only health-checked and is not claimed to equal this undeployed candidate."
+  ],
+  "evidence_sha256": {
+    "nodia-server/test/nodia-ai-ai36-secure-preparation.integration.mjs": "e55168cb4a73f0a0ae764481ecd61df592cc6154691dc0f69441615fd3b5c4fc",
+    "nodia-server/test/nodia-ai-ai36-write-preparation.integration.mjs": "b0bdaaf47608e8414e4adc47529dfef88b9f28a2bb6463117c1be2969ee48113",
+    "docs/evidence/scripts/nodia-ai-ai36-c02-secure-sql-stage.cjs": "72e15ba91bf3986849bad175fbf959940dad5fac4ddfd490a6993a370f730c86",
+    "docs/evidence/scripts/nodia-ai-ai36-c02-secure-sql-remote.py": "12a8b5d2cfd4c10149fcacc3f5ef6b792565b697dd7935f32179b4b0eedfe8b7",
+    "docs/evidence/scripts/nodia-ai-ai36-c02-secure-sql-health.py": "df687ab6aff622c044d26e3185777f7b0da9a58bf4f671ddeda401745e8dcdee",
+    "docs/evidence/scripts/nodia-ai-ai36-c02-secure-sql-evidence.cjs": "c14a39b77305acffc9536a9f81e0decd3402a68ec99448706dc387bb3a71d746",
+    "docs/evidence/nodia-ai-ai36-c02-secure-sql-manifest.json": "b82111052dde40991c2cb7a24f439f3881c8618f079f3edc99203b72895309a5",
+    "docs/evidence/nodia-ai-ai36-c02-secure-sql-attempt01.json": "68bd3ccf64cf90b9886226e2ae2b198bac5f3927a9bc5b829957e642903a5ee0",
+    "docs/evidence/nodia-ai-ai36-c02-secure-sql-attempt02.json": "45e37f9d1a155d6fcc1bc76b89af369d35f02fe2126b0458d415ad1e99f80a50",
+    "docs/evidence/nodia-ai-ai36-c02-secure-sql-attempt03.json": "17f26f7cd998b77ca25dca6c1b8b4a507df43eb70e9d8a1b7a2cd90e77d6387e",
+    "docs/evidence/nodia-ai-ai36-c02-secure-sql-attempt01-failure.json": "f569eeceeb34c353a22c9b19f23a4633ac61c2502720b1c52d881bde21b52ce7",
+    "docs/evidence/nodia-ai-ai36-c02-secure-sql-health.json": "3cffff10163c6874f00444c5abb1abfdfa5541e63ebfa457e13dd050489ade78"
+  }
+}

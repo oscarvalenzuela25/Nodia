@@ -1,0 +1,57 @@
+{
+  "stage": "AI-38",
+  "status": "failed",
+  "scope": "isolated_production_ui_http_sql",
+  "context": {
+    "environment_id": "ai38-isolated-ui-api-sql",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "checked_at": "2026-10-20T16:43:35.962Z",
+  "checks": 0,
+  "results": [],
+  "profiles": [],
+  "requests": [],
+  "page_errors": [],
+  "external_requests_blocked": [],
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai38-acceptance.integration.mjs",
+      "sha256": "2b92ab87d37a3b4f924c2f159f318bd20fde70608e75f6529259ca3e63e903d9"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai-ai38/main.tsx",
+      "sha256": "b1166d0ec5e8e2e3be573b2d90f9c0052f594c353bce192e14549192b167acbd"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai-ai38/index.html",
+      "sha256": "c9be06773cfff1d089fe5fedc66fea39958e31754c45fff81f42be0f0a62e512"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-acceptance-ui.mjs",
+      "sha256": "048d741ce10bdd159fc1a9f3ba21ab17e1329505af41bd70519bd8e757ef4c4e"
+    }
+  ],
+  "final_snapshot": null,
+  "api_report": null,
+  "failure": {
+    "name": "TypeError",
+    "message": "Cannot read properties of undefined (reading 'launch')"
+  },
+  "boundaries": {
+    "synthetic_authenticated_transport": true,
+    "synthetic_redis": true,
+    "preparation_via_internal_native_port": true,
+    "natural_language_or_mcp_preparation_verified": false,
+    "real_provider_inferences": 0,
+    "configured_database_writes": 0,
+    "storage_operations": 0,
+    "live_environment_acceptance": false,
+    "product_context_evolution_verified": false,
+    "api_paid_mode_verified": false,
+    "cleanup_verified_separately": true
+  }
+}

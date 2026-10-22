@@ -1,0 +1,69 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "gates_open",
+  "observed_at_utc": "2026-10-18T03:20:25Z",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "probe": {
+    "engine": "web",
+    "kind": "audio",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null,
+    "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+    "reference": {
+      "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "session_generation": "05ca5db348174c828613c0dd4fd4b5df",
+      "operation_ref": "2e4944a0-d087-49ad-92e3-1e50e8f12078"
+    },
+    "attempt_id": "2e4944a0-d087-49ad-92e3-1e50e8f12078",
+    "file_bytes": 113568,
+    "media_type": "audio/wav",
+    "file_sha256": "91c00ea902149bfa794a568f98300380568bbaa7a2f5382f99d460a391826318",
+    "expected_answer_sha256": "35cc327329772dbf23ef54d1055949ff4c2045a22f3ff03332fd6e8a424bb133",
+    "answer_normalization": "speech_words_v1",
+    "native_acknowledged": true,
+    "verified": false,
+    "fixture": "synthetic_known_canary",
+    "http_status": 200,
+    "answer_sha256": "e74c26d7af89071fb2622bd6ce0a42e8275e9e36fa100fccbd00668385492ff0",
+    "semantic_canary_matches": false,
+    "semantic_diagnostic": {
+      "answer_is_string": true,
+      "answer_chars": 24,
+      "expected_chars": 29,
+      "line_count": 1,
+      "trim_equals": false,
+      "casefold_equals": false,
+      "whitespace_collapse_equals": false,
+      "contains_expected": false,
+      "expected_is_prefix": false,
+      "expected_is_suffix": false,
+      "json_string_decoded_equals": false
+    },
+    "elapsed_seconds": 7.12,
+    "native_outcome": "completed"
+  },
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [
+      "image",
+      "pdf"
+    ],
+    "supports_mcp": false
+  },
+  "diagnostics": [],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T03:20:32Z"
+}

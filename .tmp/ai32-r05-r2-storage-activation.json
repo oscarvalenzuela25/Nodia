@@ -1,0 +1,45 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "scoped_compiled_storage_single_attempt_activation",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T16:28:04Z",
+  "provider_generations": 0,
+  "r2_object_operations": 0,
+  "configuration_modified": false,
+  "schema_modified": false,
+  "gemini_restarted": false,
+  "compiled_files_verified": 909,
+  "scoped_outputs_installed": 6,
+  "changed_paths": [
+    "dist/common/storage/storage.service.js",
+    "dist/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.js"
+  ],
+  "added_output_paths": [
+    "dist/common/storage/storage.service.d.ts",
+    "dist/common/storage/storage.service.js.map",
+    "dist/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.d.ts",
+    "dist/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.js.map"
+  ],
+  "previous_compiled_files_verified": 905,
+  "unchanged_existing_compiled_files": 903,
+  "all_other_compiled_hashes_preserved": true,
+  "final_dist_manifest_sha256": "0293d34fe9d320be6b9f696ebdc094e839d5cf5919f25091aa480ee262dfc3b5",
+  "backup_directory": "/opt/nodia/verification-backups/ai32-r05-storage-1792340884434",
+  "api_and_worker_restarted": true,
+  "gemini_container_identity_preserved": true,
+  "nginx_identity_preserved": true,
+  "server_environment_unchanged": true,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 26
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 26
+  },
+  "completed_at_utc": "2026-10-18T16:28:08Z"
+}

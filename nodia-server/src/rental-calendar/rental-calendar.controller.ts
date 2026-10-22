@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from '../rental-common/rental-response.schemas.js';
 import {
   Controller,
@@ -52,7 +53,7 @@ export class RentalCalendarController {
     @Query() dto: RentalCalendarQueryDto,
   ) {
     return this.getRentalCalendarUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
     );
@@ -67,7 +68,7 @@ export class RentalCalendarController {
     @Query() dto: RentalAvailabilityQueryDto,
   ) {
     return this.getRentalAvailabilityUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
     );

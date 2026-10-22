@@ -23,11 +23,33 @@ def read_session() -> Optional[tuple[str, str]]:
         return None
 
 
-def save_session(psid: str, psidts: str) -> None:
+def disconnected_state() -> str | None:
+    """Durable logout overrides even a read-only .env seed after restart."""
+    try:
+        data = json.loads(SESSION_FILE.read_text(encoding="utf-8"))
+        value = data.get("disconnected")
+        return value if isinstance(value, str) and value in {"pending", "complete"} else None
+    except (OSError, ValueError, AttributeError):
+        return None
+
+
+def mark_disconnected(*, pending: bool) -> None:
+    _write_session({"disconnected": "pending" if pending else "complete"})
+
+
+def save_session(psid: str, psidts: str, *, explicit_login: bool = False) -> None:
     if not psid or not psidts:
         return
+    if disconnected_state() and not explicit_login:
+        return
+    if explicit_login and disconnected_state() == "pending":
+        raise RuntimeError("Session cleanup must complete before login")
     if read_session() == (psid, psidts):
         return
+    _write_session({"secure_1psid": psid, "secure_1psidts": psidts})
+
+
+def _write_session(data: dict[str, str]) -> None:
     SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
     temporary = None
     try:
@@ -36,7 +58,7 @@ def save_session(psid: str, psidts: str) -> None:
             prefix="cookies-", suffix=".tmp", delete=False,
         ) as stream:
             temporary = Path(stream.name)
-            json.dump({"secure_1psid": psid, "secure_1psidts": psidts}, stream)
+            json.dump(data, stream)
             stream.flush()
             os.fsync(stream.fileno())
         if os.name != "nt":

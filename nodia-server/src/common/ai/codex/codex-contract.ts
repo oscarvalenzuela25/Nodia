@@ -2,6 +2,12 @@ import { HttpException } from '@nestjs/common';
 
 export const CODEX_VERSION = '0.161.0';
 export const CODEX_PROVIDER = 'nodia_codex';
+// Codex 0.161.0 rejects the removed readOnly.access field. Tools are disabled
+// separately; this stable policy prevents their writes and network access.
+export const CODEX_READ_ONLY_POLICY = {
+  type: 'readOnly',
+  networkAccess: false,
+} as const;
 export const CODEX_SETTINGS: Record<string, unknown> = {
   cli_auth_credentials_store: 'keyring',
   forced_login_method: 'chatgpt',
@@ -73,6 +79,13 @@ export function codexError(code: string, status = 503) {
     codex_inference_failed:
       'Codex no completó la extracción. Compruebe sesión, modelo y cuota.',
     codex_cancelled: 'Se interrumpió la operación Codex.',
+    codex_login_unknown:
+      'No se pudo comprobar el resultado del intento de conexión Codex. No se repetirá automáticamente.',
+    codex_login_not_found:
+      'No existe un intento Codex asociado a esta identidad.',
+    codex_login_expired: 'Venció el plazo del intento de conexión Codex.',
+    codex_request_conflict:
+      'La identidad del intento Codex ya tiene otro plazo de admisión.',
   };
   return new CodexOperationException(
     {

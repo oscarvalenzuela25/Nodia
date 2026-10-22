@@ -1,0 +1,45 @@
+{
+  "stage": "AI-35",
+  "scope": "read_only_pre_activation_baseline",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T22:47:10Z",
+  "compiled_files": 931,
+  "compiled_manifest_sha256": "5f5f89bb4d8418f422f6fd446f91c838e011e579ccbad4e0f7590b7d41ee7909",
+  "knowledge_release": "72e2d9823d559968836eb36a0a48c7a9afa268f02ba549cb7be9ad930f646896",
+  "native_image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "native_source_files_verified": 99,
+  "native_source_manifest_sha256": "e9e955f093f7c1491b1a856fed0ca782b7a098a48f053f3cc6e7c271871600c5",
+  "native_runtime_artifact_counts": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "sql_quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 28
+  },
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "http": {
+    "api": 200,
+    "gemini": 200,
+    "proxy": 200
+  },
+  "configured_chat_checked": true,
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "configured_database_writes": 0,
+  "storage_operations": 0,
+  "services_restarted": false,
+  "script_path": "docs/evidence/scripts/nodia-ai-ai35-runtime-baseline.py",
+  "script_sha256": "3ebc7182aec1739ae316de062d09f720e1ec041108f505fa9b36a2cd74b2450e"
+}

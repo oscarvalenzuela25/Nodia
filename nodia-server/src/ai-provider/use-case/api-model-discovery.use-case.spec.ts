@@ -28,7 +28,7 @@ function setup(key = 'openai') {
     findProviderById: vi.fn().mockResolvedValue(provider),
     findAllProviders: vi.fn().mockResolvedValue({ data: [provider] }),
     getActiveApiKeySecret: vi.fn().mockResolvedValue('synthetic-key'),
-    updateProviderFields: vi.fn(),
+    mergeDiscoveredModels: vi.fn(),
   };
   const api = new ApiProviderService();
   const providers = service as unknown as AiProviderService;
@@ -94,16 +94,12 @@ describe('API models discovered through use cases', () => {
       ),
     ).toBe(true);
     expect(result.tokenPlan).toBeNull();
-    expect(service.updateProviderFields).not.toHaveBeenCalled();
+    expect(service.mergeDiscoveredModels).not.toHaveBeenCalled();
     await sync.execute('42', { mode: 'api_key' });
-    expect(service.updateProviderFields).toHaveBeenCalledWith(
+    expect(service.mergeDiscoveredModels).toHaveBeenCalledWith(
       '42',
-      expect.objectContaining({
-        token_plan_web: { selected_model: 'other-mode' },
-        api_key: expect.objectContaining({
-          selected_model: 'live-account-model',
-        }),
-      }),
+      'api_key',
+      result.models,
     );
   });
   it('exposes observed API models and verifies configuration without fabricating a successful inference', async () => {

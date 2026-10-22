@@ -1,0 +1,38 @@
+{
+  "stage": "AI-38",
+  "scope": "one_real_MCP_transport_nonce_not_domain_acceptance",
+  "started_at_utc": "2026-10-20T16:51:46.525977+00:00",
+  "finished_at_utc": "2026-10-20T16:53:57.422428+00:00",
+  "context": {
+    "environment_id": "linux_lab_candidate_adapter",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "runner_sha256": "b0786d534b1cb85b66179dad72682aebb550476e5972f49870bd5fc7db1d821d",
+  "harness_sha256": "604563be962df59a4b4431ad5efb2bf590b67a133a748a0d748cc90cd79ae49c",
+  "selection_sha256": "f4002f1e91c3d665104c5886c16e05f619628efb1f93876c455050f302acc665",
+  "exit_code": 1,
+  "native_result": {
+    "task": "AI-15",
+    "scope": "exact_configured_connection_mcp_attestation",
+    "configured_database_read_only": true,
+    "configured_database_modified": false,
+    "configured_selection_modified": false,
+    "available_before": true,
+    "supports_mcp_before": false,
+    "real_provider_dispatch_requests": 1,
+    "maximum_provider_dispatch_requests": 1,
+    "diagnostic_nonce_verified": false,
+    "native_terminal_proof_acknowledged": true,
+    "inference_replayed": false,
+    "status": "failed",
+    "error_code": "mcp_result_unknown",
+    "native_pending_identity": false
+  },
+  "maximum_provider_dispatch_requests": 1,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "services_restarted": false,
+  "candidate_adopted": false,
+  "automatic_inference_retries": 0,
+  "raw_logs_retained_privately": true
+}

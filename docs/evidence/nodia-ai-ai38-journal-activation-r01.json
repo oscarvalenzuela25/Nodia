@@ -1,0 +1,1 @@
+{"stage": "AI-38", "status": "activation_failed_admission_closed_no_legacy_rollback", "phase": "start_journaled_consumers", "bootstrap_attempted_external_era_may_be_active": true, "legacy_consumers_restarted": false, "raw_details_emitted": false, "API_stopped": true, "worker_stopped": true, "private_failure_receipt_written": true}

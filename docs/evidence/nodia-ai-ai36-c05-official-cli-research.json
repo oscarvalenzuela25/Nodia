@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "scope": "primary_official_public_documentation_only_no_runtime_action",
+  "consulted_at_utc": "2026-10-19T20:30:38.501485+00:00",
+  "installed_binary_version_under_review": "1.3.1",
+  "installed_binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "sources": [
+    {
+      "title": "Headless mode",
+      "url": "https://www.antigravity.google/docs/cli/headless/",
+      "version_scope": "current unversioned documentation, not an installed-binary attestation",
+      "findings": [
+        "init reports configuration; step_update covers transitions; result is terminal. No upper bound on the interval between these events is specified.",
+        "Closing stdin permits the active turn to finish before process exit. /model and /usage are separate CLI commands, not stream-json user turns.",
+        "--print-timeout bounds response waiting. It does not document a count of internal model requests.",
+        "stdout may contain tool arguments/results; stderr may contain error and permission details. These are not promised sanitized diagnostics."
+      ],
+      "short_quote": "The init payload records the run configuration."
+    },
+    {
+      "title": "MCP",
+      "url": "https://www.antigravity.google/docs/mcp/",
+      "version_scope": "current shared App/CLI/IDE guide",
+      "findings": [
+        "stdio uses command/args and optional cwd/env under mcpServers.",
+        "The inspected guide does not specify a headless startup-failure deadline, mandatory fail-fast behavior after stdio exit, or a startup error event contract."
+      ]
+    },
+    {
+      "title": "Changelog - CLI entries",
+      "url": "https://www.antigravity.google/docs/changelog/",
+      "version_scope": "release notes; history is not proof that a behavior happened in a retained attempt",
+      "entries": [
+        {
+          "version": "1.0.7",
+          "date": "2026-06-09",
+          "finding": "Advertises configurable MCP launch timeout, without a parameter name in that entry."
+        },
+        {
+          "version": "1.1.9",
+          "date": "2026-07-31",
+          "finding": "Headless/one-shot startup remains blocking for MCP tool loading."
+        },
+        {
+          "version": "1.2.1",
+          "date": "2026-09-11",
+          "finding": "Advertises in-process exponential-backoff retries for transient model errors, retaining completed tool outputs."
+        },
+        {
+          "version": "1.2.6",
+          "date": "2026-09-18",
+          "finding": "Introduces structured AGY_ERROR stderr metadata; changes unspecified headless timeout to unlimited."
+        },
+        {
+          "version": "1.2.13",
+          "date": "2026-09-29",
+          "finding": "Advertises server-requested rate-limit delay and stopping for delays above 30s or daily/billing caps."
+        },
+        {
+          "version": "1.3.1",
+          "date": "2026-10-07",
+          "finding": "Installed release under review."
+        },
+        {
+          "version": "1.3.4",
+          "date": "2026-10-13",
+          "finding": "Later fix caps retry waits at 30s rather than up to 4min. Earlier release notes do not prove every 1.3.1 path had that cap."
+        }
+      ],
+      "short_quote": "headless and one-shot runs keep blocking"
+    },
+    {
+      "title": "CLI commands",
+      "url": "https://www.antigravity.google/docs/cli/reference/",
+      "version_scope": "current unversioned settings/reference",
+      "findings": [
+        "No documented CLI setting for disabling or limiting internal model retry count was found in the inspected reference."
+      ]
+    },
+    {
+      "title": "CLI settings and tips",
+      "url": "https://www.antigravity.google/docs/cli/using/",
+      "version_scope": "current unversioned settings guide",
+      "findings": [
+        "No retry-count/backoff override was identified. This search result is a documentation limitation, not proof that no internal option exists."
+      ]
+    }
+  ],
+  "not_a_CLI_control": "RetryConfig and LocalAgentConfig retry settings found in SDK release notes belong to the Python SDK, not a verified override for this CLI.",
+  "operational_interpretation": [
+    "Nodia/harness automatic_inference_retries=0 means no application resend. Native accepted-start counts are not upstream request counts.",
+    "init plus prompt_received without tools/result does not identify a network, quota, reasoning or retry cause.",
+    "AGY_ERROR can only supply evidence when actually emitted; no stderr means no such retained evidence.",
+    "Retain the current 120s outer bound and exact selection. This research authorizes no config/model/binary/timeout change."
+  ],
+  "potential_future_safe_diagnostic": "If separately authorized, parse only an emitted AGY_ERROR structural allowlist (canonical status, numeric HTTP/gRPC code, retryable boolean) with byte/depth caps; omit message, error ID and nested data. This is a proposal, not implemented or verified against 1.3.1.",
+  "actions": {
+    "provider_requests": 0,
+    "CLI_executions": 0,
+    "VM_actions": 0,
+    "production_source_changes": 0,
+    "configuration_changes": 0
+  }
+}

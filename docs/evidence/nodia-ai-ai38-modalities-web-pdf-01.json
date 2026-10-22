@@ -1,0 +1,41 @@
+{
+  "stage": "AI-38",
+  "scope": "exact_native_format_semantic_canary",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:55:04.102149+00:00",
+  "source_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_web",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null
+  },
+  "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+  "session_generation": "50d0785bea9d42faadaac151ba7d7445",
+  "attempt_id": "98a28fe4-ef88-4013-84bb-6d5956c43d47",
+  "kind": "pdf",
+  "media_type": "application/pdf",
+  "file_bytes": 672,
+  "file_sha256": "13586f48194dbdda58695c23ff32960fe6718ef63f829d4423270b9387a9bde4",
+  "expected_answer_sha256": "165042b7723420914a357c654edaa475ecc584529a12054606ebdab275ba6e2a",
+  "maximum_generations": 1,
+  "generation_requests": 1,
+  "inference_replayed": false,
+  "configured_SQL_writes": 0,
+  "business_effects": 0,
+  "provider_login_logout": false,
+  "semantic_match": true,
+  "native_acknowledged": true,
+  "native_pending_identity": false,
+  "raw_provider_output_exported": false,
+  "quiet_before": {
+    "jobs": 0,
+    "attempts": 0,
+    "slots": 0
+  },
+  "http_status": 200,
+  "actual_answer_sha256": "165042b7723420914a357c654edaa475ecc584529a12054606ebdab275ba6e2a",
+  "native_outcome": "completed",
+  "exact_format_verified_after": true,
+  "finished_at_utc": "2026-10-20T19:55:38.101359+00:00"
+}

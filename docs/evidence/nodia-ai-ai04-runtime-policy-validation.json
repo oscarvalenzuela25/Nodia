@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-15",
+  "task": "AI-04",
+  "status": "policy_validated_runtime_gated",
+  "scope": "Offline schema, semantic rejection fixtures, arithmetic boundaries and recorded evidence comparison only",
+  "policyVersion": "nodia-ai-runtime/1",
+  "negativeFixtures": [
+    "missing policy",
+    "unknown override",
+    "nested unknown field",
+    "numeric string",
+    "zero upload budget",
+    "voice product decision preserved",
+    "file product decision preserved",
+    "extra audit archive rejected",
+    "extra receipt archive rejected",
+    "chat window preserved",
+    "API routing excluded",
+    "error fallback excluded",
+    "switch never confirms",
+    "cross connection routing excluded",
+    "dispatch replay excluded",
+    "gate cannot disappear",
+    "gate cannot duplicate",
+    "file vs message mismatch",
+    "unreachable message cap",
+    "chat storage mismatch",
+    "owner storage mismatch",
+    "count mismatch",
+    "upload concurrency mismatch",
+    "upload intent too short",
+    "list cannot exceed structure",
+    "default cannot exceed list",
+    "context budget insufficient",
+    "RPC budget cannot reset calls",
+    "dispatch budget must fit phases",
+    "lease too short",
+    "queue consumes deadline",
+    "step plan too large",
+    "drain too short",
+    "retry count mismatch",
+    "cleanup count mismatch",
+    "backoff does not increase",
+    "search default exceeds maximum",
+    "sweep too slow"
+  ],
+  "boundaryChecks": [
+    "UTF8 emoji boundary is bytes, not JS length",
+    "two full files fit one message, third exceeds aggregate",
+    "90 UTC periods cross year without local timezone arithmetic",
+    "full queue does not imply latency guarantee",
+    "dispatch cap includes delegation and compaction without resetting budget",
+    "worst simultaneous parser allowance is explicit"
+  ],
+  "localLinksChecked": 31,
+  "observedAgenticDispatchSeconds": [
+    55.24,
+    17.09,
+    10.1,
+    96.67
+  ],
+  "observedEvidenceSha256": "a7522bddf0aad1add7bd929005d39ea851fdcb207164bdd499317c8b701ebddd",
+  "providerDeadlineSeconds": 120,
+  "measuredDeadlineMarginSeconds": 23.33,
+  "productionGates": [
+    {
+      "id": "postgres_admission_fencing",
+      "status": "pending_runtime_test"
+    },
+    {
+      "id": "shared_profile_all_entrypoints",
+      "status": "pending_runtime_test"
+    },
+    {
+      "id": "durable_budgets_routing_contracts",
+      "status": "pending_runtime_test"
+    },
+    {
+      "id": "modalities_per_exact_adapter",
+      "status": "pending_runtime_test"
+    },
+    {
+      "id": "effect_reconciliation",
+      "status": "pending_runtime_test"
+    },
+    {
+      "id": "storage_late_put_version_cleanup",
+      "status": "pending_runtime_test"
+    },
+    {
+      "id": "backup_rotation_restore",
+      "status": "pending_runtime_test"
+    },
+    {
+      "id": "load_drain_deployment",
+      "status": "pending_runtime_test"
+    }
+  ],
+  "servicesStarted": false,
+  "providerCalls": 0,
+  "businessWrites": 0,
+  "artifacts": [
+    {
+      "file": "docs/mvp/nodia-ai-v1-runtime-policy.json",
+      "sha256": "1db71c074aa9f9ad0aa0213ab4438293c8583cb10ad783629b1b43a464b4743e"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-runtime-policy.schema.json",
+      "sha256": "8149c8fa16792da09f4b504640dffd1521c8584ec599cf973b7f947693c6a86f"
+    },
+    {
+      "file": "docs/mvp/50-nodia-ai-ai04-runtime-policy.md",
+      "sha256": "2831f27d11e0971bf384422d017aaca574aec5c4ca4b10473ac1902d6beed1db"
+    },
+    {
+      "file": "docs/architecture/decisions/ADR-037-nodia-ai-admission-and-minimal-retention.md",
+      "sha256": "5c676ba8218a33ea2ec225c55c5a0dd0e8ab4d2fa99da8cec4827597dd2b9904"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md",
+      "sha256": "b802c793a094ff75cbb39bf3815bf998d0bd83eb027a435889c8995e9ca010da"
+    },
+    {
+      "file": "docs/evidence/scripts/validate-nodia-ai-ai04.cjs",
+      "sha256": "6c38ed75cadb874b1be1ff3569fa8904c1a40f7651f3fbfd147711f4624c302a"
+    }
+  ],
+  "limitations": [
+    "Does not implement or prove PostgreSQL admission, locks, budgets, races, fencing or leases",
+    "Does not test parser resource limits, modalities, real storage deletion or backup rotation",
+    "Four recorded dispatches are a baseline, not percentiles, capacity or a provider quota",
+    "No live service, model inference, schema migration or automatic document approval"
+  ]
+}

@@ -12,7 +12,9 @@ describe('GetAllModuleGroupsUseCase', () => {
     moduleGroupServiceMock = {
       findAll: vi.fn(),
     };
-    useCase = new GetAllModuleGroupsUseCase(moduleGroupServiceMock as ModuleGroupService);
+    useCase = new GetAllModuleGroupsUseCase(
+      moduleGroupServiceMock as ModuleGroupService,
+    );
   });
 
   it('should be defined', () => {
@@ -39,9 +41,7 @@ describe('GetAllModuleGroupsUseCase', () => {
           is_active: true,
           created_at: new Date(),
           updated_at: new Date(),
-          translates: [
-            { key: 'key', es: 'Ajustes', en: 'Settings' },
-          ],
+          translates: [{ key: 'key', es: 'Ajustes', en: 'Settings' }],
           modules: [],
         },
       ],

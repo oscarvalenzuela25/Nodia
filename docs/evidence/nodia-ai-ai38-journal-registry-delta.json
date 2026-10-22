@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "scope": "registry_provenance_only_no_publication_or_approval_change",
+  "snapshot": {
+    "path": "docs/evidence/nodia-ai-ai38-journal-registry-before.json",
+    "sha256": "be5dba960f773d9df1c3defdd0e111f963305bba5727e8b492e4532bc3af9c05"
+  },
+  "registry_sha256_after": "e9c22c9b8ce84f9f7a6dbea750562326189074fb91e5d75f9ff57ce2dcd42149",
+  "changed_source": "nodia-server/src/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.ts",
+  "old_pin": "8d56e89ecc8c0bf6a0193a1df9ed1faac70ae3cfeb6ab84bbb34bf2105a60f37",
+  "new_pin": "347167cf7e42dc5834d6409c8870530366655dd7bf5cd7fae1bde30627e363e9",
+  "changed_pins": 2,
+  "capabilities_preserved": 74,
+  "capability_ABI_and_schema_descriptors_unchanged": true,
+  "contract_hash_constructor_unchanged_against_frozen_candidate_JS": true,
+  "baseline_compiled_JS": {
+    "path": ".tmp/ai38-node-candidate01/nodia-server/dist/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.js",
+    "sha256": "a472f1f11279597b0cae04988be0606370bd7d573462e6921cb45c119337f9f5"
+  },
+  "new_approval": false
+}

@@ -68,6 +68,7 @@ export interface FinancePage<T> {
   };
 }
 export interface FinanceQuery {
+  owner_id?: string;
   page?: number;
   limit?: number;
   active?: FinanceActive;

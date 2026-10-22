@@ -1,0 +1,68 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "non_generative_explicit_catalog_Low_variant_preflight",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T18:15:58.127Z",
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "storage_operations": 0,
+  "source_sha256": "451b3d21106d156b1730d73d71fa12d7a3ed10752d814ce5d0d93297c3cb1b05",
+  "SQL_quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "stored_selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high",
+    "auto_delegate_to_agentic": false
+  },
+  "explicit_test_selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-low",
+    "effort_id": "low",
+    "auto_delegate_to_agentic": false
+  },
+  "public_mode_configuration_sha256_before": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+  "native_metadata_requests": 1,
+  "observation_elapsed_ms": 9136.526008,
+  "native_observation": {
+    "available": true,
+    "supports_mcp": false,
+    "reason": null,
+    "source": "gemini_live_session_and_catalog",
+    "observed_at_utc": "2026-10-19T18:15:58.271Z",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+    "session_generation_sha256": "9f3dd503d957975b11239d8f39db505d55acfc37a159d7ab1a1580b8b666b08f",
+    "adapter_contract_version": "nodia-ai-gemini-chat/1"
+  },
+  "public_mode_configuration_sha256_after": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+  "SQL_quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "interpretation": "Exact catalog variant accepted by non-generative model command; MCP proof and effective inference effort are independent",
+  "finished_at_utc": "2026-10-19T18:16:07.384Z",
+  "native_quiet_before": {
+    "unknown_markers": 0,
+    "native_attempt_proofs": 0,
+    "MCP_temp_directories": 0
+  },
+  "native_quiet_after": {
+    "unknown_markers": 0,
+    "native_attempt_proofs": 0,
+    "MCP_temp_directories": 0
+  },
+  "matches_previous_High_observation": {
+    "configuration_generation": true,
+    "resource_key_sha256": true,
+    "session_generation_sha256": true,
+    "adapter_contract_version": true
+  }
+}

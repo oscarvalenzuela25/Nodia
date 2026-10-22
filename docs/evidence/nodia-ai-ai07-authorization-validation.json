@@ -1,0 +1,187 @@
+{
+  "task": "AI-07",
+  "date": "2026-10-15",
+  "status": "implemented_locally_runtime_consumers_pending",
+  "unitTests": {
+    "serverFiles": 117,
+    "serverTests": 907,
+    "nodiaAiCases": 23
+  },
+  "integration": {
+    "task": "AI-07",
+    "scope": "compiled_nest_di_disposable_postgresql16",
+    "checks": 28,
+    "passed": [
+      "repeat seed preserves catalog identities",
+      "concurrent seeds converge on the same catalog identities",
+      "translation failure rejects the entire seed",
+      "failed seed rolls back the preceding module update",
+      "no user assignments from migration/seed",
+      "both module translations exist",
+      "ordinary actor without NodiaAI assignment",
+      "current actor admitted after assignment",
+      "unassigned destination rejected",
+      "discovery resolves current target ID",
+      "revoked destination blocks recovery immediately",
+      "inactive destination rejected",
+      "inactive group blocks NodiaAI",
+      "repeat seed preserves disabled group",
+      "seed does not reactivate NodiaAI",
+      "seed preserves edited translations",
+      "ordinary foreign resource hidden",
+      "existing action missing",
+      "existing action granted via active roles",
+      "revoked role action rejected",
+      "super administrator bypasses assignments while retaining actor",
+      "super administrator cannot author/confirm for another owner",
+      "super administrator role revocation effective immediately",
+      "revoked session rejected even for super administrator",
+      "expired session rejected",
+      "inactive user rejected",
+      "session cannot be used as another actor",
+      "new valid session can recover own resource"
+    ],
+    "configuredDatabaseTouched": false,
+    "providersCalled": false,
+    "file": "docs/evidence/nodia-ai-ai07-postgres-integration.json"
+  },
+  "client": {
+    "routeCases": 6,
+    "fullSuite": {
+      "files": 190,
+      "tests": 1196,
+      "passed": true
+    },
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "browserQa": {
+      "file": "docs/evidence/nodia-ai-ai07-browser-qa.json",
+      "cases": 16,
+      "passed": true,
+      "scope": "isolated_page_real_theme_and_pagecontent_chrome"
+    }
+  },
+  "limits": [
+    "No configured-database installation or user assignment",
+    "No chat endpoints, MCP tools, grants or provider inference",
+    "Revocation checked between decisions; transaction barriers pending AI-08",
+    "Knowledge remains draft and unregistered"
+  ],
+  "server": {
+    "build": "passed",
+    "lint": {
+      "errors": 0,
+      "existingWarnings": [
+        "unused IsNumber in ai-provider/dto/create-ai-provider.dto.ts",
+        "unused AiConnectionMode in ai-provider/entities/ai-provider.entity.ts"
+      ]
+    },
+    "changedCodeLintWarnings": 0,
+    "focusedFinalUseCaseTests": 23
+  },
+  "knowledge": {
+    "sourceDocuments": 38,
+    "excludedDrafts": 38,
+    "publishedDocuments": 0,
+    "publishedCapabilities": 0,
+    "contextModuleRoute": "/tools/nodia-ai"
+  },
+  "sourceHashes": [
+    {
+      "file": "nodia-server/src/app.module.ts",
+      "sha256": "e56dcc92fe61bfda52971c6c2f7bf09c433b68fb99a6b1495a3a7733cfc10e66"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/nodia-ai.module.ts",
+      "sha256": "bd9ff27c643d0d52d9fb42ef6408dcdf878d24e86529396bab5f869a794fd0c8"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/nodia-ai-authorization.service.ts",
+      "sha256": "9763ebf2029063e62e24d2d6c060cd8ecd91bb9eff19a927974478e440b8cc8a"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/nodia-ai-navigation.service.ts",
+      "sha256": "ebde180f8633dafa203a144325c50eed6353e031e960ff7d72cc3a4f264244c1"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/nodia-ai.constants.ts",
+      "sha256": "cfa7c5f264bb88dde5be7260550a218aeccb2d94524777796a92ecbc404c2cfa"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/types/nodia-ai-authorization.types.ts",
+      "sha256": "64f16b9a948b04657ab58bd505a67b6e3d3100adc1d499e6c008ed05cf198b57"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/use-case/authorize-nodia-ai.use-case.ts",
+      "sha256": "d695cfe1a3162ddb6c152a53afc2b8d9b786239970d06b368234a1be89469930"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/use-case/authorize-nodia-ai.use-case.spec.ts",
+      "sha256": "9595425ec3902563d3b0fd0d188e44a9c3a52885c8cb4508b971612fbda07574"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/use-case/authorize-nodia-ai-resource.use-case.ts",
+      "sha256": "fca0f952069e3e9466a975dc62bd42d9ab5ca23a6fc1fbe6868b235d3040951d"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/use-case/seed-nodia-ai-navigation.use-case.ts",
+      "sha256": "b8bb7a2433e1468a2612b30f56f6ac4f1f020be827652ba627ee871715e829d1"
+    },
+    {
+      "file": "nodia-server/src/migrations/1792100000000-RegisterNodiaAiNavigation.ts",
+      "sha256": "d047a54f175c38a5904f7d16d05ac864c2e22d98f7b0b17a3a585d299c13b724"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-authorization.integration.mjs",
+      "sha256": "acf4daf7bf73d56c93a26c841837c748f65c658d8fd2b69d5bb46b36b9f481bd"
+    },
+    {
+      "file": "nodia-server/scripts/seed-nodia-ai.mjs",
+      "sha256": "a87a6f90a21a82614a681e54ab3547350ab70336e2858dda16be3fb9595c23ce"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "5fc3c26f8138e6165b7a82e8a60b5e1de60c74e5e717713283250114e730b808"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/styles.ts",
+      "sha256": "418cf4184a3123d38d0678ab998c1c946f99e244aa6faade25cbb3c8a7e8ca2d"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/constants/routes.ts",
+      "sha256": "7bfbfcf23937b1cbef48d70d4921044bfb7968a82558fb2f0783b39ca443d6ab"
+    },
+    {
+      "file": "nodia-client/src/routes/index.tsx",
+      "sha256": "7052d7d50769164d38419d3e42f4d19f51f17bf29de655efc73e23df14dc5e05"
+    },
+    {
+      "file": "nodia-client/src/routes/navigationOptions.ts",
+      "sha256": "b76b674b125daaa2489e694c3b79b27aa07b621098d0d0c9a1e3fc7282ba886d"
+    },
+    {
+      "file": "nodia-client/src/test/routes/NodiaAIRoute.test.tsx",
+      "sha256": "b14817f1831c64e7b017eae557ae8d95926bb095d2a987716ae5957bd779cd4b"
+    },
+    {
+      "file": "nodia-client/src/test/manual/nodia-ai/verify.mjs",
+      "sha256": "71e87f133471138270c80fee68de7ebb0b3bc2e4b3bab17130fe13ef4a69ffb1"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai07-postgres-integration.json",
+      "sha256": "f5e89bcaca02b404edfd99e99fa5be78157b841a07926abc8b0d6038391de881"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai07-browser-qa.json",
+      "sha256": "345fba29c2732cd5490c157e5b5778e0e3632a750d6756ee1423fae3e6c9dc94"
+    }
+  ],
+  "notes": [
+    "Full suites ran before final bounded-key validation cleanup; final focused 23 cases and real PostgreSQL harness rerun after cleanup",
+    "Browser first attempt used unavailable bundled headless shell; successful repeat uses installed Chrome channel, no browser downloads",
+    "Existing Vite chunk-size advisory and existing lint warnings preserved; no new warning suppressed",
+    "No configured-database installation; migration/seed tested only in disposable PostgreSQL",
+    "No atomic permission-versus-effect race guarantee; AI-08 pending"
+  ]
+}

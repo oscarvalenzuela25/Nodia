@@ -1,0 +1,10 @@
+{
+  "task": "AI-15",
+  "configured_database_read_only": true,
+  "configured_database_modified": false,
+  "real_provider_dispatch_requests": 0,
+  "inference_replayed": false,
+  "status": "failed",
+  "error_code": "attestation_check_failed",
+  "native_pending_identity": false
+}

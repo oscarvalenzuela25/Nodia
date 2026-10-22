@@ -1,0 +1,25 @@
+{
+  "stage": "AI-36",
+  "status": "passed",
+  "inventory_file": "docs/mvp/nodia-ai-current-endpoints.json",
+  "before_inventory_sha256": "e4a515b6a9af80b10d0c09f0ddc5a88e87e0b17f457a2a50f3692f8d835532c1",
+  "after_inventory_sha256": "02986e74df4805e60b98e6f2d81da640f6f122e7b87cc79fd7b68d4b46557776",
+  "source_deltas": [
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts",
+      "previous_sha256": "e88a760b3fb69a83770a29a123c27bc0c08116385e7e28d9dbf58ce01f034dac",
+      "sha256": "6241a93bc7a896d1688d802506216a69c8d448d2be992ebcbb45be8406a3d312"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.ts",
+      "previous_sha256": "1cc05155e3f84aaa4c7fa68f118deb58f36c88201da4cfe8e81d6b5c1cc273a7",
+      "sha256": "978448b681d88dc9fd2c166b455a828a901f7ed7ca4ee03657e27af5f7376aab"
+    }
+  ],
+  "sources": 849,
+  "handlers": 217,
+  "aliases": 336,
+  "endpoint_contracts_changed": false,
+  "tool_publication_changed": false,
+  "rationale": "Proven local arming rejection does not quarantine a never-dispatched profile; uncertain SQL responses stay unknown."
+}

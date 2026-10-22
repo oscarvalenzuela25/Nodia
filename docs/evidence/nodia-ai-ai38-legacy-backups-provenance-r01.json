@@ -1,0 +1,1222 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "scope": "offline_historical_backup_path_provenance_only",
+  "status": "24_exact_receipt_references_5_without_reference_in_bounded_scope",
+  "inventory_source": {
+    "path": "docs/evidence/nodia-ai-ai38-environment-retention-r02.json",
+    "sha256": "13370e9eed7dd00220bd4cf28158a897739225a27e33793f7bf864098ff224c4",
+    "observed_at_VM_utc": "2026-10-20T23:18:06.062540+00:00",
+    "json_pointer": "/known_root_artifact_metadata"
+  },
+  "method": {
+    "inventory_selection": "metadata entries whose exact path ends with .dump; no filesystem or VM access",
+    "historical_receipt_scope": "docs/evidence/nodia-ai-ai15..ai35 JSON filenames containing activation or validation; additionally nodia-ai-ai17-code-deployment.json",
+    "excluded_name_fragments": [
+      "legacy",
+      "environment",
+      "journal",
+      "retention",
+      "infrastructure"
+    ],
+    "reference_rule": "JSON string scalar equals exact directory or exact dump path; embedded commands and prefix-only matches do not count",
+    "negative_result_meaning": "No exact scalar reference in the frozen successfully parsed historical receipt set, not proof of absent ownership or author",
+    "source_hash_algorithm": "sha256 over original file bytes"
+  },
+  "summary": {
+    "dumps": 29,
+    "directories_with_exact_historical_receipt": 24,
+    "directories_without_exact_reference": 5,
+    "historical_receipts_scanned": 131,
+    "historical_receipts_not_parseable": 1,
+    "historical_receipts_with_exact_references": 27,
+    "historical_total_bytes": 7561623
+  },
+  "entries": [
+    {
+      "directory": "/opt/nodia/verification-backups/ai15-before-publication-20261016T183626Z",
+      "dump_path": "/opt/nodia/verification-backups/ai15-before-publication-20261016T183626Z/nodia_lab.dump",
+      "historical_metadata": {
+        "byte_count": 1032,
+        "mtime_utc": "2026-10-16T18:36:26.738339+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "no_exact_reference_in_scanned_historical_receipts",
+      "historical_receipts": []
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai15-before-publication-20261016T183638Z",
+      "dump_path": "/opt/nodia/verification-backups/ai15-before-publication-20261016T183638Z/nodia_lab.dump",
+      "historical_metadata": {
+        "byte_count": 162764,
+        "mtime_utc": "2026-10-16T18:36:38.495470+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "no_exact_reference_in_scanned_historical_receipts",
+      "historical_receipts": []
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai15-before-publication-20261016T195927Z",
+      "dump_path": "/opt/nodia/verification-backups/ai15-before-publication-20261016T195927Z/nodia_lab.dump",
+      "historical_metadata": {
+        "byte_count": 162761,
+        "mtime_utc": "2026-10-16T19:59:27.958733+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai15-lab-activation.json",
+          "sha256": "d10e8acce722b8ab9da6a126b3ba9b45234c71ff2cebc890edc51f04a4e602e8",
+          "exact_references": [
+            {
+              "json_pointer": "/database/backup/path",
+              "match": "exact_dump_path"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai16-before-observation-1792192118",
+      "dump_path": "/opt/nodia/verification-backups/ai16-before-observation-1792192118/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 227932,
+        "mtime_utc": "2026-10-16T23:08:38.969978+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai16-lab-activation.json",
+          "sha256": "8984a82fe1cc46df3714dc987734628b969e0a26ab3512e55719d249e529cc57",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai17-before-proposals-1792194373",
+      "dump_path": "/opt/nodia/verification-backups/ai17-before-proposals-1792194373/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 230192,
+        "mtime_utc": "2026-10-16T23:46:14.073301+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai17-lab-activation.json",
+          "sha256": "b23353a390db775e5f49a82a0224b864fd6037e25cf6fde3e7b19f3778a5bd1e",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai17-validation.json",
+          "sha256": "4c78d64d9da89d712af3d1af1c18a36b784e5d34370cf313e8f279cd063276db",
+          "exact_references": [
+            {
+              "json_pointer": "/lab/backup_before_migration",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai17-before-proposals-1792194498",
+      "dump_path": "/opt/nodia/verification-backups/ai17-before-proposals-1792194498/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 251043,
+        "mtime_utc": "2026-10-16T23:48:18.211448+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "no_exact_reference_in_scanned_historical_receipts",
+      "historical_receipts": []
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai17-before-proposals-1792195018",
+      "dump_path": "/opt/nodia/verification-backups/ai17-before-proposals-1792195018/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 251043,
+        "mtime_utc": "2026-10-16T23:56:58.492522+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai17-code-deployment.json",
+          "sha256": "49fdce711021d10d6ae17842ec4e30cfa955eb5c2c01da268c9deed821c31189",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai18-before-confirmation-1792211984",
+      "dump_path": "/opt/nodia/verification-backups/ai18-before-confirmation-1792211984/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 251045,
+        "mtime_utc": "2026-10-17T04:39:44.583411+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai18-lab-activation.json",
+          "sha256": "d64f2549280c3a2d6a4ea392f217e0d526edc002ae8196bef632daecd335498e",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai19-before-financial-effect-1792213367",
+      "dump_path": "/opt/nodia/verification-backups/ai19-before-financial-effect-1792213367/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 278733,
+        "mtime_utc": "2026-10-17T05:02:47.728262+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai19-lab-activation.json",
+          "sha256": "784800c3391f5d68a9d2b75054c71e7ce57202791b4b504d53e1ddd4ed11a0dd",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai20-before-execution-worker-1792215064",
+      "dump_path": "/opt/nodia/verification-backups/ai20-before-execution-worker-1792215064/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 280896,
+        "mtime_utc": "2026-10-17T05:31:04.727705+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai20-lab-activation.json",
+          "sha256": "81984da5951b62b25a125362ab5d6996b68446ce063aa57ab85f6ad93a154266",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai21-before-financial-operations-1792216513",
+      "dump_path": "/opt/nodia/verification-backups/ai21-before-financial-operations-1792216513/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 280892,
+        "mtime_utc": "2026-10-17T05:55:13.791849+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai21-validation.json",
+          "sha256": "f136227c32d0627c3161c6810bc1fad3880e296cd49306fe23fdf2a265409147",
+          "exact_references": [
+            {
+              "json_pointer": "/deployment/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai22-before-business-operations-1792251286",
+      "dump_path": "/opt/nodia/verification-backups/ai22-before-business-operations-1792251286/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 280896,
+        "mtime_utc": "2026-10-17T15:34:47.135668+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "no_exact_reference_in_scanned_historical_receipts",
+      "historical_receipts": []
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai22-before-business-operations-1792251968",
+      "dump_path": "/opt/nodia/verification-backups/ai22-before-business-operations-1792251968/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 280896,
+        "mtime_utc": "2026-10-17T15:46:09.135427+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai22-lab-activation.json",
+          "sha256": "af83899a3f60f46ed54b9be9f3431bf0bc8102bd246eba537a4d5cd725dffcb6",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai23-before-dependent-workflows-1792254323",
+      "dump_path": "/opt/nodia/verification-backups/ai23-before-dependent-workflows-1792254323/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 280896,
+        "mtime_utc": "2026-10-17T16:25:23.357465+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai23-lab-activation.json",
+          "sha256": "51edbf8e3def2fbb0bf732c663540f0311cfc1d160bd525b025f3bcde09c716b",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai24-before-dependent-workflows-1792256919",
+      "dump_path": "/opt/nodia/verification-backups/ai24-before-dependent-workflows-1792256919/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284695,
+        "mtime_utc": "2026-10-17T17:08:39.640730+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai24-lab-activation.json",
+          "sha256": "e56adca03f9c42a345ddb5772b92879816fb0b04126fa2c086dab37afbdf4d33",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai25-before-reservation-lifecycle-1792259190",
+      "dump_path": "/opt/nodia/verification-backups/ai25-before-reservation-lifecycle-1792259190/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284695,
+        "mtime_utc": "2026-10-17T17:46:31.190268+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai25-lab-activation.json",
+          "sha256": "735df6822b08298cea5302782cd6f00b6be78ae909d0b81d1d6007ad59c29f12",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai26-before-rental-money-operations-1792260583",
+      "dump_path": "/opt/nodia/verification-backups/ai26-before-rental-money-operations-1792260583/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284695,
+        "mtime_utc": "2026-10-17T18:09:43.578123+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai26-lab-activation.json",
+          "sha256": "3b0492f14e15e897ebba1a86b297211e8e3878486b7083be5ce4755b2d4160ba",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai27-before-core-administration-1792262286",
+      "dump_path": "/opt/nodia/verification-backups/ai27-before-core-administration-1792262286/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284695,
+        "mtime_utc": "2026-10-17T18:38:07.182874+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai27-lab-activation.json",
+          "sha256": "b73af2d1c84b9e05a6f1228087475de1078a4c6e08f4f2f7744515233b558693",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai28-before-provider-configuration-1792264597",
+      "dump_path": "/opt/nodia/verification-backups/ai28-before-provider-configuration-1792264597/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284695,
+        "mtime_utc": "2026-10-17T19:16:37.862886+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai28-lab-activation.json",
+          "sha256": "3836db31d518f5cc82c10c377b2ef8ee87b4c4bbb01adad28cd64f48fd6e694c",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai29-before-secure-human-flows-1792273466",
+      "dump_path": "/opt/nodia/verification-backups/ai29-before-secure-human-flows-1792273466/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284695,
+        "mtime_utc": "2026-10-17T21:44:26.601249+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai29-lab-activation.json",
+          "sha256": "25121143c2f2c7c4174d88288a09ebe03a1ef7132e83b1976b785a121dcff7b1",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai29-r01-before-durable-login-1792276406",
+      "dump_path": "/opt/nodia/verification-backups/ai29-r01-before-durable-login-1792276406/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284691,
+        "mtime_utc": "2026-10-17T22:33:26.516914+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai29-r01-lab-activation.json",
+          "sha256": "599197db1ac8ecb2c3f064187d3addb147fa4f5c298936b8fe02dd0a980de16e",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai30-before-restricted-reports-1792286699",
+      "dump_path": "/opt/nodia/verification-backups/ai30-before-restricted-reports-1792286699/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284695,
+        "mtime_utc": "2026-10-18T01:24:59.489283+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai30-lab-activation.json",
+          "sha256": "7eda5de4936377306bd53b701c974b89b0dded7b605ca8bb08fba727475b6479",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai31-before-cross-reports-1792288926",
+      "dump_path": "/opt/nodia/verification-backups/ai31-before-cross-reports-1792288926/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284689,
+        "mtime_utc": "2026-10-18T02:02:07.161577+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai31-lab-activation.json",
+          "sha256": "449e4e21c98cab5693d9b00f13c6fe251f1e1296cd931aaa49945f1c4135f7fc",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai31-validation.json",
+          "sha256": "4cc78719ee28577b9171f4e7816ac8a88871fccf6fb6cbb014444b409a37a7a5",
+          "exact_references": [
+            {
+              "json_pointer": "/activation/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai32-before-attachments-1792292350",
+      "dump_path": "/opt/nodia/verification-backups/ai32-before-attachments-1792292350/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 284692,
+        "mtime_utc": "2026-10-18T02:59:11.042576+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai32-lab-activation.json",
+          "sha256": "ea82057f80ccc35daa466fe8541c0916ce205ed5a86c916010ffeb9b589cdebf",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        },
+        {
+          "path": "docs/evidence/nodia-ai-ai32-validation.json",
+          "sha256": "69fb56e8182599862f429643241232f23bd08e250c171749feb48241ab7c1800",
+          "exact_references": [
+            {
+              "json_pointer": "/activation/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai32-r02-before-code-1792296716",
+      "dump_path": "/opt/nodia/verification-backups/ai32-r02-before-code-1792296716/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 293657,
+        "mtime_utc": "2026-10-18T04:11:57.234388+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "no_exact_reference_in_scanned_historical_receipts",
+      "historical_receipts": []
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai32-r02-before-code-1792296805",
+      "dump_path": "/opt/nodia/verification-backups/ai32-r02-before-code-1792296805/nodia-lab.dump",
+      "historical_metadata": {
+        "byte_count": 293657,
+        "mtime_utc": "2026-10-18T04:13:25.604510+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai32-r02-node-activation.json",
+          "sha256": "6dab49eaaf142d7b5bbffa8520e43d7e1b6710093850c0be0b764216b234e8b0",
+          "exact_references": [
+            {
+              "json_pointer": "/backup",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai33-1792349337883",
+      "dump_path": "/opt/nodia/verification-backups/ai33-1792349337883/configured-db-before.dump",
+      "historical_metadata": {
+        "byte_count": 296521,
+        "mtime_utc": "2026-10-18T18:48:58.591025+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai33-activation.json",
+          "sha256": "be8bdff92acee5b385480cb7c71bddc5aa024d6ded62bf5382c3520a80693930",
+          "exact_references": [
+            {
+              "json_pointer": "/backup_directory",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai34-1792353265109",
+      "dump_path": "/opt/nodia/verification-backups/ai34-1792353265109/configured-db-before.dump",
+      "historical_metadata": {
+        "byte_count": 302330,
+        "mtime_utc": "2026-10-18T19:54:25.954517+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai34-runtime-activation.json",
+          "sha256": "6f116e9af7bca2c9f270e8c6be6d1f20838c9240969807a2472b832d1d489c00",
+          "exact_references": [
+            {
+              "json_pointer": "/backup_directory",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "/opt/nodia/verification-backups/ai35-1792364492826",
+      "dump_path": "/opt/nodia/verification-backups/ai35-1792364492826/configured-db-before.dump",
+      "historical_metadata": {
+        "byte_count": 307500,
+        "mtime_utc": "2026-10-18T23:01:33.851256+00:00",
+        "mode": "0o600",
+        "uid": 0
+      },
+      "provenance_status": "historical_receipt_exact_reference",
+      "historical_receipts": [
+        {
+          "path": "docs/evidence/nodia-ai-ai35-runtime-activation.json",
+          "sha256": "22b8b41b45bb4217e57d60066cb755921ce9c5b3213c5a8c91372615ccc43396",
+          "exact_references": [
+            {
+              "json_pointer": "/backup_directory",
+              "match": "exact_directory"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scanned_historical_receipts": [
+    {
+      "path": "docs/evidence/nodia-ai-ai15-external-validation.json",
+      "sha256": "3d6baf02a20cc9517a3ab94d37ca1add446c8c7c2dae5d917c0bf2118a8c260d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-lab-activation.json",
+      "sha256": "d10e8acce722b8ab9da6a126b3ba9b45234c71ff2cebc890edc51f04a4e602e8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-mcp-transport-validation.json",
+      "sha256": "aada80b15f2fd049e1fdb64a2927c37818a196cc60a8ebd2c8770ca2c486af0a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-publication-validation.json",
+      "sha256": "98c876852bdf56b83aadba07eeb4a80148e6302343fd4f2716d79ee4d499bdf5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-timeout-bridge-activation.json",
+      "sha256": "680f6a3b837710f473e6ca601bc8db353518f20f4d07969a5a4485ddcf5667c9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-timeout-server-activation.json",
+      "sha256": "b04d8c6b21b9f9c6dfe660b070b7b0e7269fd2e4c4c52355122baf8fed3d5314"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-timeout-worker-metadata-fix-activation.json",
+      "sha256": "c28214cbee0df1d52680e578329a7f535049ac9c4e5be571a800e645efaaa22f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-validation.json",
+      "sha256": "00cfa8bda580becc248606b7c5753110573d82d39e1dd940ddcf7ba22d5be6cb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai16-lab-activation.json",
+      "sha256": "8984a82fe1cc46df3714dc987734628b969e0a26ab3512e55719d249e529cc57"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai16-validation.json",
+      "sha256": "56d79fcfbde6f7631e12ad7c4f50f02a80699c20085449198785b6810d9351b7"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai17-code-deployment.json",
+      "sha256": "49fdce711021d10d6ae17842ec4e30cfa955eb5c2c01da268c9deed821c31189"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai17-lab-activation.json",
+      "sha256": "b23353a390db775e5f49a82a0224b864fd6037e25cf6fde3e7b19f3778a5bd1e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai17-validation.json",
+      "sha256": "4c78d64d9da89d712af3d1af1c18a36b784e5d34370cf313e8f279cd063276db"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai18-lab-activation.json",
+      "sha256": "d64f2549280c3a2d6a4ea392f217e0d526edc002ae8196bef632daecd335498e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai18-validation.json",
+      "sha256": "b8fab387cb32d0fda2b0503edef5af5989066b846558c98a95a3437d0a16bf78"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai19-knowledge-validation.json",
+      "sha256": "a5f655af09157ddd86f475bc57ff403e5c9e9db0b2de9a83da67de7ba84283e6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai19-lab-activation.json",
+      "sha256": "784800c3391f5d68a9d2b75054c71e7ce57202791b4b504d53e1ddd4ed11a0dd"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai19-validation.json",
+      "sha256": "64aae5584b94e9911276e23d2e8bf0c9044cc4a92ce3dcf04b5244f1ae01387a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai20-knowledge-validation.json",
+      "sha256": "3a6bdd29c32a5a379dd9f74d2ea710497a5f4878a745100d13dc412b62b8fea8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai20-lab-activation.json",
+      "sha256": "81984da5951b62b25a125362ab5d6996b68446ce063aa57ab85f6ad93a154266"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai20-validation.json",
+      "sha256": "559a1da42b24491cda0fc0a0e1bb00681bfc58920200c7bb151378115bfec3ed"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai21-ui-validation.json",
+      "sha256": "231de46c445ce001f9d17c0cf6bde44868af9d3537407799013d4ddbf664f361"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai21-validation.json",
+      "sha256": "f136227c32d0627c3161c6810bc1fad3880e296cd49306fe23fdf2a265409147"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai22-lab-activation.json",
+      "sha256": "af83899a3f60f46ed54b9be9f3431bf0bc8102bd246eba537a4d5cd725dffcb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai22-ui-validation.json",
+      "sha256": "6018b0f9aff797845fa34dded87c72c07a143da9a85361b1e2bbfc46705ee88f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai22-validation.json",
+      "sha256": "c1dbfffc14484c187b7628c92ae037ba65828b2465d5fe4325d4f2a22f33b0e5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai23-knowledge-validation.json",
+      "sha256": "8b55ff3eef3853390cae5114416c94166f220e5278d439d8d7918116c56af57c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai23-lab-activation.json",
+      "sha256": "51edbf8e3def2fbb0bf732c663540f0311cfc1d160bd525b025f3bcde09c716b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai23-ui-validation.json",
+      "sha256": "050f00d055b166e9fa0cccc7448c795486b8edcdce4ccbf72f73756704592fb7"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai23-validation.json",
+      "sha256": "cf3a49d512f4bf76db26905058b515678b2ea9b139cbcac0ab86924e5375761a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai24-knowledge-validation.json",
+      "sha256": "d76766f7963258913884992c674adf8beff2347fab87e467511e4be8ef00ce37"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai24-lab-activation.json",
+      "sha256": "e56adca03f9c42a345ddb5772b92879816fb0b04126fa2c086dab37afbdf4d33"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai24-ui-validation.json",
+      "sha256": "6bce780f78730e1028a7f49f19a17f834bda74c36dac5fe67c3e072166c890b9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai24-validation.json",
+      "sha256": "bb68e808d10e65820cb79037aa4a00a897277b9e1403de458876031435f29ea4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai25-client-validation.json",
+      "sha256": "d3ccb2565c1f766194018b287e50bd6d276c0e7970228db7d8656154ac210656"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai25-knowledge-validation.json",
+      "sha256": "cbcb9631a04a9eb6ecb00a31badc58028fea3c3d2cd93e465dc53f3bb6287deb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai25-lab-activation.json",
+      "sha256": "735df6822b08298cea5302782cd6f00b6be78ae909d0b81d1d6007ad59c29f12"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai25-ui-validation.json",
+      "sha256": "ba95bebab8a659ad0d4d87c2c46a88bf5829110056c0087d6ef6020f56b2245c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai25-validation.json",
+      "sha256": "08692c9f6404df67778d25e9c894c8238803ff7f234fd7eff8d836bc7c96eea5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai26-client-validation.json",
+      "sha256": "585fac60e3221f802d1f07d9db65dc965763810904bf282746e25e8ab6deb384"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai26-knowledge-validation.json",
+      "sha256": "068f02ab71c73f1acc363a5d5873142cfe89b88287cb108cb70a77ea2df36626"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai26-lab-activation.json",
+      "sha256": "3b0492f14e15e897ebba1a86b297211e8e3878486b7083be5ce4755b2d4160ba"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai26-model-validation.json",
+      "sha256": "dbd3c459c3ab18d4f7f673b685f7bdc4d0550a332799780e3a34ac591d43cfc5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai26-ui-validation.json",
+      "sha256": "5cb4b99be83c3cff9501c081fcfe6cedfb9a147408f9e41cec058c03cc9182e4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai26-validation.json",
+      "sha256": "7d872e1b487264f6cfc36a58639eae2fb20169b95ad595b5d0c0d98361b21cb9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai27-client-validation.json",
+      "sha256": "b110109836fd8569fd38d543cb8c26cdfe9748c16e65c5faddd4f5297196b3c3"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai27-knowledge-validation.json",
+      "sha256": "b0acc61fab7e658c01adb2f9c3ae846f23482202bde772fd9ca955ba3b303c0f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai27-lab-activation.json",
+      "sha256": "b73af2d1c84b9e05a6f1228087475de1078a4c6e08f4f2f7744515233b558693"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai27-ui-validation.json",
+      "sha256": "da8bba4fd755fd7e5f7cc590ef5b7eedcd411d186156403baafd895d846bd7e7"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai27-validation.json",
+      "sha256": "dd5bf0808663c46419e6cb325c8e71e2182c9f94125c9b69d4e12381d4640579"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai28-client-validation.json",
+      "sha256": "3e24d6d364ff653c5ddb2d1dfcb04c06d15a2486007f6bfcebf642a76c0f14ad"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai28-knowledge-validation.json",
+      "sha256": "7c023f70fd0eb10e4ae13ed748879cefaf1b168640f058bf37e6432b91e4f71f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai28-lab-activation.json",
+      "sha256": "3836db31d518f5cc82c10c377b2ef8ee87b4c4bbb01adad28cd64f48fd6e694c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai28-ui-validation.json",
+      "sha256": "7d9b2c00f8fd8a1aa485ce16cd293a8e8c875fe22e0144552a1c48924106beaf"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai28-validation.json",
+      "sha256": "d64eef1c1b5e874edc51e0d9dfc921dda782dc2d7d9bc57d48a4d29571134563"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-client-validation.json",
+      "sha256": "4a79e3be938b0c10c447096ade693583566926df2c80989c717dbba4f6aedbb3"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-knowledge-validation.json",
+      "sha256": "df0867e11314ffb3d56b4c643e7b624db6fee056af9fb53434564bb39def94d7"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-lab-activation.json",
+      "sha256": "25121143c2f2c7c4174d88288a09ebe03a1ef7132e83b1976b785a121dcff7b1"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-cgroup-host-validation.json",
+      "sha256": "e6c07caa0abca913264aeda35a7176f523a2e49b22d93e9ff2b0de8332120d90"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-activation.json",
+      "sha256": "8bcc861a2546c2f6b345f99efdab87b6a6f74b495e07558d9946e55ea0628cb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-diagnostics-activation.json",
+      "sha256": "fc9b299e8454f41fd08a05683b6114dcd25027bb37c81d78223fb9e9135d4a5d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-lab-activation.json",
+      "sha256": "599197db1ac8ecb2c3f064187d3addb147fa4f5c298936b8fe02dd0a980de16e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-validation.json",
+      "sha256": "b672aedc8cae9f158ca08c13fe7933c130fbde5d6a9b6ae6746b63878d3c50d9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-web-diagnostics-offline-validation.json",
+      "sha256": "c66c4438903ecdb1689655ac347a0ff587fa78d246a125bdc1a7108d2cfa8573"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-ui-validation.json",
+      "sha256": "cf1ce4a54901f6101c255b39e15b0d90566c1d752852fc3fd314afe634fbd58d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-validation.json",
+      "sha256": "1c6769f7ee8599bd719ad1140f2fe3e595dbab1126522633dacea8cd4d7c6929"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai30-lab-activation.json",
+      "sha256": "7eda5de4936377306bd53b701c974b89b0dded7b605ca8bb08fba727475b6479"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai30-validation.json",
+      "sha256": "655616602cfcb2edd2f363858309ed4467dfedf117852566600babcfdc854d29"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai31-lab-activation.json",
+      "sha256": "449e4e21c98cab5693d9b00f13c6fe251f1e1296cd931aaa49945f1c4135f7fc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai31-sql-validation.json",
+      "sha256": "845c0bcc71b6a1c534e95ca4d801a495a06a692087052999fdeca8ef48ad5240"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai31-ui-validation.json",
+      "sha256": "75a535ae995657822abd97c22c7955653622faa33ab3b90b2f9c716d9de9367d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai31-validation.json",
+      "sha256": "4cc78719ee28577b9171f4e7816ac8a88871fccf6fb6cbb014444b409a37a7a5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-gemini-activation-first.json",
+      "sha256": "14e6e86265ee7429d8a6ca2d6b1c0f01663f5bad0c5db72d1835152892eb4307"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-gemini-activation-second.json",
+      "sha256": "beaa19e379d73caab8828331e5de6a1dcd4175d3c0233a117e71c6716ba1cd76"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-gemini-activation.json",
+      "sha256": "94e64fc322f7a4e1bff3a2de19ab3ee94a143070ddd44da9dc1f54be928e0702"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-lab-activation.json",
+      "sha256": "ea82057f80ccc35daa466fe8541c0916ce205ed5a86c916010ffeb9b589cdebf"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-mcp-validation.json",
+      "sha256": "59cf0b87e26de63a739f0bde15aa2335fcec8d340e1f50b003fb26a671c2bb0f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-native-validation.json",
+      "sha256": "3c807253d12c2a34df143f7a8df506c53374945a9a0b1ac500bbb7e2250b1420"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-parser-validation.json",
+      "sha256": "ee2c84d269269e512eda9d089f24d327af5643d8bfbc3e01904a1b1efd7d28a4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r01-activation-before-citation.json",
+      "sha256": "ea350511acab5747c63684137b66e5b225fe140403b8012df54046169b33fa39"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r01-activation-before-mime.json",
+      "sha256": "b5195c57a16f9fc25b396c11199e2283aac22db182658be206dfe28e796786ef"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r01-activation-before-trace.json",
+      "sha256": "721ef82bcfbd166b0519bfe5e4427b41c527b1239bd565e22cd1f8e380323280"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r01-activation-diagnostic.json",
+      "sha256": "9c16bc04f3e7730f6b2dcd8bb5c0a0ee868a9e071f2f37bd3d51ec221ae32511"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r01-activation-intermediate.json",
+      "sha256": "d85ac6d2eaa4d8e0bc11832680a1483b07de5195012add8816995794c4227fc1"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r01-gemini-activation.json",
+      "sha256": "2f401d0c182346ea2772805236d7b43e9b6036765dbf5a28f4d6ae59bcf46316"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r01-validation.json",
+      "sha256": "c33efcc0f4f539bd1d2494d8aa97eff80ada87354fdf0c4ff596db11640dd60c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r02-gemini-activation.json",
+      "sha256": "1239f3d14eb27cf08a19a7e891f64145f40a15409e59cf7bac820ff1e0472c0f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r02-node-activation-attempt01.json",
+      "sha256": "e2f0622492e324de3170ec49fdb7e60116e5a56b1f319a1d59425bca5a4b9b7f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r02-node-activation.json",
+      "sha256": "6dab49eaaf142d7b5bbffa8520e43d7e1b6710093850c0be0b764216b234e8b0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r02-validation.json",
+      "sha256": "bceb6f7ba1ce3212073c5803032c87e5ef5167148418ace0349f0764717c5fe2"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r03-activation-health.json",
+      "sha256": "86c3b1465d79f3f0c562f39949a28da0cdb568a894959523babf9c1a448382b8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r03-gemini-activation.json",
+      "sha256": "f95f2e82ff18ef77974791fcace0ce295cbafdd572c278807bce8f6dac4c85ed"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r03-validation.json",
+      "sha256": "98e0a36ae77b912b0779f1de4205c5d5b131ac0a062f501dad39f39847423c60"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-activation-health.json",
+      "sha256": "3defb355ad2c7f82a22a5eb50e73b71c705c756f5a29f720a259e01a8fe457a8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-gemini-activation.json",
+      "sha256": "890e71cd3c41f125569dbcd50ab4dc677c382ace7893be9febd0fa1ee1af8e84"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-validation.json",
+      "sha256": "c4285455a2561658f80a2e8586d4a204a3f1ada626dbae3b32ddb1e947883e3d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-storage-activation-attempt01.json",
+      "sha256": "ad9370b9ed5e45cae9ca388d75c055e470450ca80272e7b2e24ed44358099570"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-r2-storage-activation.json",
+      "sha256": "6517a21892c42c7e0704d8ede950a3c60087c9cbc3255ab43e0693e124ec207f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-storage-code-validation.json",
+      "sha256": "8ca2eb310dea057755455ee214137a98795f5f5b7ebb8624251d992356b99e23"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r05-validation.json",
+      "sha256": "cb07f2d706c6580d6741db9767b96edea7ddab73ff6c46d0b02bfcc0fdf70ead"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r06-invoice-validation.json",
+      "sha256": "cf2c45e24baa1fa2ddc8df94df43b35f093c2a3aa2a2c9dee17bb5a2224690f4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r06-validation.json",
+      "sha256": "8828963b12e1f65cb13b1dc9bb8c2acdb3a7265d7d558a5a15b4b0b22d5f196d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r07-document-validation-attempt01.json",
+      "sha256": "182850101fac049254604c0a7e6b525f85b1dac0c4bced335a37f5c9edc5001b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r07-inspector-validation.json",
+      "sha256": "339a0785319c714ec512190caa89d3e659ff5122042bc12eb5f7d25993037513"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r07-validation.json",
+      "sha256": "0793e7a5bc3f7956c4c5693a13c8e7dc009e8a805d56d4957018e640c103d0ec"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-sql-validation.json",
+      "sha256": "17762fad4079f13edea3eaf4ba0074fc788a97169ff7773f2f3a8f83aad8000a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-ui-validation.json",
+      "sha256": "e3283942bd3ddbef83cb41ea22a7fbf5a20e81669e9f332697de3e4c32b64b14"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-validation.json",
+      "sha256": "69fb56e8182599862f429643241232f23bd08e250c171749feb48241ab7c1800"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-activation.json",
+      "sha256": "be8bdff92acee5b385480cb7c71bddc5aa024d6ded62bf5382c3520a80693930"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-backend-validation.json",
+      "sha256": "f4cc34ad9dfa7a7d0bffa730e3629ba68b9b67603f4099087f77be149ff3f3ea"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-client-validation.json",
+      "sha256": "1bc507e7675651c26b97de09007ac6f6c0b6e2708761da17cd989f6947cd165d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-runtime-validation.json",
+      "sha256": "5e1632f6f64371cf42d3160ac8f680e2f1e2ebb0707efe9c2fff10e26702f37b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-sql-validation.json",
+      "sha256": "08cc3e93931a70b60f67141c42f3faa786bf75f4342fd53472113299157a4cb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-ui-real-validation.json",
+      "sha256": "1aa2b1b93856c3045bcad01b2241e574e3e672dbab4a8f61fbf3e7787f168412"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-ui-validation.json",
+      "sha256": "47a9121f483b3eaa14dddb5ddbe84ae310694984b144a89872b2b846509933b4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai33-validation.json",
+      "sha256": "4bdd65326d6bdf3101de94605ef038cb2ba12ba1e2c89871c8304758581ec05b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-live-validation-attempt02.json",
+      "sha256": "0bdbb42bc86c964657be9799b11e2378cf494c534f0bfe2a7c8d22f30b874e2b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-live-validation.json",
+      "sha256": "a8edb541bb13cbfbb80f11b9f7fa2b7d8c70e862d56adb81464f6be2c2b61bc4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-native-diagnostics-activation.json",
+      "sha256": "741681d147285c3d2860040feb7ce3c5332a18cd966ae5efde17125911b4d13e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-native-mcp-activation.json",
+      "sha256": "82b33bc0ebccf66b01d2b5efe7e87c43244e7067381b6c118790feaf6bdac913"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-native-role-activation.json",
+      "sha256": "9f0d6622fcc710ad166fc369a13997c2fe5900270b422373c434c09ef1086393"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-runtime-activation.json",
+      "sha256": "6f116e9af7bca2c9f270e8c6be6d1f20838c9240969807a2472b832d1d489c00"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-sql-validation.json",
+      "sha256": "6d0033b210bb69512b2de46e933d0736553b8699ae08c33aa8a3f34d73f574b0"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-ui-validation.json",
+      "sha256": "4dba0095d79d98de66941316935608386096349fe8c3935e6a6807fa803f59c3"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-unit-validation.json",
+      "sha256": "306e58766bdd07d7d71410c2ab002a6b3f39d84d623ca96793e76ca39672da1e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai34-validation.json",
+      "sha256": "222f4018175025014245593eb078bcbfd788967247e9efffc0cc714882881a60"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai35-runtime-activation.json",
+      "sha256": "22b8b41b45bb4217e57d60066cb755921ce9c5b3213c5a8c91372615ccc43396"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai35-sql-validation-attempt04.json",
+      "sha256": "6542906593fe6272e577ae5ea4c52e942790272731464cacfd9838069560fe3a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai35-sql-validation.json",
+      "sha256": "6d37bf1dd870b8c7ea444f8ffd43ff48e31e31fd7422050a2352ead459e8da9a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai35-unit-validation.json",
+      "sha256": "2329c27a21eafa73165f7820b6eae49c32fdf73c0437c88ed681594d9012a83c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai35-validation.json",
+      "sha256": "89a31dec96d6ef1a0de1c46fde1b95f089a91bd79b383c8bbe4b2524155c41f1"
+    }
+  ],
+  "unparsed_candidates": [
+    {
+      "path": "docs/evidence/nodia-ai-ai20-contract-validation.json",
+      "sha256": "44a9c9e1671cb24113b5d6e48ab5a3eda14b71c872bfd9131651f5e3a1e8cedf",
+      "status": "not_parseable_as_JSON_not_used_for_provenance"
+    }
+  ],
+  "limits": {
+    "network_or_VM_access": false,
+    "backup_payloads_read": false,
+    "backup_files_deleted_or_modified": false,
+    "capture_time_inferred_from_mtime": false,
+    "cipher_or_recoverability_proven": false,
+    "no_reference_means_corrupt_or_unowned": false,
+    "deletion_authorized_by_this_receipt": false,
+    "inventory_or_new_journal_docs_used_as_historical_provenance": false
+  }
+}

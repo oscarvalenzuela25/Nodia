@@ -13,21 +13,37 @@ export interface ConfigurationTransition {
 
 @Injectable()
 export class RentalPropertyService {
+  /** Same visibility predicate as findPage, bounded to the IDs in an already projected page. */
+  visibleMemberships(
+    manager: EntityManager,
+    actorId: string,
+    ids: readonly string[],
+    isSuperAdmin: boolean,
+  ): Promise<{ id: string; owner_id: string }[]> {
+    return manager.query(
+      `SELECT p.id::text AS id,p.owner_id::text AS owner_id FROM rental_properties p
+       WHERE p.id=ANY($2::bigint[]) AND ($3::boolean OR p.owner_id=$1 OR EXISTS
+         (SELECT 1 FROM rental_collaborators c WHERE c.property_id=p.id AND c.user_id=$1 AND c.is_active=TRUE))`,
+      [actorId, [...ids], isSuperAdmin],
+    );
+  }
   async findPage(
     manager: EntityManager,
     actorId: string,
     query: RentalConfigurationQueryDto,
+    isSuperAdmin = false,
   ): Promise<[RentalProperty[], number]> {
     const direction = query.q?.s === 'name desc' ? 'DESC' : 'ASC';
     const filter = query.q?.name_cont as string | undefined;
     const rows = await manager.query<(RentalProperty & { total: string })[]>(
-      `WITH scoped AS (SELECT p.* FROM rental_properties p WHERE (p.owner_id=$1 OR EXISTS (SELECT 1 FROM rental_collaborators c WHERE c.property_id=p.id AND c.user_id=$1 AND c.is_active=TRUE)) AND ($2::boolean IS NULL OR p.is_active=$2) AND ($3::text IS NULL OR p.name ILIKE '%' || $3 || '%' ESCAPE '\\')) SELECT counts.total, page.* FROM (SELECT count(*)::text AS total FROM scoped) counts LEFT JOIN LATERAL (SELECT * FROM scoped ORDER BY name ${direction},id ASC LIMIT $4 OFFSET $5) page ON TRUE`,
+      `WITH scoped AS (SELECT p.* FROM rental_properties p WHERE ($6::boolean OR p.owner_id=$1 OR EXISTS (SELECT 1 FROM rental_collaborators c WHERE c.property_id=p.id AND c.user_id=$1 AND c.is_active=TRUE)) AND ($2::boolean IS NULL OR p.is_active=$2) AND ($3::text IS NULL OR p.name ILIKE '%' || $3 || '%' ESCAPE '\\')) SELECT counts.total, page.* FROM (SELECT count(*)::text AS total FROM scoped) counts LEFT JOIN LATERAL (SELECT * FROM scoped ORDER BY name ${direction},id ASC LIMIT $4 OFFSET $5) page ON TRUE`,
       [
         actorId,
         query.active === 'all' ? null : query.active === 'active',
         filter?.replace(/[\\%_]/g, '\\$&') ?? null,
         query.limit,
         (query.page - 1) * query.limit,
+        isSuperAdmin,
       ],
     );
     const total = Number(rows[0].total);

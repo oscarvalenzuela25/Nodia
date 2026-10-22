@@ -1,0 +1,13 @@
+{
+  "stage": "AI-36-C01",
+  "scope": "post_disposable_sql_read_only_health_and_dependency_parity",
+  "status": "failed",
+  "safe_failure_phase": "dependency_parity",
+  "error_category": "test_only_dependency_absent_from_operational_runtime",
+  "explanation": "The initial health fixture assumed @nestjs/testing was installed in the production runtime. Its absence is valid; the corrected fixture records that test-only dependency separately and still requires exact versions for production dependencies.",
+  "sql_integration_changed_or_repeated": false,
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "services_restarted": false
+}

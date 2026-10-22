@@ -1,0 +1,113 @@
+{
+  "stage": "AI-38",
+  "scope": "pinned_Web_Agentic_opt_in_routing_disposable_SQL",
+  "phase": "preflight",
+  "attempt": "01",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:39:17.152521+00:00",
+  "runner_sha256": "017de1acd7f272700ced64e1302bdaf3f09ca4ce7c77f78e421b9e66f469dcdb",
+  "harness_sha256": "29bc149e398cd50be1a7bd7fff779fdd8bff0d18bcb7ec5e72d9c51d023fc6e9",
+  "candidate_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "expected_MCP_report_sha256": "8dc6a298417ac30818e3d9c541717e128650a28400d63234b24b7d2e7ef98a0f",
+  "maximum_provider_dispatch_requests": 0,
+  "maximum_provider_dispatch_requests_per_delegated_run": 3,
+  "automatic_inference_retries": 0,
+  "configured_SQL_writes": 0,
+  "operational_Node_modified": false,
+  "services_restarted": false,
+  "storage_operations": 0,
+  "dependencies_reused_existing_installation": true,
+  "npm_ci_executed": false,
+  "container_before": {
+    "id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at_utc": "2026-10-20T19:14:35.412657745Z",
+    "running": true
+  },
+  "native_pending_identity": false,
+  "raw_logs_retained_privately": true,
+  "native_result": {
+    "stage": "AI-38",
+    "scope": "real_Web_opt_in_Agentic_next_turn_Web_disposable_SQL",
+    "status": "passed",
+    "started_at_utc": "2026-10-20T19:39:17.432Z",
+    "preflight_only": true,
+    "maximum_provider_dispatch_requests": 0,
+    "provider_dispatch_requests": 0,
+    "maximum_provider_dispatch_requests_per_delegated_run": 3,
+    "native_accepted_starts": {
+      "web": 0,
+      "agentic": 0
+    },
+    "generation_count_scope": "Nodia_adapter_requests_not_provider_internal_tokens_or_billing",
+    "automatic_inference_retries": 0,
+    "configured_SQL_writes": 0,
+    "configured_database_read_only": true,
+    "provider_configuration_modified": false,
+    "operational_Node_modified": false,
+    "native_restarts": 0,
+    "synthetic_provider_transport": false,
+    "synthetic_publication_override": false,
+    "fixture_authenticated_actor": true,
+    "standalone_worker_or_UI_acceptance": false,
+    "writes_confirmed_or_business_effects_created": 0,
+    "checks": [
+      "configured SQL has no active or uncertain work before verification",
+      "compiled publication binds actual product read",
+      "exact Web is available and cannot use MCP",
+      "exact configured Agentic already has current MCP attestation"
+    ],
+    "generations": [],
+    "turns": [],
+    "terminal_ACKs": [],
+    "transport_counts": {
+      "observe": 2
+    },
+    "native_pending_identity": false,
+    "selections": {
+      "web": {
+        "connection_id": "2",
+        "mode": "token_plan_web",
+        "model_id": "56fdd199312815e2",
+        "effort_id": null
+      },
+      "agentic": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      }
+    },
+    "public_mode_fields_sha256": "0ffe07965997c958d92d3e2a117444aeefe8083b2a374d2fe63c0d1d89f7013d",
+    "publication": {
+      "release_id": "c70317bf3106f002a399c5449158f0cdea204a308f1016dc0053a27be3e6ad36",
+      "catalog_release": "nodia-ai-ai15-reads/1",
+      "capabilities": 74
+    },
+    "exact_observation": {
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "session_generation": "2058fda1aff3454f80a11d10d05a1e5e",
+      "supports_mcp": true
+    },
+    "configured_snapshot_unchanged_after": true,
+    "disposable_final": {
+      "unresolved_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "disposable_database_retained_for_reconciliation": false,
+    "finished_at_utc": "2026-10-20T19:39:37.507Z"
+  },
+  "container_after": {
+    "id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at_utc": "2026-10-20T19:14:35.412657745Z",
+    "running": true
+  },
+  "exit_code": 0,
+  "finished_at_utc": "2026-10-20T19:39:37.583400+00:00",
+  "private_log_hashes": {
+    "private-stdout.log": "c1f2973bd6b0a2c4b6ba6decb447eecc2b97963d63ace168e28ffaf9dc89d334",
+    "private-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

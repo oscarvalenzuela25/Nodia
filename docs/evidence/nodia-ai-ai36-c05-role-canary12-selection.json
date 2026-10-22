@@ -1,0 +1,11 @@
+{
+  "rows": [
+    {
+      "provider_key": "gemini",
+      "is_active": true,
+      "connection_id": "2",
+      "agentic_model": "gemini-3.8-flash-high",
+      "agentic_effort": "high"
+    }
+  ]
+}

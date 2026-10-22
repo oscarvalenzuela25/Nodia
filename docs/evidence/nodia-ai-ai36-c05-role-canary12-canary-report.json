@@ -1,0 +1,116 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "new_owned_role_single_exact_configured_MCP_probe_not_capability_acceptance",
+  "status": "failed",
+  "started_at_utc": "2026-10-19T19:11:09.951Z",
+  "maximum_native_start_requests": 1,
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "real_provider_generations": 1,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "automatic_inference_retries": 0,
+  "capability_acceptance": false,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "image_binding": {
+    "schema_version": 1,
+    "candidate_image_id": "sha256:3f004c6c170ea79d16a544a788a5189f3afc17d3d68d465cb5092c3099cd0404",
+    "role_policy_sha256": "e62d03c83e5aadd062b697a9da44183efb638d9a41b7ae3f71b213c76a5dc469",
+    "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "baseline_observation_sha256": "b50c9c38e8946e4c60c357d4718229d41c99e06cafeb038dec2ef1eb2c40ee49",
+    "scope": "exact_current_configured_High_native_owned_role_no_old_proof_transfer"
+  },
+  "image_binding_file_sha256": "f3052f3aace4442f18e3929d02e873d9a540684be43be238ae2a3ef07a16896b",
+  "source_sha256": "191877d0165c0bf4577eb836dc510b16db8d6e83a8abd5cf4dcc9b3299d38046",
+  "existing_canary_source_sha256": "604563be962df59a4b4431ad5efb2bf590b67a133a748a0d748cc90cd79ae49c",
+  "request_events": [
+    {
+      "kind": "start",
+      "started": {
+        "at_utc": "2026-10-19T19:11:13.971Z",
+        "monotonic_ms": 4140.028204
+      },
+      "finished": {
+        "at_utc": "2026-10-19T19:11:13.980Z",
+        "monotonic_ms": 4149.516878
+      },
+      "returned": true
+    },
+    {
+      "kind": "cancel",
+      "started": {
+        "at_utc": "2026-10-19T19:11:17.090Z",
+        "monotonic_ms": 7259.052257
+      },
+      "finished": {
+        "at_utc": "2026-10-19T19:11:17.092Z",
+        "monotonic_ms": 7261.725078
+      },
+      "returned": true
+    },
+    {
+      "kind": "reconcile",
+      "started": {
+        "at_utc": "2026-10-19T19:11:17.093Z",
+        "monotonic_ms": 7262.174181
+      },
+      "finished": {
+        "at_utc": "2026-10-19T19:11:17.095Z",
+        "monotonic_ms": 7264.985203
+      },
+      "returned": true
+    },
+    {
+      "kind": "acknowledge",
+      "started": {
+        "at_utc": "2026-10-19T19:11:17.096Z",
+        "monotonic_ms": 7265.377406
+      },
+      "finished": {
+        "at_utc": "2026-10-19T19:11:17.100Z",
+        "monotonic_ms": 7269.096835
+      },
+      "returned": true
+    }
+  ],
+  "proofs": [
+    {
+      "attempt_id": "ca7977ca-3321-435f-9036-05b9915b4245",
+      "terminal_proof_sha256": "205b223c634da8b6386a1d06c7577c2f47f36f46cd80c39f03abdd348ab4a812",
+      "outcome": "abandoned_unknown",
+      "process_closed": true,
+      "observed_at_utc": "2026-10-19T19:11:17.072497+00:00"
+    }
+  ],
+  "acknowledgements": [
+    {
+      "attempt_id": "ca7977ca-3321-435f-9036-05b9915b4245",
+      "terminal_proof_sha256": "205b223c634da8b6386a1d06c7577c2f47f36f46cd80c39f03abdd348ab4a812",
+      "acknowledged": true
+    }
+  ],
+  "attempt_id": "ca7977ca-3321-435f-9036-05b9915b4245",
+  "selection": {
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "native_timeout_seconds": 119,
+  "canonical_prompt_sha256": "da2e8a2d1ed3778fec63aa5f8fce621ceb3c2411269f40e593fcad47f7c4fa20",
+  "tools_sha256": "6323f8ecb4e2bab94a8713375959102fe5e88d38e29ca9a32b6a36354bcd5f73",
+  "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+  "session_generation_sha256": "9dfefa95dd8a8edfb17a41518773c49cc98fa2d5a5a5841693f25367c448b5d8",
+  "native_start_payload_sha256": "52ff590b63b8a8b679d8b00a8dbd5a229ea46eab91f8a9ed01b2996130690d65",
+  "existing_canary_report_sha256": "a7727d1401443de8a037177188345d6eb68728f38d44d7f419b8ddb20326a89a",
+  "existing_canary_status": "failed",
+  "native_pending_identity": false,
+  "finished_at_utc": "2026-10-19T19:11:17.102Z"
+}

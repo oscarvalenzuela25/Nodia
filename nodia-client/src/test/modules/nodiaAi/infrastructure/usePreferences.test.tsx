@@ -1,0 +1,40 @@
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { PropsWithChildren } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import useAuthStore from "../../../../store/authStore";
+import { usePreferences, usePreparePreference } from "../../../../modules/nodiaAi/infrastructure/usePreferences";
+import * as services from "../../../../modules/nodiaAi/infrastructure/preferenceServices";
+import { createInput, preference, prepared } from "./preferenceFixtures";
+const feedback = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
+vi.mock("sileo", () => ({ sileo: feedback }));
+vi.mock("../../../../config/httpFeedback", () => ({ notifyHttpError: feedback.error }));
+vi.mock("../../../../modules/nodiaAi/infrastructure/preferenceServices", () => ({ getPreferences: vi.fn(), preparePreference: vi.fn() }));
+let client: QueryClient;
+const authenticate = (id: string, version = 1) => useAuthStore.setState({ user: { id, name: "Synthetic" }, token: "synthetic-only", expiresAt: Date.now() + 600000, sessionStatus: "authenticated", sessionVersion: version, isRefreshing: false });
+const Wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+describe("preference actor lifecycle", () => {
+  beforeEach(() => { vi.clearAllMocks(); client = new QueryClient({ defaultOptions: { queries: { retry: false } } }); authenticate("9"); });
+  afterEach(() => { client.clear(); useAuthStore.setState({ user: null, token: null, sessionStatus: "anonymous" }); });
+  it("reads on panel intent and never carries a previous account's preference into the new scope", async () => {
+    vi.mocked(services.getPreferences).mockResolvedValue({ items: [preference], next_cursor: null });
+    const { result, rerender } = renderHook(({ active }) => usePreferences(active), { initialProps: { active: false }, wrapper: Wrapper });
+    expect(services.getPreferences).not.toHaveBeenCalled(); rerender({ active: true });
+    await waitFor(() => expect(result.current.data?.pages[0].items).toHaveLength(1));
+    vi.mocked(services.getPreferences).mockReturnValue(new Promise(() => {}));
+    act(() => authenticate("10", 2));
+    expect(result.current.data).toBeUndefined();
+  });
+  it("never shows a late preparation success or invalidates the next session", async () => {
+    let resolve!: (value: typeof prepared) => void;
+    vi.mocked(services.preparePreference).mockReturnValue(new Promise(done => { resolve = done; }));
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    const { result } = renderHook(() => usePreparePreference(), { wrapper: Wrapper });
+    let pending!: ReturnType<typeof result.current.mutateAsync>;
+    act(() => { pending = result.current.mutateAsync(createInput); });
+    await waitFor(() => expect(services.preparePreference).toHaveBeenCalledTimes(1));
+    act(() => authenticate("10", 2));
+    await act(async () => { resolve(prepared); await pending; });
+    expect(feedback.success).not.toHaveBeenCalled(); expect(invalidate).not.toHaveBeenCalled();
+  });
+});

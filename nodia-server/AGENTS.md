@@ -16,6 +16,12 @@ El proyecto cuenta con una colección de **habilidades locales especializadas** 
 
 ---
 
+## Contexto de productos para NodiaAI
+
+Al especificar o cambiar funciones/contratos de un producto, aplicar el [estándar de contexto NodiaAI](../docs/nodia-ai/knowledge/README.md) y la regla de [AGENTS raíz](../AGENTS.md). Entregar fichas de producto/funcionalidad actualizadas con fuentes, reglas, autoridad, operaciones e integración real; no equiparar un endpoint o Markdown con una herramienta publicada.
+
+Para integrar descubrimiento/contexto/herramientas/recuperación, reutilizar la [política AI-07](../docs/mvp/53-nodia-ai-ai07-module-authorization.md); no usar el contexto Redis de navegación como concesión ni confundir su decisión puntual con las barreras transaccionales implementadas en [AI-08](../docs/mvp/54-nodia-ai-ai08-transversal-authority.md); mantener el orden común antes de consultas/locks de dominio y no anidar escritores Core exclusivos bajo el ejecutor SHARE.
+
 ## Skills de calidad obligatorias
 
 Antes de desarrollar, corregir, refactorizar o revisar código backend, contratos, configuración, pruebas u operación de este proyecto, **leer y aplicar ambas**:

@@ -1,0 +1,12 @@
+{
+  "stage": "AI-28",
+  "tested_archive_sha256": "bbfa8c065a77cffa1bc0f8f70d89263054cae259bb49f1419c32f465470234ea",
+  "final_archive_sha256": "e11f4a51628a6024a9e7bc4622ad9d255decb155e1b99c8f3af752004379d791",
+  "production_dist_identical": true,
+  "dist_files_checked": 851,
+  "changed_package_files": [
+    "test/nodia-ai-ai28.integration.mjs"
+  ],
+  "reason": "Disposable SQL harness gained explicit catalog-reassignment assertion and correct AI28 provenance; production dist is identical to all accepted SQL regressions.",
+  "final_harness_sha256": "d05cf4fdb99c6a45c05841f02ddbe48302bed06552764ec0d5f2130794ddf5a9"
+}

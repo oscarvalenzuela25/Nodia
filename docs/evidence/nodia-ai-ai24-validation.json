@@ -1,0 +1,134 @@
+{
+  "task": "AI-24",
+  "status": "implemented_and_verified_private_lab_mcp_write_publication_pending",
+  "verified_at_utc": "2026-10-17T17:07:39.773213+00:00",
+  "implementation": {
+    "native_configuration_operations": 6,
+    "families": [
+      "rental_properties",
+      "rental_collaborators",
+      "rental_cancellation_policies"
+    ],
+    "operations": [
+      "create",
+      "update"
+    ],
+    "native_executors_total": 32,
+    "native_journal_audit_effect_receipt_transaction_shared": true,
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_migrations": 0,
+    "owner_and_super_admin_configuration_only": true,
+    "actor_preserved": true,
+    "archive_preserves_history_occupancy_money": true,
+    "policy_rules_atomic_replacement": true,
+    "structured_review_kind": "rental_cancellation_rules",
+    "future_rental_output_bindings_added": false,
+    "shared_native_transaction_deadline_seconds": 10,
+    "bounded_per_statement_timeout_and_prior_wrapper_restored": true,
+    "native_error_mapping_preserved": true
+  },
+  "server": {
+    "full_suite": {
+      "passed": true,
+      "tests": 2418,
+      "files": 191,
+      "duration_seconds": 119.76,
+      "log": ".tmp/ai24-server-release-tests.log",
+      "max_workers": 4
+    },
+    "build": {
+      "passed": true,
+      "log": ".tmp/ai24-server-release-build.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": ".tmp/ai24-server-release-lint.log"
+    }
+  },
+  "client": {
+    "full_suite": {
+      "passed": true,
+      "tests": 1441,
+      "files": 202,
+      "duration_seconds": 537.88,
+      "log": "nodia-client/.tmp/ai24-client-full-release.log",
+      "max_workers": 2
+    },
+    "focused_suite": {
+      "passed": true,
+      "tests": 178,
+      "files": 5,
+      "duration_seconds": 29.05,
+      "log": "nodia-client/.tmp/ai24-client-focused-final.log"
+    },
+    "build_and_typecheck": {
+      "passed": true,
+      "log": "nodia-client/.tmp/ai24-client-build-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "log": "nodia-client/.tmp/ai24-client-lint-final.log"
+    }
+  },
+  "postgresql": {
+    "new_checks": 36,
+    "regression_checks": 191,
+    "total_numbered_checks": 227,
+    "evidence": [
+      "docs/evidence/nodia-ai-ai24-postgresql.json",
+      "docs/evidence/nodia-ai-ai24-regressions.json"
+    ],
+    "configured_business_database_used": false,
+    "real_ai_inferences": 0,
+    "real_r2": false,
+    "temporary_test_containers_remaining": 0
+  },
+  "ui": {
+    "evidence": "docs/evidence/nodia-ai-ai24-ui-validation.json",
+    "transport": "isolated_synthetic",
+    "qa_5194_stopped": true,
+    "real_tab_5174_modified": false
+  },
+  "deployment": {
+    "activation": "docs/evidence/nodia-ai-ai24-lab-activation.json",
+    "runtime": "docs/evidence/nodia-ai-ai24-lab-runtime.json",
+    "dist_equality": "docs/evidence/nodia-ai-ai24-deployed-equality.json",
+    "services": "docs/evidence/nodia-ai-ai24-services.json",
+    "archive_sha256": "1cc2a0ea6b5499b8588e87ff423669763e674dded1459a0837e33f4d9c4a9b1d",
+    "archive_files": 862,
+    "migrations": 25,
+    "nodia_ai_tables": 18,
+    "nodia_ai_columns": 241,
+    "registered_native_executors": 32,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "knowledge": {
+    "sources": 47,
+    "excluded_drafts": 20,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "release_id": "6f8233b3d7a6b57af5fe3317b7cf11a01a2ecedf5977a92216d79d447cf803c3",
+    "published_content_and_contracts_unchanged": true,
+    "delta_evidence": "docs/evidence/nodia-ai-ai24-knowledge-delta.json",
+    "compiler_current_corpus_checks": 53,
+    "validation_evidence": "docs/evidence/nodia-ai-ai24-knowledge-validation.json",
+    "rental_write_prepare_published": false
+  },
+  "static_validation": {
+    "schema_definitions": 136,
+    "domain_definitions": 184,
+    "source_hashes": 670,
+    "fixtures": 354,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json"
+  },
+  "limits_and_pending": [
+    "MCP preparation/write tools remain unpublished; no Gemini business write acceptance claimed.",
+    "Reservation lifecycle and money operations remain AI-25/26; no rental DELETE introduced.",
+    "AI-15/22 R2/external/routing gates and AI-32 attachments remain.",
+    "New knowledge remains draft/unregistered; documentation is not automatically approved."
+  ]
+}

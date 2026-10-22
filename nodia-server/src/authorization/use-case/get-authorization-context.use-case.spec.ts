@@ -27,9 +27,7 @@ describe('GetAuthorizationContextUseCase', () => {
       actions: [
         {
           key: 'users.create',
-          translates: [
-            { key: 'key', es: 'Crear Usuario', en: 'Create User' },
-          ],
+          translates: [{ key: 'key', es: 'Crear Usuario', en: 'Create User' }],
         },
       ],
       modules: [
@@ -42,9 +40,7 @@ describe('GetAuthorizationContextUseCase', () => {
             {
               key: 'users',
               link: '/general-settings/users',
-              translates: [
-                { key: 'key', es: 'Usuarios', en: 'Users' },
-              ],
+              translates: [{ key: 'key', es: 'Usuarios', en: 'Users' }],
             },
           ],
         },

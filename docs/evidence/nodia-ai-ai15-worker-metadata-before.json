@@ -1,0 +1,97 @@
+{
+  "task": "AI-15",
+  "scope": "fresh_standalone_worker_metadata_and_native_sql",
+  "status": "passed",
+  "expected_missing_baseline": true,
+  "metadata": [
+    {
+      "entity": "Business",
+      "registered": false
+    },
+    {
+      "entity": "BusinessCollaborator",
+      "registered": false
+    },
+    {
+      "entity": "BusinessAction",
+      "registered": true
+    },
+    {
+      "entity": "Product",
+      "registered": false
+    },
+    {
+      "entity": "ProductLog",
+      "registered": false
+    },
+    {
+      "entity": "Provider",
+      "registered": false
+    },
+    {
+      "entity": "ProviderContact",
+      "registered": false
+    },
+    {
+      "entity": "Invoice",
+      "registered": false
+    },
+    {
+      "entity": "UserRole",
+      "registered": true
+    },
+    {
+      "entity": "Translation",
+      "registered": true
+    },
+    {
+      "entity": "AiProvider",
+      "registered": false
+    },
+    {
+      "entity": "AiApiKey",
+      "registered": false
+    },
+    {
+      "entity": "AiProviderCatalog",
+      "registered": false
+    },
+    {
+      "entity": "AiProviderEvent",
+      "registered": false
+    },
+    {
+      "entity": "FinanceCategory",
+      "registered": true
+    }
+  ],
+  "entity_count": 37,
+  "reads": [
+    {
+      "capability_id": "nodia_businesses_list",
+      "status": "expected_metadata_missing"
+    },
+    {
+      "capability_id": "nodia_finance_categories_list",
+      "status": "completed",
+      "synthetic_sql_marker_verified": true
+    },
+    {
+      "capability_id": "nodia_ai_providers_list",
+      "status": "expected_metadata_missing"
+    }
+  ],
+  "datasource_explicit_entities_override": false,
+  "app_module_imported": false,
+  "worker_lifecycle_initialized": false,
+  "postgres_read_only": true,
+  "provider_generations": 0,
+  "provider_profiles_read": false,
+  "empty_publication": {
+    "scope": "fresh_worker_empty_publication",
+    "status": "passed",
+    "runtime_initialization": false
+  },
+  "configured_database_modified": false,
+  "disposable_database_removed": true
+}

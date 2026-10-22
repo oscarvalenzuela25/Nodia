@@ -1,0 +1,10 @@
+{
+  "desktop_observed_at_utc": "2026-10-18T01:54:56.680498+00:00",
+  "remaining_test_containers": [],
+  "configured_container_names": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "configured_services_mutated": false
+}

@@ -37,7 +37,7 @@ class PrivateRequestGuard:
                 response_started = True
                 response_status = message["status"]
                 message.setdefault("headers", []).append((b"x-request-id", request_id.encode()))
-                if scope["path"].startswith("/agentic/auth/login"):
+                if scope["path"].startswith(("/agentic/auth/login", "/auth/login", "/auth/logout")):
                     message["headers"].append((b"cache-control", b"no-store"))
             await send(message)
 
@@ -57,18 +57,21 @@ class PrivateRequestGuard:
             if rejection is not None:
                 await rejection(scope, receive, traced_send)
                 return
-            if scope["path"].startswith("/agentic/auth/login/") and scope["method"] == "POST":
-                # OAuth codes are tiny private commands, never unbounded JSON.
+            if scope["path"].startswith(("/agentic/auth/login/", "/auth/login/", "/nodia-ai/")) and scope["method"] == "POST":
+                # Login inputs are tiny private commands, never unbounded JSON.
                 payload = bytearray()
+                context_measure = scope["path"] in {"/nodia-ai/web/measure-context", "/nodia-ai/agentic/measure-context"}
+                invoice_contract = scope["path"] == "/nodia-ai/invoice-analysis/contract"
+                maximum_body = 64 * 1024 if invoice_contract else 57 * 1024 * 1024 if scope["path"] in {"/nodia-ai/web/turn", "/nodia-ai/agentic/turn", "/nodia-ai/web/attachments/probe", "/nodia-ai/agentic/attachments/probe", "/nodia-ai/agentic/mcp/start"} else 2 * 1024 * 1024 if context_measure else 300000 if scope["path"].startswith("/nodia-ai/") else 8192
                 try:
-                    async with asyncio.timeout(5):
+                    async with asyncio.timeout(60 if maximum_body > 400000 and not context_measure else 5):
                         while True:
                             message = await receive()
                             if message["type"] == "http.disconnect":
                                 response_status = 499
                                 return
                             chunk = message.get("body", b"")
-                            if len(payload) + len(chunk) > 8192:
+                            if len(payload) + len(chunk) > maximum_body:
                                 await reject("body_too_large", "La solicitud de login supera el tamaño permitido.", 413)
                                 return
                             payload.extend(chunk)

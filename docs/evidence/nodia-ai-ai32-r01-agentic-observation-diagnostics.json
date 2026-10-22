@@ -1,0 +1,59 @@
+{
+  "stage": "AI-32",
+  "follow_up": "R01",
+  "scope": "real_agentic_non_generative_session_catalog_observation",
+  "source": {
+    "kind": "safe_docker_log_projection",
+    "event": "Agentic session/catalog check finished",
+    "window_from_utc": "2026-10-18T03:44:00Z",
+    "window_until_utc": "2026-10-18T03:49:23Z"
+  },
+  "observations": [
+    {
+      "timestamp_utc": "2026-10-18T03:44:25.658351262Z",
+      "duration_ms": 4725,
+      "verified": true
+    },
+    {
+      "timestamp_utc": "2026-10-18T03:47:07.485381609Z",
+      "duration_ms": 5559,
+      "verified": true
+    },
+    {
+      "timestamp_utc": "2026-10-18T03:47:58.805152297Z",
+      "duration_ms": 12025,
+      "verified": false
+    },
+    {
+      "timestamp_utc": "2026-10-18T03:49:22.676309269Z",
+      "duration_ms": 6114,
+      "verified": true
+    }
+  ],
+  "observation_budget": {
+    "seconds": 12,
+    "scope": "shared_aggregate_deadline",
+    "sequential_commands": [
+      "/usage",
+      "models"
+    ],
+    "code_source": "nodia-gemini-microservice/agentic_service.py",
+    "method": "_observe",
+    "first_line": 94
+  },
+  "interpretation": {
+    "confirmed": "One unverified observation lasted 12025 ms; the next verified observation completed in 6114 ms.",
+    "inference": "The failed observation elapsed time is consistent with exhausting the shared 12-second deadline.",
+    "exact_exception_observed": false,
+    "exact_subcommand_cause_observed": false,
+    "authentication_expiry_proven": false,
+    "limitations": "The existing log records aggregate duration and verification only; it does not identify which sequential command consumed the deadline or the exact exception."
+  },
+  "generation_requests": 0,
+  "inference_retries": 0,
+  "provider_configuration_modified": false,
+  "login_logout_requested": false,
+  "service_restarted": false,
+  "raw_logs_saved": false,
+  "credentials_logged": false
+}

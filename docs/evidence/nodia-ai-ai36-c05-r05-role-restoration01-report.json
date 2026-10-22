@@ -1,0 +1,92 @@
+{
+  "stage": "AI-36-C05-R05",
+  "scope": "exact_061_CLI131_baseline_restoration_no_old_credentials_or_proofs_restored",
+  "status": "passed_restore_requires_fresh_non_generative_metadata",
+  "started_at_utc": "2026-10-19T21:22:18.712573+00:00",
+  "source_sha256": "605d7568f22228ad51c67c3bf17c394d33e131500bbb4ceb820f351a11035840",
+  "target_image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+  "provider_generations": 0,
+  "credential_contents_read_copied_or_restored": false,
+  "old_MCP_proofs_transferred": false,
+  "Node_runtime_files_modified": 0,
+  "configured_selection_modified": false,
+  "pre_restoration_quiet": {
+    "SQL": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-19T21:22:18.948Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    },
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-19T21:22:18Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    }
+  },
+  "post_restoration_quiet": {
+    "SQL": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-19T21:22:50.666Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    },
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-19T21:22:50Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    }
+  },
+  "restored_epoch": {
+    "id": "83f01759821f42b21b8956dd5c6e91f761a59b8e072326c4b2bcc46bdd467ca4",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T21:22:19.611154456Z"
+  },
+  "descriptor_environment_unique_six_mounts_UID_port_resources_exact": true,
+  "MCP_after_restart": "unknown_requires_new_current_instance_evidence",
+  "API_worker_restore_exit_code": 0,
+  "service_states_after": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "finished_at_utc": "2026-10-19T21:22:50.710791+00:00"
+}

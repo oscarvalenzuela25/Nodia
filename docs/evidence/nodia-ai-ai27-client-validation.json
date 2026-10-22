@@ -1,0 +1,84 @@
+{
+  "stage": "AI-27",
+  "scope": "client_unit_and_synthetic_transport_no_database_or_provider",
+  "status": "passed",
+  "verified_at_utc": "2026-10-17T18:36:51.915712+00:00",
+  "full_suite": {
+    "tests": 1571,
+    "files": 205,
+    "workers": 2,
+    "duration_seconds": 454.42,
+    "exit_code": 0
+  },
+  "focused": {
+    "tests": 280,
+    "files": 7,
+    "workers": 2,
+    "duration_seconds": 38.86,
+    "exit_code": 0
+  },
+  "typecheck": {
+    "command": "npm run typecheck",
+    "exit_code": 0
+  },
+  "lint": {
+    "command": "npm run lint",
+    "exit_code": 0
+  },
+  "build": {
+    "command": "npm run build",
+    "vite_seconds": 17.08,
+    "exit_code": 0,
+    "historical_large_chunk_warning": true
+  },
+  "checks": [
+    "17 registered Core actions and6 resources localized in ES/EN; no invented user DELETE or individual GET",
+    "Resolved associations, users affected and removed access render recursively as readonly facts before the exact button",
+    "Final association editing uses shared SelectMultipleInput and exact string bigint IDs; duplicate, zero, padded, exponential and overflow IDs rejected",
+    "TranslationInput edits structured key/ES/EN entries; incomplete translations remain editable and block PATCH",
+    "Unedited translations with reordered public object fields do not produce spurious edits",
+    "Known native Core NI13 business403 errors preserve the proposal cache, editor and draft while authorization403 continues to revoke observation",
+    "Completed receipts link to actual Settings destinations and revalidate current actor authorization, Core catalogs and chat observation without granting permissions",
+    "Malformed stored collections and incompatible structured metadata bounds disable human controls",
+    "Transport rejection preserves role IDs, translation text and other command fields; toasts use localized native messages"
+  ],
+  "document_validation": {
+    "status": "passed",
+    "markdown_files": 4,
+    "local_links": 115,
+    "source_and_frontmatter_checks": "passed",
+    "core_effects_per_locale": 17,
+    "core_resources_per_locale": 6,
+    "core_field_labels_per_locale": 33,
+    "locales": [
+      "es",
+      "en"
+    ],
+    "approval": "unchanged_null",
+    "new_tools_published": 0,
+    "broken_links": []
+  },
+  "ui_evidence": "docs/evidence/nodia-ai-ai27-ui-validation.json",
+  "sources": [
+    {
+      "path": "nodia-client/.tmp/ai27-client-focused-final.log",
+      "sha256": "6f893403b6499a7bb3aada4b77ffba542b39576911a9a1d3de4ac7a105cfa661"
+    },
+    {
+      "path": "nodia-client/.tmp/ai27-client-full-release.log",
+      "sha256": "3784b64cf05c7dc64c53168e807dee6bf9d00d4ac3f509ec152d2bc731706557"
+    },
+    {
+      "path": "nodia-client/.tmp/ai27-client-typecheck-final.log",
+      "sha256": "e7bf9235c4b3d2f32ae91ad79594338311c7f2da0e9371d85417552aaa0b1865"
+    },
+    {
+      "path": "nodia-client/.tmp/ai27-client-lint-final.log",
+      "sha256": "ffd8fd64020e579eedde270479fe815463785d7fafad2537f697ac8c68b27abe"
+    },
+    {
+      "path": "nodia-client/.tmp/ai27-client-build-final.log",
+      "sha256": "a42325db1d7d2f3154f05cb86dfa232cfcdbbba3d7177a61a0cb17ce8b22b96d"
+    }
+  ]
+}

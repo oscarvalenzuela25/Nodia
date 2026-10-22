@@ -3,7 +3,7 @@
 from typing import Annotated, Literal
 from datetime import date
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 def validate_user_bigint(value: str) -> str:
@@ -25,6 +25,10 @@ class HealthResponse(BaseModel):
 class LoginJobResponse(BaseModel):
     id: str = Field(pattern=r"^[0-9a-f]{32}$")
     state: Literal["running", "succeeded", "failed", "cancelled"]
+
+
+class WebLogoutResponse(BaseModel):
+    status: Literal["disconnected"]
 
 
 class AgenticLoginJobResponse(BaseModel):
@@ -65,6 +69,8 @@ class AgenticModelsResponse(BaseModel):
 class WebSupportedOptions(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     extended_thinking: bool | None = None
+    thinking_level: bool | None = None
+    thinking_levels_by_model: dict[str, list[Literal["low", "medium", "high"]]] | None = None
 
 
 class WebStatusResponse(BaseModel):
@@ -131,8 +137,14 @@ class AnalysisOptions(BaseModel):
     provider_fields: dict[str, object] | None = None
     provider_tax: int | None = Field(default=None, ge=0, le=100)
     model: str = Field(min_length=1, max_length=128)
-    extended_thinking: bool = False
+    extended_thinking: bool | None = None
     thinking_level: Literal["low", "medium", "high"] | None = None
+
+    @model_validator(mode="after")
+    def exclusive_web_reasoning(self):
+        if self.engine == "web" and self.thinking_level is not None and self.extended_thinking is not None:
+            raise ValueError("Do not combine explicit Web levels with legacy thinking")
+        return self
 
 
 class RuntimeLimits(BaseModel):

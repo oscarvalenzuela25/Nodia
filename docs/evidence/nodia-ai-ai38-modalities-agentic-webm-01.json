@@ -1,0 +1,41 @@
+{
+  "stage": "AI-38",
+  "scope": "exact_native_format_semantic_canary",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:52:22.266488+00:00",
+  "source_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "session_generation": "2058fda1aff3454f80a11d10d05a1e5e",
+  "attempt_id": "97fb0e13-1f0b-4fe0-919b-aee1f39b07b4",
+  "kind": "audio",
+  "media_type": "audio/webm",
+  "file_bytes": 29743,
+  "file_sha256": "6faf3d9f76e7216b105a3b9291f9f671dcfb8edee74818108225405be260d8b0",
+  "expected_answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+  "maximum_generations": 1,
+  "generation_requests": 1,
+  "inference_replayed": false,
+  "configured_SQL_writes": 0,
+  "business_effects": 0,
+  "provider_login_logout": false,
+  "semantic_match": true,
+  "native_acknowledged": true,
+  "native_pending_identity": false,
+  "raw_provider_output_exported": false,
+  "quiet_before": {
+    "jobs": 0,
+    "attempts": 0,
+    "slots": 0
+  },
+  "http_status": 200,
+  "actual_answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+  "native_outcome": "completed",
+  "exact_format_verified_after": true,
+  "finished_at_utc": "2026-10-20T19:53:19.098408+00:00"
+}

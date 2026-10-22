@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "status": "review_complete_exact_cleanup_plan_pending_explicit_authorization",
+  "legacy_files": 29,
+  "bytes": 7561623,
+  "PostgreSQL_custom_archives_without_application_encryption_envelope": 29,
+  "readable_catalogs_with_entries": 28,
+  "readable_empty_catalogs": 1,
+  "full_legacy_SQL_restores_executed": 0,
+  "all_prior_size_mtime_preserved": true,
+  "all_paths_stable_and_single_link_regular_private_files": true,
+  "open_descriptors_observed": 0,
+  "catalog_dates_are_declarations_not_capture_attestations": true,
+  "declared_7day_horizon_elapsed_files": 0,
+  "cleanup_proposed_before_expiry_for_obsolescence_and_custody": true,
+  "files_deleted": 0,
+  "current_R2_replacement_copies_reverified": 3,
+  "R2_inspection_HEAD_GET_digests": true,
+  "R2_uploads_deletes_or_CAS_writes": 0,
+  "operator_keys_metadata_only": true,
+  "keys_sent_to_VM": false,
+  "SQL_queries_or_writes": 0,
+  "provider_requests": 0,
+  "services_unchanged": true,
+  "production_behavior_changes": false,
+  "full_product_suites_rerun": false,
+  "source_syntax_checks": {
+    "python_AST_files": 2,
+    "node_check_files": 1,
+    "all_passed": true
+  },
+  "new_approval_or_publication": false,
+  "runtime_policy_revision": 13,
+  "AI38_complete": false,
+  "remaining": [
+    "explicit authorization and exact-file removal receipt",
+    "separate retention classification of sibling metadata, other exports, snapshots and provider versions",
+    "remaining AI38 environment and functional gates"
+  ],
+  "evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-backups-inspection-r01.json",
+      "sha256": "78891f4209aaa599322c1fc43a53364f3912e35fb72aad685fc219753ac43035"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-backups-cleanup-plan-r01.json",
+      "sha256": "dd9421d7339e13408c972f3fbd4424bae2253eb85141789fe01081fc9433526b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-current-protection-r01.json",
+      "sha256": "6787b59de22548fee9253188aab2155aa268b18705becd8bbe6367fb4d6a98f5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-key-custody-r01.json",
+      "sha256": "01a2b9e485f9e5b79649b38024a76bdf3cc285dd25b529921f701834e6804685"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-runtime-policy-before.md",
+      "sha256": "35f8a80cafb56d3d81da506607b7f5315f9f19e3dbcd8d1a38413f877200f86e"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-legacy-backups-inspect.py",
+      "sha256": "b1bedcf761297599da3636ce35428fd8c8cef0ffb0c63b2ed03fe6ce92ba5489"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-legacy-backups-inspect-r01.py",
+      "sha256": "642d7e8d242fdcb6356459f4f28e2a7cb87aa77290ce7a7c6eb360f32f44e8dd"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-legacy-current-protection.mjs",
+      "sha256": "85e224f091187123393cf29edde118124cfa356194bb77268953a1704821c19d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-backups-provenance-r01.json",
+      "sha256": "93b37e798ce4f7d3096c9cd13e03d5e2e98f94500d9528fc53a70cab3058d0a0"
+    }
+  ],
+  "provenance": {
+    "exact_historical_references": 24,
+    "unattributed_within_scanned_scope": 5,
+    "source_receipts": 27,
+    "not_global_authorship_proof": true
+  },
+  "knowledge_check": {
+    "exit": 0,
+    "sources": 59,
+    "excluded": 28,
+    "published_documents": 31,
+    "published_fragments": 31,
+    "published_capabilities_preserved": 74,
+    "release": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+    "log_sha256": "aa39245d48901c3aeba98037d9040100ff0221eb258d9e37e8d11ed7e6cfbbd9"
+  },
+  "local_markdown_links_checked": 583,
+  "documentation_sha256": {
+    "docs/evidence/nodia-ai-ai38-legacy-backups-review-r01.md": "622f95ed35ce891788e2f72935dfc8a660ffae5252231d73ef9f3ad8e5acd538",
+    "docs/mvp/README.md": "562ea2fdbac00cee8483a64e980c7ead5a42459931b00e7ca4872d91b96b99af",
+    "docs/mvp/00-progress.md": "decc2d3da6eff9538ff293f73385a6b1c32920c7b514c8cd83adc64f7e4b410b",
+    "docs/mvp/84-nodia-ai-ai38-environment-acceptance.md": "31f411ee481c8423ea623b28b405d70fe11f205e2dad9e4bb9b53ef501e02351",
+    "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md": "43ba45986cf864c09aeb1309fc72e723ebf67cca18603f453a4ec58b1e7f1f7d",
+    "ops/nodia-ai-backups/journal.md": "aa4ba2ac9a155aa881283a45e88fc7ef09ed3d0ed84257bbe14075ae2e90387b"
+  }
+}

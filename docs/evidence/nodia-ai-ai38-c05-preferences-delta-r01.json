@@ -1,0 +1,41 @@
+{
+  "stage": "AI-38",
+  "scope": "C05_delta_preferences_current_epoch_not_historical_capabilities_reacceptance",
+  "status": "partial_two_of_three_pending_capabilities_accepted",
+  "snapshot_finished_at_utc": "2026-10-20T19:34:41.987126+00:00",
+  "current_epoch": {
+    "container_id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at": "2026-10-20T19:14:35.412657745Z"
+  },
+  "current_delta_accepted": [
+    "nodia_preferences_prepare",
+    "nodia_preferences_list"
+  ],
+  "historically_accepted_not_reexecuted": [
+    "nodia_proposals_get",
+    "nodia_operations_get",
+    "nodia_attachments_describe",
+    "nodia_workflows_prepare"
+  ],
+  "still_pending_in_this_snapshot": [
+    "nodia_finance_movements_prepare_create"
+  ],
+  "provider_start_requests_this_delta": 2,
+  "accepted_native_starts_this_delta": 2,
+  "ACKs_this_delta": 2,
+  "configured_SQL_writes": 0,
+  "operational_publication_changed": false,
+  "operational_business_effects": 0,
+  "synthetic_preferences_after_exact_HTTP_confirmation": 1,
+  "synthetic_finance_effects": 0,
+  "standalone_worker_accepted": false,
+  "physical_UI_accepted": false,
+  "sources": {
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-driver.json": "ceef4ea7466affb3ad2f5dbdde260e02a23f3085bc0f2168fe1a13fabed4a2ec",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-case.json": "82c6079367e6ce221195ac66f117cdb503c63f5f49452f5cc581642fe6a2746f",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-guard.json": "f1ded12aad0461d1541dd2512c2f99df0dc454009984b9ea6139d8ace342d0d1",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-capture.json": "72cda5f5821061a84ed9f46a80992b648243e2641aa424dc40c12ad37b4941c7",
+    "docs/evidence/nodia-ai-ai38-live-capabilities-preferences-r01-receipt.json": "5d43068cacdbfb95e81aefd0c3300b94f8917f37376a89b393c8309617140b6f"
+  }
+}

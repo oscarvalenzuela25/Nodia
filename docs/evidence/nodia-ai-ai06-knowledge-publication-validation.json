@@ -1,0 +1,452 @@
+{
+  "date": "2026-10-15",
+  "task": "AI-06",
+  "status": "compiler_verified_empty_corpus_release_runtime_pending",
+  "scope": "Real build compiler and temporary-filesystem fixture execution, no production knowledge publication",
+  "checks": [
+    {
+      "name": "approved bound fragment emits without draft parent or unselected metadata/body",
+      "passed": true
+    },
+    {
+      "name": "identical inputs across two isolated roots produce identical manifest and bytes",
+      "passed": true
+    },
+    {
+      "name": "draft without runtime binding emits empty release",
+      "passed": true
+    },
+    {
+      "name": "unknown author metadata field",
+      "passed": true
+    },
+    {
+      "name": "duplicate canonical source entry",
+      "passed": true
+    },
+    {
+      "name": "duplicate capability identity",
+      "passed": true
+    },
+    {
+      "name": "duplicate binding identity",
+      "passed": true
+    },
+    {
+      "name": "missing indexed product document",
+      "passed": true
+    },
+    {
+      "name": "missing document source file",
+      "passed": true
+    },
+    {
+      "name": "approval required for approved state",
+      "passed": true
+    },
+    {
+      "name": "approval requires a real verification date",
+      "passed": true
+    },
+    {
+      "name": "approval evidence reference must exist",
+      "passed": true
+    },
+    {
+      "name": "approval revision must match",
+      "passed": true
+    },
+    {
+      "name": "body edited without renewed approval",
+      "passed": true
+    },
+    {
+      "name": "draft cannot retain approval",
+      "passed": true
+    },
+    {
+      "name": "active binding cannot publish draft",
+      "passed": true
+    },
+    {
+      "name": "registration alone does not verify integration",
+      "passed": true
+    },
+    {
+      "name": "planned implementation cannot publish",
+      "passed": true
+    },
+    {
+      "name": "context module must be resolved",
+      "passed": true
+    },
+    {
+      "name": "unknown capability cannot bind",
+      "passed": true
+    },
+    {
+      "name": "capability revision incompatibility",
+      "passed": true
+    },
+    {
+      "name": "schema incompatibility in binding",
+      "passed": true
+    },
+    {
+      "name": "schema bytes cannot change without registry update",
+      "passed": true
+    },
+    {
+      "name": "schema definition must exist",
+      "passed": true
+    },
+    {
+      "name": "implementation source hash must match",
+      "passed": true
+    },
+    {
+      "name": "module scope cannot be weakened or replaced",
+      "passed": true
+    },
+    {
+      "name": "section must exist",
+      "passed": true
+    },
+    {
+      "name": "duplicate heading cannot select ambiguous text",
+      "passed": true
+    },
+    {
+      "name": "unclosed fence rejected",
+      "passed": true
+    },
+    {
+      "name": "hidden HTML comment content is outside supported publication subset",
+      "passed": true
+    },
+    {
+      "name": "shorter inner fence does not expose a heading inside a longer fence",
+      "passed": true
+    },
+    {
+      "name": "published capability needs a knowledge binding",
+      "passed": true
+    },
+    {
+      "name": "verified document needs binding",
+      "passed": true
+    },
+    {
+      "name": "broken approved body link blocks publication",
+      "passed": true
+    },
+    {
+      "name": "unsafe link scheme rejected",
+      "passed": true
+    },
+    {
+      "name": "traversal cannot enter source index",
+      "passed": true
+    },
+    {
+      "name": "templates cannot enter source index",
+      "passed": true
+    },
+    {
+      "name": "duplicate authoring table rejected",
+      "passed": true
+    },
+    {
+      "name": "JSON duplicate key rejected",
+      "passed": true
+    },
+    {
+      "name": "escaped JSON duplicate key rejected",
+      "passed": true
+    },
+    {
+      "name": "unsafe JSON number rejected",
+      "passed": true
+    },
+    {
+      "name": "UTF8 invalid bytes rejected",
+      "passed": true
+    },
+    {
+      "name": "BOM rejected explicitly",
+      "passed": true
+    },
+    {
+      "name": "oversized authoring file rejected before parsing",
+      "passed": true
+    },
+    {
+      "name": "source junction rejected before following its target",
+      "passed": true
+    },
+    {
+      "name": "revision cannot be reused for changed approved content against prior release",
+      "passed": true
+    },
+    {
+      "name": "corrupted fragment and catalog mismatch rejected with trusted release pin",
+      "passed": true
+    },
+    {
+      "name": "build lock excludes second writer",
+      "passed": true
+    },
+    {
+      "name": "invalid next compile preserves valid bundle and retirement removes stale fragments",
+      "passed": true
+    },
+    {
+      "name": "a second metadata source is not accepted as a fallback",
+      "passed": true
+    },
+    {
+      "name": "YAML syntax is not silently coerced to JSON",
+      "passed": true
+    },
+    {
+      "name": "templates use valid unique metadata with no invented check date or approval",
+      "passed": true
+    }
+  ],
+  "unavailable": [],
+  "sourceDocuments": 43,
+  "excludedDrafts": 43,
+  "publishedDocuments": 0,
+  "publishedFragments": 0,
+  "publishedCapabilities": 0,
+  "releaseId": "262f513ec28106d304a1c5da13e1ad1b7111b49fa67e0942faa4f841de51d90a",
+  "schemaDefinitions": 19,
+  "localLinksChecked": 751,
+  "artifacts": [
+    {
+      "file": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "sha256": "c207505d44f5f74361cd7048efe332b923d0e7c54696d4cb034680f4ce749d0b"
+    },
+    {
+      "file": "nodia-server/scripts/build-nodia-ai-knowledge.mjs",
+      "sha256": "f8fb6573d51035716bb487989f6978fa0fbb4c7d4a87928dc57337b7b87a6469"
+    },
+    {
+      "file": "nodia-server/scripts/nodia-ai-knowledge/compiler.mjs",
+      "sha256": "554781fda5d29d7f54b62a3279be9874567a027b832da1037504b2530f874aad"
+    },
+    {
+      "file": "nodia-server/scripts/nodia-ai-knowledge/frontmatter.cjs",
+      "sha256": "9732526dc6f1e59620d0f9155a3d435a9b624b895735e962cdf122019b2e40a7"
+    },
+    {
+      "file": "nodia-server/scripts/nodia-ai-knowledge/contracts.schema.json",
+      "sha256": "b129b45f455eda10ce7647c96e2765447ea86bbfcd8adf085aec657910334c8c"
+    },
+    {
+      "file": "nodia-server/package.json",
+      "sha256": "5232f6b77b15833875e7863314202bf3d6d3354b6ea3423b22476a36fc7e1e63"
+    },
+    {
+      "file": "docs/mvp/52-nodia-ai-ai06-knowledge-publication-contract.md",
+      "sha256": "dcae857be56ecc14f9c4538afef2b017c5bb88d97f5f3b29f333d1ef07758eed"
+    },
+    {
+      "file": "docs/architecture/decisions/ADR-038-nodia-ai-compiled-knowledge-contract.md",
+      "sha256": "7733cd0278b5fd2e7138760edde509a4dfb7e950c4a68d6c5bac30de509921df"
+    },
+    {
+      "file": "docs/evidence/scripts/validate-nodia-ai-ai06.cjs",
+      "sha256": "3a916ff28ec87b566be4abf76fab7adae1507b62b0171baea87ae62c5498e3e3"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/README.md",
+      "sha256": "1855c60768c7f91a39c0bbb12fd610fc664eb3d06f041f4acb0ab938b04d1a15"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+      "sha256": "bc95a8d2e56c124cd3bb6408e0ed49921856c2e91ea28c24a3975c860d335edc"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+      "sha256": "f1912861f8adb905fe115c950e972cc53c91efe14b86462ef436051dc7c362b3"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+      "sha256": "a0545dd9f3e605f609e1077de60dcb3ff34fa106e5e98094f6b60e9c2be0b00b"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+      "sha256": "3d1dfe2d9f60beaf73bbbeda760296b2f2f70102036934effca7b7a107d7ede8"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/products.md",
+      "sha256": "15df9597ffbe31e7c4aac42998983aa23acd92bbc89d1c844a6a05cfd36bd73e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+      "sha256": "2be89c25fb83b32c565a4efb44510d99eb580fbba852d90595bf5d6c56f8fe6e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+      "sha256": "f8051aa43f37bfbf27e90a2e561f7d4a17e254d37c5b287aebd3f2eb36da0587"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "sha256": "b7f576e263dab13262a7db4f101553704fcf53fc036964967529bee1869adeaf"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+      "sha256": "e159ded03e792a5767f0ac69c3158b4264ccc97ead28fa9e396a18ffc4b7ee78"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+      "sha256": "b1b3328ed7a88f1dd2555ee29653c6d6818f66fb94fafd9a87dcc1b00951b614"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+      "sha256": "9e565ef76ebe27dda5620e05979a49a70cd1b4d6820882d3d8983d28c54364f0"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+      "sha256": "b67d3213b0d9e57722d2cb9701f6a6a26071828d643832d3db4f259af444cb6b"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+      "sha256": "e780780ee9bbac0fe5c83e9b6fd8a7232984caaf52a77a1352a3e5d78eafee63"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+      "sha256": "ee4989939e75950bc994b8f6dbdb3320456df993ddee420b1c9850dd2c88c55c"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+      "sha256": "8c0ebe3f956fe8a8ad48baba5fb01010f20a949c1888ed9177e626ffb533f0c6"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+      "sha256": "df60936d8a9f8c0c7af119b359431b238ba3cdcfa5fcf841a13e6bdadaa38629"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/chat-admission-retention.md",
+      "sha256": "6908e865f6704e969c413df39158afd04a2cace4aacfd093b487256425b4bc2f"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md",
+      "sha256": "d8fbc7dd8580eab716016f77a8a5208172bd4c59fc38bd950e4d7b9c6d7df4a5"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "sha256": "3235a2acafbb4b923f4c04bb85e906f7a18a72e15e41a1371a2b33205f585ed8"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-persistence.md",
+      "sha256": "977204a21dfa79aa325d0069e6dd2d42c93735390c778f42cc97f0b564771951"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/durable-worker.md",
+      "sha256": "b22ff27b3924975119f46fbe58177f1ee593d599de4656ecc6a5b6674e2061f9"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/gemini-agentic-viability.md",
+      "sha256": "7f13d655293c59973c33f1f9d356c38f9af938a0a20c245a36aa8ecb8b5926da"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/gemini-web-viability.md",
+      "sha256": "7d1f1d0b463c49fb1488ad51ae50f65a98609e933e85d0832b54e8e01fcc7811"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/knowledge-publication.md",
+      "sha256": "a93c0090badb8860d5193800aba17ced6c232c64dcb640406936852384a2d3f6"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/module-authorization.md",
+      "sha256": "cc9de41264ac1fb5900364ccf6c529a1079956c6866a1cb50c2f2407b080228e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md",
+      "sha256": "b802c793a094ff75cbb39bf3815bf998d0bd83eb027a435889c8995e9ca010da"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/nodia-ai/features/shared-authority.md",
+      "sha256": "cd94885f18a027a47fd0f8dfe8276fe3a3375eda2b47a05185f31d930a304a17"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/README.md",
+      "sha256": "b00d166a9196613e3f66c183a02da207a4455978b31f240b0befe5c810e6ec3e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+      "sha256": "950261ffc6ed94b567a00652f921e67615759f92d4e3e5bf136d84b39a342b8f"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+      "sha256": "885a4f021244594f84993c8d9b829ca20b5689623940217b68a14b9f89f9d1c8"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+      "sha256": "f848fa3d87b6863b23ab8464e0271270fb5b0ec402bdc955d68d8fcce89ab7ca"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+      "sha256": "31eb3f0afdd7b51540579780c273375637532a1a85a33e5dd6acd8c19951d613"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/README.md",
+      "sha256": "d57316257199b3a96b262b123438b2945bc070cd5d6dbdd2a3df7f4b376b80d6"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+      "sha256": "c40c99b126afb6d966ad617a8a5f8c14f6c59d80cdf709c6ff37cf05c056318e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+      "sha256": "a198d2bfa4cac9563108e66ffcd1791c9340ac0a04e0e107a584391c73219578"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+      "sha256": "e2ca3efc0399c0a79d991d7e76dedfeee5d6c8948e4fb3d435a46b155646d63e"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+      "sha256": "15e86912ae91805d89b0b7c9c1d1602b96050af92bacf2118d890d5e20208fd7"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+      "sha256": "923ad5740398beea55ee2d43356fc934967a16276e1eb39ff5457518fb4b524f"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+      "sha256": "8e5b75fc252d0764da9e51a99c95f4088120625e63b914848c439e4ab0d5ff9d"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+      "sha256": "0571b6de979078628855532d4748d4920c6be3c193a80ff0c974cbacbf9adbeb"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+      "sha256": "78012bb92691bf490f51484ff3d2440193749fb50e951b2e821b05c2bcddd2d4"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+      "sha256": "fbaf5349013f98f88eee9aae1f981bbc4a6243b79871f4a068cce5aa69070950"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/_templates/product.md",
+      "sha256": "9344f829285e451680f30e8d0b4d583aaa49ecbae93fdd56544400c50c8d5dc3"
+    },
+    {
+      "file": "docs/nodia-ai/knowledge/_templates/feature.md",
+      "sha256": "3140b78942d274a5a7e1fe8a6b3ef8dcf9379afc8e6ea2fe7d1802c182188ed5"
+    }
+  ],
+  "servicesStarted": false,
+  "providerCalls": 0,
+  "businessWrites": 0,
+  "limitations": [
+    "Fixtures approvals/capabilities are synthetic and isolated; actual corpus remains draft/unregistered",
+    "File/hash checks do not prove human approval provenance or semantic implementation/authorization of a capability",
+    "Module IDs/authority and runtime KnowledgeRegistry/ContextBuilder/startup after prune remain AI-07/08/12",
+    "No DB/HTTP/MCP/inference/deployment performed; full Server build is a separate command from this verifier"
+  ]
+}

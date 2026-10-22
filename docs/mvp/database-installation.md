@@ -78,3 +78,16 @@ Usa PostgreSQL 16 desechable y credenciales/identidades sintéticas. Comprueba i
 Comprobaciones del VPS, TLS/proxy/OAuth, restauración externa y S-05 continúan en [la revisión de lanzamiento](19-prelaunch-review.md).
 
 Entrega verificada: build correcto, lint sin errores (dos avisos previos ajenos), **863 pruebas de casos de uso/114 archivos y 35 comprobaciones de integración**. El CLI se probó como proceso real con entorno sintético. No se ejecutó el comando de instalación contra la BD local ni se creó/modificó su administrador. La introspección de tablas de TypeORM emite un aviso de deprecación del driver pg por consultas concurrentes internas; no falla la comprobación, y no se modificaron dependencias para ocultarlo.
+
+## Continuidad M4 AI-33 — 2026-10-18
+
+El inventario y cifras de instalación anteriores conservan su fecha original. [AI-33/79](79-nodia-ai-ai33-accepted-preferences.md) incorpora `1792900000000-CreateNodiaAiPreferences.ts`: una tabla/12 columnas, unicidad personal por scope/clave, dos índices parciales de origen y referencias SET NULL para sobrevivir a la purga del chat. No añade snapshots de AI-34. En el laboratorio con historial reconciliado se aplicó únicamente esa migración tras backup privado:26→27 entradas del ledger;20 tablas NodiaAI/279 columnas. Ver [evidencia de activación](../evidence/nodia-ai-ai33-activation.json). No usar bootstrap como reparación de una base existente. Revertir código conserva la tabla; down bloquea datos aceptados hasta conciliación explícita.
+
+
+## Incremento AI-34 — snapshots de contexto
+
+La migración28, `1793000000000-CreateNodiaAiContextSnapshots`, añade una tabla de nueve columnas y runs.context_snapshot_id. Se requiere aplicar antes de ejecutar el nuevo API/worker porque las cuotas consultan snapshots. Mantener synchronize:false, respaldo y orden explícito de despliegue. Down rechaza snapshots o referencias poblados; no borrar datos del chat para facilitar rollback. [Entrega80](80-nodia-ai-ai34-long-context-compaction.md) registra la activación de laboratorio: respaldo privado, historial27→28 conservado y21 tablas NodiaAI/289 columnas verificadas. Compactación/continuidad con cuenta Web/Agentic y callback MCP sintético se verifican por separado; no se deducen de la migración ni acreditan un efecto SQL de negocio con cuenta.
+
+## Incremento AI-35 — índice de búsqueda literal
+
+La migración29, `1793100000000-AddNodiaAiTextSearchIndex`, añade pg_trgm en public y un índice GIN parcial sobre las partes textuales; no modifica las21 tablas/289 columnas de NodiaAI. Instalar sólo con migrador autorizado, backup y ventana de mantenimiento: el CREATE INDEX transaccional bloquea escrituras mientras se construye. Si la extensión existe fuera de public, la migración aborta sin moverla. Down elimina sólo su índice, preservando la extensión compartida; revertir código no requiere borrar tablas o chats. [ADR-060](../architecture/decisions/ADR-060-nodia-ai-authorized-text-search.md), [SQL47](../evidence/nodia-ai-ai35-sql-validation.json) y [activación exacta28→29](../evidence/nodia-ai-ai35-runtime-activation.json) distinguen ensayo desechable y BD configurada. Instalar el índice no autoriza herramientas ni amplía la búsqueda a archivos/transcripciones.

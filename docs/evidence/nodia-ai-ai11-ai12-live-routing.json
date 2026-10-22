@@ -1,0 +1,23 @@
+{
+  "task": "AI-11/AI-12",
+  "phase": "routing",
+  "checks": 10,
+  "passed": [
+    "Agentic session/catalog eligible without inferring MCP support",
+    "real CLI makes both closed MCP fixture callbacks",
+    "real Agentic answer incorporates random callback data",
+    "real MCP loop publishes exact verified support",
+    "real provider turn seals exactly once",
+    "real Web delegates once to the exact opted-in Agentic target",
+    "delegated Agentic uses technical knowledge MCP",
+    "delegation preserves the base Web selection",
+    "real provider turn seals exactly once",
+    "next turn starts in Web without another delegation"
+  ],
+  "adapterDispatchRequests": 4,
+  "maximumAdapterDispatchRequests": 6,
+  "real_inference": true,
+  "configured_business_database_modified": false,
+  "business_writes": 0,
+  "selection_source": "Read-only configured Gemini connection; new synthetic database for all chat/worker state"
+}

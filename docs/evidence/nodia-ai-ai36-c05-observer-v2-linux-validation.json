@@ -1,0 +1,44 @@
+{
+  "scope": "offline_linux_v2_tool_validation",
+  "tests_exit_code": 0,
+  "test_summary": "...................\n----------------------------------------------------------------------\nRan 19 tests in 1.138s\n\nOK",
+  "control_exit_code": 0,
+  "control": {
+    "scope": "offline_owned_observer_lifecycle_with_synthetic_files_only",
+    "helper_sha256": "b6c9cd9ae2b0b5988b600cace089773721bce13340de8a97fd603e1237633e33",
+    "parser_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+    "ownership_ended_stdin_open": {
+      "exit_code": 0,
+      "normalized_shell_exit_code": 0,
+      "stderr_bytes": 0,
+      "buffered_stdin_shutdown_error": false,
+      "fatal_python_error": false,
+      "daemon_thread_shutdown_indicator": false,
+      "result_reason": "ownership_ended",
+      "stdin_was_kept_open": true
+    },
+    "explicit_stop": {
+      "exit_code": 0,
+      "normalized_shell_exit_code": 0,
+      "stderr_bytes": 0,
+      "buffered_stdin_shutdown_error": false,
+      "fatal_python_error": false,
+      "daemon_thread_shutdown_indicator": false,
+      "result_reason": "requested_stop",
+      "stdin_was_kept_open": true
+    },
+    "provider_requests": 0,
+    "application_imports": 0,
+    "runtime_mutations": 0,
+    "raw_stderr_emitted": false
+  },
+  "source_hashes": {
+    "nodia-ai-ai36-c05-live-owned-log-observer-v2.py": "b6c9cd9ae2b0b5988b600cace089773721bce13340de8a97fd603e1237633e33",
+    "test_nodia_ai_ai36_c05_live_owned_log_observer_v2.py": "e4ea0f1334b1495f4a49c8004304e343a7bbf650adc49bee1de282258a2e3830",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+    "nodia-ai-ai36-c05-observer-shutdown-control.py": "2c41827956f0fcc561430fd2c7f392755a14853520e2806b7df800293347785c"
+  },
+  "provider_requests": 0,
+  "application_imports": 0,
+  "services_restarted": false
+}

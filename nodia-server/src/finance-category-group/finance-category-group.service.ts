@@ -1,3 +1,7 @@
+import {
+  runFinanceScope,
+  type FinanceActor,
+} from '../authorization/authority-transaction.js';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, type EntityManager } from 'typeorm';
@@ -9,9 +13,24 @@ import { applyFinanceQuery } from '../finance-common/finance-query.js';
 
 @Injectable()
 export class FinanceCategoryGroupService {
+  withScope<T>(
+    actor: FinanceActor,
+    work: (scope: {
+      manager: EntityManager;
+      ownerId: string;
+      actorId: string;
+    }) => Promise<T>,
+  ): Promise<T> {
+    return runFinanceScope(this.dataSource, actor, work, 'READ COMMITTED');
+  }
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
-  transaction<T>(work: (manager: EntityManager) => Promise<T>): Promise<T> {
+  transaction<T>(
+    work: (manager: EntityManager) => Promise<T>,
+    existingManager?: EntityManager,
+  ): Promise<T> {
+    if (existingManager) return work(existingManager);
+
     return this.dataSource.transaction(work);
   }
 
@@ -30,8 +49,9 @@ export class FinanceCategoryGroupService {
   async findPage(
     actorId: string,
     query: FinanceQueryDto,
+    manager: EntityManager = this.dataSource.manager,
   ): Promise<[FinanceCategoryGroup[], number]> {
-    const qb = this.dataSource
+    const qb = manager
       .getRepository(FinanceCategoryGroup)
       .createQueryBuilder('category_group')
       .where('category_group.user_id = :actorId', { actorId });
@@ -45,9 +65,10 @@ export class FinanceCategoryGroupService {
   async categoryCounts(
     actorId: string,
     groupIds: string[],
+    manager: EntityManager = this.dataSource.manager,
   ): Promise<Map<string, number>> {
     if (groupIds.length === 0) return new Map();
-    const rows = await this.dataSource
+    const rows = await manager
       .getRepository(FinanceCategoryGroupMembership)
       .createQueryBuilder('membership')
       .select('membership.category_group_id', 'id')

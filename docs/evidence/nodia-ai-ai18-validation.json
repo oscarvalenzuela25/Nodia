@@ -1,0 +1,206 @@
+{
+  "task": "AI-18",
+  "status": "implemented_and_verified_private_lab",
+  "scope": "human_exact_revision_confirmation_protocol_conditional_admission_no_native_effect",
+  "verified_at_utc": "2026-10-17T04:42:31.278Z",
+  "server": {
+    "full_suite": {
+      "tests": 1810,
+      "files": 172,
+      "passed": true,
+      "log": "nodia-server/.tmp/ai18-server-tests.log"
+    },
+    "build": {
+      "passed": true
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3
+    }
+  },
+  "sql": {
+    "checks": 37,
+    "passed": true,
+    "configured_database_used": false,
+    "provider_calls": 0,
+    "business_writes": 0,
+    "evidence": "docs/evidence/nodia-ai-ai18-postgres-integration.json",
+    "regression_checks": 100,
+    "regression_evidence": [
+      "docs/evidence/nodia-ai-ai18-proposal-regression.json",
+      "docs/evidence/nodia-ai-ai18-events-regression.json",
+      "docs/evidence/nodia-ai-ai18-observation-regression.json"
+    ]
+  },
+  "runtime": {
+    "execution_admission_registry": "empty",
+    "production_confirmation_available": false,
+    "first_native_effect": "AI-19",
+    "execution_recovery": "AI-20",
+    "published_capabilities": 67,
+    "published_fragments": 27
+  },
+  "limitations": [
+    "No MCP preparation tool published",
+    "No real Gemini inference or business mutation executed by AI-18",
+    "Browser QA uses synthetic transport, with actual React components",
+    "Public production acceptance and further product operations remain separate stages"
+  ],
+  "client": {
+    "stage": "AI-18",
+    "observed_at_utc": "2026-10-17 04:42:15 UTC",
+    "workspace": "C:/Users/Oscar/Desktop/Nodia/nodia-client",
+    "evidence_kind": "Observed tool command results, not fabricated stdout log files",
+    "full_suite": {
+      "passed": true,
+      "tests": 1314,
+      "files": 200,
+      "command": "npm run test -- --maxWorkers=4",
+      "exit_code": 0,
+      "start_time_host_local": "01:37:30",
+      "duration_seconds": 230.82,
+      "modifications_during_final_run": false
+    },
+    "focused": {
+      "passed": true,
+      "tests": 109,
+      "files": 8,
+      "command": "npm run test -- src/test/modules/nodiaAi --maxWorkers=2",
+      "exit_code": 0,
+      "duration_seconds": 25.45
+    },
+    "typecheck": {
+      "passed": true,
+      "command": "npm run typecheck",
+      "exit_code": 0
+    },
+    "lint": {
+      "passed": true,
+      "command": "npm run lint",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    "build": {
+      "passed": true,
+      "command": "npm run build",
+      "exit_code": 0,
+      "vite_build_seconds": 15.62,
+      "transformed_modules": 2651,
+      "nodia_ai_chunk": {
+        "file": "NodiaAI-Czmlj0F3.js",
+        "bytes_reported_kb": 76.75,
+        "gzip_kb": 23.04
+      },
+      "warnings": [
+        "Existing chunks larger than 500 kB; plugin timing diagnostic from Babel transform"
+      ]
+    },
+    "previous_attempts": [
+      {
+        "command": "npm run test",
+        "passed": false,
+        "tests_passed": 1296,
+        "tests_failed": 1,
+        "files_passed": 199,
+        "files_failed": 1,
+        "failure": "Unrelated ProvidersTab contact lazy import exceeded findByText deadline while parallel builds/tests were active; DOM showed Cargando contactos…",
+        "isolated_retry": {
+          "command": "npm run test -- src/test/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.test.tsx src/test/modules/business/pages/BusinessDetail/components/ProvidersTab/ProvidersTab.test.tsx --maxWorkers=1",
+          "passed": true,
+          "tests": 28,
+          "files": 2,
+          "modified_unrelated_source_or_assertions": false
+        }
+      },
+      {
+        "passed": null,
+        "disposition": "Two in-flight full runs were stopped because review fixes invalidated their source snapshot; neither is final acceptance evidence."
+      }
+    ],
+    "verified_scope": [
+      "Backend-provided exact revision/hash review metadata controls scalar editing and actual confirmation availability.",
+      "CAS edits preserve money/IDs as strings, false and drafts after error; stable field identities survive reordered metadata.",
+      "Canonical 43-character base64url challenge validation; token and client_request_id stay in mounted human refs, outside query/mutation caches and persistent storage.",
+      "Human intent issues challenge then exact confirmation; double click is blocked; response loss uses explicit GET recovery followed by a separate explicit replay of the original payload if still ready.",
+      "Typed confirmation_invalid 403 preserves preview and clears nonce/replay state; actual access denial clears protected preview caches.",
+      "Typed revision_conflict and preconditions_changed feedback preserves durable state and requires review without automatic replay.",
+      "Conversation detail validates ExecutionStatus|null, revalidates active execution and blocks new composer/config interactions while queued/running/waiting_for_user/cancel_requested/unknown.",
+      "Production executor unavailability remains authoritative; available queued admission is exercised only in isolated synthetic UI fixtures."
+    ],
+    "browser_qa": {
+      "performed_by": "root agent through CUA",
+      "scope": "Root owns screenshots/evidence; this report does not claim browser or Gemini checks performed by this subagent."
+    },
+    "operational_changes_by_this_subagent": "None to VM, services, production data, models, providers, MCP publication or documentation approval."
+  },
+  "lab": {
+    "activation": "docs/evidence/nodia-ai-ai18-lab-activation.json",
+    "read_only_state": "docs/evidence/nodia-ai-ai18-live-state.json",
+    "stage": "AI-18",
+    "scope": "read_only_configured_private_lab",
+    "observed_at_utc": "2026-10-17T04:43:06.669Z",
+    "migrations": 23,
+    "tables": 18,
+    "columns": 239,
+    "challenges": 0,
+    "executions": 0,
+    "execution_steps": 0,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "knowledge_release": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "production_executor_registrations": 0,
+    "native_business_execution_enabled": false
+  },
+  "delivery_archive_sha256": "25d43cdf6506ddc22ea8bac3426f569133aa528f5d865047281b610a2eee579c",
+  "browser": "docs/evidence/nodia-ai-ai18-browser-qa.json",
+  "artifacts": [
+    {
+      "file": "docs/mvp/64-nodia-ai-ai18-human-confirmation.md",
+      "sha256": "980c383e47c309dd591b6c4de455a75414d9a0e6b0e9907f6b75bdb11d125a77"
+    },
+    {
+      "file": "docs/architecture/decisions/ADR-045-nodia-ai-human-confirmation-admission.md",
+      "sha256": "d2057649353431bb2578c833db814197c6a35ead58f71c2726ae11423d85d64a"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "124ad1ca365d3697f502a49f46943ee3d13e2e8b6b8ffe0f1129a979af7dd70e"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-coordination-api.json",
+      "sha256": "3ffbb1d88df3c2f7905010512f2232fbe1a49df95756e86eaf10af9ee961c319"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-data-model.json",
+      "sha256": "a530a8353c27e5efcf233922e572437dc708b1007e73f28085e788fef05b1efa"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-data-model.dbml",
+      "sha256": "2345030ae5b2fd08cc9027ba0fdcbc07499a3884367f063e8e2040fe0925d456"
+    },
+    {
+      "file": "nodia-server/src/migrations/1792500000000-CreateNodiaAiConfirmationPersistence.ts",
+      "sha256": "3cf127179c8e2c370b9087de30bedd3f58f169fff19680efee0dbb63d7410d80"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai18.integration.mjs",
+      "sha256": "f8c4633e68f9de2bf4afa9e5d963b9d4fda71f6949a2f1c8276f78f3d55bd276"
+    },
+    {
+      "file": "outputs/nodia-ai-ai18-gate-synthetic.png",
+      "sha256": "f7807c773432fdc7b235e5866d2b018e50a602a2408a31d60cbb02e0c31f742a"
+    },
+    {
+      "file": "outputs/nodia-ai-ai18-confirmed-synthetic.png",
+      "sha256": "270dfbd19ad8ea664423765da49e016d7c1659223642a0c839fbc77dcd85e1c7"
+    },
+    {
+      "file": "outputs/nodia-ai-ai18-mobile-synthetic.png",
+      "sha256": "11ec2d3f0435c5a122474b6878f762b727bdd5f1fd11ea5c7793c17d5355a04c"
+    }
+  ]
+}

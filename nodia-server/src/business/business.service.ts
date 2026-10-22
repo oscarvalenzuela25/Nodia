@@ -5,7 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, type EntityManager } from 'typeorm';
+import { lockAuthority } from '../authorization/authority-transaction.js';
 import { Business } from './entities/business.entity.js';
 import { BusinessCollaborator } from './entities/business-collaborator.entity.js';
 import { BusinessAction } from '../business-action/entities/business-action.entity.js';
@@ -39,9 +40,9 @@ export class BusinessService {
     private readonly translationService: TranslationService,
   ) {}
 
-  private async isSuperAdmin(userId?: string): Promise<boolean> {
+  private async isSuperAdmin(userId?: string, manager?: EntityManager): Promise<boolean> {
     if (!userId) return false;
-    const count = await this.userRoleRepository
+    const count = await (manager?.getRepository(UserRole) ?? this.userRoleRepository)
       .createQueryBuilder('ur')
       .innerJoin('ur.role', 'r')
       .where('ur.user_id = :userId', { userId: String(userId) })
@@ -55,6 +56,7 @@ export class BusinessService {
   async findMyBusinesses(
     userId: string,
     { page = 1, limit = 10, all = false, includes = true, all_businesses = false, q }: GetBusinessesDto,
+    includeSummary = true,
   ): Promise<GetBusinessesResponse> {
     const isSuper = await this.isSuperAdmin(userId);
     const qb = this.businessRepository.createQueryBuilder('business');
@@ -76,9 +78,12 @@ export class BusinessService {
     }
 
     applyRansack(qb, q, 'business', RANSACK_POLICIES.business);
+    if (!/^id(?:\s|$)/i.test(q?.s?.trim() ?? '')) qb.addOrderBy('business.id', 'ASC');
 
     const formatBusinesses = async (businesses: Business[]): Promise<Business[]> => {
       if (businesses.length === 0) return [];
+      // Scoped readers need the same membership rules without unbounded secondary summaries.
+      if (!includeSummary) return this.translationService.attachTranslations('businesses', businesses);
 
       const businessIds = businesses.map((b) => b.id);
 
@@ -215,10 +220,14 @@ export class BusinessService {
     };
   }
 
-  async findOne(id: string, userId?: string): Promise<Business> {
+  async findOne(id: string, userId?: string, includeSummary = true): Promise<Business> {
+    // NodiaAI scoped readers reuse a transaction manager. Serialize membership
+    // observations with owner/collaborator writes before reading their state.
+    if (this.businessRepository.manager?.queryRunner?.isTransactionActive)
+      await this.businessRepository.manager.query('SELECT id FROM businesses WHERE id=$1 FOR SHARE', [id]);
     const rawBusiness = await this.businessRepository.findOne({
       where: { id },
-      relations: { owner: true },
+      relations: includeSummary ? { owner: true } : undefined,
     });
     if (!rawBusiness) {
       throw new NotFoundException(`Business with ID "${id}" not found`);
@@ -248,6 +257,8 @@ export class BusinessService {
       business.user_position = isOwner ? 'Owner' : (isSuper ? 'Super Admin' : (collaborator?.position ?? null));
       business.user_action_ids = isOwner || isSuper ? [] : (collaborator?.action_ids ?? []);
     }
+
+    if (!includeSummary) return business;
 
     const [productsCount, collaborators, allProviders] = await Promise.all([
       this.productRepository.count({
@@ -288,120 +299,76 @@ export class BusinessService {
     return business;
   }
 
-  async create(userId: string, createBusinessDto: CreateBusinessDto): Promise<Business> {
+  async create(userId: string, createBusinessDto: CreateBusinessDto, manager?: EntityManager): Promise<Business> {
+    if (!manager) {
+      const saved = await this.businessRepository.manager.transaction((tx) => this.create(userId, createBusinessDto, tx));
+      return this.findOne(saved.id, userId);
+    }
+    await lockAuthority(manager);
+    const repository = manager.getRepository(Business);
     const { translates, ...businessData } = createBusinessDto;
-    const business = this.businessRepository.create({
+    const business = repository.create({
       ...businessData,
       has_description: translates?.some(({ key, es, en }) =>
         ['description', 'comment'].includes(key) && Boolean(es?.trim() || en?.trim()),
       ) ?? false,
       owner_id: String(userId),
     });
-
-    const saved = await this.businessRepository.save(business);
-
-    if (translates && translates.length > 0) {
-      await this.translationService.saveTranslations('businesses', saved.id, translates);
-    }
-
-    return this.findOne(saved.id, userId);
+    const saved = await repository.save(business);
+    if (translates?.length) await this.translationService.updateTranslations('businesses', saved.id, translates, manager);
+    return this.translationService.attachTranslationsToOne('businesses', saved, manager);
   }
 
-  async update(
-    id: string,
-    userId: string,
-    updateBusinessDto: UpdateBusinessDto,
-  ): Promise<Business> {
-    const business = await this.findOne(id);
-    const isSuper = await this.isSuperAdmin(userId);
-
-    if (String(business.owner_id) !== String(userId) && !isSuper) {
-      throw new ForbiddenException('Only the business owner can update business details');
+  async update(id: string, userId: string, updateBusinessDto: UpdateBusinessDto, manager?: EntityManager): Promise<Business> {
+    if (!manager) {
+      await this.businessRepository.manager.transaction((tx) => this.update(id, userId, updateBusinessDto, tx));
+      return this.findOne(id, userId);
     }
-
+    await lockAuthority(manager);
+    const repository = manager.getRepository(Business);
+    const business = await repository.findOne({ where: { id }, lock: { mode: 'pessimistic_write' } });
+    if (!business) throw new NotFoundException(`Business with ID "${id}" not found`);
+    if (String(business.owner_id) !== String(userId) && !(await this.isSuperAdmin(userId, manager)))
+      throw new ForbiddenException('Only the business owner can update business details');
     const { translates, ...rest } = updateBusinessDto;
     Object.assign(business, rest);
-
     if (translates !== undefined) {
       business.has_description = translates.some(({ key, es, en }) =>
         ['description', 'comment'].includes(key) && Boolean(es?.trim() || en?.trim()),
       );
-      await this.translationService.updateTranslations('businesses', id, translates);
+      await this.translationService.updateTranslations('businesses', id, translates, manager);
     }
-
-    await this.businessRepository.save(business);
-    return this.findOne(id, userId);
+    await repository.save(business);
+    return this.translationService.attachTranslationsToOne('businesses', business, manager);
   }
 
-  async assignCollaborators(
-    businessId: string,
-    userId: string,
-    dto: AssignCollaboratorsDto,
-  ): Promise<BusinessCollaborator[]> {
-    const business = await this.findOne(businessId);
-    const isSuper = await this.isSuperAdmin(userId);
-
-    if (String(business.owner_id) !== String(userId) && !isSuper) {
+  async assignCollaborators(businessId: string, userId: string, dto: AssignCollaboratorsDto, manager?: EntityManager): Promise<BusinessCollaborator[]> {
+    if (!manager) return this.businessRepository.manager.transaction((tx) => this.assignCollaborators(businessId, userId, dto, tx));
+    await lockAuthority(manager);
+    const business = await manager.getRepository(Business).findOne({ where: { id: businessId }, lock: { mode: 'pessimistic_write' } });
+    if (!business) throw new NotFoundException(`Business with ID "${businessId}" not found`);
+    if (String(business.owner_id) !== String(userId) && !(await this.isSuperAdmin(userId, manager)))
       throw new ForbiddenException('Only the business owner can manage collaborators');
-    }
-
-    // Validar que todas las action_ids pertenezcan a business_actions existentes
-    const allActionIds = Array.from(
-      new Set(dto.users.flatMap((u) => u.action_ids ?? [])),
-    );
-
-    if (allActionIds.length > 0) {
-      const existingActions = await this.businessActionRepository.find({
-        where: { id: In(allActionIds), is_active: true },
-      });
+    const collaborators = manager.getRepository(BusinessCollaborator);
+    const allActionIds = Array.from(new Set(dto.users.flatMap((u) => u.action_ids ?? [])));
+    if (allActionIds.length) {
+      const existingActions = await manager.getRepository(BusinessAction).find({ where: { id: In(allActionIds), is_active: true } });
       const existingIds = new Set(existingActions.map((a) => String(a.id)));
       const invalidIds = allActionIds.filter((id) => !existingIds.has(String(id)));
-
-      if (invalidIds.length > 0) {
-        throw new BadRequestException(
-          `Invalid or inactive business action IDs: ${invalidIds.join(', ')}`,
-        );
-      }
+      if (invalidIds.length) throw new BadRequestException(`Invalid or inactive business action IDs: ${invalidIds.join(', ')}`);
     }
-
     for (const item of dto.users) {
-      const existingCollab = await this.collaboratorRepository.findOne({
-        where: {
-          business_id: businessId,
-          user_id: String(item.user_id),
-        },
-      });
-
-      if (!item.action_ids || item.action_ids.length === 0) {
-        // Desasignar / inactivar colaborador
-        if (existingCollab) {
-          existingCollab.is_active = false;
-          existingCollab.action_ids = [];
-          await this.collaboratorRepository.save(existingCollab);
-        }
+      const existing = await collaborators.findOne({ where: { business_id: businessId, user_id: String(item.user_id) } });
+      if (!item.action_ids?.length) {
+        if (existing) { existing.is_active = false; existing.action_ids = []; await collaborators.save(existing); }
+      } else if (existing) {
+        existing.position = item.position !== undefined ? item.position : existing.position;
+        existing.action_ids = item.action_ids; existing.is_active = true;
+        await collaborators.save(existing);
       } else {
-        // Asignar o actualizar colaborador
-        if (existingCollab) {
-          existingCollab.position = item.position !== undefined ? item.position : existingCollab.position;
-          existingCollab.action_ids = item.action_ids;
-          existingCollab.is_active = true;
-          await this.collaboratorRepository.save(existingCollab);
-        } else {
-          const newCollab = this.collaboratorRepository.create({
-            business_id: businessId,
-            user_id: String(item.user_id),
-            position: item.position ?? null,
-            action_ids: item.action_ids,
-            is_active: true,
-          });
-          await this.collaboratorRepository.save(newCollab);
-        }
+        await collaborators.save(collaborators.create({ business_id: businessId, user_id: String(item.user_id), position: item.position ?? null, action_ids: item.action_ids, is_active: true }));
       }
     }
-
-    return this.collaboratorRepository.find({
-      where: { business_id: businessId, is_active: true },
-      relations: { user: true },
-    });
+    return collaborators.find({ where: { business_id: businessId, is_active: true }, relations: { user: true } });
   }
 }

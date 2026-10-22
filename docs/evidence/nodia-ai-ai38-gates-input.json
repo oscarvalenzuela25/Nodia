@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "environment": {
+    "environment_id": null,
+    "package_manifest_sha256": null
+  },
+  "observations": [
+    {
+      "gate_id": "published_domain_acceptance",
+      "status": "unknown",
+      "scope": "historical",
+      "reason": "C05 accumulated 4/7 capabilities; 77 other candidates remain unpublished. No capability is accepted for a new AI-38 runtime by inheriting this history.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
+          "sha256": "25f3ee4a8a82f778522c55ff88922905acc6a22d40f2e74617ba6791baf236c4"
+        }
+      ]
+    },
+    {
+      "gate_id": "package_integrity",
+      "status": "unknown",
+      "scope": "historical",
+      "reason": "AI-37 candidate04 remains immutable. Its bde release predates a documentation-only provenance change to c703; a fresh official build/package must pin its actual current release.",
+      "evidence": [
+        {
+          "path": "docs/evidence/nodia-ai-ai37-documentation-finalization.json",
+          "sha256": "66b47a546cc640237f491f9d0232569d0590f0144773061a99d469f015f8d281"
+        }
+      ]
+    }
+  ],
+  "historical_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
+      "sha256": "25f3ee4a8a82f778522c55ff88922905acc6a22d40f2e74617ba6791baf236c4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-validation.json",
+      "sha256": "6837001444fc6230c6f8b35dc7a4dc11868b485d0b70d392292ac17c55fd625d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-documentation-finalization.json",
+      "sha256": "66b47a546cc640237f491f9d0232569d0590f0144773061a99d469f015f8d281"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-operational-state.json",
+      "sha256": "beaced2473754a857b16129f9be5a0bf01d1b4f0a22e8dedcbb6c48e0536a30d"
+    }
+  ],
+  "excluded_modes": [
+    "api_key",
+    "openai_codex_agentic"
+  ],
+  "knowledge_provenance_note": "The AI-37 addendum records a source_hash-only change, with identical approved content, capability contracts, bindings and fragments. A fresh build/package pin is required; no new knowledge approval or capability publication follows from that source-only hash change. Subsequent source changes must be classified from their actual diff."
+}

@@ -1,0 +1,37 @@
+{
+  "stage": "AI-38",
+  "scope": "offline_R04_operational_continuation_controls",
+  "status": "passed",
+  "checks": [
+    "pinned controller helpers loaded without historical entry point or operations",
+    "backup work unit and reporting source belong exclusively to R04",
+    "cleanup uses R04 rollback and wrapper provenance",
+    "modified source rejected before executing controller_r04",
+    "modified source rejected before executing backup_r04",
+    "modified source rejected before executing cleanup_r04",
+    "backup dry-run performs no process or filesystem mutations",
+    "cleanup check performs no process or filesystem mutations",
+    "fresh completed encrypted isolated restore accepted",
+    "backup guard rejects status",
+    "backup guard rejects configured_database_backup",
+    "backup guard rejects disposable_restore_verified",
+    "backup guard rejects original_database_restored",
+    "backup guard rejects encryption",
+    "backup guard rejects backup_retained_for_closed_drill",
+    "backup guard rejects passphrase_retained_privately",
+    "backup guard rejects owned_containers_remaining",
+    "backup guard rejects expiry_timer_active_after",
+    "backup guard rejects source_snapshot_finished_at_utc",
+    "backup guard rejects backup_expires_at_utc",
+    "snapshot preceding new quiescence rejected"
+  ],
+  "checks_passed": 21,
+  "VM_operations": 0,
+  "provider_requests": 0,
+  "configured_database_writes": 0,
+  "sources": {
+    "nodia-ai-ai38-adoption-r04.py": "44201c7d0f5080dd40d926307dbf8d5a045039576466cc6bc73c9eb7fc6bddb1",
+    "nodia-ai-ai38-adoption-backup-r04.py": "d722a53f47f952de205a5b3d1beea4bc7d47539350d72f9767bb7271f77b42f6",
+    "nodia-ai-ai38-adoption-backup-cleanup-r04.py": "d0461d16017b19f3d8e41705e5c674d314916e9169bbe48baeccdc34105052b1"
+  }
+}

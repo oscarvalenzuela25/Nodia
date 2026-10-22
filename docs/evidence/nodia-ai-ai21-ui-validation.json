@@ -1,0 +1,61 @@
+{
+  "task": "AI-21",
+  "scope": "isolated_synthetic_client_transport_no_provider_no_business_database",
+  "verified_at_utc": "2026-10-17T05:53:47.428640+00:00",
+  "origin": "http://127.0.0.1:5194",
+  "checks": [
+    "Spanish dark desktop derived initial movement preserves exact bigint and translates type/status",
+    "Description draft and focus survive resizing to 390x844",
+    "English light 390x844 group deletion warns that categories and movements remain",
+    "Mobile document clientWidth and scrollWidth both380: no horizontal overflow",
+    "Spanish historical obligation receipt and refresh keep the original reference without claiming record existence"
+  ],
+  "viewports": [
+    [
+      1050,
+      892
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "mobile_document_metrics": {
+    "clientWidth": 380,
+    "scrollWidth": 380
+  },
+  "real_user_tab_5174_modified": false,
+  "temporary_tab_closed": true,
+  "viewport_override_reset": true,
+  "qa_service_stopped": true,
+  "screenshots": [
+    {
+      "file": "docs/evidence/nodia-ai-ai21/desktop-es-derived.jpg",
+      "width": 1050,
+      "height": 892,
+      "sha256": "0921ac3a3c294454b23ac3d9911c012520fc7cbab5ae4230715c76294b133747"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai21/desktop-es-receipt.jpg",
+      "width": 1050,
+      "height": 892,
+      "sha256": "e9c4892345a9cb565a73a0d805c1a9d28d40411a306cfd8df7c665e154d58a29"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai21/mobile-en-delete-preview.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "546e0f8a498a70a188a0a7a2fd0658e6a4017cd2d67af3d8ee0b099879a859c7"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai21/mobile-es-editor.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "97b2543a0d1cb925e726138bb9cbdde58d7547f6e972c1e026b0a9adf5cd7612"
+    }
+  ],
+  "limitations": [
+    "Synthetic preview and receipt only; no Gemini request or real financial mutation",
+    "No physical mobile keyboard or production acceptance asserted"
+  ]
+}

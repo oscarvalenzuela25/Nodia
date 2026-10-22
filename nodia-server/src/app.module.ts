@@ -31,6 +31,8 @@ import { FinanceObligationModule } from './finance-obligation/finance-obligation
 import { FinanceMovementModule } from './finance-movement/finance-movement.module.js';
 import { FinanceOverviewModule } from './finance-overview/finance-overview.module.js';
 import { RentalModule } from './rental-common/rental.module.js';
+import { NodiaAiModule } from './nodia-ai/nodia-ai.module.js';
+import { NodiaAiPreferenceModule } from './nodia-ai-preference/nodia-ai-preference.module.js';
 
 @Module({
   imports: [
@@ -58,6 +60,8 @@ import { RentalModule } from './rental-common/rental.module.js';
     FinanceMovementModule,
     FinanceOverviewModule,
     RentalModule,
+    NodiaAiModule,
+    NodiaAiPreferenceModule,
   ],
   controllers: [AppController],
   providers: [

@@ -6,6 +6,10 @@ import { User } from '../entities/user.entity.js';
 export class UserFilterDto implements RansackFilter<User> {
   @IsOptional()
   @IsString()
+  id_eq?: string;
+
+  @IsOptional()
+  @IsString()
   name_cont?: string;
 
   @IsOptional()

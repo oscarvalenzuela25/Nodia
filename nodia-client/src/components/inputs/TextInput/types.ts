@@ -11,6 +11,8 @@ export type TextInputProps = {
   disabled?: boolean;
   error?: boolean;
   helperText?: ReactNode;
+  endAdornment?: ReactNode;
+  "aria-describedby"?: string;
   id?: string;
   name?: string;
   fullWidth?: boolean;

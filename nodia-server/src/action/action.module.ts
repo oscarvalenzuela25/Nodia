@@ -1,3 +1,4 @@
+import { SaveActionUseCase } from './use-case/save-action.use-case.js';
 import { Module } from '@nestjs/common';
 import { ActionService } from './action.service.js';
 import { ActionController } from './action.controller.js';
@@ -12,6 +13,7 @@ import { TranslationModule } from '../translation/translation.module.js';
 @Module({
   controllers: [ActionController],
   providers: [
+    SaveActionUseCase,
     ActionService,
     GetAllActionsUseCase,
     CreateActionUseCase,
@@ -19,5 +21,11 @@ import { TranslationModule } from '../translation/translation.module.js';
     DeleteActionUseCase,
   ],
   imports: [TypeOrmModule.forFeature([Action]), TranslationModule],
+  exports: [
+    ActionService,
+    GetAllActionsUseCase,
+    SaveActionUseCase,
+    DeleteActionUseCase,
+  ],
 })
 export class ActionModule {}

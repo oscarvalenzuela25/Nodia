@@ -1,0 +1,3750 @@
+{
+  "date": "2026-10-18",
+  "status": "m1_and_ai17_ai18_ai19_m2_subset_implemented_full_v1_proposed",
+  "sourceDocument": "42-nodia-ai-erd.md",
+  "identity": "UUIDv4 for new public entities; native domain identities preserved",
+  "retention": {
+    "chatDays": 90,
+    "basis": "last_owner_message_at",
+    "emptyChatBasis": "created_at",
+    "attachmentsAndTranscripts": "purge_with_chat",
+    "acceptedPreferences": "independent_until_explicit_deletion",
+    "minimalReceipts": "AI-04/50: purge_settled_with_chat; unresolved_minimal_until_reconciled_then_delete; no_additional_archive",
+    "browserStorage": "optional_cache_never_authoritative"
+  },
+  "execution": {
+    "durableStore": "postgresql",
+    "scheduler": "typed_jobs_with_short_claim_transactions",
+    "notifications": "postgresql_event_outbox_optional_accelerators",
+    "externalUncertainty": "reconcile_before_replay",
+    "implemented": false,
+    "workflowRepresentation": "Ordered proposal_steps with validated public_step.depends_on and output_bindings, no separate relational edge table; sequential stop-on-failure",
+    "knowledgeStorage": "Versioned build artifact loaded by Server; only catalog version and selected document hash manifest persisted per run; no product knowledge tables or vectors",
+    "localFinancialExecution": {
+      "stage": "AI-20",
+      "status": "implemented",
+      "scope": "single_local_finance_movement",
+      "receipt": "transactional_witness",
+      "recovery": "shared_sql_locks_then_receipt_observation_no_native_replay",
+      "resume": "human_current_session_same_original_identity_and_preconditions",
+      "controlReceipt": "latest_only_bounded_job_recovery_descriptor",
+      "migrationsAdded": 0
+    },
+    "localDependentExecution": {
+      "stage": "AI-23",
+      "status": "implemented",
+      "scope": "ordered_individual_local_sql_operations",
+      "maxSteps": 8,
+      "typedBindings": [
+        "nodia_providers_prepare_create.id -> nodia_provider_contacts_prepare_create.provider_id"
+      ],
+      "commitBoundary": "one_native_effect_receipt_and_next_step_unlock_per_transaction",
+      "firstBinding": "immutable_execution_steps.bound_command_with_hash_before_effect",
+      "partialFailure": "preserve_completed_prefix_stop_remaining_steps",
+      "resume": "explicit_human_same_identity_payload_and_current_authority",
+      "materialCorrection": "new_pending_suffix_proposal_hash_confirmation_and_prior_execution_id",
+      "retention": "clear_payload_when_source_step_is_purged_reconcile_unknown_without_replay",
+      "migrationsAdded": 1,
+      "tablesAdded": 0,
+      "existingColumnsAdded": 2
+    },
+    "localRentalConfigurationExecution": {
+      "stage": "AI-24",
+      "scope": "six_native_property_collaborator_policy_create_update_operations",
+      "receipt": "transactional_witness_same_manager_as_native_rental_operation_and_audit",
+      "newTables": 0,
+      "newColumns": 0,
+      "newMigrations": 0,
+      "noPhysicalDelete": true,
+      "evidenceDocument": "docs/mvp/70-nodia-ai-ai24-rental-configuration.md",
+      "sourceReconciliation": {
+        "file": "nodia-server/src/rental-common/rental-transaction.service.ts",
+        "previousSha256": "2b2d85943b35a838ad93d7accaa1d5bd4811270e3d1e49715964534b2bdcd701",
+        "currentSha256": "55ee6443bbf671183376c5d28ea9ee55e3555250628b37907f43c0f04647767f",
+        "reason": "AI-24 preserves inherited manager transaction ownership and adds bounded native deadlines and shared error mapping; no schema change"
+      }
+    },
+    "localRentalReservationExecution": {
+      "implementedIn": "AI-25",
+      "nativeOperations": 6,
+      "resource": "rental_reservations",
+      "operations": [
+        "create",
+        "update",
+        "confirm",
+        "start",
+        "complete",
+        "cancel"
+      ],
+      "newTables": 0,
+      "newColumns": 0,
+      "newMigrations": 0,
+      "advisoryAvailabilityCreatesHold": false,
+      "createRegistersPayment": false,
+      "cancellationRegistersRefund": false,
+      "sourceDocument": "docs/mvp/71-nodia-ai-ai25-rental-reservation-lifecycle.md",
+      "note": "Native lifecycle journal, effect, audit and NodiaAI receipt share the caller transaction. No duplicate reservation or availability model; monetary writers remain AI-26."
+    },
+    "localRentalMoneyOccupancyPreparation": {
+      "implementedIn": "AI-26",
+      "nativeOperations": 10,
+      "resources": [
+        "rental_payments",
+        "rental_expenses",
+        "rental_blocks",
+        "rental_turnovers"
+      ],
+      "newTables": 0,
+      "newColumns": 0,
+      "newMigrations": 0,
+      "physicalDelete": false,
+      "nativeFamilyCoverage": {
+        "endpointOperations": 44,
+        "publishedReadPorts": 21,
+        "internalWritePorts": 22,
+        "nativeRecoveryCoordinator": 1
+      },
+      "sourceDocument": "docs/mvp/72-nodia-ai-ai26-rental-money-occupancy-preparation.md",
+      "note": "Native payment/refund, expenses, blocks and turnover records remain in their domain tables. Reuse intent/revision and atomic receipt storage; no new money ledger, hold table or generic recovery key tool."
+    },
+    "localCoreAdministration": {
+      "implementedIn": "AI-27",
+      "nativeOperations": 17,
+      "resources": [
+        "users",
+        "roles",
+        "actions",
+        "business_actions",
+        "modules",
+        "module_groups"
+      ],
+      "newTables": 0,
+      "newColumns": 0,
+      "newMigrations": 0,
+      "sourceDocument": "docs/mvp/73-nodia-ai-ai27-core-administration.md",
+      "note": "Exclusive authority transaction inherited by native writers; atomic existing execution receipt. No new ledger or permission store."
+    },
+    "localAiProviderConfiguration": {
+      "implementation": "AI-28",
+      "document": "74-nodia-ai-ai28-provider-configuration.md",
+      "nativeOperations": 4,
+      "resources": [
+        "ai_providers",
+        "ai_provider_catalog"
+      ],
+      "schemasAdded": [],
+      "newTables": 0,
+      "newColumns": 0,
+      "newMigrations": 0,
+      "transaction": "Existing execution step and minimal receipt share the native manager; authority SHARE or the existing exclusive frontier for mixed Core workflows; global provider defaults and catalogs locked consistently.",
+      "secretAndRemoteOperations": "Credentials, login, logout and remote model synchronization keep separate safe/external protocols; no provider network call inside a local SQL effect.",
+      "publication": "Internal only; MCP prepare/write publication and real Gemini write acceptance remain gated."
+    }
+  },
+  "externalTables": [
+    {
+      "name": "users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": []
+    },
+    {
+      "name": "auth_sessions",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "public_id",
+          "type": "uuid",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "public_id"
+        ]
+      ]
+    },
+    {
+      "name": "ai_providers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": []
+    }
+  ],
+  "tables": [
+    {
+      "name": "nodia_ai_conversations",
+      "purpose": "Canonical private chat, selection and expiration",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "owner_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "client_request_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "is_pinned",
+          "type": "boolean",
+          "nullable": false
+        },
+        {
+          "name": "is_archived",
+          "type": "boolean",
+          "nullable": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "retention_epoch",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "selected_connection_id",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "selected_mode",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "selected_model_id",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "active_job_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "next_message_seq",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "next_event_seq",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "last_owner_message_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "lifecycle",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "creation_request_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "selected_effort_id",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "routing_revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "routing_enabled",
+          "type": "boolean",
+          "nullable": false
+        },
+        {
+          "name": "routing_target_selection",
+          "type": "jsonb",
+          "nullable": true,
+          "note": "Closed RoutingTarget; same configured connection, exact Agentic model/effort and verified configuration/session generation; not an availability assertion"
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "owner_id",
+          "client_request_id"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "lifecycle",
+          "values": [
+            "active",
+            "expiring"
+          ]
+        },
+        "revision > 0; retention_epoch > 0; sequence counters >= 0",
+        "Mode/model are both null or both nonempty; nonnull connection requires complete selection; deleted connection can leave unavailable historical mode/model",
+        "routing_revision > 0; routing_enabled implies nonnull typed target; disabled does not erase prior consent target"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "owner_id",
+            "is_archived",
+            "is_pinned",
+            "updated_at",
+            "id"
+          ]
+        },
+        {
+          "columns": [
+            "expires_at",
+            "id"
+          ],
+          "where": "lifecycle = 'active'"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_messages",
+      "purpose": "Canonical message with ordered parts and scope provenance",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "seq",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "author_id",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "client_message_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "source_scope_manifest",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "sealed_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "input_hash",
+          "type": "char(64)",
+          "nullable": true
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "conversation_id"
+        ],
+        [
+          "conversation_id",
+          "seq"
+        ],
+        [
+          "conversation_id",
+          "author_id",
+          "client_message_id"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "role",
+          "values": [
+            "user",
+            "assistant"
+          ]
+        },
+        {
+          "key": "status",
+          "values": [
+            "streaming",
+            "sealed",
+            "partial"
+          ]
+        },
+        "seq > 0; user message requires author_id and client_message_id",
+        "role=user requires non-null input_hash; retries compare original canonical input before accepting same client_message_id"
+      ],
+      "indexes": []
+    },
+    {
+      "name": "nodia_ai_attachments",
+      "purpose": "Private durable upload intent and one revisable interpretation per immutable object generation",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "client_request_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "request_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "retention_epoch",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "file_name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "storage_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "generation",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "reserved_bytes",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "byte_count",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "media_type",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "content_hash",
+          "type": "char(64)",
+          "nullable": true
+        },
+        {
+          "name": "page_count",
+          "type": "integer",
+          "nullable": true
+        },
+        {
+          "name": "duration_seconds",
+          "type": "double precision",
+          "nullable": true
+        },
+        {
+          "name": "interpretation_text",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "interpretation_revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "interpretation_reviewed",
+          "type": "boolean",
+          "nullable": false
+        },
+        {
+          "name": "interpretation_origin",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "processing_started_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "write_until_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "conversation_id",
+          "client_request_id"
+        ],
+        [
+          "conversation_id",
+          "id"
+        ],
+        [
+          "storage_key"
+        ],
+        [
+          "generation"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "kind",
+          "values": [
+            "image",
+            "pdf",
+            "audio"
+          ]
+        },
+        {
+          "key": "state",
+          "values": [
+            "uploading",
+            "ready",
+            "rejected",
+            "expired"
+          ]
+        },
+        "Ready requires actual byte count, MIME and SHA; interpretation null means unknown, never an invented transcript",
+        "Immutable review snapshot on first message binding; cleanup identity uses existing jobs without duplicating content",
+        "Reservations and deadlines bound pending I/O; owner derives from parent chat"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "expires_at",
+            "id"
+          ],
+          "where": "state='uploading'"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_message_parts",
+      "purpose": "Typed text/file parts with same-chat referential integrity",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "message_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "part_index",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "text",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "attachment_id",
+          "type": "uuid",
+          "nullable": true
+        }
+      ],
+      "primaryKey": [
+        "message_id",
+        "part_index"
+      ],
+      "unique": [],
+      "checks": [
+        {
+          "key": "kind",
+          "values": [
+            "text",
+            "image",
+            "pdf",
+            "audio"
+          ]
+        },
+        "part_index >= 0; text kind requires nonempty text/no attachment; file kind requires attachment_id and optional immutable reviewed text snapshot"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "attachment_id",
+            "conversation_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_context_snapshots",
+      "purpose": "Immutable compaction artifact anchored to canonical history",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "through_message_seq",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "source_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "summary",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "scope_manifest",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "builder_contract_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "conversation_id"
+        ],
+        [
+          "conversation_id",
+          "revision"
+        ]
+      ],
+      "checks": [
+        "revision > 0; through_message_seq >= 0"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "conversation_id",
+            "through_message_seq"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_adapter_states",
+      "purpose": "Whitelisted encrypted provider continuation state",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "connection_id",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "mode",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "model_id",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "generation",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "state_revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "context_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "state_ciphertext",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "encryption_key_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "adapter_contract_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "conversation_id"
+        ],
+        [
+          "conversation_id",
+          "connection_id",
+          "mode",
+          "model_id",
+          "generation"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "mode",
+          "values": [
+            "api_key",
+            "token_plan_web",
+            "token_plan_agentic"
+          ]
+        },
+        {
+          "key": "status",
+          "values": [
+            "valid",
+            "invalid",
+            "unknown"
+          ]
+        },
+        "generation > 0; state_revision > 0; nonempty exact model_id",
+        "Connection null makes historical state invalid; no lookup/resume by null connection"
+      ],
+      "indexes": [],
+      "activation": {
+        "kind": "conditional",
+        "gate": "Verified adapter requires durable opaque continuation; add this table and runs.adapter_state_id FK only after evidence. Canonical history remains authoritative."
+      }
+    },
+    {
+      "name": "nodia_ai_runs",
+      "purpose": "Admitted inference turn with frozen configuration",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "user_message_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "assistant_message_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "connection_id",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "selection_snapshot",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "catalog_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "policy_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "context_snapshot_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "adapter_state_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "input_through_seq",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "phase",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "deadline_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "error_code",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "retention_epoch",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "context_manifest",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Versioned selected knowledge document IDs/revisions/hashes, catalog release hash and authorized source references; not complete Markdown, prompts or runtime secrets"
+        },
+        {
+          "name": "routing_snapshot",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Closed immutable RoutingSnapshot; base selection_snapshot remains unchanged"
+        },
+        {
+          "name": "policy_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "budget_snapshot",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Closed RunBudgetSnapshot from admitted policy release, not provider quota"
+        },
+        {
+          "name": "tool_calls_used",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "mcp_rpc_messages_used",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "provider_dispatches_used",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "compactions_used",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "delegations_used",
+          "type": "integer",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "conversation_id"
+        ],
+        [
+          "user_message_id"
+        ],
+        [
+          "assistant_message_id"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "state",
+          "values": [
+            "queued",
+            "running",
+            "waiting_for_user",
+            "completed",
+            "failed",
+            "cancel_requested",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "revision > 0; context is frozen per turn",
+        "context_manifest follows registered bounded schema and catalog release; selected explanations and cached context reauthorized before provider dispatch",
+        "Budget counters >=0 and <=corresponding frozen budget_snapshot limits; reservations before dispatch under fence/epoch are AI-11/12"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "conversation_id",
+            "created_at",
+            "id"
+          ]
+        },
+        {
+          "columns": [
+            "conversation_id"
+          ],
+          "unique": true,
+          "where": "state IN ('queued','running','cancel_requested','unknown')"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_tool_calls",
+      "purpose": "Validated adapter call and public result within one turn",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "run_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "adapter_call_id",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "tool_name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "contract_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "arguments_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "arguments",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "public_result",
+          "type": "jsonb",
+          "nullable": true
+        },
+        {
+          "name": "scope_manifest",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamptz",
+          "nullable": true
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "conversation_id"
+        ],
+        [
+          "run_id",
+          "adapter_call_id"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "state",
+          "values": [
+            "received",
+            "validated",
+            "completed",
+            "rejected",
+            "unknown"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "run_id",
+            "created_at"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_drafts",
+      "purpose": "Partial preparation separate from executable command",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "tool_call_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "tool_name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "catalog_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "scope",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "partial_command",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "clarifications",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "claimed_proposal_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "conversation_id"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "state",
+          "values": [
+            "incomplete",
+            "ready",
+            "claimed",
+            "cancelled",
+            "invalidated"
+          ]
+        },
+        "revision > 0; claimed requires claimed_proposal_id"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "conversation_id",
+            "state",
+            "updated_at"
+          ]
+        },
+        {
+          "columns": [
+            "tool_call_id",
+            "conversation_id"
+          ],
+          "where": "tool_call_id IS NOT NULL"
+        },
+        {
+          "columns": [
+            "claimed_proposal_id",
+            "conversation_id"
+          ],
+          "where": "claimed_proposal_id IS NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_proposals",
+      "purpose": "Logical proposal owning immutable revisions",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "current_revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "id",
+          "conversation_id"
+        ]
+      ],
+      "checks": [
+        "current_revision > 0"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "conversation_id",
+            "created_at",
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_proposal_revisions",
+      "purpose": "Frozen canonical approval envelope and public projection",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "proposal_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "catalog_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "canonicalization_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "proposal_id",
+        "revision"
+      ],
+      "unique": [],
+      "checks": [
+        {
+          "key": "state",
+          "values": [
+            "draft",
+            "ready",
+            "confirmed",
+            "superseded",
+            "cancelled",
+            "expired",
+            "invalidated"
+          ]
+        },
+        "revision > 0; content immutable after ready; hash verified before confirmation",
+        "Canonical approval envelope and PublicProposal are reconstructed from immutable revision metadata and ordered proposal_steps; do not store full duplicate envelopes/previews"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "proposal_id",
+            "state"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_proposal_steps",
+      "purpose": "Typed immutable command template in a proposal revision",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "proposal_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "proposal_revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "tool_name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "contract_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "effect_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "scope",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "command_template",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "public_step",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "output_bindings",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "preconditions",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "proposal_id",
+          "proposal_revision",
+          "position"
+        ],
+        [
+          "id",
+          "proposal_id",
+          "proposal_revision"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "kind",
+          "values": [
+            "domain_change",
+            "secure_flow",
+            "preference_change"
+          ]
+        },
+        "position > 0; known required fields complete; bindings are registered typed keys",
+        "public_step.depends_on IDs are unique, belong to this revision and precede position; every output_binding references a declared predecessor and registered typed output; reject forward/self/cross-revision references"
+      ],
+      "indexes": []
+    },
+    {
+      "name": "nodia_ai_confirmation_challenges",
+      "purpose": "Digest-only one-use challenge isolated from model channel",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "proposal_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "proposal_revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "session_public_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "expected_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "token_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "consumed_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "token_hash"
+        ],
+        [
+          "proposal_id",
+          "proposal_revision",
+          "actor_id",
+          "session_public_id"
+        ]
+      ],
+      "checks": [
+        "Null/deleted/revoked session invalidates challenge"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "expires_at"
+          ]
+        },
+        {
+          "columns": [
+            "session_public_id"
+          ],
+          "where": "session_public_id IS NOT NULL"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_executions",
+      "purpose": "Minimal durable operation header surviving chat purge",
+      "retention": "receipt",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "proposal_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "origin_conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "origin_proposal_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "origin_proposal_revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "proposal_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "chat_owner_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "client_request_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "catalog_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "minimal_scope",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "prior_execution_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "retention_epoch",
+          "type": "bigint",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "origin_proposal_id"
+        ],
+        [
+          "actor_id",
+          "client_request_id"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "state",
+          "values": [
+            "queued",
+            "running",
+            "waiting_for_user",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancel_requested",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "revision > 0; immutable origin references and approval hash; no transcript in ledger",
+        "Completed state/revision/completed_at are immutable; resolved receipts purge with chat"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "conversation_id",
+            "created_at",
+            "id"
+          ]
+        },
+        {
+          "columns": [
+            "actor_id",
+            "created_at",
+            "id"
+          ]
+        },
+        {
+          "columns": [
+            "conversation_id"
+          ],
+          "unique": true,
+          "where": "conversation_id IS NOT NULL AND state IN ('queued','running','waiting_for_user','cancel_requested','unknown')"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_execution_steps",
+      "purpose": "Stable identity, outcome and minimal recovery receipt per effect",
+      "retention": "receipt",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "execution_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "source_step_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "position",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "tool_name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "template_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "bound_command_hash",
+          "type": "char(64)",
+          "nullable": true
+        },
+        {
+          "name": "native_request_key",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "minimal_scope",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "minimal_receipt",
+          "type": "jsonb",
+          "nullable": true
+        },
+        {
+          "name": "recovery_descriptor",
+          "type": "jsonb",
+          "nullable": true
+        },
+        {
+          "name": "lease_fence",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "error_code",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "dispatched_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamptz",
+          "nullable": true
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "execution_id",
+          "position"
+        ],
+        [
+          "native_request_key"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "state",
+          "values": [
+            "blocked",
+            "ready",
+            "running",
+            "waiting_for_user",
+            "completed",
+            "failed",
+            "unknown",
+            "skipped",
+            "cancelled"
+          ]
+        },
+        "position > 0; lease_fence >= 0; source_step_id is null or equals id",
+        "Completed requires verified receipt, bound hash and completed_at",
+        "First non-null bound_command_hash and completed receipt/state/times/error are immutable; completed receipts purge with execution/chat"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "execution_id",
+            "state",
+            "position"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_execution_payloads",
+      "purpose": "Full command/result content purged with its chat",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "step_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "bound_command",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "public_result",
+          "type": "jsonb",
+          "nullable": true
+        },
+        {
+          "name": "safe_error",
+          "type": "jsonb",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "step_id"
+      ],
+      "unique": [],
+      "checks": [
+        "No provider secrets; values frozen at first bound dispatch"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "conversation_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_events",
+      "purpose": "Transactional outbox and replayable public events",
+      "retention": "conversation",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "seq",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "event_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "run_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "execution_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "public_payload",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "scope_manifest",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "conversation_id",
+          "seq"
+        ],
+        [
+          "conversation_id",
+          "event_key"
+        ]
+      ],
+      "checks": [
+        "seq > 0; redacted versioned event; no token per row requirement",
+        "Event payload is bounded transition/delta/reference data; full tool/report/step results remain in their owning row, not copied into every event"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "run_id",
+            "seq"
+          ],
+          "name": "nodia_ai_events_run_seq_idx"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_jobs",
+      "purpose": "Durable typed work item; delivery independent of effect identity",
+      "retention": "operational",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "kind",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "dedup_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "run_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "execution_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "storage_key",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "storage_generation",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "recovery_descriptor",
+          "type": "jsonb",
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "available_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "lease_owner",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "lease_until",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "fence",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "attempt_count",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "deadline_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "stage_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "stage_seq",
+          "type": "integer",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "dedup_key"
+        ],
+        [
+          "id",
+          "conversation_id"
+        ]
+      ],
+      "checks": [
+        {
+          "key": "kind",
+          "values": [
+            "turn",
+            "execution",
+            "expire_chat",
+            "delete_blob",
+            "reconcile"
+          ]
+        },
+        {
+          "key": "state",
+          "values": [
+            "ready",
+            "leased",
+            "waiting",
+            "done",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "fence >= 0; attempt_count >= 0; live target validated by kind; no arbitrary job payload",
+        "stage_seq > 0; one bounded stage per claim, immutable attempt stage snapshot"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "available_at",
+            "id"
+          ],
+          "where": "state = 'ready'"
+        },
+        {
+          "columns": [
+            "lease_until",
+            "id"
+          ],
+          "where": "state = 'leased'"
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_job_attempts",
+      "purpose": "Delivery attempt with monotonic phase updates under fence; terminal evidence immutable",
+      "retention": "operational",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "job_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "attempt_no",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "fence",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "worker_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "phase",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "error_code",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "external_operation_ref",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "started_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "ended_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "runtime_resource_key",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "runtime_fence",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "stage_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "stage_seq",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "selection_snapshot",
+          "type": "jsonb",
+          "nullable": true,
+          "note": "ExactSelection for one dispatch stage, never mutated from Web to Agentic"
+        },
+        {
+          "name": "routing_phase",
+          "type": "text",
+          "nullable": true
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "job_id",
+          "attempt_no"
+        ],
+        [
+          "job_id",
+          "fence"
+        ]
+      ],
+      "checks": [
+        "attempt_no > 0; fence > 0; external references are allowlisted non-secret metadata",
+        "stage_seq > 0; one bounded stage per claim, immutable attempt stage snapshot",
+        "routing_phase base|delegated or null; selection_snapshot and routing_phase are both present for dispatch, absent otherwise"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "job_id",
+            "started_at"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_execution_grants",
+      "purpose": "Scoped worker authority anchored to current Nodia session",
+      "retention": "operational",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "session_public_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "run_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "execution_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "allowed_modules",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "allowed_operations",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "allowed_scope",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "command_set_hash",
+          "type": "char(64)",
+          "nullable": true
+        },
+        {
+          "name": "policy_version",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "run_id"
+        ],
+        [
+          "execution_id"
+        ]
+      ],
+      "checks": [
+        "Exactly one run_id or execution_id; execution requires command_set_hash",
+        "No JWT, refresh token, cookie or provider credential"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "session_public_id",
+            "revoked_at"
+          ]
+        },
+        {
+          "columns": [
+            "expires_at"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_runtime_slots",
+      "purpose": "Shared profile/process lease and quarantine for uncertain external work",
+      "retention": "runtime",
+      "columns": [
+        {
+          "name": "resource_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "job_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "holder_worker_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "fence",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "lease_until",
+          "type": "timestamptz",
+          "nullable": true
+        },
+        {
+          "name": "external_operation_ref",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "resource_key"
+      ],
+      "unique": [],
+      "checks": [
+        {
+          "key": "state",
+          "values": [
+            "free",
+            "held",
+            "unknown"
+          ]
+        },
+        "fence >= 0; actual shared runtime identity, not just provider connection ID"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "state",
+            "lease_until"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_preferences",
+      "purpose": "Explicitly accepted memory independent of source chat",
+      "retention": "preference",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "owner_id",
+          "type": "bigint",
+          "nullable": false
+        },
+        {
+          "name": "scope_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "scope_hash",
+          "type": "char(64)",
+          "nullable": false
+        },
+        {
+          "name": "scope",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "value",
+          "type": "jsonb",
+          "nullable": false,
+          "note": "Validated versioned shape; not arbitrary SQL or credentials"
+        },
+        {
+          "name": "revision",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "source_conversation_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "accepted_step_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [
+        [
+          "owner_id",
+          "scope_hash",
+          "key"
+        ]
+      ],
+      "checks": [
+        "revision > 0; only accepted values; source deletion does not delete preference"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "owner_id",
+            "scope_key",
+            "key"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nodia_ai_audit_events",
+      "purpose": "Minimal access/confirmation/recovery/purge audit without chat text",
+      "retention": "receipt",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "note": "UUIDv4 opaque reference generated once by Server"
+        },
+        {
+          "name": "actor_id",
+          "type": "bigint",
+          "nullable": true
+        },
+        {
+          "name": "session_public_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "conversation_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "execution_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "event_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "correlation_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "minimal_details",
+          "type": "jsonb",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "unique": [],
+      "checks": [
+        "No prompt, transcript, extracted data, token, raw SDK/SQL error or title"
+      ],
+      "indexes": [
+        {
+          "columns": [
+            "actor_id",
+            "created_at",
+            "id"
+          ]
+        },
+        {
+          "columns": [
+            "execution_id",
+            "created_at",
+            "id"
+          ]
+        }
+      ]
+    }
+  ],
+  "foreignKeys": [
+    {
+      "fromTable": "nodia_ai_conversations",
+      "columns": [
+        "owner_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_messages",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_messages",
+      "columns": [
+        "author_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_attachments",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_context_snapshots",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_adapter_states",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_runs",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_runs",
+      "columns": [
+        "actor_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_tool_calls",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_drafts",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_drafts",
+      "columns": [
+        "actor_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_proposals",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_proposals",
+      "columns": [
+        "actor_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_confirmation_challenges",
+      "columns": [
+        "actor_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_confirmation_challenges",
+      "columns": [
+        "session_public_id"
+      ],
+      "toTable": "auth_sessions",
+      "targetColumns": [
+        "public_id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_executions",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_executions",
+      "columns": [
+        "actor_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_executions",
+      "columns": [
+        "chat_owner_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_events",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_jobs",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true,
+      "note": "Deferred to permit same-chat run cascade to clear both job references; standalone maintenance pending jobs must detach explicitly before purge."
+    },
+    {
+      "fromTable": "nodia_ai_execution_grants",
+      "columns": [
+        "actor_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_execution_grants",
+      "columns": [
+        "session_public_id"
+      ],
+      "toTable": "auth_sessions",
+      "targetColumns": [
+        "public_id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_runtime_slots",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_preferences",
+      "columns": [
+        "owner_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_audit_events",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE",
+      "note": "AI-04/50 no additional audit archive; unresolved effect reconciliation belongs to minimal jobs/receipts, not audit history."
+    },
+    {
+      "fromTable": "nodia_ai_audit_events",
+      "columns": [
+        "actor_id"
+      ],
+      "toTable": "users",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_audit_events",
+      "columns": [
+        "session_public_id"
+      ],
+      "toTable": "auth_sessions",
+      "targetColumns": [
+        "public_id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_conversations",
+      "columns": [
+        "selected_connection_id"
+      ],
+      "toTable": "ai_providers",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_conversations",
+      "columns": [
+        "active_job_id",
+        "id"
+      ],
+      "toTable": "nodia_ai_jobs",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true,
+      "note": "Same-chat active job, deferred cycle; clear pointer before deleting an active job."
+    },
+    {
+      "fromTable": "nodia_ai_adapter_states",
+      "columns": [
+        "connection_id"
+      ],
+      "toTable": "ai_providers",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_runs",
+      "columns": [
+        "connection_id"
+      ],
+      "toTable": "ai_providers",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_message_parts",
+      "columns": [
+        "message_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_messages",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_message_parts",
+      "columns": [
+        "attachment_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_attachments",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_runs",
+      "columns": [
+        "user_message_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_messages",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_runs",
+      "columns": [
+        "assistant_message_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_messages",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_runs",
+      "columns": [
+        "context_snapshot_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_context_snapshots",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_runs",
+      "columns": [
+        "adapter_state_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_adapter_states",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_tool_calls",
+      "columns": [
+        "run_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_runs",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_drafts",
+      "columns": [
+        "tool_call_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_tool_calls",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_drafts",
+      "columns": [
+        "claimed_proposal_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_proposals",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_proposals",
+      "columns": [
+        "id",
+        "current_revision"
+      ],
+      "toTable": "nodia_ai_proposal_revisions",
+      "targetColumns": [
+        "proposal_id",
+        "revision"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_proposal_revisions",
+      "columns": [
+        "proposal_id"
+      ],
+      "toTable": "nodia_ai_proposals",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_proposal_steps",
+      "columns": [
+        "proposal_id",
+        "proposal_revision"
+      ],
+      "toTable": "nodia_ai_proposal_revisions",
+      "targetColumns": [
+        "proposal_id",
+        "revision"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_confirmation_challenges",
+      "columns": [
+        "proposal_id",
+        "proposal_revision"
+      ],
+      "toTable": "nodia_ai_proposal_revisions",
+      "targetColumns": [
+        "proposal_id",
+        "revision"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_executions",
+      "columns": [
+        "proposal_id"
+      ],
+      "toTable": "nodia_ai_proposals",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_executions",
+      "columns": [
+        "prior_execution_id"
+      ],
+      "toTable": "nodia_ai_executions",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_execution_steps",
+      "columns": [
+        "execution_id"
+      ],
+      "toTable": "nodia_ai_executions",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_execution_steps",
+      "columns": [
+        "source_step_id"
+      ],
+      "toTable": "nodia_ai_proposal_steps",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_execution_payloads",
+      "columns": [
+        "step_id"
+      ],
+      "toTable": "nodia_ai_execution_steps",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_execution_payloads",
+      "columns": [
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_events",
+      "columns": [
+        "run_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_runs",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "NO ACTION",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_events",
+      "columns": [
+        "execution_id"
+      ],
+      "toTable": "nodia_ai_executions",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_jobs",
+      "columns": [
+        "run_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_runs",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "SET NULL",
+      "note": "Both nullable recovery references are cleared together on run deletion; pending work retains only minimal descriptor.",
+      "deferrable": true
+    },
+    {
+      "fromTable": "nodia_ai_jobs",
+      "columns": [
+        "execution_id"
+      ],
+      "toTable": "nodia_ai_executions",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_job_attempts",
+      "columns": [
+        "job_id"
+      ],
+      "toTable": "nodia_ai_jobs",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_execution_grants",
+      "columns": [
+        "run_id"
+      ],
+      "toTable": "nodia_ai_runs",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "CASCADE"
+    },
+    {
+      "fromTable": "nodia_ai_execution_grants",
+      "columns": [
+        "execution_id"
+      ],
+      "toTable": "nodia_ai_executions",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_runtime_slots",
+      "columns": [
+        "job_id",
+        "conversation_id"
+      ],
+      "toTable": "nodia_ai_jobs",
+      "targetColumns": [
+        "id",
+        "conversation_id"
+      ],
+      "onDelete": "SET NULL",
+      "note": "Same-chat runtime holder when both references survive; deleting a job clears only refs, never unknown state/fence."
+    },
+    {
+      "fromTable": "nodia_ai_preferences",
+      "columns": [
+        "source_conversation_id"
+      ],
+      "toTable": "nodia_ai_conversations",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_preferences",
+      "columns": [
+        "accepted_step_id"
+      ],
+      "toTable": "nodia_ai_execution_steps",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "SET NULL"
+    },
+    {
+      "fromTable": "nodia_ai_audit_events",
+      "columns": [
+        "execution_id"
+      ],
+      "toTable": "nodia_ai_executions",
+      "targetColumns": [
+        "id"
+      ],
+      "onDelete": "RESTRICT"
+    },
+    {
+      "fromTable": "nodia_ai_job_attempts",
+      "columns": [
+        "runtime_resource_key"
+      ],
+      "toTable": "nodia_ai_runtime_slots",
+      "targetColumns": [
+        "resource_key"
+      ],
+      "onDelete": "SET NULL"
+    }
+  ],
+  "sourceChecksums": [
+    {
+      "file": "nodia-server/src/ai-provider/entities/ai-provider.entity.ts",
+      "sha256": "190942db716d87db8aaba909e115574e9e5ff4a44f494c08212ad66039d50611"
+    },
+    {
+      "file": "nodia-server/src/auth/entities/auth-session.entity.ts",
+      "sha256": "09065a22a9f64cfd12e700555dcf39bbb5a45b6c27df224749c2ff4d649b3477"
+    },
+    {
+      "file": "nodia-server/src/common/redis/redis.service.ts",
+      "sha256": "0206912a47b37ff657b7c7bb20753efbad53d5b137936276cbb68e1873544f42"
+    },
+    {
+      "file": "nodia-server/src/invoice/entities/invoice-upload.entity.ts",
+      "sha256": "1d64fcc4263df9cd3efb9a75cfd8475de214ff138943a53b0fec5c57596bb051"
+    },
+    {
+      "file": "nodia-server/src/invoice/use-case/recover-invoice-uploads.use-case.ts",
+      "sha256": "f562e18e779e848cd3b277e8f71608d3925e66457842fe6982ae8c8c1143100d"
+    },
+    {
+      "file": "nodia-server/src/migrations/1792800000000-CreateNodiaAiAttachments.ts",
+      "sha256": "7ab510ea13e2caf5a2f6c040ab6b601bf38104cea4d934c6708d76e525716086"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-attachment/entities/nodia-ai-attachment.entity.ts",
+      "sha256": "e316426d678becb34c5d939aa3b21091d1851c879de8748e553a90cca2ba9a36"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/entities/nodia-ai-message-part.entity.ts",
+      "sha256": "4bee802f63d54a2ef0d13934db7f5eac076a7ba4ea2373f2508ce61df03726bc"
+    },
+    {
+      "file": "nodia-server/src/rental-common/rental-transaction.service.ts",
+      "sha256": "55ee6443bbf671183376c5d28ea9ee55e3555250628b37907f43c0f04647767f"
+    },
+    {
+      "file": "nodia-server/src/rental-operation/entities/rental-operation.entity.ts",
+      "sha256": "37968b479d29bf2d8d42116590a2e7ca8c5dbce8b2eaae4607560470b9eff9a8"
+    },
+    {
+      "file": "nodia-server/src/user/entities/user.entity.ts",
+      "sha256": "79830f2e9d243e2367f48ea955e252bdcc23765d00ee84fddcdc5b84a3fcf011"
+    }
+  ],
+  "counts": {
+    "newTables": 23,
+    "reusedTables": 3,
+    "columns": 309,
+    "foreignKeys": 62
+  },
+  "designRevision": 6,
+  "simplificationReview": {
+    "sourceDocument": "docs/mvp/44-nodia-ai-data-model-review.md",
+    "previousCounts": {
+      "newTables": 24,
+      "reusedTables": 3,
+      "columns": 290,
+      "foreignKeys": 65
+    },
+    "removedTable": "nodia_ai_step_dependencies",
+    "removedColumns": [
+      "nodia_ai_proposal_revisions.approval_envelope",
+      "nodia_ai_proposal_revisions.public_preview",
+      "nodia_ai_attachments.owner_id"
+    ],
+    "removedIndexes": [
+      {
+        "table": "nodia_ai_messages",
+        "columns": [
+          "conversation_id",
+          "seq"
+        ]
+      },
+      {
+        "table": "nodia_ai_events",
+        "columns": [
+          "conversation_id",
+          "seq"
+        ]
+      },
+      {
+        "table": "nodia_ai_proposal_steps",
+        "columns": [
+          "proposal_id",
+          "proposal_revision"
+        ]
+      },
+      {
+        "table": "nodia_ai_adapter_states",
+        "columns": [
+          "conversation_id",
+          "connection_id",
+          "mode",
+          "generation"
+        ],
+        "reason": "Exact selection lookup includes model_id and is served by the unique selection key"
+      }
+    ],
+    "optionalTables": [
+      "nodia_ai_adapter_states"
+    ],
+    "runtimeVerified": false
+  },
+  "reconciliations": [
+    {
+      "date": "2026-10-15",
+      "task": "AI-08",
+      "description": "Authority context and transaction sharing only; no changes to tables, columns or FK design",
+      "changedSources": [
+        {
+          "file": "nodia-server/src/rental-common/rental-transaction.service.ts",
+          "previousSha256": "c199966ed1aa5e216fe304280cdcf7ef1a9845ce89000d88298138681d820c06",
+          "sha256": "d74a64ad5155d4240f6533c8cc06127f366be3099afedab1bda5e68e87a0d2b1"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-15",
+      "task": "AI-09",
+      "description": "Typed routing/effort/stage/budget delta on existing tables, same-chat active-job/run constraints, audit cascade enforcing later50 no-archive policy; only M1 is migrated."
+    },
+    {
+      "date": "2026-10-16",
+      "task": "AI-16",
+      "description": "Add only events(run_id,seq) index for bounded durable polling; message-to-run lookup reuses existing user_message_id/assistant_message_id UNIQUE indexes. No new tables, columns or retention.",
+      "existingSourceReconciliation": {
+        "description": "Reviewed preexisting native transaction sharing/statement timeout delta used by AI-15; AI-16 does not modify this source.",
+        "changes": [
+          {
+            "file": "nodia-server/src/rental-common/rental-transaction.service.ts",
+            "previousSha256": "d74a64ad5155d4240f6533c8cc06127f366be3099afedab1bda5e68e87a0d2b1",
+            "sha256": "2b2d85943b35a838ad93d7accaa1d5bd4811270e3d1e49715964534b2bdcd701"
+          }
+        ]
+      }
+    },
+    {
+      "date": "2026-10-16",
+      "task": "AI-17",
+      "description": "Implement existing 4 M2 draft/proposal tables with 40 columns, no envelope/preview duplication or workflow-edge table. Frozen step insert/update/delete constraints preserve chat cascade. Challenges/execution remain future."
+    },
+    {
+      "date": "2026-10-17",
+      "task": "AI-18",
+      "description": "Implement the next 3 planned M2 tables (44 columns) and 4 existing M1 references. No request alias/payload/envelope duplication; digest nonce rotated per actor/session/proposal/revision, bounded by original expiry. Grant run_id becomes nullable with exactly one run/execution target."
+    },
+    {
+      "date": "2026-10-17",
+      "task": "AI-19",
+      "description": "No tables or columns added. Existing steps are the transactional witness for native FinanceMovement creation; first-binding and terminal receipt immutability enforced by additive triggers. Category material snapshot v2 includes name/key, not timestamp alone."
+    },
+    {
+      "date": "2026-10-17",
+      "task": "AI-32",
+      "description": "M3 one attachment table: consolidated transcript/derived_text into one revisable interpretation; explicit idempotency, quota reservations, parser metadata and upload lifecycle. Existing jobs retain only pending object cleanup identity. No table per format, transcript or availability cache."
+    }
+  ],
+  "migrationStages": {
+    "M1": {
+      "migration": "1792200000000-CreateNodiaAiConversationPersistence",
+      "tables": 11,
+      "columns": 151,
+      "verified": "docs/evidence/nodia-ai-ai09-postgres-integration.json",
+      "futureColumnsExcluded": [
+        "message_parts.attachment_id",
+        "runs.context_snapshot_id",
+        "runs.adapter_state_id",
+        "events.execution_id",
+        "jobs.execution_id",
+        "execution_grants.execution_id",
+        "execution_grants.command_set_hash",
+        "audit_events.execution_id"
+      ],
+      "note": "Full-v1 manifest includes future fields/checks; M1 permits text parts and run grants, no execution jobs. AI-17 adds only the first four M2 tables; later groups remain pending."
+    },
+    "M2_AI17": {
+      "migration": "1792400000000-CreateNodiaAiProposalPersistence",
+      "tables": 4,
+      "columns": 40,
+      "tableNames": [
+        "nodia_ai_drafts",
+        "nodia_ai_proposals",
+        "nodia_ai_proposal_revisions",
+        "nodia_ai_proposal_steps"
+      ],
+      "verified": "docs/evidence/nodia-ai-ai17-postgres-integration.json",
+      "excluded": [
+        "nodia_ai_confirmation_challenges",
+        "nodia_ai_executions",
+        "nodia_ai_execution_steps",
+        "nodia_ai_execution_payloads"
+      ],
+      "note": "Internal native preparation plus immutable revisions only; no MCP prepare publication or effects. TTL 900s capped by chat, unchanged by PATCH. Conversation cascade removes all four tables content."
+    },
+    "M2_AI18": {
+      "migration": "1792500000000-CreateNodiaAiConfirmationPersistence",
+      "tables": 3,
+      "columns": 44,
+      "existingColumnsAdded": 4,
+      "tableNames": [
+        "nodia_ai_confirmation_challenges",
+        "nodia_ai_executions",
+        "nodia_ai_execution_steps"
+      ],
+      "existingFields": [
+        "jobs.execution_id",
+        "events.execution_id",
+        "execution_grants.execution_id",
+        "execution_grants.command_set_hash"
+      ],
+      "verified": "docs/evidence/nodia-ai-ai18-postgres-integration.json",
+      "excluded": [
+        "nodia_ai_execution_payloads"
+      ],
+      "note": "Human protocol and conditional atomic admission only. Production execution admission registry empty until a native writer/recovery is available; no MCP prepare publication. Queued confirmations purge with chat; unresolved dispatch identity survives only until reconciliation."
+    },
+    "M2_AI19": {
+      "migration": "1792600000000-FreezeNodiaAiFinancialWitness",
+      "tables": 0,
+      "columns": 0,
+      "existingColumnsAdded": 0,
+      "verified": "docs/evidence/nodia-ai-ai19-postgres-integration.json",
+      "note": "Local single financial effect uses existing execution_steps.minimal_receipt and bound/native identity columns. Triggers freeze first binding and committed receipt/terminal execution. Production admission and execution worker remain closed until AI-20."
+    },
+    "M2_AI23": {
+      "migration": "1792700000000-AddNodiaAiWorkflowBindings",
+      "tables": 0,
+      "columns": 0,
+      "existingColumnsAdded": 2,
+      "existingFields": [
+        "execution_steps.bound_command",
+        "proposals.prior_execution_id"
+      ],
+      "installedTotals": {
+        "tables": 18,
+        "columns": 241
+      },
+      "verified": "docs/evidence/nodia-ai-ai23-postgresql.json",
+      "excluded": [
+        "nodia_ai_execution_payloads"
+      ],
+      "note": "Local sequential SQL effects store one immutable bounded command/scope/preconditions envelope in execution_steps.bound_command. The proposed future payload table remains unimplemented; do not duplicate this storage without a lifecycle review. prior_execution_id on proposals links a newly confirmed correction of pending steps to preserved committed effects."
+    },
+    "M3_AI32": {
+      "migration": "1792800000000-CreateNodiaAiAttachments",
+      "tables": 1,
+      "columns": 25,
+      "existingColumnsAdded": 1,
+      "existingFields": [
+        "message_parts.attachment_id"
+      ],
+      "changedFields": [
+        "message_parts.text nullable; immutable reviewed snapshot or null native original"
+      ],
+      "installedTotals": {
+        "tables": 19,
+        "columns": 267
+      },
+      "note": "Verification in delivery78; full-v1 manifest retains future tables/fields not installed. Original binaries never stored in SQL.",
+      "verified": "docs/evidence/nodia-ai-ai32-sql-validation.json"
+    },
+    "M4_AI33": {
+      "migration": "1792900000000-CreateNodiaAiPreferences",
+      "tables": 1,
+      "columns": 12,
+      "existingColumnsAdded": 0,
+      "tableNames": [
+        "nodia_ai_preferences"
+      ],
+      "installedTotals": {
+        "tables": 20,
+        "columns": 279
+      },
+      "verified": "docs/evidence/nodia-ai-ai33-activation.json",
+      "note": "Personal accepted references independent of chat; source chat/step SET NULL. Historical AI-33 laboratory activation, not full-v1 target approval."
+    },
+    "M4_AI34": {
+      "migration": "1793000000000-CreateNodiaAiContextSnapshots",
+      "tables": 1,
+      "columns": 9,
+      "existingColumnsAdded": 1,
+      "existingFields": [
+        "runs.context_snapshot_id"
+      ],
+      "tableNames": [
+        "nodia_ai_context_snapshots"
+      ],
+      "verificationStatus": "compiled_sql_lab_schema_and_real_adapter_context_verified",
+      "sourceDocument": "docs/mvp/80-nodia-ai-ai34-long-context-compaction.md",
+      "excluded": [
+        "nodia_ai_adapter_states",
+        "runs.adapter_state_id"
+      ],
+      "note": "Immutable sequence/hash/scope-cited summaries, originals preserved and chat cascade. Installed totals verified by exact lab migration28. Real Web/Agentic compaction and continuity plus synthetic MCP callback verified separately from disposable SQL worker persistence; no opaque continuation or production acceptance.",
+      "installedTotals": {
+        "tables": 21,
+        "columns": 289
+      },
+      "verified": "docs/evidence/nodia-ai-ai34-sql-validation.json",
+      "activation": "docs/evidence/nodia-ai-ai34-runtime-activation.json"
+    }
+  }
+}

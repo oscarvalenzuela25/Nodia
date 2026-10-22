@@ -1,0 +1,53 @@
+{
+  "stage": "AI-38-MCP-R01",
+  "scope": "post_resume_exact_epoch_non_generative_MCP_observation",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:21:09.538648+00:00",
+  "source_sha256": "efff14295acc1b455d39e5034e1571a18999820ce23c51635d515da5f538e7e7",
+  "live_report_sha256": "8dc6a298417ac30818e3d9c541717e128650a28400d63234b24b7d2e7ef98a0f",
+  "harness_sha256": "95cdfdc53e86cf44c892273185c11ee2d319c636fbb0db6cd39980b12d42c87d",
+  "container_before": {
+    "id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at_utc": "2026-10-20T19:14:35.412657745Z",
+    "running": true
+  },
+  "provider_generations": 0,
+  "configured_SQL_writes": 0,
+  "services_restarted": false,
+  "native_ACK_or_reconcile_requested": false,
+  "resource_key_historical_comparison": "not_recorded_in_live_report",
+  "raw_logs_retained_privately": true,
+  "api_public_root_http_status": 200,
+  "same_selection_configuration_session_and_epoch": true,
+  "supports_mcp_before": true,
+  "supports_mcp_after": true,
+  "metadata_requests": 2,
+  "container_after": {
+    "id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at_utc": "2026-10-20T19:14:35.412657745Z",
+    "running": true
+  },
+  "services": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "native_pending_identity": false,
+  "provider_dispatch_requests": 0,
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "session_generation": "2058fda1aff3454f80a11d10d05a1e5e",
+  "finished_at_utc": "2026-10-20T19:21:23.077391+00:00",
+  "private_log_hashes": {
+    "private-stdout.log": "a0db5b54738f30407d947224b01dd19c5db452ccf9874838ae036ad99d0a2ecd",
+    "private-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -18,10 +18,15 @@ import {
 } from 'node:fs/promises';
 import { CodexRpc } from './codex-rpc.js';
 import {
+  codexProcessIdentity,
+  type CodexProcessIdentity,
+} from './codex-process-ownership.js';
+import {
   codexError,
   codexObject,
   codexModels,
   codexQuotas,
+  CodexOperationException,
   type CodexModel,
   type CodexSession,
 } from './codex-contract.js';
@@ -53,7 +58,12 @@ export class CodexRuntimeService implements OnModuleDestroy {
   }, 60_000).unref();
   private stopping = false;
 
-  private async create(id: string): Promise<Profile> {
+  private async create(
+    id: string,
+    signal?: AbortSignal,
+    beforeNativeStart?: (identity: CodexProcessIdentity) => Promise<void>,
+  ): Promise<Profile> {
+    signal?.throwIfAborted();
     if (
       process.env.NODIA_CODEX_ENABLED !== 'true' ||
       process.platform === 'win32'
@@ -99,10 +109,34 @@ export class CodexRuntimeService implements OnModuleDestroy {
     // detached native child is dead; automatic reclamation can share a profile.
     let cwd: string | undefined;
     let rpc: CodexRpc | undefined;
+    const cancel = () => {
+      void rpc?.close().catch(() => undefined);
+    };
     try {
+      const serverIdentity =
+        process.platform === 'linux'
+          ? await codexProcessIdentity(process.pid)
+          : null;
       await lock.writeFile(
-        JSON.stringify({ serverPid: process.pid, runtimePid: null }),
+        JSON.stringify({
+          serverPid: process.pid,
+          runtimePid: null,
+          gated: !!beforeNativeStart,
+          ...(serverIdentity
+            ? {
+                serverBirth: serverIdentity.birth,
+                serverBoot: serverIdentity.boot,
+              }
+            : {}),
+        }),
       );
+      await lock.sync();
+      const directory = await open(profile, 'r');
+      try {
+        await directory.sync();
+      } finally {
+        await directory.close();
+      }
       // Nodia-owned profiles never import global auth/config, plugins or tools.
       for (const name of ['config.toml', 'auth.json']) {
         try {
@@ -121,15 +155,51 @@ export class CodexRuntimeService implements OnModuleDestroy {
       }
       await writeFile(join(profile, 'config.toml'), '', { mode: 0o600 });
       cwd = await mkdtemp(join(profile, 'work-'));
+      signal?.throwIfAborted();
       const executable = this.executable();
-      rpc = new CodexRpc(executable, cwd, profile, homedir());
+      rpc = new CodexRpc(
+        executable,
+        cwd,
+        profile,
+        homedir(),
+        !!beforeNativeStart,
+      );
+      signal?.addEventListener('abort', cancel, { once: true });
+      signal?.throwIfAborted();
+      const runtimeIdentity =
+        process.platform === 'linux' && rpc.ownedPid
+          ? await codexProcessIdentity(rpc.ownedPid)
+          : null;
       const ownership = Buffer.from(
-        JSON.stringify({ serverPid: process.pid, runtimePid: rpc.ownedPid }),
+        JSON.stringify({
+          serverPid: process.pid,
+          runtimePid: rpc.ownedPid,
+          gated: !!beforeNativeStart,
+          ...(serverIdentity
+            ? {
+                serverBirth: serverIdentity.birth,
+                serverBoot: serverIdentity.boot,
+              }
+            : {}),
+          ...(runtimeIdentity
+            ? {
+                runtimeBirth: runtimeIdentity.birth,
+                runtimeBoot: runtimeIdentity.boot,
+              }
+            : {}),
+        }),
       );
       await lock.truncate(0);
       await lock.write(ownership, 0, ownership.length, 0);
       await lock.sync();
+      if (beforeNativeStart) {
+        if (!runtimeIdentity) throw codexError('codex_login_unknown', 409);
+        await beforeNativeStart(runtimeIdentity);
+        signal?.throwIfAborted();
+        rpc.releaseStartGate();
+      }
       await rpc.initialize();
+      signal?.throwIfAborted();
       return {
         rpc,
         cwd,
@@ -145,6 +215,8 @@ export class CodexRuntimeService implements OnModuleDestroy {
       await lock.close();
       await rm(lockPath, { force: true });
       throw error;
+    } finally {
+      signal?.removeEventListener('abort', cancel);
     }
   }
   private executable() {
@@ -167,28 +239,60 @@ export class CodexRuntimeService implements OnModuleDestroy {
       process.platform === 'win32' ? 'codex.exe' : 'codex',
     );
   }
-  async get(id: string): Promise<Profile> {
+  async get(
+    id: string,
+    signal?: AbortSignal,
+    beforeNativeStart?: (identity: CodexProcessIdentity) => Promise<void>,
+  ): Promise<Profile> {
+    signal?.throwIfAborted();
     if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > 9223372036854775807n)
       throw new BadRequestException('Identificador de conexión inválido.');
     if (this.stopping) throw codexError('codex_runtime_unavailable');
     if (!this.profiles.has(id)) {
       if (this.profiles.size >= 4) throw codexError('codex_profile_busy', 503);
-      const p = this.create(id).catch((error: unknown) => {
-        this.profiles.delete(id);
-        throw error;
-      });
+      const p = this.create(id, signal, beforeNativeStart).catch(
+        (error: unknown) => {
+          this.profiles.delete(id);
+          throw error;
+        },
+      );
       this.profiles.set(id, p);
     }
-    const p = await this.profiles.get(id)!;
+    const pending = this.profiles.get(id)!;
+    const p = signal
+      ? await new Promise<Profile>((resolve, reject) => {
+          const abort = () => {
+            signal.removeEventListener('abort', abort);
+            reject(signal.reason);
+          };
+          signal.addEventListener('abort', abort, { once: true });
+          if (signal.aborted) abort();
+          void pending.then(
+            (profile) => {
+              signal.removeEventListener('abort', abort);
+              resolve(profile);
+            },
+            (error) => {
+              signal.removeEventListener('abort', abort);
+              reject(error);
+            },
+          );
+        })
+      : await pending;
     if (!p.rpc.alive || p.closing) {
       await this.stop(id);
-      return this.get(id);
+      return this.get(id, signal, beforeNativeStart);
     }
     p.lastUsed = Date.now();
     return p;
   }
-  async acquire(id: string) {
-    const profile = await this.get(id);
+  async acquire(
+    id: string,
+    signal?: AbortSignal,
+    beforeNativeStart?: (identity: CodexProcessIdentity) => Promise<void>,
+  ) {
+    const profile = await this.get(id, signal, beforeNativeStart);
+    signal?.throwIfAborted();
     if (profile.busy) throw codexError('codex_profile_busy', 409);
     profile.busy = true;
     return {
@@ -209,7 +313,60 @@ export class CodexRuntimeService implements OnModuleDestroy {
       })
       .catch(() => undefined);
   }
-  async observe(id: string): Promise<CodexSession> {
+  /** Observation never interrupts another operation. Cancel only the profile leased here. */
+  private async exclusiveObservation<T>(
+    id: string,
+    signal: AbortSignal,
+    work: () => Promise<T>,
+  ): Promise<T> {
+    signal.throwIfAborted();
+    const lease = await this.acquire(id, signal);
+    let stop: Promise<void> | undefined;
+    const cancel = () => {
+      stop ??= this.stop(id);
+      void stop.catch(() => undefined);
+    };
+    signal.addEventListener('abort', cancel, { once: true });
+    try {
+      signal.throwIfAborted();
+      const result = await work();
+      signal.throwIfAborted();
+      return result;
+    } finally {
+      signal.removeEventListener('abort', cancel);
+      if (stop) await stop.catch(() => undefined);
+      lease.release();
+    }
+  }
+  async observe(id: string, signal?: AbortSignal): Promise<CodexSession> {
+    if (signal) {
+      try {
+        return await this.exclusiveObservation(id, signal, () =>
+          this.observe(id),
+        );
+      } catch (error) {
+        signal.throwIfAborted();
+        // Failure to acquire a runtime is an observation, not a failed inference.
+        // Preserve unexpected failures and never interrupt another profile owner.
+        if (
+          !(error instanceof CodexOperationException) ||
+          !['codex_runtime_unavailable', 'codex_profile_busy'].includes(
+            error.code,
+          )
+        )
+          throw error;
+        return {
+          available: false,
+          authenticated: null,
+          planType: null,
+          checkedAt: null,
+          reason: error.code,
+          quotas: null,
+          lastInferenceAt: null,
+          usageAllowed: null,
+        };
+      }
+    }
     let p: Profile;
     try {
       p = await this.get(id);
@@ -278,7 +435,8 @@ export class CodexRuntimeService implements OnModuleDestroy {
     p.observation = { expires: Date.now() + 30_000, promise };
     return promise;
   }
-  async snapshot(id: string): Promise<CodexSession> {
+  async snapshot(id: string, signal?: AbortSignal): Promise<CodexSession> {
+    signal?.throwIfAborted();
     if (!this.profiles.has(id))
       return {
         available: false,
@@ -290,9 +448,11 @@ export class CodexRuntimeService implements OnModuleDestroy {
         lastInferenceAt: null,
         usageAllowed: null,
       };
-    return this.observe(id);
+    return this.observe(id, signal);
   }
-  async listModels(id: string): Promise<CodexModel[]> {
+  async listModels(id: string, signal?: AbortSignal): Promise<CodexModel[]> {
+    if (signal)
+      return this.exclusiveObservation(id, signal, () => this.listModels(id));
     const p = await this.get(id);
     if (!(await this.observe(id)).authenticated)
       throw codexError('codex_session_required', 409);
@@ -340,16 +500,23 @@ export class CodexRuntimeService implements OnModuleDestroy {
     if (!pending) return;
     const p = await pending;
     p.closing ??= (async () => {
-      try {
-        await p.rpc.close();
-        await rm(p.cwd, { recursive: true, force: true });
-      } finally {
-        await p.lock.close();
-        await rm(p.lockPath, { force: true });
-        this.profiles.delete(id);
-      }
+      await p.rpc.close();
+      await rm(p.cwd, { recursive: true, force: true });
+      await p.lock.close();
+      await rm(p.lockPath, { force: true });
+      this.profiles.delete(id);
     })();
     return p.closing;
+  }
+  /** Yield only a local idle profile. Reserving busy prevents a concurrent lease during close. */
+  async releaseIdle(id: string) {
+    const pending = this.profiles.get(id);
+    if (!pending) return;
+    const profile = await pending;
+    if (profile.busy || profile.closing)
+      throw codexError('codex_profile_busy', 409);
+    profile.busy = true;
+    await this.stop(id);
   }
   async onModuleDestroy() {
     this.stopping = true;

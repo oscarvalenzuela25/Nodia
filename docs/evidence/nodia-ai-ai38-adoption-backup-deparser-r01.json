@@ -1,0 +1,45 @@
+{
+  "stage": "AI-38",
+  "scope": "read_only_schema_deparser_context_and_visible_ordinals",
+  "status": "observed_not_backup_acceptance",
+  "caller_pinned_source_sha256": "bfb3a639d1f52e5962debc2f62d82536e4b625dfb067b6b788d3d4258ebe118d",
+  "original_server_version_num": 160015,
+  "configured_search_path_sha256": "7fc5a3fd9257648677832329a2c4e7b7ea2b5e2d5b86fe2318362349b4150d39",
+  "dropped_column_count": 1,
+  "ordinal_gap_count": 1,
+  "cases": [
+    {
+      "context": "configured_default",
+      "columns_sha256": "254002a823e842bd083d37e13e242215499f697c7c11a8ab966331023aad7268",
+      "constraints_sha256": "108061cc368fe99a06c23bf991e0bdaf20dc406549b90f525e7e393b48f73cb8",
+      "visible_ordinal_columns_sha256": "57c31ff375ea1df909b8ec6d02f46fe67f4693c5c7e35d122b75b3180676f65d",
+      "columns_equal_restored_r02": false,
+      "constraints_equal_restored_r02": false,
+      "visible_ordinal_columns_equal_restored_r02": true
+    },
+    {
+      "context": "public_first",
+      "columns_sha256": "254002a823e842bd083d37e13e242215499f697c7c11a8ab966331023aad7268",
+      "constraints_sha256": "108061cc368fe99a06c23bf991e0bdaf20dc406549b90f525e7e393b48f73cb8",
+      "visible_ordinal_columns_sha256": "57c31ff375ea1df909b8ec6d02f46fe67f4693c5c7e35d122b75b3180676f65d",
+      "columns_equal_restored_r02": false,
+      "constraints_equal_restored_r02": false,
+      "visible_ordinal_columns_equal_restored_r02": true
+    },
+    {
+      "context": "catalog_first",
+      "columns_sha256": "254002a823e842bd083d37e13e242215499f697c7c11a8ab966331023aad7268",
+      "constraints_sha256": "108061cc368fe99a06c23bf991e0bdaf20dc406549b90f525e7e393b48f73cb8",
+      "visible_ordinal_columns_sha256": "57c31ff375ea1df909b8ec6d02f46fe67f4693c5c7e35d122b75b3180676f65d",
+      "columns_equal_restored_r02": false,
+      "constraints_equal_restored_r02": false,
+      "visible_ordinal_columns_equal_restored_r02": true
+    }
+  ],
+  "configured_SQL_writes": 0,
+  "provider_requests": 0,
+  "containers_created": 0,
+  "services_modified": false,
+  "backups_created": 0,
+  "original_database_restored": false
+}

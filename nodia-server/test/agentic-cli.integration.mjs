@@ -122,7 +122,7 @@ try {
   let updates = 0;
   const repository = { async findAllProviders() { return { data: [structuredClone(provider)] }; },
     async findProviderById(id) { assert.equal(id, '42'); return structuredClone(provider); },
-    async updateProviderFields(id, fields) { assert.equal(id, '42'); updates++; provider.fields = fields; } };
+    async mergeDiscoveredModels(id, mode, models) { assert.equal(id, '42'); updates++; provider.fields[mode] = { ...provider.fields[mode], available_models: models }; } };
   const implementations = [
     [GetAiProvidersHealthUseCase, new GetAiProvidersHealthUseCase(repository, gemini)],
     [GetSelectableModelsUseCase, new GetSelectableModelsUseCase(repository, gemini)],

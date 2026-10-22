@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "environment": "linux_lab",
+  "scope": "read_only_clock_diagnosis_and_private_closed_canary_logs",
+  "guest_utc": "2026-10-20T17:00:30.988038+00:00",
+  "clock": {
+    "exit_code": 0,
+    "fields": {
+      "Timezone": "America/Santiago",
+      "LocalRTC": "no",
+      "CanNTP": "yes",
+      "NTP": "yes",
+      "NTPSynchronized": "yes",
+      "TimeUSec": "Tue 2026-10-20 14:00:30 -03",
+      "RTCTimeUSec": "Sat 2026-10-24 12:12:35 -03"
+    }
+  },
+  "timesync": {
+    "exit_code": 0,
+    "fields": {
+      "ServerName": "ntp.ubuntu.com",
+      "ServerAddress": "185.125.190.56",
+      "RootDistanceMaxUSec": "5s",
+      "PollIntervalMinUSec": "32s",
+      "PollIntervalMaxUSec": "34min 8s",
+      "PollIntervalUSec": "34min 8s",
+      "Frequency": "674583",
+      "NTPMessage": "{ Leap=0, Version=4, Mode=4, Stratum=2, Precision=-25, RootDelay=7.247ms, RootDispersion=442us, Reference=1D586304, OriginateTimestamp=Tue 2026-10-20 13:31:28 -03, ReceiveTimestamp=Tue 2026-10-20 13:31:28 -03, TransmitTimestamp=Tue 2026-10-20 13:31:28 -03, DestinationTimestamp=Tue 2026-10-20 13:31:28 -03, Ignored=no, PacketCount=109, Jitter=2min 24.729603s }"
+    }
+  },
+  "services": {
+    "systemd-timesyncd": {
+      "exit_code": 0,
+      "fields": {
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    },
+    "chrony": {
+      "exit_code": 0,
+      "fields": {
+        "LoadState": "not-found",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": ""
+      }
+    },
+    "chronyd": {
+      "exit_code": 0,
+      "fields": {
+        "LoadState": "not-found",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "UnitFileState": ""
+      }
+    },
+    "hv-kvp-daemon": {
+      "exit_code": 0,
+      "fields": {
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    },
+    "hv-vss-daemon": {
+      "exit_code": 0,
+      "fields": {
+        "LoadState": "loaded",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    }
+  },
+  "clocksource": "hyperv_clocksource_tsc_page",
+  "virtualization": "microsoft",
+  "synchronized_marker": {
+    "exists": true,
+    "mtime_utc": "2026-10-20T16:31:28.322830+00:00"
+  },
+  "timesync_journal": {
+    "exit_code": 0,
+    "lines_observed": 80,
+    "allowlisted_categories": {
+      "no_network_connectivity": 52,
+      "timeout_waiting_reply": 0,
+      "initial_synchronization": 0,
+      "synchronized_to_time_server": 0
+    },
+    "raw_text_emitted": false
+  },
+  "canary_log_preservation": {
+    "path": "/opt/nodia/verification/ai38-mcp-canary-r01/private-docker-window-ai38-delivery-r01.log",
+    "sha256": "cbb3c909401afbf3de33c3fdc879eb93178d32b5554448ec6fd7e0d2227db50f",
+    "bytes": 423190,
+    "lines": 2354,
+    "mode": "0600",
+    "owner_uid": 0,
+    "new_capture_created": false,
+    "since_guest_utc": "2026-10-20T16:51:40Z",
+    "until_guest_utc": "2026-10-20T16:54:10Z",
+    "allowlisted_token_occurrences": {
+      "mcp_result_unknown": 0,
+      "invalid_json": 0,
+      "timeout": 1,
+      "cancelled": 0,
+      "terminal": 2,
+      "acknowledged": 0
+    },
+    "raw_text_emitted": false,
+    "personal_codex_origin": false
+  },
+  "clock_adjusted": false,
+  "services_restarted": false,
+  "provider_requests": 0,
+  "database_operations": 0,
+  "causality_for_canary_established": false,
+  "release_authorized": false
+}

@@ -1,0 +1,66 @@
+{
+  "stage": "AI-34",
+  "scope": "incremental_node_and_native_tool_role_activation",
+  "status": "passed",
+  "provider_generations": 0,
+  "schema_migrations_applied": 0,
+  "settings_changed": false,
+  "observed_at_utc": "2026-10-18T20:25:45Z",
+  "native_image_before": "sha256:d54315b1d373250063a3644b13a5fad4115d084fffdc85d66efe27528b832850",
+  "native_image_after": "sha256:b40c3078ed60778d2aaf9089e175ca0d1d350de391afc68605c78c3da23b4a92",
+  "backup_directory": "/opt/nodia/verification-backups/ai34-native-role-1792355146531",
+  "source_manifest_sha256": "4efece28ff0a48e6ce602eb3f832a6de239915c8428f5b2a5b9f8adc2d0a5d8e",
+  "source_files_verified": 99,
+  "source_drift_count": 0,
+  "previous_compiled_files_verified": 931,
+  "compiled_files_verified": 931,
+  "compiled_manifest_sha256": "0d7e3ade11f4a40695ebae89a597c606480f8818d22aca61d42bcb3eff78bc2c",
+  "node_files_written": 3,
+  "changed_paths": [
+    "dist/nodia-ai-context/config/knowledge-pin.json",
+    "dist/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.js",
+    "dist/nodia-ai/knowledge/manifest.json"
+  ],
+  "added_output_paths": [],
+  "knowledge_release": "c2d7a6299d5306dacdb094015d1b7dacf6bda126fffea416d4769fb822032980",
+  "schema_and_snapshot_revision_preserved": true,
+  "schema_snapshot_revision_metadata": {
+    "stage": "AI-34",
+    "scope": "read_only_schema_snapshot_revision_metadata",
+    "status": "passed",
+    "transaction_read_only": "on",
+    "migrations": 28,
+    "snapshot_columns": 9,
+    "run_snapshot_columns": 1,
+    "snapshots": 0,
+    "maximum_snapshot_revision": 0,
+    "configured_database_writes": 0,
+    "provider_generations": 0
+  },
+  "api_and_worker_restarted": true,
+  "native_restarted": true,
+  "environment_mounts_isolation_preserved": true,
+  "nginx_identity_preserved": true,
+  "configured_chat_preserved": true,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 28
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 28
+  },
+  "native_artifact_counts": {
+    "unknown_markers": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "invalid_native_proofs": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "completed_at_utc": "2026-10-18T20:26:23Z"
+}

@@ -1,0 +1,151 @@
+{
+  "task": "AI-26",
+  "status": "implemented_and_verified_private_lab_mcp_write_publication_pending",
+  "verified_at_utc": "2026-10-17T18:06:52.579089+00:00",
+  "clock_source": "windows_host",
+  "remote_runtime_and_deployment_clocks": "vm_host_not_normalized_against_windows",
+  "implementation": {
+    "new_native_operations": 10,
+    "money_operations": 6,
+    "calendar_preparation_operations": 4,
+    "native_executors_total": 48,
+    "native_rental_endpoint_coverage": {
+      "total": 44,
+      "published_reads": 21,
+      "internal_writes": 22,
+      "native_recovery_coordinator": 1
+    },
+    "new_tables": 0,
+    "new_columns": 0,
+    "new_migrations": 0,
+    "physical_delete": false,
+    "new_future_output_bindings": false,
+    "exact_human_confirmation_and_atomic_effect_receipt_journal_audit": true,
+    "shared_native_turnover_rules": true,
+    "money_capture_is_recording_not_external_transfer": true,
+    "void_is_not_refund": true,
+    "pay_updates_existing_expense": true,
+    "null_false_true_linen_are_distinct": true,
+    "planned_or_same_day_approved_does_not_mean_actual_preparation": true,
+    "material_snapshots_ignore_unrelated_notes_linen_and_neighbor_status": true,
+    "super_admin_observation_keeps_original_actor_journal_and_owner_only_mutations": true
+  },
+  "server": {
+    "full_suite": {
+      "passed": true,
+      "tests": 2637,
+      "files": 194,
+      "duration_seconds": 219.77,
+      "log": ".tmp/ai26-server-tests-final.log",
+      "max_workers": 2
+    },
+    "build": {
+      "passed": true,
+      "log": ".tmp/ai26-server-build-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": ".tmp/ai26-server-lint.log"
+    },
+    "coordinator_focused": {
+      "passed": true,
+      "tests": 134,
+      "files": 2,
+      "duration_seconds": 29.96
+    }
+  },
+  "client": {
+    "full_suite": {
+      "passed": true,
+      "tests": 1526,
+      "files": 203,
+      "duration_seconds": 481.94,
+      "log": "nodia-client/.tmp/ai26-client-full-release.log",
+      "max_workers": 2
+    },
+    "focused_suite": {
+      "passed": true,
+      "tests": 260,
+      "files": 5,
+      "duration_seconds": 27.61,
+      "log": "nodia-client/.tmp/ai26-client-focused-final.log",
+      "max_workers": 2
+    },
+    "build_and_typecheck": {
+      "passed": true,
+      "build_log": "nodia-client/.tmp/ai26-client-build-final.log",
+      "typecheck_log": "nodia-client/.tmp/ai26-client-typecheck-final.log"
+    },
+    "lint": {
+      "errors": 0,
+      "log": "nodia-client/.tmp/ai26-client-lint-final.log"
+    },
+    "evidence": "docs/evidence/nodia-ai-ai26-client-validation.json"
+  },
+  "postgresql": {
+    "new_checks": 44,
+    "regression_checks": 266,
+    "total_numbered_checks": 310,
+    "native_http_requests": 282,
+    "evidence": [
+      "docs/evidence/nodia-ai-ai26-postgresql.json",
+      "docs/evidence/nodia-ai-ai26-regressions.json"
+    ],
+    "tested_archive_sha256": "985059cc1f77d40d78d60b30d732132383982f7df7cfff974a9e6c10c4cefe45",
+    "final_harness_sha256": "e7a3dd323c4d465d99644e4f56efb647c4b0cf193b58dd0f41efc55fe9d9f98f",
+    "release_parity": "docs/evidence/nodia-ai-ai26-tested-release-parity.json",
+    "configured_business_database_used": false,
+    "real_ai_inferences": 0,
+    "temporary_test_containers_remaining": 0
+  },
+  "ui": {
+    "evidence": "docs/evidence/nodia-ai-ai26-ui-validation.json",
+    "transport": "isolated_synthetic",
+    "checks": 9,
+    "screenshots": 4,
+    "qa_5194_stopped": true,
+    "real_tab_5174_modified": false
+  },
+  "deployment": {
+    "activation": "docs/evidence/nodia-ai-ai26-lab-activation.json",
+    "runtime": "docs/evidence/nodia-ai-ai26-lab-runtime.json",
+    "dist_equality": "docs/evidence/nodia-ai-ai26-deployed-equality.json",
+    "services": "docs/evidence/nodia-ai-ai26-services.json",
+    "archive_sha256": "2c23a8589f05f7d5799d11a15bbb245cce842dd4db997741f788f8c76495ea7a",
+    "archive_files": 879,
+    "dist_files": 837,
+    "migrations": 25,
+    "nodia_ai_tables": 18,
+    "nodia_ai_columns": 241,
+    "registered_native_executors": 48,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "knowledge": {
+    "sources": 50,
+    "excluded_drafts": 23,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "release_id": "46e4950b15ac9b89903341bbdd9cee47c578654b0ef9fc039eff32b21d2a2d0c",
+    "published_content_and_contracts_unchanged": true,
+    "delta_evidence": "docs/evidence/nodia-ai-ai26-knowledge-delta.json",
+    "compiler_current_corpus_checks": 53,
+    "validation_evidence": "docs/evidence/nodia-ai-ai26-knowledge-validation.json",
+    "rental_write_prepare_published": false
+  },
+  "static_validation": {
+    "schema_definitions": 136,
+    "domain_definitions": 184,
+    "source_hashes": 722,
+    "fixtures": 450,
+    "evidence": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json"
+  },
+  "limits_and_pending": [
+    "MCP preparation/write publication and Gemini write acceptance remain pending.",
+    "AI-15/22 external/R2/routing gates and AI-32 attachments remain independent.",
+    "Knowledge remains draft/unregistered and document72 in review; no automatic approval.",
+    "AI-27 is the next implementation step for administration Core."
+  ]
+}

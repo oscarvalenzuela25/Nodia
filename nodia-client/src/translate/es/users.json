@@ -80,5 +80,7 @@
     "previous": "Página anterior",
     "first": "Primera página",
     "last": "Última página"
-  }
+  },
+  "last_super_admin": "Debe permanecer al menos un superadministrador activo.",
+  "invalid_associations": "Revisa los roles y módulos seleccionados."
 }

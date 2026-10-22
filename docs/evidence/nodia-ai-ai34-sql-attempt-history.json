@@ -1,0 +1,80 @@
+{
+  "stage": "AI-34",
+  "scope": "preserved_disposable_sql_attempt_provenance",
+  "attempts": [
+    {
+      "attempt": "attempt01",
+      "category": "fixture_missing_user_client_identity",
+      "resolution": "Fixed synthetic history to honor original user message client-id/input-hash constraint",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt01.json"
+    },
+    {
+      "attempt": "attempt02",
+      "category": "runtime_compaction_reservation_row_shape",
+      "resolution": "Real defect: raw UPDATE RETURNING result treated as rows",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt02.json"
+    },
+    {
+      "attempt": "attempt03",
+      "category": "runtime_compaction_reservation_row_shape_confirmed",
+      "resolution": "Root changed reservation to CTE SELECT; no dispatch had occurred",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt03.json"
+    },
+    {
+      "attempt": "attempt04",
+      "category": "fixture_order_sensitive_object_comparison",
+      "resolution": "Compared stable selection values instead of JSON key insertion order",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt04.json"
+    },
+    {
+      "attempt": "attempt05",
+      "category": "runtime_agentic_context_descriptor_gate",
+      "resolution": "Real defect: measuring Agentic context called a descriptor path restricted to inference",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt05.json"
+    },
+    {
+      "attempt": "attempt06",
+      "category": "runtime_agentic_context_descriptor_gate_diagnosis",
+      "resolution": "Preserved safe failure diagnostics to locate capability denial",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt06.json"
+    },
+    {
+      "attempt": "attempt07",
+      "category": "runtime_agentic_context_descriptor_gate_confirmed",
+      "resolution": "Root added private metadata-only projection while keeping context tool execution denied",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt07.json"
+    },
+    {
+      "attempt": "attempt08",
+      "category": "fixture_sync_rejection_assertion",
+      "resolution": "Used assert.throws for synchronous transaction guard",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt08.json"
+    },
+    {
+      "attempt": "attempt09",
+      "category": "fixture_bypassed_native_purge_flow",
+      "resolution": "Replaced direct chat DELETE with real ExpireNodiaAiConversationsUseCase before validating cascades",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt09.json"
+    },
+    {
+      "attempt": "attempt10",
+      "category": "passed",
+      "resolution": "36 compiled/disposable SQL checks pass; native adapter and provider observations are explicitly synthetic",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt10.json"
+    },
+    {
+      "attempt": "attempt11",
+      "category": "passed_final_first_mcp_listing_reserve",
+      "resolution": "36 checks pass against final compiled Node adapter/context budget contract; source stage/manifest is pinned in receipt",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt11.json"
+    },
+    {
+      "attempt": "attempt12",
+      "category": "passed_final_routing_checkpoint_atomicity",
+      "resolution": "36 checks pass against the final compiled callback-routing fix and knowledge release c2d7; no operational database or provider was used",
+      "report": "docs/evidence/nodia-ai-ai34-sql-attempt12.json"
+    }
+  ],
+  "operational_database_modified": false,
+  "real_provider_generations": 0
+}

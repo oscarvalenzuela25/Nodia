@@ -1,0 +1,19 @@
+{
+  "stage": "AI-36",
+  "scope": "offline_markdown_repository_relative_file_targets",
+  "status": "passed",
+  "directories": [
+    "docs/mvp",
+    "docs/features",
+    "docs/nodia-ai",
+    "docs/architecture",
+    "docs/evidence"
+  ],
+  "markdown_files": 226,
+  "local_file_targets_checked": 3830,
+  "missing_targets": [],
+  "external_requests": 0,
+  "limitations": [
+    "Does not validate fragment anchors, remote URLs, JavaScript, or rendered browser navigation"
+  ]
+}

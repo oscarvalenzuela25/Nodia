@@ -45,7 +45,7 @@ export const propertySchema = z.strictObject({
   created_at: z.iso.datetime({ offset: true }),
   updated_at: z.iso.datetime({ offset: true }),
   membership: z.strictObject({
-    type: z.enum(["owner", "collaborator"]),
+    type: z.enum(["owner", "collaborator", "super_admin"]),
     can_manage_configuration: z.boolean(),
     can_manage_collaborators: z.boolean(),
   }),

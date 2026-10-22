@@ -1,0 +1,23 @@
+{
+  "script_sha256": "9eeb11ad30ce3070f5976e51f95a2d58e2048ac3a2c8f1ad0cf03405979eacca",
+  "synthetic_attempt_id": "2ff9177b-04b3-4b51-95f8-f1913a4af356",
+  "elapsed_ms": 106,
+  "rpc_messages": 1,
+  "callbacks": 0,
+  "phase": "running_cli",
+  "controlled_initial_utf8_bytes": 23244,
+  "controlled_used_utf8_bytes": 23244,
+  "exception_chain": [
+    "JSONDecodeError",
+    "AssertionError"
+  ],
+  "stdio_exit_code": null,
+  "stderr_retained": false,
+  "schema_version": 1,
+  "status": "failed_intermediate_offline_control",
+  "source_stdio_sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+  "provider_CLI_executions": 0,
+  "provider_requests": 0,
+  "production_source_changed_since_first_postfix_attempt": false,
+  "interpretation": "Closed metadata projected from retained tool execution output. Missing exit/error details remain unknown. These failures are not upstream attempts and do not establish another production defect."
+}

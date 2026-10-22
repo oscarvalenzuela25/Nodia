@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { validateRentalDto } from '../../rental-common/rental-validation.js';
@@ -45,13 +46,13 @@ export class GetRentalOverviewUseCase {
     private readonly overview: RentalOverviewService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: RentalOverviewQueryDto,
   ) {
     const query = await validateRentalDto(RentalOverviewQueryDto, input);
     validateCivilPeriod(query.from_on, query.to_on, 366);
-    return this.tx.read(actorId, propertyId, async (ctx) => {
+    return this.tx.read(actor, propertyId, async (ctx) => {
       const totals = await this.overview.aggregate(
         ctx.manager,
         propertyId,

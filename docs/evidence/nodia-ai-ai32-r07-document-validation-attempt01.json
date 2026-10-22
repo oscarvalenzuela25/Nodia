@@ -1,0 +1,15 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "initial_document_quality_checks",
+  "status": "failed_then_corrected",
+  "knowledge_check_error": "metadata_schema_invalid",
+  "reason": "draft_product_implementation_notes_exceeded_4096_characters",
+  "observed_characters": 4109,
+  "corrected_characters": 1504,
+  "correction": "summarize_current_state_and_keep_historical_detail_in_body_and_evidence",
+  "schema_changed": false,
+  "approval_changed": false,
+  "application_changed": false,
+  "lint_initial_invocation_error": "relative_paths_containing_parent_segments_rejected",
+  "lint_correction": "invoke_existing_binary_with_absolute_paths"
+}

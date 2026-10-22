@@ -1,0 +1,20 @@
+{
+  "stage": "AI-33",
+  "scope": "private_pre_M4_backup_catalog_readability",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T18:49:58.584Z",
+  "validation_order": "after_activation; pg_dump_exit0_bytes_hash_and_0600_verified_before_activation",
+  "native_pg_dump_absence_resolved_with_cached_container": true,
+  "backup_bytes": 296521,
+  "backup_sha256": "94108e9fb2d886f0841cea837625d2f7efbdec090e978a07966ef509cb880030",
+  "backup_mode": "0600",
+  "pg_restore_list_exit_code": 0,
+  "catalog_entries": 596,
+  "source_database_major": 16,
+  "pg_dump_major": 16,
+  "current_database_major": 16,
+  "pre_M4_schema_verified": true,
+  "sql_restore_executed": false,
+  "provider_generations": 0,
+  "storage_operations": 0
+}

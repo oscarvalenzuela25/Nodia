@@ -1,0 +1,42 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "executed_harness_sources_and_initial_pre_PUT_failure",
+  "status": "passed",
+  "sources": [
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r07-late-put-attempt01.mjs",
+      "sha256": "1d3bbef84e12736c13f88b80f89e9a5b591e260e585a0b455c88e29732ed59d7"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r07-late-put.mjs",
+      "sha256": "657e743b804669f0eebdf46640efea46105a8364dfdd0ffd229ec9daa31d1e21"
+    },
+    {
+      "path": "docs/evidence/scripts/test-nodia-ai-ai32-r07-late-put.mjs",
+      "sha256": "a148616051a8e1133076e1a6023213e88608da958c63938e7c3406ca4733ed4a"
+    }
+  ],
+  "executed_source_changed_between_initial_pre_PUT_failure_and_success": true,
+  "initial_put_calls": 0,
+  "corrected_upload_put_calls": 1,
+  "cleanup_put_calls": 0,
+  "application_code_changed": false,
+  "reports": [
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r07-late-put-upload-attempt01.json",
+      "sha256": "fb3629b3b68104ea48fa958dcca01c7fa1b028d72902d02d396e0527f1495844"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r07-di-failure-state.json",
+      "sha256": "0e41e97b4c6ed1fc6995e1e2dbbc8d484cc5c03cc17f6394a239ccf9445e1f7c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r07-late-put-upload.json",
+      "sha256": "c8b414f4b6b11de6fa45589d96b4d0294c098c009ea5452a683126080f3b4a26"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r07-late-put-cleanup.json",
+      "sha256": "84c7504155b42f25ee1524da691e96474bd9c106d941ed4f814b4f88fc945c17"
+    }
+  ]
+}

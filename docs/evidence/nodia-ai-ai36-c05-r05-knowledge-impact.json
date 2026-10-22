@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R05",
+  "scope": "draft_context_update_approved_health_nonimpact_no_bundle_emission",
+  "status": "passed",
+  "before": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r05-knowledge-impact-before.json",
+    "sha256": "8afd45ab1b6d477918401f90e8fe708539d10f864de89a109d5fdc40d59d50f9"
+  },
+  "continuation": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r05-validation.json",
+    "sha256": "25f3ee4a8a82f778522c55ff88922905acc6a22d40f2e74617ba6791baf236c4"
+  },
+  "draft_updates": [
+    {
+      "document_id": "nodia-ai.context-execution",
+      "revision": 13,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md",
+      "sha256": "28958dcf3d366318eab5739feaf22b22c3ac616dd16c5d6d482c389b594c3339",
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null
+    },
+    {
+      "document_id": "nodia-ai.runtime-policy",
+      "revision": 4,
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md",
+      "sha256": "f912f77229896b7c5399fe7f5a21e2ec46a15eef2b200212700673c4376e87e4",
+      "document_status": "draft",
+      "integration_status": "unregistered",
+      "approval": null
+    }
+  ],
+  "approved_documents_byte_identical": 31,
+  "approved_health": {
+    "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+    "sha256": "978bfd8c6667f67d650ee134cf388a92ec158a0b9df8c19e61db081708854d72",
+    "revision": 8,
+    "approval_preserved": true,
+    "reason": "Precise non-generative timeout classification preserves unavailable-observation semantics without inferring auth/quota, changing schemas or adding a published operation."
+  },
+  "registry_byte_identical": true,
+  "compiled_manifest_byte_identical": true,
+  "compiled_manifest_semantically_identical": true,
+  "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+  "catalog_release": "nodia-ai-ai15-reads/1",
+  "capabilities": 74,
+  "documents": 31,
+  "fragments": 31,
+  "fragment_assets_byte_identical": 31,
+  "source_counts": {
+    "sources": 59,
+    "excluded": 28
+  },
+  "compile_mode": "compileKnowledge in memory only; no emitBundle or compiled assets written",
+  "compiled_assets_modified": false,
+  "approved_document_modified": false,
+  "operational_Node_candidate_adopted": false,
+  "candidate_Python_fix_adopted": false,
+  "metadata_scope": "RepoPath remains closed to docs/nodia-server/nodia-client. Draft metadata references the Python source diff/evidence under docs; a body link provides the human-readable Python source without expanding publication paths.",
+  "validation_commands": [
+    "node nodia-server/scripts/build-nodia-ai-knowledge.mjs --check",
+    "node docs/evidence/scripts/nodia-ai-ai36-c05-publication-build.cjs --check",
+    "node docs/evidence/scripts/validate-nodia-ai-ai36-c05-r05.cjs --check"
+  ]
+}

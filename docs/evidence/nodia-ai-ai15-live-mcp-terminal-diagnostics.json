@@ -1,0 +1,84 @@
+{
+  "source": "Real Gemini container allowlisted nodia_ai_mcp_terminal logger; Docker UTC timestamps",
+  "provider_outputs_retained": false,
+  "records": [
+    {
+      "logged_at": "2026-10-16T18:48:50.782821478Z",
+      "phase": "awaiting_server_callback",
+      "state": "unknown",
+      "exception_type": "CancelledError",
+      "elapsed_ms": 40230,
+      "rpc_messages": 9,
+      "callbacks": 3,
+      "exit_code": null,
+      "gate_verified": false,
+      "cli": {
+        "stage": "other_step",
+        "events": 10,
+        "invalid_lines": 0,
+        "stdout_bytes": 5093,
+        "initialized": true,
+        "document_read_completed": false,
+        "result_seen": false,
+        "last_event_age_ms": 180,
+        "tool_steps": 5,
+        "last_tool": "call_mcp_tool",
+        "terminal_status": "absent",
+        "denied_count": 0,
+        "stderr_bytes": 0
+      }
+    },
+    {
+      "logged_at": "2026-10-16T19:11:36.060036968Z",
+      "phase": "awaiting_server_callback",
+      "state": "unknown",
+      "exception_type": "CancelledError",
+      "elapsed_ms": 23799,
+      "rpc_messages": 7,
+      "callbacks": 1,
+      "exit_code": null,
+      "gate_verified": false,
+      "cli": {
+        "stage": "other_step",
+        "events": 4,
+        "invalid_lines": 0,
+        "stdout_bytes": 2405,
+        "initialized": true,
+        "document_read_completed": false,
+        "result_seen": false,
+        "last_event_age_ms": 979,
+        "tool_steps": 1,
+        "last_tool": "call_mcp_tool",
+        "terminal_status": "absent",
+        "denied_count": 0,
+        "stderr_bytes": 0
+      }
+    },
+    {
+      "logged_at": "2026-10-16T19:19:48.780727392Z",
+      "phase": "awaiting_cli_terminal",
+      "state": "unknown",
+      "exception_type": "CancelledError",
+      "elapsed_ms": 115358,
+      "rpc_messages": 11,
+      "callbacks": 5,
+      "exit_code": null,
+      "gate_verified": false,
+      "cli": {
+        "stage": "other_step",
+        "events": 20,
+        "invalid_lines": 0,
+        "stdout_bytes": 11159,
+        "initialized": true,
+        "document_read_completed": false,
+        "result_seen": false,
+        "last_event_age_ms": 48717,
+        "tool_steps": 12,
+        "last_tool": "call_mcp_tool",
+        "terminal_status": "absent",
+        "denied_count": 0,
+        "stderr_bytes": 0
+      }
+    }
+  ]
+}

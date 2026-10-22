@@ -1,3 +1,4 @@
+import { lockAuthority } from '../../authorization/authority-transaction.js';
 import {
   BadRequestException,
   ConflictException,
@@ -50,6 +51,7 @@ export class SeedAuthUseCase {
 
     // Serialize bootstrap across CLI/HTTP and processes before checking or creating the role.
     const result = await this.dataSource.transaction(async (manager) => {
+      await lockAuthority(manager, true);
       await manager.query('SELECT pg_advisory_xact_lock(1789257400)');
       const superAdminRole = await manager.getRepository(Role).findOne({
         where: { key: 'super_admin' },

@@ -47,7 +47,9 @@ describe('GetAllBusinessActionsUseCase', () => {
       },
     };
 
-    vi.mocked(businessActionServiceMock.findAll!).mockResolvedValue(mockResponse as any);
+    vi.mocked(businessActionServiceMock.findAll!).mockResolvedValue(
+      mockResponse as any,
+    );
 
     const result = await useCase.execute(queryParams);
 

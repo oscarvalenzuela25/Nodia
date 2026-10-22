@@ -1,0 +1,131 @@
+{
+  "task": "AI-15 timeout investigation: non-generative infrastructure",
+  "checked_at_vm_utc": "2026-10-16T20:20:36Z",
+  "mutations": {
+    "services_restarted": false,
+    "configuration_changed": false,
+    "profile_access": false,
+    "provider_discovery": false,
+    "generations": 0
+  },
+  "quiet_snapshot": {
+    "checked_at_vm_utc": "2026-10-16T20:16:43Z",
+    "active_units": [
+      "nodia-api",
+      "nodia-ai-worker",
+      "nodia-gemini-lab",
+      "nginx"
+    ],
+    "healthy_containers": 3,
+    "cli_or_chrome_processes": 0,
+    "runtime_admission_files": 0,
+    "api_root_http": 200,
+    "bridge_health_http": 200,
+    "load_1_5_15": [
+      0.0,
+      0.02,
+      0.01
+    ],
+    "ram_available_mib": 6935,
+    "swap_used_mib": 0,
+    "disk_used_percent": 38,
+    "gemini_container_memory_mib": 67.07
+  },
+  "sql_readonly": {
+    "migrations": 20,
+    "nodia_ai_tables": 11,
+    "conversations": 1,
+    "runs": 1,
+    "jobs": 0,
+    "tool_calls": 0,
+    "pending": 0
+  },
+  "clock": {
+    "checked_at_vm_utc": "2026-10-16T20:17:34Z",
+    "container_matches_vm": true,
+    "vm_ntp_synced": true,
+    "ntp_source": "ntp.ubuntu.com",
+    "ntp_offset_ms": 17.215,
+    "ntp_delay_ms": 136.526,
+    "vm_minus_windows_midpoint_seconds": 372.1925,
+    "interpretation": "Windows clock lags VM. VM NTP and container agree; no clock correction performed. Both generation adapters run in the VM."
+  },
+  "cgroups": {
+    "memory_max_bytes": 2147483648,
+    "cpu_max": "200000 100000",
+    "pids_max": 256,
+    "oom": 0,
+    "oom_kill": 0,
+    "memory_max_events": 0,
+    "cpu_nr_throttled": 0,
+    "pids_max_events": 0
+  },
+  "sockets": {
+    "total": 266,
+    "tcp_established": 17,
+    "orphaned": 0,
+    "timewait": 13
+  },
+  "container_network": {
+    "network_mode": "nodia-gemini-lab_default",
+    "dns_overrides": false,
+    "dns_search_count": 0,
+    "resolver": "127.0.0.11",
+    "ipv6_assigned": false,
+    "restart_count": 0,
+    "started_at": "2026-10-16T19:55:52.414643106Z",
+    "oom_killed": false
+  },
+  "proxy_and_ca": {
+    "host_proxy_present": false,
+    "container_proxy_present": false,
+    "filtered_service_dotenv_proxy_present": false,
+    "cli_environment_proxy_present": false,
+    "docker_daemon_proxy_present": false,
+    "custom_ca_override_present": false,
+    "values_logged": false
+  },
+  "public_https_probes": {
+    "method": "HEAD",
+    "path": "/",
+    "authentication": false,
+    "redirects_followed": false,
+    "connect_timeout_seconds": 3,
+    "total_timeout_seconds": 8,
+    "process_timeout_seconds": 10,
+    "contexts": [
+      "host",
+      "container",
+      "cli_environment exact pure function"
+    ],
+    "hosts_and_status_in_every_context": {
+      "gemini.google.com": 200,
+      "accounts.google.com": 302,
+      "cloudcode-pa.googleapis.com": 404,
+      "daily-cloudcode-pa.googleapis.com": 404
+    },
+    "completed": 12,
+    "exit_codes_all_zero": true,
+    "ssl_verify_results_all_zero": true,
+    "dns_seconds_range": [
+      0.000695,
+      0.012655
+    ],
+    "tls_appconnect_seconds_range": [
+      0.021071,
+      0.037388
+    ],
+    "total_seconds_range": [
+      0.140567,
+      2.08294
+    ],
+    "response_bodies_and_headers_logged": false
+  },
+  "conclusion": "No current evidence of resource exhaustion, DNS/TLS blocking or proxy removal causing the 119-second timeouts. Basic public HTTP reachability does not validate authenticated RPC, stream delivery, session validity or generation success.",
+  "historical_comparison": "Earlier real LOCAL SQL/CSV and Agentic MCP callbacks succeeded on this VM/network. Latest configured Agentic attestation and UI Web simple message each exhausted approximately119 seconds; this snapshot cannot establish a shared network root cause.",
+  "reproduction_scripts": [
+    ".tmp/ai15-timeout-public-network.py",
+    ".tmp/ai15-timeout-network-shape.py"
+  ],
+  "snapshot_scope": "Before the combined diagnostic deployment; timestamps in each section identify the observed state."
+}

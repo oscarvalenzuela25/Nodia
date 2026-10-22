@@ -1,0 +1,525 @@
+// NodiaAI ERD revision3: M1 persistence; later groups remain design only.
+// Full checks, partial indexes, stages and deferrability: JSON manifest and42/55.
+
+Table users {
+  id bigint [not null, pk]
+}
+
+Table auth_sessions {
+  id bigint [not null, pk]
+  public_id uuid [not null]
+  indexes {
+    (public_id) [unique]
+  }
+}
+
+Table ai_providers {
+  id bigint [not null, pk]
+}
+
+Table nodia_ai_conversations {
+  id uuid [not null, pk]
+  owner_id bigint [not null]
+  client_request_id uuid [not null]
+  title text [null]
+  is_pinned boolean [not null]
+  is_archived boolean [not null]
+  revision integer [not null]
+  retention_epoch bigint [not null]
+  selected_connection_id bigint [null]
+  selected_mode text [null]
+  selected_model_id text [null]
+  active_job_id uuid [null]
+  next_message_seq bigint [not null]
+  next_event_seq bigint [not null]
+  last_owner_message_at timestamptz [null]
+  expires_at timestamptz [not null]
+  lifecycle text [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  creation_request_hash char(64) [not null]
+  selected_effort_id text [null]
+  routing_revision integer [not null]
+  routing_enabled boolean [not null]
+  routing_target_selection jsonb [null]
+  indexes {
+    (owner_id, client_request_id) [unique]
+  }
+}
+
+Table nodia_ai_messages {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  seq bigint [not null]
+  role text [not null]
+  author_id bigint [null]
+  client_message_id uuid [null]
+  status text [not null]
+  source_scope_manifest jsonb [not null]
+  created_at timestamptz [not null]
+  sealed_at timestamptz [null]
+  input_hash char(64) [null]
+  indexes {
+    (id, conversation_id) [unique]
+    (conversation_id, seq) [unique]
+    (conversation_id, author_id, client_message_id) [unique]
+  }
+}
+
+Table nodia_ai_attachments {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  kind text [not null]
+  state text [not null]
+  storage_key text [not null]
+  content_hash char(64) [null]
+  media_type text [null]
+  byte_size bigint [null]
+  page_count integer [null]
+  duration_seconds numeric [null]
+  transcript text [null]
+  derived_text text [null]
+  storage_generation uuid [not null]
+  created_at timestamptz [not null]
+  indexes {
+    (id, conversation_id) [unique]
+    (storage_key) [unique]
+  }
+}
+
+Table nodia_ai_message_parts {
+  message_id uuid [not null]
+  conversation_id uuid [not null]
+  part_index integer [not null]
+  kind text [not null]
+  text text [null]
+  attachment_id uuid [null]
+  indexes {
+    (message_id, part_index) [pk]
+  }
+}
+
+Table nodia_ai_context_snapshots {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  revision integer [not null]
+  through_message_seq bigint [not null]
+  source_hash char(64) [not null]
+  summary jsonb [not null]
+  scope_manifest jsonb [not null]
+  builder_contract_version text [not null]
+  created_at timestamptz [not null]
+  indexes {
+    (id, conversation_id) [unique]
+    (conversation_id, revision) [unique]
+  }
+}
+
+Table nodia_ai_adapter_states {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  connection_id bigint [null]
+  mode text [not null]
+  model_id text [not null]
+  generation bigint [not null]
+  state_revision integer [not null]
+  context_hash char(64) [not null]
+  state_ciphertext text [not null]
+  encryption_key_version text [not null]
+  adapter_contract_version text [not null]
+  status text [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (id, conversation_id) [unique]
+    (conversation_id, connection_id, mode, model_id, generation) [unique]
+  }
+}
+
+Table nodia_ai_runs {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  actor_id bigint [not null]
+  user_message_id uuid [not null]
+  assistant_message_id uuid [null]
+  connection_id bigint [null]
+  selection_snapshot jsonb [not null]
+  catalog_version text [not null]
+  policy_version text [not null]
+  context_snapshot_id uuid [null]
+  adapter_state_id uuid [null]
+  input_through_seq bigint [not null]
+  revision integer [not null]
+  state text [not null]
+  phase text [not null]
+  deadline_at timestamptz [not null]
+  error_code text [null]
+  created_at timestamptz [not null]
+  completed_at timestamptz [null]
+  retention_epoch bigint [not null]
+  context_manifest jsonb [not null]
+  routing_snapshot jsonb [not null]
+  policy_hash char(64) [not null]
+  budget_snapshot jsonb [not null]
+  tool_calls_used integer [not null]
+  mcp_rpc_messages_used integer [not null]
+  provider_dispatches_used integer [not null]
+  compactions_used integer [not null]
+  delegations_used integer [not null]
+  indexes {
+    (id, conversation_id) [unique]
+    (user_message_id) [unique]
+    (assistant_message_id) [unique]
+  }
+}
+
+Table nodia_ai_tool_calls {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  run_id uuid [not null]
+  adapter_call_id text [not null]
+  tool_name text [not null]
+  contract_hash char(64) [not null]
+  arguments_hash char(64) [not null]
+  arguments jsonb [not null]
+  public_result jsonb [null]
+  scope_manifest jsonb [not null]
+  state text [not null]
+  created_at timestamptz [not null]
+  completed_at timestamptz [null]
+  indexes {
+    (id, conversation_id) [unique]
+    (run_id, adapter_call_id) [unique]
+  }
+}
+
+Table nodia_ai_drafts {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  actor_id bigint [not null]
+  tool_call_id uuid [null]
+  tool_name text [not null]
+  catalog_version text [not null]
+  revision integer [not null]
+  scope jsonb [not null]
+  partial_command jsonb [not null]
+  clarifications jsonb [not null]
+  state text [not null]
+  claimed_proposal_id uuid [null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (id, conversation_id) [unique]
+  }
+}
+
+Table nodia_ai_proposals {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  actor_id bigint [not null]
+  current_revision integer [not null]
+  created_at timestamptz [not null]
+  indexes {
+    (id, conversation_id) [unique]
+  }
+}
+
+Table nodia_ai_proposal_revisions {
+  proposal_id uuid [not null]
+  revision integer [not null]
+  state text [not null]
+  hash char(64) [not null]
+  catalog_version text [not null]
+  canonicalization_version text [not null]
+  created_at timestamptz [not null]
+  expires_at timestamptz [not null]
+  indexes {
+    (proposal_id, revision) [pk]
+  }
+}
+
+Table nodia_ai_proposal_steps {
+  id uuid [not null, pk]
+  proposal_id uuid [not null]
+  proposal_revision integer [not null]
+  position integer [not null]
+  tool_name text [not null]
+  contract_hash char(64) [not null]
+  kind text [not null]
+  effect_key text [not null]
+  scope jsonb [not null]
+  command_template jsonb [not null]
+  public_step jsonb [not null]
+  output_bindings jsonb [not null]
+  preconditions jsonb [not null]
+  indexes {
+    (proposal_id, proposal_revision, position) [unique]
+    (id, proposal_id, proposal_revision) [unique]
+  }
+}
+
+Table nodia_ai_confirmation_challenges {
+  id uuid [not null, pk]
+  proposal_id uuid [not null]
+  proposal_revision integer [not null]
+  actor_id bigint [not null]
+  session_public_id uuid [null]
+  expected_hash char(64) [not null]
+  token_hash char(64) [not null]
+  expires_at timestamptz [not null]
+  consumed_at timestamptz [null]
+  created_at timestamptz [not null]
+  indexes {
+    (token_hash) [unique]
+    (proposal_id, proposal_revision, actor_id, session_public_id) [unique]
+  }
+}
+
+Table nodia_ai_executions {
+  id uuid [not null, pk]
+  conversation_id uuid [null]
+  proposal_id uuid [null]
+  origin_conversation_id uuid [not null]
+  origin_proposal_id uuid [not null]
+  origin_proposal_revision integer [not null]
+  proposal_hash char(64) [not null]
+  actor_id bigint [not null]
+  chat_owner_id bigint [not null]
+  client_request_id uuid [not null]
+  catalog_version text [not null]
+  revision integer [not null]
+  state text [not null]
+  minimal_scope jsonb [not null]
+  prior_execution_id uuid [null]
+  created_at timestamptz [not null]
+  completed_at timestamptz [null]
+  retention_epoch bigint [not null]
+  indexes {
+    (origin_proposal_id) [unique]
+    (actor_id, client_request_id) [unique]
+  }
+}
+
+Table nodia_ai_execution_steps {
+  id uuid [not null, pk]
+  execution_id uuid [not null]
+  source_step_id uuid [null]
+  position integer [not null]
+  tool_name text [not null]
+  template_hash char(64) [not null]
+  bound_command_hash char(64) [null]
+  native_request_key uuid [not null]
+  state text [not null]
+  minimal_scope jsonb [not null]
+  minimal_receipt jsonb [null]
+  recovery_descriptor jsonb [null]
+  lease_fence bigint [not null]
+  error_code text [null]
+  dispatched_at timestamptz [null]
+  completed_at timestamptz [null]
+  indexes {
+    (execution_id, position) [unique]
+    (native_request_key) [unique]
+  }
+}
+
+Table nodia_ai_execution_payloads {
+  step_id uuid [not null, pk]
+  conversation_id uuid [not null]
+  bound_command jsonb [not null]
+  public_result jsonb [null]
+  safe_error jsonb [null]
+  created_at timestamptz [not null]
+}
+
+Table nodia_ai_events {
+  id uuid [not null, pk]
+  conversation_id uuid [not null]
+  seq bigint [not null]
+  event_key text [not null]
+  run_id uuid [null]
+  execution_id uuid [null]
+  public_payload jsonb [not null]
+  scope_manifest jsonb [not null]
+  created_at timestamptz [not null]
+  indexes {
+    (conversation_id, seq) [unique]
+    (conversation_id, event_key) [unique]
+    (run_id, seq) [name: 'nodia_ai_events_run_seq_idx']
+  }
+}
+
+Table nodia_ai_jobs {
+  id uuid [not null, pk]
+  kind text [not null]
+  dedup_key text [not null]
+  conversation_id uuid [null]
+  run_id uuid [null]
+  execution_id uuid [null]
+  storage_key text [null]
+  storage_generation uuid [null]
+  recovery_descriptor jsonb [null]
+  state text [not null]
+  available_at timestamptz [not null]
+  lease_owner uuid [null]
+  lease_until timestamptz [null]
+  fence bigint [not null]
+  attempt_count integer [not null]
+  deadline_at timestamptz [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  stage_key text [not null]
+  stage_seq integer [not null]
+  indexes {
+    (dedup_key) [unique]
+    (id, conversation_id) [unique]
+  }
+}
+
+Table nodia_ai_job_attempts {
+  id uuid [not null, pk]
+  job_id uuid [not null]
+  attempt_no integer [not null]
+  fence bigint [not null]
+  worker_id uuid [not null]
+  phase text [not null]
+  error_code text [null]
+  external_operation_ref text [null]
+  started_at timestamptz [not null]
+  ended_at timestamptz [null]
+  runtime_resource_key text [null]
+  runtime_fence bigint [null]
+  stage_key text [not null]
+  stage_seq integer [not null]
+  selection_snapshot jsonb [null]
+  routing_phase text [null]
+  indexes {
+    (job_id, attempt_no) [unique]
+    (job_id, fence) [unique]
+  }
+}
+
+Table nodia_ai_execution_grants {
+  id uuid [not null, pk]
+  actor_id bigint [not null]
+  session_public_id uuid [null]
+  run_id uuid [null]
+  execution_id uuid [null]
+  allowed_modules jsonb [not null]
+  allowed_operations jsonb [not null]
+  allowed_scope jsonb [not null]
+  command_set_hash char(64) [null]
+  policy_version text [not null]
+  expires_at timestamptz [not null]
+  revoked_at timestamptz [null]
+  created_at timestamptz [not null]
+  indexes {
+    (run_id) [unique]
+    (execution_id) [unique]
+  }
+}
+
+Table nodia_ai_runtime_slots {
+  resource_key text [not null, pk]
+  state text [not null]
+  conversation_id uuid [null]
+  job_id uuid [null]
+  holder_worker_id uuid [null]
+  fence bigint [not null]
+  lease_until timestamptz [null]
+  external_operation_ref text [null]
+  updated_at timestamptz [not null]
+}
+
+Table nodia_ai_preferences {
+  id uuid [not null, pk]
+  owner_id bigint [not null]
+  scope_key text [not null]
+  scope_hash char(64) [not null]
+  scope jsonb [not null]
+  key text [not null]
+  value jsonb [not null]
+  revision integer [not null]
+  source_conversation_id uuid [null]
+  accepted_step_id uuid [null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes {
+    (owner_id, scope_hash, key) [unique]
+  }
+}
+
+Table nodia_ai_audit_events {
+  id uuid [not null, pk]
+  actor_id bigint [null]
+  session_public_id uuid [null]
+  conversation_id uuid [null]
+  execution_id uuid [null]
+  event_key text [not null]
+  correlation_id uuid [not null]
+  minimal_details jsonb [null]
+  created_at timestamptz [not null]
+}
+
+Ref: nodia_ai_conversations.owner_id > users.id [delete: restrict]
+Ref: nodia_ai_messages.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_messages.author_id > users.id [delete: restrict]
+Ref: nodia_ai_attachments.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_context_snapshots.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_adapter_states.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_runs.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_runs.actor_id > users.id [delete: restrict]
+Ref: nodia_ai_tool_calls.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_drafts.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_drafts.actor_id > users.id [delete: restrict]
+Ref: nodia_ai_proposals.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_proposals.actor_id > users.id [delete: restrict]
+Ref: nodia_ai_confirmation_challenges.actor_id > users.id [delete: restrict]
+Ref: nodia_ai_confirmation_challenges.session_public_id > auth_sessions.public_id [delete: set null]
+Ref: nodia_ai_executions.conversation_id > nodia_ai_conversations.id [delete: set null]
+Ref: nodia_ai_executions.actor_id > users.id [delete: restrict]
+Ref: nodia_ai_executions.chat_owner_id > users.id [delete: restrict]
+Ref: nodia_ai_events.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_jobs.conversation_id > nodia_ai_conversations.id [delete: no action]
+Ref: nodia_ai_execution_grants.actor_id > users.id [delete: restrict]
+Ref: nodia_ai_execution_grants.session_public_id > auth_sessions.public_id [delete: set null]
+Ref: nodia_ai_runtime_slots.conversation_id > nodia_ai_conversations.id [delete: set null]
+Ref: nodia_ai_preferences.owner_id > users.id [delete: restrict]
+Ref: nodia_ai_audit_events.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_audit_events.actor_id > users.id [delete: restrict]
+Ref: nodia_ai_audit_events.session_public_id > auth_sessions.public_id [delete: set null]
+Ref: nodia_ai_conversations.selected_connection_id > ai_providers.id [delete: set null]
+Ref: nodia_ai_conversations.(active_job_id, id) > nodia_ai_jobs.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_adapter_states.connection_id > ai_providers.id [delete: set null]
+Ref: nodia_ai_runs.connection_id > ai_providers.id [delete: set null]
+Ref: nodia_ai_message_parts.(message_id, conversation_id) > nodia_ai_messages.(id, conversation_id) [delete: cascade]
+Ref: nodia_ai_message_parts.(attachment_id, conversation_id) > nodia_ai_attachments.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_runs.(user_message_id, conversation_id) > nodia_ai_messages.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_runs.(assistant_message_id, conversation_id) > nodia_ai_messages.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_runs.(context_snapshot_id, conversation_id) > nodia_ai_context_snapshots.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_runs.(adapter_state_id, conversation_id) > nodia_ai_adapter_states.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_tool_calls.(run_id, conversation_id) > nodia_ai_runs.(id, conversation_id) [delete: cascade]
+Ref: nodia_ai_drafts.(tool_call_id, conversation_id) > nodia_ai_tool_calls.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_drafts.(claimed_proposal_id, conversation_id) > nodia_ai_proposals.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_proposals.(id, current_revision) > nodia_ai_proposal_revisions.(proposal_id, revision) [delete: no action]
+Ref: nodia_ai_proposal_revisions.proposal_id > nodia_ai_proposals.id [delete: cascade]
+Ref: nodia_ai_proposal_steps.(proposal_id, proposal_revision) > nodia_ai_proposal_revisions.(proposal_id, revision) [delete: cascade]
+Ref: nodia_ai_confirmation_challenges.(proposal_id, proposal_revision) > nodia_ai_proposal_revisions.(proposal_id, revision) [delete: cascade]
+Ref: nodia_ai_executions.proposal_id > nodia_ai_proposals.id [delete: set null]
+Ref: nodia_ai_executions.prior_execution_id > nodia_ai_executions.id [delete: restrict]
+Ref: nodia_ai_execution_steps.execution_id > nodia_ai_executions.id [delete: restrict]
+Ref: nodia_ai_execution_steps.source_step_id > nodia_ai_proposal_steps.id [delete: set null]
+Ref: nodia_ai_execution_payloads.step_id > nodia_ai_execution_steps.id [delete: restrict]
+Ref: nodia_ai_execution_payloads.conversation_id > nodia_ai_conversations.id [delete: cascade]
+Ref: nodia_ai_events.(run_id, conversation_id) > nodia_ai_runs.(id, conversation_id) [delete: no action]
+Ref: nodia_ai_events.execution_id > nodia_ai_executions.id [delete: restrict]
+Ref: nodia_ai_jobs.(run_id, conversation_id) > nodia_ai_runs.(id, conversation_id) [delete: set null]
+Ref: nodia_ai_jobs.execution_id > nodia_ai_executions.id [delete: restrict]
+Ref: nodia_ai_job_attempts.job_id > nodia_ai_jobs.id [delete: cascade]
+Ref: nodia_ai_execution_grants.run_id > nodia_ai_runs.id [delete: cascade]
+Ref: nodia_ai_execution_grants.execution_id > nodia_ai_executions.id [delete: restrict]
+Ref: nodia_ai_runtime_slots.(job_id, conversation_id) > nodia_ai_jobs.(id, conversation_id) [delete: set null]
+Ref: nodia_ai_preferences.source_conversation_id > nodia_ai_conversations.id [delete: set null]
+Ref: nodia_ai_preferences.accepted_step_id > nodia_ai_execution_steps.id [delete: set null]
+Ref: nodia_ai_audit_events.execution_id > nodia_ai_executions.id [delete: restrict]
+Ref: nodia_ai_job_attempts.runtime_resource_key > nodia_ai_runtime_slots.resource_key [delete: set null]

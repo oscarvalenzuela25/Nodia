@@ -197,19 +197,33 @@ export class AnalyzeInvoiceUseCase {
             ? ocrModel
             : defaultModel));
 
-    // Extended thinking toggle is only supported in token_plan_web
+    const sessionMode = effectiveMode === 'token_plan_web' || effectiveMode === 'token_plan_agentic';
+    const levels: unknown = modeFields?.thinking_levels;
+    if (sessionMode && engineKey === 'gemini' && dto.thinking_level === undefined
+        && levels != null && (typeof levels !== 'object' || Array.isArray(levels))) {
+      throw new BadRequestException('La configuración de niveles de razonamiento es inválida.');
+    }
+    const levelMap = levels && typeof levels === 'object' && !Array.isArray(levels)
+      ? levels as Record<string, unknown> : {};
+    const hasModelLevel = typeof effectiveModel === 'string' && Object.hasOwn(levelMap, effectiveModel);
+    const hasLevelPreference = dto.thinking_level !== undefined || hasModelLevel || Object.hasOwn(modeFields ?? {}, 'thinking_level');
+    const resolvedLevel: unknown = dto.thinking_level !== undefined ? dto.thinking_level
+      : sessionMode ? (hasModelLevel ? levelMap[effectiveModel] : modeFields?.thinking_level) : undefined;
+    if (engineKey === 'gemini' && sessionMode && resolvedLevel != null && !['low', 'medium', 'high'].includes(resolvedLevel as string)) {
+      throw new BadRequestException('El nivel de razonamiento configurado es inválido.');
+    }
+    const effectiveThinkingLevel = resolvedLevel == null ? undefined : resolvedLevel as 'low' | 'medium' | 'high';
+    // Preserve the legacy boolean only until an explicit level preference exists.
     const effectiveExtendedThinking =
       effectiveMode === 'token_plan_agentic'
         ? undefined
         : dto.extended_thinking ?? (effectiveMode === 'token_plan_web'
-          ? (typeof modeFields?.enable_extended_thinking === 'boolean' ? modeFields.enable_extended_thinking : undefined)
+          ? (!hasLevelPreference && typeof modeFields?.enable_extended_thinking === 'boolean' ? modeFields.enable_extended_thinking : undefined)
           : undefined);
 
-    // The Web adapter validates its installed SDK option; never infer support from names.
-    const effectiveThinkingLevel: 'low' | 'medium' | 'high' | undefined =
-      dto.thinking_level || (effectiveMode === 'token_plan_agentic'
-        ? modeFields?.thinking_levels?.[effectiveModel] || modeFields?.thinking_level
-        : undefined);
+    if (effectiveMode === 'token_plan_web' && effectiveThinkingLevel !== undefined && effectiveExtendedThinking !== undefined) {
+      throw new BadRequestException('No combine niveles de razonamiento con pensamiento extendido histórico.');
+    }
 
     let targetGeminiEngine: GeminiExecutionEngine | undefined = dto.engine;
     if (!targetGeminiEngine) {

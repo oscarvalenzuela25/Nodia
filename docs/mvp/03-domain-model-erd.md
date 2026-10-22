@@ -2,6 +2,7 @@
 
 > Estado: en revisión — ampliación auth, negocios, IA, Finanzas personales, Reservas y Contactos
 > Última actualización: 2026-10-05
+> Ampliación propuesta del2026-10-14: NodiaAI42/43; no reemplaza esquemas aceptados ni añade migraciones.
 > Dependencias: 01-interview.md aprobado, 02-prd-v1.md aprobado, 15-ai-providers-interview.md, 16-ai-provider-management-handoff.md, 20-personal-finance-interview.md, 21-personal-finance-erd.md, 27-rental-reservations-erd.md (esquema aceptado)
 
 ## 1. Resumen del modelo
@@ -50,6 +51,8 @@ Once tablas nuevas, compartidas por casa: `rental_properties`, `rental_collabora
 ---
 
 ## 2. Modelo DBML Unificado
+
+NodiaAI se modela por separado en [ERD42](42-nodia-ai-erd.md), [DBML propuesto](nodia-ai-v1-data-model.dbml), [manifiesto](nodia-ai-v1-data-model.json) y [ejecución43](43-nodia-ai-execution-architecture.md):23 tablas previstas/62 FKs (22 para v1 completa y adapter_states condicional), reutilizando users/auth_sessions/ai_providers. Conversación/preparación y payloads separados de receipts/jobs/grants, caducidad90 días desde último mensaje del dueño, adjuntos/transcripciones con chat y preferencias independientes. Propuesta en revisión, sin incorporación automática al DBML histórico, JSON externo Obsidian o esquema real. La aprobación de Reservas27 no aprueba esta ampliación.
 
 ```dbml
 Enum ai_connection_mode {

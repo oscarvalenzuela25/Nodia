@@ -1,0 +1,155 @@
+{
+  "schema": "ai38-live-ui-http-observer-v1",
+  "action": "end",
+  "status": "bounded_metadata_observed_not_Google_or_UI_acceptance",
+  "scope": "explicit_two_file_rotation_metadata_continuation",
+  "source_sha256": "1bf56cf6f1ef0b5b67988820dba72dbd29ecb4c655c5be06402003e058b09919",
+  "frozen_parser_sha256": "1587fd82495866362cc77d88b469ff4a0bc789bbc80d83356eb4223eeff63e9d",
+  "began_at_utc": "2026-10-21T02:44:13.712338+00:00",
+  "finished_at_utc": "2026-10-21T03:03:26+00:00",
+  "observed_at_VM_utc": "2026-10-21T03:05:37.356693+00:00",
+  "explicit_log_metadata": [
+    {
+      "role": "previous_explicit",
+      "device": 2050,
+      "inode": 3673396,
+      "bytes": 257120
+    },
+    {
+      "role": "current_explicit",
+      "device": 2050,
+      "inode": 3683192,
+      "bytes": 9866
+    }
+  ],
+  "old_inode_and_cursor_anchor_verified": true,
+  "cursor_sha256": "4f920928c36eff30cf5430239a1b87b5ac8933bb2c91257f9be013ef9ee59b33",
+  "start_anchor_verified": true,
+  "original_cursor_full_continuity_claimed": false,
+  "acceptance_conversation_sha256": "ceb08fb97c86411d5e49d7ba5ed14a6eee471675b060ee13668b94b8869a96cb",
+  "acceptance_proposal_sha256": "3056e37f4e05ae1c9f0784819c62c54b225be8830e9b69cba53be864e15aa91e",
+  "acceptance_execution_sha256": "3fc10cb820b456db96b59a67e0b9aed682bad061fb1405a74a9d3e9741176f94",
+  "acceptance_movement_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+  "matched_lines": 185,
+  "ignored_lines": 158,
+  "unparseable_lines": 0,
+  "first_matched_request_utc": "2026-10-21T02:44:57+00:00",
+  "last_matched_request_utc": "2026-10-21T03:01:35+00:00",
+  "counts": [
+    {
+      "endpoint": "acceptance_confirmation",
+      "method": "POST",
+      "status": 202,
+      "count": 1
+    },
+    {
+      "endpoint": "acceptance_confirmation_challenge",
+      "method": "POST",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "endpoint": "acceptance_conversation_detail",
+      "method": "GET",
+      "status": 200,
+      "count": 71
+    },
+    {
+      "endpoint": "acceptance_conversation_detail",
+      "method": "GET",
+      "status": 401,
+      "count": 1
+    },
+    {
+      "endpoint": "acceptance_conversation_messages",
+      "method": "GET",
+      "status": 200,
+      "count": 69
+    },
+    {
+      "endpoint": "acceptance_conversation_messages",
+      "method": "GET",
+      "status": 401,
+      "count": 1
+    },
+    {
+      "endpoint": "acceptance_conversation_messages",
+      "method": "POST",
+      "status": 202,
+      "count": 1
+    },
+    {
+      "endpoint": "acceptance_execution",
+      "method": "GET",
+      "status": 200,
+      "count": 4
+    },
+    {
+      "endpoint": "acceptance_proposal",
+      "method": "GET",
+      "status": 200,
+      "count": 3
+    },
+    {
+      "endpoint": "acceptance_review_metadata",
+      "method": "GET",
+      "status": 200,
+      "count": 3
+    },
+    {
+      "endpoint": "auth_me",
+      "method": "GET",
+      "status": 200,
+      "count": 7
+    },
+    {
+      "endpoint": "auth_refresh",
+      "method": "POST",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "endpoint": "authorization_context",
+      "method": "GET",
+      "status": 200,
+      "count": 9
+    },
+    {
+      "endpoint": "connection_catalog",
+      "method": "GET",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "endpoint": "connection_eligibility",
+      "method": "GET",
+      "status": 200,
+      "count": 6
+    },
+    {
+      "endpoint": "conversation_list",
+      "method": "GET",
+      "status": 200,
+      "count": 6
+    }
+  ],
+  "read_bytes": 123623,
+  "selected_bytes": 123623,
+  "outside_time_window_lines_excluded": 0,
+  "unparseable_lines_not_projected": 0,
+  "raw_log_saved": false,
+  "credentials_emitted": false,
+  "provider_requests": 0,
+  "source_modified": false,
+  "earlier_failed_observations_preserved": [
+    "nodia-ai-ai38-live-http-final-r01.json",
+    "nodia-ai-ai38-live-http-final-r02.json"
+  ],
+  "limits": [
+    "Frozen original observer correctly refused a changed inode; these are separate successor metadata observations.",
+    "Only the explicitly named previous/current files were read, bounded to 16 MiB combined and the closed timestamp window.",
+    "Old inode plus unchanged prefix anchor is checked if present; no claim excludes every rotation/copytruncate loss or unseen duplicate.",
+    "Counts correlate known resource IDs and SQL; neither physical UI gesture nor HTTP bodies/tokens are observed.",
+    "Requests after 2026-10-21T03:03:26Z are excluded; earlier 401 responses remain counted honestly."
+  ]
+}

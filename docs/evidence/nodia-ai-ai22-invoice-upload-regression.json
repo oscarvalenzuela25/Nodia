@@ -1,0 +1,21 @@
+{
+  "checks": 18,
+  "sql": "disposable PostgreSQL 16",
+  "storage": "AWS SDK against synthetic localhost S3",
+  "realR2": false,
+  "verification_stage": "AI-22",
+  "verified_at": "2026-10-17T15:41:19.960212+00:00",
+  "compilation": {
+    "archive_sha256": "06bc266d1a249cf00e7984699938ca2d0e069900ec775dd0d3457135171d37c1",
+    "archive_files": 848,
+    "knowledge_release_id": "67df82be991496f45536f62528c283b3342975e2351124512d6f232ed442d825",
+    "configured_database_used": false,
+    "real_gemini_inference": false,
+    "real_r2": false,
+    "new_mcp_writes_published": false
+  },
+  "test_source": {
+    "path": "nodia-server/test/invoice-upload.integration.mjs",
+    "sha256": "71d72e1aff2c155569dce857f3d74f25c9fd2333fa3c313752a6987587c11213"
+  }
+}

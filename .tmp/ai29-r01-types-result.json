@@ -1,0 +1,6 @@
+{
+  "observed_at_utc": "2026-10-17T22:35:55.4806982Z",
+  "command": "npx tsc -p tsconfig.build.json --noEmit",
+  "log": ".tmp/ai29-r01-types-final.log",
+  "exit_code": 0
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "scope": "bounded_metadata_infrastructure_observation_receipt",
+  "files": {
+    "docs/evidence/nodia-ai-ai38-infrastructure-observation-r01.md": "fe5d9f6da92dac599f4fe4cbe3427165809d697805f7e10894ce700952d8478d",
+    "docs/evidence/nodia-ai-ai38-infrastructure-observation-r01.json": "3f42ce40b04c33d3c3e8d283b887857c8d9c7e73054129b60bd3579a88cb9c18",
+    "docs/evidence/scripts/nodia-ai-ai38-infrastructure-observation-r01.py": "2b9f7ad5d71ff5be7e780c125aee647b0735747bc8c33c4b88e4100c65810f04"
+  },
+  "provider_requests": 0,
+  "R2_requests": 0,
+  "configured_SQL_queries": 0,
+  "data_writes": 0,
+  "remote_files_written": false,
+  "secrets_emitted": false
+}

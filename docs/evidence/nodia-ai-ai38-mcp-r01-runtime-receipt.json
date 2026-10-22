@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38-MCP-R01",
+  "scope": "readonly_runtime_diagnostic_receipt",
+  "files": {
+    "docs/evidence/nodia-ai-ai38-mcp-r01-runtime.json": "96109fd3f1e2961787d69b505827b5b5eae1b14f3f1bdfe41096a182af8231f8",
+    "docs/evidence/nodia-ai-ai38-mcp-r01-runtime.md": "675ae36855f8a55542fac955abd72b9c1880ff80f47e1503a5af46788c3234b4",
+    "docs/evidence/scripts/nodia-ai-ai38-mcp-r01-runtime.py": "dc82146603a399b59dc95afac21fda869cc9596e406745ee9861ef511d024d79"
+  },
+  "provider_requests": 0,
+  "services_restarted": false,
+  "remote_files_written": false
+}

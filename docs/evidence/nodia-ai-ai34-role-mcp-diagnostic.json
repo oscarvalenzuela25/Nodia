@@ -1,0 +1,73 @@
+{
+  "stage": "AI-34",
+  "scope": "exact_attempt_read_only_native_structural_diagnostics",
+  "status": "observed",
+  "attempt_id": "cc39038f-4ff3-4b26-a16f-30ea5467c93e",
+  "window_utc": [
+    "2026-10-18T20:29:02Z",
+    "2026-10-18T20:29:07Z"
+  ],
+  "events": [
+    {
+      "kind": "nodia_ai_mcp_terminal",
+      "metadata": {
+        "attempt_id": "cc39038f-4ff3-4b26-a16f-30ea5467c93e",
+        "phase": "validating_terminal",
+        "state": "unknown",
+        "exception_type": "ValueError",
+        "elapsed_ms": 3703,
+        "rpc_messages": 6,
+        "callbacks": 0,
+        "exit_code": 3,
+        "gate_verified": false,
+        "cli": {
+          "stage": "result",
+          "events": 4,
+          "invalid_lines": 0,
+          "stdout_bytes": 2622,
+          "initialized": true,
+          "document_read_completed": false,
+          "result_seen": true,
+          "last_event_age_ms": 102,
+          "phase": "result",
+          "result_status": "ERROR",
+          "denied_actions_count": null,
+          "tool_error_categories": [],
+          "tool_event_counts": {},
+          "tool_completed_counts": {},
+          "tool_error_counts": {},
+          "tool_steps": 0,
+          "last_tool": "none",
+          "terminal_status": "ERROR",
+          "denied_count": 0,
+          "stderr_bytes": 405
+        },
+        "hook": null,
+        "cli_log": {
+          "state": "observed",
+          "interpretation": "text_indicator_not_verified_cause",
+          "bytes_read": 32182,
+          "lines_scanned": 128,
+          "truncated": true,
+          "transport_indicators": [],
+          "provider_error_indicators": [],
+          "http_statuses": []
+        },
+        "controlled_context": {
+          "scope": "initial_prompt_and_mcp_stdout",
+          "initial_utf8_bytes": 1504,
+          "used_utf8_bytes": 2050,
+          "maximum_utf8_bytes": 262144,
+          "provider_internal_context_tokens": null
+        }
+      }
+    }
+  ],
+  "provider_generations": 0,
+  "services_restarted": false,
+  "provider_text_exported": false,
+  "raw_logs_exported": false,
+  "limitations": [
+    "Text indicators and missing terminal fields do not independently prove a provider failure cause"
+  ]
+}

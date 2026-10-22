@@ -1,0 +1,75 @@
+{
+  "stage": "AI-36-C05",
+  "cohort": "01",
+  "scope": "existing_structural_native_terminal_diagnostics_exact_owned_attempts",
+  "observed_at_utc": "2026-10-19T20:17:25.084762+00:00",
+  "requested_attempt_ids": [
+    "2166278c-02b6-4cb1-8e30-39f0f0881632"
+  ],
+  "diagnostics": [
+    {
+      "phase": "running_cli",
+      "state": "unknown",
+      "exception_type": "TimeoutError",
+      "elapsed_ms": 119041,
+      "rpc_messages": 0,
+      "callbacks": 0,
+      "exit_code": null,
+      "gate_verified": false,
+      "cli": {
+        "stage": "prompt_received",
+        "events": 2,
+        "invalid_lines": 0,
+        "stdout_bytes": 1814,
+        "initialized": true,
+        "document_read_completed": false,
+        "result_seen": false,
+        "last_event_age_ms": 114835,
+        "phase": "prompt_received",
+        "result_status": null,
+        "denied_actions_count": null,
+        "tool_steps": 0,
+        "last_tool": "none",
+        "terminal_status": "absent",
+        "denied_count": 0,
+        "stderr_bytes": 0,
+        "error_indicator_interpretation": "text_indicator_not_verified_cause",
+        "result_error_json_utf8_bytes": null,
+        "tool_event_counts": {},
+        "tool_completed_counts": {},
+        "tool_error_counts": {},
+        "result_error_categories": [],
+        "stderr_error_categories": [],
+        "tool_error_categories": []
+      },
+      "hook": null,
+      "cli_log": {
+        "state": "observed",
+        "interpretation": "text_indicator_not_verified_cause",
+        "bytes_read": 28665,
+        "lines_scanned": 128,
+        "truncated": true,
+        "transport_indicators": [],
+        "provider_error_indicators": [],
+        "http_statuses": []
+      },
+      "controlled_context": {
+        "scope": "initial_prompt_and_mcp_stdout",
+        "initial_utf8_bytes": 27804,
+        "used_utf8_bytes": 27804,
+        "maximum_utf8_bytes": 262144,
+        "provider_internal_context_tokens": null
+      },
+      "attempt_id": "2166278c-02b6-4cb1-8e30-39f0f0881632"
+    }
+  ],
+  "missing_attempt_ids": [],
+  "input_source": "existing_container_logs",
+  "extractor_sha256": "e4b17e541506a7929bdf5c678e0db47b63a796c4f4ef6291dcfdb9a7c99d5995",
+  "native_source_attestation": "separate_fixed_source_hash_extractor_required",
+  "raw_container_logs_included": false,
+  "provider_requests": 0,
+  "services_restarted": false,
+  "profiles_or_temporary_bridge_files_read": false,
+  "progress_counts_interpretation": "step_update_events_not_distinct_invocations"
+}

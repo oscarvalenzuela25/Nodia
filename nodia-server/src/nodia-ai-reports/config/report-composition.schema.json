@@ -1,0 +1,518 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["ok", "empty", "partial", "needs_clarification"]
+    },
+    "report_id": {
+      "$ref": "#/$defs/ProtocolId"
+    },
+    "catalog_version": {
+      "$ref": "#/$defs/CatalogVersion"
+    },
+    "columns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ReportColumn"
+      }
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Scalar"
+        }
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SourceProvenance"
+      }
+    },
+    "group_page_complete": {
+      "type": "boolean"
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "clarification_keys": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source_errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source_alias": {
+            "type": "string",
+            "minLength": 1
+          },
+          "error": {
+            "$ref": "#/$defs/ApiError"
+          }
+        },
+        "required": ["source_alias", "error"]
+      }
+    },
+    "combine": {
+      "enum": ["separate", "compare_compatible"]
+    },
+    "snapshot_consistency": {
+      "const": "independent_source_snapshots"
+    },
+    "source_results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SourceReportResult"
+      }
+    }
+  },
+  "required": [
+    "status",
+    "report_id",
+    "catalog_version",
+    "columns",
+    "rows",
+    "provenance",
+    "group_page_complete",
+    "next_cursor",
+    "clarification_keys",
+    "source_errors",
+    "combine",
+    "snapshot_consistency",
+    "source_results"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/schemas/nodia-ai-report-composition/1",
+  "$defs": {
+    "ProtocolId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "New public protocol reference, not the domain entity primary key"
+    },
+    "CatalogVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque version of structural tool contracts; not an availability observation",
+      "maxLength": 128
+    },
+    "ReportColumn": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value_type": {
+          "type": "string",
+          "enum": ["text", "decimal", "number", "boolean", "date", "instant"]
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scale": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "key",
+        "label_key",
+        "value_type",
+        "unit",
+        "scale",
+        "source_aliases"
+      ]
+    },
+    "Scalar": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "SourceProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "scope": {
+          "$ref": "#/$defs/PublicScope"
+        },
+        "measure_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Period"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "matched_records": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source_alias",
+        "source_key",
+        "observed_at",
+        "scope",
+        "measure_keys",
+        "period",
+        "basis_key",
+        "matched_records"
+      ]
+    },
+    "PublicScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject_user_id": {
+          "$ref": "#/$defs/BigintId"
+        },
+        "property_id": {
+          "$ref": "#/$defs/BigintId"
+        },
+        "business_id": {
+          "$ref": "#/$defs/DomainUuid"
+        },
+        "provider_id": {
+          "$ref": "#/$defs/BigintId"
+        }
+      },
+      "required": []
+    },
+    "BigintId": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,18}$",
+      "description": "Canonical positive decimal; runtime BigInt validation must enforce PostgreSQL max 9223372036854775807"
+    },
+    "DomainUuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID resource identity; actual resource decides representation"
+    },
+    "Period": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/InstantPeriod"
+        },
+        {
+          "$ref": "#/$defs/CivilPeriod"
+        }
+      ]
+    },
+    "InstantPeriod": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "instant"
+        },
+        "dimension_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to_exclusive": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "IANA validated at runtime"
+        }
+      },
+      "required": ["kind", "dimension_key", "from", "to_exclusive", "timezone"]
+    },
+    "CivilPeriod": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "civil_date"
+        },
+        "dimension_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from": {
+          "type": "string",
+          "format": "date"
+        },
+        "to_exclusive": {
+          "type": "string",
+          "format": "date"
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "IANA of source calendar, validated at runtime"
+        }
+      },
+      "required": ["kind", "dimension_key", "from", "to_exclusive", "timezone"]
+    },
+    "ApiError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "safe_message": {
+          "type": "string"
+        },
+        "field_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FieldError"
+          }
+        },
+        "retry_action": {
+          "type": "string",
+          "enum": ["none", "recover_status", "manual_after_review"]
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/ProtocolId"
+        }
+      },
+      "required": [
+        "code",
+        "message_key",
+        "field_errors",
+        "retry_action",
+        "correlation_id"
+      ]
+    },
+    "FieldError": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "field_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message_key": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["field_key", "code", "message_key"]
+    },
+    "SourceReportResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": ["ok", "empty"]
+        },
+        "report_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "catalog_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_alias": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "subject_user_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "business_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "property_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "provider_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReportColumn"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Scalar"
+            }
+          }
+        },
+        "totals": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$"
+          }
+        },
+        "matched_records": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Period"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "group_page_complete": {
+          "type": "boolean"
+        },
+        "next_cursor": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "status",
+        "report_id",
+        "catalog_version",
+        "source_key",
+        "source_alias",
+        "scope",
+        "columns",
+        "rows",
+        "totals",
+        "matched_records",
+        "period",
+        "basis_key",
+        "observed_at",
+        "group_page_complete",
+        "next_cursor"
+      ]
+    }
+  }
+}

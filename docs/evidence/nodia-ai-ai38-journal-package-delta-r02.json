@@ -1,0 +1,63 @@
+{
+  "before": "nodia-ai-ai38-journal-package-r01.json",
+  "after": "nodia-ai-ai38-journal-package-r02.json",
+  "delta": {
+    "dist/nodia-ai-recovery/use-case/encrypt-nodia-ai-backup.use-case.js": {
+      "before": "35857b11ed099c4d1f5c3658620208c102b5b02c996f0ddbd32c4162302aa725",
+      "after": "f2b7c9318d2c9e1cccb73e6b597078f1b25a32aa180fcc742d48f9fa8add06b8"
+    },
+    "dist/nodia-ai-recovery/use-case/encrypt-nodia-ai-backup.use-case.js.map": {
+      "before": "186d0b7961729dcb8bad51c81b3444ecf70d6685058925b2ae83636f62370977",
+      "after": "57178d523a932480cdc513a40f064e3e242f265eba4b286b9cad74757d5c625a"
+    },
+    "dist/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.d.ts": {
+      "before": null,
+      "after": "c39f5e793218b0410541d90b39404f2d9370cbe5c1f2b6e7679c49491b25a599"
+    },
+    "dist/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.js": {
+      "before": null,
+      "after": "719b74bfe1b409ec37464430e3c0d7d401647ae0036534b8b3dcc41b5118be61"
+    },
+    "dist/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.js.map": {
+      "before": null,
+      "after": "397bfde1aeb02179779d17a4b9784ee370cc8275256ee8276da6fc551c9e7855"
+    },
+    "dist/nodia-ai-recovery/use-case/update-nodia-ai-external-state.use-case.js": {
+      "before": "8d6b0a1a897f1b76268bde329ae9db197dc412f48ff0513c29e416f0ee21987d",
+      "after": "a9b3534e766660eedd8bcadfa943dee6a0497529e8d77d085266d06a2ce14b82"
+    },
+    "dist/nodia-ai-recovery/use-case/update-nodia-ai-external-state.use-case.js.map": {
+      "before": "ac8c7da863db9cc68df52182befd3b23f25e2a7be189183a306c1259f553b117",
+      "after": "113c0dd4157e9b5f5ab1611c5d3554d2e92af109d75ab224b9b62f179f90d5d5"
+    },
+    "ops/nodia-ai-backups/README.md": {
+      "before": "749acabb267fa952fff744b29356140028c5764b6aa3111e0853f3ed7a96e5eb",
+      "after": "60ff79861a752425bf90777475e88026225d6f3b0bc871b52de2ed4ac16bc7ba"
+    },
+    "ops/nodia-ai-backups/journal.md": {
+      "before": "1282f828ef6ae8cd9ef43a0af91b4e4f2a3a225e0e9fcce2fecf6223b3613185",
+      "after": "b3956ab442f4175d33aa1642cf36528b930dbcccca6056dc22341533dd317072"
+    },
+    "scripts/nodia-ai-journal.mjs": {
+      "before": "d760e4447f7c05baebd8c82dbcea7f10a557313ebbf1e0772878828f9f7aafb0",
+      "after": "c675014a129a00a55f74a9794607c5bc064dd90e6bad0e3d3bbc409af446d8dd"
+    },
+    "src/nodia-ai-recovery/use-case/encrypt-nodia-ai-backup.use-case.ts": {
+      "before": "1030495e0b85de8a76321c1f082609e4f1078db58197cc78a2749d9b55c808c9",
+      "after": "e1c783218433576f163908259af0ef37d1589fe798f8d3abb317c8552d80e523"
+    },
+    "src/nodia-ai-recovery/use-case/reconcile-nodia-ai-deletion-journal.use-case.ts": {
+      "before": null,
+      "after": "659c47682a367ded6212f4fbfa49c60b04ae0f30e68d1a5cc4c2e2d6390cd43c"
+    },
+    "src/nodia-ai-recovery/use-case/update-nodia-ai-external-state.use-case.ts": {
+      "before": "42c129bfb770ef2b318dfa81c9c356b2dd590cacdd95087c676bed11c196d3f6",
+      "after": "8000ae0c708b9fe55eb07e1d9d7416701817145969a2b1bdd4c1204ff575a726"
+    },
+    "test/nodia-ai-ai38-journal-reconcile.integration.mjs": {
+      "before": null,
+      "after": "35625b0a68ff6c15d235762008f21a6b84379f53633d0575abf3a8680735ebd5"
+    }
+  },
+  "removed": []
+}

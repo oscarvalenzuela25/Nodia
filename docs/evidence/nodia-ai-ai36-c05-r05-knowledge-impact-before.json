@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "scope": "immutable_before_draft_context_updates_no_publication_change",
+  "compiled_manifest": {
+    "path": "nodia-server/dist/nodia-ai/knowledge/manifest.json",
+    "sha256": "cfa884b835ad2d46727a2b432ac3b9fe139bae4995ef47845fa758f33f179519"
+  },
+  "registry": {
+    "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+    "sha256": "be5dba960f773d9df1c3defdd0e111f963305bba5727e8b492e4532bc3af9c05"
+  },
+  "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+  "approved_documents": [
+    {
+      "document_id": "businesses.businesses-and-collaborators",
+      "path": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+      "sha256": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1"
+    },
+    {
+      "document_id": "businesses.invoice-analysis",
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+      "sha256": "629762ec44c0dea4e34744a83769480a1e86105d05af0669a22f33d40e7a5b4a"
+    },
+    {
+      "document_id": "businesses.invoices-and-files",
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+      "sha256": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11"
+    },
+    {
+      "document_id": "businesses.product-logs",
+      "path": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+      "sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2"
+    },
+    {
+      "document_id": "businesses.products",
+      "path": "docs/nodia-ai/knowledge/businesses/features/products.md",
+      "sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df"
+    },
+    {
+      "document_id": "businesses.supplier-contacts",
+      "path": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+      "sha256": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744"
+    },
+    {
+      "document_id": "businesses.suppliers",
+      "path": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+      "sha256": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a"
+    },
+    {
+      "document_id": "general-settings.actions-and-business-actions",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+      "sha256": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0"
+    },
+    {
+      "document_id": "general-settings.ai-connections",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+      "sha256": "6079989af96ecec7c326b10da18bf840f599962f79b32e535a89dc72377e7a91"
+    },
+    {
+      "document_id": "general-settings.ai-credentials-and-sessions",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+      "sha256": "358c4b18b3073875203addb398a24e659f9da96071f567463542e3dc1a32153c"
+    },
+    {
+      "document_id": "general-settings.ai-models-and-health",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+      "sha256": "978bfd8c6667f67d650ee134cf388a92ec158a0b9df8c19e61db081708854d72"
+    },
+    {
+      "document_id": "general-settings.modules-and-groups",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+      "sha256": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c"
+    },
+    {
+      "document_id": "general-settings.roles",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+      "sha256": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909"
+    },
+    {
+      "document_id": "general-settings.users",
+      "path": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+      "sha256": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63"
+    },
+    {
+      "document_id": "nodia-ai.accepted-preferences",
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md",
+      "sha256": "62964211264988e62aa32f06b8ba956beccec14275f31e26d44d6959fa20daa8"
+    },
+    {
+      "document_id": "nodia-ai.attachments-and-voice",
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+      "sha256": "a98368e3e3113fc254b200708b8c5b5aada9fe6668845f6a2aef9502e99057fa"
+    },
+    {
+      "document_id": "nodia-ai.conversation-coordination",
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "sha256": "4fec68d7475b06a06243671739101ab0a1e7177e879a28464fc03e05ec31dd95"
+    },
+    {
+      "document_id": "personal-finance.categories-and-groups",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+      "sha256": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826"
+    },
+    {
+      "document_id": "personal-finance.confirmed-movement-effect",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md",
+      "sha256": "2c40d09529595032f9e7b1f636c83f8b0990bab747f3b7df95c76c190911aebd"
+    },
+    {
+      "document_id": "personal-finance.movements",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+      "sha256": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a"
+    },
+    {
+      "document_id": "personal-finance.obligations",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+      "sha256": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8"
+    },
+    {
+      "document_id": "personal-finance.summaries",
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+      "sha256": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5"
+    },
+    {
+      "document_id": "reservations.audit-and-recovery",
+      "path": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+      "sha256": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396"
+    },
+    {
+      "document_id": "reservations.availability-and-calendar",
+      "path": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+      "sha256": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72"
+    },
+    {
+      "document_id": "reservations.blocks",
+      "path": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+      "sha256": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667"
+    },
+    {
+      "document_id": "reservations.cancellation-policies",
+      "path": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+      "sha256": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f"
+    },
+    {
+      "document_id": "reservations.expenses",
+      "path": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+      "sha256": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765"
+    },
+    {
+      "document_id": "reservations.payments-and-refunds",
+      "path": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+      "sha256": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5"
+    },
+    {
+      "document_id": "reservations.preparation",
+      "path": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+      "sha256": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882"
+    },
+    {
+      "document_id": "reservations.properties-and-collaborators",
+      "path": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+      "sha256": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931"
+    },
+    {
+      "document_id": "reservations.reservations",
+      "path": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+      "sha256": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f"
+    }
+  ],
+  "draft_snapshots": [
+    {
+      "document_id": "nodia-ai.context-execution",
+      "original": {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md",
+        "sha256": "767451c87caa1159e4fec19288ac33c442a181a002e3974d5696179b1eeb2bbf"
+      },
+      "snapshot": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-context-execution-r01-snapshot.md",
+        "sha256": "767451c87caa1159e4fec19288ac33c442a181a002e3974d5696179b1eeb2bbf"
+      }
+    },
+    {
+      "document_id": "nodia-ai.runtime-policy",
+      "original": {
+        "path": "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md",
+        "sha256": "b802c793a094ff75cbb39bf3815bf998d0bd83eb027a435889c8995e9ca010da"
+      },
+      "snapshot": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r05-runtime-policy-r03-snapshot.md",
+        "sha256": "b802c793a094ff75cbb39bf3815bf998d0bd83eb027a435889c8995e9ca010da"
+      }
+    }
+  ],
+  "approved_health_document": {
+    "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+    "sha256": "978bfd8c6667f67d650ee134cf388a92ec158a0b9df8c19e61db081708854d72"
+  }
+}

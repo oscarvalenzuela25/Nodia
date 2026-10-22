@@ -1,3 +1,6 @@
+import { Req } from '@nestjs/common';
+import type { AuthRequest } from '../auth/types/auth.types.js';
+import { actorReference } from '../authorization/authority-transaction.js';
 import { Controller, Get, Post, Body, Put, Param, Query } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
@@ -20,13 +23,23 @@ export class UserController {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.createUserUseCase.execute(createUserDto);
+  create(@Body() createUserDto: CreateUserDto, @Req() request: AuthRequest) {
+    return this.createUserUseCase.execute(
+      createUserDto,
+      actorReference(request.auth),
+    );
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.updateUserUseCase.execute(id, updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() request: AuthRequest,
+  ) {
+    return this.updateUserUseCase.execute(
+      id,
+      updateUserDto,
+      actorReference(request.auth),
+    );
   }
 }
-

@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from '../rental-common/rental-response.schemas.js';
 import { RentalMutationResultDto } from '../rental-common/dto/rental-mutation-result.dto.js';
 import {
@@ -71,7 +72,7 @@ export class RentalCancellationPolicyController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.createRentalCancellationPolicyUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
       requestKey,
@@ -87,7 +88,7 @@ export class RentalCancellationPolicyController {
     @Query() dto: RentalConfigurationQueryDto,
   ) {
     return this.getRentalCancellationPoliciesUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
     );
@@ -100,7 +101,7 @@ export class RentalCancellationPolicyController {
     @Param() params: RentalResourceParamsDto,
   ) {
     return this.getRentalCancellationPolicyUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
     );
@@ -123,7 +124,7 @@ export class RentalCancellationPolicyController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.updateRentalCancellationPolicyUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,

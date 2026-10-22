@@ -1,0 +1,66 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "independent_offline_metadata_parent_exit_zero_but_descendant_holds_pipe",
+  "status": "passed",
+  "platform": "win32",
+  "controls": [
+    {
+      "held_pipe": "stdout",
+      "timeout_seconds": 1,
+      "elapsed_ms": 1014,
+      "result_code": "agentic_timeout",
+      "cleanup": {
+        "parent_returncode_before_cleanup": 0,
+        "parent_returncode_after_cleanup": 0,
+        "elapsed_ms": 0
+      },
+      "synthetic_child_closed": true,
+      "descendant_side_effect_after_cleanup": false,
+      "runner_owned_processes_after_cleanup": 0,
+      "runner_windows_jobs_after_cleanup": 0,
+      "stdout_eof_after_cleanup": true,
+      "stderr_eof_after_cleanup": true
+    },
+    {
+      "held_pipe": "stderr",
+      "timeout_seconds": 1,
+      "elapsed_ms": 1010,
+      "result_code": "agentic_timeout",
+      "cleanup": {
+        "parent_returncode_before_cleanup": 0,
+        "parent_returncode_after_cleanup": 0,
+        "elapsed_ms": 0
+      },
+      "synthetic_child_closed": true,
+      "descendant_side_effect_after_cleanup": false,
+      "runner_owned_processes_after_cleanup": 0,
+      "runner_windows_jobs_after_cleanup": 0,
+      "stdout_eof_after_cleanup": true,
+      "stderr_eof_after_cleanup": true
+    },
+    {
+      "held_pipe": "both",
+      "timeout_seconds": 1,
+      "elapsed_ms": 1020,
+      "result_code": "agentic_timeout",
+      "cleanup": {
+        "parent_returncode_before_cleanup": 0,
+        "parent_returncode_after_cleanup": 0,
+        "elapsed_ms": 0
+      },
+      "synthetic_child_closed": true,
+      "descendant_side_effect_after_cleanup": false,
+      "runner_owned_processes_after_cleanup": 0,
+      "runner_windows_jobs_after_cleanup": 0,
+      "stdout_eof_after_cleanup": true,
+      "stderr_eof_after_cleanup": true
+    }
+  ],
+  "runner_source_sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+  "script_sha256": "c6257bc5401314c0be32e00f03ef5aa5253b817fa4f0f4f14d73f4d2718513a4",
+  "provider_CLI_executions": 0,
+  "provider_requests": 0,
+  "network_requests": 0,
+  "production_source_changes": 0,
+  "interpretation": "Demonstrates a possible local EOF wait; does not establish that it occurred in the real metadata observation."
+}

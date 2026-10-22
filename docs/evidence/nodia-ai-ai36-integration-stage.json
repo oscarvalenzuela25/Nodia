@@ -1,0 +1,47 @@
+{
+  "stage": "AI-36",
+  "scope": "disposable_sql_stage_setup",
+  "status": "passed",
+  "attempt": "attempt05",
+  "compiled_files_verified": 2731,
+  "manifest_sha256": "d5162b527f63975bca311df8428a74d04534f6391521061c3eda1962f2825449",
+  "archive_sha256": "489c1d6a5371745fb32a38d0deedd8f9bc76386612d23d1dc8d2e8300d456507",
+  "test_sha256": "9aca7b664772eea55031302f7d1cd3f37dbc950d9a2ccc3c1064e69522bc7bf6",
+  "dependency_versions": {
+    "@nestjs/common": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1"
+    },
+    "@nestjs/core": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1"
+    },
+    "@nestjs/testing": {
+      "staging": "12.0.1",
+      "activated_runtime": null
+    },
+    "@nestjs/typeorm": {
+      "staging": "12.0.1",
+      "activated_runtime": "12.0.1"
+    },
+    "typeorm": {
+      "staging": "1.1.1",
+      "activated_runtime": "1.1.1"
+    },
+    "pg": {
+      "staging": "8.23.0",
+      "activated_runtime": "8.23.0"
+    },
+    "@aws-sdk/client-s3": {
+      "staging": "3.1136.0",
+      "activated_runtime": "3.1136.0"
+    }
+  },
+  "configured_database_used": false,
+  "production_deployed": false,
+  "services_restarted": false,
+  "workflow_fixture_source_sha256": "d996954b7eb1c2de6aad8f76754b0e4d9c64c9ea1306fa8946bb762ee29388ea",
+  "test_source_local": "nodia-server/test/nodia-ai-ai36.integration.mjs",
+  "source_stage_report_local": "docs/evidence/nodia-ai-ai36-regressions-stage05.json",
+  "source_stage_report_sha256": "9f08038a8017817c500f2b8534c9f758680b38f611da909029157d32cb578b21"
+}

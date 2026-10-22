@@ -1,0 +1,87 @@
+{
+  "stage": "AI-32-R04",
+  "scope": "readonly_sdk_audio_protocol_research",
+  "real_inference_requests": 0,
+  "vm_access": false,
+  "production_modified": false,
+  "credentials_read": false,
+  "confirmed_local": [
+    {
+      "path": "nodia-gemini-microservice/.venv/Lib/site-packages/gemini_webapi/client.py:1205",
+      "finding": "Public generate_content uploads each file then sends attachment reference [[upload_ref], filename]. The generation attachment descriptor omits explicit MIME and media-kind enumeration."
+    },
+    {
+      "path": "nodia-gemini-microservice/.venv/Lib/site-packages/gemini_webapi/utils/upload_file.py:72",
+      "finding": "Multipart MIME comes from mimetypes.guess_type(filename); body bytes are sent unchanged, then response.text is returned after HTTP success. There is no file-readiness observation."
+    },
+    {
+      "path": "nodia-gemini-microservice/native_attachments.py:111",
+      "finding": "Validated audio/webm is privately named 0.weba only for Web to ensure SDK multipart audio/webm. WAV uses .wav; audio/ogg uses .ogg. No transcoding."
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py:292",
+      "finding": "Canary explicitly requests a complete transcript inside JSON text with proper JSON escaping; expected phrase/hash is absent from the model prompt."
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r03-web-audio-ogg-es.json",
+      "finding": "HTTP200 upload and EOF; 18 candidates; final text already invalid after _parse_candidate, identical after Candidate. HTML unescape compensation did not cause that failure."
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r03-web-audio-webm-es.json",
+      "finding": "Completed JSON response with audio/file/format keywords, 253 answer characters, no exact transcript match. No timeout or evidence of universal format incompatibility."
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://support.google.com/gemini/answer/14903178?hl=en",
+      "finding": "Current Gemini Apps Help supports audio uploads generally, but does not enumerate WebM/Ogg codecs. API audio format documentation cannot certify Web session ingestion."
+    },
+    {
+      "url": "https://github.com/HanaokaYuzu/Gemini-API/pull/179",
+      "finding": "Closed unmerged proposal used explicit MIME and media-kind metadata in multimedia references. Author tested the old upload endpoint successfully too; this does not prove a mandatory endpoint change."
+    },
+    {
+      "url": "https://github.com/HanaokaYuzu/Gemini-API/pull/179/files",
+      "finding": "Proposed descriptor [[upload_ref,file_code,None,mime_type],filename], with audio code4. This is a historical proposal, not an approved current Google protocol contract."
+    },
+    {
+      "url": "https://github.com/HanaokaYuzu/Gemini-API/issues/65",
+      "finding": "Maintainer rejected audio support in February2025, describing then-Web microphone STT. Too old and different from uploaded files to certify current unsupported status."
+    },
+    {
+      "url": "https://github.com/HanaokaYuzu/Gemini-API/issues/284",
+      "finding": "Author reproduces intermittent attachment failures after successful uploads. Different larger code attachments; cannot attribute this account or codec failures."
+    },
+    {
+      "url": "https://github.com/nicobailon/pi-web-access/issues/508",
+      "finding": "Another implementation fixed garbled binary interpretation by preserving multipart MIME and reference filename. Nodia already preserves both; useful diagnostic pattern, not the same confirmed defect."
+    }
+  ],
+  "hypotheses_ranked": [
+    {
+      "rank": 1,
+      "hypothesis": "WebM/Ogg may reach an incorrect file-ingestion classification despite correct multipart MIME; generation reference has only URL and filename.",
+      "status": "unproven",
+      "minimal_test": "Observe official Web request metadata for a synthetic file and compare descriptor/MIME/filename shape, never cookies or content. Do not copy historical code4 blindly."
+    },
+    {
+      "rank": 2,
+      "hypothesis": "Web filename .weba may be less recognized by the provider than .webm even with audio/webm MIME.",
+      "status": "unproven",
+      "minimal_test": "After obtaining current reference evidence, compare same original bytes and explicit audio/webm with filename variants; one controlled variable, no fallback or global MIME mutation."
+    },
+    {
+      "rank": 3,
+      "hypothesis": "Ogg final JSON is already malformed in the actual provider candidate or is changed by SDK pre-Candidate cleanup.",
+      "status": "unresolved_boundary",
+      "minimal_test": "Add content-free pre-_parse_candidate source fingerprints and closed lexical/format flags; compare chosen candidate across raw-source, post-cleaning and Candidate. Preserve strict rejection."
+    },
+    {
+      "rank": 4,
+      "hypothesis": "Current Web model/session may handle PCM but fail or refuse Opus ingestion.",
+      "status": "unproven",
+      "minimal_test": "Keep original formats, model and session fixed. Exact-format canaries and safe refusal keywords determine behavior; do not infer support from model names or Web Help generality."
+    }
+  ],
+  "recommendation": "Instrument raw candidate boundary first; do not rewrite upload or transcode without an observed current protocol mismatch. Preserve MIME-exact admission, 120s deadline, one generation per explicit canary, and reconciliation before any next attempt."
+}

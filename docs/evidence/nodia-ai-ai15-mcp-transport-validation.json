@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-16",
+  "status": "verified_isolated_transport_not_gemini_inference",
+  "candidate_catalog": {
+    "tools": 72,
+    "product_read_tools": 64,
+    "infrastructure_tools": 5,
+    "exact_private_wire_utf8_bytes": 92931,
+    "stdio_tools_list_reply_utf8_bytes": 100371,
+    "last_tool": "nodia_users_list",
+    "fixture_path": "nodia-gemini-microservice/tests/fixtures/nodia-ai-ai15-mcp-tools.json",
+    "fixture_sha256": "3ba0f6d6fd2934900a21c5689814340854ab465c31e42a88b02f8e64bcaec9dc",
+    "product_artifact_tools": 3
+  },
+  "transport_limits": {
+    "catalog_tools": 72,
+    "catalog_utf8_bytes": 131072,
+    "manifest_utf8_bytes": 135168,
+    "ordinary_rpc_json_utf8_bytes_unchanged": 65536,
+    "callback_json_utf8_bytes_unchanged": 65536,
+    "individual_schema_json_utf8_bytes_unchanged": 65536,
+    "description_utf8_bytes": 2048,
+    "rpc_messages_per_run_unchanged": 128,
+    "tool_requests_per_run_unchanged": 12
+  },
+  "checks": [
+    {
+      "name": "all_72_descriptors_admitted_and_listed_in_real_stdio_subprocess",
+      "passed": true
+    },
+    {
+      "name": "last_catalogued_name_nodia_users_list_forwarded_to_synthetic_callback",
+      "passed": true
+    },
+    {
+      "name": "same_rpc_identity_replay_counts_again_without_second_callback",
+      "passed": true
+    },
+    {
+      "name": "unregistered_sql_denied_and_consumes_tool_budget",
+      "passed": true
+    },
+    {
+      "name": "cancel_notification_accepted_and_existing_session_cancel_regressions_preserved",
+      "passed": true
+    },
+    {
+      "name": "hook_accepts_all_72_registered_tools_and_rejects_unregistered_native_tools",
+      "passed": true
+    },
+    {
+      "name": "72_tools_accepted_73_tools_rejected_without_truncation",
+      "passed": true
+    },
+    {
+      "name": "catalog_131072_bytes_accepted_131073_rejected",
+      "passed": true
+    },
+    {
+      "name": "rpc_64_kib_ceiling_unchanged",
+      "passed": true
+    },
+    {
+      "name": "descriptions_2048_utf8_bytes_accepted_multibyte_overflow_rejected",
+      "passed": true
+    },
+    {
+      "name": "windows_stdout_encoding_utf8_preserves_actual_catalog_unicode",
+      "passed": true
+    },
+    {
+      "name": "server_adapter_preserves_every_real_candidate_descriptor_schema_and_description_across_private_wire",
+      "passed": true
+    },
+    {
+      "name": "all_eight_new_external_artifact_tool_names_present_in_full_catalog_and_hook_allowlist",
+      "passed": true
+    }
+  ],
+  "verification": {
+    "server_focal_tests": 80,
+    "server_focal_files": 2,
+    "python_tests": 240,
+    "python_skipped_preexisting_windows": 2,
+    "python_passed": 238,
+    "python_command": ".\\.venv\\Scripts\\python.exe run_tests.py",
+    "server_command": "npx vitest run src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.spec.ts src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts --maxWorkers=2",
+    "production_tsc": "passed",
+    "focused_oxlint": "passed"
+  },
+  "limitations": [
+    "Fixture contains real candidate descriptor metadata; callback data and actor identity are synthetic, not business data.",
+    "No Gemini model, CLI inference, login, SDK quota, Linux execution, deployment or production family publication was verified by these transport checks.",
+    "Catalog is bounded and complete at72 exact tools. Dynamic tool selection or generic invoke was not implemented; growth above72 tools or128KiB requires fresh strategy/evidence before publication. The limit is not raised automatically from registry size.",
+    "The cancellation notification check is distinct from a live provider cancellation; existing unit session cancellation/unknown-proof regressions remain passing."
+  ],
+  "source_sha256": {
+    "nodia-gemini-microservice/native_mcp_stdio.py": "762375eac259e4541f5e4e9eaaf88cabd0d814276daf44ab17f1ef6224475904",
+    "nodia-gemini-microservice/native_mcp_sessions.py": "6b9bac0b05a4d2746cc03d4eedd3ff6917cfbc5922022a0bfa77c1f62b32489a",
+    "nodia-gemini-microservice/tests/test_native_mcp.py": "c09d59b216d79e18286e5a1b7b66fc37d85b812f82b6ecef0dc43ca4ca93be0d",
+    "nodia-gemini-microservice/tests/fixtures/nodia-ai-ai15-mcp-tools.json": "3ba0f6d6fd2934900a21c5689814340854ab465c31e42a88b02f8e64bcaec9dc",
+    "nodia-server/src/nodia-ai-adapter/types/nodia-ai-adapter.types.ts": "c2b8dda77ef53077270a976bc2d15439a8c74ac2b36a9aa5d45fe40a91e79cdf",
+    "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.ts": "9334cb76177f27fd047c54bcd6de9174b0c698c36c23fea43c7a9a1bf27c192b",
+    "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.spec.ts": "76a80b755ec9b87d803cd48da02af21e5a4c990d18cdbebcb8f838bb9a4c63f0",
+    "nodia-server/src/nodia-ai-tools/use-case/execute-nodia-ai-tool.use-case.spec.ts": "f0ebcc74b659dc103f160a93f9b95c799c008d46330b9e5763810de9bf3b2f8c"
+  },
+  "limit_change_basis": "The exact complete AI-15 candidate catalog grew by eight verified implementations, from59+5 to64+3+5=72. The full real descriptor fixture is measured and transported without truncation. Catalog bytes stay128KiB; ordinary envelopes64KiB and durable budgets are unchanged. This is no provider/model quota and provides no inference evidence."
+}

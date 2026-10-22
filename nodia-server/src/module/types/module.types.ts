@@ -1,6 +1,5 @@
 import { Module } from '../entities/module.entity.js';
 
-
 export type PaginationMeta = {
   page: number;
   limit: number;

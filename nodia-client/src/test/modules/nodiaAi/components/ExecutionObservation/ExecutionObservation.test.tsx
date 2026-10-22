@@ -1,0 +1,178 @@
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { AxiosError } from "axios";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import ExecutionObservation, { HistoricalObservation } from "../../../../../modules/nodiaAi/components/ExecutionObservation";
+import { nodiaAiObservationDestination } from "../../../../../modules/nodiaAi/components/ExecutionObservation/navigation";
+import useAuthStore from "../../../../../store/authStore";
+import { chatId, run } from "../../infrastructure/fixtures";
+import { observation, toolEvent } from "../../infrastructure/observationFixtures";
+import { report } from "../../infrastructure/reportFixtures";
+import { editableProposal, editableReview, proposalEvent } from "../../infrastructure/proposalFixtures";
+
+const mocks = vi.hoisted(() => ({ getNodiaAiRun: vi.fn(), getNodiaAiEvents: vi.fn(), getNodiaAiObservation: vi.fn(), getNodiaAiReport: vi.fn(), getNodiaAiProposal: vi.fn(), getNodiaAiProposalReview: vi.fn(), challengeNodiaAiProposal: vi.fn(), confirmNodiaAiProposal: vi.fn(), updateNodiaAiProposal: vi.fn() }));
+vi.mock("../../../../../modules/nodiaAi/infrastructure/services", async importOriginal => ({ ...await importOriginal<object>(), ...mocks }));
+vi.mock("sileo", () => ({ sileo: { error: vi.fn() } }));
+let client: QueryClient;
+beforeEach(() => {
+  vi.clearAllMocks();
+  client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  useAuthStore.setState({ user: { id: "9", name: "Synthetic owner" }, token: "synthetic-only", expiresAt: Date.now() + 600000, sessionStatus: "authenticated", sessionVersion: 1, isRefreshing: false });
+  mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [toolEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+  mocks.getNodiaAiObservation.mockResolvedValue(observation);
+  mocks.getNodiaAiProposal.mockResolvedValue(editableProposal);
+  mocks.getNodiaAiProposalReview.mockResolvedValue(editableReview);
+  mocks.getNodiaAiRun.mockResolvedValue({ ...run, state: "completed" });
+});
+afterEach(() => { client.clear(); useAuthStore.setState({ token: null, user: null, sessionStatus: "anonymous" }); });
+function open() { render(<QueryClientProvider client={client}><MemoryRouter><ExecutionObservation conversationId={chatId} run={{ ...run, state: "completed" }} /></MemoryRouter></QueryClientProvider>); }
+
+describe("NodiaAI query observations", () => {
+  it("keeps an uncertain revision mounted and prevents both activity and preview collapse from discarding its recovery state", async () => {
+    mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [proposalEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+    let reject!: (error: Error) => void;
+    mocks.updateNodiaAiProposal.mockReturnValue(new Promise((_resolve, rejectPromise) => { reject = rejectPromise; }));
+    const user = userEvent.setup();
+    render(<QueryClientProvider client={client}><MemoryRouter><HistoricalObservation conversationId={chatId} runId={run.run_id} /></MemoryRouter></QueryClientProvider>);
+    await user.click(screen.getByRole("button", { name: "Ver actividad del turno" }));
+    await user.click(await screen.findByRole("button", { name: "Ver propuesta" }));
+    await user.click(await screen.findByRole("button", { name: "Corregir propuesta" }));
+    fireEvent.change(screen.getByRole("textbox", { name: /^Nombre/ }), { target: { value: "Synthetic uncertain revision" } });
+    await user.click(screen.getByRole("button", { name: "Guardar nueva revisión" }));
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Ocultar propuesta" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Ocultar actividad del turno" })).toBeDisabled();
+    });
+    reject(new Error("Synthetic uncertain transport"));
+    await screen.findByRole("button", { name: "Recuperar estado" });
+    expect(screen.getByRole("textbox", { name: /^Nombre/ })).toHaveValue("Synthetic uncertain revision");
+    expect(screen.getByRole("button", { name: "Ocultar propuesta" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Ocultar actividad del turno" })).toBeDisabled();
+    expect(mocks.updateNodiaAiProposal).toHaveBeenCalledOnce();
+  });
+  it("preserves a correction when its historical activity is collapsed and reopens through authorized reads only", async () => {
+    mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [proposalEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+    const user = userEvent.setup();
+    render(<QueryClientProvider client={client}><MemoryRouter><HistoricalObservation conversationId={chatId} runId={run.run_id} /></MemoryRouter></QueryClientProvider>);
+    await user.click(screen.getByRole("button", { name: "Ver actividad del turno" }));
+    await user.click(await screen.findByRole("button", { name: "Ver propuesta" }));
+    await user.click(await screen.findByRole("button", { name: "Corregir propuesta" }));
+    fireEvent.change(screen.getByRole("textbox", { name: /^Nombre/ }), { target: { value: "Synthetic historical unsaved correction" } });
+    await user.click(screen.getByRole("button", { name: "Ocultar actividad del turno" }));
+    expect(screen.queryByRole("textbox", { name: /^Nombre/ })).not.toBeInTheDocument();
+    const reads = mocks.getNodiaAiProposal.mock.calls.length;
+    await user.click(screen.getByRole("button", { name: "Ver actividad del turno" }));
+    await waitFor(() => expect(mocks.getNodiaAiProposal.mock.calls.length).toBeGreaterThan(reads));
+    expect(screen.getByRole("textbox", { name: /^Nombre/ })).toHaveValue("Synthetic historical unsaved correction");
+    expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
+    expect(mocks.confirmNodiaAiProposal).not.toHaveBeenCalled();
+  });
+  it("keeps the correction mounted and blocked when review revalidation fails transiently, then recovers the same draft", async () => {
+    mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [proposalEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+    const user = userEvent.setup(); open();
+    await user.click(await screen.findByRole("button", { name: "Ver propuesta" }));
+    await user.click(await screen.findByRole("button", { name: "Corregir propuesta" }));
+    fireEvent.change(screen.getByRole("textbox", { name: /^Nombre/ }), { target: { value: "Synthetic retained after outage" } });
+    mocks.getNodiaAiProposalReview.mockRejectedValueOnce(new Error("Synthetic outage"));
+    await client.invalidateQueries({ queryKey: ["nodia-ai", "9", 1, "proposal-review"] });
+    const name = screen.getByRole("textbox", { name: /^Nombre/ });
+    expect(name).toHaveValue("Synthetic retained after outage");
+    await waitFor(() => expect(name).toBeDisabled());
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(name).toBeEnabled());
+    expect(name).toHaveValue("Synthetic retained after outage");
+    expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
+  });
+  it("preserves an unsaved exact proposal correction across collapse, revalidates on reopening and keeps focus on the expander", async () => {
+    mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [proposalEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+    const user = userEvent.setup(); open();
+    const show = await screen.findByRole("button", { name: "Ver propuesta" });
+    expect(mocks.getNodiaAiProposal).not.toHaveBeenCalled();
+    const preview = document.getElementById(show.getAttribute("aria-controls")!);
+    expect(preview).toHaveAttribute("hidden");
+    await user.click(show);
+    await user.click(await screen.findByRole("button", { name: "Corregir propuesta" }));
+    const name = screen.getByRole("textbox", { name: /^Nombre/ });
+    fireEvent.change(name, { target: { value: "Synthetic unsaved correction" } });
+    const reads = mocks.getNodiaAiProposal.mock.calls.length;
+    await user.click(screen.getByRole("button", { name: "Ocultar propuesta" }));
+    expect(preview).toHaveAttribute("hidden");
+    expect(screen.queryByRole("textbox", { name: /^Nombre/ })).not.toBeInTheDocument();
+    expect(show).toHaveFocus();
+    await user.click(show);
+    await waitFor(() => expect(mocks.getNodiaAiProposal.mock.calls.length).toBeGreaterThan(reads));
+    await waitFor(() => expect(screen.getByRole("textbox", { name: /^Nombre/ })).toHaveValue("Synthetic unsaved correction"));
+    expect(mocks.challengeNodiaAiProposal).not.toHaveBeenCalled();
+    expect(mocks.confirmNodiaAiProposal).not.toHaveBeenCalled();
+    expect(mocks.updateNodiaAiProposal).not.toHaveBeenCalled();
+  });
+  it("withdraws a preserved proposal when reopening is rejected by current permissions", async () => {
+    mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [proposalEvent], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+    const user = userEvent.setup(); open();
+    await user.click(await screen.findByRole("button", { name: "Ver propuesta" }));
+    await user.click(await screen.findByRole("button", { name: "Corregir propuesta" }));
+    fireEvent.change(screen.getByRole("textbox", { name: /^Nombre/ }), { target: { value: "Synthetic private draft" } });
+    await user.click(screen.getByRole("button", { name: "Ocultar propuesta" }));
+    mocks.getNodiaAiProposal.mockRejectedValue(new AxiosError("Synthetic revocation", "ERR_BAD_RESPONSE", undefined, undefined, { status: 403, data: {}, headers: {}, config: {} as never, statusText: "Forbidden" }));
+    await user.click(screen.getByRole("button", { name: "Ver propuesta" }));
+    expect(await screen.findByText("Esta propuesta ya no está disponible con tus permisos actuales.")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: /^Nombre/ })).not.toBeInTheDocument();
+    expect(screen.queryByText("Synthetic private draft")).not.toBeInTheDocument();
+    expect(mocks.confirmNodiaAiProposal).not.toHaveBeenCalled();
+  });
+  it("opens report receipts only on intent, without requesting generic metadata or executing a new query", async () => {
+    if (toolEvent.kind !== "tool_completed") throw new Error("Synthetic tool event expected");
+    const event = { ...toolEvent, payload: { ...toolEvent.payload, result_ref: { ...toolEvent.payload.result_ref, tool_name: "nodia_reports_run" } } };
+    mocks.getNodiaAiEvents.mockResolvedValue({ conversation_id: chatId, items: [event], next_cursor: "synthetic-checkpoint", cursor_state: "current", has_more: false });
+    mocks.getNodiaAiReport.mockResolvedValue(report);
+    const user = userEvent.setup(); open();
+    const show = await screen.findByRole("button", { name: "Ver resultado de consulta" });
+    expect(mocks.getNodiaAiReport).not.toHaveBeenCalled();
+    await user.click(show);
+    expect(await screen.findByText(/total: 90/)).toBeInTheDocument();
+    expect(mocks.getNodiaAiObservation).not.toHaveBeenCalled();
+    expect(mocks.getNodiaAiReport).toHaveBeenCalledTimes(1);
+  });
+  it("fetches saved metadata only on intent and displays its real date, source, zeros and authorized record link", async () => {
+    const user = userEvent.setup(); open();
+    const show = await screen.findByRole("button", { name: "Ver resultado de consulta" });
+    expect(mocks.getNodiaAiObservation).not.toHaveBeenCalled();
+    await user.click(show);
+    expect(await screen.findByText("Total: 0")).toBeInTheDocument();
+    expect(screen.getByText("0 registros devueltos")).toBeInTheDocument();
+    expect(screen.getByText("Fuente: Negocios")).toBeInTheDocument();
+    expect(screen.queryByText(observation.result_ref.tool_name)).not.toBeInTheDocument();
+    expect(screen.getByText(/Los datos actuales pueden haber cambiado/)).toBeInTheDocument();
+    expect(document.querySelector(`time[datetime="${observation.observed_at}"]`)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Synthetic business" })).toHaveAttribute("href", `/tools/business/${chatId}`);
+    expect(mocks.getNodiaAiObservation).toHaveBeenCalledTimes(1);
+  });
+  it("does not manufacture missing totals or display destinations from arbitrary provider/model URLs", async () => {
+    mocks.getNodiaAiObservation.mockResolvedValue({ ...observation, summary: { total: null, returned: null }, navigation: [{ kind: "module", id: null, module_route: "https://example.invalid/unsafe", label: "Unsafe" }] });
+    const user = userEvent.setup(); open();
+    await user.click(await screen.findByRole("button", { name: "Ver resultado de consulta" }));
+    await screen.findByText("Fuente: Negocios");
+    expect(screen.queryByText(/^Total:/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+  it("shows empty and failed observations distinctly and retries a read without repeating an action", async () => {
+    mocks.getNodiaAiEvents.mockRejectedValueOnce(new Error("synthetic network failure")).mockResolvedValue({ conversation_id: chatId, items: [], next_cursor: "checkpoint", cursor_state: "current", has_more: false });
+    const user = userEvent.setup(); open();
+    expect(await screen.findByText(/No pudimos actualizar la actividad/)).toBeInTheDocument();
+    expect(screen.queryByText("Aún no hay actividad publicada para este turno.")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(screen.getByText("Aún no hay actividad publicada para este turno.")).toBeInTheDocument());
+    expect(mocks.getNodiaAiObservation).not.toHaveBeenCalled();
+  });
+  it("resolves only registered module routes and valid IDs", () => {
+    const module = { kind: "module" as const, id: null, module_route: "/settings/users", label: null };
+    expect(nodiaAiObservationDestination(module)).toBe("/settings/users");
+    expect(nodiaAiObservationDestination({ ...module, module_route: "//example.invalid" })).toBeNull();
+    expect(nodiaAiObservationDestination({ ...module, kind: "business_detail", module_route: "/tools/business", id: "../../settings/users" })).toBeNull();
+    expect(nodiaAiObservationDestination({ ...module, kind: "business_detail", module_route: "/tools/business", id: "123e4567-e89b-12d3-a456-426614174000" })).toBe("/tools/business/123e4567-e89b-12d3-a456-426614174000");
+    expect(nodiaAiObservationDestination({ ...module, kind: "rental_property", module_route: "/tools/reservations", id: "9007199254740993" })).toBe("/tools/reservations?property=9007199254740993");
+    expect(nodiaAiObservationDestination({ ...module, kind: "rental_property", module_route: "/tools/reservations", id: "9223372036854775808" })).toBeNull();
+  });
+});

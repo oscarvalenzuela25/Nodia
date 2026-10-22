@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   BadRequestException,
   Injectable,
@@ -24,14 +25,14 @@ export class GetRentalBlocksUseCase {
     private readonly blocks: RentalBlockService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: RentalBlockQueryDto,
   ) {
     const query = await validateRentalDto(RentalBlockQueryDto, input);
     validateRentalQuery(query, 'blocks');
     validateInstantPeriod(query.starts_at, query.ends_at);
-    return this.tx.read(actorId, propertyId, async ({ manager }) => {
+    return this.tx.read(actor, propertyId, async ({ manager }) => {
       const [rows, total] = await this.blocks.list(manager, propertyId, query);
       return pageResult(rows.map(projectRentalBlock), total, query);
     });
@@ -44,9 +45,9 @@ export class GetRentalBlockUseCase {
     private readonly tx: RentalTransactionService,
     private readonly blocks: RentalBlockService,
   ) {}
-  async execute(actorId: string, propertyId: string, id: string) {
+  async execute(actor: ActorReference, propertyId: string, id: string) {
     if (!isRentalId(id)) throw new BadRequestException('rental:invalid_input');
-    return this.tx.read(actorId, propertyId, async ({ manager }) => {
+    return this.tx.read(actor, propertyId, async ({ manager }) => {
       const row = await this.blocks.find(manager, propertyId, id);
       if (!row) throw new NotFoundException('rental:not_found');
       return projectRentalBlock(row);

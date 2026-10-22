@@ -1,0 +1,17 @@
+{
+  "task": "AI-15",
+  "scope": "exact_configured_connection_mcp_attestation",
+  "configured_database_read_only": true,
+  "configured_database_modified": false,
+  "configured_selection_modified": false,
+  "available_before": true,
+  "supports_mcp_before": false,
+  "real_provider_dispatch_requests": 1,
+  "maximum_provider_dispatch_requests": 1,
+  "diagnostic_nonce_verified": false,
+  "native_terminal_proof_acknowledged": true,
+  "inference_replayed": false,
+  "status": "failed",
+  "error_code": "mcp_result_unknown",
+  "native_pending_identity": false
+}

@@ -1,3 +1,4 @@
+import { AuthSessionRevocationModule } from './auth-session-revocation.module.js';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -27,6 +28,7 @@ import { TranslationModule } from '../translation/translation.module.js';
 @Module({
   imports: [
     JwtModule.register({}),
+    AuthSessionRevocationModule,
     TypeOrmModule.forFeature([
       User,
       AuthSession,
@@ -54,6 +56,6 @@ import { TranslationModule } from '../translation/translation.module.js';
     SeedAuthUseCase,
     AuthGuard,
   ],
-  exports: [AuthGuard],
+  exports: [AuthGuard, AuthSessionRevocationModule],
 })
 export class AuthModule {}

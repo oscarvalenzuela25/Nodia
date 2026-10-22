@@ -1,0 +1,253 @@
+{
+  "stage": "AI-38-MCP-R01",
+  "scope": "read_only_preserved_log_structure",
+  "observed_at_utc": "2026-10-20T19:01:34.307521+00:00",
+  "log": {
+    "sha256": "cbb3c909401afbf3de33c3fdc879eb93178d32b5554448ec6fd7e0d2227db50f",
+    "bytes": 423190,
+    "lines": 2354,
+    "pattern_line_counts": {
+      "timeout": 1,
+      "unknown": 1,
+      "error": 1176,
+      "finish": 1,
+      "mcp": 1168,
+      "callback": 1,
+      "poll": 0,
+      "checkpoint": 0,
+      "dispatch": 0,
+      "metadata": 0,
+      "stderr": 1,
+      "stdout": 1,
+      "hook": 1,
+      "tool": 1,
+      "cancel": 1,
+      "EOF": 0,
+      "exit": 1,
+      "403": 36,
+      "429": 32,
+      "503": 28,
+      "quota": 0,
+      "stream": 0,
+      "bridge": 0,
+      "expired": 0,
+      "diagnostic": 0
+    },
+    "json_line_shapes": [],
+    "known_terminal_diagnostics": [
+      {
+        "attempt_id": "ca67a430-c790-48be-8982-35de1aefc57c",
+        "phase": "running_cli",
+        "state": "unknown",
+        "exception_type": "TimeoutError",
+        "elapsed_ms": 120047,
+        "rpc_messages": 6,
+        "callbacks": 0,
+        "exit_code": null,
+        "gate_verified": false,
+        "cli": {
+          "stage": "prompt_received",
+          "events": 2,
+          "invalid_lines": 0,
+          "stdout_bytes": 1814,
+          "initialized": true,
+          "document_read_completed": false,
+          "result_seen": false,
+          "last_event_age_ms": 116211,
+          "phase": "prompt_received",
+          "result_status": null,
+          "denied_actions_count": null,
+          "tool_error_categories": [],
+          "tool_event_counts": {},
+          "tool_completed_counts": {},
+          "tool_error_counts": {},
+          "tool_steps": 0,
+          "last_tool": "none",
+          "terminal_status": "absent",
+          "denied_count": 0,
+          "stderr_bytes": 0,
+          "error_indicator_interpretation": "text_indicator_not_verified_cause",
+          "stderr_error_categories": [],
+          "result_error_categories": [],
+          "result_error_json_utf8_bytes": null
+        },
+        "hook": null,
+        "cli_log": {
+          "state": "observed",
+          "interpretation": "text_indicator_not_verified_cause",
+          "bytes_read": 31376,
+          "lines_scanned": 128,
+          "truncated": true,
+          "transport_indicators": [],
+          "provider_error_indicators": [],
+          "http_statuses": []
+        },
+        "controlled_context": {
+          "scope": "initial_prompt_and_mcp_stdout",
+          "initial_utf8_bytes": 1758,
+          "used_utf8_bytes": 2298,
+          "maximum_utf8_bytes": 262144,
+          "provider_internal_context_tokens": null
+        }
+      }
+    ],
+    "http_status_counts": {
+      "200": 1175
+    },
+    "http_route_counts": [
+      {
+        "method": "POST",
+        "route": "/nodia-ai/agentic/attempts/<uuid>/mcp/events",
+        "status": "200",
+        "count": 1165
+      },
+      {
+        "method": "GET",
+        "route": "/health",
+        "status": "200",
+        "count": 5
+      },
+      {
+        "method": "POST",
+        "route": "/nodia-ai/agentic/observe",
+        "status": "200",
+        "count": 1
+      },
+      {
+        "method": "POST",
+        "route": "/nodia-ai/agentic/mcp/start",
+        "status": "200",
+        "count": 1
+      },
+      {
+        "method": "POST",
+        "route": "/nodia-ai/agentic/attempts/<uuid>/mcp/cancel",
+        "status": "200",
+        "count": 1
+      },
+      {
+        "method": "POST",
+        "route": "/nodia-ai/agentic/attempts/<uuid>/reconcile",
+        "status": "200",
+        "count": 1
+      },
+      {
+        "method": "POST",
+        "route": "/nodia-ai/agentic/attempts/<uuid>/acknowledge",
+        "status": "200",
+        "count": 1
+      }
+    ],
+    "error_token_context_is_http_lines": 0,
+    "request_guard_error_value_counts": {
+      "none": 1175
+    },
+    "request_guard_duration_ms": [],
+    "exception_class_counts": {
+      "TimeoutError": 1
+    },
+    "error_code_words": {
+      "error": 1175,
+      "TimeoutError": 1,
+      "tool_error_categories": 1,
+      "tool_error_counts": 1,
+      "error_indicator_interpretation": 1,
+      "stderr_error_categories": 1,
+      "result_error_categories": 1,
+      "provider_error_indicators": 1
+    },
+    "traceback_module_basenames": {},
+    "mcp_error_structural_templates": [
+      {
+        "tokens": [
+          "initialized"
+        ],
+        "count": 1
+      }
+    ]
+  },
+  "services": {
+    "nodia-api": {
+      "MainPID": "1820662",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "1820663",
+      "ActiveState": "active",
+      "SubState": "running"
+    },
+    "nodia-gemini-lab": {
+      "MainPID": "0",
+      "ActiveState": "active",
+      "SubState": "exited"
+    },
+    "nginx": {
+      "MainPID": "1004",
+      "ActiveState": "active",
+      "SubState": "running"
+    }
+  },
+  "containers": [
+    {
+      "id": "83f01759821f",
+      "name": "nodia-gemini-microservice"
+    },
+    {
+      "id": "9b094ac3e8c7",
+      "name": "nodia-lab-postgres-1"
+    },
+    {
+      "id": "46223b71d84f",
+      "name": "nodia-lab-redis-1"
+    }
+  ],
+  "runtime": {
+    "container_id": "83f01759821f42b21b8956dd5c6e91f761a59b8e072326c4b2bcc46bdd467ca4",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "started_at": "2026-10-19T21:22:19.611154456Z",
+    "running": true,
+    "user": "nodia",
+    "ports": {
+      "8000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "8000"
+        }
+      ]
+    },
+    "environment_matches_preserved_baseline": true,
+    "mounts_match_preserved_baseline": true,
+    "cli_configured_version": null,
+    "cli_configured_timeout_seconds": "240",
+    "binary_read_only_probe": {
+      "binary_basename": "agy",
+      "binary_bytes": 211026152,
+      "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+      "matches_configured_sha512": true,
+      "selected_process_name_counts": {
+        "python": 2
+      },
+      "binary_executed": false
+    }
+  },
+  "operational_node": {
+    "compiled_files": 932,
+    "manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792"
+  },
+  "interpretation": {
+    "request_error_word_is_not_failure": "1175 request_guard records have error=none",
+    "http_status_digit_substrings_are_not_http_statuses": true,
+    "six_rpc_messages_do_not_identify_methods_or_prove_successful_handshake": true,
+    "stalled_after_prompt_received_without_observed_tool_or_result": true,
+    "provider_error_or_credential_or_quota_cause_proven": false,
+    "current_session_or_mcp_availability_observed": false
+  },
+  "limits": {
+    "provider_requests": 0,
+    "services_restarted": false,
+    "remote_files_written": false,
+    "raw_log_emitted": false,
+    "profile_or_credential_bytes_read": false
+  }
+}

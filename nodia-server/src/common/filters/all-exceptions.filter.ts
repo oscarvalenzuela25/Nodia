@@ -9,6 +9,7 @@ import {
 import type { Request, Response } from 'express';
 import { CodexOperationException } from '../ai/codex/codex-contract.js';
 import { GeminiUpstreamException } from '../ai/gemini-upstream.exception.js';
+import { randomUUID } from 'node:crypto';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -31,6 +32,31 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getResponse()
         : 'Internal Server Error';
+    if (request.path === '/api/v1/nodia-ai' || request.path.startsWith('/api/v1/nodia-ai/')) {
+      const detail = exceptionResponse && typeof exceptionResponse === 'object'
+        ? exceptionResponse as Record<string, unknown> : null;
+      const candidate = typeof exceptionResponse === 'string' ? exceptionResponse : detail?.message;
+      const code = typeof candidate === 'string' && /^(?:nodia_ai|auth):[a-z0-9_]{1,100}$/.test(candidate)
+        ? candidate : status === 400 || status === 413 ? 'nodia_ai:invalid_input'
+        : status === 401 ? 'auth:session_expired' : status === 403 ? 'nodia_ai:capability_denied'
+        : status === 404 ? 'nodia_ai:conversation_not_found' : 'nodia_ai:request_failed';
+      const provided = response.getHeader('X-Request-Id');
+      const correlationId = typeof provided === 'string' && /^[a-f0-9-]{36}$/i.test(provided) ? provided : randomUUID();
+      const retry = detail?.retry_after_seconds;
+      if (status === HttpStatus.TOO_MANY_REQUESTS && typeof retry === 'number' && Number.isSafeInteger(retry) && retry > 0)
+        response.setHeader('Retry-After', String(retry));
+      response.setHeader('Cache-Control','no-store');
+      response.setHeader('X-Request-Id',correlationId);
+      this.logger.warn({event:'nodia_ai_http_error',status,code,correlation_id:correlationId});
+      response.status(status).json({error:{code,message_key:code,field_errors:[],
+        retry_action:status===409?'manual_after_review':'none',correlation_id:correlationId}});
+      return;
+    }
+    if (request.path.startsWith('/api/v1/nodia-ai/') && exceptionResponse && typeof exceptionResponse === 'object') {
+      const retry = (exceptionResponse as Record<string, unknown>).retry_after_seconds;
+      if (status === HttpStatus.TOO_MANY_REQUESTS && typeof retry === 'number' && Number.isSafeInteger(retry) && retry > 0)
+        response.setHeader('Retry-After', String(retry));
+    }
 
     let message: string | object = 'Internal Server Error';
     let error = 'Internal Server Error';

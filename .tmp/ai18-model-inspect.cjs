@@ -1,0 +1,1 @@
+const fs=require('fs');let m=JSON.parse(fs.readFileSync('docs/mvp/nodia-ai-v1-data-model.json'));console.log(JSON.stringify({keys:Object.keys(m),counts:m.counts,stage:m.migrationStages,challenge:m.tables.find(t=>t.name==='nodia_ai_confirmation_challenges')},null,2));

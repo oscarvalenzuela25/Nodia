@@ -1,0 +1,194 @@
+{
+  "operation": "One user-authorized Web chat turn from the real UI",
+  "scope": "Conversation only, no MCP or delegation",
+  "bridge_image": "sha256:e1fcee82dd54afbb0d386e406169f85613085a5b1cdb8a3148962409a0b4a695",
+  "diagnostic": {
+    "activity_calls": 1,
+    "attached": true,
+    "body_bytes": 40413,
+    "byte_chunks": 15,
+    "cancelled_at_phase": null,
+    "candidate_outputs": 7,
+    "client_close_calls": 0,
+    "elapsed_ms": 66377,
+    "events": [
+      {
+        "elapsed_ms": 0,
+        "phase": "activity_started",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 221,
+        "phase": "activity_completed",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 221,
+        "phase": "generation_started",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 221,
+        "phase": "request_started",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 1858,
+        "phase": "response_opened",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 1858,
+        "phase": "first_body_chunk",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 64871,
+        "phase": "candidate_output",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 66012,
+        "phase": "stream_exit_started",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 66012,
+        "phase": "stream_exit_completed",
+        "task_role": "generation"
+      },
+      {
+        "elapsed_ms": 66372,
+        "phase": "generation_completed",
+        "task_role": "generation"
+      }
+    ],
+    "http_status": 200,
+    "last_phase": "generation_completed",
+    "recovery_calls": 0,
+    "sink_errors": 0
+  },
+  "sql_observation": {
+    "checked_at": "2026-10-16T20:38:31.606Z",
+    "new_run_state": "completed",
+    "completed_at": "2026-10-16T20:37:48.348Z",
+    "error_code": null,
+    "provider_dispatches_used": 1,
+    "tool_calls_used": 0,
+    "mcp_rpc_messages_used": 0,
+    "delegations_used": 0,
+    "job_state": "done",
+    "open_attempts": 0,
+    "pending_jobs": 0,
+    "prompt_or_answer_read": false
+  },
+  "historical_run_preserved": "An earlier failed outcome_unknown run remains as history; the completed run is a new authorized turn, not a replay.",
+  "collector_scope": "Docker logs bounded by since/until and tail500, passed through the strict safe projection reader. An initial broad time window exceeded reader scan bounds; it was corrected without another generation.",
+  "safe_progress_events": [
+    {
+      "elapsed_ms": 1858,
+      "event": "web_progress",
+      "phase": "response_opened",
+      "task_role": "generation"
+    },
+    {
+      "elapsed_ms": 1858,
+      "event": "web_progress",
+      "phase": "first_body_chunk",
+      "task_role": "generation"
+    },
+    {
+      "elapsed_ms": 64871,
+      "event": "web_progress",
+      "phase": "candidate_output",
+      "task_role": "generation"
+    },
+    {
+      "elapsed_ms": 66012,
+      "event": "web_progress",
+      "phase": "stream_exit_started",
+      "task_role": "generation"
+    },
+    {
+      "elapsed_ms": 66012,
+      "event": "web_progress",
+      "phase": "stream_exit_completed",
+      "task_role": "generation"
+    },
+    {
+      "elapsed_ms": 66372,
+      "event": "web_progress",
+      "phase": "generation_completed",
+      "task_role": "generation"
+    },
+    {
+      "event": "web_success",
+      "web_generation": {
+        "activity_calls": 1,
+        "attached": true,
+        "body_bytes": 40413,
+        "byte_chunks": 15,
+        "cancelled_at_phase": null,
+        "candidate_outputs": 7,
+        "client_close_calls": 0,
+        "elapsed_ms": 66377,
+        "events": [
+          {
+            "elapsed_ms": 0,
+            "phase": "activity_started",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 221,
+            "phase": "activity_completed",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 221,
+            "phase": "generation_started",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 221,
+            "phase": "request_started",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 1858,
+            "phase": "response_opened",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 1858,
+            "phase": "first_body_chunk",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 64871,
+            "phase": "candidate_output",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 66012,
+            "phase": "stream_exit_started",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 66012,
+            "phase": "stream_exit_completed",
+            "task_role": "generation"
+          },
+          {
+            "elapsed_ms": 66372,
+            "phase": "generation_completed",
+            "task_role": "generation"
+          }
+        ],
+        "http_status": 200,
+        "last_phase": "generation_completed",
+        "recovery_calls": 0,
+        "sink_errors": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "stage": "AI-32-R06",
+  "scope": "real_compiled_invoice_contracts_disposable_sql_and_real_private_r2",
+  "status": "failed",
+  "configured_database_used": false,
+  "configured_business_records_modified": 0,
+  "sandbox_business_effects": null,
+  "provider_generations": 0,
+  "confirmation": "real_contracts_synthetic_actor_no_UI",
+  "inspector": "real_private_linux_http",
+  "inspector_calls": 3,
+  "checks": 16,
+  "check_names": [
+    "dedicated disposable SQL identity and empty business tables verified before mutations",
+    "real inspector and R2 upload produce exact metadata; preview performs no domain PUT",
+    "confirmation contract admits before copying or creating invoice",
+    "create commits one invoice, receipt and consumed intent with an independent real R2 copy",
+    "idle delivery cannot replay completed copy",
+    "ready staging acknowledgement reuses the copied bytes without another PUT",
+    "replacement retains invoice identity and atomically commits distinct PDF bytes, new key and receipt",
+    "completed effect replay has no additional PUT or invoice",
+    "native recovery removes superseded real R2 object and preserves replacement",
+    "legacy transfer without a new attachment commits observed digest and independent destination key",
+    "legacy native recovery verifies old object absence while destination remains readable",
+    "receipt SQL failure rolls back invoice and intent consumption after the real R2 PUT",
+    "real native compensation removes the rolled-back domain object",
+    "expiry and generation-owned janitor delete original chat objects and private SQL content",
+    "both invoices and their independent copied R2 objects survive origin chat purge",
+    "no provider or inference was invoked and PNG PDF PNG originals used the real inspector"
+  ],
+  "counters": {
+    "puts": 8,
+    "domain_puts": 4,
+    "original_puts": 3,
+    "seed_puts": 1,
+    "gets": 35,
+    "deletes": 6,
+    "verified_404": 20
+  },
+  "owned_objects": 8,
+  "preexisting_collision_objects_preserved": 0,
+  "cleanup_complete": false,
+  "storage_counters_scope": "guarded_port_invocations_not_raw_http",
+  "expiry_clock": "only_owned_sandbox_chats_backdated_to_due",
+  "source_receipts": [
+    {
+      "path": "dist/common/redis/redis.service.js",
+      "sha256": "6f6b0debf126eccc866805c85110c33382b6694717e294025f530498a6b04dbb"
+    },
+    {
+      "path": "dist/common/storage/storage.service.js",
+      "sha256": "c2c26b35420b057b31fc246bc3b162ea9389e6481ad9edae795ea8eea77aac2f"
+    },
+    {
+      "path": "dist/invoice/use-case/recover-invoice-uploads.use-case.js",
+      "sha256": "30b42bf8855fa475102a58e29efec424b76e3f0f58d85f2922fffd5ca0048d40"
+    },
+    {
+      "path": "dist/nodia-ai-adapter/types/nodia-ai-adapter.types.js",
+      "sha256": "10f2fa362602af99e2f14e979bea7e3ddb08fad27a5989e89c63e0b41fac1320"
+    },
+    {
+      "path": "dist/nodia-ai-attachment/adapters/http-nodia-ai-attachment-inspector.js",
+      "sha256": "c6b07a2835cda6ec72767570da58030489cc2afe64d1dc0d1bf3471e3332ebc7"
+    },
+    {
+      "path": "dist/nodia-ai-attachment/adapters/storage-nodia-ai-attachment.js",
+      "sha256": "3ae14ec3fc0737a0e75ece5a66ba9031cc0b67a35970dd77711f8329534947b8"
+    },
+    {
+      "path": "dist/nodia-ai-attachment/nodia-ai-attachment.module.js",
+      "sha256": "d074830e26e987cb23d6f61cc7ec7c0a0a435982fc694835e286bc528d80a0ad"
+    },
+    {
+      "path": "dist/nodia-ai-attachment/nodia-ai-attachment.service.js",
+      "sha256": "df116754c3de8af43398ea8bbe08e71e97e3fd0d9a64cf567151d659f60ad245"
+    },
+    {
+      "path": "dist/nodia-ai-attachment/types/attachment-ports.js",
+      "sha256": "66e72c8b939ef1bde380a625622ff9286fb2ff8e2842bbd31c1091e937a99a42"
+    },
+    {
+      "path": "dist/nodia-ai-attachment/use-case/create-nodia-ai-attachment.use-case.js",
+      "sha256": "c5070831d18413768da2d39e217b8d9e3e707f27218927fe578db6b8b5d5fe9c"
+    },
+    {
+      "path": "dist/nodia-ai-attachment/use-case/upload-nodia-ai-attachment.use-case.js",
+      "sha256": "e014abe3454f03b9a41c6421edeefb45ba9da364898eeb8e73ba5e6b352ee116"
+    },
+    {
+      "path": "dist/nodia-ai-confirmation/use-case/confirm-nodia-ai-proposal.use-case.js",
+      "sha256": "00ed7427b0103c18a1c56975118f32ddcbcae393941bfc630778c472ea2cd707"
+    },
+    {
+      "path": "dist/nodia-ai-confirmation/use-case/create-nodia-ai-confirmation-challenge.use-case.js",
+      "sha256": "411a2b4b5d022d055179551962602a051083473e6ffe931ea4ab53b8bc51c4e9"
+    },
+    {
+      "path": "dist/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.js",
+      "sha256": "55b5cc6b680e36dadd82462e3b60c36e199ddc782656b2261db36cbc118fd284"
+    },
+    {
+      "path": "dist/nodia-ai-conversation/nodia-ai-conversation.service.js",
+      "sha256": "3b711738248a449841f96bfd7369228995e611e9729d435762cf2b9530e0f191"
+    },
+    {
+      "path": "dist/nodia-ai-conversation/use-case/expire-nodia-ai-conversations.use-case.js",
+      "sha256": "8bf09f24fd9e533216179ac4b61a0b2f5407d5deb98adc8a52a023bd986e4496"
+    },
+    {
+      "path": "dist/nodia-ai-execution/nodia-ai-execution.module.js",
+      "sha256": "0408a3fe9599a8c90932cb09a868074fa25515f0229ca6da8c4f8c89c0612ecc"
+    },
+    {
+      "path": "dist/nodia-ai-execution/use-case/claim-nodia-ai-execution.use-case.js",
+      "sha256": "417ebd6036d0422979d09c271967278ce75bb55ccc0424eb3974255c8aa227a3"
+    },
+    {
+      "path": "dist/nodia-ai-execution/use-case/execute-nodia-ai-local-execution.use-case.js",
+      "sha256": "e36c7d6d2b6469b1af14880eb39d98f05d958fe8504b24ed4be90067c2255ae2"
+    },
+    {
+      "path": "dist/nodia-ai-execution/use-case/run-nodia-ai-execution.use-case.js",
+      "sha256": "71e3b74c5d9b7ce070f597c16957e70a76da279e35c5b36cbcf53de6218aaabc"
+    },
+    {
+      "path": "dist/nodia-ai-invoice-attachment/use-case/stage-nodia-ai-invoice-attachment.use-case.js",
+      "sha256": "52415e4a84f94b6f841fbb89343b20a3eb9920bad8cc17748b3b5c89a7b421ce"
+    },
+    {
+      "path": "dist/nodia-ai-proposal/use-case/prepare-nodia-ai-proposal.use-case.js",
+      "sha256": "5e8c1640a0b948c653ce9d5de22dd73ec4052628e08cb6431f8f317f688359a1"
+    },
+    {
+      "path": "dist/nodia-ai-runtime/config/runtime-policy.js",
+      "sha256": "30ba5fc47727c3e5ee100b92c9f2a0908e30a1f75a99136dc2addf2d76c3f734"
+    },
+    {
+      "path": "dist/nodia-ai-runtime/nodia-ai-runtime.service.js",
+      "sha256": "38cb8c5d8f9f93a51880ba4a070ad38dbdf159aa9689f10e98dd5b79cb9e90c7"
+    },
+    {
+      "path": "dist/nodia-ai-runtime/use-case/cleanup-nodia-ai-attachments.use-case.js",
+      "sha256": "437639001f45f569744cc42f330de2c3e9a54eaa6902651968ce53a1277f2669"
+    }
+  ],
+  "fixtures": [
+    {
+      "media_type": "image/png",
+      "bytes": 29076,
+      "sha256": "e66411ae91976c0626a45a1b5e151cb49e76b0b60aac135a59395bccf20d78d7"
+    },
+    {
+      "media_type": "application/pdf",
+      "bytes": 765,
+      "sha256": "3597b3465cad3b2770a88929eb5b39366aa0b324c7283de84ebc56501157485d"
+    }
+  ],
+  "ledger_contains_only_own_object_keys": true,
+  "public_object_keys_stored": false,
+  "credentials_or_provider_text_stored": false,
+  "error": {
+    "phase": "owned_fixture_teardown",
+    "category": "owned_cleanup_unconfirmed"
+  },
+  "coordinator": {
+    "harness_sha256": "255cff530b8916b98726a791fee05195a7362b63c83b452e45ad76fda0d87982",
+    "exit_code": 1,
+    "descriptor_stdin": true,
+    "private_stdout_stderr_mode": "0600",
+    "operational_postgres_env_passed": false
+  }
+}

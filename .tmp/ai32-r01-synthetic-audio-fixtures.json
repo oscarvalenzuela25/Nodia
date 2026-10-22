@@ -1,0 +1,104 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "offline_synthetic_english_voice_fixture_provenance",
+  "provider_calls": 0,
+  "physical_microphone_recording": false,
+  "private_user_audio_used": false,
+  "source_files_deleted": false,
+  "voice": {
+    "engine": "Windows SAPI/System.Speech",
+    "name": "Microsoft Zira Desktop",
+    "culture": "en-US",
+    "installed_and_enabled_observed": true,
+    "synthesis_rate": -1,
+    "synthesis_selection_confirmed_by": "root operator; installed voice independently enumerated by probe subagent"
+  },
+  "acceptance": {
+    "normalization": "speech_words_v1",
+    "expected_text_is_provider_prompt_input": false,
+    "oracle_hash_bound_before_dispatch": true,
+    "number_spellings_not_equated": true
+  },
+  "fixtures": [
+    {
+      "role": "preserved_earlier_numeric_canary",
+      "wav": {
+        "path": ".tmp\\ai32-r01-synthetic-en-US.wav",
+        "bytes": 113568,
+        "sha256": "91c00ea902149bfa794a568f98300380568bbaa7a2f5382f99d460a391826318",
+        "sample_rate": 22050,
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "frames": 56761,
+        "duration_seconds": 2.5742
+      },
+      "oracle": {
+        "text": "The purple lantern is eleven.",
+        "chars": 29,
+        "speech_words_v1_sha256": "35cc327329772dbf23ef54d1055949ff4c2045a22f3ff03332fd6e8a424bb133"
+      },
+      "encodings": {
+        "webm": {
+          "path": "/tmp/ai32-r01-synthetic-en-US-opus.webm",
+          "bytes": 22250,
+          "sha256": "3a50a66e75a752d7ac0b61563402b9c900cbe1d8fefa26d235fc6b9194aca19a",
+          "duration_seconds": 2.5742,
+          "decoded_frames": 130,
+          "codec": "opus"
+        },
+        "ogg": {
+          "path": "/tmp/ai32-r01-synthetic-en-US-opus.ogg",
+          "bytes": 21210,
+          "sha256": "f46aacca000179d8f80c6942460e82b3c19b184a0226add19868021e2844b688",
+          "duration_seconds": 2.5742,
+          "decoded_frames": 130,
+          "codec": "opus"
+        }
+      }
+    },
+    {
+      "role": "new_independent_word_only_canary",
+      "wav": {
+        "path": ".tmp\\ai32-r01-synthetic-glowing-en-US.wav",
+        "bytes": 113568,
+        "sha256": "01c0566cb38ca3e3366e799ce298d61c881b966433a45875253f78bd431ab390",
+        "sample_rate": 22050,
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "frames": 56761,
+        "duration_seconds": 2.5742
+      },
+      "oracle": {
+        "text": "The purple lantern is glowing.",
+        "chars": 30,
+        "speech_words_v1_sha256": "a26c5e0dce40a892145850e954339118ffc1e0a8963c63cc27632916e9fbe215"
+      },
+      "encodings": {
+        "webm": {
+          "path": "/tmp/ai32-r01-synthetic-glowing-en-US-opus.webm",
+          "bytes": 22264,
+          "sha256": "11b085cf4e8ae91ab634a3a564af9899aed88bffe6c2a09bd0e6165c06b855a1",
+          "duration_seconds": 2.5742,
+          "decoded_frames": 130,
+          "codec": "opus"
+        },
+        "ogg": {
+          "path": "/tmp/ai32-r01-synthetic-glowing-en-US-opus.ogg",
+          "bytes": 21229,
+          "sha256": "144433aa38344d15782d6bc8819bf4c90df933f09675933b1c9d86ae9ca13f45",
+          "duration_seconds": 2.5742,
+          "decoded_frames": 130,
+          "codec": "opus"
+        }
+      }
+    }
+  ],
+  "decoder_verification": {
+    "implementation": "PyAV installed in the active Gemini parser container",
+    "source_wav_decoded_to_eof_for_each_encoding": true,
+    "resample_hz": 48000,
+    "channels": 1,
+    "output_webm_and_ogg_decoded_to_eof": true
+  }
+}
+

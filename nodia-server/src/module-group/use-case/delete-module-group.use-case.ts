@@ -1,3 +1,5 @@
+import { runCoreAuthorityTransaction } from '../../authorization/core-authority-transaction.js';
+import { type ActorReference } from '../../authorization/authority-transaction.js';
 import {
   ConflictException,
   Injectable,
@@ -17,24 +19,28 @@ export class DeleteModuleGroupUseCase {
     private readonly redis: RedisService,
   ) {}
 
-  async execute(id: string): Promise<void> {
+  async execute(id: string, actor: ActorReference): Promise<void> {
     validateCatalogId(id);
-    await this.dataSource.transaction(async (manager) => {
-      // The parent lock also serializes concurrent associations through their FK.
-      const group = await manager.findOne(ModuleGroup, {
-        where: { id },
-        lock: { mode: 'pessimistic_write' },
-      });
-      if (!group) throw new NotFoundException('modules:groups.not_found');
-      if (await manager.exists(Module, { where: { module_group_id: id } })) {
-        throw new ConflictException('modules:groups.delete_has_modules');
-      }
-      await manager.delete(Translation, {
-        source_entity: 'module_groups',
-        source_id: id,
-      });
-      await manager.delete(ModuleGroup, { id });
-    });
-    await this.redis.delByPattern('auth:context:*');
+    await runCoreAuthorityTransaction(
+      this.dataSource,
+      actor,
+      async (manager) => {
+        // The parent lock also serializes concurrent associations through their FK.
+        const group = await manager.findOne(ModuleGroup, {
+          where: { id },
+          lock: { mode: 'pessimistic_write' },
+        });
+        if (!group) throw new NotFoundException('modules:groups.not_found');
+        if (await manager.exists(Module, { where: { module_group_id: id } })) {
+          throw new ConflictException('modules:groups.delete_has_modules');
+        }
+        await manager.delete(Translation, {
+          source_entity: 'module_groups',
+          source_id: id,
+        });
+        await manager.delete(ModuleGroup, { id });
+      },
+    );
+    if (!actor.transaction) await this.redis.delByPattern('auth:context:*');
   }
 }

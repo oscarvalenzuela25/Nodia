@@ -1,7 +1,7 @@
 # OpenAI Codex Agentic
 
-> Estado: código preparado; migración aplicada y conexión OpenAI ID 4 habilitada en BD local por solicitud explícita del 2026-10-08. Cuenta/inferencia y soporte Windows pendientes.
-> Se utilizó PostgreSQL ya activo; no se autenticó una cuenta ni generó una factura real. El documento no constituye una aprobación.
+> Estado al2026-10-12: login y OCR PNG mediante cuenta real comprobados en VM Ubuntu, conexión de laboratorio ID1. La conexión Windows ID4 conserva su configuración independiente; runtime Windows pendiente.
+> Factura sintética analizada como borrador, sin guardar factura/productos. El documento no constituye una aprobación ni aceptación del VPS real.
 
 ## Comportamiento implementado
 
@@ -9,7 +9,7 @@ OpenAI admite el canal `token_plan_agentic` mediante un runtime Codex supervisad
 
 La sesión Codex pertenece a la conexión de Nodia y es compartida por quienes tengan permiso para gestionarla/usarla. Cada intento de login pertenece además al actor autenticado; otro actor no recibe su código ni el estado privado del job. Conectar no cambia modelos, canal predeterminado, API keys ni sesiones Gemini.
 
-El panel Codex del detalle permite consultar sesión, iniciar autorización por código de dispositivo, recuperar el intento pendiente, cancelar y desconectar. Solo abre `https://auth.openai.com/codex/device`. El backend conserva los tokens en el keyring del SO; el navegador recibe un código temporal, estados y observaciones seguras. Los jobs terminales borran URL/código de su respuesta pública. Los errores conservan el modal y permiten reintentar; feedback y estados tienen ES/EN.
+El panel Codex del detalle se muestra exclusivamente en la pestaña `token_plan_agentic` de OpenAI, por solicitud del2026-10-13. API key no muestra la cuenta, sus acciones ni sus cuotas. Permite consultar sesión, iniciar autorización por código de dispositivo, recuperar el intento pendiente, cancelar y desconectar. Si una alerta de Codex se activa desde API, primero abre Agéntico y después su modal, esperando que terminen las consultas de esa pestaña. Cambiar de pestaña no desconecta la cuenta. Solo abre `https://auth.openai.com/codex/device`. El backend conserva los tokens en el keyring del SO; el navegador recibe un código temporal, estados y observaciones seguras. Los jobs terminales borran URL/código de su respuesta pública. Los errores conservan el modal y permiten reintentar; feedback y estados tienen ES/EN.
 
 ## Modelo y razonamiento
 
@@ -126,7 +126,31 @@ Antes de escribir se probó up/up/down/down en un esquema temporal de PostgreSQL
 
 La activación de la instancia es independiente de la migración: para revertirla, restaurar su flag desde el respaldo, además de usar el procedimiento de rollback del catálogo cuando corresponda. No se cambió `.env`, ejecutó login/inferencia ni corrigió el P1 de cancelación; Windows continúa rechazado. Esta solicitud reemplaza el aplazamiento de la migración local, sin aprobar documentos ni certificar operación real.
 
-## Fuentes
+## Ensayo Ubuntu — 2026-10-12
+
+Despliegue y límites en [laboratorio VM](../../mvp/vps-local-vm-lab.md). Autorización por código completada por el usuario en Chrome; cuenta ChatGPT comprobada por el runtime, sin `auth.json`. El proceso hijo hereda únicamente el bus D-Bus privado y XDG_RUNTIME_DIR en Linux, además de su allowlist existente; no hereda claves API. Con `ProtectHome=true`, systemd oculta `/run/user`: se enlaza exclusivamente su socket privado en `/run/nodia-runtime/bus`, manteniendo la protección y el keyring cifrado. Guardado/lectura/borrado sintéticos se comprobaron también dentro del namespace aislado de la API.
+
+Codex0.161.0 rechazó `readOnly.access` en `turn/start` antes de iniciar la primera generación: «readOnly.access is no longer supported». Se retiró ese campo no admitido; el contrato estable conserva `readOnly` y `networkAccess:false`, herramientas deshabilitadas y rechazo de peticiones interactivas. No se afirma restricción de raíces de lectura mediante ese campo eliminado. Prueba nativa en perfil desechable sin autenticación valida la política exacta que usa producción; evita que el peer sintético o la documentación de otra versión oculten una incompatibilidad.
+
+OCR posterior desde Client localhost→SSH→Nginx→Server Linux→Codex: HTTP201 en10,5 s, turno terminal completado y extracción validada. Modelo elegido por el usuario `gpt-6.1-sol`, sin esfuerzo forzado; folioTEST-0042, fecha2026-10-12, total11900, CUADERNO AZUL×2 a2500 y LAPIZ ROJO×5 a1000 coinciden con la imagen sintética. Los SKU ausentes siguen pendientes de revisión; no se inventan para habilitar guardado. Evidencia externa `outputs/codex-ubuntu-ocr.jpg`, ejecución de seguimiento `bad647db-dc59-4d9b-9a7e-3f2d4d47cdb5`.
+
+Server Linux873 pruebas/115 archivos,20 regresiones focalizadas tras corrección y contratos JSONL/HTTP/PDF + política nativa correctos. No se probaron inferencia PDF, renovación/revocación reales, cuenta de otra conexión, VPS público ni elegibilidad comercial SIWC.
+
+## Observación desde NodiaAI — 2026-10-16
+
+La observación cancelable de sesión conserva la admisión exclusiva del perfil. Si no puede adquirirlo por `codex_runtime_unavailable` o `codex_profile_busy`, devuelve una observación con `available:false`, `authenticated:null`, fecha desconocida y el motivo exacto; no convierte ese resultado en una sesión cerrada ni en una inferencia fallida. En esta admisión, la cancelación y los errores inesperados siguen propagándose; el manejo de errores RPC posterior conserva su contrato previo. Un perfil ocupado no se interrumpe; sólo se detiene por cancelación el perfil cuyo lease pertenece a esta solicitud.
+
+La revisión AI-15 reprodujo la diferencia anterior entre observar con y sin señal en el runtime real del laboratorio: la variante cancelable lanzaba una excepción antes del fallback. Las regresiones del caso de uso de lectura externa comprueban indisponibilidad, perfil ocupado, errores inesperados y cancelación con propiedad. Esta corrección no acredita login o inferencia Codex; la prueba generativa de AI-15 utiliza Gemini Agentic. Ver [entrega61](../../mvp/61-nodia-ai-ai15-product-reads.md).
+
+## Ampliación solicitada: Codex en el chat NodiaAI — 2026-10-18
+
+El usuario solicita incorporar el agente Codex como proveedor del chat NodiaAI. Se añade al [plan de implementación, AI-39/40](../../mvp/45-nodia-ai-implementation-plan.md#e11--codex-agentic-en-nodiaai): adaptador/runtime con MCP y posterior integración de interfaz/aceptación real. Esta solicitud amplía el alcance; no acredita implementación, disponibilidad actual o nueva inferencia. La integración histórica de sesión/OCR descrita arriba conserva su evidencia y límites.
+
+Reutilizar la conexión OpenAI y su modo Agéntico, con modelos/esfuerzos descubiertos. El historial y el contexto autorizado pertenecen a NodiaAI; las herramientas deben pasar por su gateway, propuestas exactas, confirmación humana y recibos. El runtime de OCR sigue con herramientas deshabilitadas; el chat requiere un adaptador y una conciliación explícitos, compartiendo exclusión del perfil con OCR/login. No se crea un proveedor duplicado, no se habilita OpenAI Web ni se cambia automáticamente Gemini/API a Codex. Primer entorno de verificación: Linux; no se declara soporte nativo Windows.
+
+La [ficha funcional](../../nodia-ai/knowledge/nodia-ai/features/context-execution.md#extensión-planificada-codex-ai-3940) mantiene estos cambios como planeados, sin publicar conocimiento operativo ni herramientas. Autenticación de una cuenta no prueba conversación/MCP; cada modalidad y operación publicada necesita su aceptación con el nuevo adaptador.
+
+## Referencias oficiales
 
 - [App-server y autenticación](https://learn.chatgpt.com/docs/app-server), [auth Codex](https://learn.chatgpt.com/docs/auth), [configuración](https://learn.chatgpt.com/docs/config-file/config-reference).
 - [SIWC con Codex](https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server), [login SIWC](https://developers.openai.com/siwc/token-sharing-open-source/sign-in).

@@ -26,21 +26,21 @@
   "query_samples": [
     {
       "limit": 1,
-      "statements": 9
+      "statements": 13
     },
     {
       "limit": 100,
-      "statements": 9
+      "statements": 13
     }
   ],
   "reservation_query_samples": [
     {
       "limit": 1,
-      "statements": 11
+      "statements": 15
     },
     {
       "limit": 100,
-      "statements": 11
+      "statements": 15
     }
   ],
   "query_plan": [
@@ -53,8 +53,8 @@
         "Total Cost": 8.18,
         "Plan Rows": 1,
         "Plan Width": 12,
-        "Actual Startup Time": 0.443,
-        "Actual Total Time": 0.451,
+        "Actual Startup Time": 0.442,
+        "Actual Total Time": 0.45,
         "Actual Rows": 100,
         "Actual Loops": 1,
         "Shared Hit Blocks": 24,
@@ -78,7 +78,7 @@
             "Plan Rows": 1,
             "Plan Width": 12,
             "Actual Startup Time": 0.442,
-            "Actual Total Time": 0.446,
+            "Actual Total Time": 0.445,
             "Actual Rows": 100,
             "Actual Loops": 1,
             "Sort Key": [
@@ -113,7 +113,7 @@
                 "Plan Rows": 1,
                 "Plan Width": 12,
                 "Actual Startup Time": 0.015,
-                "Actual Total Time": 0.148,
+                "Actual Total Time": 0.174,
                 "Actual Rows": 1001,
                 "Actual Loops": 1,
                 "Index Cond": "(property_id = '2'::bigint)",
@@ -147,9 +147,9 @@
         "Temp Read Blocks": 0,
         "Temp Written Blocks": 0
       },
-      "Planning Time": 0.342,
+      "Planning Time": 0.315,
       "Triggers": [],
-      "Execution Time": 0.477
+      "Execution Time": 0.475
     }
   ]
 }

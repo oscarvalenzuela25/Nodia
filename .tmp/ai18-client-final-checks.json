@@ -1,0 +1,88 @@
+{
+  "stage": "AI-18",
+  "observed_at_utc": "2026-10-17 04:42:15 UTC",
+  "workspace": "C:/Users/Oscar/Desktop/Nodia/nodia-client",
+  "evidence_kind": "Observed tool command results, not fabricated stdout log files",
+  "full_suite": {
+    "passed": true,
+    "tests": 1314,
+    "files": 200,
+    "command": "npm run test -- --maxWorkers=4",
+    "exit_code": 0,
+    "start_time_host_local": "01:37:30",
+    "duration_seconds": 230.82,
+    "modifications_during_final_run": false
+  },
+  "focused": {
+    "passed": true,
+    "tests": 109,
+    "files": 8,
+    "command": "npm run test -- src/test/modules/nodiaAi --maxWorkers=2",
+    "exit_code": 0,
+    "duration_seconds": 25.45
+  },
+  "typecheck": {
+    "passed": true,
+    "command": "npm run typecheck",
+    "exit_code": 0
+  },
+  "lint": {
+    "passed": true,
+    "command": "npm run lint",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "build": {
+    "passed": true,
+    "command": "npm run build",
+    "exit_code": 0,
+    "vite_build_seconds": 15.62,
+    "transformed_modules": 2651,
+    "nodia_ai_chunk": {
+      "file": "NodiaAI-Czmlj0F3.js",
+      "bytes_reported_kb": 76.75,
+      "gzip_kb": 23.04
+    },
+    "warnings": [
+      "Existing chunks larger than 500 kB; plugin timing diagnostic from Babel transform"
+    ]
+  },
+  "previous_attempts": [
+    {
+      "command": "npm run test",
+      "passed": false,
+      "tests_passed": 1296,
+      "tests_failed": 1,
+      "files_passed": 199,
+      "files_failed": 1,
+      "failure": "Unrelated ProvidersTab contact lazy import exceeded findByText deadline while parallel builds/tests were active; DOM showed Cargando contactos…",
+      "isolated_retry": {
+        "command": "npm run test -- src/test/modules/nodiaAi/components/ProposalPreview/HumanProposalReview.test.tsx src/test/modules/business/pages/BusinessDetail/components/ProvidersTab/ProvidersTab.test.tsx --maxWorkers=1",
+        "passed": true,
+        "tests": 28,
+        "files": 2,
+        "modified_unrelated_source_or_assertions": false
+      }
+    },
+    {
+      "passed": null,
+      "disposition": "Two in-flight full runs were stopped because review fixes invalidated their source snapshot; neither is final acceptance evidence."
+    }
+  ],
+  "verified_scope": [
+    "Backend-provided exact revision/hash review metadata controls scalar editing and actual confirmation availability.",
+    "CAS edits preserve money/IDs as strings, false and drafts after error; stable field identities survive reordered metadata.",
+    "Canonical 43-character base64url challenge validation; token and client_request_id stay in mounted human refs, outside query/mutation caches and persistent storage.",
+    "Human intent issues challenge then exact confirmation; double click is blocked; response loss uses explicit GET recovery followed by a separate explicit replay of the original payload if still ready.",
+    "Typed confirmation_invalid 403 preserves preview and clears nonce/replay state; actual access denial clears protected preview caches.",
+    "Typed revision_conflict and preconditions_changed feedback preserves durable state and requires review without automatic replay.",
+    "Conversation detail validates ExecutionStatus|null, revalidates active execution and blocks new composer/config interactions while queued/running/waiting_for_user/cancel_requested/unknown.",
+    "Production executor unavailability remains authoritative; available queued admission is exercised only in isolated synthetic UI fixtures."
+  ],
+  "browser_qa": {
+    "performed_by": "root agent through CUA",
+    "scope": "Root owns screenshots/evidence; this report does not claim browser or Gemini checks performed by this subagent."
+  },
+  "operational_changes_by_this_subagent": "None to VM, services, production data, models, providers, MCP publication or documentation approval."
+}

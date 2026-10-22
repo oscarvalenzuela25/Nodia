@@ -1,0 +1,21 @@
+{
+  "stage": "AI-35",
+  "scope": "global_server_test_fixture_typecheck",
+  "status": "failed_unchanged_from_ai34_baseline",
+  "exit_code": 2,
+  "errors": 192,
+  "files": 48,
+  "source_log_local": ".tmp/ai35-server-global-test-fixtures.log",
+  "log_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9",
+  "baseline_log_local": ".tmp/ai34-tsc-all-after-spec-fixes.log",
+  "baseline_log_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9",
+  "file_code_count_changes": [],
+  "changed_ai35_files_errors": 0,
+  "changed_ai35_files": [
+    "src/nodia-ai-conversation/nodia-ai-conversation.service.ts",
+    "src/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.ts",
+    "src/nodia-ai-conversation/use-case/list-nodia-ai-conversations.use-case.spec.ts",
+    "src/migrations/1793100000000-AddNodiaAiTextSearchIndex.ts"
+  ],
+  "notes": "192 diagnostics in48 existing fixture files remain; the five conversation-resource diagnostics belong to unmodified admit-nodia-ai-message.use-case.spec.ts. Production build is checked separately."
+}

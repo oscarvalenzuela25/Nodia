@@ -1,0 +1,85 @@
+{
+  "stage": "AI-38",
+  "scope": "closed_native_diagnostics_for_one_capability_case",
+  "case_id": "preferences",
+  "observed_at_utc": "2026-10-20T19:35:46.126688Z",
+  "log_window_since_utc": "2026-10-20T19:32:02.487Z",
+  "log_window_until_utc": "2026-10-20T19:34:41.539Z",
+  "container_id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+  "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+  "started_at": "2026-10-20T19:14:35.412657745Z",
+  "driver_report_sha256": "ceef4ea7466affb3ad2f5dbdde260e02a23f3085bc0f2168fe1a13fabed4a2ec",
+  "case_report_sha256": "82c6079367e6ce221195ac66f117cdb503c63f5f49452f5cc581642fe6a2746f",
+  "guard_report_sha256": "f1ded12aad0461d1541dd2512c2f99df0dc454009984b9ea6139d8ace342d0d1",
+  "source_sha256": "5c93b705d6534d49d467ceb8979269603a75df18f67b7aea551ecacb8faed848",
+  "parser_sha256": "54e894bc1fe14c3a45fb3b76b81bd17a125611679625adb41f813f4409e0bdc5",
+  "attempt_ids": [
+    "ef7b74be-b1fe-4f24-a488-fd6257c09a70",
+    "7cb1cc33-3bb4-49e3-acfc-0277c4a48ed5"
+  ],
+  "same_container_epoch_after_capture": true,
+  "private_log": {
+    "sha256": "3ca104472c6e82402367a362eb55ab70b1af5590f1bb2a88880c409343f0fee0",
+    "bytes": 438805,
+    "permissions_octal": "0o600",
+    "raw_emitted": false
+  },
+  "http_status_counts": {
+    "200": 1223
+  },
+  "http_route_counts": [
+    {
+      "method": "POST",
+      "route_category": "mcp_events",
+      "status": "200",
+      "count": 1204
+    },
+    {
+      "method": "GET",
+      "route_category": "health",
+      "status": "200",
+      "count": 6
+    },
+    {
+      "method": "POST",
+      "route_category": "other",
+      "status": "200",
+      "count": 6
+    },
+    {
+      "method": "POST",
+      "route_category": "observe",
+      "status": "200",
+      "count": 3
+    },
+    {
+      "method": "POST",
+      "route_category": "mcp_start",
+      "status": "200",
+      "count": 2
+    },
+    {
+      "method": "POST",
+      "route_category": "acknowledge",
+      "status": "200",
+      "count": 2
+    }
+  ],
+  "request_guard_error_counts": {
+    "none": 1223
+  },
+  "exact_attempt_terminal_diagnostics": {
+    "ef7b74be-b1fe-4f24-a488-fd6257c09a70": {
+      "terminals": [],
+      "closed_projection_omissions": {}
+    },
+    "7cb1cc33-3bb4-49e3-acfc-0277c4a48ed5": {
+      "terminals": [],
+      "closed_projection_omissions": {}
+    }
+  },
+  "provider_requests": 0,
+  "services_restarted": false,
+  "reconciliation_or_ACK_performed": false,
+  "profile_or_credentials_read": false
+}

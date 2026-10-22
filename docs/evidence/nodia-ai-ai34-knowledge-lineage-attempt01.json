@@ -1,0 +1,64 @@
+{
+  "stage": "AI-34",
+  "scope": "generated_published_knowledge_release_lineage",
+  "status": "passed",
+  "before_release": "7092b896342022735935d4aaff2783ed300b905f5693d2285b748cd75ac99ffd",
+  "after_release": "c2d7a6299d5306dacdb094015d1b7dacf6bda126fffea416d4769fb822032980",
+  "published_fragments": 27,
+  "published_fragments_unchanged": true,
+  "published_fragments_canonical_sha256": "fc805f74e2eda3b567eb3f0dfa6c07796ce64d9e37dca7c3db227775389d2571",
+  "capability_contracts": 67,
+  "capability_contracts_unchanged": true,
+  "capability_contracts_canonical_sha256": "1f5aa14da21071cd2900fb0a6debdff0c7c95120a13aa03b2c54a259d4408cb2",
+  "registry_unchanged": true,
+  "contract_schema_unchanged": true,
+  "document_metadata_except_source_hashes_unchanged": true,
+  "source_hash_changes": [
+    {
+      "document_id": "general-settings.actions-and-business-actions",
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "before_sha256": "011aa4ce856b8862a646fb1c3d9eb330c26808e7ed11af8ff82a1fd1655e4941",
+      "after_sha256": "bfaf7ece7433f33ceb73ae0bc8b438a84fd633331568aa3c25da2fa352976670"
+    },
+    {
+      "document_id": "general-settings.ai-connections",
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "before_sha256": "011aa4ce856b8862a646fb1c3d9eb330c26808e7ed11af8ff82a1fd1655e4941",
+      "after_sha256": "bfaf7ece7433f33ceb73ae0bc8b438a84fd633331568aa3c25da2fa352976670"
+    },
+    {
+      "document_id": "general-settings.ai-credentials-and-sessions",
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "before_sha256": "011aa4ce856b8862a646fb1c3d9eb330c26808e7ed11af8ff82a1fd1655e4941",
+      "after_sha256": "bfaf7ece7433f33ceb73ae0bc8b438a84fd633331568aa3c25da2fa352976670"
+    },
+    {
+      "document_id": "general-settings.ai-models-and-health",
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "before_sha256": "011aa4ce856b8862a646fb1c3d9eb330c26808e7ed11af8ff82a1fd1655e4941",
+      "after_sha256": "bfaf7ece7433f33ceb73ae0bc8b438a84fd633331568aa3c25da2fa352976670"
+    },
+    {
+      "document_id": "general-settings.modules-and-groups",
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "before_sha256": "011aa4ce856b8862a646fb1c3d9eb330c26808e7ed11af8ff82a1fd1655e4941",
+      "after_sha256": "bfaf7ece7433f33ceb73ae0bc8b438a84fd633331568aa3c25da2fa352976670"
+    },
+    {
+      "document_id": "general-settings.roles",
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "before_sha256": "011aa4ce856b8862a646fb1c3d9eb330c26808e7ed11af8ff82a1fd1655e4941",
+      "after_sha256": "bfaf7ece7433f33ceb73ae0bc8b438a84fd633331568aa3c25da2fa352976670"
+    },
+    {
+      "document_id": "general-settings.users",
+      "path": "docs/mvp/ai-provider-feature-contract.md",
+      "before_sha256": "011aa4ce856b8862a646fb1c3d9eb330c26808e7ed11af8ff82a1fd1655e4941",
+      "after_sha256": "bfaf7ece7433f33ceb73ae0bc8b438a84fd633331568aa3c25da2fa352976670"
+    }
+  ],
+  "provider_generations": 0,
+  "limitations": [
+    "Historical canary reports keep their original pinned releases; this comparison does not claim new real-provider acceptance"
+  ]
+}

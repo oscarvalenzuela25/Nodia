@@ -1,0 +1,18 @@
+{
+  "stage": "AI-24",
+  "previous_release": "67df82be991496f45536f62528c283b3342975e2351124512d6f232ed442d825",
+  "release": "6f8233b3d7a6b57af5fe3317b7cf11a01a2ecedf5977a92216d79d447cf803c3",
+  "changed_manifest_fields": [
+    "registry_sha256",
+    "release_id"
+  ],
+  "published_documents_unchanged": true,
+  "published_fragments_unchanged": true,
+  "capability_contracts_unchanged": true,
+  "new_published_content": false,
+  "reason": "One explicitly indexed draft/unregistered rental configuration document changes only registry digest and release identity",
+  "sources": 47,
+  "excluded": 20,
+  "published_capabilities": 67,
+  "published_fragments": 27
+}

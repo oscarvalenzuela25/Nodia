@@ -1,0 +1,92 @@
+{
+  "stage": "AI-34",
+  "scope": "unit_compilation_and_static_checks",
+  "status": "passed_with_documented_global_test_fixture_typing_limit",
+  "observed_at_utc": "2026-10-18T17:18:27.5663752-03:00",
+  "suites": [
+    {
+      "name": "server_all",
+      "runner": "vitest",
+      "tests_passed": 3540,
+      "files": 219,
+      "failed": 0,
+      "report_sha256": "0a3446fdeafff515880ab132ba1537742c63dc95352799147211ce1b57fe6c21",
+      "source_report_local": ".tmp/ai34-server-routing-final-all.json",
+      "overlaps_other_suites": false
+    },
+    {
+      "name": "client_all",
+      "runner": "vitest",
+      "tests_passed": 1716,
+      "files": 223,
+      "failed": 0,
+      "report_sha256": "c6dd4ac12ca1ad3063578f9faee22db649ae56f2c435b2a4b3c8e0c451cca573",
+      "source_report_local": ".tmp/ai34-client-unit-all.json",
+      "overlaps_other_suites": false
+    },
+    {
+      "name": "final_context_and_adapter",
+      "runner": "vitest",
+      "tests_passed": 118,
+      "files": 2,
+      "failed": 0,
+      "report_sha256": "1066727da00553fda8c1a42f0309968055d2e5c367ffa955cae255d5f317a306",
+      "source_report_local": ".tmp/ai34-budget-final-regressions.json",
+      "overlaps_other_suites": true
+    },
+    {
+      "name": "typed_ai34_specs",
+      "runner": "vitest",
+      "tests_passed": 149,
+      "files": 5,
+      "failed": 0,
+      "report_sha256": "b95bd9254bd6d94ef5b486327b0fa5c1605c8900e56b9fdaecb37ed3f4ea0765",
+      "source_report_local": ".tmp/ai34-spec-type-fixes-unit.json",
+      "overlaps_other_suites": true
+    },
+    {
+      "name": "routing_race_final",
+      "runner": "vitest",
+      "tests_passed": 75,
+      "files": 2,
+      "failed": 0,
+      "report_sha256": "fc4b483eb9ed11e0778c0cd1b3a04a1d50fdca3af8f5387781199c643b0c44de",
+      "source_report_local": ".tmp/ai34-routing-race-unit.json",
+      "overlaps_other_suites": true
+    }
+  ],
+  "server_production_build": {
+    "status": "passed",
+    "log_sha256": "dca1cdbfc155e08f69fd43c268b70b516c07f7d814c33ffe61f20df027b3254c"
+  },
+  "server_lint": {
+    "errors": 0,
+    "warnings": 3,
+    "notes": "Warnings remain in existing provider DTO/entity and historical live-unknown fixture, outside AI-34.",
+    "log_sha256": "5486b600bb58caaa5705dbd3bdb262512a5f27bb83910bde11d57c72f0cdbc30"
+  },
+  "client_typecheck_build_lint": {
+    "status": "passed",
+    "reported_by": "ai34_persistence; full output logs retained locally"
+  },
+  "windows_python": {
+    "total": 420,
+    "passed": 418,
+    "skipped": 2,
+    "failed": 0,
+    "notes": "Two historical Windows symlink platform skips; final Linux candidate must run all 420.",
+    "log_sha256": "28ff3a40756a4dc46cdabb7ed551504e5fde860c842881ec3c0e034226b28271"
+  },
+  "global_server_test_fixture_typecheck": {
+    "status": "failed_outside_changed_scope",
+    "errors": 192,
+    "files": 48,
+    "changed_ai34_scope_errors": 0,
+    "historical_baseline_claimed": false,
+    "production_typecheck": "passed_by_production_build",
+    "log_sha256": "c5c7c21e659651d0d72bd544cb4adc6ddd4b8bf16e22738a16dbd91356126dc9"
+  },
+  "automatic_inference_retries": 0,
+  "provider_generations": 0,
+  "configured_database_used": false
+}

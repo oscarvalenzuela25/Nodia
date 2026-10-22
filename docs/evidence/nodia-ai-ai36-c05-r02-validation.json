@@ -1,0 +1,2626 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R02",
+  "status": "partial_real_acceptance_AI36_still_open",
+  "inputs": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r02-inputs.json",
+    "sha256": "82b34ef7b7af79b8b28c81f606642763104414c5fad2af1c3c934d5bded020c9"
+  },
+  "baseline": {
+    "report": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+      "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+    },
+    "inputs": {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r01-inputs.json",
+      "sha256": "6d0ffa8b609b4a341bc69913306b50a91294cd73fd6cb43008325d91813c837f"
+    },
+    "consolidator": {
+      "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05-r01.cjs",
+      "sha256": "8732ea99780fa8d2afd8e9c8bbd39013eecd8ab602e68eb2aa90863680033d1f"
+    },
+    "immutable_references_verified": 131,
+    "accepted_capability_ids": [
+      "nodia_attachments_describe",
+      "nodia_operations_get",
+      "nodia_proposals_get"
+    ],
+    "observed_native_starts": 16,
+    "scope": "Frozen R01 evidence with its original Node/native environments; not verification of the R02 epoch."
+  },
+  "inherited_security": {
+    "source": {
+      "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05-r01.cjs",
+      "sha256": "8732ea99780fa8d2afd8e9c8bbd39013eecd8ab602e68eb2aa90863680033d1f"
+    },
+    "normalized_function_block_sha256": "10c580375c550903f21d5882fb058f1f8427eac1a62fb5c4abdff0d186fdc59b",
+    "functions_literal_and_controls_unchanged": true
+  },
+  "publication": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-publication-validation.json",
+    "sha256": "85c0efe12c35eb5408662a890fbf85f1e7e810342fcdcf1807d03e90d114e099"
+  },
+  "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+  "node_compiled_delta": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+    "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+  },
+  "native_epochs": [
+    {
+      "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+      "image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+      "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+      "node_compiled_delta": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+        "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+      },
+      "source_manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04-manifest.json",
+        "sha256": "5572e21e9466d6592e3ee0427312911551aad50df4dd5f8e5e6db600184be70d"
+      },
+      "qualification": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-qualification.json",
+        "sha256": "f41276c82a27491aa69e252437ce5498df4f0f83fddca9def249da75b14164b5"
+      },
+      "container_started_at_utc": "2026-10-19T20:05:13.415129549Z"
+    }
+  ],
+  "native_canaries": [
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-canary-report.json",
+        "sha256": "3040ded98df29d08f0e91008e173f4d970179fc6606bb651895d91fa18a95acd"
+      },
+      "binding": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-binding.json",
+        "sha256": "c26d0087d1f239c686ef8c1c2eaf913a2a21d5d66a7aa86ef80d43a52a4d7c19"
+      },
+      "original_report": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-original-ai15-report.json",
+        "sha256": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9"
+      },
+      "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+      "status": "passed",
+      "native_start_requests": 1,
+      "accepted_native_starts": 1,
+      "exact_terminal_proof_and_ACK": {
+        "attempt_id": "8ef681a1-ebb8-476e-ab11-e9d7fbad78f9",
+        "terminal_proof_sha256": "e8fd0aa45730e9c72dec8af496dd6ef1a8446eb5b61a80c6c1f7dc416d107227",
+        "outcome": "completed",
+        "process_closed": true,
+        "observed_at_utc": "2026-10-19T20:09:33.736496+00:00"
+      },
+      "epoch_MCP_qualified": true,
+      "business_capability_acceptance_added": false,
+      "scope": "Fresh image/policy-bound diagnostic canary; never a business capability acceptance."
+    }
+  ],
+  "cohorts": [
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences.json",
+        "sha256": "7c4b7f24cd8abcba922a58c3b03dad89b2fd994be04ea1506ad32ddbb05f699c"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "case_id": "preferences",
+      "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+      "native_epoch": {
+        "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+        "image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+        "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high"
+        },
+        "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+        "node_compiled_delta": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+          "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+        },
+        "source_manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04-manifest.json",
+          "sha256": "5572e21e9466d6592e3ee0427312911551aad50df4dd5f8e5e6db600184be70d"
+        },
+        "qualification": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-qualification.json",
+          "sha256": "f41276c82a27491aa69e252437ce5498df4f0f83fddca9def249da75b14164b5"
+        },
+        "container_started_at_utc": "2026-10-19T20:05:13.415129549Z"
+      },
+      "producer_stage": "AI-36-C05-R02",
+      "status": "failed",
+      "compiled_provenance": {
+        "mode": "current_compiled",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-manifest.json",
+          "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+        },
+        "producer_harness_sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539",
+        "archive_sha256": "aeacdfd1041dea130dc9213a71f30686f9b24165f603c48b1a6f4412a5bb75f3",
+        "independent_case_fixture": {
+          "archive_member": "test/nodia-ai-ai36-c05-independent-cases.fixture.mjs",
+          "sha256": "01e9d5a003e84af302700c7ff3f81011a7ab3424feefc35ce4c7e7c3c5606b2a"
+        },
+        "compiled_executable_files": 971,
+        "current_compiled_provenance_checked": true,
+        "archive_byte_verification": "recorded_by_frozen_remote_producer_not_repeated_from_retained_archive_bytes"
+      },
+      "native_start_requests": 2,
+      "accepted_native_starts": 2,
+      "evaluated": [
+        {
+          "capability_id": "nodia_preferences_prepare",
+          "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+          "qualifying_completed_turns": [],
+          "real_callback_and_terminal_protocol_verified": false,
+          "semantic_assertions": {
+            "required": [
+              "preference_draft_exact",
+              "preference_unaccepted_before_confirmation",
+              "preference_exact_effect_once_after_confirmation",
+              "preference_atomic_receipt"
+            ],
+            "checks": [
+              {
+                "id": "preference_draft_exact",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "preference_unaccepted_before_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "preference_exact_effect_once_after_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "preference_atomic_receipt",
+                "passed": false,
+                "evidence": null
+              }
+            ]
+          },
+          "valid_operator_confirmation_recorded_where_required": false,
+          "human_confirmation_binding": {
+            "valid_operator_records": [],
+            "finance_public_proposal_identity_correlated": null,
+            "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+          },
+          "representative_real_E2E_verified": false,
+          "complete_semantic_or_productive_acceptance": false
+        },
+        {
+          "capability_id": "nodia_preferences_list",
+          "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+          "qualifying_completed_turns": [],
+          "real_callback_and_terminal_protocol_verified": false,
+          "semantic_assertions": {
+            "required": [
+              "preferences_excludes_unaccepted"
+            ],
+            "checks": [
+              {
+                "id": "preferences_excludes_unaccepted",
+                "passed": false,
+                "evidence": null
+              }
+            ]
+          },
+          "valid_operator_confirmation_recorded_where_required": true,
+          "human_confirmation_binding": null,
+          "representative_real_E2E_verified": false,
+          "complete_semantic_or_productive_acceptance": false
+        }
+      ],
+      "scope": "One directed real-provider turn over disposable SQL; overall cohort status never bypasses individual capability gates."
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance.json",
+        "sha256": "3eee7e90caca175c24c81d62c9adf0409e10027b743331fe463dbe4171d5449e"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "case_id": "finance",
+      "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+      "native_epoch": {
+        "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+        "image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+        "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high"
+        },
+        "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+        "node_compiled_delta": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+          "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+        },
+        "source_manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04-manifest.json",
+          "sha256": "5572e21e9466d6592e3ee0427312911551aad50df4dd5f8e5e6db600184be70d"
+        },
+        "qualification": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-qualification.json",
+          "sha256": "f41276c82a27491aa69e252437ce5498df4f0f83fddca9def249da75b14164b5"
+        },
+        "container_started_at_utc": "2026-10-19T20:05:13.415129549Z"
+      },
+      "producer_stage": "AI-36-C05-R02",
+      "status": "failed",
+      "compiled_provenance": {
+        "mode": "current_compiled",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-manifest.json",
+          "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+        },
+        "producer_harness_sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539",
+        "archive_sha256": "aeacdfd1041dea130dc9213a71f30686f9b24165f603c48b1a6f4412a5bb75f3",
+        "independent_case_fixture": {
+          "archive_member": "test/nodia-ai-ai36-c05-independent-cases.fixture.mjs",
+          "sha256": "01e9d5a003e84af302700c7ff3f81011a7ab3424feefc35ce4c7e7c3c5606b2a"
+        },
+        "compiled_executable_files": 971,
+        "current_compiled_provenance_checked": true,
+        "archive_byte_verification": "recorded_by_frozen_remote_producer_not_repeated_from_retained_archive_bytes"
+      },
+      "native_start_requests": 1,
+      "accepted_native_starts": 1,
+      "evaluated": [
+        {
+          "capability_id": "nodia_finance_movements_prepare_create",
+          "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+          "qualifying_completed_turns": [],
+          "real_callback_and_terminal_protocol_verified": false,
+          "semantic_assertions": {
+            "required": [
+              "finance_preview_exact",
+              "finance_no_effect_before_confirmation",
+              "finance_exact_effect_once_after_confirmation",
+              "finance_atomic_receipt"
+            ],
+            "checks": [
+              {
+                "id": "finance_preview_exact",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "finance_no_effect_before_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "finance_exact_effect_once_after_confirmation",
+                "passed": false,
+                "evidence": null
+              },
+              {
+                "id": "finance_atomic_receipt",
+                "passed": false,
+                "evidence": null
+              }
+            ]
+          },
+          "valid_operator_confirmation_recorded_where_required": false,
+          "human_confirmation_binding": {
+            "valid_operator_records": [],
+            "finance_public_proposal_identity_correlated": null,
+            "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+          },
+          "representative_real_E2E_verified": false,
+          "complete_semantic_or_productive_acceptance": false
+        }
+      ],
+      "scope": "One directed real-provider turn over disposable SQL; overall cohort status never bypasses individual capability gates."
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow.json",
+        "sha256": "df30d7673d4a7d68be7404a6db1a6d5c6b03a5048e4424759df468bd3b4c5ab9"
+      },
+      "manifest": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "case_id": "workflow",
+      "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+      "native_epoch": {
+        "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+        "image_id": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+        "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high"
+        },
+        "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+        "node_compiled_delta": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-compiled-delta.json",
+          "sha256": "6d5e5f4b1e4523a40c6f4a70b0861eca4cba164f8ec0cf832d1d84342bbbadd1"
+        },
+        "source_manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04-manifest.json",
+          "sha256": "5572e21e9466d6592e3ee0427312911551aad50df4dd5f8e5e6db600184be70d"
+        },
+        "qualification": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-qualification.json",
+          "sha256": "f41276c82a27491aa69e252437ce5498df4f0f83fddca9def249da75b14164b5"
+        },
+        "container_started_at_utc": "2026-10-19T20:05:13.415129549Z"
+      },
+      "producer_stage": "AI-36-C05-R02",
+      "status": "passed",
+      "compiled_provenance": {
+        "mode": "current_compiled",
+        "manifest": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-manifest.json",
+          "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+        },
+        "producer_harness_sha256": "7cc5b68b634047fc35cf953ebfd7ad55c7d62f33b01995c93dd58b56fcd42539",
+        "archive_sha256": "aeacdfd1041dea130dc9213a71f30686f9b24165f603c48b1a6f4412a5bb75f3",
+        "independent_case_fixture": {
+          "archive_member": "test/nodia-ai-ai36-c05-independent-cases.fixture.mjs",
+          "sha256": "01e9d5a003e84af302700c7ff3f81011a7ab3424feefc35ce4c7e7c3c5606b2a"
+        },
+        "compiled_executable_files": 971,
+        "current_compiled_provenance_checked": true,
+        "archive_byte_verification": "recorded_by_frozen_remote_producer_not_repeated_from_retained_archive_bytes"
+      },
+      "native_start_requests": 2,
+      "accepted_native_starts": 2,
+      "evaluated": [
+        {
+          "capability_id": "nodia_workflows_prepare",
+          "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+          "qualifying_completed_turns": [
+            {
+              "label": "independent_workflow",
+              "run_id": "16c962df-fea1-4999-a03f-74ca76a4b8d4",
+              "linked_callbacks": [
+                {
+                  "callback_call_id": "aa7d6103-d882-437d-a98a-23f1f98fccae",
+                  "receipt_id": "438c037d-5f11-4dc8-92b9-c4c3a5546d5b",
+                  "contract_hash": "3f2de6818c06114ec1715fcb9e8b6dd71ef75cde9691b7e9d4e1184892ac78b2",
+                  "result_sha256": "c923367fba4f8aee47173e563c8cdf5125f0aa1cb171a61dc19eaba520469f6f",
+                  "attempt_id": "228d3012-f204-423e-8477-8644ae0f625b",
+                  "observed_generation_binding": "retained_adapter_observation_checked",
+                  "SQL_run_and_adapter_call_binding": "explicit_retained_columns_checked"
+                }
+              ],
+              "acknowledged_generations": [
+                {
+                  "attempt_id": "c4637748-5623-44e2-b47a-bef3e120af11",
+                  "terminal_proof_sha256": "616b1b68aa92d9704b78a93ad44e8df78bba2bf437f4c889c9f11da5ef597a43"
+                },
+                {
+                  "attempt_id": "228d3012-f204-423e-8477-8644ae0f625b",
+                  "terminal_proof_sha256": "9735a1f273b989760f42482da2e55831de31124c999a2d1cd3580a58f5d71655"
+                }
+              ]
+            }
+          ],
+          "real_callback_and_terminal_protocol_verified": true,
+          "semantic_assertions": {
+            "required": [
+              "workflow_exact_ordered_steps",
+              "workflow_no_effect_before_confirmation",
+              "workflow_exact_effects_once_after_confirmation",
+              "workflow_native_step_receipts"
+            ],
+            "checks": [
+              {
+                "id": "workflow_exact_ordered_steps",
+                "passed": true,
+                "evidence": {
+                  "id": "workflow_exact_ordered_steps",
+                  "passed": true,
+                  "expected": [
+                    {
+                      "tool_name": "nodia_preferences_prepare_create",
+                      "kind": "preference_change",
+                      "target": null,
+                      "scope": {
+                        "subject_user_id": "1"
+                      },
+                      "changes": [
+                        {
+                          "field_key": "scope_key",
+                          "before": null,
+                          "before_present": false,
+                          "after": "finance",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "key",
+                          "before": null,
+                          "before_present": false,
+                          "after": "expense_category_id",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "business_id",
+                          "before": null,
+                          "before_present": false,
+                          "after": null,
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "value",
+                          "before": null,
+                          "before_present": false,
+                          "after": "1",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "value_label",
+                          "before": null,
+                          "before_present": false,
+                          "after": "Synthetic C05 food",
+                          "after_present": true,
+                          "origin": "database"
+                        },
+                        {
+                          "field_key": "scope_label",
+                          "before": null,
+                          "before_present": false,
+                          "after": null,
+                          "after_present": true,
+                          "origin": "database"
+                        }
+                      ],
+                      "effect_key": "preferences.create",
+                      "output_bindings": []
+                    },
+                    {
+                      "tool_name": "nodia_finance_movements_prepare_create",
+                      "kind": "domain_change",
+                      "target": null,
+                      "scope": {
+                        "subject_user_id": "1"
+                      },
+                      "changes": [
+                        {
+                          "field_key": "name",
+                          "before": null,
+                          "before_present": false,
+                          "after": "Synthetic C05 workflow snack",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "amount",
+                          "before": null,
+                          "before_present": false,
+                          "after": "1234",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "type",
+                          "before": null,
+                          "before_present": false,
+                          "after": "expense",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "status",
+                          "before": null,
+                          "before_present": false,
+                          "after": "paid",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "category_id",
+                          "before": null,
+                          "before_present": false,
+                          "after": "1",
+                          "after_present": true,
+                          "origin": "user"
+                        },
+                        {
+                          "field_key": "obligation_id",
+                          "before": null,
+                          "before_present": false,
+                          "after": null,
+                          "after_present": true,
+                          "origin": "contract_default"
+                        },
+                        {
+                          "field_key": "is_active",
+                          "before": null,
+                          "before_present": false,
+                          "after": true,
+                          "after_present": true,
+                          "origin": "contract_default"
+                        }
+                      ],
+                      "effect_key": "finance_movement.create",
+                      "output_bindings": []
+                    }
+                  ],
+                  "observed": [
+                    {
+                      "tool_name": "nodia_preferences_prepare_create",
+                      "kind": "preference_change",
+                      "target": null,
+                      "scope": {
+                        "subject_user_id": "1"
+                      },
+                      "changes": [
+                        {
+                          "after": "finance",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "scope_key",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": "expense_category_id",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "key",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": null,
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "business_id",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": "1",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "value",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": "Synthetic C05 food",
+                          "before": null,
+                          "origin": "database",
+                          "field_key": "value_label",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": null,
+                          "before": null,
+                          "origin": "database",
+                          "field_key": "scope_label",
+                          "after_present": true,
+                          "before_present": false
+                        }
+                      ],
+                      "effect_key": "preferences.create",
+                      "output_bindings": []
+                    },
+                    {
+                      "tool_name": "nodia_finance_movements_prepare_create",
+                      "kind": "domain_change",
+                      "target": null,
+                      "scope": {
+                        "subject_user_id": "1"
+                      },
+                      "changes": [
+                        {
+                          "after": "Synthetic C05 workflow snack",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "name",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": "1234",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "amount",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": "expense",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "type",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": "paid",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "status",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": "1",
+                          "before": null,
+                          "origin": "user",
+                          "field_key": "category_id",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": null,
+                          "before": null,
+                          "origin": "contract_default",
+                          "field_key": "obligation_id",
+                          "after_present": true,
+                          "before_present": false
+                        },
+                        {
+                          "after": true,
+                          "before": null,
+                          "origin": "contract_default",
+                          "field_key": "is_active",
+                          "after_present": true,
+                          "before_present": false
+                        }
+                      ],
+                      "effect_key": "finance_movement.create",
+                      "output_bindings": []
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "workflow_no_effect_before_confirmation",
+                "passed": true,
+                "evidence": {
+                  "id": "workflow_no_effect_before_confirmation",
+                  "passed": true,
+                  "expected": {
+                    "preferences": 0,
+                    "movements": 0
+                  },
+                  "observed": {
+                    "preferences": 0,
+                    "movements": 0
+                  }
+                }
+              },
+              {
+                "id": "workflow_exact_effects_once_after_confirmation",
+                "passed": true,
+                "evidence": {
+                  "id": "workflow_exact_effects_once_after_confirmation",
+                  "passed": true,
+                  "expected": {
+                    "preference": {
+                      "owner_id": "1",
+                      "scope_key": "finance",
+                      "scope": {},
+                      "key": "expense_category_id",
+                      "value": "1"
+                    },
+                    "expense": {
+                      "name": "Synthetic C05 workflow snack",
+                      "amount": "1234",
+                      "type": "expense",
+                      "status": "paid",
+                      "category_id": "1"
+                    },
+                    "total_preferences": 1,
+                    "total_movements": 1
+                  },
+                  "observed": {
+                    "preference": {
+                      "owner_id": "1",
+                      "scope_key": "finance",
+                      "scope": {},
+                      "key": "expense_category_id",
+                      "value": "1"
+                    },
+                    "expense": {
+                      "name": "Synthetic C05 workflow snack",
+                      "amount": "1234",
+                      "type": "expense",
+                      "status": "paid",
+                      "category_id": "1"
+                    },
+                    "total_preferences": 1,
+                    "total_movements": 1
+                  }
+                }
+              },
+              {
+                "id": "workflow_native_step_receipts",
+                "passed": true,
+                "evidence": {
+                  "id": "workflow_native_step_receipts",
+                  "passed": true,
+                  "expected": [
+                    {
+                      "state": "completed",
+                      "resource_key": "nodia_ai_preferences",
+                      "resource_id": "2cc84e07-28f8-4d9c-9976-8361e18c1715"
+                    },
+                    {
+                      "state": "completed",
+                      "resource_key": "finance_movements",
+                      "resource_id": "1"
+                    }
+                  ],
+                  "observed": [
+                    {
+                      "state": "completed",
+                      "resource_key": "nodia_ai_preferences",
+                      "resource_id": "2cc84e07-28f8-4d9c-9976-8361e18c1715"
+                    },
+                    {
+                      "state": "completed",
+                      "resource_key": "finance_movements",
+                      "resource_id": "1"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "valid_operator_confirmation_recorded_where_required": true,
+          "human_confirmation_binding": {
+            "valid_operator_records": [
+              {
+                "proposal_id": "f5a187a8-1c3a-4f0f-9061-13cf20477148",
+                "revision": 1,
+                "proposal_hash": "c7d2ddda811450a4cb79bb1040ad1c845492b1d412e3a118685f9b0f503d351d",
+                "execution_id": "87bc3c5b-7270-4afe-94ca-b94388083368",
+                "duplicate_confirmation_same_execution": true,
+                "layer": "operator_HTTP_fixture_actor_not_UI",
+                "purpose": "capability_acceptance"
+              }
+            ],
+            "finance_public_proposal_identity_correlated": null,
+            "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+          },
+          "representative_real_E2E_verified": true,
+          "complete_semantic_or_productive_acceptance": false
+        }
+      ],
+      "scope": "One directed real-provider turn over disposable SQL; overall cohort status never bypasses individual capability gates."
+    }
+  ],
+  "offline_controls": [
+    {
+      "case_id": "preferences",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-preferences.json",
+        "sha256": "13e26bbc1c57e7d10aaaa6cf76131596932d1cf85be7f5e411a2a1341f76ed83"
+      },
+      "checks": 14,
+      "semantic_assertions": [
+        {
+          "capability_id": "nodia_preferences_prepare",
+          "required": [
+            "preference_draft_exact",
+            "preference_unaccepted_before_confirmation",
+            "preference_exact_effect_once_after_confirmation",
+            "preference_atomic_receipt"
+          ],
+          "checks": [
+            {
+              "id": "preference_draft_exact",
+              "passed": true,
+              "evidence": {
+                "id": "preference_draft_exact",
+                "passed": true,
+                "expected": {
+                  "revision": 1,
+                  "partial": {
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                },
+                "observed": {
+                  "revision": 1,
+                  "partial": {
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                }
+              }
+            },
+            {
+              "id": "preference_unaccepted_before_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "preference_unaccepted_before_confirmation",
+                "passed": true,
+                "expected": 0,
+                "observed": 0
+              }
+            },
+            {
+              "id": "preference_exact_effect_once_after_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "preference_exact_effect_once_after_confirmation",
+                "passed": true,
+                "expected": {
+                  "count": 1,
+                  "preference": {
+                    "owner_id": "1",
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                },
+                "observed": {
+                  "count": 1,
+                  "preference": {
+                    "owner_id": "1",
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  }
+                }
+              }
+            },
+            {
+              "id": "preference_atomic_receipt",
+              "passed": true,
+              "evidence": {
+                "id": "preference_atomic_receipt",
+                "passed": true,
+                "expected": {
+                  "state": "completed",
+                  "resource_key": "nodia_ai_preferences",
+                  "resource_id": "d07feb9f-ae82-4f7b-9d92-d898a1d684a7"
+                },
+                "observed": {
+                  "state": "completed",
+                  "resource_key": "nodia_ai_preferences",
+                  "resource_id": "d07feb9f-ae82-4f7b-9d92-d898a1d684a7"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "capability_id": "nodia_preferences_list",
+          "required": [
+            "preferences_excludes_unaccepted"
+          ],
+          "checks": [
+            {
+              "id": "preferences_excludes_unaccepted",
+              "passed": true,
+              "evidence": {
+                "id": "preferences_excludes_unaccepted",
+                "passed": true,
+                "expected": {
+                  "items": [],
+                  "next_cursor": null
+                },
+                "observed": {
+                  "items": [],
+                  "next_cursor": null
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "synthetic_generations": 2,
+      "real_provider_generations": 0,
+      "scope": "Retained same-Node-build SQL controls with synthetic transport, not R02 native-role acceptance."
+    },
+    {
+      "case_id": "finance",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-finance.json",
+        "sha256": "9493073c6b2b9a60826e4d7ba467cfe3da8b350cc69ca3b622c7a3a9539b0b86"
+      },
+      "checks": 13,
+      "semantic_assertions": [
+        {
+          "capability_id": "nodia_finance_movements_prepare_create",
+          "required": [
+            "finance_preview_exact",
+            "finance_no_effect_before_confirmation",
+            "finance_exact_effect_once_after_confirmation",
+            "finance_atomic_receipt"
+          ],
+          "checks": [
+            {
+              "id": "finance_preview_exact",
+              "passed": true,
+              "evidence": {
+                "id": "finance_preview_exact",
+                "passed": true,
+                "expected": {
+                  "owner_id": "1",
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                },
+                "observed": {
+                  "owner_id": "1",
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                }
+              }
+            },
+            {
+              "id": "finance_no_effect_before_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "finance_no_effect_before_confirmation",
+                "passed": true,
+                "expected": 0,
+                "observed": 0
+              }
+            },
+            {
+              "id": "finance_exact_effect_once_after_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "finance_exact_effect_once_after_confirmation",
+                "passed": true,
+                "expected": {
+                  "count": 1,
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                },
+                "observed": {
+                  "count": 1,
+                  "name": "Synthetic C05 lunch",
+                  "amount": "23450",
+                  "type": "expense",
+                  "status": "paid",
+                  "category_id": "1"
+                }
+              }
+            },
+            {
+              "id": "finance_atomic_receipt",
+              "passed": true,
+              "evidence": {
+                "id": "finance_atomic_receipt",
+                "passed": true,
+                "expected": [
+                  {
+                    "state": "completed",
+                    "resource_key": "finance_movements",
+                    "resource_id": "1"
+                  }
+                ],
+                "observed": [
+                  {
+                    "state": "completed",
+                    "resource_key": "finance_movements",
+                    "resource_id": "1"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "synthetic_generations": 2,
+      "real_provider_generations": 0,
+      "scope": "Retained same-Node-build SQL controls with synthetic transport, not R02 native-role acceptance."
+    },
+    {
+      "case_id": "workflow",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-cases-control-attempt01-workflow.json",
+        "sha256": "60d7985c7ab833ed6b38c29500e47f101c3ed18aed7c843f5466da48c5946ecc"
+      },
+      "checks": 13,
+      "semantic_assertions": [
+        {
+          "capability_id": "nodia_workflows_prepare",
+          "required": [
+            "workflow_exact_ordered_steps",
+            "workflow_no_effect_before_confirmation",
+            "workflow_exact_effects_once_after_confirmation",
+            "workflow_native_step_receipts"
+          ],
+          "checks": [
+            {
+              "id": "workflow_exact_ordered_steps",
+              "passed": true,
+              "evidence": {
+                "id": "workflow_exact_ordered_steps",
+                "passed": true,
+                "expected": [
+                  {
+                    "tool_name": "nodia_preferences_prepare_create",
+                    "kind": "preference_change",
+                    "target": null,
+                    "scope": {
+                      "subject_user_id": "1"
+                    },
+                    "changes": [
+                      {
+                        "field_key": "scope_key",
+                        "before": null,
+                        "before_present": false,
+                        "after": "finance",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "key",
+                        "before": null,
+                        "before_present": false,
+                        "after": "expense_category_id",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "business_id",
+                        "before": null,
+                        "before_present": false,
+                        "after": null,
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "value",
+                        "before": null,
+                        "before_present": false,
+                        "after": "1",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "value_label",
+                        "before": null,
+                        "before_present": false,
+                        "after": "Synthetic C05 food",
+                        "after_present": true,
+                        "origin": "database"
+                      },
+                      {
+                        "field_key": "scope_label",
+                        "before": null,
+                        "before_present": false,
+                        "after": null,
+                        "after_present": true,
+                        "origin": "database"
+                      }
+                    ],
+                    "effect_key": "preferences.create",
+                    "output_bindings": []
+                  },
+                  {
+                    "tool_name": "nodia_finance_movements_prepare_create",
+                    "kind": "domain_change",
+                    "target": null,
+                    "scope": {
+                      "subject_user_id": "1"
+                    },
+                    "changes": [
+                      {
+                        "field_key": "name",
+                        "before": null,
+                        "before_present": false,
+                        "after": "Synthetic C05 workflow snack",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "amount",
+                        "before": null,
+                        "before_present": false,
+                        "after": "1234",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "type",
+                        "before": null,
+                        "before_present": false,
+                        "after": "expense",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "status",
+                        "before": null,
+                        "before_present": false,
+                        "after": "paid",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "category_id",
+                        "before": null,
+                        "before_present": false,
+                        "after": "1",
+                        "after_present": true,
+                        "origin": "user"
+                      },
+                      {
+                        "field_key": "obligation_id",
+                        "before": null,
+                        "before_present": false,
+                        "after": null,
+                        "after_present": true,
+                        "origin": "contract_default"
+                      },
+                      {
+                        "field_key": "is_active",
+                        "before": null,
+                        "before_present": false,
+                        "after": true,
+                        "after_present": true,
+                        "origin": "contract_default"
+                      }
+                    ],
+                    "effect_key": "finance_movement.create",
+                    "output_bindings": []
+                  }
+                ],
+                "observed": [
+                  {
+                    "tool_name": "nodia_preferences_prepare_create",
+                    "kind": "preference_change",
+                    "target": null,
+                    "scope": {
+                      "subject_user_id": "1"
+                    },
+                    "changes": [
+                      {
+                        "after": "finance",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "scope_key",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": "expense_category_id",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "key",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": null,
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "business_id",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": "1",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "value",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": "Synthetic C05 food",
+                        "before": null,
+                        "origin": "database",
+                        "field_key": "value_label",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": null,
+                        "before": null,
+                        "origin": "database",
+                        "field_key": "scope_label",
+                        "after_present": true,
+                        "before_present": false
+                      }
+                    ],
+                    "effect_key": "preferences.create",
+                    "output_bindings": []
+                  },
+                  {
+                    "tool_name": "nodia_finance_movements_prepare_create",
+                    "kind": "domain_change",
+                    "target": null,
+                    "scope": {
+                      "subject_user_id": "1"
+                    },
+                    "changes": [
+                      {
+                        "after": "Synthetic C05 workflow snack",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "name",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": "1234",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "amount",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": "expense",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "type",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": "paid",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "status",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": "1",
+                        "before": null,
+                        "origin": "user",
+                        "field_key": "category_id",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": null,
+                        "before": null,
+                        "origin": "contract_default",
+                        "field_key": "obligation_id",
+                        "after_present": true,
+                        "before_present": false
+                      },
+                      {
+                        "after": true,
+                        "before": null,
+                        "origin": "contract_default",
+                        "field_key": "is_active",
+                        "after_present": true,
+                        "before_present": false
+                      }
+                    ],
+                    "effect_key": "finance_movement.create",
+                    "output_bindings": []
+                  }
+                ]
+              }
+            },
+            {
+              "id": "workflow_no_effect_before_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "workflow_no_effect_before_confirmation",
+                "passed": true,
+                "expected": {
+                  "preferences": 0,
+                  "movements": 0
+                },
+                "observed": {
+                  "preferences": 0,
+                  "movements": 0
+                }
+              }
+            },
+            {
+              "id": "workflow_exact_effects_once_after_confirmation",
+              "passed": true,
+              "evidence": {
+                "id": "workflow_exact_effects_once_after_confirmation",
+                "passed": true,
+                "expected": {
+                  "preference": {
+                    "owner_id": "1",
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  },
+                  "expense": {
+                    "name": "Synthetic C05 workflow snack",
+                    "amount": "1234",
+                    "type": "expense",
+                    "status": "paid",
+                    "category_id": "1"
+                  },
+                  "total_preferences": 1,
+                  "total_movements": 1
+                },
+                "observed": {
+                  "preference": {
+                    "owner_id": "1",
+                    "scope_key": "finance",
+                    "scope": {},
+                    "key": "expense_category_id",
+                    "value": "1"
+                  },
+                  "expense": {
+                    "name": "Synthetic C05 workflow snack",
+                    "amount": "1234",
+                    "type": "expense",
+                    "status": "paid",
+                    "category_id": "1"
+                  },
+                  "total_preferences": 1,
+                  "total_movements": 1
+                }
+              }
+            },
+            {
+              "id": "workflow_native_step_receipts",
+              "passed": true,
+              "evidence": {
+                "id": "workflow_native_step_receipts",
+                "passed": true,
+                "expected": [
+                  {
+                    "state": "completed",
+                    "resource_key": "nodia_ai_preferences",
+                    "resource_id": "0b9fae15-8177-4857-bf03-0a9c8af17074"
+                  },
+                  {
+                    "state": "completed",
+                    "resource_key": "finance_movements",
+                    "resource_id": "1"
+                  }
+                ],
+                "observed": [
+                  {
+                    "state": "completed",
+                    "resource_key": "nodia_ai_preferences",
+                    "resource_id": "0b9fae15-8177-4857-bf03-0a9c8af17074"
+                  },
+                  {
+                    "state": "completed",
+                    "resource_key": "finance_movements",
+                    "resource_id": "1"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "synthetic_generations": 2,
+      "real_provider_generations": 0,
+      "scope": "Retained same-Node-build SQL controls with synthetic transport, not R02 native-role acceptance."
+    }
+  ],
+  "metadata_evidence": [
+    {
+      "kind": "supervised_metadata_diagnostics",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata-summary.json",
+        "sha256": "26affe4a5e1cf0ca44eefc392fb11550f61df093969aa1f753cffd806d4c19f6"
+      },
+      "scope": "Non-generative diagnostic evidence; never counted as a capability or inferred provider availability."
+    },
+    {
+      "kind": "current_epoch_metadata_and_undispatched_preflight",
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata03-summary.json",
+        "sha256": "6d1c877896d78a4fe6c8f5330ed110dd763d9bdef27d0a5311de883b7d00ccc3"
+      },
+      "scope": "Non-generative diagnostic evidence; never counted as a capability or inferred provider availability."
+    }
+  ],
+  "artifact_aliases": [
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-receipt.json",
+        "sha256": "7c4b7f24cd8abcba922a58c3b03dad89b2fd994be04ea1506ad32ddbb05f699c"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences.json",
+        "sha256": "7c4b7f24cd8abcba922a58c3b03dad89b2fd994be04ea1506ad32ddbb05f699c"
+      },
+      "scope": "Byte-exact captured R02 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-ai36-c05-cases-live-stage-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "scope": "Byte-exact captured R02 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-receipt.json",
+        "sha256": "3eee7e90caca175c24c81d62c9adf0409e10027b743331fe463dbe4171d5449e"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance.json",
+        "sha256": "3eee7e90caca175c24c81d62c9adf0409e10027b743331fe463dbe4171d5449e"
+      },
+      "scope": "Byte-exact captured R02 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-ai36-c05-cases-live-stage-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "scope": "Byte-exact captured R02 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-receipt.json",
+        "sha256": "df30d7673d4a7d68be7404a6db1a6d5c6b03a5048e4424759df468bd3b4c5ab9"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow.json",
+        "sha256": "df30d7673d4a7d68be7404a6db1a6d5c6b03a5048e4424759df468bd3b4c5ab9"
+      },
+      "scope": "Byte-exact captured R02 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    },
+    {
+      "original": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-ai36-c05-cases-live-stage-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "alias": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-manifest.json",
+        "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+      },
+      "scope": "Byte-exact captured R02 runner artifact alias for the inherited sibling-file provenance convention; original preserved."
+    }
+  ],
+  "supplementary_evidence": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-diagnostic-report.json",
+      "sha256": "d76848e08993a0b16196fbab7f72f7c157271ec1612c29cc32a4fb7dd643c59e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-HTTP-observation.json",
+      "sha256": "ded36947cab55041d402ad10b2f64ea4017a024a01e78021d11bb21c8d5984a5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-post-SQL-quiet.json",
+      "sha256": "f6a7395204816e86607529d2227616eb7b5f71087c3f721824c6118188f2bd46"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata02-post-native-quiet.json",
+      "sha256": "dcc526974c69df648cf79534e996e273821b2c5b6b1db16bfc7db9aef86103a2"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-control01-report.json",
+      "sha256": "a269023c04d0e6d7fb9133dbfee3bf0a1db846d42054ed9601fb896d780ad38c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-report.json",
+      "sha256": "8c70fa63fa7569c99ffe5352a7cf1153c714f41bda1047547830edbedd8dacff"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-command-report.json",
+      "sha256": "de5c22f97dcec1e105699dbc5604b3d0fa2b00041ee127821e3e55e2b40a9791"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-post-SQL-quiet.json",
+      "sha256": "2c8e80d48bf0a3e744a3aded630a39614a9eedcc775011ff84f94727f1891a90"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-model45-02-post-native-quiet.json",
+      "sha256": "5a1790c4acf0148e5ce998cdc4ae774fac19e1d3221e0459da6f9b6bbc6111a7"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-canary-report.json",
+      "sha256": "3040ded98df29d08f0e91008e173f4d970179fc6606bb651895d91fa18a95acd"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-runner-report.json",
+      "sha256": "a2e20169b9f4934d3bc659bbcc562bbee6e5b1ed975449854927d04520fdb86b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-original-ai15-report.json",
+      "sha256": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-binding.json",
+      "sha256": "c26d0087d1f239c686ef8c1c2eaf913a2a21d5d66a7aa86ef80d43a52a4d7c19"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04.json",
+      "sha256": "151c182322c08662abdb24f425f5d47949d255c2c0d0b2cbe9d66a64d2eb9d1e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata03-diagnostic-report.json",
+      "sha256": "22df70e1d14397b49e3a936ff3416c239df8bb2880d2775635dd7b1b57965f57"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary01-canary-report.json",
+      "sha256": "8991bf60a3d9233b68eb353b760cf487321ce58c6480ca8a59ead5e5c4001a19"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary01-runner-report.json",
+      "sha256": "b77a9fa623dc696d4a881ae6f4b9356886618f3ae89fbba73bf53d1854ffd2fa"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary01-original-ai15-report.json",
+      "sha256": "1e8915bf6735f1df0b0ea694e14d9eb393f4c8c289ea0d27c9eb2de0e5e38e0d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary01-epoch.json",
+      "sha256": "c4355e6da51f07304baf1f2ebedfa254d9b31f9d07cde6cf6cd92ac5b3bb41e4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary01-quiescence.json",
+      "sha256": "771f45c045f721f423e5e642116095a9bc2cc687429369d390c606711d040772"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary01-native-quiet.json",
+      "sha256": "75956568e1e0465c34df736205ffbc360ce2c00497b915075aa43e6251f1b425"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-quiescence.json",
+      "sha256": "1ab119732b878ba434705b8b077ee793ee26c76fbfd72d5868f4afa031dc1dd9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-role-canary02-native-quiet.json",
+      "sha256": "4d2614f4e3e3bd5dda8374eba9ed8a5a05e4fb63b717fad5835049abd35cd2bf"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-metadata03-HTTP-observation.json",
+      "sha256": "878f733d9f730a2d818a2c02335e8956e52c8cd6035c32b1f9e6b03f13e44630"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-context-execution-r01-snapshot.md",
+      "sha256": "767451c87caa1159e4fec19288ac33c442a181a002e3974d5696179b1eeb2bbf"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-receipt.json",
+      "sha256": "7c4b7f24cd8abcba922a58c3b03dad89b2fd994be04ea1506ad32ddbb05f699c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-ai36-c05-cases-live-stage-manifest.json",
+      "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-case-report.json",
+      "sha256": "b05be4511299505bb74b1090bb26d6304ac64dd6129900c6a2a33deb9af5af45"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-stdout.log",
+      "sha256": "b05be4511299505bb74b1090bb26d6304ac64dd6129900c6a2a33deb9af5af45"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-native-diagnostics.json",
+      "sha256": "505f5ff07333b7228eafd9e1e8063cc50c8973278d9f09d093272314255c7d43"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-timeline.json",
+      "sha256": "5441988efd223bd1330d75d4b299450c3e2826ce7ef5f7431941a5a98d754dd6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-quiescence.json",
+      "sha256": "c37aeaa54d6a4c37ed21ddfccaa9ded13e23ab263287ddfaae227ca38196df86"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences-native-quiet.json",
+      "sha256": "91a3b234ad513ae471eb8899672c97a3522a48c44eb033fcea059e1e8850d117"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-receipt.json",
+      "sha256": "3eee7e90caca175c24c81d62c9adf0409e10027b743331fe463dbe4171d5449e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-ai36-c05-cases-live-stage-manifest.json",
+      "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-case-report.json",
+      "sha256": "60b890384647cce3bbab60ae9453cf71449380c2405366bea30bfbe4a44e7ed8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-stdout.log",
+      "sha256": "60b890384647cce3bbab60ae9453cf71449380c2405366bea30bfbe4a44e7ed8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-native-diagnostics.json",
+      "sha256": "9c7652855c29420e2ae1d9a5c31773473ea56e3ddb2d44165d402c30f8604c83"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-timeline.json",
+      "sha256": "0251301aef57397b049fe60114a8f123abb69daa971b9e7aaa82ab44de0a45f8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-quiescence.json",
+      "sha256": "98e09ae0c8f0ac6887a532d366eb0a6f15a6084beb56fe02b08c6da810485cdf"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance-native-quiet.json",
+      "sha256": "d91f682f0177239525dded76b9ced9145743bee4d82d8ad2db359691fdbff7bb"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-receipt.json",
+      "sha256": "df30d7673d4a7d68be7404a6db1a6d5c6b03a5048e4424759df468bd3b4c5ab9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-ai36-c05-cases-live-stage-manifest.json",
+      "sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-case-report.json",
+      "sha256": "3ba981c892e56e987fde0c35dd247c185c2abedcd889823b7dd8b0ac457b9a5d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-stdout.log",
+      "sha256": "3ba981c892e56e987fde0c35dd247c185c2abedcd889823b7dd8b0ac457b9a5d"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-timeline.json",
+      "sha256": "951061a8d60341133520755fe33a21806650b2310703c0a63881691fd06d9286"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-quiescence.json",
+      "sha256": "055483d38639e4081b356d5d8f068369a78c19ff78c3f59d915f45312964a654"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-native-quiet.json",
+      "sha256": "30829785ab43767fad37b5da631f9f9ca7445708484d811f6eec3256f2547974"
+    }
+  ],
+  "closing_observed_state": {
+    "evidence": {
+      "runtime_receipt": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-receipt.json",
+        "sha256": "df30d7673d4a7d68be7404a6db1a6d5c6b03a5048e4424759df468bd3b4c5ab9"
+      },
+      "SQL_quiet": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-quiescence.json",
+        "sha256": "055483d38639e4081b356d5d8f068369a78c19ff78c3f59d915f45312964a654"
+      },
+      "native_quiet": {
+        "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow-native-quiet.json",
+        "sha256": "30829785ab43767fad37b5da631f9f9ca7445708484d811f6eec3256f2547974"
+      }
+    },
+    "runtime_receipt_completed_at_utc": "2026-10-19T20:23:58.673497+00:00",
+    "operational_runtime": {
+      "compiled_files": 932,
+      "manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792",
+      "units": {
+        "nodia-api": "active",
+        "nodia-ai-worker": "active",
+        "nodia-gemini-lab": "active",
+        "nginx": "active"
+      },
+      "container": {
+        "id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+        "image": "sha256:902d0edc51ae2153d02bd32ad77c496bf1d16ee09d89d98d8dce86bb7cffd8c5",
+        "started_at": "2026-10-19T20:05:13.415129549Z"
+      }
+    },
+    "SQL_quiet": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-19T20:24:17.551Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    },
+    "native_quiet": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-19T20:24:17Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    },
+    "scope": "Separate observed VM times retained per source; candidate Node2803/971 was tested, while operational Node932 was preserved. No operational adoption of the candidate Node publication is inferred."
+  },
+  "new_target_capability_ids": [
+    "nodia_finance_movements_prepare_create",
+    "nodia_preferences_list",
+    "nodia_preferences_prepare",
+    "nodia_workflows_prepare"
+  ],
+  "newly_accepted_capability_ids": [
+    "nodia_workflows_prepare"
+  ],
+  "historical_accepted_capability_ids": [
+    "nodia_attachments_describe",
+    "nodia_operations_get",
+    "nodia_proposals_get"
+  ],
+  "accumulated_accepted_capability_ids": [
+    "nodia_attachments_describe",
+    "nodia_operations_get",
+    "nodia_proposals_get",
+    "nodia_workflows_prepare"
+  ],
+  "capability_acceptance_matrix": [
+    {
+      "capability_id": "nodia_attachments_describe",
+      "historical_R01": {
+        "accepted": true,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+          "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+        },
+        "environment_claim": "Only the R01 cohort's own build and native policy; not copied into R02."
+      },
+      "R02": {
+        "in_target_scope": false,
+        "representative_accepted": false,
+        "evidence": []
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_finance_movements_prepare_create",
+      "historical_R01": {
+        "accepted": false,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+          "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+        },
+        "environment_claim": "Only the R01 cohort's own build and native policy; not copied into R02."
+      },
+      "R02": {
+        "in_target_scope": true,
+        "representative_accepted": false,
+        "evidence": [
+          {
+            "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-finance.json",
+              "sha256": "3eee7e90caca175c24c81d62c9adf0409e10027b743331fe463dbe4171d5449e"
+            },
+            "evaluation": {
+              "capability_id": "nodia_finance_movements_prepare_create",
+              "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+              "qualifying_completed_turns": [],
+              "real_callback_and_terminal_protocol_verified": false,
+              "semantic_assertions": {
+                "required": [
+                  "finance_preview_exact",
+                  "finance_no_effect_before_confirmation",
+                  "finance_exact_effect_once_after_confirmation",
+                  "finance_atomic_receipt"
+                ],
+                "checks": [
+                  {
+                    "id": "finance_preview_exact",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "finance_no_effect_before_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "finance_exact_effect_once_after_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "finance_atomic_receipt",
+                    "passed": false,
+                    "evidence": null
+                  }
+                ]
+              },
+              "valid_operator_confirmation_recorded_where_required": false,
+              "human_confirmation_binding": {
+                "valid_operator_records": [],
+                "finance_public_proposal_identity_correlated": null,
+                "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+              },
+              "representative_real_E2E_verified": false,
+              "complete_semantic_or_productive_acceptance": false
+            }
+          }
+        ]
+      },
+      "accumulated_representative_accepted": false,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_operations_get",
+      "historical_R01": {
+        "accepted": true,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+          "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+        },
+        "environment_claim": "Only the R01 cohort's own build and native policy; not copied into R02."
+      },
+      "R02": {
+        "in_target_scope": false,
+        "representative_accepted": false,
+        "evidence": []
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_preferences_list",
+      "historical_R01": {
+        "accepted": false,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+          "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+        },
+        "environment_claim": "Only the R01 cohort's own build and native policy; not copied into R02."
+      },
+      "R02": {
+        "in_target_scope": true,
+        "representative_accepted": false,
+        "evidence": [
+          {
+            "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences.json",
+              "sha256": "7c4b7f24cd8abcba922a58c3b03dad89b2fd994be04ea1506ad32ddbb05f699c"
+            },
+            "evaluation": {
+              "capability_id": "nodia_preferences_list",
+              "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+              "qualifying_completed_turns": [],
+              "real_callback_and_terminal_protocol_verified": false,
+              "semantic_assertions": {
+                "required": [
+                  "preferences_excludes_unaccepted"
+                ],
+                "checks": [
+                  {
+                    "id": "preferences_excludes_unaccepted",
+                    "passed": false,
+                    "evidence": null
+                  }
+                ]
+              },
+              "valid_operator_confirmation_recorded_where_required": true,
+              "human_confirmation_binding": null,
+              "representative_real_E2E_verified": false,
+              "complete_semantic_or_productive_acceptance": false
+            }
+          }
+        ]
+      },
+      "accumulated_representative_accepted": false,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_preferences_prepare",
+      "historical_R01": {
+        "accepted": false,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+          "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+        },
+        "environment_claim": "Only the R01 cohort's own build and native policy; not copied into R02."
+      },
+      "R02": {
+        "in_target_scope": true,
+        "representative_accepted": false,
+        "evidence": [
+          {
+            "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-preferences.json",
+              "sha256": "7c4b7f24cd8abcba922a58c3b03dad89b2fd994be04ea1506ad32ddbb05f699c"
+            },
+            "evaluation": {
+              "capability_id": "nodia_preferences_prepare",
+              "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+              "qualifying_completed_turns": [],
+              "real_callback_and_terminal_protocol_verified": false,
+              "semantic_assertions": {
+                "required": [
+                  "preference_draft_exact",
+                  "preference_unaccepted_before_confirmation",
+                  "preference_exact_effect_once_after_confirmation",
+                  "preference_atomic_receipt"
+                ],
+                "checks": [
+                  {
+                    "id": "preference_draft_exact",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "preference_unaccepted_before_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "preference_exact_effect_once_after_confirmation",
+                    "passed": false,
+                    "evidence": null
+                  },
+                  {
+                    "id": "preference_atomic_receipt",
+                    "passed": false,
+                    "evidence": null
+                  }
+                ]
+              },
+              "valid_operator_confirmation_recorded_where_required": false,
+              "human_confirmation_binding": {
+                "valid_operator_records": [],
+                "finance_public_proposal_identity_correlated": null,
+                "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+              },
+              "representative_real_E2E_verified": false,
+              "complete_semantic_or_productive_acceptance": false
+            }
+          }
+        ]
+      },
+      "accumulated_representative_accepted": false,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_proposals_get",
+      "historical_R01": {
+        "accepted": true,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+          "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+        },
+        "environment_claim": "Only the R01 cohort's own build and native policy; not copied into R02."
+      },
+      "R02": {
+        "in_target_scope": false,
+        "representative_accepted": false,
+        "evidence": []
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    },
+    {
+      "capability_id": "nodia_workflows_prepare",
+      "historical_R01": {
+        "accepted": false,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-r01-validation.json",
+          "sha256": "665eef8af8711aa6beacc7bdbf9ce7add91f69523d3ec12e685ab8ecd7ce0847"
+        },
+        "environment_claim": "Only the R01 cohort's own build and native policy; not copied into R02."
+      },
+      "R02": {
+        "in_target_scope": true,
+        "representative_accepted": true,
+        "evidence": [
+          {
+            "epoch_id": "ff962983a2b1757661afbc2b2f7495afdf802d670b03b5a9a92f71c932982a2b",
+            "receipt": {
+              "path": "docs/evidence/nodia-ai-ai36-c05-r02-case-attempt01-workflow.json",
+              "sha256": "df30d7673d4a7d68be7404a6db1a6d5c6b03a5048e4424759df468bd3b4c5ab9"
+            },
+            "evaluation": {
+              "capability_id": "nodia_workflows_prepare",
+              "receipt_binding_policy": "explicit_sql_run_call_and_observed_generation",
+              "qualifying_completed_turns": [
+                {
+                  "label": "independent_workflow",
+                  "run_id": "16c962df-fea1-4999-a03f-74ca76a4b8d4",
+                  "linked_callbacks": [
+                    {
+                      "callback_call_id": "aa7d6103-d882-437d-a98a-23f1f98fccae",
+                      "receipt_id": "438c037d-5f11-4dc8-92b9-c4c3a5546d5b",
+                      "contract_hash": "3f2de6818c06114ec1715fcb9e8b6dd71ef75cde9691b7e9d4e1184892ac78b2",
+                      "result_sha256": "c923367fba4f8aee47173e563c8cdf5125f0aa1cb171a61dc19eaba520469f6f",
+                      "attempt_id": "228d3012-f204-423e-8477-8644ae0f625b",
+                      "observed_generation_binding": "retained_adapter_observation_checked",
+                      "SQL_run_and_adapter_call_binding": "explicit_retained_columns_checked"
+                    }
+                  ],
+                  "acknowledged_generations": [
+                    {
+                      "attempt_id": "c4637748-5623-44e2-b47a-bef3e120af11",
+                      "terminal_proof_sha256": "616b1b68aa92d9704b78a93ad44e8df78bba2bf437f4c889c9f11da5ef597a43"
+                    },
+                    {
+                      "attempt_id": "228d3012-f204-423e-8477-8644ae0f625b",
+                      "terminal_proof_sha256": "9735a1f273b989760f42482da2e55831de31124c999a2d1cd3580a58f5d71655"
+                    }
+                  ]
+                }
+              ],
+              "real_callback_and_terminal_protocol_verified": true,
+              "semantic_assertions": {
+                "required": [
+                  "workflow_exact_ordered_steps",
+                  "workflow_no_effect_before_confirmation",
+                  "workflow_exact_effects_once_after_confirmation",
+                  "workflow_native_step_receipts"
+                ],
+                "checks": [
+                  {
+                    "id": "workflow_exact_ordered_steps",
+                    "passed": true,
+                    "evidence": {
+                      "id": "workflow_exact_ordered_steps",
+                      "passed": true,
+                      "expected": [
+                        {
+                          "tool_name": "nodia_preferences_prepare_create",
+                          "kind": "preference_change",
+                          "target": null,
+                          "scope": {
+                            "subject_user_id": "1"
+                          },
+                          "changes": [
+                            {
+                              "field_key": "scope_key",
+                              "before": null,
+                              "before_present": false,
+                              "after": "finance",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "key",
+                              "before": null,
+                              "before_present": false,
+                              "after": "expense_category_id",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "business_id",
+                              "before": null,
+                              "before_present": false,
+                              "after": null,
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "value",
+                              "before": null,
+                              "before_present": false,
+                              "after": "1",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "value_label",
+                              "before": null,
+                              "before_present": false,
+                              "after": "Synthetic C05 food",
+                              "after_present": true,
+                              "origin": "database"
+                            },
+                            {
+                              "field_key": "scope_label",
+                              "before": null,
+                              "before_present": false,
+                              "after": null,
+                              "after_present": true,
+                              "origin": "database"
+                            }
+                          ],
+                          "effect_key": "preferences.create",
+                          "output_bindings": []
+                        },
+                        {
+                          "tool_name": "nodia_finance_movements_prepare_create",
+                          "kind": "domain_change",
+                          "target": null,
+                          "scope": {
+                            "subject_user_id": "1"
+                          },
+                          "changes": [
+                            {
+                              "field_key": "name",
+                              "before": null,
+                              "before_present": false,
+                              "after": "Synthetic C05 workflow snack",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "amount",
+                              "before": null,
+                              "before_present": false,
+                              "after": "1234",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "type",
+                              "before": null,
+                              "before_present": false,
+                              "after": "expense",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "status",
+                              "before": null,
+                              "before_present": false,
+                              "after": "paid",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "category_id",
+                              "before": null,
+                              "before_present": false,
+                              "after": "1",
+                              "after_present": true,
+                              "origin": "user"
+                            },
+                            {
+                              "field_key": "obligation_id",
+                              "before": null,
+                              "before_present": false,
+                              "after": null,
+                              "after_present": true,
+                              "origin": "contract_default"
+                            },
+                            {
+                              "field_key": "is_active",
+                              "before": null,
+                              "before_present": false,
+                              "after": true,
+                              "after_present": true,
+                              "origin": "contract_default"
+                            }
+                          ],
+                          "effect_key": "finance_movement.create",
+                          "output_bindings": []
+                        }
+                      ],
+                      "observed": [
+                        {
+                          "tool_name": "nodia_preferences_prepare_create",
+                          "kind": "preference_change",
+                          "target": null,
+                          "scope": {
+                            "subject_user_id": "1"
+                          },
+                          "changes": [
+                            {
+                              "after": "finance",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "scope_key",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": "expense_category_id",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "key",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": null,
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "business_id",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": "1",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "value",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": "Synthetic C05 food",
+                              "before": null,
+                              "origin": "database",
+                              "field_key": "value_label",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": null,
+                              "before": null,
+                              "origin": "database",
+                              "field_key": "scope_label",
+                              "after_present": true,
+                              "before_present": false
+                            }
+                          ],
+                          "effect_key": "preferences.create",
+                          "output_bindings": []
+                        },
+                        {
+                          "tool_name": "nodia_finance_movements_prepare_create",
+                          "kind": "domain_change",
+                          "target": null,
+                          "scope": {
+                            "subject_user_id": "1"
+                          },
+                          "changes": [
+                            {
+                              "after": "Synthetic C05 workflow snack",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "name",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": "1234",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "amount",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": "expense",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "type",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": "paid",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "status",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": "1",
+                              "before": null,
+                              "origin": "user",
+                              "field_key": "category_id",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": null,
+                              "before": null,
+                              "origin": "contract_default",
+                              "field_key": "obligation_id",
+                              "after_present": true,
+                              "before_present": false
+                            },
+                            {
+                              "after": true,
+                              "before": null,
+                              "origin": "contract_default",
+                              "field_key": "is_active",
+                              "after_present": true,
+                              "before_present": false
+                            }
+                          ],
+                          "effect_key": "finance_movement.create",
+                          "output_bindings": []
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "workflow_no_effect_before_confirmation",
+                    "passed": true,
+                    "evidence": {
+                      "id": "workflow_no_effect_before_confirmation",
+                      "passed": true,
+                      "expected": {
+                        "preferences": 0,
+                        "movements": 0
+                      },
+                      "observed": {
+                        "preferences": 0,
+                        "movements": 0
+                      }
+                    }
+                  },
+                  {
+                    "id": "workflow_exact_effects_once_after_confirmation",
+                    "passed": true,
+                    "evidence": {
+                      "id": "workflow_exact_effects_once_after_confirmation",
+                      "passed": true,
+                      "expected": {
+                        "preference": {
+                          "owner_id": "1",
+                          "scope_key": "finance",
+                          "scope": {},
+                          "key": "expense_category_id",
+                          "value": "1"
+                        },
+                        "expense": {
+                          "name": "Synthetic C05 workflow snack",
+                          "amount": "1234",
+                          "type": "expense",
+                          "status": "paid",
+                          "category_id": "1"
+                        },
+                        "total_preferences": 1,
+                        "total_movements": 1
+                      },
+                      "observed": {
+                        "preference": {
+                          "owner_id": "1",
+                          "scope_key": "finance",
+                          "scope": {},
+                          "key": "expense_category_id",
+                          "value": "1"
+                        },
+                        "expense": {
+                          "name": "Synthetic C05 workflow snack",
+                          "amount": "1234",
+                          "type": "expense",
+                          "status": "paid",
+                          "category_id": "1"
+                        },
+                        "total_preferences": 1,
+                        "total_movements": 1
+                      }
+                    }
+                  },
+                  {
+                    "id": "workflow_native_step_receipts",
+                    "passed": true,
+                    "evidence": {
+                      "id": "workflow_native_step_receipts",
+                      "passed": true,
+                      "expected": [
+                        {
+                          "state": "completed",
+                          "resource_key": "nodia_ai_preferences",
+                          "resource_id": "2cc84e07-28f8-4d9c-9976-8361e18c1715"
+                        },
+                        {
+                          "state": "completed",
+                          "resource_key": "finance_movements",
+                          "resource_id": "1"
+                        }
+                      ],
+                      "observed": [
+                        {
+                          "state": "completed",
+                          "resource_key": "nodia_ai_preferences",
+                          "resource_id": "2cc84e07-28f8-4d9c-9976-8361e18c1715"
+                        },
+                        {
+                          "state": "completed",
+                          "resource_key": "finance_movements",
+                          "resource_id": "1"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "valid_operator_confirmation_recorded_where_required": true,
+              "human_confirmation_binding": {
+                "valid_operator_records": [
+                  {
+                    "proposal_id": "f5a187a8-1c3a-4f0f-9061-13cf20477148",
+                    "revision": 1,
+                    "proposal_hash": "c7d2ddda811450a4cb79bb1040ad1c845492b1d412e3a118685f9b0f503d351d",
+                    "execution_id": "87bc3c5b-7270-4afe-94ca-b94388083368",
+                    "duplicate_confirmation_same_execution": true,
+                    "layer": "operator_HTTP_fixture_actor_not_UI",
+                    "purpose": "capability_acceptance"
+                  }
+                ],
+                "finance_public_proposal_identity_correlated": null,
+                "preparation_callback_to_proposal_and_effect": "validated_by_frozen_producer_and_same_cohort_SQL_semantic_assertions_not_independently_reconstructed_from_callback_hashes"
+              },
+              "representative_real_E2E_verified": true,
+              "complete_semantic_or_productive_acceptance": false
+            }
+          }
+        ]
+      },
+      "accumulated_representative_accepted": true,
+      "acceptance_for_every_scenario_or_productive_use": false
+    }
+  ],
+  "native_starts": {
+    "baseline_accepted_starts": 16,
+    "new_native_start_requests": 6,
+    "new_accepted_native_starts": 6,
+    "cumulative_accepted_native_starts": 22,
+    "maximum_new_start_requests": 7,
+    "scope": "Observed accepted native MCP start requests, not tokens or billing measurements."
+  },
+  "offline_validator_controls": {
+    "positive_isolated_fixtures": 2,
+    "negative_security_fixtures": [
+      "missing_execution_ACK",
+      "another_attempt_ACK",
+      "another_proof_ACK",
+      "cancelled_native_proof",
+      "process_not_closed",
+      "callback_from_another_turn",
+      "foreign_receipt",
+      "result_changed",
+      "incompatible_contract",
+      "foreign_explicit_SQL_run",
+      "foreign_explicit_SQL_call",
+      "missing_SQL_binding_columns",
+      "missing_observed_generation_binding",
+      "another_observed_generation",
+      "duplicated_receipt_identity",
+      "duplicated_callback_identity",
+      "incomplete_terminal_receipt",
+      "execution_before_discovery_ACK",
+      "incomplete_callback_receipt",
+      "domain_not_selected",
+      "selector_not_durable",
+      "overall_pass_cannot_override_unknown_turn",
+      "unresolved_native_state",
+      "simulated_transport",
+      "missing_semantic_check",
+      "false_semantic_check",
+      "wrong_semantic_value",
+      "missing_human_confirmation",
+      "implicit_model_confirmation",
+      "non_idempotent_human_confirmation",
+      "unrelated_known_proposal_confirmation",
+      "bootstrap_confirmation_is_not_capability_confirmation",
+      "independent_case_requires_explicit_confirmation_purpose"
+    ],
+    "historical_real_receipts": [
+      {
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt01.json",
+          "sha256": "f9792d1151ef2b00b94e6835a9a4cf2c16e2d416a7522f3257e316ad4af03970"
+        },
+        "accepted_capabilities": []
+      },
+      {
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai36-c05-live-attempt02.json",
+          "sha256": "bb649fa0d014dd6391750cfed9e0eaad58b76392542693f8a9161910c0cc3f69"
+        },
+        "accepted_capabilities": []
+      }
+    ],
+    "fixture_scope": "isolated_validator_inputs_not_provider_results",
+    "cohort_provenance_controls": {
+      "positive_fixtures": 2,
+      "negative_fixtures": [
+        "missing_provenance",
+        "missing_manifest_reference",
+        "unrelated_manifest_path",
+        "changed_manifest_hash",
+        "changed_receipt_manifest",
+        "missing_producer_digest",
+        "unrelated_producer_member",
+        "changed_producer_manifest",
+        "changed_producer_receipt",
+        "changed_archive_receipt",
+        "empty_compiled_manifest",
+        "current_compiled_drift"
+      ]
+    }
+  },
+  "R02_interface_controls": {
+    "positive_fixtures": 5,
+    "negative_fixtures": [
+      "divergent_artifact_alias",
+      "wrong_R02_runner_stage",
+      "foreign_runtime_image",
+      "foreign_runtime_epoch",
+      "foreign_runtime_started_at",
+      "metadata_without_native_start_zero",
+      "positive_native_start_hidden_in_metadata",
+      "accepted_start_hidden_behind_zero_request",
+      "generation_hidden_in_metadata",
+      "conflicting_generation_counter",
+      "missing_ACK_observation",
+      "missing_ACK_timestamp",
+      "invalid_ACK_timestamp",
+      "dispatch_before_canary_ACK",
+      "missing_dispatch_timestamp",
+      "invalid_dispatch_timestamp",
+      "accepted_starts_exceed_requests",
+      "eighth_start_exceeds_authorization"
+    ],
+    "scope": "Isolated R02 interface guards; no invented provider result or inferred cross-clock order."
+  },
+  "boundaries": {
+    "baseline_R01_modified": false,
+    "historical_capabilities_transferred_to_R02_epoch": false,
+    "operational_business_database_writes": 0,
+    "physical_UI_accepted": false,
+    "productive_acceptance": false,
+    "AI36_C05_open": true,
+    "remaining_unpublished_candidates": 77
+  },
+  "limitations": [
+    "A successful native canary qualifies only its exact image, policy, configuration and selection; it accepts no business capability.",
+    "Historical and new results are accumulated by capability with explicit environment layers; seven accumulated capabilities would not prove seven under the new native role.",
+    "Human proposal-to-effect linkage retains R01's honest frozen-producer plus same-cohort SQL assertion basis; public callback hashes do not independently reconstruct the entire chain.",
+    "Preparation QA, metadata requests and synthetic controls never imply a successful generation or current provider availability.",
+    "The operational Node runtime remains the 932-output AI35 baseline. The 2803-file/971-asset C05 candidate and its 74 published capability records are acceptance artifacts; this report does not deploy or adopt them operationally."
+  ],
+  "reproducible_consolidator": {
+    "path": "docs/evidence/scripts/validate-nodia-ai-ai36-c05-r02.cjs",
+    "sha256": "e8811dd414b6cb119e9367dc5569643ec9247790f0fb1af35c65193853059004"
+  }
+}

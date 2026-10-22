@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "stage": "AI-32-R02",
+  "previous_release": "a26257366f459d3baa059280b1a4105cb35615dc929de59624ce8fc986f27a99",
+  "release": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50",
+  "previous_registry_sha256": "2eb742fd5493148e67bf00c6470c6e3c77113937f87dafe4efbbafbb0a17146d",
+  "registry_sha256": "2eb742fd5493148e67bf00c6470c6e3c77113937f87dafe4efbbafbb0a17146d",
+  "historical_ai32_delta_sha256": "f48d999e9b4211771af60fbad10d9741f82b0d9d9825d7aab98648128ad93d71",
+  "changed_manifest_fields": [
+    "documents",
+    "release_id"
+  ],
+  "document_source_hash_changes": [
+    {
+      "document_id": "general-settings.ai-credentials-and-sessions",
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.ts",
+      "before_sha256": "03a35791afd48230fb232b1c32b4c09f8ebd568bf1b25ee97623331d9b7a1cf5",
+      "after_sha256": "57f9b9dd8d8cc7391d00ea5ca22cb595b9006569b41d49d2e8f170a1f3ff4f67"
+    },
+    {
+      "document_id": "general-settings.ai-models-and-health",
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/gemini-nodia-ai-adapter.use-case.ts",
+      "before_sha256": "03a35791afd48230fb232b1c32b4c09f8ebd568bf1b25ee97623331d9b7a1cf5",
+      "after_sha256": "57f9b9dd8d8cc7391d00ea5ca22cb595b9006569b41d49d2e8f170a1f3ff4f67"
+    }
+  ],
+  "registry_changed": false,
+  "published_document_bytes_unchanged": true,
+  "published_fragments_unchanged": true,
+  "public_contracts_unchanged": true,
+  "new_published_content": false,
+  "approved_documents_changed": false,
+  "sources": 55,
+  "excluded": 28,
+  "published_capabilities": 67,
+  "published_fragments": 27,
+  "reason": "Exact MIME evidence is an optional private runtime observation. Only the implementation-source hash in two existing approved feature descriptors changes; no approved Markdown, binding, capability, schema, fragment or permission is published or modified."
+}

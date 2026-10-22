@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38-MCP-R01",
+  "scope": "offline_candidate_freeze_build_QA",
+  "files": {
+    "docs/evidence/nodia-ai-ai38-mcp-r01-candidate-inventory.json": "a4bcf4451ea8d2878b2211771a4f0e39012d408632a018838f7902c02d7da7e6",
+    "docs/evidence/nodia-ai-ai38-mcp-r01-candidate-build02.json": "ae4ccf3810ca7b1693e85eb54a93c6715537d8e6dc0ad72abf0f4cf1cc6b8dca",
+    "docs/evidence/nodia-ai-ai38-mcp-r01-candidate.md": "01fa146a4445a409a933779b77fcdcbf45d4d15d905ea28a699ae65a1b77852a",
+    "docs/evidence/nodia-ai-ai38-mcp-r01-candidate-source-freeze02.json": "9e1dd79b220c9119bc357a0b8cb4b4f3d53a3a7b093250d0303e41c0a77eb919",
+    "docs/evidence/scripts/nodia-ai-ai38-mcp-r01-candidate-build.py": "22f1fd07f36083a80dd0b5efdb4c3cb06730caa6408ee916f1703b2fb674dc80",
+    "docs/evidence/scripts/nodia-ai-ai38-mcp-r01-candidate-base-sources.py": "0e47a7c2e5292481399d960b3c287e57517dbe657ce5d673e26153fd8b99911c",
+    "docs/evidence/scripts/nodia-ai-ai38-mcp-r01-candidate-inventory.py": "f111254685229df5d54f47fc3010cb442da80c6f22eb9ff091a5443e8ec51908",
+    "docs/evidence/scripts/nodia-ai-ai38-mcp-r01-candidate-stage.cjs": "ac95f9ea795910714cf6386fb6d9ef041928007a0bd88519dec28c396ef44f3f",
+    "docs/evidence/nodia-ai-ai38-mcp-r01-candidate-manifest02.json": "a92d4802bd5c6ecd5aefbdf17162920a0768bc34cd6277bf19dfcbbb2469a8ae"
+  },
+  "candidate_image_id": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+  "provider_requests": 0,
+  "candidate_activated": false,
+  "services_restarted": false
+}

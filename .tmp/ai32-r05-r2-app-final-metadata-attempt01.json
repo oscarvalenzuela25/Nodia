@@ -1,0 +1,54 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "single_chat_read_only_metadata_and_private_cloud_digest",
+  "observed_at_utc": "2026-10-18T16:36:14.347Z",
+  "conversation_id": "33d6c32d-19a3-4533-8077-3ca7299d30cb",
+  "status": "failed",
+  "provider_generations": 0,
+  "database_modified": false,
+  "storage_mutations": 0,
+  "signed_urls_generated": false,
+  "message_text_or_interpretations_exported": false,
+  "storage_keys_or_credentials_exported": false,
+  "default_transaction_read_only": "on",
+  "transaction_read_only": "on",
+  "total_attachment_rows": 3,
+  "messages": [
+    {
+      "role": "assistant",
+      "status": "sealed",
+      "count": 1,
+      "sealed_count": 1
+    },
+    {
+      "role": "user",
+      "status": "sealed",
+      "count": 1,
+      "sealed_count": 1
+    }
+  ],
+  "message_parts": [
+    {
+      "kind": "audio",
+      "count": 1,
+      "attachment_reference_count": 1
+    },
+    {
+      "kind": "image",
+      "count": 1,
+      "attachment_reference_count": 1
+    },
+    {
+      "kind": "pdf",
+      "count": 1,
+      "attachment_reference_count": 1
+    },
+    {
+      "kind": "text",
+      "count": 2,
+      "attachment_reference_count": 0
+    }
+  ],
+  "safe_failure_phase": "metadata_snapshot",
+  "completed_at_utc": "2026-10-18T16:36:14.371Z"
+}

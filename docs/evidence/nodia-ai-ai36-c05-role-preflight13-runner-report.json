@@ -1,0 +1,23 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "GO13_corrected_owned_role_one_native_MCP_canary",
+  "status": "failed",
+  "started_at_utc": "2026-10-19T19:19:40.993157+00:00",
+  "maximum_native_start_requests": 1,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "runner_source_sha256": "390a36de8ec9dc07fb469fbc523e0b419cdc7b403fa564ab44ccb2d6649487be",
+  "wrapper_source_sha256": "191877d0165c0bf4577eb836dc510b16db8d6e83a8abd5cf4dcc9b3299d38046",
+  "original_AI15_source_sha256": "604563be962df59a4b4431ad5efb2bf590b67a133a748a0d748cc90cd79ae49c",
+  "Node_operational_files_modified": 0,
+  "activation_semantic_postverification": {
+    "environment_names_unique": true,
+    "environment_values_unchanged": true,
+    "mounts_unchanged": true,
+    "resources_and_security_unchanged": true,
+    "candidate_container_id": "9320ec8e2397b99e7f34d4b00f1aed65558b02158ab34bc1b6a47acb63556a17",
+    "started_at_utc": "2026-10-19T19:19:06.599936481Z",
+    "healthy": true
+  },
+  "finished_at_utc": "2026-10-19T19:19:59.202965+00:00"
+}

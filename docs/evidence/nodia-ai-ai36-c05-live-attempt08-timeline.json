@@ -1,0 +1,295 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "d95b6718ed52b15bc7be26001206efca8064a7f34976550a66d816e9debdccfd",
+  "source_completed_at_utc": "2026-10-19T18:43:43.396Z",
+  "provider_generations": 2,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:40:21.104Z",
+        "monotonic_ms": 8915.338287
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:40:24.420Z",
+        "monotonic_ms": 12231.453026
+      },
+      "elapsed_ms": 3316.1147389999987
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:40:24.739Z",
+        "monotonic_ms": 12550.860144
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:40:24.746Z",
+        "monotonic_ms": 12557.473507
+      },
+      "elapsed_ms": 6.6133630000003905
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:40:24.850Z",
+        "monotonic_ms": 12661.345488
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:40:29.143Z",
+        "monotonic_ms": 16954.353849
+      },
+      "elapsed_ms": 4293.008360999998
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:40:29.250Z",
+        "monotonic_ms": 17062.153367
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:40:29.255Z",
+        "monotonic_ms": 17067.261415
+      },
+      "elapsed_ms": 5.108048000001872
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "65123624-4ea6-45f2-8e0c-a2be0091fc29",
+      "started": {
+        "at_utc": "2026-10-19T18:40:29.305Z",
+        "monotonic_ms": 17116.565381
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-19T18:42:29.346Z",
+      "finished": {
+        "at_utc": "2026-10-19T18:40:29.346Z",
+        "monotonic_ms": 17158.247475
+      },
+      "elapsed_ms": 41.68209399999978
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "65123624-4ea6-45f2-8e0c-a2be0091fc29",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T18:40:29.348Z",
+        "monotonic_ms": 17159.655588
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:41:44.419Z",
+        "monotonic_ms": 92230.474673
+      },
+      "elapsed_ms": 75070.819085
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:41:44.818Z",
+        "monotonic_ms": 92629.336024
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:41:53.821Z",
+        "monotonic_ms": 101632.39238
+      },
+      "elapsed_ms": 9003.056356000001
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:41:53.951Z",
+        "monotonic_ms": 101762.290801
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:41:53.957Z",
+        "monotonic_ms": 101768.406759
+      },
+      "elapsed_ms": 6.115958000009414
+    },
+    {
+      "kind": "arm_dispatch",
+      "attempt_id": "069266b1-9a22-4961-ba31-d0766f662d50",
+      "started": {
+        "at_utc": "2026-10-19T18:41:54.024Z",
+        "monotonic_ms": 101836.035895
+      },
+      "status": "completed",
+      "provider_deadline_at": "2026-10-19T18:43:54.064Z",
+      "finished": {
+        "at_utc": "2026-10-19T18:41:54.064Z",
+        "monotonic_ms": 101875.330764
+      },
+      "elapsed_ms": 39.29486900000484
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "069266b1-9a22-4961-ba31-d0766f662d50",
+      "phase": "execution",
+      "started": {
+        "at_utc": "2026-10-19T18:41:54.066Z",
+        "monotonic_ms": 101877.299383
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:43:43.082Z",
+        "monotonic_ms": 210894.192847
+      },
+      "elapsed_ms": 109016.893464
+    }
+  ],
+  "generations": [
+    {
+      "turn": "independent_reads",
+      "run_id": "594ea634-15e6-4673-84f2-79266765b437",
+      "run_state": "completed",
+      "attempt_id": "65123624-4ea6-45f2-8e0c-a2be0091fc29",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T18:40:29.349Z",
+      "accepted_start_at_utc": "2026-10-19T18:40:29.360Z",
+      "native_start_request_ms": 10.246197000000393,
+      "execute_elapsed_ms": 75070.983987,
+      "terminal_proof_received": true,
+      "terminal_proof_sha256": "72d4f442133a0d5b7d5f992474446997cef7e741de3b6734b88340113a4b06e1",
+      "terminal_proof_outcome": "completed",
+      "process_closed": true,
+      "callbacks": [
+        {
+          "name": "nodia_capabilities_select",
+          "call_id": "f63eff0b-75a5-465e-a151-54439402d437",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T18:41:26.675Z",
+          "completed_at_utc": "2026-10-19T18:41:26.840Z",
+          "start_to_callback_request_ms": 57325.942603999996,
+          "handler_elapsed_ms": 164.86925200000405,
+          "result_accepted_at_utc": "2026-10-19T18:41:26.844Z",
+          "result_submit_elapsed_ms": 3.065429000009317,
+          "result_accepted_to_terminal_ms": 17575.08478199999,
+          "result_accepted_to_execute_exit_ms": 17574.935580999998
+        }
+      ],
+      "native_ACK": {
+        "attempt_id": "65123624-4ea6-45f2-8e0c-a2be0091fc29",
+        "terminal_proof_sha256": "72d4f442133a0d5b7d5f992474446997cef7e741de3b6734b88340113a4b06e1",
+        "acknowledged_at_utc": "2026-10-19T18:41:44.472Z"
+      },
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 7,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 1,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 2
+          }
+        ],
+        "signature": "24810d48f2976073b0335562e89ab1c062e29bb8a572771431551b8f2c641a23",
+        "at_utc": "2026-10-19T18:41:44.418Z",
+        "monotonic_ms": 92230.090269
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 725,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 725,
+        "mcp/results": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    },
+    {
+      "turn": "independent_reads",
+      "run_id": "594ea634-15e6-4673-84f2-79266765b437",
+      "run_state": "completed",
+      "attempt_id": "069266b1-9a22-4961-ba31-d0766f662d50",
+      "phase": "execution",
+      "started_at_utc": "2026-10-19T18:41:54.067Z",
+      "accepted_start_at_utc": "2026-10-19T18:41:54.077Z",
+      "native_start_request_ms": 10.13089499999478,
+      "execute_elapsed_ms": 109017.548171,
+      "terminal_proof_received": true,
+      "terminal_proof_sha256": "f3141b3b8a516e3b9067cba1db286843c39e823ef8116cc467c6611dd1ef95f2",
+      "terminal_proof_outcome": "completed",
+      "process_closed": true,
+      "callbacks": [
+        {
+          "name": "nodia_operations_get",
+          "call_id": "25741017-1b1c-495e-a8ba-5c5d187295dd",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T18:43:20.143Z",
+          "completed_at_utc": "2026-10-19T18:43:20.193Z",
+          "start_to_callback_request_ms": 86076.549427,
+          "handler_elapsed_ms": 49.67046500000288,
+          "result_accepted_at_utc": "2026-10-19T18:43:20.197Z",
+          "result_submit_elapsed_ms": 3.0396290000062436,
+          "result_accepted_to_terminal_ms": 22886.019628999988,
+          "result_accepted_to_execute_exit_ms": 22885.729625999986
+        },
+        {
+          "name": "nodia_attachments_describe",
+          "call_id": "86fdf160-b31a-4935-8f02-e89d4ce4d68d",
+          "status": "completed",
+          "requested_at_utc": "2026-10-19T18:43:20.310Z",
+          "completed_at_utc": "2026-10-19T18:43:20.343Z",
+          "start_to_callback_request_ms": 86243.19018700001,
+          "handler_elapsed_ms": 33.08090899998206,
+          "result_accepted_at_utc": "2026-10-19T18:43:20.347Z",
+          "result_submit_elapsed_ms": 3.2195300000021234,
+          "result_accepted_to_terminal_ms": 22735.772123000002,
+          "result_accepted_to_execute_exit_ms": 22735.48212
+        }
+      ],
+      "native_ACK": {
+        "attempt_id": "069266b1-9a22-4961-ba31-d0766f662d50",
+        "terminal_proof_sha256": "f3141b3b8a516e3b9067cba1db286843c39e823ef8116cc467c6611dd1ef95f2",
+        "acknowledged_at_utc": "2026-10-19T18:43:43.113Z"
+      },
+      "latest_poll": {
+        "state": "completed",
+        "rpc_messages": 8,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 2,
+        "event_kinds": {
+          "answer": 1
+        },
+        "event_identities": [
+          {
+            "kind": "answer",
+            "seq": 3
+          }
+        ],
+        "signature": "39de10c9dcca1b1b016b94b5ae4bf682df34231547f5b0be22bcc0f49f49bb42",
+        "at_utc": "2026-10-19T18:43:43.082Z",
+        "monotonic_ms": 210893.854744
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1055,
+        "mcp/results": 2,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1055,
+        "mcp/results": 2,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

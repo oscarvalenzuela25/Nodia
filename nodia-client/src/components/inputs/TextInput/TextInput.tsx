@@ -19,6 +19,8 @@ const TextInput: FC<TextInputProps> = ({
   disabled = false,
   error = false,
   helperText,
+  endAdornment,
+  "aria-describedby": ariaDescribedBy,
   id,
   name,
   fullWidth = true,
@@ -53,6 +55,7 @@ const TextInput: FC<TextInputProps> = ({
         disabled={disabled}
         error={error}
         helperText={helperText}
+        slotProps={{ input: { endAdornment }, ...(ariaDescribedBy ? { htmlInput: { "aria-describedby": ariaDescribedBy } } : {}) }}
         fullWidth
         autoFocus={autoFocus}
         variant="outlined"

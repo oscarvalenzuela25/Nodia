@@ -1,0 +1,556 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/schemas/nodia-ai-v1-runtime-policy",
+  "title": "NodiaAI own operational policy, not provider quotas",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "policy_version",
+    "status",
+    "admission",
+    "results",
+    "budget",
+    "queue",
+    "timing",
+    "retry",
+    "routing",
+    "search",
+    "retention",
+    "publication_gates"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "./nodia-ai-v1-runtime-policy.schema.json"
+    },
+    "policy_version": {
+      "const": "nodia-ai-runtime/1"
+    },
+    "status": {
+      "const": "validated_design_not_runtime"
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "http_json_bytes",
+        "message_text_utf8_bytes",
+        "parts_per_message",
+        "title_utf8_bytes",
+        "file_bytes",
+        "files_per_message",
+        "message_files_bytes",
+        "audio_seconds",
+        "pdf_pages",
+        "image_pixels",
+        "attachments_per_chat",
+        "chat_storage_bytes",
+        "owner_storage_bytes",
+        "upload_seconds",
+        "upload_intent_seconds",
+        "parse_seconds",
+        "parse_memory_mib",
+        "uploads_per_owner",
+        "uploads_global"
+      ],
+      "properties": {
+        "http_json_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "message_text_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "parts_per_message": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "title_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "file_bytes": {
+          "type": "integer",
+          "const": 20971520
+        },
+        "files_per_message": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "message_files_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "audio_seconds": {
+          "type": "integer",
+          "const": 300
+        },
+        "pdf_pages": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "image_pixels": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000000
+        },
+        "attachments_per_chat": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "chat_storage_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "owner_storage_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "upload_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "upload_intent_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "parse_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "parse_memory_mib": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 4096
+        },
+        "uploads_per_owner": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "uploads_global": {
+          "$ref": "#/$defs/cardinality"
+        }
+      }
+    },
+    "results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_arguments_utf8_bytes",
+        "tool_result_utf8_bytes",
+        "json_depth",
+        "json_collection_items",
+        "assembled_context_utf8_bytes",
+        "assistant_text_utf8_bytes",
+        "list_default_rows",
+        "list_max_rows",
+        "report_max_groups",
+        "report_max_filters",
+        "provider_stream_bytes",
+        "outbox_events_per_activity",
+        "delta_batch_utf8_bytes",
+        "delta_flush_milliseconds",
+        "sse_connections_per_owner"
+      ],
+      "properties": {
+        "tool_arguments_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "tool_result_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "json_depth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "json_collection_items": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "assembled_context_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "assistant_text_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "list_default_rows": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "list_max_rows": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "report_max_groups": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "report_max_filters": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "provider_stream_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "outbox_events_per_activity": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "delta_batch_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "delta_flush_milliseconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "sse_connections_per_owner": {
+          "$ref": "#/$defs/cardinality"
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_calls_per_run",
+        "mcp_rpc_messages_per_run",
+        "provider_dispatches_per_run",
+        "compactions_per_run",
+        "delegations_per_run",
+        "steps_per_proposal"
+      ],
+      "properties": {
+        "tool_calls_per_run": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "mcp_rpc_messages_per_run": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "provider_dispatches_per_run": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "compactions_per_run": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "delegations_per_run": {
+          "type": "integer",
+          "const": 1
+        },
+        "steps_per_proposal": {
+          "$ref": "#/$defs/cardinality"
+        }
+      }
+    },
+    "queue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "active_per_chat",
+        "active_per_owner",
+        "waiting_per_owner",
+        "waiting_global",
+        "foreground_workers",
+        "maintenance_workers",
+        "holders_per_runtime_resource",
+        "wait_seconds",
+        "local_retry_after_seconds"
+      ],
+      "properties": {
+        "active_per_chat": {
+          "type": "integer",
+          "const": 1
+        },
+        "active_per_owner": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "waiting_per_owner": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "waiting_global": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "foreground_workers": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "maintenance_workers": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "holders_per_runtime_resource": {
+          "type": "integer",
+          "const": 1
+        },
+        "wait_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "local_retry_after_seconds": {
+          "$ref": "#/$defs/seconds"
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_seconds",
+        "execution_admission_seconds",
+        "provider_dispatch_seconds",
+        "read_query_seconds",
+        "domain_step_seconds",
+        "proposal_seconds",
+        "confirmation_challenge_seconds",
+        "heartbeat_seconds",
+        "lease_seconds",
+        "cancellation_seconds",
+        "flush_seconds",
+        "drain_seconds",
+        "eligibility_observation_seconds",
+        "secure_human_seconds"
+      ],
+      "properties": {
+        "run_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "execution_admission_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "provider_dispatch_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "read_query_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "domain_step_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "proposal_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "confirmation_challenge_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "heartbeat_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "lease_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "cancellation_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "flush_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "drain_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "eligibility_observation_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "secure_human_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600
+        }
+      }
+    },
+    "retry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pre_dispatch_retries",
+        "pre_dispatch_delay_seconds",
+        "uncertain_dispatch_retries",
+        "cleanup_attempts",
+        "cleanup_delay_seconds"
+      ],
+      "properties": {
+        "pre_dispatch_retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "pre_dispatch_delay_seconds": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/seconds"
+          }
+        },
+        "uncertain_dispatch_retries": {
+          "type": "integer",
+          "const": 0
+        },
+        "cleanup_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "cleanup_delay_seconds": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/seconds"
+          }
+        }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_mode",
+        "target_mode",
+        "same_connection_only",
+        "default_enabled",
+        "return_to_base_next_turn",
+        "fallback_on_error",
+        "switch_confirms_writes",
+        "api_delegation_enabled"
+      ],
+      "properties": {
+        "source_mode": {
+          "const": "token_plan_web"
+        },
+        "target_mode": {
+          "const": "token_plan_agentic"
+        },
+        "same_connection_only": {
+          "const": true
+        },
+        "default_enabled": {
+          "const": false
+        },
+        "return_to_base_next_turn": {
+          "const": true
+        },
+        "fallback_on_error": {
+          "const": false
+        },
+        "switch_confirms_writes": {
+          "const": false
+        },
+        "api_delegation_enabled": {
+          "const": false
+        }
+      }
+    },
+    "search": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "query_utf8_bytes",
+        "default_rows",
+        "max_rows",
+        "sources",
+        "exclude_expired"
+      ],
+      "properties": {
+        "query_utf8_bytes": {
+          "$ref": "#/$defs/bytes"
+        },
+        "default_rows": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "max_rows": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "sources": {
+          "const": [
+            "title",
+            "owner_message_text",
+            "assistant_message_text"
+          ]
+        },
+        "exclude_expired": {
+          "const": true
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chat_days",
+        "basis",
+        "audit_days_after_chat",
+        "settled_receipt_days_after_chat",
+        "terminal_attempt_days_after_chat",
+        "accepted_preferences",
+        "unresolved_work",
+        "provider_unknown",
+        "sweep_seconds",
+        "batch_chats",
+        "physical_cleanup_target_seconds",
+        "backup_max_days",
+        "restore_mode"
+      ],
+      "properties": {
+        "chat_days": {
+          "type": "integer",
+          "const": 90
+        },
+        "basis": {
+          "const": "last_new_owner_message_at_or_created_at"
+        },
+        "audit_days_after_chat": {
+          "type": "integer",
+          "const": 0
+        },
+        "settled_receipt_days_after_chat": {
+          "type": "integer",
+          "const": 0
+        },
+        "terminal_attempt_days_after_chat": {
+          "type": "integer",
+          "const": 0
+        },
+        "accepted_preferences": {
+          "const": "until_explicit_deletion"
+        },
+        "unresolved_work": {
+          "const": "minimal_until_reconciled_then_delete"
+        },
+        "provider_unknown": {
+          "const": "quarantine_no_replay"
+        },
+        "sweep_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "batch_chats": {
+          "$ref": "#/$defs/cardinality"
+        },
+        "physical_cleanup_target_seconds": {
+          "$ref": "#/$defs/seconds"
+        },
+        "backup_max_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 7
+        },
+        "restore_mode": {
+          "const": "quarantine_purge_expired_no_job_replay"
+        }
+      }
+    },
+    "publication_gates": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {
+        "enum": [
+          "postgres_admission_fencing",
+          "shared_profile_all_entrypoints",
+          "durable_budgets_routing_contracts",
+          "modalities_per_exact_adapter",
+          "effect_reconciliation",
+          "storage_late_put_version_cleanup",
+          "backup_rotation_restore",
+          "load_drain_deployment"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1073741824
+    },
+    "seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 86400
+    },
+    "cardinality": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    }
+  }
+}

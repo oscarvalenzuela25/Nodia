@@ -1,0 +1,733 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36",
+  "status": "all_requirements_classified_not_all_accepted",
+  "source": {
+    "file": "docs/mvp/44-nodia-ai-data-model-review.md",
+    "sha256": "afa61aa597b6a8c62b5acbcb98b17b0b591ed165718d46beddaa73d8bf233e12"
+  },
+  "cases_count": 34,
+  "cases": [
+    {
+      "id": "NR-01",
+      "illustrative_request": "«Voy a comprar comida por20.000»",
+      "required_behavior": "Preguntar estado/categoría/nombre ambiguos y obligatorios faltantes; draft sin movimiento hasta preview/botón",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-17",
+            "AI-21"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-02",
+      "illustrative_request": "«Registra el gasto» y doble clic en confirmar",
+      "required_behavior": "Una execution por origin_proposal_id; receipt atómico con movimiento o recovery equivalente",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-18",
+            "AI-19",
+            "AI-21"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-client-acceptance.json",
+          "layer": "current_actual_client_components_synthetic_HTTP"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-03",
+      "illustrative_request": "Timeout después de COMMIT del gasto",
+      "required_behavior": "Recuperar mismo efecto; no crear otro movimiento ni inferir rollback",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-19",
+            "AI-20",
+            "AI-21"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-client-acceptance.json",
+          "layer": "current_actual_client_components_synthetic_HTTP"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-04",
+      "illustrative_request": "Editar un gasto que cambió por otro cliente",
+      "required_behavior": "Precondición/versionado por operación, conflicto y nueva preview; no sobreescribir silenciosamente",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-21"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-05",
+      "illustrative_request": "«Cuánto gasté en proveedor X este mes»",
+      "required_behavior": "Aclarar factura vs dinero pagado, negocio y base temporal; Finanzas no tiene provider_id ni fecha económica propia, factura no prueba pago/moneda",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-15",
+            "AI-30"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-06",
+      "illustrative_request": "Dos facturas de igual monto, cada una con varios productos",
+      "required_behavior": "Agregar al grano factura antes de expandir; no SUM(DISTINCT amount) ni sumar sólo la página",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-30"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-07",
+      "illustrative_request": "Gastos personales y de una casa en el mismo informe",
+      "required_behavior": "Separar procedencia y medidas compatibles; no sumar poblaciones solapadas ni monedas desconocidas",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-31"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-08",
+      "illustrative_request": "Crear proveedor y luego contacto",
+      "required_behavior": "Pasos con orden, binding tipado al proveedor creado e identidad estable por efecto",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-23"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-09",
+      "illustrative_request": "Fallo del contacto tras crear proveedor",
+      "required_behavior": "Conservar proveedor; recuperar contacto sin repetir paso1, ni confirmar también una propuesta individual reclamada",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-23"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-client-acceptance.json",
+          "layer": "current_actual_client_components_synthetic_HTTP"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-10",
+      "illustrative_request": "«Agrega este teléfono al proveedor»",
+      "required_behavior": "Resolver contacto existente o pedir nombre para nuevo contacto; mostrar reemplazo/append real de teléfonos y versionado",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-22"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-11",
+      "illustrative_request": "Desactivar proveedor/contacto",
+      "required_behavior": "No inventar DELETE ni borrar contactos al desactivar proveedor",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-22"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-12",
+      "illustrative_request": "Consultar disponibilidad y después crear reserva",
+      "required_behavior": "La lectura no reserva cupo; creación reúne todos los requeridos y produce el estado que define el dominio",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-25"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-13",
+      "illustrative_request": "Otro usuario ocupa fechas antes de confirmar reserva",
+      "required_behavior": "Revalidar disponibilidad y acuerdo en transacción nativa; rechazo sin éxito ficticio",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-25"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-14",
+      "illustrative_request": "«Crea una reserva» sin anticipo o datos de huésped",
+      "required_behavior": "Preguntar mínimos; no registrar pago no solicitado ni confundir draft con confirmed. Confirmación comercial conserva requisitos de anticipo/plataforma",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-25"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-15",
+      "illustrative_request": "Cancelar reserva con pagos",
+      "required_behavior": "Preview de cancelación/devolución y reglas nativas; no DELETE ni rollback del dinero",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-25",
+            "AI-26"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-16",
+      "illustrative_request": "Super_admin opera una casa/Finanzas ajenas",
+      "required_behavior": "Actor separado de destinatario, acceso transversal explícito; no cambiar propietario ni actuar como autor de otra propuesta",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-21",
+            "AI-24"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-17",
+      "illustrative_request": "Ordinario tiene NodiaAI pero no módulo de destino",
+      "required_behavior": "Rechazar descubrimiento/contexto/consulta/escritura/recuperación de ese destino también por backend",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-14",
+            "AI-21",
+            "AI-24"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-18",
+      "illustrative_request": "Revocar acceso durante inferencia o entre pasos",
+      "required_behavior": "Revalidar antes de enviar/aceptar contexto y cada efecto; detener futuros pasos, conservar efectos comprometidos",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-20",
+            "AI-23"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-client-acceptance.json",
+          "layer": "current_actual_client_components_synthetic_HTTP"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-19",
+      "illustrative_request": "Quitar el último superadministrador o editar clave reservada",
+      "required_behavior": "NI-13 compartido con REST; invariantemente rechazar incluso con concurrencia",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-27"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-20",
+      "illustrative_request": "Crear usuario y asignar módulos/roles",
+      "required_behavior": "Validar existencia/asociaciones y atomicidad del comando; no convertir endpoints de seed/login en herramienta genérica",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-27"
+          ]
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-21",
+      "illustrative_request": "Configurar clave o completar login Gemini",
+      "required_behavior": "Canal seguro de la app; ni challenge de confirmación ni secretos quedan en tool_calls, mensajes o memoria",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-29"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai29-validation.json",
+          "sha256": "1c6769f7ee8599bd719ad1140f2fe3e595dbab1126522633dacea8cd4d7c6929",
+          "layer": "historical_external_or_volume_evidence_not_reexecuted_by_AI36"
+        }
+      ],
+      "limits": [
+        "Internal guarantees and classification do not prove natural-language preparation through an unpublished MCP adapter.",
+        "Real-account, native or R2 evidence retains its historical version and scope; it is not renewed here."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-22",
+      "illustrative_request": "Salir del chat o perder SSE",
+      "required_behavior": "Worker continúa; consultar secuencia/estado recupera resultado sin reenviar el mensaje o comando",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-10",
+            "AI-16"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-client-acceptance.json",
+          "layer": "current_actual_client_components_synthetic_HTTP"
+        }
+      ],
+      "limits": [],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-23",
+      "illustrative_request": "Worker pierde lease y vuelve con respuesta tardía",
+      "required_behavior": "Rechazar fence viejo; dispatch remoto incierto permanece unknown hasta reconciliar",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-11"
+          ]
+        }
+      ],
+      "limits": [],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-24",
+      "illustrative_request": "Dos conexiones comparten perfil usado por OCR/login",
+      "required_behavior": "Mismo runtime slot; no iniciar trabajo concurrente ni liberar por timeout. Evitar OCR anidado esperando su propio perfil",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-11"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai34-native-mcp-offline.json",
+          "sha256": "4838c5b99a843753bd3489c31d65cd20422b39a398b4e644b9c73fd9e9c13e1e",
+          "layer": "historical_external_or_volume_evidence_not_reexecuted_by_AI36"
+        }
+      ],
+      "limits": [
+        "Real-account, native or R2 evidence retains its historical version and scope; it is not renewed here.",
+        "AI-11 SQL covers physical runtime exclusion; the historical AI-34 native MCP report is only a transport/budget complement, not a new OCR/login concurrency test."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-25",
+      "illustrative_request": "Cambio de conexión/modo/modelo",
+      "required_behavior": "Sólo entre turnos; conservar historial/efectos, rehidratar desde Nodia y no migrar cookies/opaque state",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-12"
+          ]
+        }
+      ],
+      "limits": [],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-26",
+      "illustrative_request": "PDF/voz solicita acciones o contiene instrucciones",
+      "required_behavior": "Archivo autorizado del mismo chat, contenido tratado como dato; extracción revisable, aclaración y botón",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai32-r05-validation.json",
+          "sha256": "cb07f2d706c6580d6741db9767b96edea7ddab73ff6c46d0b02bfcc0fdf70ead",
+          "layer": "historical_external_or_volume_evidence_not_reexecuted_by_AI36"
+        }
+      ],
+      "limits": [
+        "Real-account, native or R2 evidence retains its historical version and scope; it is not renewed here.",
+        "R05 verifies microphone and transcription transport; PDF/voice prompt-injection behavior is not exercised by that report or newly accepted here."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-27",
+      "illustrative_request": "Factura incorpora adjunto y el chat expira",
+      "required_behavior": "Archivo del dominio con key independiente; purgar adjunto/transcripción sin borrar factura, gasto ni recibo",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai32-r06-validation.json",
+          "sha256": "8828963b12e1f65cb13b1dc9bb8c2acdb3a7265d7d558a5a15b4b0b22d5f196d",
+          "layer": "historical_external_or_volume_evidence_not_reexecuted_by_AI36"
+        }
+      ],
+      "limits": [
+        "Real-account, native or R2 evidence retains its historical version and scope; it is not renewed here."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-28",
+      "illustrative_request": "Chat cumple90 días mientras hay mensaje, job o PUT tardío",
+      "required_behavior": "Reloj Server, lock/epoch, denegar chat vencido, cleanup durable previo al borrado de metadata; no esperar que vuelva el navegador",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-10"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai32-r07-validation.json",
+          "sha256": "0793e7a5bc3f7956c4c5693a13c8e7dc009e8a805d56d4957018e640c103d0ec",
+          "layer": "historical_external_or_volume_evidence_not_reexecuted_by_AI36"
+        }
+      ],
+      "limits": [
+        "Real-account, native or R2 evidence retains its historical version and scope; it is not renewed here."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-29",
+      "illustrative_request": "«Recuerda esta categoría» y después expira el chat",
+      "required_behavior": "Consentimiento explícito; preference independiente con origen nullable, acceso actual y borrado propio",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-33"
+          ]
+        }
+      ],
+      "limits": [],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-30",
+      "illustrative_request": "Compactar conversación y cambiar permisos",
+      "required_behavior": "Resumen no concede autoridad ni reejecuta efectos; reconstruir fuentes autorizadas, conservar dudas/recibos e historial bajo retención",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-regressions.json",
+          "layer": "compiled_SQL_synthetic_records_with_per_suite_candidate_provenance",
+          "suite_groups": [
+            "AI-34"
+          ]
+        },
+        {
+          "file": "docs/evidence/nodia-ai-ai34-live-validation.json",
+          "sha256": "a8edb541bb13cbfbb80f11b9f7fa2b7d8c70e862d56adb81464f6be2c2b61bc4",
+          "layer": "historical_external_or_volume_evidence_not_reexecuted_by_AI36"
+        }
+      ],
+      "limits": [
+        "Real-account, native or R2 evidence retains its historical version and scope; it is not renewed here."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-31",
+      "illustrative_request": "Nuevo producto o extensión compatible",
+      "required_behavior": "Ficha y registro versionados; siguiente turno descubre contexto autorizado sin migración de tablas de chat",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-unit-validation.json",
+          "layer": "current_real_loader_and_builder_with_synthetic_published_bundle",
+          "selector": "NR-31 exposes a new published product"
+        }
+      ],
+      "limits": [
+        "No chat-table migration or model call is needed by this loader fixture; an actual product rollout with an existing account is not exercised."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-32",
+      "illustrative_request": "Cambio incompatible de funcionalidad con propuesta lista",
+      "required_behavior": "Release de turno fija, invalidación de propuesta afectada, nueva preview y botón; no reescribir recibos",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai36-integration-validation.json",
+          "layer": "current_cross_product_HTTP_SQL_synthetic_records"
+        }
+      ],
+      "limits": [
+        "Next-release admission metadata is synthetic; no actual two-release deployment or hot reload was exercised."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-33",
+      "illustrative_request": "Buscar miles de chats/mensajes/reportes",
+      "required_behavior": "Cursor, proyección y consultas acotadas; no descargar todo el historial ni producir evento por token",
+      "coverage": "mapped_evidence_with_explicit_scope",
+      "evidence": [
+        {
+          "file": "docs/evidence/nodia-ai-ai35-sql-validation.json",
+          "sha256": "6d37bf1dd870b8c7ea444f8ffd43ff48e31e31fd7422050a2352ead459e8da9a",
+          "layer": "historical_external_or_volume_evidence_not_reexecuted_by_AI36"
+        }
+      ],
+      "limits": [
+        "Volume/search laboratory evidence exists; concurrent load, production percentiles and broader operational profiling remain AI-37."
+      ],
+      "full_product_acceptance": false
+    },
+    {
+      "id": "NR-34",
+      "illustrative_request": "Restaurar backup con jobs y chats vencidos",
+      "required_behavior": "Arranque en conciliación sin dispatch automático; caducidad/autoridad comprobadas antes de exponer contenido o ejecutar",
+      "coverage": "planned_not_executed",
+      "evidence": [],
+      "limits": [
+        "Restore and effective startup quarantine were not executed; planned AI-37/38. A policy declaration is not proof."
+      ],
+      "full_product_acceptance": false
+    }
+  ],
+  "no_requirement_silently_dropped": true,
+  "cases_classified": 34,
+  "cases_fully_accepted": 0,
+  "notes": [
+    "A populated row is traceability, not a new executed assertion or product approval.",
+    "AI-36 remains open for strict MCP contracts; later operational/provider gates remain independently assigned."
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "stage": "AI-37",
+  "scope": "operational recovery and quarantined restore",
+  "status": "verified_isolated",
+  "operational_adoption": false,
+  "observed_at_vm_utc": "2026-10-20T16:16:12.500306+00:00",
+  "package": {
+    "candidate": "ai37-node-candidate04",
+    "manifest_sha256": "56ddf27f290bfb0c11f5575a6dbfcb03c41d5f3c0d7f9fae4f8af0be8e38dea6",
+    "verified_files": 2929,
+    "compiled_outputs": 2827,
+    "runtime_assets": 979,
+    "production_sources": 924
+  },
+  "sources_sha256": {
+    "nodia-server/src/nodia-ai-recovery/use-case/prepare-nodia-ai-restore.use-case.ts": "b600212c4b5a242bb89756e0f42b99ff4f9fec4eae321d6a8ed87ccbc4b3594b",
+    "nodia-server/src/nodia-ai-recovery/use-case/validate-nodia-ai-restore.use-case.ts": "ec3ae0ed388d139db99b5e6977a8a558b38c4c9d9254aff1b1e30a50c284d62c",
+    "nodia-server/src/nodia-ai-runtime/nodia-ai-runtime.service.ts": "6baf8f7db19a4494958b95ce241e9a15bb3beee01921e13e83f41916aff0241e",
+    "nodia-server/src/nodia-ai-execution/nodia-ai-execution.service.ts": "5524a3ebb25a249b196c98d3c0b504b03ecfd6c7902ec336f8d34fd16c02f0f7",
+    "nodia-server/src/nodia-ai-runtime/use-case/claim-nodia-ai-job.use-case.ts": "3276881bfe24606e03c9d1c7fa53a5a2fbe048caa063baa55e721919750c0cd9",
+    "nodia-server/src/nodia-ai-runtime/use-case/checkpoint-nodia-ai-job.use-case.ts": "3662c8f7f97bc65efbc75e8368512e42782766e6d3c1eb0d46cdab5f16691155",
+    "nodia-server/src/nodia-ai-runtime/use-case/recover-nodia-ai-jobs.use-case.ts": "dde32c916c591281d4dff43949347b63cb9988413513275a24cd3950687473a3",
+    "nodia-server/src/nodia-ai-execution/use-case/claim-nodia-ai-execution.use-case.ts": "6bd3258f7f2474154922e6971981be213cd27601cdc954e98f1211fd5d7f6e13",
+    "nodia-server/src/nodia-ai-execution/use-case/recover-nodia-ai-executions.use-case.ts": "17b860f4ffae2425171cf8852f957c558c801b2d3d9edd828e240af23908eb09",
+    "nodia-server/src/nodia-ai-runtime/use-case/reconcile-nodia-ai-runtime.use-case.ts": "72d130000ef127d63704d37f7a2052c00fe5188dc9f1d9b005524ae5a2b23838",
+    "nodia-server/src/nodia-ai-runtime/use-case/cleanup-nodia-ai-runtime-proofs.use-case.ts": "3a9c01c1c483588b01ba9bcbe401a7c89acee767cb4ce219a05469ebc7ad32c4",
+    "nodia-server/src/nodia-ai-secure-flow/use-case/recover-nodia-ai-secure-flows.use-case.ts": "d4f2b9318533e49a87fdc2212a0e2d134ee4976b4b0d21e9afd0240bd89bb6bd",
+    "nodia-server/src/nodia-ai-secure-flow/use-case/manage-nodia-ai-secure-flow.use-case.ts": "92a20e7353a374672ae28901df2d56da5fb743fc86c0c0004a3a26e4c95376e7",
+    "nodia-server/src/nodia-ai-confirmation/use-case/control-nodia-ai-execution.use-case.ts": "4d3c6e6bd9ca068cdb4d2d1073947d4ba9632e2212b92aeda268650566581c12",
+    "nodia-server/src/nodia-ai-conversation/use-case/expire-nodia-ai-conversations.use-case.ts": "7b8ee45ac2f7067128f05efed3c57d3d705abcc285ec6c91e3cbb2eedcee6f49",
+    "nodia-server/scripts/prepare-nodia-ai-restore.mjs": "30b1b69bd62b41e7ccd5b92499c506ae8a0ec2da55147342f1bdca8cbd23e005",
+    "nodia-server/test/nodia-ai-ai37-recovery.integration.mjs": "2d38bce733fb37308782c5874983d2c2ef0a1883533034a2b871f0304c2d52b3",
+    "nodia-server/src/nodia-ai-runtime/use-case/assert-nodia-ai-operation-mode.use-case.ts": "0c3e56f4ca926ab7b2ac924447b4f695e3f028dd825d86f189e1080788f84e9a"
+  },
+  "sql_and_process_validation": {
+    "artifact": "docs/evidence/nodia-ai-ai37-recovery-sql-r01.json",
+    "sha256": "94abdea2cc51bcb0d065490bc96e39bf9063785d31988d99a3876d239ab4c967",
+    "passed": 33,
+    "result": {
+      "stage": "AI-37-recovery",
+      "passed": 33,
+      "checks": [
+        "SIGKILL before dispatch permits recovery under a newer fence",
+        "restarted worker creates a new durable attempt and monotonic fence",
+        "old worker cannot commit after restart",
+        "SIGKILL after arming preserves unknown and the exact remote identity",
+        "normal recovery and a new process cannot claim an unknown inference",
+        "rolling old worker leaves unsupported catalog queued",
+        "compatible worker can claim the frozen next catalog",
+        "source fixture contains a resumable failed second step and completed prefix",
+        "counterexample proves promoting every historical failure violates PostgreSQL active-chat uniqueness",
+        "missing external tail, wrong mode and expired backup fail before mutations",
+        "maximal legacy descriptor fails closed and rolls back challenge/grant invalidation without truncation",
+        "real pg_restore purges current-clock expiry and recent manual deletion",
+        "preparation never authorizes automatic release or dispatch",
+        "restored ready job becomes durably quarantined unknown",
+        "a free slot in a backup cannot attest current remote quiet",
+        "restored grants and exact confirmation tokens cannot authorize replay",
+        "business effect remains a single exact financial record",
+        "ordinary recovery cannot downgrade restore unknown to ready/rollback",
+        "SQL execution recovery preserves current backup uncertainty without inventing a rollback",
+        "valid historical partial failure and newer active execution share a chat without violating active uniqueness",
+        "restored failure cannot advertise can_resume from a stale rollback witness",
+        "completed prefix receipt is byte-equivalent and never replayed",
+        "restored proof cannot invoke native reconciliation or ACK",
+        "failed cleanup attempt 1 retains the generation witness",
+        "failed cleanup attempt 2 retains the generation witness",
+        "failed cleanup attempt 3 retains the generation witness",
+        "failed cleanup attempt 4 retains the generation witness",
+        "failed cleanup attempt 5 retains the generation witness",
+        "retry exhaustion is a durable failed cleanup, not a fictitious deletion",
+        "explicit repaired cleanup acknowledges deletion and removes minimal witness",
+        "separate operator process preserves quarantine across restart without replay",
+        "purging historical failure plus active execution retains two detached quarantined unknown witnesses",
+        "ordinary orphan recovery cannot erase restored uncertainty after chat purge"
+      ],
+      "duration_ms": 5299,
+      "postgres": "16-alpine",
+      "real_process_sigkill": true,
+      "real_pg_dump_restore": true,
+      "backup_sha256": "88569e20c49c69e9f37d5c2a744ced5e72c01be9d70535668310451239447f59",
+      "backup_bytes": 293905,
+      "provider_calls": 0,
+      "storage": "synthetic deletion port with real SQL witness",
+      "scope": "disposable PostgreSQL; no operational migration, provider, profile or R2 access"
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "exit_code": 1,
+      "started_at_vm_utc": "2026-10-20T16:14:57.404461+00:00",
+      "finished_at_vm_utc": "2026-10-20T16:14:57.548655+00:00",
+      "reason": "docker_socket_permission_before_container_creation",
+      "database_queries": 0,
+      "containers_created": 0,
+      "source_changed": false,
+      "stderr_sha256": "f5341657db0ca9406d1b881b3579e9057d56353cd245c9c39d22c9b3c47c87b8",
+      "stderr_bytes": 1503,
+      "private_raw_log": "/opt/nodia/verification/ai37-recovery-r01/attempt01.stderr",
+      "public_raw_log_omitted": "contains only ephemeral synthetic fixture password, not operational credentials"
+    },
+    {
+      "attempt": 2,
+      "exit_code": 0,
+      "started_at_vm_utc": "2026-10-20T16:15:28.220674+00:00",
+      "finished_at_vm_utc": "2026-10-20T16:15:36.187702+00:00",
+      "reason": "same harness executed with sudo -n node for disposable Docker access",
+      "source_changed": false,
+      "stdout_sha256": "94abdea2cc51bcb0d065490bc96e39bf9063785d31988d99a3876d239ab4c967",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0
+    }
+  ],
+  "unit_validation": {
+    "restore_manifest_tests": 17,
+    "new_guard_regressions": 4,
+    "guards": [
+      "restored candidate cannot claim",
+      "stale worker checkpoint rejects copied lease",
+      "SQL recovery cannot infer rollback from restored empty dispatch fields",
+      "secure flow recovery cannot observe/cancel restored login"
+    ],
+    "limitations": "Separate use-case executions; do not sum overlapping focused reruns. Full-suite/build/typecheck evidence is maintained by the parent AI-37 verification."
+  },
+  "cleanup": {
+    "observed_ai37_containers_remaining": 0,
+    "operational_containers_after": [
+      "nodia-gemini-microservice",
+      "nodia-lab-postgres-1",
+      "nodia-lab-redis-1"
+    ],
+    "node_children": "SIGKILL children awaited and separate CLI completed; temporary credential files removed by harness"
+  },
+  "guarantees": [
+    "crash before dispatch can reclaim with new fence; after arming remains unknown with original identity",
+    "old catalog worker does not claim incompatible frozen release",
+    "quarantine gate and independent external journal digest/head/coverage are required",
+    "backup ready/claimed cannot prove never sent after capture",
+    "grants revoked, confirmation challenges removed, executable drafts/proposals invalidated",
+    "historical terminal headers preserved to respect one active execution per chat; failed steps become uncertain and resume is blocked",
+    "failed execution jobs remain unknown through chat purge with quarantine marker and native identity preserved",
+    "normal claims/checkpoint/recovery/native reconciliation/ACK/login/resume cannot replay restored work",
+    "current-clock expiry and recent deletion journal applied using existing purge implementation",
+    "generation cleanup remains durable through five failed attempts and only settles after acknowledged synthetic DELETE",
+    "maximal 8192-byte recovery descriptor fails closed and rolls back invalidation without truncating identity"
+  ],
+  "limitations": [
+    "No real provider, profile, MCP inference, R2, configured database, migration, service restart or operational adoption.",
+    "Storage failures use a synthetic deletion port; PostgreSQL witnesses, constraints, real worker processes and pg_dump/pg_restore are real.",
+    "The preserved completed receipt is explicitly synthetic metadata; this validates preservation, not a new native financial atomic writer.",
+    "External deletion-journal completeness/provenance and actual snapshot/WAL/object-version rotation are not deployed or historically attested.",
+    "Preparation always returns release_authorized=false; current-domain/native/session reconciliation and operator release protocol remain required.",
+    "A restore gate does not constitute network isolation and cannot infer that a database was restored if an operator skips quarantine.",
+    "No new indexes, tables, migrations, dependencies, public endpoint or automatic restore-release mechanism."
+  ],
+  "runbook": "docs/evidence/nodia-ai-ai37-recovery-runbook.md"
+}

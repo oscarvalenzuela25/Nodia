@@ -1,0 +1,52 @@
+{
+  "stage": "AI-38",
+  "scope": "same_epoch_High_three_pending_capabilities_disposable_SQL",
+  "case_id": "finance",
+  "status": "passed",
+  "binding_sha256": "2acc1a76737014a4d984a08f7ac5dcaec3ed01f4f770b42b301ee0f323c89f5e",
+  "requested_capabilities": [
+    "nodia_finance_movements_prepare_create"
+  ],
+  "maximum_native_start_requests": 2,
+  "native_start_requests": 2,
+  "starts": [
+    {
+      "attempt_id": "7454c847-5f64-4a52-8de5-d026ddd3e6fc",
+      "phase": "discovery",
+      "tool_names": [
+        "nodia_knowledge_index",
+        "nodia_knowledge_get",
+        "nodia_capabilities_search",
+        "nodia_capabilities_describe",
+        "nodia_entities_search",
+        "nodia_reports_describe",
+        "nodia_reports_run",
+        "nodia_capabilities_select"
+      ],
+      "catalog_sha256": "112ea22aa81bf891517d265fe9556b6fe050118aac920b502e9966b44744fbdb",
+      "request_recorded_at_utc": "2026-10-20T19:35:40.181Z"
+    },
+    {
+      "attempt_id": "4b8493a6-233b-4c97-b0fd-a7baa2413074",
+      "phase": "execution",
+      "tool_names": [
+        "nodia_knowledge_index",
+        "nodia_knowledge_get",
+        "nodia_capabilities_search",
+        "nodia_capabilities_describe",
+        "nodia_entities_search",
+        "nodia_reports_describe",
+        "nodia_reports_run",
+        "nodia_finance_movements_prepare_create"
+      ],
+      "catalog_sha256": "8667f324e8cc60fedcbfa830ca6521388b8524293b0b544c8cad2f6bd7e7e0f2",
+      "request_recorded_at_utc": "2026-10-20T19:37:36.618Z"
+    }
+  ],
+  "configured_SQL_writes": 0,
+  "operational_publication_modified": false,
+  "automatic_inference_retries": 0,
+  "inherited_harness_source_preserved": true,
+  "physical_UI_acceptance": false,
+  "finished_at_utc": "2026-10-20T19:38:26.260Z"
+}

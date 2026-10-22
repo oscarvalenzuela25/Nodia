@@ -1,15 +1,14 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
+import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import {
   calendarStay,
   immediateNeighbors,
-  refreshPlan,
-  planValid,
-  sameDay,
 } from '../../rental-common/rental-calendar.rules.js';
 import { assertEmptyCommand } from '../../rental-common/rental-validation.js';
 import type { EmptyRentalCommandDto } from '../../rental-reservation/dto/reservation-commands.dto.js';
 import { RentalTurnoverService } from '../rental-turnover.service.js';
+import { approveRentalTurnoverSameDay } from '../types/rental-turnover.rules.js';
 @Injectable()
 export class ApproveSameDayRentalTurnoverUseCase {
   constructor(
@@ -17,16 +16,17 @@ export class ApproveSameDayRentalTurnoverUseCase {
     private readonly turnovers: RentalTurnoverService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     dto: EmptyRentalCommandDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     assertEmptyCommand(dto);
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'turnover.approve_same_day',
@@ -40,23 +40,15 @@ export class ApproveSameDayRentalTurnoverUseCase {
           propertyId,
           original.incoming_reservation_id,
         );
-        if (!['draft', 'confirmed'].includes(reservation.status))
-          throw new ConflictException('rental:invalid_transition');
         const incoming = calendarStay(reservation, ctx.property.timezone);
         const { previous } = await immediateNeighbors(ctx, incoming);
-        const row = refreshPlan(original, previous);
-        if (
-          !sameDay(previous, incoming) ||
-          row.linen_ready !== true ||
-          !planValid(
-            row,
-            incoming,
-            previous,
-            ctx.property.minimum_turnover_minutes,
-          )
-        )
-          throw new ConflictException('rental:turnover_required');
-        row.same_day_approved_at = ctx.now;
+        const row = approveRentalTurnoverSameDay(
+          original,
+          incoming,
+          previous,
+          ctx.property.minimum_turnover_minutes,
+          ctx.now,
+        );
         row.updated_by = actorId;
         const saved = await this.turnovers.save(ctx.manager, row);
         return {

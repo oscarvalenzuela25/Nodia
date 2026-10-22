@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ModuleGroupService } from '../module-group.service.js';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { UpdateModuleGroupDto } from '../dto/update-module-group.dto.js';
-
+import { SaveModuleGroupUseCase } from './save-module-group.use-case.js';
 @Injectable()
 export class UpdateModuleGroupUseCase {
-  constructor(private readonly moduleGroupService: ModuleGroupService) {}
-
-  async execute(id: string, dto: UpdateModuleGroupDto) {
-    return this.moduleGroupService.update(id, dto);
+  constructor(private readonly save: SaveModuleGroupUseCase) {}
+  execute(id: string, dto: UpdateModuleGroupDto, actor: ActorReference) {
+    return this.save.execute(id, dto, actor);
   }
 }

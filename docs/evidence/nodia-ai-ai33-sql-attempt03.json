@@ -1,0 +1,31 @@
+{
+  "stage": "AI-33",
+  "scope": "compiled_preferences_disposable_postgresql",
+  "attempt": "attempt03",
+  "started_at_utc": "2026-10-18T18:38:28.281559+00:00",
+  "completed_at_utc": "2026-10-18T18:38:38.623231+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "45e60985ceac0862e96b9143179db5de1023624538268b5a57875a15844852ca",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "assertion_result": {
+    "stage": "AI-33",
+    "completed_checks": 29,
+    "last_checks": [
+      "receipt failure atomically rolls back preference value revision and consent provenance",
+      "lost COMMIT response recovers the existing receipt without applying the memory update twice",
+      "chat retention preserves accepted memory while both origin references become NULL",
+      "explicit forget and its receipt replay never recreate or double-delete memory"
+    ]
+  },
+  "error_category": "unclassified_test_failure",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "65cdb765c28fb464bafe63917ce9badae987be42a2b4090a5c309fea40a259ea",
+  "failure_classification": "fixture_assumed_two_simultaneous_claims_for_one_actor",
+  "observed_failure": "Second execution claim returns null while same actor has a live claim. Test dereferenced that null; production serialization is intentional.",
+  "production_defect_claimed": false
+}

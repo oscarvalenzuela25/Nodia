@@ -1,0 +1,74 @@
+--- base/agentic_cli.py
++++ candidate/agentic_cli.py
+@@ -17,6 +17,10 @@
+ from service_errors import ServiceError
+ 
+ 
++# Transport candidates, not evidence of a working session or MCP/attachment support.
++CHAT_CLI_VERSIONS = frozenset({"1.3.1", "1.4.2"})
++
++
+ @dataclass(frozen=True)
+ class CliConfig:
+     binary: Path
+@@ -35,6 +39,9 @@
+         home = os.environ.get("ANTIGRAVITY_CLI_HOME")
+         if len(checksum) != 128 or any(c not in "0123456789abcdef" for c in checksum) or not home:
+             raise ValueError("Configure ANTIGRAVITY_CLI_SHA512 and ANTIGRAVITY_CLI_HOME")
++        version = os.environ.get("ANTIGRAVITY_CLI_VERSION", "1.3.1")
++        if version not in CHAT_CLI_VERSIONS:
++            raise ValueError("Unsupported ANTIGRAVITY_CLI_VERSION")
+         timeout = float(os.environ.get("ANTIGRAVITY_CLI_TIMEOUT_SECONDS", "240"))
+         if not 1 <= timeout <= 240:
+             raise ValueError("Invalid CLI timeout")
+@@ -49,7 +56,7 @@
+                 or profile.resolve() in workspace.parents
+                 or profile.resolve().is_relative_to(workspace)):
+             raise ValueError("Configure absolute CLI paths and a dedicated profile outside Nodia")
+-        return cls(binary.resolve(), checksum, profile.resolve(), timeout=timeout)
++        return cls(binary.resolve(), checksum, profile.resolve(), version=version, timeout=timeout)
+ 
+ 
+ def cli_environment(home: Path, inherited: Mapping[str, str] | None = None) -> dict[str, str]:
+@@ -112,8 +119,8 @@
+         info = self.config.binary.stat()
+         self._verified_stat = (info.st_mtime_ns, info.st_size)
+         prepare_cli_home(self.config.home)
+-        result, _ = await self.run(["--version"], timeout=4)
+-        if result.strip() != self.config.version:
++        result, code = await self.run(["--version"], timeout=4)
++        if code != 0 or result.strip() != self.config.version:
+             raise ServiceError("agentic_cli_incompatible", "La versión del CLI agéntico no es compatible.")
+ 
+     async def _terminate(self, process: asyncio.subprocess.Process) -> None:
+--- base/agentic_service.py
++++ candidate/agentic_service.py
+@@ -146,6 +146,8 @@
+                               thinking_level: str | None = None, progress_callback: Callable[[str], None] | None = None) -> dict[str, Any]:
+         if not self._available:
+             raise ServiceError("agentic_unavailable", "Antigravity CLI no está disponible.")
++        if getattr(getattr(self.runner, "config", None), "version", None) != "1.3.1":
++            raise ServiceError("agentic_cli_incompatible", "La versión del CLI no está verificada para analizar facturas.", 409)
+         if extended_thinking or thinking_level not in (None, "low", "medium", "high"):
+             raise ServiceError("agentic_invalid_option", "Opciones agénticas incompatibles.", 422)
+         if self._analysis_lock.locked():
+--- base/nodia_ai_chat.py
++++ candidate/nodia_ai_chat.py
+@@ -25,7 +25,7 @@
+ from gemini_webapi.exceptions import AuthError
+ from loguru import logger as progress_logger
+ 
+-from agentic_cli import prepare_cli_home, permission_path
++from agentic_cli import CHAT_CLI_VERSIONS, prepare_cli_home, permission_path
+ from agentic_observation import command_data
+ from service_errors import ServiceError
+ from native_attempts import NativeAttemptLedger, ReconcileAttempt, AcknowledgeAttempt, NativeTerminalReply
+@@ -246,7 +246,7 @@
+                     if not status["available"] or not status["has_active_session"]:
+                         observation["reason"] = status.get("reason") or "session_required"
+                         return observation
+-                    if self.agentic.runner.config.version != "1.3.1":
++                    if self.agentic.runner.config.version not in CHAT_CLI_VERSIONS:
+                         observation["reason"] = "adapter_protocol_unverified"
+                         return observation
+                     if len([m for m in status["models"] if m["id"] == request.model_id]) != 1:

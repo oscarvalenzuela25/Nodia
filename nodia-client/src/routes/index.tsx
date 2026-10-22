@@ -11,9 +11,11 @@ import { lazyWithRetry } from "./lazyRoute";
 import { PERSONAL_FINANCE_ROUTE } from "../modules/finances/constants/routes";
 import { RENTAL_RESERVATIONS_ROUTE } from "../modules/rentals/constants/routes";
 import { BUSINESS_ROUTE } from "../modules/business/constants/routes";
+import { NODIA_AI_ROUTE } from "../modules/nodiaAi/constants/routes";
 
 // Lazy-loaded route pages (Code Splitting per route)
 const Home = lazyWithRetry(() => import("../modules/home/pages/Home"));
+const NodiaAI = lazyWithRetry(() => import("../modules/nodiaAi/pages/NodiaAI"));
 const RentalReservations = lazyWithRetry(
   () => import("../modules/rentals/pages/RentalReservations"),
 );
@@ -60,6 +62,16 @@ const router = createBrowserRouter([
     path: "/",
     errorElement: <RouteError />,
     children: [
+      {
+        path: NODIA_AI_ROUTE,
+        element: (
+          <BaseLayout>
+            <GuardStrict modulePath={NODIA_AI_ROUTE}>
+              {renderLazyPage(<NodiaAI />)}
+            </GuardStrict>
+          </BaseLayout>
+        ),
+      },
       {
         path: RENTAL_RESERVATIONS_ROUTE,
         element: (

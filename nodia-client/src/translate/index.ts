@@ -16,6 +16,7 @@ import aiProvidersEs from "./es/ai_providers.json";
 import financeEs from "./es/finance.json";
 import rentalEs from "./es/rental.json";
 import providerContactsEs from "./es/provider_contacts.json";
+import nodiaAiEs from "./es/nodiaAi.json";
 
 // en
 import authEn from "./en/auth.json";
@@ -32,6 +33,7 @@ import aiProvidersEn from "./en/ai_providers.json";
 import financeEn from "./en/finance.json";
 import rentalEn from "./en/rental.json";
 import providerContactsEn from "./en/provider_contacts.json";
+import nodiaAiEn from "./en/nodiaAi.json";
 
 export const SUPPORTED_LANGUAGES = ["es", "en"] as const;
 export const DEFAULT_LANGUAGE = "es";
@@ -82,6 +84,7 @@ const resources = {
     finance: financeEs,
     rental: rentalEs,
     provider_contacts: providerContactsEs,
+    nodiaAi: nodiaAiEs,
   },
   en: {
     auth: authEn,
@@ -98,6 +101,7 @@ const resources = {
     finance: financeEn,
     rental: rentalEn,
     provider_contacts: providerContactsEn,
+    nodiaAi: nodiaAiEn,
   },
 };
 
@@ -123,6 +127,7 @@ i18n
       "finance",
       "rental",
       "provider_contacts",
+      "nodiaAi",
     ],
     defaultNS: "home",
     interpolation: {

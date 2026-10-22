@@ -1,3 +1,5 @@
+import { actorReference } from '../authorization/authority-transaction.js';
+import { FinanceOwnerQueryDto } from '../finance-common/dto/finance-owner-query.dto.js';
 import { DeleteFinanceMovementUseCase } from './use-case/delete-finance-movement.use-case.js';
 import {
   Body,
@@ -64,23 +66,40 @@ export class FinanceMovementController {
   @ApiOkResponse({ schema: FINANCE_MOVEMENT_PAGE_SCHEMA })
   @ApiOperation({ summary: 'List movements owned by the authenticated user' })
   list(@Req() request: AuthRequest, @Query() query: FinanceQueryDto) {
-    return this.getMovements.execute(request.auth.user.id, query);
+    return this.getMovements.execute(
+      { ...actorReference(request.auth), ownerId: query.owner_id },
+      query,
+    );
   }
   @Get(':id')
   @ApiOkResponse({ schema: FINANCE_MOVEMENT_SCHEMA })
   @ApiOperation({
     summary: 'Get a personal movement, including archived records',
   })
-  findOne(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.getMovement.execute(request.auth.user.id, params.id);
+  findOne(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.getMovement.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
   @Post()
   @ApiCreatedResponse({ schema: FINANCE_MOVEMENT_SCHEMA })
   @ApiOperation({
     summary: 'Create a movement or a partial obligation repayment',
   })
-  create(@Req() request: AuthRequest, @Body() dto: CreateFinanceMovementDto) {
-    return this.createMovement.execute(request.auth.user.id, dto);
+  create(
+    @Req() request: AuthRequest,
+    @Body() dto: CreateFinanceMovementDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.createMovement.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      dto,
+    );
   }
   @Put(':id')
   @ApiOkResponse({ schema: FINANCE_MOVEMENT_SCHEMA })
@@ -89,8 +108,13 @@ export class FinanceMovementController {
     @Req() request: AuthRequest,
     @Param() params: FinanceIdDto,
     @Body() dto: UpdateFinanceMovementDto,
+    @Query() owner: FinanceOwnerQueryDto,
   ) {
-    return this.updateMovement.execute(request.auth.user.id, params.id, dto);
+    return this.updateMovement.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+      dto,
+    );
   }
   @Delete(':id')
   @HttpCode(204)
@@ -99,7 +123,14 @@ export class FinanceMovementController {
       'Delete an owned personal finance record with association safeguards',
   })
   @ApiNoContentResponse({ description: 'Record deleted atomically.' })
-  remove(@Req() request: AuthRequest, @Param() params: FinanceIdDto) {
-    return this.deleteMovement.execute(request.auth.user.id, params.id);
+  remove(
+    @Req() request: AuthRequest,
+    @Param() params: FinanceIdDto,
+    @Query() owner: FinanceOwnerQueryDto,
+  ) {
+    return this.deleteMovement.execute(
+      { ...actorReference(request.auth), ownerId: owner.owner_id },
+      params.id,
+    );
   }
 }

@@ -1,0 +1,32 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "frozen_owned_role_candidate_one_original_MCP_canary",
+  "status": "failed",
+  "started_at_utc": "2026-10-19T20:05:12.376429+00:00",
+  "maximum_native_start_requests": 1,
+  "native_start_requests": 0,
+  "accepted_native_starts": 0,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "Node_deployed": false,
+  "source_sha256": "cc27c69672747eabca279fe570cbf89a168adba73b1a83502fa5625e50b3572e",
+  "automatic_inference_retries": 0,
+  "candidate_activated": true,
+  "selection_binding_sha256": "c26d0087d1f239c686ef8c1c2eaf913a2a21d5d66a7aa86ef80d43a52a4d7c19",
+  "compiled_files_verified": 2803,
+  "compiled_manifest_sha256": "eb5909cf0e08ff01b309744797047c98de136d1dbfe5723882a4926ba2dfb46a",
+  "canary_command_started_at_utc": "2026-10-19T20:05:44.616918+00:00",
+  "canary_status": "failed",
+  "canary_exit_code": 1,
+  "canary_report_sha256": "8991bf60a3d9233b68eb353b760cf487321ce58c6480ca8a59ead5e5c4001a19",
+  "native_start_or_restore_exit_code": 0,
+  "API_worker_restore_exit_code": 0,
+  "service_states_after": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "finished_at_utc": "2026-10-19T20:05:57.170290+00:00"
+}

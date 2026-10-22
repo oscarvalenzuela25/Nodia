@@ -1,0 +1,33 @@
+{
+  "stage": "AI-37",
+  "scope": "isolated_postgresql_synthetic",
+  "checks": [
+    "empty database has actual zero counters",
+    "empty ages and remote readiness/cost remain unknown",
+    "restored failed job alerts without unknown jobs or slots",
+    "unknown jobs and orphan slots counted independently",
+    "only supported cleanup stages counted",
+    "proof attempts read descriptor; leased final blob attempt is not exhausted",
+    "persisted blob cleanup target is overdue without resetting retry deadlines",
+    "expired leases are visible",
+    "unknown age uses persisted state observation time",
+    "aggregate output contains no payload or identity",
+    "observation cannot release unknown or mutate pending cleanup",
+    "volume uses one aggregate statement with no N+1",
+    "volume returns aggregate instead of materializing individual jobs",
+    "real worker DI resolves required operations dependency without starting loops",
+    "worker composition uses actual aggregate SQL and validated runtime policy",
+    "composition and observation invoke no external provider",
+    "composition cannot autoenqueue, lease or release existing unknown records"
+  ],
+  "measured": {
+    "pending_jobs": 1006,
+    "aggregate_statements": 1,
+    "total_statements_including_begin_commit": 4,
+    "elapsed_ms": 9.839296999998624
+  },
+  "provider_inferences": 0,
+  "operational_database_touched": false,
+  "tables_added": 0,
+  "indexes_added": 0
+}

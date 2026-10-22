@@ -6,6 +6,8 @@
 
 ## 1. Resumen del producto
 
+Referencia documental añadida el2026-10-15: [contexto de Ajustes Generales para NodiaAI](../nodia-ai/knowledge/general-settings/README.md), con7 fichas y[revisión AI-05](51-nodia-ai-ai05-product-knowledge.md). La aprobación histórica de este PRD se conserva; las fichas son borradores sin publicación y distinguen decisiones posteriores de19/contrato IA e invariantes pendientes NI-13.
+
 Nodia es una aplicación web pública con comportamiento de backoffice que servirá como base experimental para estandarizar módulos, usuarios y autorización.
 
 La aplicación tendrá dos modos aislados:

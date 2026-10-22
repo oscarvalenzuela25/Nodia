@@ -30,6 +30,14 @@ import { GetFinanceObligationByIdUseCase } from './use-case/get-finance-obligati
     GetFinanceObligationsUseCase,
     GetFinanceObligationByIdUseCase,
   ],
-  exports: [FinanceLedgerService, FinanceObligationService],
+  exports: [
+    CreateFinanceObligationUseCase,
+    UpdateFinanceObligationUseCase,
+    DeleteFinanceObligationUseCase,
+    FinanceLedgerService,
+    FinanceObligationService,
+    GetFinanceObligationsUseCase,
+    GetFinanceObligationByIdUseCase,
+  ],
 })
 export class FinanceObligationModule {}

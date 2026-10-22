@@ -1,0 +1,158 @@
+{
+  "stage": "AI-36-C05-R02",
+  "scope": "one_actual_HTTP_observe_with_readonly_native_metadata_process_timing",
+  "status": "passed_diagnostic_observation_not_MCP_acceptance",
+  "started_at_utc": "2026-10-19T19:57:40.198628+00:00",
+  "maximum_HTTP_observations": 1,
+  "HTTP_observations_requested": 1,
+  "native_MCP_start_requests": 0,
+  "provider_inference_requests": 0,
+  "additional_CLI_executions": 0,
+  "application_sources_modified": 0,
+  "services_restarted": false,
+  "baseline_sha256": "af5512ee1d2b8ff4e07a66b5156bf8a474e4af0d0145cbe3ea80b31a783d25dc",
+  "source_sha256": "9777c90e7f4219597eff5c6ae94d58d62bf75f1a10b0e56a22edd94dc3c812dc",
+  "observer_source_sha256": "574de554e50c5ea7b3d417fbd782b20ffeb1abfcfe701473de90aa9296547c58",
+  "observer_ready": {
+    "kind": "ready",
+    "baseline_CLI_processes": 0,
+    "same_container_cgroup": true,
+    "sample_interval_ms": 20,
+    "at_utc": "2026-10-19T19:57:40.578639+00:00",
+    "monotonic_ms": 163426677.132475
+  },
+  "HTTP_command_started": {
+    "at_utc": "2026-10-19T19:57:40.579303+00:00",
+    "monotonic_ms": 163426677.79298198
+  },
+  "HTTP_command_closed": {
+    "at_utc": "2026-10-19T19:57:59.577389+00:00",
+    "monotonic_ms": 163445675.87952998
+  },
+  "HTTP_command_exit_code": 0,
+  "HTTP_observation_sha256": "ded36947cab55041d402ad10b2f64ea4017a024a01e78021d11bb21c8d5984a5",
+  "observer_exit_code": 0,
+  "process_observation": {
+    "kind": "result",
+    "state": "caller_stopped_after_HTTP_closed",
+    "commands": [
+      {
+        "pid": 506,
+        "group": 506,
+        "start_ticks": 16342701,
+        "kind": "usage",
+        "first_seen": {
+          "at_utc": "2026-10-19T19:57:40.936293+00:00",
+          "monotonic_ms": 163427034.77888
+        },
+        "last_seen": {
+          "at_utc": "2026-10-19T19:57:47.778253+00:00",
+          "monotonic_ms": 163433876.73914298
+        },
+        "first_zombie_seen": null,
+        "exit_observed": {
+          "at_utc": "2026-10-19T19:57:47.820228+00:00",
+          "monotonic_ms": 163433918.71198902
+        }
+      },
+      {
+        "pid": 515,
+        "group": 515,
+        "start_ticks": 16343391,
+        "kind": "models",
+        "first_seen": {
+          "at_utc": "2026-10-19T19:57:47.820228+00:00",
+          "monotonic_ms": 163433918.71198902
+        },
+        "last_seen": {
+          "at_utc": "2026-10-19T19:57:49.485040+00:00",
+          "monotonic_ms": 163435583.523788
+        },
+        "first_zombie_seen": null,
+        "exit_observed": {
+          "at_utc": "2026-10-19T19:57:49.527047+00:00",
+          "monotonic_ms": 163435625.53113398
+        }
+      },
+      {
+        "pid": 523,
+        "group": 523,
+        "start_ticks": 16343562,
+        "kind": "model",
+        "first_seen": {
+          "at_utc": "2026-10-19T19:57:49.527047+00:00",
+          "monotonic_ms": 163435625.53113398
+        },
+        "last_seen": {
+          "at_utc": "2026-10-19T19:57:59.516000+00:00",
+          "monotonic_ms": 163445614.480678
+        },
+        "first_zombie_seen": null,
+        "exit_observed": {
+          "at_utc": "2026-10-19T19:57:59.557883+00:00",
+          "monotonic_ms": 163445656.368723
+        }
+      }
+    ],
+    "related_process_group_members": [],
+    "command_output_shape": null,
+    "command_exit_codes": null,
+    "raw_arguments_or_paths_emitted": false,
+    "profile_or_credentials_read": false,
+    "CLI_executions_by_observer": 0,
+    "timestamps_scope": "VM_monotonic_clock_with_20ms_sampling_uncertainty",
+    "at_utc": "2026-10-19T19:57:59.746024+00:00",
+    "monotonic_ms": 163445844.510421
+  },
+  "HTTP_observation": {
+    "stage": "AI-36-C05-R02",
+    "scope": "one_controlled_HTTP_High_observation_no_new_CLI_owner",
+    "status": "passed",
+    "observed_at_utc": "2026-10-19T19:57:59.565Z",
+    "source_sha256": "ba6ec0ff625478f461033623d824e9524accf60dd3387321827d09746b99010e",
+    "observations": [
+      {
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_agentic",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high"
+        },
+        "available": false,
+        "reason": "agentic_timeout",
+        "supports_mcp": false,
+        "elapsed_ms": 18670.631365,
+        "observed_at_utc": "2026-10-19T19:57:40.917Z",
+        "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+        "session_generation_sha256": "a328bdba8fd267db4160cb6ffb8ab58bcb5c5b96cab851e27aafd322e994cec0",
+        "verified_modalities": [],
+        "verified_attachment_media_types": []
+      }
+    ],
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "configured_SQL_writes": 0,
+    "provider_generations": 0,
+    "metadata_requests": 1,
+    "request_timings": [
+      {
+        "started": {
+          "at_utc": "2026-10-19T19:57:40.896Z",
+          "monotonic_ms": 315.193753
+        },
+        "finished": {
+          "at_utc": "2026-10-19T19:57:59.557Z",
+          "monotonic_ms": 18975.276706
+        },
+        "returned": true
+      }
+    ],
+    "eligible_for_future_MCP_probe": false,
+    "modality_canaries_executed": 0,
+    "services_restarted": false
+  },
+  "finished_at_utc": "2026-10-19T19:57:59.754253+00:00"
+}

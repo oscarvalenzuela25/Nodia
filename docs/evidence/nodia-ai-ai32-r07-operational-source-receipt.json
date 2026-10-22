@@ -1,0 +1,28 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "two_phase_operational_source_receipt",
+  "frozen": true,
+  "executed_original": {
+    "source": "docs/evidence/scripts/nodia-ai-ai32-r07-late-put-attempt01.mjs",
+    "sha256": "1d3bbef84e12736c13f88b80f89e9a5b591e260e585a0b455c88e29732ed59d7",
+    "put_calls": 0,
+    "failure": "harness_DI_policy_not_exported"
+  },
+  "executed_corrected": {
+    "source": "docs/evidence/scripts/nodia-ai-ai32-r07-late-put.mjs",
+    "sha256": "657e743b804669f0eebdf46640efea46105a8364dfdd0ffd229ec9daa31d1e21",
+    "upload_put_calls": 1,
+    "cleanup_put_calls": 0,
+    "cleanup_delete_calls": 1
+  },
+  "inspector_linux": {
+    "tests": 4,
+    "passed": 4,
+    "network": "none",
+    "temporary_container_removed": true
+  },
+  "production_sources_modified": false,
+  "production_services_restarted": false,
+  "provider_generations": 0,
+  "further_operations_planned": false
+}

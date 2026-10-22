@@ -1,0 +1,70 @@
+{
+  "task": "AI-27",
+  "scope": "isolated_synthetic_client_transport_no_business_database_no_provider",
+  "verified_at_utc": "2026-10-17T18:30:42.081545+00:00",
+  "origin": "http://127.0.0.1:5194",
+  "checks": [
+    "User preview identifies the exact target label and bigint ID and shows resolved role/module associations and access loss as read-only data.",
+    "Invalid association ID 1e3 remains in the editor and cannot be added.",
+    "Valid bigint ID 9007199254740996 is added as an exact string while the existing association remains.",
+    "Unsaved name, associations and field focus survive the requested390x844 viewport.",
+    "Saving the user correction yields revision2, a new hash and a localized toast; synthetic fixture keeps confirmation disabled.",
+    "Translations use structured ES/EN fields; empty required ES blocks save and retains the English value and editor.",
+    "Correcting ES to Rol revisado de QA yields revision2/new hash/toast while English Synthetic role remains unchanged.",
+    "Deletion preview identifies the module label/ID, affected users and removed module, and explicitly distinguishes physical deletion.",
+    "A deletion with no editable fields still exposes an enabled Confirm revision1 button.",
+    "Clicking confirm uses only the synthetic challenge/confirmation transport and yields queued with a pending toast, without claiming a completed effect.",
+    "English historical receipt retains exact bigint9007199254740996, historical warning and the real /settings/users navigation target."
+  ],
+  "requested_mobile_viewport": [
+    390,
+    844
+  ],
+  "real_user_tab_5174_modified": false,
+  "temporary_tab_closed": true,
+  "viewport_override_reset": true,
+  "qa_service_stopped": true,
+  "screenshots": [
+    {
+      "file": "docs/evidence/nodia-ai-ai27/confirmation-queued.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "a6c1b7b40c041363dac1e43f6246e38262744c966c3c53f3b4fb1984c4d26942"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai27/core-receipt-en.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "cec5776020a3e89f6d8ec2d7d84830811fddb6e29f78211868f8d77535604d5c"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai27/delete-preview.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "2dbd3dc8177c1bdebe04e37a363eded73f612786cdc27b5e0ce7ec749e3f1daa"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai27/role-editor.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "6a7c5341af3e22bfe2f93d5351315d8a046ca7aa93b68f6bde91192529dca208"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai27/role-revision.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "f9711745c734dfa7f7e3b66bbe131a1d2becf96c80b529323bf0ec64fbffba22"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai27/user-mobile.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "04a651ef2ab7b02807a57abf7b4e405f0cfa02805a86b4969406b51a9425820c"
+    }
+  ],
+  "limitations": [
+    "Synthetic transport verifies interface/protocol, not SQL effects, permissions or provider inference.",
+    "HTTP403 and business validation errors are covered separately by component tests; no browser failNext injected.",
+    "No real MCP write, Gemini write acceptance, physical phone or virtual keyboard acceptance."
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "failed_DI_attempt_state_verification",
+  "status": "passed",
+  "sandbox_counts": {
+    "chats": 0,
+    "attachments": 0,
+    "jobs": 0,
+    "invoices": 0
+  },
+  "ledger_absent": true,
+  "cloud_operations": 0
+}

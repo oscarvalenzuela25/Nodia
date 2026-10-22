@@ -1,0 +1,169 @@
+{
+  "task": "AI-15",
+  "phase": "external-health",
+  "status": "failed",
+  "checks": 3,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader"
+  ],
+  "turns": [
+    {
+      "state": "unknown",
+      "error_code": "nodia_ai:outcome_unknown",
+      "dispatches": 1,
+      "delegations": 0,
+      "tool_calls": 2,
+      "rpc_messages": 8,
+      "native_proofs_acknowledged": 0,
+      "receipt_tools": [
+        {
+          "name": "nodia_ai_providers_health",
+          "state": "completed"
+        },
+        {
+          "name": "nodia_ai_providers_gemini_engines",
+          "state": "completed"
+        }
+      ]
+    }
+  ],
+  "dispatches": [
+    {
+      "mode": "token_plan_agentic",
+      "tools": 72,
+      "elapsed_ms": 63489,
+      "error_code": "mcp_result_unknown",
+      "error_outcome": "unknown"
+    }
+  ],
+  "eligibility": [
+    {
+      "available": true,
+      "supports_mcp": true,
+      "reason": null
+    }
+  ],
+  "external_observations": [
+    {
+      "tool": "nodia_ai_providers_health",
+      "state": "completed",
+      "result": {
+        "engines": {
+          "web": {
+            "available": true,
+            "authenticated": true,
+            "quota_observed_at": "2026-10-16T19:51:13.552Z"
+          },
+          "agentic": {
+            "available": true,
+            "authenticated": null,
+            "quota_observed_at": null
+          },
+          "active_engine": "web"
+        },
+        "providers": [
+          {
+            "id": "1",
+            "key": "openai",
+            "mode": "token_plan_agentic",
+            "name": "Synthetic Codex observation",
+            "status": "unconfigured",
+            "is_active": true,
+            "last_check": null,
+            "latency_ms": null,
+            "has_connection": true,
+            "selected_model": "gpt-6.1-sol"
+          },
+          {
+            "id": "2",
+            "key": "gemini",
+            "mode": "token_plan_agentic",
+            "name": "AI15-connection-5f182060a75588f292d0",
+            "status": "degraded",
+            "is_active": true,
+            "last_check": "2026-10-16T19:51:13.554Z",
+            "latency_ms": 679,
+            "has_connection": true,
+            "selected_model": "gemini-3.8-flash-high"
+          }
+        ],
+        "timestamp": "2026-10-16T19:51:13.554Z",
+        "overall_status": "degraded"
+      }
+    },
+    {
+      "tool": "nodia_ai_providers_gemini_engines",
+      "state": "completed",
+      "result": {
+        "engines": {
+          "web": {
+            "available": true,
+            "authenticated": true,
+            "quota_observed_at": "2026-10-16T19:51:13.552Z"
+          },
+          "agentic": {
+            "available": true,
+            "authenticated": null,
+            "quota_observed_at": null
+          },
+          "active_engine": "web"
+        }
+      }
+    }
+  ],
+  "adapter_dispatch_requests": 1,
+  "maximum_adapter_dispatch_requests": 1,
+  "candidate_release_id": "47e9a55b917ddd53efceac449593371c0cbaa82e9571245ccdd1e72ec9bd92ff",
+  "inference_replayed": false,
+  "configured_business_database_modified": false,
+  "cleanup": {
+    "completed": true,
+    "pending": {
+      "jobs": 0,
+      "attempts": 0,
+      "runtime_slots": 0,
+      "diagnostic_requests": 0,
+      "diagnostic_proofs": 0
+    },
+    "disposable_database_removed": true,
+    "inference_replayed": false
+  },
+  "native_terminal_diagnostic": {
+    "callbacks": 2,
+    "cli": {
+      "denied_count": 0,
+      "document_read_completed": false,
+      "events": 15,
+      "initialized": true,
+      "invalid_lines": 0,
+      "last_event_age_ms": 124,
+      "last_tool": "finish",
+      "result_seen": true,
+      "stage": "result",
+      "stderr_bytes": 0,
+      "stdout_bytes": 10040,
+      "terminal_status": "SUCCESS",
+      "tool_steps": 7
+    },
+    "elapsed_ms": 63384,
+    "exception_type": "ValueError",
+    "exit_code": 0,
+    "gate_verified": false,
+    "hook": {
+      "categories": {
+        "allowed_finish": 1,
+        "allowed_registered": 2,
+        "arguments_type": 1
+      },
+      "categories_state": "valid",
+      "decision_count": 4,
+      "receipt_class": "denied_tool",
+      "rejected_count": 1
+    },
+    "phase": "validating_hook",
+    "rpc_messages": 8,
+    "state": "unknown"
+  }
+}

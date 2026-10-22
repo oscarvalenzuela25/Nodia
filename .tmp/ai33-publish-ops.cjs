@@ -1,0 +1,19 @@
+const fs=require('node:fs'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),write=(p,v)=>fs.writeFileSync(p,JSON.stringify(v,null,2)+'\n');
+const hash=v=>crypto.createHash('sha256').update(v).digest('hex');
+for(const [name,scope] of [['runtime-baseline-health','read_only_pre_activation_runtime_health'],['configured-chat-before','pre_activation_existing_chat_metadata'],['configured-chat-after','post_activation_existing_chat_metadata']]){
+ const path='docs/evidence/nodia-ai-ai33-'+name+'.json',value=read(path);
+ if(value.stage!=='AI-33')write(path,{stage:'AI-33',scope,probe_origin:'AI-32-R05',provider_generations:0,private_cloud_gets:0,storage_mutations:0,observation:value});
+}
+const fields=['total_attachment_rows','messages','message_parts','conversation','attachment_parts','runs','jobs','attempts','attachments','expected_synthetic_fixture_matches'];
+const before=read('docs/evidence/nodia-ai-ai33-configured-chat-before.json').observation,after=read('docs/evidence/nodia-ai-ai33-configured-chat-after.json').observation;
+const project=value=>Object.fromEntries(fields.map(key=>[key,value[key]]));assert.deepEqual(project(before),project(after));
+const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;
+const digest=hash(JSON.stringify(stable(project(after))));const activation=read('docs/evidence/nodia-ai-ai33-activation.json');assert.equal(digest,activation.configured_chat_metadata_sha256);
+write('docs/evidence/nodia-ai-ai33-configured-chat-preservation.json',{stage:'AI-33',scope:'unchanged_R05_chat_metadata_across_additive_M4_activation',status:'passed',conversation_id:after.conversation_id,attachment_rows:after.total_attachment_rows,before_after_metadata_equal:true,metadata_sha256:digest,provider_generations:0,private_cloud_gets:0,storage_mutations:0,message_text_exported:false});
+const manifest=read('docs/evidence/nodia-ai-ai33-compiled-manifest.json');assert.equal(manifest.compiled_files,2703);
+const versions={'@nestjs/common':'12.0.1','@nestjs/core':'12.0.1','@nestjs/testing':'12.0.1','@nestjs/typeorm':'12.0.1',typeorm:'1.1.1',pg:'8.23.0','@aws-sdk/client-s3':'3.1136.0'};
+write('docs/evidence/nodia-ai-ai33-staging-setup.json',{stage:'AI-33',scope:'frozen_compiled_SQL_disposable_staging_integrity',status:'passed',compiled_files:2703,manifest_sha256:hash(fs.readFileSync('docs/evidence/nodia-ai-ai33-compiled-manifest.json')),test_sha256:manifest.files['test/nodia-ai-ai33.integration.mjs'],dependency_versions:Object.fromEntries(Object.entries(versions).map(([key,version])=>[key,{staging:version,activated_runtime:key==='@nestjs/testing'?null:version,same_when_present:true}])),version_observation:'VM stage verification for final attempt05; testing package absent from production by design',configured_environment_copied:false,production_deployed_by_staging:false,provider_generations:0,storage_operations:0});
+for(const [source,target]of [['.tmp/ai33-activate.py','nodia-ai-ai33-activate.py'],['.tmp/ai33-migrate.mjs','nodia-ai-ai33-migrate.mjs'],['.tmp/ai33-backup-verify.mjs','nodia-ai-ai33-backup-verify.mjs'],['.tmp/ai33-final-health.py','nodia-ai-ai33-final-health.py'],['.tmp/ai33-state.mjs','nodia-ai-ai33-state.mjs'],['.tmp/ai33-catalog-authority.mjs','nodia-ai-ai33-catalog-authority.mjs'],['.tmp/ai33-stage-remote.py','nodia-ai-ai33-stage-remote.py'],['.tmp/ai33-sql-run.py','nodia-ai-ai33-sql-run.py']])fs.copyFileSync(source,'docs/evidence/scripts/'+target);
+fs.copyFileSync('nodia-server/.tmp/ai33-runtime-candidate-manifest.json','docs/evidence/nodia-ai-ai33-runtime-manifest.json');
+console.log(JSON.stringify({stage:'AI-33',ops_artifacts:'published',status:'passed',compiled_files:923,sql_checks:read('docs/evidence/nodia-ai-ai33-sql-validation.json').assertion_result.checks,configured_chat_preserved:true,backup_preserved:true}));

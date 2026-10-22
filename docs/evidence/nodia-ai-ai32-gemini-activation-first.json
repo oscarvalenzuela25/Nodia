@@ -1,0 +1,28 @@
+{
+  "stage": "AI-32",
+  "scope": "private_gemini_lab_activation",
+  "observed_at_utc": "2026-10-18T02:31:50Z",
+  "old_image": "sha256:b5ca62f20b9e7cefe87eebcffb2fd461ad01b3eae46c0af13f6b8a066cdd83bd",
+  "new_image": "sha256:34a4e7a5b4122ed0250edd835af0b2c0e0d7cb036d1148ab103504815e2f8bb0",
+  "backup": "/opt/nodia/verification-backups/ai32-before-gemini-1792290678",
+  "container_restarted": true,
+  "credential_bytes_owner_mode_preserved": true,
+  "docker_limits_mounts_network_capabilities_namespace_preserved": true,
+  "host_proof_verified_as_service_uid": true,
+  "health_http": 200,
+  "provider_login_logout_or_inference_requested_by_activation": false,
+  "profile_files_copied_or_hashed": false,
+  "database_modified": false,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 25
+  },
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 25
+  }
+}

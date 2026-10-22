@@ -1,0 +1,28 @@
+{
+  "stage": "AI-34",
+  "scope": "compiled_compaction_disposable_postgresql",
+  "attempt": "attempt08",
+  "started_at_utc": "2026-10-18T19:39:18.274507+00:00",
+  "completed_at_utc": "2026-10-18T19:39:25.957293+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "1181ff2a4587caab288950ebd1d5acc815a32a86125ec91d63558916b8f0dfcc",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "assertion_result": {
+    "stage": "AI-34",
+    "completed_checks": 17,
+    "last_checks": [
+      "subsequent turn reuses the validated snapshot without another compaction",
+      "history larger than the canonical byte ceiling completes from one bounded compaction window and the remaining tail",
+      "changing connection mode and model preserves canonical memory without replaying prior turns",
+      "rollback refuses populated snapshots rather than silently discarding memory"
+    ]
+  },
+  "error_category": "unclassified_fixture_failure",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "fbac90e7eec6c9b6cbd9934f5cd479fe0bc4d245bbe1c815b3756d4a2436ff85"
+}

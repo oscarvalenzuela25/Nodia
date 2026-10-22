@@ -1,0 +1,71 @@
+{
+  "stage": "AI-36-C05-R04",
+  "scope": "current_experimental_binary_epoch_owned_role_qualification_not_business_capability_acceptance",
+  "status": "passed",
+  "source_artifacts_sha256": {
+    "docs/evidence/nodia-ai-ai36-c05-r04-role-canary01-canary-report.json": "08fdc1158dc0867b7a6bf4c34d70b2283c0b0525e17af54147e37c5a919aa0e8",
+    "docs/evidence/nodia-ai-ai36-c05-r04-role-canary01-runner-report.json": "2380b3c5839a806d872b5335f0df2f3ac60f4dfa88a6df53e016ae0a2070f44e",
+    "docs/evidence/nodia-ai-ai36-c05-r04-role-canary01-original-ai15-report.json": "bf70f8e81255715e347aec91f6dc45801d48fe025f12c7515765b37e3fe0a9c9",
+    "docs/evidence/nodia-ai-ai36-c05-r04-role-canary01-binding.json": "c4ccddbd9e01168091c444ace3c982255c358f4a2e554c2d598674d596a28b75",
+    "docs/evidence/nodia-ai-ai36-c05-r04-build01-report.json": "59a8747bfcefaf22f0df463ca56400c380c55700928f3f9135c0e4f3670bce97",
+    "docs/evidence/nodia-ai-ai36-c05-r04-build01-manifest.json": "4b6d1c1518810c8514a4ba17341aced43f7e0734d0283b074e2ce2ae53b69a41",
+    "docs/evidence/nodia-ai-ai36-c05-r04-binary-observation01.json": "c99ea30198226c6bcdd410f528756edce97461abec1f7f88f57ba862c32d1a57",
+    "docs/evidence/nodia-ai-ai36-c05-r04-role-activation.json": "a6962542648827c066c4673769616733438cadfd42f1e398d7c2a4545a576bac"
+  },
+  "source_manifest_sha256": "4b6d1c1518810c8514a4ba17341aced43f7e0734d0283b074e2ce2ae53b69a41",
+  "image_id": "sha256:9482df4c8ad2db5d591e3f1ac76e2c7cdc2a8fe7b296fa76374dc139c234a47e",
+  "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "binary_version": "1.4.2",
+  "binary_sha512": "f63dd18d9aee3742055452c6eefbc22740ac4cb7bd7ad4c6b5cac2cccbd69d0548058ef5a3f7105d57146f7ce0a3ae07ef9dd89cde84dcac2cba64edc6f8dbdc",
+  "binary_observation_evidence": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r04-role-canary01-runner-report.json",
+    "sha256": "2380b3c5839a806d872b5335f0df2f3ac60f4dfa88a6df53e016ae0a2070f44e"
+  },
+  "binary_observation_artifact": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r04-binary-observation01.json",
+    "sha256": "c99ea30198226c6bcdd410f528756edce97461abec1f7f88f57ba862c32d1a57"
+  },
+  "epoch": {
+    "id": "ba4c13db6dd5baca6aed7161d69104471fd96a3f9822d5f49cb7498aa5a8ac64",
+    "image": "sha256:9482df4c8ad2db5d591e3f1ac76e2c7cdc2a8fe7b296fa76374dc139c234a47e",
+    "started_at": "2026-10-19T20:53:57.49153675Z",
+    "binary_version": "1.4.2",
+    "binary_sha512": "f63dd18d9aee3742055452c6eefbc22740ac4cb7bd7ad4c6b5cac2cccbd69d0548058ef5a3f7105d57146f7ce0a3ae07ef9dd89cde84dcac2cba64edc6f8dbdc"
+  },
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "session_generation_sha256": "320059c6d4b2e096a9c202e82e6622b9b10692127455a8e4fede9e2c1ba40d31",
+  "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+  "attempt_id": "a4edd1b4-0ac0-4a0e-bb45-1baba6612d59",
+  "terminal_proof": {
+    "attempt_id": "a4edd1b4-0ac0-4a0e-bb45-1baba6612d59",
+    "terminal_proof_sha256": "fdd938ca034f97fdb5f7c6249a0fb6c686115fc284dd7264602820331f44abe6",
+    "outcome": "completed",
+    "process_closed": true,
+    "observed_at_utc": "2026-10-19T20:55:46.160589+00:00"
+  },
+  "acknowledgement": {
+    "attempt_id": "a4edd1b4-0ac0-4a0e-bb45-1baba6612d59",
+    "terminal_proof_sha256": "fdd938ca034f97fdb5f7c6249a0fb6c686115fc284dd7264602820331f44abe6",
+    "acknowledged": true,
+    "request_started_at_utc": "2026-10-19T20:55:46.224Z",
+    "response_received_at_utc": "2026-10-19T20:55:46.227Z"
+  },
+  "diagnostic_nonce_verified": true,
+  "supports_MCP_after": true,
+  "adapter_contract_version": "nodia-ai-gemini-chat/1",
+  "encoding_observed": null,
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "business_capabilities_accepted_by_canary": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "derivation_clock_scope": "No local wall-clock timestamp synthesized; all event timestamps are preserved from their VM source artifacts.",
+  "wire_scope": "Effective loop and nonce callback verified under this observed binary/image/epoch. Original object-versus-JSON-string argument encoding is not retained by the bridge and remains unknown."
+}

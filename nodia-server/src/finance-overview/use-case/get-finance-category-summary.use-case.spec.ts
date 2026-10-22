@@ -1,3 +1,5 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { BadRequestException } from '@nestjs/common';
 import { describe, expect, it, vi } from 'vitest';
 import type { EntityManager } from 'typeorm';
@@ -8,25 +10,24 @@ import { GetFinanceCategorySummaryUseCase } from './get-finance-category-summary
 function fixture() {
   const manager = {} as EntityManager;
   const service = {
+    withScope: financeScopeFixture(manager),
     snapshot: vi.fn((operation: (tx: EntityManager) => Promise<unknown>) =>
       operation(manager),
     ),
-    summary: vi
-      .fn()
-      .mockResolvedValue({
-        rows: [
-          {
-            id: '3',
-            name: 'Sin actividad',
-            key: 'empty',
-            is_active: true,
-            movement_count: '0',
-            income_amount: '0',
-            expense_amount: '0',
-          },
-        ],
-        total: 25,
-      }),
+    summary: vi.fn().mockResolvedValue({
+      rows: [
+        {
+          id: '3',
+          name: 'Sin actividad',
+          key: 'empty',
+          is_active: true,
+          movement_count: '0',
+          income_amount: '0',
+          expense_amount: '0',
+        },
+      ],
+      total: 25,
+    }),
   };
   return {
     service,
@@ -50,7 +51,7 @@ describe('GetFinanceCategorySummaryUseCase', () => {
       },
       category_group_ids: ['7'],
     });
-    const result = await useCase.execute('12', query);
+    const result = await useCase.execute(actorFixture('12'), query);
     expect(result.data[0]).toMatchObject({
       id: '3',
       movement_count: 0,
@@ -81,7 +82,7 @@ describe('GetFinanceCategorySummaryUseCase', () => {
     const { useCase, service } = fixture();
     await expect(
       useCase.execute(
-        '12',
+        actorFixture('12'),
         Object.assign(new FinanceQueryDto(), {
           q: { name_cont: 'ok', user_id_eq: '99' },
         }),
@@ -89,7 +90,7 @@ describe('GetFinanceCategorySummaryUseCase', () => {
     ).rejects.toBeInstanceOf(BadRequestException);
     await expect(
       useCase.execute(
-        '12',
+        actorFixture('12'),
         Object.assign(new FinanceQueryDto(), {
           all: true,
           q: { key_cont: 'ok' },
@@ -102,7 +103,10 @@ describe('GetFinanceCategorySummaryUseCase', () => {
   it('returns a documented empty page, preserving total metadata', async () => {
     const { useCase, service } = fixture();
     service.summary.mockResolvedValue({ rows: [], total: 0 });
-    const result = await useCase.execute('99', new FinanceQueryDto());
+    const result = await useCase.execute(
+      actorFixture('99'),
+      new FinanceQueryDto(),
+    );
     expect(result.data).toEqual([]);
     expect(result.meta.total_pages).toBe(0);
   });

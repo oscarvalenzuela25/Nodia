@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "environment": "linux_lab",
+  "scope": "read_only_delivery_inventory_not_acceptance",
+  "observed_at_utc": "2026-10-20T17:01:33.924476+00:00",
+  "units": {
+    "nodia-api": {
+      "active_state": "active",
+      "sub_state": "running",
+      "pid": 1820662,
+      "working_directory": "/opt/nodia/releases/nodia-server-ai15-20261016",
+      "unit_file": "/etc/systemd/system/nodia-api.service",
+      "process_executable": "/opt/node-v24.20.0-linux-x64/bin/node"
+    },
+    "nodia-ai-worker": {
+      "active_state": "active",
+      "sub_state": "running",
+      "pid": 1820663,
+      "working_directory": "/opt/nodia/releases/nodia-server-ai15-20261016",
+      "unit_file": "/etc/systemd/system/nodia-ai-worker.service",
+      "process_executable": "/opt/node-v24.20.0-linux-x64/bin/node"
+    },
+    "nodia-gemini-lab": {
+      "active_state": "active",
+      "sub_state": "exited",
+      "pid": 0,
+      "working_directory": "/opt/nodia/nodia-gemini-microservice",
+      "unit_file": "/etc/systemd/system/nodia-gemini-lab.service",
+      "process_executable": null
+    },
+    "nginx": {
+      "active_state": "active",
+      "sub_state": "running",
+      "pid": 1004,
+      "working_directory": "",
+      "unit_file": "/usr/lib/systemd/system/nginx.service",
+      "process_executable": "/usr/sbin/nginx"
+    }
+  },
+  "operational_node": {
+    "root": "/opt/nodia/releases/nodia-server-ai15-20261016",
+    "compiled_files": 932,
+    "manifest_sha256": "bd07328b490756cb63a3054e44161d7e9c36d14e38b5acfe841cdb963024e792"
+  },
+  "gemini_container": {
+    "id": "83f01759821f42b21b8956dd5c6e91f761a59b8e072326c4b2bcc46bdd467ca4",
+    "image": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+    "running": true,
+    "started_at": "2026-10-19T21:22:19.611154456Z",
+    "uid_configuration": "nodia",
+    "port_bindings": {
+      "8000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "8000"
+        }
+      ]
+    },
+    "mounts": [
+      {
+        "destination": "/app/.env",
+        "type": "bind",
+        "read_write": false
+      },
+      {
+        "destination": "/app/browser_profile",
+        "type": "bind",
+        "read_write": true
+      },
+      {
+        "destination": "/app/session_state",
+        "type": "bind",
+        "read_write": true
+      },
+      {
+        "destination": "/app/config/web_reasoning_profiles.json",
+        "type": "bind",
+        "read_write": false
+      },
+      {
+        "destination": "/home/nodia/agentic_profile",
+        "type": "bind",
+        "read_write": true
+      },
+      {
+        "destination": "/run/user/10001",
+        "type": "bind",
+        "read_write": false
+      }
+    ],
+    "environment_matches_private_baseline": true,
+    "environment_list_order_matches_private_baseline": false,
+    "mounts_match_private_baseline": true
+  },
+  "listening_addresses": [
+    "*:3000",
+    "127.0.0.1:5432",
+    "127.0.0.1:6379",
+    "127.0.0.1:8000"
+  ],
+  "browser_inventory": {
+    "binaries": {
+      "chromium": null,
+      "chromium-browser": null,
+      "google-chrome": null,
+      "google-chrome-stable": null,
+      "firefox": null
+    },
+    "known_cache_or_package_paths": [
+      {
+        "path": "/root/.cache/ms-playwright",
+        "exists": false
+      },
+      {
+        "path": "/home/operador/.cache/ms-playwright",
+        "exists": false
+      },
+      {
+        "path": "/opt/nodia/verification/ai32-r02-20261018/node_modules/playwright",
+        "exists": false
+      },
+      {
+        "path": "/opt/nodia/verification/ai32-r02-20261018/node_modules/@playwright/test",
+        "exists": false
+      }
+    ],
+    "browser_execution_verified": false
+  },
+  "SQL_read_only": {
+    "stage": "AI-36-C05",
+    "scope": "post_disposable_live_read_only_operational_quiescence",
+    "status": "passed",
+    "observed_at_utc": "2026-10-20T17:01:33.914Z",
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0,
+    "preserved_r05_chat": 1,
+    "configured_SQL_writes": 0,
+    "provider_requests": 0,
+    "storage_operations": 0,
+    "services_restarted": false,
+    "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+  },
+  "limits": {
+    "firewall_external_probe": false,
+    "provider_session_or_inference_checked": false,
+    "R2_checked": false,
+    "profile_contents_read": false,
+    "environment_values_emitted": false,
+    "services_restarted": false,
+    "remote_files_written": false,
+    "release_authorized": false
+  }
+}

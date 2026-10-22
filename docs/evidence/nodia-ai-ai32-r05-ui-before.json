@@ -1,0 +1,44 @@
+{
+  "stage": "AI-32-R05",
+  "scope": "real_app_dom_geometry_before_layout_fix",
+  "conversation_id": "33d6c32d-19a3-4533-8077-3ca7299d30cb",
+  "viewport": {
+    "width": 731,
+    "height": 716
+  },
+  "document_scroll_width": 731,
+  "card": {
+    "height": 600,
+    "bottom": 618,
+    "scroll_height": 997,
+    "overflow_y": "visible"
+  },
+  "composer": {
+    "height": 660.140625,
+    "bottom": 1016.140625,
+    "overflow_y": "visible"
+  },
+  "attachment_panel": {
+    "height": 322.1875,
+    "scroll_height": 624,
+    "overflow_y": "auto"
+  },
+  "draft_files": [
+    {
+      "name": "ai32-r05-synthetic.png",
+      "bytes": 29076
+    },
+    {
+      "name": "ai32-r05-synthetic.pdf",
+      "bytes": 765
+    },
+    {
+      "name": "voice.webm",
+      "bytes": 99755,
+      "capture": "user_confirmed_physical_microphone"
+    }
+  ],
+  "expected_speech_in_provider_prompt": false,
+  "draft_uploaded": false,
+  "composer_outside_card_pixels": 398.140625
+}

@@ -1,0 +1,26 @@
+{
+  "stage": "AI-34",
+  "scope": "isolated_native_mcp_compatibility_candidate_build_and_linux_unit",
+  "status": "passed",
+  "candidate_image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "source_files": 99,
+  "source_manifest_sha256": "e9e955f093f7c1491b1a856fed0ca782b7a098a48f053f3cc6e7c271871600c5",
+  "linux_tests": 420,
+  "linux_seconds": 8.229,
+  "linux_test_log_sha256": "9fb1150acede01d71a649849815a0c77edf37b2adc7dfa8127b1e38a6d55192b",
+  "build_log_sha256": "5cb624adaca0400e3a67ced95fb75db5bee619e924f95a83e08d99efbabe81e8",
+  "native_image_source_files_verified": 99,
+  "native_image_source_drift": 0,
+  "isolated_network": "none",
+  "read_only_root": true,
+  "memory_bytes": 536870912,
+  "cpu_limit": 1,
+  "active_tag_modified": false,
+  "services_restarted": false,
+  "configured_database_used": false,
+  "profile_or_credential_files_copied": false,
+  "provider_generations": 0,
+  "limitations": [
+    "Offline tests verify restored default MCP transport, preserved proven text/reader roles, closed error classification and controlled-context budgets; real MCP acceptance remains separate"
+  ]
+}

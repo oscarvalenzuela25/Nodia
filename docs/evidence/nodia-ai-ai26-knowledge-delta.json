@@ -1,0 +1,18 @@
+{
+  "stage": "AI-26",
+  "previous_release": "fe96f76311b45096287f600108c242477146150653c4720687a11f6de230834f",
+  "release": "46e4950b15ac9b89903341bbdd9cee47c578654b0ef9fc039eff32b21d2a2d0c",
+  "changed_manifest_fields": [
+    "registry_sha256",
+    "release_id"
+  ],
+  "published_documents_unchanged": true,
+  "published_fragments_unchanged": true,
+  "capability_contracts_unchanged": true,
+  "new_published_content": false,
+  "reason": "Two explicitly indexed draft/unregistered money and occupancy/preparation sources change only registry digest and release identity",
+  "sources": 50,
+  "excluded": 23,
+  "published_capabilities": 67,
+  "published_fragments": 27
+}

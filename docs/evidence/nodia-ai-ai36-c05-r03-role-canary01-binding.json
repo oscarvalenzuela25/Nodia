@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "candidate_image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+  "candidate_build_report_sha256": "7332694f79027adaccb3b0b80fb1d808e507d8a03caa0689ecfeb21dbb213af0",
+  "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "baseline_observation_sha256": "b50c9c38e8946e4c60c357d4718229d41c99e06cafeb038dec2ef1eb2c40ee49",
+  "scope": "exact_current_configured_High_native_owned_role_no_old_proof_transfer"
+}

@@ -1,0 +1,1 @@
+{"stage":"AI-32-R07","scope":"late_put_exact_guard_memory_only","status":"passed","checks":9,"real_storage_calls":0,"database_calls":0,"provider_calls":0,"preexisting_collision_delete_calls":0,"suspended_put_before_purge_calls":0,"uncertain_put_not_replayed":true}

@@ -1,0 +1,27 @@
+{
+  "stage": "AI-34",
+  "scope": "compiled_compaction_disposable_postgresql",
+  "attempt": "attempt01",
+  "started_at_utc": "2026-10-18T19:22:02.573210+00:00",
+  "completed_at_utc": "2026-10-18T19:22:07.150496+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "c402c724c72e2f1d88d60d0d025067c9c2622df72c7b62fd47a1187b857b54cd",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "assertion_result": {
+    "stage": "AI-34",
+    "completed_checks": 3,
+    "last_checks": [
+      "M4 adds exactly the nine-column snapshot table and nullable run reference",
+      "empty snapshot migration rolls back without removing independent preferences",
+      "empty snapshot migration can be applied again"
+    ]
+  },
+  "error_category": "QueryFailedError",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "5e6ebbd1b5b693a81a8263fac355c9966d2857047b9c77766da5bf16e9509558"
+}

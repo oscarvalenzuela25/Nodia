@@ -1,0 +1,88 @@
+{
+  "stage": "AI-14",
+  "date": "2026-10-16",
+  "status": "implemented_verified_local_not_deployed",
+  "scope": "Typed capability registry, shared discovery and Agentic ToolGateway; compiled Nest HTTP and worker with disposable PostgreSQL and a synthetic adapter.",
+  "server": {
+    "full_suite": {
+      "command": "npm run test -- --maxWorkers=4",
+      "passed": 1342,
+      "files": 147,
+      "duration_seconds": 39.73
+    },
+    "build": "npm run build passed, including strict production TypeScript and generated runtime assets",
+    "lint": "npm run lint passed with zero errors and three pre-existing warnings outside AI-14",
+    "all_test_sources_typecheck": "Standalone tsc --noEmit still reports 30 pre-existing errors in other test fixtures; no error remains in NodiaAI files. This is distinct from the successful production build and Vitest run.",
+    "integration": {
+      "command": "node test/nodia-ai-ai14.integration.mjs (after build)",
+      "checks": 40,
+      "passed": 40,
+      "worker_dispatches": 4,
+      "report": "docs/evidence/nodia-ai-ai14-postgres-integration.json",
+      "adapter": "synthetic",
+      "provider_inference": false
+    },
+    "compiled_postgres_regressions": [
+      { "command": "node test/nodia-ai-ai12.integration.mjs", "checks": 20, "passed": 20 },
+      { "command": "node test/nodia-ai-ai12-routing.integration.mjs", "checks": 33, "passed": 33 },
+      { "command": "node test/nodia-ai-ai13.integration.mjs", "checks": 21, "passed": 21 }
+    ]
+  },
+  "contracts": {
+    "command": "npm run test:nodia-ai:contracts",
+    "compiled_schemas": 125,
+    "structural_assertions": 243,
+    "source_hashes": 286,
+    "modules": 47,
+    "controllers": 37,
+    "handlers": 190,
+    "http_routes": 309,
+    "coordination_routes": 28,
+    "coordination_implemented": 13,
+    "implemented_common_tools": 3,
+    "report": "docs/evidence/nodia-ai-v1-catalog-contracts-validation.json"
+  },
+  "knowledge": {
+    "commands": ["npm run knowledge:check", "npm run context:prepare"],
+    "sources": 44,
+    "excluded_drafts": 44,
+    "published_documents": 0,
+    "published_fragments": 0,
+    "published_business_tools": 0,
+    "registered_real_families": 0,
+    "release_id": "2001786c9e3b2cd5815647199ac802e6ef631fa512ded2dc39111914efef5c1f",
+    "catalog_release": "nodia-ai-unpublished/1",
+    "approval": "unchanged, null"
+  },
+  "verified_invariants": [
+    "Explicit typed family composition; no controller, ORM or string-based handler discovery",
+    "Exact bidirectional publication, revision, kind, required-module and raw schema hash matching",
+    "Closed input/output schemas without coercion, default insertion or silent field removal",
+    "HTTP discovery uses current NodiaAI and destination-module/action authority, no-store and bounded cursors",
+    "One fresh SQL authority snapshot for batch visibility; no permission cache or per-tool permission queries",
+    "Admission freezes catalog version, tool contracts and granted names for the run",
+    "Web receives no MCP callbacks; verified Agentic alone can use the gateway, including explicit same-connection delegation",
+    "Durable tool request budget includes rejected, repeated, rolled-back and native hidden requests",
+    "Gateway checkpoints enforce current session, grant, scope, contracts, publication and resource authority before execution or replay",
+    "Direct and common entity resolvers share version, resource, bigint/UUID identity, duplicate, paging and ambiguity checks, including cached results",
+    "Result projection is validated before persistence, and revoked authority cannot replay cached data",
+    "Oversized provider tool descriptors are rejected before external dispatch without truncation or fallback",
+    "Synthetic publication, database and worker fixture resources are removed after integration"
+  ],
+  "changes": {
+    "new_tables": 0,
+    "new_migrations": 0,
+    "new_dependencies": 0,
+    "frontend_changes": false,
+    "real_business_writes": false,
+    "configured_database_modified": false,
+    "vm_or_provider_sessions_modified": false
+  },
+  "remaining_gates": [
+    "AI-15 and later: implement and verify actual product read ports, projections, resource authority and approved knowledge bindings before publication",
+    "Current transport accepts 32 tools and 65536 UTF-8 bytes per dispatch; five infrastructure tools leave 27 simultaneous domain tools. Verify bounded selection/discovery before exceeding this capacity in AI-15/36",
+    "Preparation, confirmation and writes remain in their planned stages; read metadata never authorizes effects",
+    "Deploy the new release and verify these additional discovery/gateway functions with Gemini; existing AI-11/12 live evidence is historical and not a new AI-14 inference",
+    "Drain or reconcile incompatible previously admitted work before upgrading the runtime; old runs do not acquire new capabilities implicitly"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "installed_public_CLI_binary_readonly_analysis_not_execution",
+  "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "binary_size_bytes": 211026152,
+  "binary_format": "ELF64",
+  "zip_archive": false,
+  "adjacent_source_files_py_js_mjs_found": 0,
+  "related_source_symbol_table_found": false,
+  "public_string_literals_present": [
+    "--model %s conflicts with --effort=%s",
+    "--effort is not supported for model %q",
+    "--model %s requires --effort (available: %s)",
+    "invalid --effort %q (valid: %s)"
+  ],
+  "interpretation": "These literals establish that the binary contains model/effort validation messages; they do not establish the branch taken by the Low observation, the returned model ID, or an effort mapping.",
+  "exact_low_preflight_evidence": "docs/evidence/nodia-ai-ai36-c05-high-low-preflight.json",
+  "low_result": "model_option_mismatch",
+  "low_cause_still_ambiguous": [
+    "nonzero CLI model-command exit",
+    "CLI command returned a different exact model ID"
+  ],
+  "repository_source_evidence": [
+    {
+      "file": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "method": "ChatAdapter.observe",
+      "behavior": "Nonzero exit OR returned model ID different from request produces model_option_mismatch."
+    },
+    {
+      "file": "nodia-gemini-microservice/agentic_observation.py",
+      "method": "discovered_models",
+      "behavior": "Existing model catalog parses TSV ID and name only, without per-model effort enum."
+    }
+  ],
+  "extended_static_scan": "Stopped after wrapper20second timeout without diagnostic output. Follow-up exact python stdin process match count0; no orphan scan observed.",
+  "provider_CLI_commands_executed": 0,
+  "provider_observe_requests_during_static_analysis": 0,
+  "provider_generations": 0,
+  "application_imports": 0,
+  "profile_files_read": 0,
+  "SQL_writes": 0,
+  "runtime_or_service_changes": 0,
+  "timeout_root_cause_proven": false,
+  "timeout_limit_changed": false
+}

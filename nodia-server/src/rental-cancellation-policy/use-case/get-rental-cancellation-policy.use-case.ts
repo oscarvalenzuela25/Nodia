@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { RentalCancellationPolicyService } from '../rental-cancellation-policy.service.js';
@@ -9,8 +10,8 @@ export class GetRentalCancellationPolicyUseCase {
     private readonly transactions: RentalTransactionService,
     private readonly service: RentalCancellationPolicyService,
   ) {}
-  execute(actorId: string, propertyId: string, id: string) {
-    return this.transactions.read(actorId, propertyId, async (ctx) => {
+  async execute(actor: ActorReference, propertyId: string, id: string) {
+    return this.transactions.read(actor, propertyId, async (ctx) => {
       const row = await this.service.find(ctx.manager, propertyId, id);
       if (!row) throw new NotFoundException('rental:not_found');
       return rentalCancellationPolicyResponse(

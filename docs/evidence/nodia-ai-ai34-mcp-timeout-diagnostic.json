@@ -1,0 +1,66 @@
+{
+  "stage": "AI-34",
+  "scope": "read_only_exact_attempt_native_mcp_terminal_projection",
+  "status": "observed",
+  "observed_at_utc": "2026-10-18T20:07:30Z",
+  "events": [
+    {
+      "attempt_id": "e735c64b-5081-4dd6-8f40-47ef5c045db1",
+      "phase": "running_cli",
+      "state": "unknown",
+      "exception_type": "TimeoutError",
+      "elapsed_ms": 119047,
+      "rpc_messages": 6,
+      "callbacks": 0,
+      "exit_code": null,
+      "gate_verified": false,
+      "cli": {
+        "stage": "prompt_received",
+        "events": 2,
+        "invalid_lines": 0,
+        "stdout_bytes": 1786,
+        "initialized": true,
+        "document_read_completed": false,
+        "result_seen": false,
+        "last_event_age_ms": 114566,
+        "phase": "prompt_received",
+        "result_status": null,
+        "denied_actions_count": null,
+        "tool_error_categories": [],
+        "tool_event_counts": {},
+        "tool_completed_counts": {},
+        "tool_error_counts": {},
+        "tool_steps": 0,
+        "last_tool": "none",
+        "terminal_status": "absent",
+        "denied_count": 0,
+        "stderr_bytes": 0
+      },
+      "hook": null,
+      "cli_log": {
+        "state": "observed",
+        "interpretation": "text_indicator_not_verified_cause",
+        "bytes_read": 30218,
+        "lines_scanned": 128,
+        "truncated": true,
+        "transport_indicators": [],
+        "provider_error_indicators": [],
+        "http_statuses": []
+      },
+      "controlled_context": {
+        "scope": "initial_prompt_and_mcp_stdout",
+        "initial_utf8_bytes": 1043,
+        "used_utf8_bytes": 1589,
+        "maximum_utf8_bytes": 262144,
+        "provider_internal_context_tokens": null
+      }
+    }
+  ],
+  "raw_logs_exported": false,
+  "provider_text_exported": false,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "limitations": [
+    "Only emitted structural fields are exported; absent provider errors or exit codes do not establish upstream health or the failure cause"
+  ]
+}

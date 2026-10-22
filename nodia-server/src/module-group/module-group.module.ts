@@ -1,3 +1,4 @@
+import { SaveModuleGroupUseCase } from './use-case/save-module-group.use-case.js';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ModuleGroup } from './entities/module-group.entity.js';
@@ -13,12 +14,19 @@ import { TranslationModule } from '../translation/translation.module.js';
   imports: [TypeOrmModule.forFeature([ModuleGroup]), TranslationModule],
   controllers: [ModuleGroupController],
   providers: [
+    SaveModuleGroupUseCase,
     ModuleGroupService,
     GetAllModuleGroupsUseCase,
     CreateModuleGroupUseCase,
     UpdateModuleGroupUseCase,
     DeleteModuleGroupUseCase,
   ],
-  exports: [ModuleGroupService, TypeOrmModule],
+  exports: [
+    GetAllModuleGroupsUseCase,
+    ModuleGroupService,
+    TypeOrmModule,
+    SaveModuleGroupUseCase,
+    DeleteModuleGroupUseCase,
+  ],
 })
 export class ModuleGroupModule {}

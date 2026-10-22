@@ -1,0 +1,25 @@
+{
+  "stage": "AI-32-R06",
+  "scope": "purge_harness_source_receipt",
+  "path": "docs/evidence/scripts/nodia-ai-ai32-r06-purge-real.mjs",
+  "sha256": "30bd29f3fd8189c267b4b26a5a6ed421f0758eb0cf6f3af8cc51ea78d9d6bd9e",
+  "resume_preserves_same_two_object_identities": true,
+  "additional_puts_during_resume": 0,
+  "runner_failures": [
+    {
+      "attempt": 1,
+      "phase": "stdin_before_database",
+      "category": "ERR_INVALID_ARG_TYPE",
+      "database_connected": false,
+      "put_attempts": 0
+    },
+    {
+      "attempt": 2,
+      "phase": "synthetic_fixture_write_deadline",
+      "category": "23514",
+      "constraint": "nodia_ai_attachments_check3",
+      "put_attempts": 2,
+      "owned_witnesses_retained": true
+    }
+  ]
+}

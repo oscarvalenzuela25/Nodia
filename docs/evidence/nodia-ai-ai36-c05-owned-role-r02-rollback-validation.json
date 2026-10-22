@@ -1,0 +1,71 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "R02_candidate_metadata_preflight_failure_and_exact_b110_restoration_no_native_canary",
+  "derived_at_utc": "2026-10-19T19:19:00.324Z",
+  "derivation_clock_scope": "Windows_workstation_wall_clock_converted_to_UTC_not_synchronized_or_ordered_against_VM_clock",
+  "source_timestamp_clock_scope": "VM_system_UTC_as_reported_by_source_artifacts",
+  "status": "restored_baseline_services_metadata_unavailable",
+  "source_artifacts_sha256": {
+    "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04.json": "151c182322c08662abdb24f425f5d47949d255c2c0d0b2cbe9d66a64d2eb9d1e",
+    "docs/evidence/nodia-ai-ai36-c05-role-build-attempt04-manifest.json": "5572e21e9466d6592e3ee0427312911551aad50df4dd5f8e5e6db600184be70d",
+    "docs/evidence/nodia-ai-ai36-c05-role-activation13.json": "9e5a3370e76a516e5f02a5785574ce50e667e0412ff606b47cf706517ae16e9a",
+    "docs/evidence/nodia-ai-ai36-c05-role-preflight13-runner-report.json": "b8578128f024799ab0072185d80d2d68ce054de387aeeb119e4381a425fcf418",
+    "docs/evidence/nodia-ai-ai36-c05-role-preflight13-postactivation-modalities.json": "8cdca1a2364bd2fc6a6ad40d8dfea8f74eda5764b501b1633ac92b72ac92afb9",
+    "docs/evidence/nodia-ai-ai36-c05-role-preflight13-continuation-report.json": "012cd9d8eb39d145eb0a00d82151420163b54f477706f3d5b81a75e81b5b8819",
+    "docs/evidence/nodia-ai-ai36-c05-role-preflight13-fresh-high-preflight.json": "a6f0eb353e77cb107c85f2fd582bdd327691ac46244f24ae2b81ae1d5d3afbd8",
+    "docs/evidence/nodia-ai-ai36-c05-role-rollback-r01.json": "4a5b58ace023994cb202994e47be9ba80ac69503640c5db285c2f4a8d949121f",
+    "docs/evidence/nodia-ai-ai36-c05-restoration-r01-postrollback-modalities.json": "a7c8dd5217c96d431930b78345c126abedf98129ce68bfb645bf969b61c3dd82",
+    "docs/evidence/nodia-ai-ai36-c05-restoration-r01-metadata-duration-log.json": "fee80ee996aac6fb224daafd4c11e6ee04c326793a7c52521b648e768619c870",
+    "docs/evidence/nodia-ai-ai36-c05-restoration-r01-quiescence.json": "632786063c66e250fc9bdde61e69798d46799495a1635dd9b392220042306433",
+    "docs/evidence/nodia-ai-ai36-c05-restoration-r01-native-quiet.json": "ae3aae958699ed12ee04c48c5d9b03aaeca4744b382e0b28d941c457071661c4",
+    "docs/evidence/nodia-ai-ai36-c05-restoration-r01-final-service-state.json": "924707f81336241729f236ebdea31aa20910722ba247398145a3e4cec1596e16",
+    "docs/evidence/scripts/nodia-ai-ai36-c05-role-canary-runner-v2.py": "390a36de8ec9dc07fb469fbc523e0b419cdc7b403fa564ab44ccb2d6649487be",
+    "docs/evidence/scripts/nodia-ai-ai36-c05-role-canary13-continue.py": "d281b058211a36ebe08055b24880dd1a1015c746230c368f68f7ba1febc419ab",
+    "docs/evidence/scripts/nodia-ai-ai36-c05-role-rollback-r01.py": "9a31dff9c5c1a9c981027f97a82f7d5043ae09161b2fc6cdb76904fff9450085"
+  },
+  "R02_Linux_applicable_tests": 430,
+  "R02_Linux_passed": 430,
+  "R02_Linux_skips": 0,
+  "explicit_C03_inapplicable_methods": 15,
+  "wrapper_executed": false,
+  "native_start_requests": 0,
+  "accepted_native_starts": 0,
+  "real_provider_generations": 0,
+  "generation_count_scope": "native_accepted_MCP_start_requests_not_token_or_billing_measurement",
+  "zero_start_basis": [
+    "R02_runner_failed_at_available_preflight_before_setting_canary_command_started_at_or_invoking_Node_wrapper",
+    "frozen_runner_source_SHA_matches_raw_runner_report",
+    "one_authorized_fresh_metadata_observation_report_explicitly_records_zero_native_start_requests",
+    "fresh_observation_can_proceed_false_prevents_wrapper_branch",
+    "baseline_restoration_High_unavailable_prevents_reserved_restoration_canary"
+  ],
+  "R02_native_compatibility": "unverified_no_generation_dispatched",
+  "C05_cumulative_native_accepted_starts": 16,
+  "historical_capabilities_accepted": 3,
+  "capability_acceptance_new": 0,
+  "business_effects": 0,
+  "Node_deployments": 0,
+  "configured_selection_modified": false,
+  "API_and_worker_restored": true,
+  "all_four_services_active": true,
+  "current_image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "current_Web_available": true,
+  "current_High_available": false,
+  "current_High_reason": "agentic_unavailable",
+  "current_MCP_verified": false,
+  "baseline_metadata_checks": [
+    {
+      "duration_ms": 12035,
+      "verified": false
+    },
+    {
+      "duration_ms": 12017,
+      "verified": false
+    }
+  ],
+  "invalid_credentials_inferred": false,
+  "quota_or_upstream_cause_inferred": false,
+  "inference_retry_performed": false,
+  "post_close_SQL_and_native_quiet": true,
+  "preserved_R05_chat": 1
+}

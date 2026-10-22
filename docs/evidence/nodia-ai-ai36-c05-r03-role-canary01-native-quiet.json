@@ -1,0 +1,15 @@
+{
+  "unknown_markers": 0,
+  "armed_native_proofs": 0,
+  "terminal_native_proofs": 0,
+  "invalid_native_proofs": 0,
+  "temporary_attachment_directories": 0,
+  "temporary_cli_directories": 0,
+  "agentic_home_configured": true,
+  "stage": "AI-32-R04",
+  "scope": "read_only_native_runtime_artifact_counts",
+  "observed_at_utc": "2026-10-19T20:32:30Z",
+  "provider_calls": 0,
+  "configured_database_modified": false,
+  "profile_bytes_read": false
+}

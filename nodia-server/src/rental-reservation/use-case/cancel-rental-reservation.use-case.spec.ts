@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, it, expect } from 'vitest';
 import { createHash } from 'node:crypto';
 import { CancelRentalReservationUseCase } from './cancel-rental-reservation.use-case.js';
@@ -30,7 +31,9 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
     const preview = await new PreviewRentalCancellationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { cancelled_at: '2026-10-10T13:00:00Z' });
+    ).execute(actorFixture('1'), '1', '10', {
+      cancelled_at: '2026-10-10T13:00:00Z',
+    });
     expect(preview.refund_amount).toBe('3333');
     expect(preview.cancellation_snapshot).toMatchObject({
       kind: 'direct',
@@ -77,7 +80,9 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
     const preview = await new PreviewRentalCancellationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { cancelled_at: '2026-10-10T13:00:00Z' });
+    ).execute(actorFixture('1'), '1', '10', {
+      cancelled_at: '2026-10-10T13:00:00Z',
+    });
     expect(preview.refund_amount).toBe('3333');
     expect(preview.cancellation_snapshot.payment_count).toBe(1);
   });
@@ -87,7 +92,9 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
     const preview = await new PreviewRentalCancellationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { cancelled_at: '2026-10-10T13:00:00Z' });
+    ).execute(actorFixture('1'), '1', '10', {
+      cancelled_at: '2026-10-10T13:00:00Z',
+    });
     expect(preview.refund_amount).toBe('3333');
   });
   it('no unpaid balance is collected after cancel and no refund row is invented', async () => {
@@ -97,7 +104,7 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
       f.transactions,
       new RentalReservationService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       '10',
       { cancelled_at: '2026-10-10T13:00:00Z', expected_refund_amount: '3333' },
@@ -127,7 +134,7 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
         f.transactions,
         new RentalReservationService(),
       ).execute(
-        '1',
+        actorFixture('1'),
         '1',
         '10',
         {
@@ -146,7 +153,9 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
     const preview = await new PreviewRentalCancellationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { cancelled_at: f.now.toISOString() });
+    ).execute(actorFixture('1'), '1', '10', {
+      cancelled_at: f.now.toISOString(),
+    });
     expect(preview.cancellation_snapshot).toMatchObject({
       kind: 'unpaid_draft',
       reason: 'no_received_payment',
@@ -164,7 +173,9 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
     const preview = await new PreviewRentalCancellationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { cancelled_at: '2026-10-11T02:59:00Z' });
+    ).execute(actorFixture('1'), '1', '10', {
+      cancelled_at: '2026-10-11T02:59:00Z',
+    });
     expect(preview.cancellation_snapshot).toMatchObject({
       days_before: 1,
       cancellation_local_on: '2026-10-10',
@@ -176,7 +187,9 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
     const preview = await new PreviewRentalCancellationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { cancelled_at: '2026-10-20T16:59:00Z' });
+    ).execute(actorFixture('1'), '1', '10', {
+      cancelled_at: '2026-10-20T16:59:00Z',
+    });
     expect(preview.cancellation_snapshot.days_before).toBe(0);
     expect(preview.refund_amount).toBe('0');
   });
@@ -188,7 +201,7 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
         new PreviewRentalCancellationUseCase(
           f.transactions,
           new RentalReservationService(),
-        ).execute('1', '1', '10', { cancelled_at }),
+        ).execute(actorFixture('1'), '1', '10', { cancelled_at }),
       ).rejects.toThrow('rental:invalid_cancellation_time');
     },
   );
@@ -199,14 +212,18 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
       new PreviewRentalCancellationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', { cancelled_at: '2026-10-20T18:00:00Z' }),
+      ).execute(actorFixture('1'), '1', '10', {
+        cancelled_at: '2026-10-20T18:00:00Z',
+      }),
     ).rejects.toThrow('rental:invalid_cancellation_time');
     f.reservation.status = 'in_progress';
     await expect(
       new PreviewRentalCancellationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', { cancelled_at: '2026-10-10T13:00:00Z' }),
+      ).execute(actorFixture('1'), '1', '10', {
+        cancelled_at: '2026-10-10T13:00:00Z',
+      }),
     ).rejects.toThrow('rental:invalid_transition');
   });
   it('direct cancellation rejects manually overridden refund and unknown snapshot keys', async () => {
@@ -215,7 +232,7 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
       new PreviewRentalCancellationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {
+      ).execute(actorFixture('1'), '1', '10', {
         cancelled_at: '2026-10-10T13:00:00Z',
         refund_amount: '10001',
       }),
@@ -225,7 +242,9 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
       new PreviewRentalCancellationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', { cancelled_at: '2026-10-10T13:00:00Z' }),
+      ).execute(actorFixture('1'), '1', '10', {
+        cancelled_at: '2026-10-10T13:00:00Z',
+      }),
     ).rejects.toThrow('rental:invalid_input');
   });
   it('Airbnb requires explicit external refund resolution within net receipts', async () => {
@@ -247,16 +266,18 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
       new RentalReservationService(),
     );
     await expect(
-      preview.execute('1', '1', '10', { cancelled_at: '2026-10-10T13:00:00Z' }),
+      preview.execute(actorFixture('1'), '1', '10', {
+        cancelled_at: '2026-10-10T13:00:00Z',
+      }),
     ).rejects.toThrow('rental:invalid_refund');
     await expect(
-      preview.execute('1', '1', '10', {
+      preview.execute(actorFixture('1'), '1', '10', {
         cancelled_at: '2026-10-10T13:00:00Z',
         refund_amount: '10002',
         resolution_note: 'Externa',
       }),
     ).rejects.toThrow('rental:invalid_refund');
-    const result = await preview.execute('1', '1', '10', {
+    const result = await preview.execute(actorFixture('1'), '1', '10', {
       cancelled_at: '2026-10-10T13:00:00Z',
       refund_amount: '2500',
       resolution_note: 'Resolución de plataforma',
@@ -279,10 +300,10 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
       cancelled_at: '2026-10-10T13:00:00Z',
       expected_refund_amount: '3333',
     };
-    await usecase.execute('1', '1', '10', dto, key);
-    await expect(usecase.execute('1', '1', '10', dto, key)).rejects.toThrow(
-      'rental:invalid_transition',
-    );
+    await usecase.execute(actorFixture('1'), '1', '10', dto, key);
+    await expect(
+      usecase.execute(actorFixture('1'), '1', '10', dto, key),
+    ).rejects.toThrow('rental:invalid_transition');
   });
   it('cancellation recalculates the following guest and discards readiness for the former transition', async () => {
     const f = await funded();
@@ -309,7 +330,7 @@ describe('Cancellation resolution through actual preview/cancel rules', () => {
       f.transactions,
       new RentalReservationService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       '10',
       { cancelled_at: '2026-10-10T13:00:00Z', expected_refund_amount: '3333' },

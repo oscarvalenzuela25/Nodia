@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GetAiProvidersHealthUseCase } from './get-ai-providers-health.use-case.js';
 import type { AiProviderService } from '../ai-provider.service.js';
 import type { GeminiService } from '../../common/ai/gemini.service.js';
+import type { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
+import type { AiProvider } from '../entities/ai-provider.entity.js';
 import {
   AiConnectionMode,
   AiKeyHealthState,
@@ -86,6 +88,81 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(incidentAlert?.title).toContain('SESIÓN WEB');
     expect(incidentAlert?.actionType).toBe('renew_session');
   });
+  it('checks independent Codex profiles and Gemini concurrently, retaining each session identity', async () => {
+    const pending = new Map<
+      string,
+      (value: Awaited<ReturnType<CodexRuntimeService['snapshot']>>) => void
+    >();
+    const snapshot = vi.fn(
+      (id: string) =>
+        new Promise<Awaited<ReturnType<CodexRuntimeService['snapshot']>>>(
+          (resolve) => pending.set(id, resolve),
+        ),
+    );
+    const engines = {
+      web: { engine: 'web', available: true, authenticated: false },
+      agentic: { engine: 'agentic', available: false, authenticated: false },
+    };
+    const dual = vi.fn().mockResolvedValue(engines);
+    vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
+      data: [
+        {
+          id: '41',
+          key: 'openai',
+          is_active: true,
+          use_token_plan_agentic: true,
+          default_mode: 'token_plan_agentic',
+          fields: {},
+        },
+        {
+          id: '42',
+          key: 'openai',
+          is_active: true,
+          use_token_plan_agentic: true,
+          default_mode: 'token_plan_agentic',
+          fields: {},
+        },
+        {
+          id: '43',
+          key: 'gemini',
+          is_active: true,
+          use_token_plan_web: true,
+          default_mode: 'token_plan_web',
+          fields: {},
+        },
+      ] as unknown as AiProvider[],
+    });
+    const concurrent = new GetAiProvidersHealthUseCase(
+      aiProviderServiceMock as AiProviderService,
+      { ...geminiServiceMock, getDualEngineStatus: dual } as GeminiService,
+      { snapshot } as unknown as CodexRuntimeService,
+    );
+    const result = concurrent.execute();
+    await vi.waitFor(() => {
+      expect(snapshot).toHaveBeenCalledTimes(2);
+      expect(dual).toHaveBeenCalledOnce();
+    });
+    const session = {
+      available: true,
+      authenticated: false,
+      planType: null,
+      checkedAt: null,
+      reason: 'codex_session_required',
+      quotas: null,
+      lastInferenceAt: null,
+      usageAllowed: null,
+    };
+    pending.get('41')!({ ...session, authenticated: true });
+    pending.get('42')!(session);
+    const health = await result;
+    expect(
+      health.providers.find((p) => p.id === '41')?.codexSession?.authenticated,
+    ).toBe(true);
+    expect(
+      health.providers.find((p) => p.id === '42')?.codexSession?.authenticated,
+    ).toBe(false);
+    expect(dual).toHaveBeenCalledOnce();
+  });
 
   it('does not claim API key availability, failover or latency from saved key health', async () => {
     const result = await useCase.execute();
@@ -94,9 +171,13 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(mistralHealth?.status).toBe('unconfigured');
     expect(mistralHealth?.latencyMs).toBeNull();
     expect(mistralHealth?.lastCheck).toBeNull();
-    expect(mistralHealth?.serviceState).toBe('Sin integración de sesión verificada');
+    expect(mistralHealth?.serviceState).toBe(
+      'Sin integración de sesión verificada',
+    );
 
-    const failoverAlert = result.alerts.find((a) => a.provider === 'mistral' && a.type === 'failover');
+    const failoverAlert = result.alerts.find(
+      (a) => a.provider === 'mistral' && a.type === 'failover',
+    );
     expect(failoverAlert).toBeUndefined();
   });
 
@@ -310,23 +391,45 @@ describe('GetAiProvidersHealthUseCase', () => {
       expect(
         result.alerts.some((alert) => alert.id.includes('agentic-unavailable')),
       ).toBe(true);
-      expect(result.alerts[0]).toMatchObject({ type: 'warning', severity: 'warning',
-        actionType: 'authenticate_agentic', reason: 'agentic_session_required' });
+      expect(result.alerts[0]).toMatchObject({
+        type: 'warning',
+        severity: 'warning',
+        actionType: 'authenticate_agentic',
+        reason: 'agentic_session_required',
+      });
     },
   );
 
-  it.each([null, {}, new Error('synthetic service outage')])('offers a real recheck without claiming a session error for unknown status %s', async (status) => {
-    vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
-      data: [{ id: '7', key: 'gemini', name: 'Second connection', is_active: true, use_token_plan_agentic: true }],
-      meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
-    });
-    geminiServiceMock.getDualEngineStatus = status instanceof Error
-      ? vi.fn().mockRejectedValue(status) : vi.fn().mockResolvedValue(status);
-    const result = await useCase.execute();
-    expect(result.alerts[0]).toMatchObject({ actionType: 'check_status', reason: 'service_status_unknown', providerName: 'Second connection' });
-    expect(result.alerts[0].actionType).not.toBe('configure');
-    if (status instanceof Error || status === null) expect(result.engines).toBeNull();
-  });
+  it.each([null, {}, new Error('synthetic service outage')])(
+    'offers a real recheck without claiming a session error for unknown status %s',
+    async (status) => {
+      vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
+        data: [
+          {
+            id: '7',
+            key: 'gemini',
+            name: 'Second connection',
+            is_active: true,
+            use_token_plan_agentic: true,
+          },
+        ],
+        meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
+      });
+      geminiServiceMock.getDualEngineStatus =
+        status instanceof Error
+          ? vi.fn().mockRejectedValue(status)
+          : vi.fn().mockResolvedValue(status);
+      const result = await useCase.execute();
+      expect(result.alerts[0]).toMatchObject({
+        actionType: 'check_status',
+        reason: 'service_status_unknown',
+        providerName: 'Second connection',
+      });
+      expect(result.alerts[0].actionType).not.toBe('configure');
+      if (status instanceof Error || status === null)
+        expect(result.engines).toBeNull();
+    },
+  );
 
   it('preserves scoped unknown models without assigning the first model or invented capabilities', async () => {
     vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
@@ -359,17 +462,32 @@ describe('GetAiProvidersHealthUseCase', () => {
 
   it('includes session status when API is the default without claiming API inference health', async () => {
     vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
-      data: [{ id: '9', key: 'gemini', is_active: true, use_api_key: true,
-        default_mode: 'api_key', use_token_plan_agentic: true, use_token_plan_web: true }],
+      data: [
+        {
+          id: '9',
+          key: 'gemini',
+          is_active: true,
+          use_api_key: true,
+          default_mode: 'api_key',
+          use_token_plan_agentic: true,
+          use_token_plan_web: true,
+        },
+      ],
       meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
     });
     geminiServiceMock.getDualEngineStatus = vi.fn().mockResolvedValue({
-      agentic: { available: true, authenticated: true }, web: { available: true, authenticated: true },
+      agentic: { available: true, authenticated: true },
+      web: { available: true, authenticated: true },
     });
     const result = await useCase.execute();
     expect(geminiServiceMock.getDualEngineStatus).toHaveBeenCalledOnce();
-    expect(result.engines).toMatchObject({ agentic: { available: true, authenticated: true } });
-    expect(result.providers[0]).toMatchObject({ status: 'degraded', statusBadge: 'SIN VERIFICAR' });
+    expect(result.engines).toMatchObject({
+      agentic: { available: true, authenticated: true },
+    });
+    expect(result.providers[0]).toMatchObject({
+      status: 'degraded',
+      statusBadge: 'SIN VERIFICAR',
+    });
     expect(result.alerts).toEqual([]);
   });
 
@@ -417,7 +535,9 @@ describe('GetAiProvidersHealthUseCase', () => {
     expect(openai).toBeDefined();
     expect(openai?.status).toBe('unverified');
     expect(openai?.statusBadge).toBe('SIN VERIFICAR');
-    expect(openai?.serviceState).toBe('API configurada; inferencia sin verificar');
+    expect(openai?.serviceState).toBe(
+      'API configurada; inferencia sin verificar',
+    );
     expect(openai?.hasConnection).toBe(true);
     expect(openai?.selectedModel).toBe('gpt-4o');
     expect(openai?.apiKeysCount).toBe(2);
@@ -515,20 +635,31 @@ describe('GetAiProvidersHealthUseCase', () => {
 
   it('shares one session check across many Gemini connections and both modes', async () => {
     vi.mocked(aiProviderServiceMock.findAllProviders!).mockResolvedValue({
-      data: Array.from({ length: 10 }, (_, index) => ({ id: String(index), key: 'gemini',
-        is_active: true, use_token_plan_agentic: true, use_token_plan_web: true, fields: {} })),
+      data: Array.from({ length: 10 }, (_, index) => ({
+        id: String(index),
+        key: 'gemini',
+        is_active: true,
+        use_token_plan_agentic: true,
+        use_token_plan_web: true,
+        fields: {},
+      })),
       meta: { page: 1, limit: 10, total_items: 10, total_pages: 1 },
     });
     geminiServiceMock.getDualEngineStatus = vi.fn().mockResolvedValue({
-      active_engine: 'agentic', agentic: { available: true, has_active_session: true },
+      active_engine: 'agentic',
+      agentic: { available: true, has_active_session: true },
       web: { available: false, authenticated: false },
     });
     const result = await useCase.execute();
     expect(result.providers).toHaveLength(10);
-    expect(result.providers.every((provider) => provider.status === 'degraded')).toBe(true);
+    expect(
+      result.providers.every((provider) => provider.status === 'degraded'),
+    ).toBe(true);
     expect(geminiServiceMock.getDualEngineStatus).toHaveBeenCalledTimes(1);
     expect(geminiServiceMock.getModelsAndQuota).not.toHaveBeenCalled();
-    expect(result.engines).toMatchObject({ agentic: { available: true, has_active_session: true },
-      web: { available: false, authenticated: false } });
+    expect(result.engines).toMatchObject({
+      agentic: { available: true, has_active_session: true },
+      web: { available: false, authenticated: false },
+    });
   });
 });

@@ -1,11 +1,15 @@
 # Tools → Reservas — primera versión funcional
 
+> AI-08 implementado localmente: [autoridad transversal, invariantes y evidencia](54-nodia-ai-ai08-transversal-authority.md). Destinatario explícito, actor real, barreras de transacción y NI-13 verificados; consumidores/herramientas del chat pendientes. Esta nota sustituye menciones históricas de acceso transversal pendiente, sin aprobar documentos ni invalidar sus reglas nativas.
+
 > Estado: en revisión — borrador; no aprobado ni implementado
 > Fecha: 2026-10-04
 > Dependencias: [entrevista 25](25-rental-reservations-interview.md), [modelo global 03](03-domain-model-erd.md), [sitemap 05](05-sitemap.md), [ADR-012 propuesto](../architecture/decisions/ADR-012-rental-property-collaboration.md)
 
 
 ## Ajuste solicitado — 2026-10-09
+
+Contexto NodiaAI del2026-10-15: [producto y funcionalidades](../nodia-ai/knowledge/reservations/README.md), contrastados en[AI-05](51-nodia-ai-ai05-product-knowledge.md) con28/backend. La cabecera inicial describe el estado original de esta especificación; implementación actual y ampliación de autoridad pendientes se registran en28. Este enlace no aprueba26 ni las fichas.
 
 El usuario exige que los horarios de entrada/salida pertenezcan a cada reserva y no al alojamiento. El formulario elimina ambos horarios y la zona IANA, coloca Activo al final y usa «Crear alojamiento» como acción contained. Se conserva una sola instrucción de selección. La zona sigue persistida internamente para calendario/DST: creación sin zona toma `RENTAL_DEFAULT_TIMEZONE` o la configuración base `America/Santiago`, validada; no toma la zona del navegador. Horarios históricos del alojamiento se conservan como metadatos nullable sin heredarlos; una reserva nueva exige sus propios horarios. [ADR-020 propuesto](../architecture/decisions/ADR-020-rental-accommodation-times.md). Este ajuste sustituye los requisitos anteriores de horarios habituales; no aprueba automáticamente documentos.
 

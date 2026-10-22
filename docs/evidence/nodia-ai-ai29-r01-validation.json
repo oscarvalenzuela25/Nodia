@@ -1,0 +1,1163 @@
+{
+  "schema_version": 1,
+  "stage": "AI-29-R01",
+  "status": "technically_closed",
+  "stage_closed": true,
+  "source_clock_latest_mtime_utc": "2026-10-18T00:57:48.566Z",
+  "reconciliation": {
+    "script": {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai29-r01-validation.cjs",
+      "sha256": "dfb11502dfb73416d3636464b15de451fe0fd0631470a45bc36bea0e8942fa5a",
+      "bytes": 18991,
+      "modified_at_utc": "2026-10-18T00:28:36.317Z"
+    },
+    "side_effects": "Evidence JSON only; no test execution, runtime changes, login, inference, database mutation or publication.",
+    "historical_ai29_evidence_preserved": true
+  },
+  "server": {
+    "full_suite": {
+      "status": "passed",
+      "tests": 3113,
+      "files": 198,
+      "duration_seconds": 138.37,
+      "log": {
+        "path": ".tmp/ai29-r01-server-tests-final.log",
+        "sha256": "64f2a6e249617561dd5545226cb93e86bfb5b3b1f4f34e3e8dfb6707c31ad728",
+        "bytes": 24964,
+        "modified_at_utc": "2026-10-17T22:20:35.237Z"
+      }
+    },
+    "production_typecheck": {
+      "status": "passed",
+      "exit_code": 0,
+      "command": "npx tsc -p tsconfig.build.json --noEmit",
+      "result": {
+        "observed_at_utc": "2026-10-17T22:35:55.4806982Z",
+        "command": "npx tsc -p tsconfig.build.json --noEmit",
+        "log": ".tmp/ai29-r01-types-final.log",
+        "exit_code": 0
+      },
+      "log": {
+        "path": ".tmp/ai29-r01-types-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "modified_at_utc": "2026-10-17T22:35:48.469Z"
+      },
+      "output_bytes": 0
+    },
+    "lint": {
+      "status": "passed",
+      "exit_code": 0,
+      "command": "npm run lint",
+      "result": {
+        "exit_code": 0,
+        "command": "npm run lint",
+        "observed_at_utc": "2026-10-17T22:35:48.9599697Z",
+        "log": ".tmp/ai29-r01-lint-final.log"
+      },
+      "log": {
+        "path": ".tmp/ai29-r01-lint-final.log",
+        "sha256": "b5b503ac4c04e968ff825e26573773293135f76f636fb83e4f4fd544324a04b2",
+        "bytes": 601,
+        "modified_at_utc": "2026-10-17T22:35:48.935Z"
+      },
+      "output_bytes": 601,
+      "warning_count": 3,
+      "error_count": 0
+    },
+    "build": {
+      "status": "passed",
+      "exit_code": 0,
+      "command": "npm run build",
+      "result": {
+        "command": "npm run build",
+        "exit_code": 0,
+        "observed_at_utc": "2026-10-17T22:38:12.9885417Z",
+        "log": ".tmp/ai29-r01-build-final.log"
+      },
+      "log": {
+        "path": ".tmp/ai29-r01-build-final.log",
+        "sha256": "f2243752ca40374fe316b67220e92ed34a1bd5af7c0ae81a5a1cfeb82009e246",
+        "bytes": 2101,
+        "modified_at_utc": "2026-10-17T22:38:12.959Z"
+      },
+      "output_bytes": 2101,
+      "exit_code_note": "Process exit is recorded in the command result receipt.",
+      "context_build": {
+        "task": "AI-12",
+        "release": "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+        "published_documents": 27,
+        "published_fragments": 27
+      }
+    }
+  },
+  "postgresql": {
+    "evidence": "docs/evidence/nodia-ai-ai29-r01-postgresql.json",
+    "status": "passed",
+    "suites": 20,
+    "passed_suites": 20,
+    "sql_http_numbered_checks": 502,
+    "codex_native_process_checks": 13,
+    "passing_suites_without_numbered_counter": [
+      "api",
+      "agentic",
+      "codexHttp"
+    ]
+  },
+  "native": {
+    "gemini": {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-native.json",
+        "sha256": "67539f718f8bffb377452a2528bf07eb0a181132206b79ca175cc28291486777",
+        "bytes": 7027,
+        "modified_at_utc": "2026-10-17T22:22:07.826Z"
+      },
+      "status": "passed",
+      "linux_tests": {
+        "discovered": 283,
+        "passed": 283,
+        "skipped": 0,
+        "duration_seconds": 7.418
+      },
+      "windows_tests": {
+        "discovered": 283,
+        "passed": 281,
+        "skipped": 2,
+        "duration_seconds": 12.914
+      },
+      "checks": 10
+    },
+    "codex": {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-codex-native.json",
+        "sha256": "2006daa611f03e0c5972d25e22839a1c9acfb0064c70aea06cb9e828c28660ca",
+        "bytes": 6862,
+        "modified_at_utc": "2026-10-17T22:11:42.415Z"
+      },
+      "status": "passed",
+      "unit_tests": {
+        "path": "nodia-server/src/ai-provider/use-case/manage-codex-session.use-case.spec.ts",
+        "passed": 25,
+        "duration_seconds": 1.01
+      },
+      "checks": 13
+    },
+    "cgroup_host": {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-cgroup-host-validation.json",
+        "sha256": "e6c07caa0abca913264aeda35a7176f523a2e49b22d93e9ff2b0de8332120d90",
+        "bytes": 1896,
+        "modified_at_utc": "2026-10-17T22:20:09.613Z"
+      },
+      "checks": 12,
+      "real_kernel": true
+    }
+  },
+  "real_gemini": {
+    "engines": [
+      {
+        "mode": "token_plan_web",
+        "status": "passed",
+        "checks": 14,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-login.json",
+          "sha256": "cdf0fde40717f0d04ca4ccaed80c52a9f6332a16683d383c92603961de7eff3d",
+          "bytes": 2368,
+          "modified_at_utc": "2026-10-18T00:49:22.310Z"
+        },
+        "result": {
+          "stage": "AI-29-R01",
+          "scope": "disposable_postgresql_real_private_gemini_login_and_model_discovery",
+          "authentication_acceptance_requested": true,
+          "observed_at_utc": "2026-10-18T00:49:14.124Z",
+          "checks": 14,
+          "passed": [
+            "token_plan_web: cancel-before-start obtains native terminal fence",
+            "token_plan_web: delayed start cannot bypass native cancellation",
+            "connection_login/token_plan_web: exact HTTP confirmation and SQL worker pause",
+            "token_plan_web: real native cancellation is reconciled in SQL",
+            "connection_login/token_plan_web: exact HTTP confirmation and SQL worker pause",
+            "token_plan_web: lost initial native response stays uncertain",
+            "token_plan_web: recovery observes the same request without redispatch",
+            "token_plan_web: existing real account completes authentication",
+            "token_plan_web: observed success produces only minimal SQL receipt",
+            "sync_models/token_plan_web: exact HTTP confirmation and SQL worker pause",
+            "token_plan_web: real discovery commits metadata and receipt atomically",
+            "token_plan_web: discovery does not invent a selected model",
+            "durable SQL records exclude credential and challenge fields",
+            "response-loss injection exercised every requested real engine"
+          ],
+          "reports": [
+            {
+              "mode": "token_plan_web",
+              "authentication_observed": true,
+              "discovered_model_count": 4
+            }
+          ],
+          "native_http": {
+            "start": 3,
+            "status": 14,
+            "cancel": 2,
+            "discovery": 1
+          },
+          "dropped_initial_responses": 1,
+          "native_container_restarts": 0,
+          "provider_transport_mocked": false,
+          "inference_requested": false,
+          "existing_account_logout": false,
+          "configured_database_written": false,
+          "credentials_or_challenges_recorded": false,
+          "status": "passed",
+          "process_exit_code": 0,
+          "cleanup_completed_without_reported_failure": true,
+          "source_log": ".tmp/ai29-r01-gemini-real-web-login-final.log",
+          "source_log_sha256": "5cd4405536548efc55126bafa633549ced993d03e6d42b4c10e5403854132e7e",
+          "process_completion_source": "Parent execution result: session 41696 completed with exit code 0; report emitted before successful final cleanup.",
+          "source_hashes": [
+            {
+              "path": "nodia-server/test/nodia-ai-ai29-gemini-real.integration.mjs",
+              "sha256": "76f9542454aef36bcf70b5be235b5059d4cb5c00b70185894363427319c42c02"
+            }
+          ]
+        }
+      },
+      {
+        "mode": "token_plan_agentic",
+        "status": "passed",
+        "checks": 14,
+        "evidence": {
+          "path": "docs/evidence/nodia-ai-ai29-r01-gemini-agentic-login.json",
+          "sha256": "5d4afdcf8e822ac376ecdebe24333d9af8d97a605468477cafdf12a7e5eb0264",
+          "bytes": 2093,
+          "modified_at_utc": "2026-10-17T22:43:56.395Z"
+        },
+        "result": {
+          "stage": "AI-29-R01",
+          "scope": "disposable_postgresql_real_private_gemini_login_and_model_discovery",
+          "authentication_acceptance_requested": true,
+          "observed_at_utc": "2026-10-17T22:49:39.172Z",
+          "checks": 14,
+          "passed": [
+            "token_plan_agentic: cancel-before-start obtains native terminal fence",
+            "token_plan_agentic: delayed start cannot bypass native cancellation",
+            "connection_login/token_plan_agentic: exact HTTP confirmation and SQL worker pause",
+            "token_plan_agentic: real native cancellation is reconciled in SQL",
+            "connection_login/token_plan_agentic: exact HTTP confirmation and SQL worker pause",
+            "token_plan_agentic: lost initial native response stays uncertain",
+            "token_plan_agentic: recovery observes the same request without redispatch",
+            "token_plan_agentic: existing real account completes authentication",
+            "token_plan_agentic: observed success produces only minimal SQL receipt",
+            "sync_models/token_plan_agentic: exact HTTP confirmation and SQL worker pause",
+            "token_plan_agentic: real discovery commits metadata and receipt atomically",
+            "token_plan_agentic: discovery does not invent a selected model",
+            "durable SQL records exclude credential and challenge fields",
+            "response-loss injection exercised every requested real engine"
+          ],
+          "reports": [
+            {
+              "mode": "token_plan_agentic",
+              "authentication_observed": true,
+              "discovered_model_count": 6
+            }
+          ],
+          "native_http": {
+            "start": 3,
+            "status": 16,
+            "cancel": 2,
+            "discovery": 1
+          },
+          "dropped_initial_responses": 1,
+          "native_container_restarts": 0,
+          "provider_transport_mocked": false,
+          "inference_requested": false,
+          "existing_account_logout": false,
+          "configured_database_written": false,
+          "credentials_or_challenges_recorded": false,
+          "process_exit_code": 0,
+          "cleanup_completed_without_reported_failure": true,
+          "source_hashes": [
+            {
+              "path": "nodia-server/test/nodia-ai-ai29-gemini-real.integration.mjs",
+              "sha256": "76f9542454aef36bcf70b5be235b5059d4cb5c00b70185894363427319c42c02"
+            }
+          ]
+        }
+      }
+    ],
+    "prior_web_attempt_failure": {
+      "path": ".tmp/ai29-r01-gemini-real-web-authenticated.log",
+      "sha256": "da1f63f1438bbdc4f24a8845e3a24dd7d303413c719f11c94119274dc19b560b",
+      "bytes": 637,
+      "modified_at_utc": "2026-10-18T00:29:32.516Z"
+    },
+    "real_mcp": {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-agentic-mcp.json",
+      "sha256": "6473688b3f726df84a02a97ad621d3b2af057ae30237703b1698722e6bdbe325",
+      "bytes": 3852,
+      "modified_at_utc": "2026-10-17T22:40:39.881Z"
+    },
+    "web_routing": {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-routing.json",
+      "sha256": "7b6caf94f7cb21b5403c90d6a1b22f68a08998ad5079836fad8f11d50e00d581",
+      "bytes": 4605,
+      "modified_at_utc": "2026-10-18T00:56:07.989Z"
+    },
+    "web_routing_candidate": {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-routing.json",
+      "sha256": "7b6caf94f7cb21b5403c90d6a1b22f68a08998ad5079836fad8f11d50e00d581",
+      "bytes": 4605,
+      "modified_at_utc": "2026-10-18T00:56:07.989Z"
+    },
+    "final_health": {
+      "path": "docs/evidence/nodia-ai-ai29-r01-final-health.json",
+      "sha256": "927b70a699b1ec3b9653916db6f4dbbd934954ed03b3f6cdd63e167653e614a1",
+      "bytes": 1523,
+      "modified_at_utc": "2026-10-18T00:56:19.031Z"
+    },
+    "health_freshness": {
+      "clock_domain": "VM observed_at_utc JSON only",
+      "health_at": "2026-10-18T01:02:29Z",
+      "web_auth_at": "2026-10-18T00:49:14.124Z",
+      "web_routing_at": "2026-10-18T01:01:53Z",
+      "status": "passed"
+    }
+  },
+  "inherited_client": {
+    "evidence": {
+      "path": "docs/evidence/nodia-ai-ai29-client-validation.json",
+      "sha256": "4a79e3be938b0c10c447096ade693583566926df2c80989c717dbba4f6aedbb3",
+      "bytes": 8112,
+      "modified_at_utc": "2026-10-17T21:33:04.739Z"
+    },
+    "full_suite": {
+      "tests": 1636,
+      "files": 208,
+      "workers": 4,
+      "duration_seconds": 365.55,
+      "exit_code": 0
+    },
+    "ui_evidence": {
+      "path": "docs/evidence/nodia-ai-ai29-ui-validation.json",
+      "sha256": "cf1ce4a54901f6101c255b39e15b0d90566c1d752852fc3fd314afe634fbd58d",
+      "bytes": 2645,
+      "modified_at_utc": "2026-10-17T21:22:33.062Z"
+    },
+    "ui_checks": 9,
+    "note": "Historical AI-29 Client evidence; not presented as a new R01 Client test run."
+  },
+  "artifacts": [
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-cgroup-host-validation.json",
+        "sha256": "e6c07caa0abca913264aeda35a7176f523a2e49b22d93e9ff2b0de8332120d90",
+        "bytes": 1896,
+        "modified_at_utc": "2026-10-17T22:20:09.613Z"
+      },
+      "status": null,
+      "scope": "isolated_ephemeral_docker_cgroup_v2_host_attachment",
+      "source_hash_validation": {
+        "checked": 2,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-codex-native.json",
+        "sha256": "2006daa611f03e0c5972d25e22839a1c9acfb0064c70aea06cb9e828c28660ca",
+        "bytes": 6862,
+        "modified_at_utc": "2026-10-17T22:11:42.415Z"
+      },
+      "status": "passed",
+      "scope": "Codex durable native login lifecycle; synthetic Linux process proof",
+      "source_hash_validation": {
+        "checked": 11,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-final-health.json",
+        "sha256": "927b70a699b1ec3b9653916db6f4dbbd934954ed03b3f6cdd63e167653e614a1",
+        "bytes": 1523,
+        "modified_at_utc": "2026-10-18T00:56:19.031Z"
+      },
+      "status": "passed",
+      "scope": "final_private_vm_read_only_health_and_compiled_parity",
+      "source_hash_validation": {
+        "checked": 0,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-activation.json",
+        "sha256": "8bcc861a2546c2f6b345f99efdab87b6a6f74b495e07558d9946e55ea0628cb6",
+        "bytes": 2823,
+        "modified_at_utc": "2026-10-17T22:26:06.980Z"
+      },
+      "status": null,
+      "scope": "private_gemini_lab_activation",
+      "source_hash_validation": {
+        "checked": 0,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-agentic-login.json",
+        "sha256": "5d4afdcf8e822ac376ecdebe24333d9af8d97a605468477cafdf12a7e5eb0264",
+        "bytes": 2093,
+        "modified_at_utc": "2026-10-17T22:43:56.395Z"
+      },
+      "status": null,
+      "scope": "disposable_postgresql_real_private_gemini_login_and_model_discovery",
+      "source_hash_validation": {
+        "checked": 1,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-agentic-mcp.json",
+        "sha256": "6473688b3f726df84a02a97ad621d3b2af057ae30237703b1698722e6bdbe325",
+        "bytes": 3852,
+        "modified_at_utc": "2026-10-17T22:40:39.881Z"
+      },
+      "status": "passed",
+      "scope": "real_gemini_agentic_mcp_readonly_synthetic_postgresql",
+      "source_hash_validation": {
+        "checked": 0,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-bootstrap-after-diagnostics.json",
+        "sha256": "48bebbc0e228e7549fc9609fcb29cddc080a13bec9ecff9a41a522ca7b986dc9",
+        "bytes": 2972,
+        "modified_at_utc": "2026-10-18T00:56:08.243Z"
+      },
+      "status": "passed",
+      "scope": "real_gemini_bootstrap_synthetic_postgresql",
+      "source_hash_validation": {
+        "checked": 2,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-native.json",
+        "sha256": "67539f718f8bffb377452a2528bf07eb0a181132206b79ca175cc28291486777",
+        "bytes": 7027,
+        "modified_at_utc": "2026-10-17T22:22:07.826Z"
+      },
+      "status": "passed",
+      "scope": "Gemini Web and Agentic durable native login; isolated kernel/Chromium/PTY proof",
+      "source_hash_validation": {
+        "checked": 16,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-diagnostics-activation.json",
+        "sha256": "fc9b299e8454f41fd08a05683b6114dcd25027bb37c81d78223fb9e9135d4a5d",
+        "bytes": 2823,
+        "modified_at_utc": "2026-10-18T00:51:23.011Z"
+      },
+      "status": null,
+      "scope": "private_gemini_lab_activation",
+      "source_hash_validation": {
+        "checked": 0,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-login.json",
+        "sha256": "cdf0fde40717f0d04ca4ccaed80c52a9f6332a16683d383c92603961de7eff3d",
+        "bytes": 2368,
+        "modified_at_utc": "2026-10-18T00:49:22.310Z"
+      },
+      "status": "passed",
+      "scope": "disposable_postgresql_real_private_gemini_login_and_model_discovery",
+      "source_hash_validation": {
+        "checked": 1,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-reconciliation.json",
+        "sha256": "42430a00b0d7a370e7304a3597d054e4980278df848b312fc7802c9c2f3ab1f7",
+        "bytes": 1893,
+        "modified_at_utc": "2026-10-17T22:43:56.396Z"
+      },
+      "status": null,
+      "scope": "disposable_postgresql_real_private_web_cancellation_and_restart_only",
+      "source_hash_validation": {
+        "checked": 1,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-routing-failed-01.json",
+        "sha256": "f9774fa2fa841bf2329f8412cf50506cd21ee337b62835c9149ff9505eb14844",
+        "bytes": 3254,
+        "modified_at_utc": "2026-10-18T00:49:22.312Z"
+      },
+      "status": "failed",
+      "scope": "real_gemini_web_routing_synthetic_postgresql",
+      "source_hash_validation": {
+        "checked": 1,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-routing.json",
+        "sha256": "7b6caf94f7cb21b5403c90d6a1b22f68a08998ad5079836fad8f11d50e00d581",
+        "bytes": 4605,
+        "modified_at_utc": "2026-10-18T00:56:07.989Z"
+      },
+      "status": "passed",
+      "scope": "real_gemini_web_routing_synthetic_postgresql",
+      "source_hash_validation": {
+        "checked": 2,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-knowledge-delta.json",
+        "sha256": "aeecd6e19b3559428af40de39f223972156cf78867df41340c40e5049729c9d1",
+        "bytes": 3829,
+        "modified_at_utc": "2026-10-17T22:13:40.986Z"
+      },
+      "status": null,
+      "scope": null,
+      "source_hash_validation": {
+        "checked": 0,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-lab-activation.json",
+        "sha256": "599197db1ac8ecb2c3f064187d3addb147fa4f5c298936b8fe02dd0a980de16e",
+        "bytes": 1146,
+        "modified_at_utc": "2026-10-17T22:27:16.307Z"
+      },
+      "status": null,
+      "scope": "private_local_vm_lab",
+      "source_hash_validation": {
+        "checked": 0,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-web-diagnostics-offline-validation.json",
+        "sha256": "c66c4438903ecdb1689655ac347a0ff587fa78d246a125bdc1a7108d2cfa8573",
+        "bytes": 16350,
+        "modified_at_utc": "2026-10-18T00:52:24.202Z"
+      },
+      "status": "passed",
+      "scope": "Content-free Web ModelOutput shape, yield timings and normal upstream EOF diagnostics; offline verification only",
+      "source_hash_validation": {
+        "checked": 4,
+        "mismatches": []
+      }
+    },
+    {
+      "evidence": {
+        "path": "docs/evidence/nodia-ai-ai29-r01-web-generation-diagnostics.json",
+        "sha256": "3f9d5920f9ff4c5bbc859fe51c2bfb16c42ebf90f9649086cfdb32a8856daab8",
+        "bytes": 12074,
+        "modified_at_utc": "2026-10-18T00:56:08.519Z"
+      },
+      "status": "passed",
+      "scope": "content_free_diagnostics_of_successful_real_web_routing",
+      "source_hash_validation": {
+        "checked": 2,
+        "mismatches": []
+      }
+    }
+  ],
+  "hash_consistency": {
+    "source_mismatches": [],
+    "knowledge_release_observations": [
+      "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+      "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+      "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+      "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+      "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+      "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+      "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591"
+    ],
+    "knowledge_release_consistent": true,
+    "dist_tree_observations": [
+      "5e5d25640bf441cfe50b071b25d0caae2d9fdb9fad14f37cd6bfea1e5e82d225",
+      "5e5d25640bf441cfe50b071b25d0caae2d9fdb9fad14f37cd6bfea1e5e82d225",
+      "5e5d25640bf441cfe50b071b25d0caae2d9fdb9fad14f37cd6bfea1e5e82d225"
+    ],
+    "dist_tree_consistent": true,
+    "dist_note": "Compare only explicitly recorded same-algorithm tree hashes. File counts or Windows mtimes are not hashes."
+  },
+  "manual_closure": {
+    "plan_evidence": {
+      "path": "docs/mvp/45-nodia-ai-implementation-plan.md",
+      "sha256": "a91ce9d2ff87a389788e1b53bdf389ec23ebf4b0c56a7d793d7c991377378b35",
+      "bytes": 49395,
+      "modified_at_utc": "2026-10-18T00:57:17.549Z"
+    },
+    "doc_evidence": {
+      "path": "docs/mvp/75-nodia-ai-ai29-secure-human-flows.md",
+      "sha256": "ba6d9f74cc6b27889cab19871d08ca602e00d106225846ca8ae5a2e95e8bd6be",
+      "bytes": 24112,
+      "modified_at_utc": "2026-10-18T00:57:48.566Z"
+    },
+    "checklist_ai29_completed": true,
+    "doc_r01_closed": true,
+    "document_approval": "independent; never inferred from technical closure"
+  },
+  "open_gates": [],
+  "limitations": [
+    "A reconciled evidence report never approves product documents or publishes capabilities.",
+    "Fixture process/native success does not prove a real provider account or inference.",
+    "Codex real account login and inference remain unverified; final health does not imply either. Its native proof covers only owned PGID descendants.",
+    "Durable Gemini starts require Linux cgroup v2, exact root-owned host attestation and current scope identity. Missing or untrusted closure remains unknown, without replay. Same-UID malicious cgroup migration is outside this trust boundary; ordinary setsid descendants are covered.",
+    "Host and Windows timestamps retain separate provenance; source mtime is a file observation, not a fabricated test execution time."
+  ],
+  "sources": [
+    {
+      "path": ".tmp/ai29-r01-build-final.log",
+      "sha256": "f2243752ca40374fe316b67220e92ed34a1bd5af7c0ae81a5a1cfeb82009e246",
+      "bytes": 2101,
+      "modified_at_utc": "2026-10-17T22:38:12.959Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-build-result.json",
+      "sha256": "f623389ded7fd4e1aa5b78dba80b7805eaab95faf3f5438b9f242e91ce2ba5df",
+      "bytes": 152,
+      "modified_at_utc": "2026-10-17T22:38:13.029Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-gemini-real-agentic-before-native-restart.log",
+      "sha256": "f30b15320ed12ad82685c8fe79439268512fea4176e83e73b88887aad57ff921",
+      "bytes": 1810,
+      "modified_at_utc": "2026-10-17T22:34:15.592Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-gemini-real-agentic.log",
+      "sha256": "9fd03431854a0bc61ad0f88c2b9d90d20bce07ca074fdae6899299f460edb2e9",
+      "bytes": 1858,
+      "modified_at_utc": "2026-10-17T22:43:24.559Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-gemini-real-web-authenticated.log",
+      "sha256": "da1f63f1438bbdc4f24a8845e3a24dd7d303413c719f11c94119274dc19b560b",
+      "bytes": 637,
+      "modified_at_utc": "2026-10-18T00:29:32.516Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-lint-final.log",
+      "sha256": "b5b503ac4c04e968ff825e26573773293135f76f636fb83e4f4fd544324a04b2",
+      "bytes": 601,
+      "modified_at_utc": "2026-10-17T22:35:48.935Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-lint-result.json",
+      "sha256": "b2c4e0891bea2dfac6dd7b2188bc5d818897a40fb0277772f2d0339243880b05",
+      "bytes": 150,
+      "modified_at_utc": "2026-10-17T22:35:48.996Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-server-tests-final.log",
+      "sha256": "64f2a6e249617561dd5545226cb93e86bfb5b3b1f4f34e3e8dfb6707c31ad728",
+      "bytes": 24964,
+      "modified_at_utc": "2026-10-17T22:20:35.237Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-main.log",
+      "sha256": "bc72f49a09a544b83b1747c315c36efea0344e12ea537a50b126a7c1a495f692",
+      "bytes": 5444,
+      "modified_at_utc": "2026-10-17T22:20:12.274Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-08.log",
+      "sha256": "fff662daa733468aeef8b31d2a52d8d6266e80a414e5e1f9c61ee2af50cb50d7",
+      "bytes": 2062,
+      "modified_at_utc": "2026-10-17T22:22:31.260Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-18.log",
+      "sha256": "5b0337fbf4f699cb91653b9b829a9ca63ddeb048c868ee89d51410f32f73cb49",
+      "bytes": 3403,
+      "modified_at_utc": "2026-10-17T22:22:27.485Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-20.log",
+      "sha256": "06726b8b8e07c7e5e2c0d055f34c0af9fb2ca2246082e6c8733ed8633d1bc15d",
+      "bytes": 3552,
+      "modified_at_utc": "2026-10-17T22:22:17.833Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-22.log",
+      "sha256": "98281d6177fe0510a96bcb0c2c80e2dd61440f2907bde3eadbf86721b7c75b3e",
+      "bytes": 5903,
+      "modified_at_utc": "2026-10-17T22:21:59.274Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-23.log",
+      "sha256": "3c745596d16c8ecccb900d16c0db1f6dfcf02781400058c55eccc84edcba6fe6",
+      "bytes": 4264,
+      "modified_at_utc": "2026-10-17T22:21:41.946Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-24.log",
+      "sha256": "21a3c693e559b95b6e84b986cf0fc8a91e086feae80fe638ffbfaac8488c0fc7",
+      "bytes": 3680,
+      "modified_at_utc": "2026-10-17T22:21:22.867Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-25.log",
+      "sha256": "c0c2e337a7d58a64976065c1a842bc0c777f33877af5ba08411c5892a2858f42",
+      "bytes": 4117,
+      "modified_at_utc": "2026-10-17T22:21:10.435Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-26.log",
+      "sha256": "eb6eb10d80236e000806337c9b527d9a63fe1c399edd3989669c07cfa81a3e18",
+      "bytes": 4565,
+      "modified_at_utc": "2026-10-17T22:20:55.062Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-27.log",
+      "sha256": "d85f89626b0d79ace434148f6258add0eb607acac72283c60ce20897b06f40b4",
+      "bytes": 3779,
+      "modified_at_utc": "2026-10-17T22:20:40.869Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-28.log",
+      "sha256": "17db7fdeff6f4a6c2ce3e8ffa792cfdf080b93bc6b41c2878593e5286e8820ef",
+      "bytes": 2505,
+      "modified_at_utc": "2026-10-17T22:20:26.361Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-actions.log",
+      "sha256": "e8fa5c71a8bbe198504a0fcbf651a05514a719f050e1125b57c81052db06b1d3",
+      "bytes": 241,
+      "modified_at_utc": "2026-10-17T22:24:38.778Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-agentic.log",
+      "sha256": "949616c712c573fd33a9974cbeeed49d699d2719f2cda104b3e98e074b1070a7",
+      "bytes": 161,
+      "modified_at_utc": "2026-10-17T22:24:47.162Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-api.log",
+      "sha256": "2dab44195c09311e3033ce7a0bcaa94cfabd5c85565c7b9de24e5b71d5ce07ef",
+      "bytes": 150,
+      "modified_at_utc": "2026-10-17T22:24:45.883Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-codexHttp.log",
+      "sha256": "3979b459f27a39eef1f51742792d047a485cef9fd5ae995782ac15caecef1780",
+      "bytes": 134,
+      "modified_at_utc": "2026-10-17T22:24:59.936Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-codexNative.log",
+      "sha256": "d5ca7a30166c7f10606aa638ce601e42ee88ce51a3240db6524a61e450bcc0b7",
+      "bytes": 1273,
+      "modified_at_utc": "2026-10-17T22:24:58.858Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-modules.log",
+      "sha256": "7f95db76f0daa46c10e48ce2b95e5667fffc693e5f5e11bc3443dbfe9fe51685",
+      "bytes": 259,
+      "modified_at_utc": "2026-10-17T22:24:35.822Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-r01.log",
+      "sha256": "c43e001551462edb26df990c5a99eda4c491f2babe4f3377a7739937f384677f",
+      "bytes": 1890,
+      "modified_at_utc": "2026-10-17T22:19:51.483Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-rental.log",
+      "sha256": "1122896fa8281ad3ee5dfeaeda8f3e1b8401f1254a6f4ceeded7b156da0653c2",
+      "bytes": 1530,
+      "modified_at_utc": "2026-10-17T22:24:32.651Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-regression-roles.log",
+      "sha256": "1fbb48935770a6e5503cfbb6fbc1858804d5c416f88981b322478c503a6cf0cb",
+      "bytes": 308,
+      "modified_at_utc": "2026-10-17T22:24:42.315Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-sql-status.json",
+      "sha256": "e08f85031d0a2f2c425ca69389cab27bd665f4d63c73c564ef60077cdfd96650",
+      "bytes": 4862,
+      "modified_at_utc": "2026-10-17T22:24:59.954Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-types-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "modified_at_utc": "2026-10-17T22:35:48.469Z"
+    },
+    {
+      "path": ".tmp/ai29-r01-types-result.json",
+      "sha256": "a4c2e0c22082ea43f003b46e818c321767d9792e515a049f1a7d4fda1435d6a7",
+      "bytes": 178,
+      "modified_at_utc": "2026-10-17T22:35:55.514Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-client-validation.json",
+      "sha256": "4a79e3be938b0c10c447096ade693583566926df2c80989c717dbba4f6aedbb3",
+      "bytes": 8112,
+      "modified_at_utc": "2026-10-17T21:33:04.739Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-cgroup-host-validation.json",
+      "sha256": "e6c07caa0abca913264aeda35a7176f523a2e49b22d93e9ff2b0de8332120d90",
+      "bytes": 1896,
+      "modified_at_utc": "2026-10-17T22:20:09.613Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-codex-native.json",
+      "sha256": "2006daa611f03e0c5972d25e22839a1c9acfb0064c70aea06cb9e828c28660ca",
+      "bytes": 6862,
+      "modified_at_utc": "2026-10-17T22:11:42.415Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-final-health.json",
+      "sha256": "927b70a699b1ec3b9653916db6f4dbbd934954ed03b3f6cdd63e167653e614a1",
+      "bytes": 1523,
+      "modified_at_utc": "2026-10-18T00:56:19.031Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-activation.json",
+      "sha256": "8bcc861a2546c2f6b345f99efdab87b6a6f74b495e07558d9946e55ea0628cb6",
+      "bytes": 2823,
+      "modified_at_utc": "2026-10-17T22:26:06.980Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-agentic-login.json",
+      "sha256": "5d4afdcf8e822ac376ecdebe24333d9af8d97a605468477cafdf12a7e5eb0264",
+      "bytes": 2093,
+      "modified_at_utc": "2026-10-17T22:43:56.395Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-agentic-mcp.json",
+      "sha256": "6473688b3f726df84a02a97ad621d3b2af057ae30237703b1698722e6bdbe325",
+      "bytes": 3852,
+      "modified_at_utc": "2026-10-17T22:40:39.881Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-bootstrap-after-diagnostics.json",
+      "sha256": "48bebbc0e228e7549fc9609fcb29cddc080a13bec9ecff9a41a522ca7b986dc9",
+      "bytes": 2972,
+      "modified_at_utc": "2026-10-18T00:56:08.243Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-native.json",
+      "sha256": "67539f718f8bffb377452a2528bf07eb0a181132206b79ca175cc28291486777",
+      "bytes": 7027,
+      "modified_at_utc": "2026-10-17T22:22:07.826Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-diagnostics-activation.json",
+      "sha256": "fc9b299e8454f41fd08a05683b6114dcd25027bb37c81d78223fb9e9135d4a5d",
+      "bytes": 2823,
+      "modified_at_utc": "2026-10-18T00:51:23.011Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-login.json",
+      "sha256": "cdf0fde40717f0d04ca4ccaed80c52a9f6332a16683d383c92603961de7eff3d",
+      "bytes": 2368,
+      "modified_at_utc": "2026-10-18T00:49:22.310Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-reconciliation.json",
+      "sha256": "42430a00b0d7a370e7304a3597d054e4980278df848b312fc7802c9c2f3ab1f7",
+      "bytes": 1893,
+      "modified_at_utc": "2026-10-17T22:43:56.396Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-routing-failed-01.json",
+      "sha256": "f9774fa2fa841bf2329f8412cf50506cd21ee337b62835c9149ff9505eb14844",
+      "bytes": 3254,
+      "modified_at_utc": "2026-10-18T00:49:22.312Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-gemini-web-routing.json",
+      "sha256": "7b6caf94f7cb21b5403c90d6a1b22f68a08998ad5079836fad8f11d50e00d581",
+      "bytes": 4605,
+      "modified_at_utc": "2026-10-18T00:56:07.989Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-knowledge-delta.json",
+      "sha256": "aeecd6e19b3559428af40de39f223972156cf78867df41340c40e5049729c9d1",
+      "bytes": 3829,
+      "modified_at_utc": "2026-10-17T22:13:40.986Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-lab-activation.json",
+      "sha256": "599197db1ac8ecb2c3f064187d3addb147fa4f5c298936b8fe02dd0a980de16e",
+      "bytes": 1146,
+      "modified_at_utc": "2026-10-17T22:27:16.307Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-web-diagnostics-offline-validation.json",
+      "sha256": "c66c4438903ecdb1689655ac347a0ff587fa78d246a125bdc1a7108d2cfa8573",
+      "bytes": 16350,
+      "modified_at_utc": "2026-10-18T00:52:24.202Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-r01-web-generation-diagnostics.json",
+      "sha256": "3f9d5920f9ff4c5bbc859fe51c2bfb16c42ebf90f9649086cfdb32a8856daab8",
+      "bytes": 12074,
+      "modified_at_utc": "2026-10-18T00:56:08.519Z"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai29-ui-validation.json",
+      "sha256": "cf1ce4a54901f6101c255b39e15b0d90566c1d752852fc3fd314afe634fbd58d",
+      "bytes": 2645,
+      "modified_at_utc": "2026-10-17T21:22:33.062Z"
+    },
+    {
+      "path": "docs/evidence/scripts/attach-nodia-gemini-login-cgroup.py",
+      "sha256": "e8b525c777446c69e0c67a90db29c0932a565b288cca7f88c422d28032c6a463",
+      "bytes": 18461,
+      "modified_at_utc": "2026-10-17T22:19:44.808Z"
+    },
+    {
+      "path": "docs/evidence/scripts/read-nodia-ai-web-diagnostics.py",
+      "sha256": "82af1dba18943f9357c5dda20a3748e65ec007dd578b6037018b54700a11d1a6",
+      "bytes": 6828,
+      "modified_at_utc": "2026-10-18T00:49:03.175Z"
+    },
+    {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai29-r01-validation.cjs",
+      "sha256": "dfb11502dfb73416d3636464b15de451fe0fd0631470a45bc36bea0e8942fa5a",
+      "bytes": 18991,
+      "modified_at_utc": "2026-10-18T00:28:36.317Z"
+    },
+    {
+      "path": "docs/evidence/scripts/verify-nodia-ai-web-diagnostics-reader.py",
+      "sha256": "cc9c4bd291dd38ddf44e7edef03c6f7d45e0e9b145349eee2a5ac70d00610cd8",
+      "bytes": 4658,
+      "modified_at_utc": "2026-10-18T00:50:12.850Z"
+    },
+    {
+      "path": "docs/evidence/scripts/verify-nodia-gemini-login-cgroup-host.py",
+      "sha256": "134755b47181d1593a1f70bfd25e65500bd208b347ea20380ed0e42eff970fc8",
+      "bytes": 9581,
+      "modified_at_utc": "2026-10-17T22:18:35.227Z"
+    },
+    {
+      "path": "docs/mvp/45-nodia-ai-implementation-plan.md",
+      "sha256": "a91ce9d2ff87a389788e1b53bdf389ec23ebf4b0c56a7d793d7c991377378b35",
+      "bytes": 49395,
+      "modified_at_utc": "2026-10-18T00:57:17.549Z"
+    },
+    {
+      "path": "docs/mvp/75-nodia-ai-ai29-secure-human-flows.md",
+      "sha256": "ba6d9f74cc6b27889cab19871d08ca602e00d106225846ca8ae5a2e95e8bd6be",
+      "bytes": 24112,
+      "modified_at_utc": "2026-10-18T00:57:48.566Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/agentic_login.py",
+      "sha256": "10e080d2e8c55bd1bf6c1a4926cdbb195cecaed26c0d208fd2551338f0379225",
+      "bytes": 5990,
+      "modified_at_utc": "2026-10-17T21:59:08.507Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/Dockerfile",
+      "sha256": "d0b45ead1d60b9b3304f5bba09bf0d6bed398042a4c2a776decef1458fb24221",
+      "bytes": 1186,
+      "modified_at_utc": "2026-10-17T22:11:40.219Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/durable_login_routes.py",
+      "sha256": "8000a67577c49adc79ea4891196833e1c0206793a5d668896bd80ab7a11abb87",
+      "bytes": 3072,
+      "modified_at_utc": "2026-10-17T22:07:28.530Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/durable_login.py",
+      "sha256": "4bf6ba19617f8a23724f10928da7fb12d971911a1aed30f9a66fab604724e2bf",
+      "bytes": 12669,
+      "modified_at_utc": "2026-10-17T22:13:23.417Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/gemini_service.py",
+      "sha256": "900e3c4feffe08f6e4951bd1e97f98cf1d371e2bb969998fc239b7023aeac08b",
+      "bytes": 29041,
+      "modified_at_utc": "2026-10-17T22:01:24.422Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/interactive_login.py",
+      "sha256": "38e8ae229d39764394c96fa3f0daaee0b2adb65aa4dba11fbfd977c72c309848",
+      "bytes": 2391,
+      "modified_at_utc": "2026-10-17T21:59:08.506Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/login_cgroups.py",
+      "sha256": "117c73f407e35c6c63c583311257835fad49d3742d9eb42f17ea2c589e772088",
+      "bytes": 9471,
+      "modified_at_utc": "2026-10-17T22:17:50.547Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/login_request_store.py",
+      "sha256": "de522f93e6e5fe44ededf7a86c1c140360d7a86034b092086725569d43539f61",
+      "bytes": 11095,
+      "modified_at_utc": "2026-10-17T22:17:50.548Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/login_supervisor.py",
+      "sha256": "8859645ee2dde0543348ee34f38bc2bb0c1410e9a2723529aa13a2e38d7a4317",
+      "bytes": 8634,
+      "modified_at_utc": "2026-10-17T22:13:45.096Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/main.py",
+      "sha256": "4c7668984af6db1672efca8dbbe21bfff38ca090b9539c44ab4339b27f77e55d",
+      "bytes": 30555,
+      "modified_at_utc": "2026-10-17T22:01:57.825Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/README.md",
+      "sha256": "8edbd392b81ebd4bdc253bfce814d84aaee01254de4230b4d37fd858802625f7",
+      "bytes": 28166,
+      "modified_at_utc": "2026-10-17T22:18:14.323Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/scripts/verify_durable_login.py",
+      "sha256": "038368156ae506ea372fcfad9ac565ceaac631a5a9b544006b7c174115d803bd",
+      "bytes": 7655,
+      "modified_at_utc": "2026-10-17T22:19:33.505Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/fixtures/login_api_fixture.py",
+      "sha256": "5ff390f050fc8dc5603515c0188dd50b59e4f164d26da72934b9a40b8f7fe326",
+      "bytes": 738,
+      "modified_at_utc": "2026-10-17T22:16:24.270Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/fixtures/login_cli_fixture.py",
+      "sha256": "abd688c22004d1af8d388506d4181d59f4f4c39db63b630780952be13c5f32c6",
+      "bytes": 1040,
+      "modified_at_utc": "2026-10-17T22:09:27.231Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/fixtures/login_supervisor_fixture.py",
+      "sha256": "72951a49de8c5c1bf5e0f03a795cf00abd27456a98629612c1f9b489670ee421",
+      "bytes": 3584,
+      "modified_at_utc": "2026-10-17T22:14:47.017Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_durable_login.py",
+      "sha256": "34e80c73d51b658f6f581d62081df162c1927e7aa445848c1edf6e2d325a7d02",
+      "bytes": 12645,
+      "modified_at_utc": "2026-10-17T22:15:47.416Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_web_generation_diagnostics.py",
+      "sha256": "ff4e98852f5d731e65ee5bd6cdd63be0990bd6343f3a05ea9c1603d2c53344bc",
+      "bytes": 19906,
+      "modified_at_utc": "2026-10-18T00:49:49.193Z"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_generation_diagnostics.py",
+      "sha256": "7c5e587f4495e6db124648ef63887999f0da23f684cae8f5574c6b0de65be79f",
+      "bytes": 14044,
+      "modified_at_utc": "2026-10-18T00:48:46.846Z"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/manage-codex-session.use-case.spec.ts",
+      "sha256": "f18fc393348ae58a93cbbd7d88831fee2486f8fb168c3899617e2fa6b5d90c65",
+      "bytes": 11520,
+      "modified_at_utc": "2026-10-17T22:05:20.963Z"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/manage-codex-session.use-case.ts",
+      "sha256": "5cc188c4b7a90c9ed9933356975071679cdf03518438c496368e1aec77118fcc",
+      "bytes": 3121,
+      "modified_at_utc": "2026-10-17T22:05:20.899Z"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-contract.ts",
+      "sha256": "ce0a43fba3d0f5e2562a2891b83a52bc06c48929ca3e8ce25457f7656282c151",
+      "bytes": 7190,
+      "modified_at_utc": "2026-10-17T22:09:34.018Z"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-login-control.ts",
+      "sha256": "8b83e4a665caaef4c1e2e1c740680d4c83bfca93c5b79716a5573b1cde0d780d",
+      "bytes": 14254,
+      "modified_at_utc": "2026-10-17T22:08:49.156Z"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-login-journal.ts",
+      "sha256": "f7240a396e98f81a76fe1879134c83b44adfb5aaea26e63e2ade065281619d80",
+      "bytes": 11002,
+      "modified_at_utc": "2026-10-17T22:05:21.064Z"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-login-supervisor.ts",
+      "sha256": "f2d747280b388b7c65b856df2008f4c6183936fed32cab952ea841f7d22dd530",
+      "bytes": 9896,
+      "modified_at_utc": "2026-10-17T22:08:49.195Z"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-process-ownership.ts",
+      "sha256": "312c912087906182b1fc28e8f30ab9bdd39b6db060b14af4c3b7f2fca7894d47",
+      "bytes": 3920,
+      "modified_at_utc": "2026-10-17T22:05:21.106Z"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-rpc.ts",
+      "sha256": "e89665ad8d4ab4b9f299f3b4d24585e5276b373194c876f02d8a7fc4fe7a82ff",
+      "bytes": 9927,
+      "modified_at_utc": "2026-10-17T22:10:22.640Z"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3",
+      "bytes": 16515,
+      "modified_at_utc": "2026-10-17T22:09:04.837Z"
+    },
+    {
+      "path": "nodia-server/test/codex-http.integration.mjs",
+      "sha256": "e339a0184c5fb401327a4e4034696411974eeffdf11e89fd5cd1cb500081895d",
+      "bytes": 9429,
+      "modified_at_utc": "2026-10-17T22:05:21.226Z"
+    },
+    {
+      "path": "nodia-server/test/codex-login-supervisor.integration.mjs",
+      "sha256": "4ac6e7cb4b31f941e78573918ff5bd02352e61adf4ddb32c0b7e3a6cfa83b87b",
+      "bytes": 11958,
+      "modified_at_utc": "2026-10-17T22:08:41.079Z"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai15-live.integration.mjs",
+      "sha256": "0923d2b918fd4377932a6394fbc02d6b5d19d027d94d0dd12f796e3958d9ca47",
+      "bytes": 34255,
+      "modified_at_utc": "2026-10-16T19:32:19.372Z"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai29-gemini-real.integration.mjs",
+      "sha256": "76f9542454aef36bcf70b5be235b5059d4cb5c00b70185894363427319c42c02",
+      "bytes": 16924,
+      "modified_at_utc": "2026-10-17T22:42:02.149Z"
+    }
+  ]
+}

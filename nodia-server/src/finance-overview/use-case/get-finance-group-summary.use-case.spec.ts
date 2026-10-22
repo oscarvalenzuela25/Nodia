@@ -1,3 +1,5 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, expect, it, vi } from 'vitest';
 import type { EntityManager } from 'typeorm';
 import { FinanceQueryDto } from '../../finance-common/dto/finance-query.dto.js';
@@ -8,6 +10,7 @@ describe('GetFinanceGroupSummaryUseCase', () => {
   it('retains overlapping group amounts and explicitly prevents additive interpretation', async () => {
     const manager = {} as EntityManager;
     const service = {
+      withScope: financeScopeFixture(manager),
       snapshot: vi.fn((operation: (tx: EntityManager) => Promise<unknown>) =>
         operation(manager),
       ),
@@ -38,7 +41,10 @@ describe('GetFinanceGroupSummaryUseCase', () => {
     const useCase = new GetFinanceGroupSummaryUseCase(
       service as unknown as FinanceOverviewService,
     );
-    const result = await useCase.execute('12', new FinanceQueryDto());
+    const result = await useCase.execute(
+      actorFixture('12'),
+      new FinanceQueryDto(),
+    );
     expect(result.overlapping_groups).toBe(true);
     expect(result.data.map((row) => row.net_amount)).toEqual([
       '-40000',
@@ -55,6 +61,7 @@ describe('GetFinanceGroupSummaryUseCase', () => {
 
   it('does not hide failed group queries behind an empty result', async () => {
     const service = {
+      withScope: financeScopeFixture({} as EntityManager),
       snapshot: (operation: (tx: EntityManager) => Promise<unknown>) =>
         operation({} as EntityManager),
       summary: vi.fn().mockRejectedValue(new Error('synthetic failure')),
@@ -62,7 +69,7 @@ describe('GetFinanceGroupSummaryUseCase', () => {
     await expect(
       new GetFinanceGroupSummaryUseCase(
         service as unknown as FinanceOverviewService,
-      ).execute('12', new FinanceQueryDto()),
+      ).execute(actorFixture('12'), new FinanceQueryDto()),
     ).rejects.toThrow('synthetic failure');
   });
 });

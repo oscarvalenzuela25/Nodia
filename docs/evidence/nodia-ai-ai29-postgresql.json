@@ -1,0 +1,146 @@
+{
+  "generated_at_utc": "2026-10-17T21:38:12.427794+00:00",
+  "stage_directory": "/opt/nodia/verification/ai29-20261017",
+  "compiled_production_archive_sha256": "a09fe2df4829b5d1b33c5cfb366c742def6b9272d944ed9e0a2319de7dc899ba",
+  "compiled_dist_files_verified": 868,
+  "knowledge_pin_sha256": "bbe14af35a6152129b05418ad440b685e88dc354079bd5696c9607bf5a6e7b93",
+  "scope": "Synthetic disposable PostgreSQL, authenticated loopback HTTP and compiled worker processes. Native job responses are simulated. Actual GeminiService private Web HTTP status/cancel transport is exercised from a separate Node process against an authenticated loopback fixture only; real bridge authorization/native key encryption/domain persistence/receipts are exercised. No configured database reads/writes, real provider sessions/credentials, external inference or MCP write publication.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "stage": "main",
+  "file": "test/nodia-ai-ai29.integration.mjs",
+  "exit_code": 0,
+  "started_utc": "2026-10-17T21:33:30.107252+00:00",
+  "elapsed_seconds": 23.41,
+  "log": ".tmp/ai29-sql-main.log",
+  "command": "node test/nodia-ai-ai29.integration.mjs",
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai29.integration.mjs",
+      "sha256": "765a48394244e7a29da14d1e288432603957b920bb6d2d7f1666a8a07fb99cd8"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai29-worker.fixture.mjs",
+      "sha256": "caf3ebd00de8150577ea53b72934793490359dc5e6ab220dfb86665bf2683d8a"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    }
+  ],
+  "log_sha256": "cf421b33a9771024b14442b07774ee832d39096e5552a61d20ac813970c210c1",
+  "checks": 55,
+  "result": {
+    "stage": "AI-29",
+    "scope": "compiled_http_confirmation_worker_disposable_postgresql_eight_secure_operations_mocked_native_login_no_credentials",
+    "checks": 55,
+    "exercised_operations": [
+      "api_key_create",
+      "api_key_delete",
+      "api_key_update",
+      "codex_logout",
+      "connection_login",
+      "gemini_web_logout",
+      "nodia_logout",
+      "sync_models"
+    ],
+    "native_start_calls": 12,
+    "native_private_http_fixture_requests": 2,
+    "known_limitations": [
+      "AI29-R01 Codex login jobs remain process-local; a lost job stays unknown without replay or fabricated cancellation"
+    ],
+    "passed": [
+      "worker establishes waiting_for_user without provider calls or native session dispatch",
+      "human pause closes attempt and releases SQL worker lease and inference slots",
+      "human flow exposes only opaque reference and exact frozen metadata",
+      "another module-enabled manager cannot inspect another owners secure interaction",
+      "same user in a different authenticated session cannot control this flow",
+      "human key submission commits encrypted native key and opaque receipt atomically",
+      "proposal steps execution receipts events and recovery witnesses never persist the entered secret",
+      "same human request after committed result recovers without creating another key",
+      "key replacement retains native key identity and updates the frozen label",
+      "metadata-only key edit preserves ciphertext and applies only confirmed public fields",
+      "native REST concurrent selection still serializes to one selected active key",
+      "human key deletion and sole-active selection commit with the same opaque receipt",
+      "cancel before human dispatch closes job and retains no domain key",
+      "native key metadata change invalidates the exact confirmed proposal",
+      "human can cancel a stale proposal without requiring unchanged domain fields",
+      "failed receipt rolls back native encrypted key and keeps human flow reviewable",
+      "explicit retry after proven SQL rollback creates exactly one native key",
+      "lost key COMMIT acknowledgement recovers completed receipt without a second encrypted key",
+      "revoking ai:manage after confirmation prevents the human credential effect",
+      "expired human interaction refuses dispatch and persists no credential",
+      "expiry sweep closes a never dispatched human flow and releases queue capacity",
+      "login starts only from the authenticated human channel after worker pause",
+      "private native login reference is absent from public operation and flow projections",
+      "viewer frame remains exclusively in the dedicated no-store human channel",
+      "viewer input is never persisted in descriptors events or transcripts",
+      "only observed native login success completes the human pause",
+      "Agentic authorization code travels only through the human/native bridge",
+      "native cancellation closes only its owning human flow",
+      "Codex login remains independent and targets the exact configured connection",
+      "device codes and authorization URLs are returned only in human interaction and excluded from durable records",
+      "occupied native profile returns a retryable human wait without changing mode",
+      "explicit human retry after known busy admission starts once without taking an inference slot",
+      "observing and cancelling a known login remains possible after disabling its connection and channel",
+      "an authorized human can explicitly log out an already disabled connection",
+      "disabling the channel still prevents preparing a new native login",
+      "Web and Codex logout use their separate real native bridge operations",
+      "remote discovery merges observed models only in the final receipt transaction",
+      "preparers reject secrets rather than accepting model authored credentials",
+      "a separate Node process observes a durable Web login through the actual authenticated private HTTP transport",
+      "a worker without an in-memory Web login owner cancels exactly the native owned job over private HTTP",
+      "real child death before human pause produces no credential or native login",
+      "explicit duplicate resume reuses the execution and commits exactly one encrypted key",
+      "authority revocation during native login cancels only the owned job and reconciles the paused execution",
+      "expiry reconciliation records a natively completed login without resending its start",
+      "chat retention purges messages and keeps only unresolved native interaction identity",
+      "detached native cleanup cancels the exact owned login after chat purge without replay",
+      "late native success after chat purge reconciles and removes the detached witness without recreating chat",
+      "Nodia logout revokes only the confirmed current session atomically with its receipt",
+      "AI29-R01: losing the process-local Codex job preserves unknown instead of inventing native cancellation",
+      "lost native start response remains unknown and never silently replays login",
+      "lost start without a native reference retains a minimal unknown witness after chat deletion",
+      "retention and maintenance never restart an unresolved native login",
+      "all eight secure operation contracts were exercised through real confirmation HTTP and PostgreSQL",
+      "secure pause does not invoke model inference or acquire nested inference runtime slots",
+      "completed human effects leave no worker lease or unfinished claim attempt"
+    ]
+  },
+  "test_only_overrides_after_archive": [],
+  "previous_attempts_not_acceptance": [
+    {
+      "archive_sha256": "385027d12f462b331752880828338d0fb47814388d23204e5922f355acb49ba7",
+      "completed_checks": 0,
+      "reason": "Execution-only composition imported all AuthModule JWT/Google dependencies. Replaced with a shared focused AuthSessionRevocationModule; no real secrets added."
+    },
+    {
+      "archive_sha256": "5d63dca0706467d468663eee72b8b0d080ace4c7e6093467d1aabd51fc5dc888",
+      "completed_checks": 18,
+      "reason": "Harness kept stale/revoked/expired human flows pending and reached configured queue capacity. Added explicit cancellation and actual expiry sweep; did not increase admission limits."
+    },
+    {
+      "archive_sha256": "b6af74e8e16c22eed71d19b06ed1c3b58ba4ad20dfe49eefcaaa19e51b830720",
+      "completed_checks": 34,
+      "reason": "Pre-pause crash had no generic resume path. Added recovery only with proven local rollback and no secure human descriptor; never replay native IO. Diagnostic compilation contained test fixture type errors and is not final build evidence."
+    },
+    {
+      "archive_sha256": "04dd0b7bd586f11a1bb64f38cb59c63b3e8fbbe62daa436054921f59871a55bc",
+      "completed_checks": 39,
+      "reason": "Harness scheduled another owner job after an unresolved native result had correctly quarantined that owner. Moved unresolved scenarios last; admission limits unchanged. A later diagnostic run passed49 checks but predated the Web transport restart fix."
+    },
+    {
+      "archive_sha256": "2c3e2140698a62db6f8563dca1acc91c81805e590ec6fa2a6faf5c42b5e261ee",
+      "completed_checks": 53,
+      "reason": "Main passed53. AI28 regression fault injection found duplicate execution-store providers, so its simulated lost COMMIT targeted another instance. Replaced with a shared singleton store module; also froze preparation from one coherent key-pool snapshot."
+    }
+  ],
+  "known_limitations": [
+    "AI29-R01: Codex login jobs are process-local; loss or restart remains unknown without replay or fabricated cancellation. A missing native Web/Agentic job likewise is not proof of closure."
+  ]
+}

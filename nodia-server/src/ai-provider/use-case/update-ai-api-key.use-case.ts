@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
+import { SaveAiApiKeyUseCase } from './save-ai-api-key.use-case.js';
 import { UpdateAiApiKeyDto } from '../dto/update-ai-api-key.dto.js';
-import { AiProviderService } from '../ai-provider.service.js';
 
 @Injectable()
 export class UpdateAiApiKeyUseCase {
-  constructor(private readonly aiProviderService: AiProviderService) {}
-
-  async execute(id: string, dto: UpdateAiApiKeyDto) {
-    const key = await this.aiProviderService.updateApiKey(id, dto);
-    const {
-      secret_ciphertext: _ciphertext,
-      secret_fingerprint: _fingerprint,
-      ...safe
-    } = key;
-    return safe;
+  constructor(private readonly save: SaveAiApiKeyUseCase) {}
+  async execute(id: string, dto: UpdateAiApiKeyDto, actor: ActorReference) {
+    return this.save.execute(id, dto, actor);
   }
 }

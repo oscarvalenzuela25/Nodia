@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import { validateRentalDto } from '../../rental-common/rental-validation.js';
@@ -17,13 +18,17 @@ export class GetRentalCalendarUseCase {
     private readonly calendar: RentalCalendarService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: RentalCalendarQueryDto,
+    maxRows = 1000,
   ) {
+    // Internal consumer ceiling, never a public DTO or a way to increase HTTP limits.
+    if (!Number.isSafeInteger(maxRows) || maxRows < 1 || maxRows > 1000)
+      throw new BadRequestException('rental:invalid_input');
     const query = await validateRentalDto(RentalCalendarQueryDto, input);
     validateCivilPeriod(query.from_on, query.to_on, 93);
-    return this.tx.read(actorId, propertyId, async (ctx) => {
+    return this.tx.read(actor, propertyId, async (ctx) => {
       const result = await this.calendar.window(
         ctx.manager,
         propertyId,
@@ -31,11 +36,12 @@ export class GetRentalCalendarUseCase {
         query.from_on,
         query.to_on,
         query.include_non_occupying === 'true',
+        maxRows,
       );
       if (
-        result.reservations.length > 1000 ||
-        result.blocks.length > 1000 ||
-        result.turnovers.length > 1000
+        result.reservations.length > maxRows ||
+        result.blocks.length > maxRows ||
+        result.turnovers.length > maxRows
       )
         throw new BadRequestException('rental:window_too_large');
       return {
@@ -96,13 +102,13 @@ export class GetRentalCalendarUseCase {
 export class GetRentalAvailabilityUseCase {
   constructor(private readonly tx: RentalTransactionService) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     input: RentalAvailabilityQueryDto,
   ) {
     const query = await validateRentalDto(RentalAvailabilityQueryDto, input);
     validateCivilPeriod(query.check_in_on, query.check_out_on, 366);
-    return this.tx.read(actorId, propertyId, (ctx) =>
+    return this.tx.read(actor, propertyId, (ctx) =>
       inspectAvailability(ctx, query),
     );
   }

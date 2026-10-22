@@ -11,7 +11,9 @@ describe('GetAllProductLogsUseCase', () => {
     productServiceMock = {
       findAllLogs: vi.fn(),
     };
-    useCase = new GetAllProductLogsUseCase(productServiceMock as ProductService);
+    useCase = new GetAllProductLogsUseCase(
+      productServiceMock as ProductService,
+    );
   });
 
   it('should be defined', () => {
@@ -50,7 +52,9 @@ describe('GetAllProductLogsUseCase', () => {
       },
     };
 
-    vi.mocked(productServiceMock.findAllLogs!).mockResolvedValue(mockResponse as any);
+    vi.mocked(productServiceMock.findAllLogs!).mockResolvedValue(
+      mockResponse as any,
+    );
 
     const result = await useCase.execute(queryParams);
 

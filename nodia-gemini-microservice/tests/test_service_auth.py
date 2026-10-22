@@ -12,6 +12,23 @@ from test_support import AppTestCase, HEADERS, fake_web
 
 
 class ServiceAuthenticationTest(AppTestCase):
+    def test_web_http_levels_are_forwarded_and_mixed_options_rejected_before_sdk(self):
+        for level in ("low", "medium", "high"):
+            response = self.client.post("/web/analyze-invoice", headers=HEADERS,
+                data={"model": "synthetic", "thinking_level": level},
+                files={"file": ("invoice.pdf", b"%PDF-1.4", "application/pdf")})
+            self.assertEqual(response.status_code, 200)
+            kwargs = self.web.analyze_invoice.call_args.kwargs
+            self.assertEqual(kwargs["thinking_level"], level)
+            self.assertIsNone(kwargs["extended_thinking"])
+        before = self.web.analyze_invoice.call_count
+        response = self.client.post("/web/analyze-invoice", headers=HEADERS,
+            data={"model": "synthetic", "thinking_level": "medium", "extended_thinking": "false"},
+            files={"file": ("invoice.pdf", b"%PDF-1.4", "application/pdf")})
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(self.web.analyze_invoice.call_count, before)
+        self.assertEqual(list(Path(self.directory).iterdir()), [])
+
     def test_sensitive_routes_reject_missing_and_wrong_caller(self):
         for path in ("/", "/models", "/auth/status", "/auth/login/start", "/analyze-invoice",
                      "/docs", "/redoc", "/openapi.json", "/engines/status", "/agentic/status", "/web/status"):
@@ -90,10 +107,10 @@ class ServiceAuthenticationTest(AppTestCase):
             self.assertEqual(list(Path(self.directory).iterdir()), [])
 
     def test_login_job_is_observable_without_browser(self):
-        response = self.client.post("/auth/login/start", headers=HEADERS)
+        response = self.client.post("/auth/login/start", headers={**HEADERS, "X-Nodia-Actor-Id": "7"})
         self.assertEqual(response.status_code, 200)
         job_id = response.json()["id"]
-        self.assertEqual(self.client.get(f"/auth/login/{job_id}", headers=HEADERS).status_code, 200)
+        self.assertEqual(self.client.get(f"/auth/login/{job_id}", headers={**HEADERS, "X-Nodia-Actor-Id": "7"}).status_code, 200)
 
     def test_duplicate_fields_and_multiple_files_are_rejected(self):
         response = self.client.post("/analyze-invoice", headers=HEADERS, data={"model": ["a", "b"]},

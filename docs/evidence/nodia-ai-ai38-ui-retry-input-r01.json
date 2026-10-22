@@ -1,0 +1,34 @@
+{
+  "schema": "ai38-authenticated-UI-retry-input-v1",
+  "scope": "evidence_path_contract_only_not_runtime_or_UI_acceptance",
+  "adoption_source_sha256": "44201c7d0f5080dd40d926307dbf8d5a045039576466cc6bc73c9eb7fc6bddb1",
+  "reports": {
+    "baseline": "docs/evidence/nodia-ai-ai38-ui-retry-entry-r01.json",
+    "prepare": "docs/evidence/nodia-ai-ai38-adoption-prepare-r01.json",
+    "continuation": "docs/evidence/nodia-ai-ai38-adoption-continuation-r04.json",
+    "quiesce": "docs/evidence/nodia-ai-ai38-adoption-quiesce-r04.json",
+    "activate": "docs/evidence/nodia-ai-ai38-adoption-activate-r04.json",
+    "rollback": "docs/evidence/nodia-ai-ai38-adoption-rollback-r04.json",
+    "backup": "docs/evidence/nodia-ai-ai38-adoption-backup-r04.json",
+    "purge": "docs/evidence/nodia-ai-ai38-adoption-backup-purge-r04.json",
+    "candidate": "docs/evidence/nodia-ai-ai38-adoption-runtime-candidate-r04.json",
+    "original": "docs/evidence/nodia-ai-ai38-adoption-runtime-original-r04.json",
+    "final_runtime": "docs/evidence/nodia-ai-ai38-adoption-runtime-final-r04.json",
+    "UI": "docs/evidence/nodia-ai-ai38-adoption-ui-r02.json",
+    "SQL_before": "docs/evidence/nodia-ai-ai38-ui-chat-before-r01.json",
+    "SQL_after": "docs/evidence/nodia-ai-ai38-ui-chat-after-r01.json",
+    "DOM_before": "docs/evidence/nodia-ai-ai38-ui-history-before-r01.json",
+    "DOM_after": "docs/evidence/nodia-ai-ai38-ui-history-after-r01.json",
+    "mobile_metrics": "docs/evidence/nodia-ai-ai38-ui-drawer-mobile-metrics-r01.json",
+    "closure": "docs/evidence/nodia-ai-ai38-adoption-localclosure-r02.json"
+  },
+  "source_pins": {
+    "docs/evidence/scripts/nodia-ai-ai38-adoption-r04.py": "44201c7d0f5080dd40d926307dbf8d5a045039576466cc6bc73c9eb7fc6bddb1",
+    "docs/evidence/scripts/nodia-ai-ai38-adoption-r03.py": "703a068c6dcd1089b12c0961646d4768bc916d7b56c908ba389d902f2c4e2bee",
+    "docs/evidence/scripts/nodia-ai-ai38-adoption-backup-r04.py": "d722a53f47f952de205a5b3d1beea4bc7d47539350d72f9767bb7271f77b42f6",
+    "docs/evidence/scripts/nodia-ai-ai38-adoption-backup-cleanup-r04.py": "d0461d16017b19f3d8e41705e5c674d314916e9169bbe48baeccdc34105052b1",
+    "docs/evidence/scripts/nodia-ai-ai38-adoption-runtime.py": "a0a8ab1afa2dc433da1a0265cb1ee16fa7a5246a734887120e968a93ae7cd336",
+    "docs/evidence/scripts/nodia-ai-ai38-ui-adoption-observer.py": "baa090cf977de918bec1d53026a192bee9a48bd810e1ae3e80f25a3cd5ada589",
+    "docs/evidence/scripts/nodia-ai-ai38-ui-chat-snapshot.mjs": "897bcf3966cdcf747ba6b2cb0b9b6ea6375f7ca6c5c62aa2b13586d0e5dca30d"
+  }
+}

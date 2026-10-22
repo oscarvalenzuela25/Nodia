@@ -1,0 +1,1 @@
+{"read_only": true, "inference_performed": false, "maximum_seconds": 150, "observed_sidecars": 1, "events": [{"category": "allowed_finish", "call_kind": "finish", "count": 1}, {"category": "allowed_registered", "call_kind": "dispatcher", "count": 2}, {"category": "arguments_type", "call_kind": "dispatcher", "count": 1}]}

@@ -1,0 +1,45 @@
+{
+  "stage": "AI-32-R06",
+  "scope": "owned_disposable_sandbox_teardown",
+  "status": "passed",
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "configured_database_used": false,
+  "production_services_restarted": false,
+  "credential_values_exported": false,
+  "sandboxes": [
+    {
+      "purpose": "purge",
+      "ledger_record_count": 2,
+      "ledger_records_settled": true,
+      "private_ledger_mode_0600": true,
+      "database_final_counts": {
+        "chats": 0,
+        "attachments": 0,
+        "jobs": 0,
+        "invoice_upload_intents": 0,
+        "invoices": 0
+      },
+      "owned_container_removed": true,
+      "private_descriptor_and_ledger_removed": true,
+      "private_directory_removed": true
+    },
+    {
+      "purpose": "invoice",
+      "ledger_record_count": 8,
+      "ledger_records_settled": true,
+      "private_ledger_mode_0600": true,
+      "database_final_counts": {
+        "chats": 0,
+        "attachments": 0,
+        "jobs": 0,
+        "invoice_upload_intents": 0,
+        "invoices": 0
+      },
+      "owned_container_removed": true,
+      "private_descriptor_and_ledger_removed": true,
+      "private_directory_removed": true
+    }
+  ],
+  "observed_at_utc": "2026-10-18T17:00:15Z"
+}

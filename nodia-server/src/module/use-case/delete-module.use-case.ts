@@ -1,3 +1,5 @@
+import { runCoreAuthorityTransaction } from '../../authorization/core-authority-transaction.js';
+import { type ActorReference } from '../../authorization/authority-transaction.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Module } from '../entities/module.entity.js';
@@ -13,22 +15,26 @@ export class DeleteModuleUseCase {
     private readonly redis: RedisService,
   ) {}
 
-  async execute(id: string): Promise<void> {
+  async execute(id: string, actor: ActorReference): Promise<void> {
     validateCatalogId(id);
-    await this.dataSource.transaction(async (manager) => {
-      const module = await manager.findOne(Module, {
-        where: { id },
-        lock: { mode: 'pessimistic_write' },
-      });
-      if (!module) throw new NotFoundException('modules:not_found');
-      // Assignments and translations belong to the deleted catalog entry.
-      await manager.delete(UserModule, { module_id: id });
-      await manager.delete(Translation, {
-        source_entity: 'modules',
-        source_id: id,
-      });
-      await manager.delete(Module, { id });
-    });
-    await this.redis.delByPattern('auth:context:*');
+    await runCoreAuthorityTransaction(
+      this.dataSource,
+      actor,
+      async (manager) => {
+        const module = await manager.findOne(Module, {
+          where: { id },
+          lock: { mode: 'pessimistic_write' },
+        });
+        if (!module) throw new NotFoundException('modules:not_found');
+        // Assignments and translations belong to the deleted catalog entry.
+        await manager.delete(UserModule, { module_id: id });
+        await manager.delete(Translation, {
+          source_entity: 'modules',
+          source_id: id,
+        });
+        await manager.delete(Module, { id });
+      },
+    );
+    if (!actor.transaction) await this.redis.delByPattern('auth:context:*');
   }
 }

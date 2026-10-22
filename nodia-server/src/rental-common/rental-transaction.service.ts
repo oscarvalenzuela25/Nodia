@@ -31,6 +31,11 @@ import {
   RENTAL_AUDIT_RESOURCES,
 } from '../rental-audit/dto/rental-audit-query.dto.js';
 import { RentalClock } from './rental-clock.js';
+import {
+  currentActor,
+  lockAuthority,
+  type ActorReference,
+} from '../authorization/authority-transaction.js';
 
 const requestPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -210,9 +215,81 @@ export class RentalTransactionService {
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly clock: RentalClock,
   ) {}
+  private fail(error: unknown): never {
+    if (error instanceof QueryFailedError) {
+      const code = (error.driverError as { code?: string }).code;
+      if (['55P03', '57014', '40P01', '40001'].includes(code ?? ''))
+        throw new ServiceUnavailableException('rental:temporarily_busy');
+      if (['23505', '23503', '23514'].includes(code ?? ''))
+        throw new ConflictException('rental:conflict');
+      throw new InternalServerErrorException('rental:server_error');
+    }
+    if (error instanceof HttpException) throw error;
+    const code =
+      error && typeof error === 'object' && 'code' in error
+        ? error.code
+        : undefined;
+    if (
+      [
+        'ECONNREFUSED',
+        'ECONNRESET',
+        'ETIMEDOUT',
+        'EPIPE',
+        '57P01',
+        '57P02',
+        '57P03',
+      ].includes(String(code))
+    )
+      throw new ServiceUnavailableException('rental:temporarily_busy');
+    this.logger.error({
+      event: 'rental.transaction_failed',
+      reason: 'unexpected_failure',
+    });
+    throw new InternalServerErrorException('rental:server_error');
+  }
   private async transaction<T>(
     fn: (manager: EntityManager) => Promise<T>,
+    existingManager?: EntityManager,
+    statementTimeoutMs?: number,
   ): Promise<T> {
+    if (existingManager) {
+      const runner = existingManager.queryRunner;
+      if (!runner?.isTransactionActive || typeof runner.query !== 'function')
+        throw new ForbiddenException('authorization:transaction_required');
+      if (
+        statementTimeoutMs !== undefined &&
+        (!Number.isSafeInteger(statementTimeoutMs) || statementTimeoutMs < 1)
+      )
+        throw new ForbiddenException('authorization:statement_timeout');
+      // The outer consumer owns COMMIT/ROLLBACK. Scope the native ceiling to
+      // this invocation, preserving and restoring any outer/nested wrapper.
+      const previousQuery = runner.query;
+      const deadline = Date.now() + 10_000;
+      const ceiling = Math.min(5000, statementTimeoutMs ?? 5000);
+      runner.query = async (...args: Parameters<typeof runner.query>) => {
+        const remaining = deadline - Date.now();
+        if (remaining <= 0)
+          throw new ServiceUnavailableException('rental:temporarily_busy');
+        await previousQuery.call(
+          runner,
+          `SET LOCAL statement_timeout = '${Math.min(ceiling, remaining)}ms'`,
+        );
+        if (Date.now() >= deadline)
+          throw new ServiceUnavailableException('rental:temporarily_busy');
+        return previousQuery.apply(runner, args);
+      };
+      try {
+        await lockAuthority(existingManager, false, statementTimeoutMs);
+        const result = await fn(existingManager);
+        if (Date.now() >= deadline)
+          throw new ServiceUnavailableException('rental:temporarily_busy');
+        return result;
+      } catch (error) {
+        return this.fail(error);
+      } finally {
+        runner.query = previousQuery;
+      }
+    }
     const runner = this.dataSource.createQueryRunner();
     const originalQuery = runner.query.bind(runner);
     try {
@@ -221,13 +298,15 @@ export class RentalTransactionService {
       const deadline = Date.now() + 10_000;
       await originalQuery("SET LOCAL lock_timeout = '2s'");
       await originalQuery("SET LOCAL statement_timeout = '5s'");
+      await lockAuthority(runner.manager, false, statementTimeoutMs);
       // The runner is private to this transaction. Reduce the SQL timeout near
       // its deadline; never race a live transaction against an HTTP timer.
       runner.query = async (...args: Parameters<typeof runner.query>) => {
         const remaining = deadline - Date.now();
         if (remaining <= 0)
           throw new ServiceUnavailableException('rental:temporarily_busy');
-        if (remaining < 5000)
+        const ceiling = Math.min(5000, statementTimeoutMs ?? 5000);
+        if (remaining < ceiling)
           await originalQuery(`SET LOCAL statement_timeout = '${remaining}ms'`);
         return originalQuery(...args);
       };
@@ -249,36 +328,7 @@ export class RentalTransactionService {
           throw new ServiceUnavailableException('rental:temporarily_busy');
         }
       }
-      if (error instanceof QueryFailedError) {
-        const code = (error.driverError as { code?: string }).code;
-        if (['55P03', '57014', '40P01', '40001'].includes(code ?? ''))
-          throw new ServiceUnavailableException('rental:temporarily_busy');
-        if (['23505', '23503', '23514'].includes(code ?? ''))
-          throw new ConflictException('rental:conflict');
-        throw new InternalServerErrorException('rental:server_error');
-      }
-      if (error instanceof HttpException) throw error;
-      const code =
-        error && typeof error === 'object' && 'code' in error
-          ? error.code
-          : undefined;
-      if (
-        [
-          'ECONNREFUSED',
-          'ECONNRESET',
-          'ETIMEDOUT',
-          'EPIPE',
-          '57P01',
-          '57P02',
-          '57P03',
-        ].includes(String(code))
-      )
-        throw new ServiceUnavailableException('rental:temporarily_busy');
-      this.logger.error({
-        event: 'rental.transaction_failed',
-        reason: 'unexpected_failure',
-      });
-      throw new InternalServerErrorException('rental:server_error');
+      return this.fail(error);
     } finally {
       runner.query = originalQuery;
       try {
@@ -294,12 +344,14 @@ export class RentalTransactionService {
   }
   private async context(
     manager: EntityManager,
-    actorId: string,
+    identity: ActorReference,
     propertyId: string,
     write: boolean,
     ownerOnly: boolean,
   ): Promise<RentalContext> {
-    if (!isRentalId(actorId) || !isRentalId(propertyId))
+    const authority = await currentActor(manager, identity);
+    const actorId = authority.actorId;
+    if (!isRentalId(propertyId))
       throw new BadRequestException('rental:invalid_input');
     const property = await manager.getRepository(RentalProperty).findOne({
       where: { id: propertyId },
@@ -315,6 +367,7 @@ export class RentalTransactionService {
     if (
       !actor ||
       (!owner &&
+        !authority.isSuperAdmin &&
         !(await manager.getRepository(RentalCollaborator).existsBy({
           property_id: propertyId,
           user_id: actorId,
@@ -322,35 +375,48 @@ export class RentalTransactionService {
         })))
     )
       throw new NotFoundException('rental:not_found');
-    if (ownerOnly && !owner)
+    if (ownerOnly && !owner && !authority.isSuperAdmin)
       throw new ForbiddenException('rental:owner_required');
-    return { manager, property, actorId, now: this.clock.now(), owner };
+    return {
+      manager,
+      property,
+      actorId,
+      now: this.clock.now(),
+      owner,
+      isSuperAdmin: authority.isSuperAdmin,
+    };
   }
   read<T>(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     fn: (context: RentalContext) => Promise<T>,
     ownerOnly = false,
   ): Promise<T> {
-    return this.transaction(async (manager) =>
-      fn(await this.context(manager, actorId, propertyId, false, ownerOnly)),
+    return this.transaction(
+      async (manager) =>
+        fn(await this.context(manager, actor, propertyId, false, ownerOnly)),
+      actor.transaction,
+      actor.statementTimeoutMs,
     );
   }
   list<T>(
-    actorId: string,
-    fn: (manager: EntityManager) => Promise<T>,
+    actor: ActorReference,
+    fn: (manager: EntityManager, isSuperAdmin: boolean) => Promise<T>,
   ): Promise<T> {
-    if (!isRentalId(actorId))
-      throw new BadRequestException('rental:invalid_input');
-    return this.transaction(async (manager) => {
-      if (
-        !(await manager
-          .getRepository(User)
-          .existsBy({ id: actorId, is_active: true }))
-      )
-        throw new NotFoundException('rental:not_found');
-      return fn(manager);
-    });
+    return this.transaction(
+      async (manager) => {
+        const authority = await currentActor(manager, actor);
+        if (
+          !(await manager
+            .getRepository(User)
+            .existsBy({ id: authority.actorId, is_active: true }))
+        )
+          throw new NotFoundException('rental:not_found');
+        return fn(manager, authority.isSuperAdmin);
+      },
+      actor.transaction,
+      actor.statementTimeoutMs,
+    );
   }
   mutate(
     options: RentalMutationOptions,
@@ -366,40 +432,52 @@ export class RentalTransactionService {
       resource_id: options.resourceId,
       command: normalizedCommand(options.operation, options.command),
     });
-    return this.transaction(async (manager) => {
-      const context = await this.context(
-        manager,
-        options.actorId,
-        options.propertyId,
-        true,
-        options.ownerOnly ?? false,
-      );
-      const previous = await manager
-        .getRepository(RentalOperationEntity)
-        .findOneBy({
-          property_id: options.propertyId,
-          actor_id: options.actorId,
-          request_key: key,
-        });
-      if (previous) {
-        if (
-          previous.operation !== options.operation ||
-          previous.request_hash !== requestHash
-        )
-          throw new ConflictException('rental:idempotency_conflict');
-        return restoreResponse(previous.response).body;
-      }
-      const effect = await fn(context);
-      return this.persist(context, key, options.operation, requestHash, effect);
-    });
+    return this.transaction(
+      async (manager) => {
+        const context = await this.context(
+          manager,
+          options.actor,
+          options.propertyId,
+          true,
+          options.ownerOnly ?? false,
+        );
+        const previous = await manager
+          .getRepository(RentalOperationEntity)
+          .findOneBy({
+            property_id: options.propertyId,
+            actor_id: context.actorId,
+            request_key: key,
+          });
+        if (previous) {
+          if (
+            previous.operation !== options.operation ||
+            previous.request_hash !== requestHash
+          )
+            throw new ConflictException('rental:idempotency_conflict');
+          return restoreResponse(previous.response).body;
+        }
+        const effect = await fn(context);
+        return this.persist(
+          context,
+          key,
+          options.operation,
+          requestHash,
+          effect,
+        );
+      },
+      options.actor.transaction,
+      options.actor.statementTimeoutMs,
+    );
   }
   async createProperty(
-    actorId: string,
+    actor: ActorReference,
     requestKey: string,
     command: object,
     fn: (manager: EntityManager, now: Date) => Promise<RentalProperty>,
+    ownerId = actor.userId,
   ): Promise<MutationResult> {
-    if (!isRentalId(actorId))
+    const actorId = actor.userId;
+    if (!isRentalId(actorId) || !isRentalId(ownerId))
       throw new BadRequestException('rental:invalid_input');
     const key = requireRequestKey(requestKey),
       requestHash = hash({
@@ -413,47 +491,61 @@ export class RentalTransactionService {
       .digest()
       .readBigInt64BE()
       .toString();
-    return this.transaction(async (manager) => {
-      await manager.query('SELECT pg_advisory_xact_lock($1::bigint)', [
-        lockKey,
-      ]);
-      if (
-        !(await manager
-          .getRepository(User)
-          .existsBy({ id: actorId, is_active: true }))
-      )
-        throw new NotFoundException('rental:not_found');
-      const previous = await manager
-        .getRepository(RentalOperationEntity)
-        .findOneBy({
-          actor_id: actorId,
-          request_key: key,
-          operation: 'property.create',
-        });
-      if (previous) {
-        await this.context(manager, actorId, previous.property_id, true, true);
-        if (previous.request_hash !== requestHash)
-          throw new ConflictException('rental:idempotency_conflict');
-        return restoreResponse(previous.response).body;
-      }
-      const now = this.clock.now(),
-        property = await fn(manager, now);
-      if (property.owner_id !== actorId)
-        throw new InternalServerErrorException('rental:server_error');
-      return this.persist(
-        { manager, property, actorId, now, owner: true },
-        key,
-        'property.create',
-        requestHash,
-        {
-          resource_id: property.id,
-          resource_type: 'property',
-          status: property.is_active ? 'active' : 'inactive',
-          updated_at: property.updated_at,
-          changes: { created: true },
-        },
-      );
-    });
+    return this.transaction(
+      async (manager) => {
+        const authority = await currentActor(manager, actor);
+        if (ownerId !== actorId && !authority.isSuperAdmin)
+          throw new ForbiddenException('rental:owner_required');
+        await manager.query('SELECT pg_advisory_xact_lock($1::bigint)', [
+          lockKey,
+        ]);
+        if (
+          !(await manager
+            .getRepository(User)
+            .existsBy({ id: ownerId, is_active: true }))
+        )
+          throw new NotFoundException('rental:not_found');
+        const previous = await manager
+          .getRepository(RentalOperationEntity)
+          .findOneBy({
+            actor_id: actorId,
+            request_key: key,
+            operation: 'property.create',
+          });
+        if (previous) {
+          await this.context(manager, actor, previous.property_id, true, true);
+          if (previous.request_hash !== requestHash)
+            throw new ConflictException('rental:idempotency_conflict');
+          return restoreResponse(previous.response).body;
+        }
+        const now = this.clock.now(),
+          property = await fn(manager, now);
+        if (property.owner_id !== ownerId)
+          throw new InternalServerErrorException('rental:server_error');
+        return this.persist(
+          {
+            manager,
+            property,
+            actorId,
+            now,
+            owner: ownerId === actorId,
+            isSuperAdmin: authority.isSuperAdmin,
+          },
+          key,
+          'property.create',
+          requestHash,
+          {
+            resource_id: property.id,
+            resource_type: 'property',
+            status: property.is_active ? 'active' : 'inactive',
+            updated_at: property.updated_at,
+            changes: { created: true },
+          },
+        );
+      },
+      actor.transaction,
+      actor.statementTimeoutMs,
+    );
   }
   private async persist(
     context: RentalContext,
@@ -498,26 +590,31 @@ export class RentalTransactionService {
     return result;
   }
   recover(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     requestKey: string,
   ): Promise<RentalOperationResponse> {
     const key = requireRequestKey(requestKey);
-    return this.read(actorId, propertyId, async ({ manager, owner }) => {
-      const operation = await manager
-        .getRepository(RentalOperationEntity)
-        .findOneBy({
-          property_id: propertyId,
-          actor_id: actorId,
-          request_key: key,
-        });
-      if (!operation) throw new NotFoundException('rental:not_found');
-      if (
-        !owner &&
-        /^(property|collaborator|policy)\./.test(operation.operation)
-      )
-        throw new ForbiddenException('rental:owner_required');
-      return restoreResponse(operation.response);
-    });
+    return this.read(
+      actor,
+      propertyId,
+      async ({ manager, owner, isSuperAdmin }) => {
+        const operation = await manager
+          .getRepository(RentalOperationEntity)
+          .findOneBy({
+            property_id: propertyId,
+            actor_id: actor.userId,
+            request_key: key,
+          });
+        if (!operation) throw new NotFoundException('rental:not_found');
+        if (
+          !owner &&
+          !isSuperAdmin &&
+          /^(property|collaborator|policy)\./.test(operation.operation)
+        )
+          throw new ForbiddenException('rental:owner_required');
+        return restoreResponse(operation.response);
+      },
+    );
   }
 }

@@ -1,0 +1,346 @@
+{
+  "stage": "AI-33",
+  "scope": "backend_explicit_preferences_and_existing_human_confirmation",
+  "status": "passed",
+  "model_inferences": 0,
+  "production_database_mutations_from_this_review": 0,
+  "production_services_restarted_from_this_review": 0,
+  "implementation": {
+    "new_tables": 1,
+    "new_columns": 12,
+    "migration": "CreateNodiaAiPreferences1792900000000",
+    "origin_partial_indexes": 2,
+    "owner_limit": 50,
+    "registered_memory_keys": 5,
+    "internal_preparers": 3,
+    "new_mcp_tools_published": 0,
+    "snapshot_ai34_implemented": false
+  },
+  "tests": {
+    "new_preferences": {
+      "files": 5,
+      "passed": 58,
+      "provenance": "observed_Vitest_tool_output",
+      "command": "npx vitest run src/nodia-ai-preference"
+    },
+    "earlier_integration_regressions": {
+      "files": 3,
+      "passed": 109,
+      "provenance": "observed_Vitest_tool_output",
+      "scope": "native effect, proposal validation, confirmation availability"
+    },
+    "after_receipt_correction": {
+      "files": 4,
+      "passed": 290,
+      "new_receipt_projection_cases": 3,
+      "groups": [
+        {
+          "files": 3,
+          "passed": 230,
+          "provenance": "observed_Vitest_tool_output",
+          "scope": "confirmation validation, execution status projection, native effects"
+        },
+        {
+          "files": 1,
+          "passed": 60,
+          "provenance": "captured_Vitest_stdout_log",
+          "log": "nodia-server/.tmp/ai33-execution-post-receipt.log",
+          "scope": "local SQL execution"
+        }
+      ]
+    },
+    "whole_server_after_correction_rerun": false,
+    "note": "58,109 and230 summaries were observed directly in tool results; no raw stdout log was persisted for those runs. Counts are recorded observations, not a fabricated rerun log."
+  },
+  "receipt_correction": {
+    "cause": "PreferenceEffectReceipt was registered in proposal validation but missing from human execution status validation",
+    "fixed": "shared confirmation validator now compiles the closed receipt; projection tests exercise create/update/delete and reject owner/revision/content corruption",
+    "initial_sql_failure_preserved_by_coordinator": true
+  },
+  "quality": {
+    "build": {
+      "exit_code": 0,
+      "log": {
+        "path": "nodia-server/.tmp/ai33-build-post-receipt.log",
+        "bytes": 2101,
+        "sha256": "398246c11422af04fcadeb89d8e3b3036b19625ff881e76df2e8706a239a3f40"
+      }
+    },
+    "typecheck": {
+      "exit_code": 0,
+      "command": "npx tsc --noEmit -p tsconfig.build.json",
+      "log": {
+        "path": "nodia-server/.tmp/ai33-backend-typecheck.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "scoped_lint": {
+      "exit_code": 0,
+      "log": {
+        "path": "nodia-server/.tmp/ai33-backend-lint.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "common_schema_definitions": 148
+  },
+  "source_receipts": [
+    {
+      "path": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "bytes": 134434,
+      "sha256": "b8b029300f93b5cf316e6d34526cd6ae2a7c0c5f090bb0c7296fb3b117aacad0"
+    },
+    {
+      "path": "nodia-server/src/app.module.ts",
+      "bytes": 3483,
+      "sha256": "6c4ef820110f6f5189187b07920bd8be894dbfc3bfbab200c663d3e6f5ab6e2e"
+    },
+    {
+      "path": "nodia-server/src/migrations/1792900000000-CreateNodiaAiPreferences.ts",
+      "bytes": 2542,
+      "sha256": "dbac525a4d9ab9c382b7f6657e0bc6a74d113a07c947d97e8885981c56fc8305"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+      "bytes": 6297,
+      "sha256": "781753c4852873b38710bcd8df420cda09477c9e3c90eb12434bb27c99a60185"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-confirmation/use-case/validate-nodia-ai-confirmation.use-case.ts",
+      "bytes": 5704,
+      "sha256": "1e824f0d7b286a8e2d102a3c325fcb393697427f905bf05c72c945fa66defc17"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-execution/use-case/execute-nodia-ai-local-execution.use-case.ts",
+      "bytes": 22084,
+      "sha256": "a66070bdda98ede2f25cf3c24d267bd537264a9d244f8bc2b9ef329e85c525bb"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+      "bytes": 7212,
+      "sha256": "e9c9d7d20412dccc94231d39c47d9a769f2ee435ba99bcc96bf7f9017121ffa8"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/dto/nodia-ai-preference.dto.ts",
+      "bytes": 1881,
+      "sha256": "1543b81f78cc0a397e6cfc461b1368b8721456081698f0827ca666db19e2b9b1"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/entities/nodia-ai-preference.entity.ts",
+      "bytes": 1102,
+      "sha256": "cac042cb204aef02f0dcf1969ae26cfa6bfc715a7a66bc571609b9e4a61ba898"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/nodia-ai-preference-operations.module.ts",
+      "bytes": 1387,
+      "sha256": "480d06141926f4252513bbf7ef6d7b6b00ff18c6313676dd51297539b43baf6a"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/nodia-ai-preference.controller.ts",
+      "bytes": 2119,
+      "sha256": "1f73888639f5717bb12c9f8f74423f98b7f0a1dd8b33e70716bae3575644ec4f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/nodia-ai-preference.module.ts",
+      "bytes": 1254,
+      "sha256": "4dd19b8b561a77ece7224537e90a3e07bba21557c3fadf57d3d2d99b849520cc"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/nodia-ai-preference.service.ts",
+      "bytes": 4120,
+      "sha256": "fcc3a4484b74f835780aeed0d8409f48f03a9087f44327a4782e8e121cd74c6f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/types/preference.types.ts",
+      "bytes": 4474,
+      "sha256": "fe01c5c071bed55b8aff06501000832176664f17f433d97ff49b68304e2a2177"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.ts",
+      "bytes": 15163,
+      "sha256": "8d56e89ecc8c0bf6a0193a1df9ed1faac70ae3cfeb6ab84bbb34bf2105a60f37"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/use-case/get-nodia-ai-preference-catalog.use-case.ts",
+      "bytes": 1102,
+      "sha256": "c31aba849349e20cca07da69afa035f19b6e9c63a5b71eb550fd3fbb8bc6ac19"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/use-case/get-nodia-ai-preference-options.use-case.ts",
+      "bytes": 4505,
+      "sha256": "5df844ff8079b6848b77b8c0fdef7a3b0088eb0356e5c64ba85d7bf2f27a7f32"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/use-case/list-nodia-ai-preferences.use-case.ts",
+      "bytes": 2488,
+      "sha256": "9df37b58a5899c84f86e6e15f5b7e3c7c29168114758423a4f5022a947d5d007"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/use-case/nodia-ai-preference-reader.use-case.ts",
+      "bytes": 3656,
+      "sha256": "ec0cbe84b0fa5328826996267b2806258210ac609276662a51f510ff8019520c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-preference/use-case/prepare-nodia-ai-preference.use-case.ts",
+      "bytes": 2538,
+      "sha256": "7d33a0831b059c915dfa896bbf92097d90138a3332cbab7c55d567376b08cc2b"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/nodia-ai-proposal.module.ts",
+      "bytes": 11059,
+      "sha256": "b1710b208c397e9f93a1f37daa47368065c3c16e443796fd7706bdf5bc1400d5"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+      "bytes": 18071,
+      "sha256": "47f35bd8c93d19aa1b946b3cf568444691f496b786b8dfbf610c552bfc9571dc"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/types/proposal-preparer.types.ts",
+      "bytes": 4091,
+      "sha256": "553a8d1c1d7ddb9749cf8666e4cb69168fb23862259f58d75dac8ed88e136c3f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.ts",
+      "bytes": 11454,
+      "sha256": "01bff87bd1cf4c72191b214988adf9963f861defc498d39be8c94de9f45cfd15"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-tools/config/common-schema.json",
+      "bytes": 134434,
+      "sha256": "b8b029300f93b5cf316e6d34526cd6ae2a7c0c5f090bb0c7296fb3b117aacad0"
+    }
+  ],
+  "compiled_receipts": [
+    {
+      "path": "nodia-server/dist/app.module.js",
+      "bytes": 4293,
+      "sha256": "69d0699ed0a04d3753c7c62c16f567ecd7d7429decdce84267db156119bd793b"
+    },
+    {
+      "path": "nodia-server/dist/migrations/1792900000000-CreateNodiaAiPreferences.js",
+      "bytes": 2402,
+      "sha256": "5885a61dbe6dc2ff5b7b466b8dbb995feffcfa3aad8d2a1d0c6108a509291911"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-confirmation/nodia-ai-confirmation.module.js",
+      "bytes": 6530,
+      "sha256": "692037f6f4131ce5d9fc5c542d33226699188152ca7dd502040066815899ba1b"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-confirmation/use-case/validate-nodia-ai-confirmation.use-case.js",
+      "bytes": 6164,
+      "sha256": "6f8984998845f341f66c75c848c87438577d71c09fc9834bc6e21cad3dfd13d3"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-execution/use-case/execute-nodia-ai-local-execution.use-case.js",
+      "bytes": 23670,
+      "sha256": "454ea1b3099ea8c3935b1619a6f3cbc6820d710bde3d32a3af00e74e5bfcf780"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.js",
+      "bytes": 7494,
+      "sha256": "5c32dfdec97032f815f537a3cc8eda8a70b6536f4532cd976c8e53e40776cb11"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/dto/nodia-ai-preference.dto.js",
+      "bytes": 4128,
+      "sha256": "ff720e12a38a8d54c5999128dcd612e48c314ac9f027a239f183f4c0fc732d20"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/entities/nodia-ai-preference.entity.js",
+      "bytes": 2962,
+      "sha256": "5a8836b63f4474771230c0429d0dfb00f230d12c7e8a27c33409394a4b23ec8c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/nodia-ai-preference-operations.module.js",
+      "bytes": 2228,
+      "sha256": "e148d59a58f29a6a62d06c45167a8283ec19cfa61532f9c7d6e1cd8ec2cd1e5e"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/nodia-ai-preference.controller.js",
+      "bytes": 4198,
+      "sha256": "088611752650aa4287ed14ac315015914eb18a6bfe33f1617ef31172b5c2095b"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/nodia-ai-preference.module.js",
+      "bytes": 2108,
+      "sha256": "c5c4e738b12c61858e5d914cc2401225f50a1aca4fa6aeffc7c405797530ee60"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/nodia-ai-preference.service.js",
+      "bytes": 4502,
+      "sha256": "b015503d40138c2ba57effeb3fea051b59f2a5643aeff7da1d4763476ca508bc"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/types/preference.types.js",
+      "bytes": 3304,
+      "sha256": "ceb3a572ffb45df3c46cd58780b5ad6dc72d5e2097d67da541081d76366bfe3e"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/use-case/build-nodia-ai-preference-operations.use-case.js",
+      "bytes": 15653,
+      "sha256": "a472f1f11279597b0cae04988be0606370bd7d573462e6921cb45c119337f9f5"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/use-case/get-nodia-ai-preference-catalog.use-case.js",
+      "bytes": 2093,
+      "sha256": "e0096261661da9d51697e6304b8a91f695fefb92065a7e99aaed25f788e49c42"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/use-case/get-nodia-ai-preference-options.use-case.js",
+      "bytes": 5652,
+      "sha256": "c5468d58ca4a6b3454d3ab31a735147ef438c65850c1644611d8975b3e965eb8"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/use-case/list-nodia-ai-preferences.use-case.js",
+      "bytes": 3497,
+      "sha256": "1ba07aa6db6aab5e3704909fba87e2e79f79d4f67f306b82d694d60b3f9f5afd"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/use-case/nodia-ai-preference-reader.use-case.js",
+      "bytes": 4388,
+      "sha256": "57d89442500e0555ad1095b9543f526b7987c01a918ee7e67875f02cd3278e2c"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-preference/use-case/prepare-nodia-ai-preference.use-case.js",
+      "bytes": 3380,
+      "sha256": "28200ac7d148f4209af3943546ae4f63e9f72a44db1a21bf0e5bc3a6f8b4bfb6"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/nodia-ai-proposal.module.js",
+      "bytes": 11550,
+      "sha256": "23b31f76f4b558663c4e51912e4972a2203cd660dcf9667758158dc5009576dd"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/types/local-operation.types.js",
+      "bytes": 17147,
+      "sha256": "7b1e809cfbd1767d27c4aee16eed060d4cf79f03fee466d94ff0f927f7a43fef"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/types/proposal-preparer.types.js",
+      "bytes": 133,
+      "sha256": "297ac767cc2883dc834abacec2467b9f4d2f237772cc6d29f69f8ddcb2a20594"
+    },
+    {
+      "path": "nodia-server/dist/nodia-ai-proposal/use-case/validate-nodia-ai-proposal.use-case.js",
+      "bytes": 12802,
+      "sha256": "3c8802fff0b52ed46976eafdf3b39cf5de68e44f7b5bc772ab2088f64b929564"
+    }
+  ],
+  "verification": {
+    "command": "node docs/evidence/scripts/reconcile-nodia-ai-ai33-backend.cjs --check",
+    "source": {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai33-backend.cjs",
+      "bytes": 5951,
+      "sha256": "ce64f13da75ba369649da0babe108b84636927e7da7f3b838f2816a43c684cbe"
+    }
+  },
+  "limits": [
+    "Disposable SQL/HTTP acceptance is recorded separately by the integration coordinator",
+    "This report does not demonstrate real provider inference, deployment or production acceptance",
+    "Accepted memories contextualize suggestions; existing domain commands are not silently autofilled",
+    "MCP publication remains a separate gate"
+  ]
+}

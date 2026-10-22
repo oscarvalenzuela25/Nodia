@@ -1,0 +1,34 @@
+{
+  "stage": "AI-31",
+  "scope": "private_local_vm_lab",
+  "activated_at_utc": "2026-10-18T02:02:15Z",
+  "backup": "/opt/nodia/verification-backups/ai31-before-cross-reports-1792288926",
+  "backup_bytes": 284689,
+  "backup_sha256": "7ac591000583ecda8bd66aac85864e6ceed265d5c13e3119391a3da9a2368f01",
+  "migration": {
+    "applied": 0,
+    "reason": "AI-31 reuses existing schema; no migration"
+  },
+  "http_health": 200,
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active"
+  },
+  "configured_provider_environment_dependencies_unchanged": true,
+  "gemini_container_restarted": false,
+  "provider_login_logout_or_inference_requested": false,
+  "profile_bytes_hashed": false,
+  "knowledge_capabilities": 67,
+  "knowledge_fragments": 27,
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 25
+  },
+  "real_inferences_by_deployment": 0,
+  "business_writes": 0,
+  "new_tables": 0,
+  "new_columns": 0,
+  "existing_columns_added": 0
+}

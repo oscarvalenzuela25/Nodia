@@ -1,0 +1,33 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "non_generative_exact_configuration_preflight",
+  "status": "passed",
+  "started_at_utc": "2026-10-19T18:09:07.480Z",
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "storage_operations": 0,
+  "source_sha256": "a382edebfffd56c805b22bd64d68638bab096081e38d74eee2fce404e149436f",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high",
+    "auto_delegate_to_agentic": false
+  },
+  "public_mode_configuration_sha256": "741a1a8a0d4b4c573efc119afda4da0f2c7578befca89707d5b7cab05819b17b",
+  "native_metadata_requests": 1,
+  "observation_elapsed_ms": 10310.116209,
+  "native_observation": {
+    "available": true,
+    "supports_mcp": true,
+    "reason": null,
+    "source": "gemini_live_session_and_catalog",
+    "observed_at_utc": "2026-10-19T18:09:07.619Z",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+    "session_generation_sha256": "9f3dd503d957975b11239d8f39db505d55acfc37a159d7ab1a1580b8b666b08f",
+    "adapter_contract_version": "nodia-ai-gemini-chat/1"
+  },
+  "finished_at_utc": "2026-10-19T18:09:17.904Z"
+}

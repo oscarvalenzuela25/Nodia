@@ -1,0 +1,26 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "status": "passed",
+  "source_sha256": "fbdd27a90113e1588b0371a6b9d939c86101b59ab4a4ae8aab644f05a6355f81",
+  "observed_at_utc": "2026-10-20T23:08:44.698641+00:00",
+  "requests": [
+    {
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "method": "PUT",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "status": 401
+    }
+  ],
+  "credentials_or_tokens_used": false,
+  "provider_generations": 0,
+  "configured_SQL_writes": 0,
+  "limits": [
+    "The test attachment had already been discarded. This proves these unauthenticated requests are rejected, not a new authenticated application download."
+  ]
+}

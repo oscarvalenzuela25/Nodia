@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "stage": "AI-36-C05-R05",
+  "scope": "offline_Node_precise_Agentic_observation_timeout_predispatch_retry_not_deployed",
+  "created_at_utc": "2026-10-19T21:10:23.464511+00:00",
+  "status": "passed_local_with_unchanged_historical_fixture_type_diagnostics",
+  "production_delta": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts",
+      "sha256": "c93b8edb1e86fb6513e8bcc20b3d86ead3f8ad7d4ce3091648ceb1e4f07cd34f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/types/nodia-ai-failure-diagnostic.ts",
+      "sha256": "aa5d157f5d9392e42130372f1b9e475b33a650796a64f9841ebaf5933706dcdd"
+    }
+  ],
+  "test_sources": [
+    {
+      "path": "nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts",
+      "sha256": "c423ced637c53ef98dcdfcc1706ee8442fba508bb7600f108e590a228418b99b"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.spec.ts",
+      "sha256": "ed3b0defeb35b8d5f7c998ff3aaaaafa6ccf3b46a6d9993d92f4a5ad5f89a8e6"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/retry-nodia-ai-job.use-case.spec.ts",
+      "sha256": "39e396c53e023cbaf900e0ec5632b9985e9656b45211ac6185302f6e8ef164a4"
+    }
+  ],
+  "full_offline_suite": {
+    "command": "npx vitest run --reporter=json --outputFile=../.tmp/ai36-c05-r05-observation-node-full-final.json",
+    "cwd": "nodia-server",
+    "total": 4208,
+    "passed": 4208,
+    "failed": 0,
+    "files": 233,
+    "exit_code": 0,
+    "report": {
+      "path": ".tmp/ai36-c05-r05-observation-node-full-final.json",
+      "sha256": "77d71672c1dd53a95ed206e23a62bc95d8bf1e0c552eb53adb0417765d4c16c1"
+    },
+    "log": {
+      "path": ".tmp/ai36-c05-r05-observation-node-full-final.log",
+      "sha256": "1189b98a932a4503ec34e5e5ec17265ee159761d23d3d0b7152bf269fc99f57c"
+    }
+  },
+  "production_types_and_official_build": {
+    "command": "npm run build",
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-r05-node-build02.log",
+      "sha256": "08ba103f8a7f5d7dcd9a4102bd9bfd62a3d3ce90572e5b03615900b2b69d3715"
+    }
+  },
+  "lint": {
+    "command": "npx oxlint src/ test/",
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-r05-node-lint-exit.log",
+      "sha256": "651b3ee86f4123c090a4b6363c50fcb1c4ba85be29b34de86ea939aa7b583fff"
+    },
+    "unrelated_existing_warnings_present": true
+  },
+  "fixture_types": {
+    "command": "npx tsc --noEmit -p tsconfig.json",
+    "exit_code": 1,
+    "diagnostics": 192,
+    "new_diagnostics": 0,
+    "comparison": "Exact diagnostic multiset after removing only line/column positions.",
+    "baseline": {
+      "path": ".tmp/ai36-c05-high-deadline-fixture-types.log",
+      "sha256": "11b2024594a62215d4e8f6b0e726735c7fa4a8dd887a6a4e41c8724dfe641051"
+    },
+    "current": {
+      "path": ".tmp/ai36-c05-r05-node-fixture-types-final.log",
+      "sha256": "11b2024594a62215d4e8f6b0e726735c7fa4a8dd887a6a4e41c8724dfe641051"
+    },
+    "normalized_sha256": "e9fd2cfd9acf8bd312f088ccc94b19286a2793877931b4935c7e9d01d44d84d7"
+  },
+  "compiled_delta": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r05-node-compiled-delta.json",
+    "sha256": "35cb9163c5be2de589c96e0c4312246574a8f5c7052da401da331d49ea15eec0"
+  },
+  "candidate_archive": {
+    "path": ".tmp/ai36-c05-r05-node-candidate01.tar",
+    "sha256": "569556945e8e65e71ea0ce0514f84c613dd5f256e55dbfb8d3536352980d68ce"
+  },
+  "candidate_manifest": {
+    "path": ".tmp/ai36-c05-r05-node-candidate01/manifest.json",
+    "sha256": "662ec8ad7076b8b7cf41c16b52c9d8e32b617076fefeaba7bb8c2b85b1796ea7"
+  },
+  "guard": {
+    "mode": "token_plan_agentic_direct_only",
+    "adapter_contract": "nodia-ai-gemini-chat/1",
+    "available": false,
+    "precise_native_reason": "agentic_timeout",
+    "resource_session_configuration_all_nonempty_and_frozen_equal": true,
+    "aborted_signal_not_retryable": true,
+    "error_code": "nodia_ai:agentic_observation_timeout",
+    "retryable": true,
+    "delegation": "unchanged_fail_closed_target_has_no_frozen_resource_key",
+    "compaction": "same_pre_dispatch_guard_before_reservation_and_budget_charge"
+  },
+  "retry_invariants": {
+    "existing_maximum_retries": 2,
+    "existing_delays_seconds": [
+      1,
+      3
+    ],
+    "maximum_deliveries": 3,
+    "same_run_job_selection_and_absolute_deadlines": true,
+    "new_attempt_and_fence_on_later_claim": "existing_claim_mechanism_not_reused_dispatch",
+    "no_reservation_arming_provider_or_compaction_charge_before_retry": true,
+    "no_retry_after_arming_or_unknown": true,
+    "generic_unavailability_session_model_config_identity_changes_not_retryable": true,
+    "admission_without_job_has_no_new_retry": true,
+    "provider_deadline_seconds_unchanged": 120,
+    "run_deadline_seconds_unchanged": 600,
+    "drain_seconds_unchanged": 150
+  },
+  "diagnostics": {
+    "closed_error_code_preserved_in_RunStage_log": true,
+    "new_helper_service_tests": 0
+  },
+  "visible_error_review": {
+    "server_event": "run.error message_key carries the code, but current Client does not render it directly.",
+    "page": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx:625-627",
+    "fallback_key": "nodiaAi:states.failed",
+    "es": "El turno terminó con un error",
+    "en": "The turn ended with an error",
+    "new_Client_or_i18n_changes": false
+  },
+  "publication_preserved": {
+    "release_id": "bde4090377b15d8519c9e001a758cf24e70ee3d54bff93ea67fb5dce1fb0a134",
+    "capabilities": 74,
+    "documents": 31,
+    "fragments": 31,
+    "sources": 59,
+    "excluded": 28,
+    "baseline_971_assets_match_R01": true,
+    "changed_compiled_assets": 5
+  },
+  "intermediate_results": [
+    {
+      "full_suite_before_empty_identity_hardening": {
+        "path": ".tmp/ai36-c05-r05-observation-node-full.json",
+        "sha256": "8a089bf0e124adcdce38d694a28ecc157abd9dd721ea664d5c779b6690c5b34a"
+      },
+      "passed": 4205
+    },
+    {
+      "first_build": {
+        "path": ".tmp/ai36-c05-r05-node-build01.log",
+        "sha256": "08ba103f8a7f5d7dcd9a4102bd9bfd62a3d3ce90572e5b03615900b2b69d3715"
+      },
+      "exit_code": 0
+    },
+    {
+      "packaging_guard": "Detected only the incremental tsconfig.tsbuildinfo cache; no initial packet emitted. Explicit cache exclusion is recorded in the final candidate manifest."
+    }
+  ],
+  "limits": [
+    "SQL ports in unit tests are synthetic; these checks do not certify PostgreSQL concurrency or real Gemini availability.",
+    "Only direct Agentic inference/compaction can retry. Delegation remains nonretryable until its contract freezes the destination resource identity.",
+    "No profile, VM, operational DB, R2, credentials or live provider was used. No Node932 deployment occurred."
+  ],
+  "actions": {
+    "provider_generations": 0,
+    "SQL_operations": 0,
+    "VM_operations": 0,
+    "deployment": false,
+    "Node932_changed": false
+  }
+}

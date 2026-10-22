@@ -15,6 +15,17 @@ const asRecord = (value: unknown): EngineStatus =>
     ? (value as EngineStatus)
     : {};
 
+export const observedWebThinkingLevels = (value: unknown): Record<string, ('low' | 'medium' | 'high')[]> | null => {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) return null;
+  const result: Record<string, ('low' | 'medium' | 'high')[]> = {};
+  for (const [id, levels] of Object.entries(value)) {
+    if (!id || !Array.isArray(levels) || !levels.length || levels.length > 3
+        || new Set(levels).size !== levels.length || levels.some((level) => !['low', 'medium', 'high'].includes(level))) return null;
+    Object.defineProperty(result, id, { value: levels, enumerable: true, configurable: true, writable: true });
+  }
+  return result;
+};
+
 export const isAgenticSessionActive = (value: unknown): boolean => {
   const status = asRecord(value);
   return (
@@ -50,6 +61,9 @@ export const normalizeGeminiEngineStatus = (
       supported_options: {
         extended_thinking: typeof asRecord(web.supported_options).extended_thinking === 'boolean'
           ? asRecord(web.supported_options).extended_thinking : null,
+        thinking_level: typeof asRecord(web.supported_options).thinking_level === 'boolean'
+          ? asRecord(web.supported_options).thinking_level : null,
+        thinking_levels_by_model: observedWebThinkingLevels(asRecord(web.supported_options).thinking_levels_by_model),
       },
       quota: quota?.quota ?? null,
       quotas: undefined,

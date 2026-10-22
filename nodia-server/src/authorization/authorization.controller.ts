@@ -6,7 +6,9 @@ import { GetAuthorizationContextUseCase } from './use-case/get-authorization-con
 @ApiBearerAuth()
 @Controller('authorization')
 export class AuthorizationController {
-  constructor(private readonly getAuthorizationContextUseCase: GetAuthorizationContextUseCase) {}
+  constructor(
+    private readonly getAuthorizationContextUseCase: GetAuthorizationContextUseCase,
+  ) {}
 
   @Get('context')
   @Header('Cache-Control', 'no-store')

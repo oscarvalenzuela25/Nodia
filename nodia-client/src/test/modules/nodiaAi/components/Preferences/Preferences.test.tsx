@@ -1,0 +1,83 @@
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import Preferences from "../../../../../modules/nodiaAi/components/Preferences/Preferences";
+import useAuthStore from "../../../../../store/authStore";
+import * as services from "../../../../../modules/nodiaAi/infrastructure/preferenceServices";
+import { catalog, preference, prepared } from "../../infrastructure/preferenceFixtures";
+import { chatId } from "../../infrastructure/fixtures";
+
+vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
+vi.mock("../../../../../modules/nodiaAi/infrastructure/preferenceServices", () => ({ getPreferenceCatalog: vi.fn(), getPreferences: vi.fn(), getPreferenceOptions: vi.fn(), preparePreference: vi.fn() }));
+vi.mock("../../../../../modules/nodiaAi/components/ProposalPreview", () => ({ default: ({ proposalRef, visible = true }: { proposalRef: { revision: number }; visible?: boolean }) => <section aria-label="Exact synthetic proposal" data-observed={visible}>Revision {proposalRef.revision}</section> }));
+let client: QueryClient;
+beforeEach(() => {
+  vi.clearAllMocks();client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  useAuthStore.setState({ user: { id: "9", name: "Synthetic" }, token: "synthetic-only", expiresAt: Date.now()+600000, sessionStatus: "authenticated", sessionVersion: 1, isRefreshing: false });
+  vi.mocked(services.getPreferenceCatalog).mockResolvedValue(catalog);
+  vi.mocked(services.getPreferences).mockResolvedValue({ items: [preference], next_cursor: null });
+  vi.mocked(services.getPreferenceOptions).mockResolvedValue({ items: [{ id: preference.value, label: "Synthetic food" }], next_cursor: null });
+  vi.mocked(services.preparePreference).mockResolvedValue(prepared);
+});
+afterEach(() => { client.clear();useAuthStore.setState({ user: null, token: null, sessionStatus: "anonymous" }); });
+const open = () => render(<QueryClientProvider client={client}><Preferences open conversationId={chatId} disabled={false} onClose={vi.fn()} /></QueryClientProvider>);
+describe("accepted preferences panel", () => {
+  it("keeps its exact proposal mounted but stops observation and preference reads while the drawer is closed", async () => {
+    const onClose = vi.fn();
+    const panel = (visible: boolean) => <QueryClientProvider client={client}><Preferences open={visible} conversationId={chatId} disabled={false} onClose={onClose} /></QueryClientProvider>;
+    const view = render(panel(true));
+    await userEvent.click(await screen.findByRole("button", { name: "Proponer borrado" }));
+    const proposal = await screen.findByRole("region", { name: "Exact synthetic proposal" });
+    expect(proposal).toHaveAttribute("data-observed", "true");
+    view.rerender(panel(false));
+    expect(proposal).toHaveAttribute("data-observed", "false");
+    const listReads = vi.mocked(services.getPreferences).mock.calls.length;
+    const catalogReads = vi.mocked(services.getPreferenceCatalog).mock.calls.length;
+    await client.invalidateQueries({ queryKey: ["nodia-ai"] });
+    expect(services.getPreferences).toHaveBeenCalledTimes(listReads);
+    expect(services.getPreferenceCatalog).toHaveBeenCalledTimes(catalogReads);
+    expect(proposal).toBeInTheDocument();
+    view.rerender(panel(true));
+    await waitFor(() => expect(services.getPreferences).toHaveBeenCalledTimes(listReads + 1));
+    expect(proposal).toHaveAttribute("data-observed", "true");
+    expect(services.preparePreference).toHaveBeenCalledOnce();
+  });
+  it("lists accepted names without silent writes and allows forgetting a revoked reference", async () => {
+    vi.mocked(services.getPreferences).mockResolvedValue({ items: [{ ...preference, available: false, value_label: null }], next_cursor: null });
+    vi.mocked(services.getPreferenceCatalog).mockResolvedValue({ items: [] });
+    const user = userEvent.setup();open();
+    expect(await screen.findByText("Referencia no disponible")).toBeInTheDocument();
+    expect(screen.queryByText(preference.value)).not.toBeInTheDocument();
+    expect(services.preparePreference).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Proponer cambio" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Proponer borrado" }));
+    await screen.findByRole("region", { name: "Exact synthetic proposal" });
+    expect(services.preparePreference).toHaveBeenCalledExactlyOnceWith({ conversation_id: chatId, operation: "delete", preference_id: preference.preference_id, expected_revision: 3 });
+  });
+  it("preserves selected draft on failed preparation and sends only explicit selection to review", async () => {
+    const user = userEvent.setup();open();
+    await user.click(await screen.findByRole("button", { name: "Proponer una preferencia" }));
+    await user.click(screen.getByRole("button", { name: "Qué recordar" }));
+    await user.click(await screen.findByRole("option", { name: "Categoría habitual de gastos" }));
+    const selector = await screen.findByRole("button", { name: "Valor preferido" });
+    await waitFor(() => expect(selector).toBeEnabled());
+    await user.click(selector);await user.click(await screen.findByRole("option", { name: "Synthetic food" }));
+    vi.mocked(services.preparePreference).mockRejectedValueOnce(new Error("Synthetic unavailable"));
+    await user.click(screen.getByRole("button", { name: "Revisar propuesta" }));
+    await waitFor(() => expect(services.preparePreference).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Revisar propuesta" })).toBeEnabled());
+    expect(screen.getByRole("button", { name: "Valor preferido" })).toHaveTextContent("Synthetic food");
+    await user.click(screen.getByRole("button", { name: "Revisar propuesta" }));
+    await screen.findByRole("region", { name: "Exact synthetic proposal" });
+    expect(services.preparePreference).toHaveBeenLastCalledWith({ conversation_id: chatId, operation: "create", scope_key: "finance", scope: {}, key: "expense_category_id", value: preference.value });
+  });
+  it("shows a retryable list failure rather than retaining revoked names", async () => {
+    vi.mocked(services.getPreferences).mockRejectedValueOnce(new Error("Synthetic unavailable"));
+    const user = userEvent.setup();open();
+    expect(await screen.findByText("No pudimos consultar tus preferencias.")).toBeInTheDocument();
+    expect(screen.queryByText("Synthetic food")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await screen.findByText("Synthetic food");expect(services.preparePreference).not.toHaveBeenCalled();
+  });
+});

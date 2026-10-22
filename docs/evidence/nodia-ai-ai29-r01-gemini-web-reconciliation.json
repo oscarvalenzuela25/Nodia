@@ -1,0 +1,49 @@
+{
+  "stage": "AI-29-R01",
+  "scope": "disposable_postgresql_real_private_web_cancellation_and_restart_only",
+  "authentication_acceptance_requested": false,
+  "observed_at_utc": "2026-10-17T22:48:56.399Z",
+  "checks": 11,
+  "passed": [
+    "token_plan_web: cancel-before-start obtains native terminal fence",
+    "token_plan_web: delayed start cannot bypass native cancellation",
+    "connection_login/token_plan_web: exact HTTP confirmation and SQL worker pause",
+    "token_plan_web: real native cancellation is reconciled in SQL",
+    "connection_login/token_plan_web: exact HTTP confirmation and SQL worker pause",
+    "token_plan_web: lost initial native response stays uncertain",
+    "real restarted native HTTP service becomes ready without redispatch",
+    "real Docker restart reconciles the exact prior request using host-certified kernel closure",
+    "native container restart never redispatches the interrupted login",
+    "durable SQL records exclude credential and challenge fields",
+    "response-loss injection exercised every requested real engine"
+  ],
+  "reports": [
+    {
+      "mode": "token_plan_web",
+      "authentication_observed": false,
+      "discovered_model_count": null,
+      "native_reconciliation_verified": true
+    }
+  ],
+  "native_http": {
+    "start": 3,
+    "status": 3,
+    "cancel": 2,
+    "discovery": 0
+  },
+  "dropped_initial_responses": 1,
+  "native_container_restarts": 1,
+  "provider_transport_mocked": false,
+  "inference_requested": false,
+  "existing_account_logout": false,
+  "configured_database_written": false,
+  "credentials_or_challenges_recorded": false,
+  "process_exit_code": 0,
+  "cleanup_completed_without_reported_failure": true,
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai29-gemini-real.integration.mjs",
+      "sha256": "76f9542454aef36bcf70b5be235b5059d4cb5c00b70185894363427319c42c02"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "context_uid": 0,
+  "runtime_enabled_in_environment": true,
+  "profile_root_configured": true,
+  "provider_inferences": 0,
+  "account_login_or_logout_requested": false,
+  "with_signal": {
+    "kind": "error",
+    "code": "codex_runtime_unavailable",
+    "elapsed_ms": 2
+  },
+  "without_signal": {
+    "kind": "status",
+    "available": false,
+    "authenticated": null,
+    "checked_at": null,
+    "reason": "codex_runtime_unavailable",
+    "quotas_observed": false
+  }
+}

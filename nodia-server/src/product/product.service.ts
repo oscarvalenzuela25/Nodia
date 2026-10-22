@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, type EntityManager } from 'typeorm';
 import { Product } from './entities/product.entity.js';
 import { ProductLog } from './entities/product-log.entity.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
@@ -13,9 +17,15 @@ import { BulkCreateProductLogDto } from './dto/bulk-create-product-log.dto.js';
 import { UpdateProductLogDto } from './dto/update-product-log.dto.js';
 import { BulkUpdateProductLogDto } from './dto/bulk-update-product-log.dto.js';
 import { GetProductLogsDto } from './dto/get-product-logs.dto.js';
-import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
+import {
+  applyRansack,
+  validateRansackEnvelope,
+} from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
-import { GetProductsResponse, GetProductLogsResponse } from './types/product.types.js';
+import {
+  GetProductsResponse,
+  GetProductLogsResponse,
+} from './types/product.types.js';
 
 @Injectable()
 export class ProductService {
@@ -26,17 +36,94 @@ export class ProductService {
     private readonly productLogRepository: Repository<ProductLog>,
   ) {}
 
+  private requireTransaction(manager: EntityManager): void {
+    if (!manager.queryRunner?.isTransactionActive)
+      throw new BadRequestException(
+        'Product effect requires an active transaction',
+      );
+  }
+
+  private referenceId(value: string): string {
+    if (
+      typeof value !== 'string' ||
+      value.length > 19 ||
+      !/^[0-9]+$/.test(value) ||
+      BigInt(value) < 1n ||
+      BigInt(value) > 9223372036854775807n
+    )
+      throw new BadRequestException('Invalid product or provider ID');
+    return BigInt(value).toString();
+  }
+
+  /** Individual and legacy bulk writers share the same relation barrier. */
+  private async validateReferenceSet(
+    manager: EntityManager,
+    references: readonly { business_id: string; provider_id?: string | null }[],
+  ): Promise<void> {
+    if (
+      references.some(
+        (item) => typeof item.business_id !== 'string' || !item.business_id,
+      )
+    )
+      throw new BadRequestException('Invalid business ID');
+    const businessIds = [
+      ...new Set(references.map((item) => item.business_id.toLowerCase())),
+    ].sort();
+    const businesses: { id: string }[] = await manager.query(
+      'SELECT id::text FROM businesses WHERE id=ANY($1::uuid[]) ORDER BY id FOR SHARE',
+      [businessIds],
+    );
+    if (businesses.length !== businessIds.length)
+      throw new NotFoundException('Business not found');
+    const providerIds = [
+      ...new Set(
+        references.flatMap((item) =>
+          item.provider_id == null ? [] : [this.referenceId(item.provider_id)],
+        ),
+      ),
+    ].sort((a, b) =>
+      BigInt(a) < BigInt(b) ? -1 : BigInt(a) > BigInt(b) ? 1 : 0,
+    );
+    if (!providerIds.length) return;
+    const providers: { id: string; business_id: string }[] =
+      await manager.query(
+        'SELECT id::text,business_id::text FROM providers WHERE id=ANY($1::bigint[]) ORDER BY id FOR SHARE',
+        [providerIds],
+      );
+    const byId = new Map(
+      providers.map((provider) => [provider.id, provider.business_id]),
+    );
+    if (
+      references.some(
+        (item) =>
+          item.provider_id != null &&
+          byId.get(this.referenceId(item.provider_id))?.toLowerCase() !==
+            item.business_id.toLowerCase(),
+      )
+    )
+      throw new BadRequestException(
+        'Provider does not belong to this business',
+      );
+  }
+
+  private async validateReferences(
+    manager: EntityManager,
+    businessId: string,
+    providerId: string | null | undefined,
+  ): Promise<void> {
+    return this.validateReferenceSet(manager, [
+      { business_id: businessId, provider_id: providerId },
+    ]);
+  }
+
   // ---------------------------------------------------------------------------
   // Products
   // ---------------------------------------------------------------------------
 
-  async findAllProducts({
-    page = 1,
-    limit = 10,
-    all = false,
-    includes = true,
-    q,
-  }: GetProductsDto): Promise<GetProductsResponse> {
+  async findAllProducts(
+    { page = 1, limit = 10, all = false, includes = true, q }: GetProductsDto,
+    maxRows?: number,
+  ): Promise<GetProductsResponse> {
     const qb = this.productRepository.createQueryBuilder('product');
     validateRansackEnvelope(q);
 
@@ -55,7 +142,11 @@ export class ProductService {
       if (statuses.includes('out')) {
         conditions.push('product.stock <= 0');
       }
-      if (statuses.includes('low') || statuses.includes('medium') || statuses.includes('medio')) {
+      if (
+        statuses.includes('low') ||
+        statuses.includes('medium') ||
+        statuses.includes('medio')
+      ) {
         conditions.push('(product.stock > 0 AND product.stock < 10)');
       }
       if (statuses.includes('normal')) {
@@ -106,13 +197,25 @@ export class ProductService {
         product.sale_price
       )`;
 
-      if (variations.includes('increased') || variations.includes('up') || variations.includes('subio')) {
+      if (
+        variations.includes('increased') ||
+        variations.includes('up') ||
+        variations.includes('subio')
+      ) {
         conditions.push(`product.sale_price > (${prevPriceSql})`);
       }
-      if (variations.includes('decreased') || variations.includes('down') || variations.includes('bajo')) {
+      if (
+        variations.includes('decreased') ||
+        variations.includes('down') ||
+        variations.includes('bajo')
+      ) {
         conditions.push(`product.sale_price < (${prevPriceSql})`);
       }
-      if (variations.includes('unchanged') || variations.includes('same') || variations.includes('mantuvo')) {
+      if (
+        variations.includes('unchanged') ||
+        variations.includes('same') ||
+        variations.includes('mantuvo')
+      ) {
         conditions.push(`product.sale_price = (${prevPriceSql})`);
       }
       if (conditions.length > 0) {
@@ -125,8 +228,15 @@ export class ProductService {
     if (!cleanQ?.s) {
       qb.addOrderBy('product.created_at', 'DESC');
     }
+    if (!/^id(?:\s|$)/i.test(cleanQ?.s?.trim() ?? ''))
+      qb.addOrderBy('product.id', 'ASC');
 
     if (all) {
+      if (maxRows !== undefined) {
+        if (!Number.isSafeInteger(maxRows) || maxRows < 1 || maxRows > 1000)
+          throw new BadRequestException('Export row limit is invalid');
+        qb.take(maxRows + 1);
+      }
       const data = await qb.getMany();
       return {
         data,
@@ -168,12 +278,27 @@ export class ProductService {
     return product;
   }
 
-  async createProduct(createDto: CreateProductDto): Promise<Product> {
-    const product = this.productRepository.create(createDto);
-    const savedProduct = await this.productRepository.save(product);
+  async createProduct(
+    createDto: CreateProductDto,
+    manager?: EntityManager,
+  ): Promise<Product> {
+    if (!manager)
+      return this.productRepository.manager.transaction((tx) =>
+        this.createProduct(createDto, tx),
+      );
+    this.requireTransaction(manager);
+    const products = manager.getRepository(Product);
+    const logs = manager.getRepository(ProductLog);
+    await this.validateReferences(
+      manager,
+      createDto.business_id,
+      createDto.provider_id,
+    );
+    const product = products.create(createDto);
+    const savedProduct = await products.save(product);
 
     // Automatically record snapshot in product_logs
-    const log = this.productLogRepository.create({
+    const log = logs.create({
       product_id: savedProduct.id,
       code: savedProduct.code,
       name: savedProduct.name,
@@ -183,18 +308,26 @@ export class ProductService {
       sale_price: savedProduct.sale_price,
       stock: savedProduct.stock,
     });
-    await this.productLogRepository.save(log);
+    await logs.save(log);
 
     return savedProduct;
   }
 
-  async createBulkProducts(bulkDto: BulkCreateProductDto): Promise<Product[]> {
-    const entities = this.productRepository.create(bulkDto.items);
-    const savedProducts = await this.productRepository.save(entities);
-
-    // Automatically record snapshot in product_logs
+  async createBulkProducts(
+    bulkDto: BulkCreateProductDto,
+    manager?: EntityManager,
+  ): Promise<Product[]> {
+    if (!manager)
+      return this.productRepository.manager.transaction((tx) =>
+        this.createBulkProducts(bulkDto, tx),
+      );
+    this.requireTransaction(manager);
+    const products = manager.getRepository(Product);
+    const productLogs = manager.getRepository(ProductLog);
+    await this.validateReferenceSet(manager, bulkDto.items);
+    const savedProducts = await products.save(products.create(bulkDto.items));
     const logs = savedProducts.map((prod) =>
-      this.productLogRepository.create({
+      productLogs.create({
         product_id: prod.id,
         code: prod.code,
         name: prod.name,
@@ -205,18 +338,40 @@ export class ProductService {
         stock: prod.stock,
       }),
     );
-    await this.productLogRepository.save(logs);
-
+    await productLogs.save(logs);
     return savedProducts;
   }
 
-  async updateProduct(id: string, updateDto: UpdateProductDto): Promise<Product> {
-    const product = await this.findOneProduct(id);
+  async updateProduct(
+    id: string,
+    updateDto: UpdateProductDto,
+    manager?: EntityManager,
+  ): Promise<Product> {
+    if (!manager)
+      return this.productRepository.manager.transaction((tx) =>
+        this.updateProduct(id, updateDto, tx),
+      );
+    this.requireTransaction(manager);
+    const products = manager.getRepository(Product);
+    const logs = manager.getRepository(ProductLog);
+    const product = await products.findOne({
+      where: { id },
+      lock: { mode: 'pessimistic_write' },
+    });
+    if (!product)
+      throw new NotFoundException(`Product with ID "${id}" not found`);
+    await this.validateReferences(
+      manager,
+      updateDto.business_id ?? product.business_id,
+      updateDto.provider_id === undefined
+        ? product.provider_id
+        : updateDto.provider_id,
+    );
     Object.assign(product, updateDto);
-    const savedProduct = await this.productRepository.save(product);
+    const savedProduct = await products.save(product);
 
     // Automatically record snapshot in product_logs
-    const log = this.productLogRepository.create({
+    const log = logs.create({
       product_id: savedProduct.id,
       code: savedProduct.code,
       name: savedProduct.name,
@@ -226,24 +381,46 @@ export class ProductService {
       sale_price: savedProduct.sale_price,
       stock: savedProduct.stock,
     });
-    await this.productLogRepository.save(log);
+    await logs.save(log);
 
     return savedProduct;
   }
 
-  async updateBulkProducts(bulkDto: BulkUpdateProductDto): Promise<Product[]> {
-    const updatedProducts: Product[] = [];
-    for (const item of bulkDto.items) {
-      const { id, ...attrs } = item;
-      const product = await this.findOneProduct(id);
-      Object.assign(product, attrs);
-      updatedProducts.push(product);
+  async updateBulkProducts(
+    bulkDto: BulkUpdateProductDto,
+    manager?: EntityManager,
+  ): Promise<Product[]> {
+    if (!manager)
+      return this.productRepository.manager.transaction((tx) =>
+        this.updateBulkProducts(bulkDto, tx),
+      );
+    this.requireTransaction(manager);
+    const products = manager.getRepository(Product);
+    const productLogs = manager.getRepository(ProductLog);
+    const ids = bulkDto.items.map((item) => this.referenceId(item.id));
+    if (new Set(ids).size !== ids.length)
+      throw new BadRequestException(
+        'A product may appear only once in a bulk update',
+      );
+    const selected = await products
+      .createQueryBuilder('product')
+      .where('product.id IN (:...ids)', { ids })
+      .orderBy('product.id', 'ASC')
+      .setLock('pessimistic_write')
+      .getMany();
+    const locked = new Map(selected.map((product) => [product.id, product]));
+    if (locked.size !== ids.length) {
+      const missing = ids.find((id) => !locked.has(id));
+      throw new NotFoundException(`Product with ID "${missing}" not found`);
     }
-    const savedProducts = await this.productRepository.save(updatedProducts);
-
-    // Automatically record snapshot in product_logs
+    const candidates = bulkDto.items.map((item, index) => {
+      const { id: _id, ...attributes } = item;
+      return Object.assign(new Product(), locked.get(ids[index])!, attributes);
+    });
+    await this.validateReferenceSet(manager, candidates);
+    const savedProducts = await products.save(candidates);
     const logs = savedProducts.map((prod) =>
-      this.productLogRepository.create({
+      productLogs.create({
         product_id: prod.id,
         code: prod.code,
         name: prod.name,
@@ -254,8 +431,7 @@ export class ProductService {
         stock: prod.stock,
       }),
     );
-    await this.productLogRepository.save(logs);
-
+    await productLogs.save(logs);
     return savedProducts;
   }
 
@@ -278,6 +454,8 @@ export class ProductService {
     }
 
     applyRansack(qb, q, 'product_log', RANSACK_POLICIES.product_log);
+    if (!/^id(?:\s|$)/i.test(q?.s?.trim() ?? ''))
+      qb.addOrderBy('product_log.id', 'ASC');
 
     if (all) {
       const data = await qb.getMany();
@@ -321,9 +499,26 @@ export class ProductService {
     return log;
   }
 
-  async createLog(dto: CreateProductLogDto): Promise<ProductLog> {
-    const log = this.productLogRepository.create(dto);
-    return this.productLogRepository.save(log);
+  async createLog(
+    dto: CreateProductLogDto,
+    manager?: EntityManager,
+  ): Promise<ProductLog> {
+    if (!manager)
+      return this.productLogRepository.manager.transaction((tx) =>
+        this.createLog(dto, tx),
+      );
+    this.requireTransaction(manager);
+    const logs = manager.getRepository(ProductLog);
+    if (
+      !(
+        await manager.query('SELECT id FROM products WHERE id=$1 FOR SHARE', [
+          dto.product_id,
+        ])
+      ).length
+    )
+      throw new NotFoundException('Product not found');
+    const log = logs.create(dto);
+    return logs.save(log);
   }
 
   async createBulkLogs(dto: BulkCreateProductLogDto): Promise<ProductLog[]> {
@@ -331,10 +526,33 @@ export class ProductService {
     return this.productLogRepository.save(logs);
   }
 
-  async updateLog(id: string, dto: UpdateProductLogDto): Promise<ProductLog> {
-    const log = await this.findOneLog(id);
+  async updateLog(
+    id: string,
+    dto: UpdateProductLogDto,
+    manager?: EntityManager,
+  ): Promise<ProductLog> {
+    if (!manager)
+      return this.productLogRepository.manager.transaction((tx) =>
+        this.updateLog(id, dto, tx),
+      );
+    this.requireTransaction(manager);
+    const logs = manager.getRepository(ProductLog);
+    const log = await logs.findOne({
+      where: { id },
+      lock: { mode: 'pessimistic_write' },
+    });
+    if (!log)
+      throw new NotFoundException(`ProductLog with ID "${id}" not found`);
+    if (
+      !(
+        await manager.query('SELECT id FROM products WHERE id=$1 FOR SHARE', [
+          dto.product_id ?? log.product_id,
+        ])
+      ).length
+    )
+      throw new NotFoundException('Product not found');
     Object.assign(log, dto);
-    return this.productLogRepository.save(log);
+    return logs.save(log);
   }
 
   async updateBulkLogs(dto: BulkUpdateProductLogDto): Promise<ProductLog[]> {

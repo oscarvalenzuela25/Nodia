@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "scope": "AI36-C05-R03_local_native_manifest_structural_depth_fix_offline_validation",
+  "status": "passed_local_offline_only",
+  "created_at_utc": "2026-10-19T20:22:21.245477+00:00",
+  "production_delta": [
+    {
+      "path": "nodia-gemini-microservice/native_mcp_stdio.py",
+      "sha256": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c"
+    }
+  ],
+  "new_tests": [
+    {
+      "path": "nodia-gemini-microservice/tests/test_native_mcp_manifest.py",
+      "sha256": "69655bede44e04b20ab449f1c07be5fbecdd7c8db8a85810112554ed298080b6"
+    }
+  ],
+  "previous_source_snapshot": {
+    "path": "docs/evidence/source-snapshots/nodia-ai-ai36-c05-r02-native_mcp_stdio.py",
+    "sha256": "0f3fa1a2e4b88d5aaba7a01ac0a35a20bb11ffb039870c26c8b7fbd12d24d999"
+  },
+  "guarantees": {
+    "catalog_depth_unchanged": 16,
+    "ordinary_RPC_and_argument_depth_unchanged": 16,
+    "closed_manifest_depth": 17,
+    "additional_manifest_structural_levels": 1,
+    "closed_manifest_keys": true,
+    "catalog_revalidated_as_root_at_depth16": true,
+    "descriptor_limit_unchanged": 74,
+    "catalog_bytes_unchanged": 131072,
+    "RPC_bytes_unchanged": 65536,
+    "collection_items_unchanged": 128,
+    "RPC_budget_ceiling_unchanged": 128,
+    "tool_budget_ceiling_unchanged": 12,
+    "timeout_ceiling_unchanged_seconds": 120,
+    "MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc"
+  },
+  "Windows_official_suite": {
+    "command": ".venv/Scripts/python.exe run_tests.py",
+    "cwd": "nodia-gemini-microservice",
+    "total": 451,
+    "passed": 449,
+    "skipped": 2,
+    "seconds": 14.12,
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-manifest-depth-python-windows.log",
+      "sha256": "ab0f57e1ec7cdf890b19f4ae877d21b45ec237fe630175498a1715d1479b230c"
+    },
+    "baseline_total": 445,
+    "added_regression_tests": 6,
+    "skips_unchanged": true
+  },
+  "Windows_focused_suite": {
+    "command": ".venv/Scripts/python.exe -m unittest discover -s tests -p test_native_mcp_manifest.py -v",
+    "total": 6,
+    "passed": 6,
+    "exit_code": 0,
+    "log": {
+      "path": ".tmp/ai36-c05-manifest-depth-focused-windows.log",
+      "sha256": "64fef39ef892e05d5e65b822ccf2f398ad9bcbf22e3ac4823718ba030f6e9ab6"
+    }
+  },
+  "compile_checks": {
+    "python_files": [
+      "nodia-gemini-microservice/native_mcp_stdio.py",
+      "nodia-gemini-microservice/tests/test_native_mcp_manifest.py",
+      "docs/evidence/scripts/nodia-ai-ai36-c05-preferences-stdio-control.py"
+    ],
+    "python_exit_code": 0,
+    "Node_syntax_file": "docs/evidence/scripts/nodia-ai-ai36-c05-preferences-catalog-control.mjs",
+    "Node_syntax_exit_code": 0
+  },
+  "offline_controls": [
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-catalog-control.json",
+      "sha256": "cd6e30cfed280bc151684e9bd38161bea310e69334ed6cabfbcebc4bc9c877da"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-control-pre-fix.json",
+      "sha256": "4d49fcfad2a8783d88fedfdbba512902b0a3039025bfa5153a08ee6e97f4f586"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-postfix-attempt01.json",
+      "sha256": "879e4b4c0d0e08b7a119a32336fc2f6b55db7bcdf861f089ffe31be7483780cd"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-postfix-attempt02.json",
+      "sha256": "643a3c1ea125ef3e9b27010c896081f8c98aa76b68192b529a7ac9f52ce11db7"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-control.json",
+      "sha256": "12e2c6a0d7489f2f00cc15bc44905a7db0c0e6312f5f53858ab0658046f90eb6"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-postfix-attempt04.json",
+      "sha256": "c86e01e7649df46fa3f6c640efca854aa0e3819a993c462c7ccf0e09b6ea3665"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai36-c05-preferences-stdio-root-independent.json",
+      "sha256": "c86e01e7649df46fa3f6c640efca854aa0e3819a993c462c7ccf0e09b6ea3665"
+    }
+  ],
+  "control_script": {
+    "path": "docs/evidence/scripts/nodia-ai-ai36-c05-preferences-stdio-control.py",
+    "sha256": "790dd055beca9a717d93e545db41abee5a9b2b5934dc4c2a92c1ef5f7a54eb11"
+  },
+  "intermediate_control_failures": {
+    "count": 2,
+    "production_source_same_for_all_postfix_controls": true,
+    "consumer_change": "After the first postfix failure, retain synthetic child stderr on a nonzero exit rather than mask it; no business/runtime rule relaxed. Later only unique output handling was added. First and second failures were retained separately.",
+    "cause": "not_established; incomplete child exit/error details remain unknown",
+    "successful_rechecks": "same production source passed the later control, unique-output control and independent root control"
+  },
+  "new_provider_requests": 0,
+  "operational_database_access": 0,
+  "deployments_or_restarts_by_this_agent": 0,
+  "Linux_QA": "pending_independent_candidate_build",
+  "real_CLI_and_capability_acceptance": "pending_new_candidate_epoch_gates; offline callbacks and CLI consumer are synthetic"
+}

@@ -1,0 +1,41 @@
+{
+  "stage": "AI-32",
+  "scope": "real_gemini_native_synthetic_modalities",
+  "status": "gates_open",
+  "observed_at_utc": "2026-10-18T02:34:04Z",
+  "maximum_generations": 6,
+  "generation_requests": 1,
+  "probes": [
+    {
+      "engine": "web",
+      "kind": "image",
+      "model_id": "56fdd199312815e2",
+      "effort_id": null,
+      "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+      "session_generation": "76c619fa0a4f497baf9c0731aed1bb88",
+      "attempt_id": "c53ace61-2dfc-475b-9f5d-cdc4b81415d5",
+      "file_bytes": 11985,
+      "file_sha256": "d50465c10e94d221bc7dd32d484a64214053a31fe182eabc041af0cec8dee200",
+      "expected_answer_sha256": "f4c94c16cda0db18626ecad4b91cb26b1c118c11224fbac4fde0629f7158b83e",
+      "verified": false,
+      "native_acknowledged": true,
+      "http_status": 502,
+      "elapsed_seconds": 9.86,
+      "status": "native_rejected",
+      "error_code": "chat_result_unknown",
+      "reconciliation_http_status": 200,
+      "native_outcome": "abandoned_unknown"
+    }
+  ],
+  "credentials_logged": false,
+  "provider_configuration_modified": false,
+  "provider_login_logout_requested": false,
+  "database_modified": false,
+  "automatic_inference_retries": 0,
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T02:34:22Z"
+}

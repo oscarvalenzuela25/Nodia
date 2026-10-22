@@ -1,0 +1,433 @@
+{
+  "stage": "AI-23",
+  "status": "passed",
+  "verified_at": "2026-10-17T16:10:31.827380+00:00",
+  "environment": "private Linux VM, PostgreSQL 16 disposable Docker fixtures only",
+  "stage_directory": "/opt/nodia/verification/ai23-20261017",
+  "stage_base_archive_sha256": "231c075e89a9aec62def067f7fc4cce8a5f090b986fc306fcb9c87108bfa6886",
+  "knowledge_release_id": "67df82be991496f45536f62528c283b3342975e2351124512d6f232ed442d825",
+  "configured_database_used": false,
+  "configured_provider_used": false,
+  "production_acceptance": false,
+  "checks": 229,
+  "suites": [
+    {
+      "stage": "AI-17",
+      "checks": 52,
+      "script_sha256": "737f78e1bce4b4f534edaa23197b2f3922e3d1a3fdad036c9d514a8fbac98952",
+      "status": "passed",
+      "result": {
+        "stage": "AI-17",
+        "scope": "compiled_http_disposable_postgresql_native_finance_preparation_no_provider_no_domain_writes",
+        "checks": 52,
+        "passed": [
+          "M2 migration runs against disposable PostgreSQL",
+          "AI-17 adds exactly the four currently consumed proposal tables",
+          "logical proposal points to a deferred current revision",
+          "native missing status produces a valid clarification without a proposal",
+          "incomplete draft persists the normalized partial command and clarification",
+          "continuation fills the same draft and creates one ready revision",
+          "ready public proposal uses the strict shared schema",
+          "draft continuation advances revision and links its proposal",
+          "a status-only continuation retains the complete normalized draft and original field provenance",
+          "composite foreign keys prevent moving a claimed draft into another chat",
+          "stale continuation cannot produce a second proposal",
+          "GET reconstructs exactly the frozen projection and hash",
+          "known defaults distinguish absent before, null after and true after",
+          "proposal expiration uses policy and never exceeds chat retention",
+          "public projection excludes internal templates/preconditions/tokens",
+          "ordinary users cannot inspect foreign proposals; super_admin can",
+          "foreign super_admin inspection records the real actor",
+          "foreign inspection never grants editing as the conversation owner",
+          "revision query validates canonical integers and unknown fields",
+          "human edit endpoint rejects managed fields, paths and duplicate semantic edits",
+          "raw JSON boundary follows Express case-insensitive proposal routing",
+          "raw HTTP rejects duplicate top-level and nested JSON keys before they can change a proposal",
+          "raw HTTP rejects escaped duplicate keys, lone surrogates and malformed UTF-8 without revising content",
+          "two-device CAS admits one revision and rejects the stale competitor",
+          "editing appends a new revision and changes the exact content hash",
+          "previous revision content/hash stays unchanged and is superseded",
+          "revising another field preserves default provenance",
+          "reads and edits do not extend owner-message retention",
+          "current destination authorization covers old and current proposal projections",
+          "observation does not recompute frozen values from newer business state",
+          "failed native re-preparation preserves the current revision",
+          "session revocation applies immediately while another valid session can inspect",
+          "direct SQL cannot rewrite a frozen command",
+          "direct SQL cannot delete a frozen step while its revision exists",
+          "direct SQL cannot append hidden steps after ready",
+          "frozen revision hash/content cannot change or reopen to draft",
+          "logical proposal identity cannot be reassigned or individually discarded",
+          "cancellation changes state without changing frozen content and is repeat-safe",
+          "AI-18 confirmation remains unavailable without an executor and public preparation stays absent",
+          "expired chat denies own and foreign proposal access before physical purge",
+          "chat cascade removes all proposal payload despite immutability triggers",
+          "native preparation never creates or edits a business movement",
+          "proposal lifecycle schedules no provider work, tool call, or execution",
+          "source-linked preparation commits a bounded exact proposal_ready reference in the same transaction",
+          "publisher retries preserve event identity and sequence without duplicates",
+          "rollback after preparation leaves no orphan proposal, draft, event or consumed sequence",
+          "authorized observation exposes the exact proposal revision and hash",
+          "private preparer is still absent from published tools and receipt retrieval",
+          "destination revocation resets cursors, hides proposal refs and denies the exact projection",
+          "restored access recovers the same event without preparing or executing again",
+          "linked outbox, source run, receipt and proposal payload all cascade with the chat",
+          "all source-linked checks retain the business sentinel and never call a provider"
+        ]
+      }
+    },
+    {
+      "stage": "AI-18",
+      "checks": 37,
+      "script_sha256": "27f9568d0612dc208af2769f275a80027c0a2da3ba7589aea6d8e77e865c8ee1",
+      "status": "passed",
+      "result": {
+        "stage": "AI-18",
+        "scope": "compiled_http_disposable_postgresql_native_preparation_synthetic_execution_admission_no_provider_no_domain_effect",
+        "checks": 37,
+        "passed": [
+          "production review reports unavailable execution without pretending approval can run",
+          "explicit empty executor registry rejects challenge and confirmation without creating work",
+          "AI-18 migration installs all three consumed tables",
+          "human review metadata binds typed editable fields to exact revision and hash",
+          "administrator inspection exposes read-only metadata without approval or edit controls",
+          "challenge is bound to the exact public proposal identity and hash",
+          "database stores only token digest and authenticated session",
+          "challenge expiry obeys 120 seconds and does not exceed proposal lifetime",
+          "foreign ordinary users and omniscient administrator cannot confirm as owner",
+          "same-session token rotates in place while other-device challenge remains independent",
+          "strict human wire rejects unknown fields, coerced revision, malformed token and duplicate JSON keys",
+          "double click admits exactly one execution and returns its identity twice",
+          "lost HTTP response retry recovers admitted work without consuming another challenge",
+          "another device discovers the existing execution after distinct-request conflict",
+          "one atomic confirmation freezes origin, exact approval hash and stable step identity",
+          "grant and typed job refer only to confirmed identity without provider credentials",
+          "human admission commits exactly one execution event without model run or challenge material",
+          "execution event dedup preserves exact target payload and scope while rejecting approval material",
+          "shared journal reserves four terminal slots and rolls back allocation with failed transaction",
+          "confirmed proposal retains exact content and exposes its admitted execution",
+          "reopening the chat observes the admitted execution without resubmitting confirmation",
+          "current-authority operation observation reports queued work without fictional business success",
+          "request identity cannot be rebound to another hash or proposal",
+          "challenge confirmation retry and inspection never renew owner-message retention",
+          "simultaneous different device requests admit one origin and reject the competitor",
+          "old revision and token cannot approve changed content",
+          "expired challenge cannot create execution",
+          "revoked destination module denies fresh admission and prior-result replay immediately",
+          "session revocation blocks result recovery while another current session retains observation",
+          "changed native precondition rejects admission without recomputing approved content",
+          "real per-owner waiting admission limit rejects excess work without consuming approval",
+          "outbox failure rolls back execution steps grant job challenge consumption and proposal state",
+          "same exact user approval remains usable after transactional rollback",
+          "SQL cannot rewrite approval identity, per-step identity or omit execution grant hash",
+          "SQL cannot append a step from another proposal to the confirmed operation",
+          "expired unstarted execution is purged with its challenge grant job steps and events",
+          "all admission and observation cases leave the business sentinel untouched and call no provider"
+        ]
+      }
+    },
+    {
+      "stage": "AI-20",
+      "checks": 36,
+      "script_sha256": "2d03a0ccf8ebc71b3e3da57812d0383b2208151ae6197a079c6fb500ad6e6917",
+      "status": "passed",
+      "result": {
+        "stage": "AI-20",
+        "scope": "compiled_http_standalone_worker_disposable_postgresql_process_crashes_local_native_finance_no_provider",
+        "checks": 36,
+        "passed": [
+          "production registration admits the verified one-step financial command without fixture overrides",
+          "two SQL claimants acquire exactly one execution lease",
+          "claim records one running step and durable attempt without a domain effect",
+          "claimed native effect receipt terminal state and attempt commit together",
+          "replaying a completed claimed identity returns its receipt without repeating native create",
+          "SQL freezes completed receipts command bindings and terminal execution states",
+          "cancel before claim stops the queued command and releases its chat without an effect",
+          "duplicate cancellation is terminal observation without an effect",
+          "cancelling a claimed local command fences the stale claimant before native create",
+          "process death after claim recovers a definite local rollback and offers explicit resume",
+          "expired claimant cannot create an effect after recovery fenced its attempt",
+          "human resume and response-lost replay preserve original execution source native key and command identity",
+          "resumed execution with a new fence commits exactly one original effect",
+          "lost COMMIT acknowledgement is reconciled from its durable receipt without another native effect",
+          "cancel after committed effect reports completed and preserves the created record",
+          "abrupt process death after COMMIT preserves the terminal receipt and cannot reopen the native effect",
+          "process death after native INSERT before COMMIT leaves neither movement nor receipt and is recoverable",
+          "explicit recovery after interrupted effect creates one movement with original identity",
+          "cancellation waits for the in-flight local transaction rather than reporting a false rollback",
+          "concurrent cancel after native COMMIT preserves the exact effect and completed receipt",
+          "material precondition changes produce a known failure requiring a new proposal",
+          "resume never refreshes a changed material snapshot or creates another financial effect",
+          "module revocation after admission prevents dispatch of the pending effect",
+          "permission failure releases the local worker with no false completed receipt",
+          "revoked confirmation session prevents effects while a new valid session can inspect the same failed execution",
+          "explicit resume renews authority under the new session without changing the original effect identity",
+          "foreign users and omniscient administrators cannot cancel a chat owned by another actor",
+          "expiry deletes chat payload while a claimed local execution retains only bounded reconciliation identity",
+          "SQL reconciliation removes the expired local journal after proving its transaction rolled back",
+          "an expired retained execution never reconstructs a command or dispatches another effect",
+          "conversation snapshot exposes the admitted execution before leaving its observation",
+          "production standalone worker claims and commits an admitted financial effect without provider access",
+          "standalone worker drains and its completed effect survives process shutdown and observation",
+          "reopening chat restores the original execution link and the effect is readable through native Finance API",
+          "local confirmed execution never acquires provider runtime slots or invokes model inference",
+          "all SQL claims are terminal with no abandoned open attempt"
+        ]
+      }
+    },
+    {
+      "stage": "AI-21",
+      "checks": 47,
+      "script_sha256": "876722965f74ab0dae5e1fe1d16d0a1e95c58d37dc759a5fb7c22cea3157298a",
+      "status": "passed",
+      "result": {
+        "stage": "AI-21",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_all_twelve_native_financial_mutations_no_provider",
+        "checks": 47,
+        "exercised_operations": [
+          "categories/create",
+          "categories/delete",
+          "categories/update",
+          "category_groups/create",
+          "category_groups/delete",
+          "category_groups/update",
+          "movements/create",
+          "movements/delete",
+          "movements/update",
+          "obligations/create",
+          "obligations/delete",
+          "obligations/update"
+        ],
+        "native_handlers": [
+          {
+            "method": "GET",
+            "path": "finance/categories//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/categories/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/categories//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/categories/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/categories/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/category-groups//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/category-groups/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/category-groups//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/category-groups/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/category-groups/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/movements//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/movements/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/movements//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/movements/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/movements/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/obligations//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/obligations/:id"
+          },
+          {
+            "method": "POST",
+            "path": "finance/obligations//"
+          },
+          {
+            "method": "PUT",
+            "path": "finance/obligations/:id"
+          },
+          {
+            "method": "DELETE",
+            "path": "finance/obligations/:id"
+          },
+          {
+            "method": "GET",
+            "path": "finance/overview//"
+          },
+          {
+            "method": "GET",
+            "path": "finance/overview/categories"
+          },
+          {
+            "method": "GET",
+            "path": "finance/overview/category-groups"
+          }
+        ],
+        "passed": [
+          "category create commits one native row and historical receipt despite completed replay",
+          "category update archives using the native partial contract",
+          "group create commits its membership with the receipt",
+          "omitted group selection preserves memberships",
+          "explicit empty group selection clears memberships atomically",
+          "movement update confirms pending expense and returns the native amount",
+          "confirmed movement cannot silently reopen to pending",
+          "editing a historical movement preserves an unchanged archived category",
+          "new movements cannot use archived categories",
+          "obligation create atomically creates its initial movement with matching amount and direction",
+          "pending repayment does not reserve or reduce the historical obligation balance",
+          "partial payment confirmation updates exact paid and remaining values",
+          "native payment and principal rules reject overpayment and principal below confirmed repayments",
+          "principal edit atomically updates its initial movement and calculated remaining balance",
+          "native deletion protections cover initial movements obligations with payments and categories with any movements",
+          "archiving a confirmed payment does not change its amortization contribution",
+          "deleting a payment preserves its historical deletion receipt and recalculates obligation balance",
+          "cancelled origin exposes unknown remaining amount rather than a fabricated zero",
+          "cancelled origin prevents new obligation repayments",
+          "deleting obligation without payments removes the obligation and initial movement in the same effect",
+          "loan initial movement uses the opposite direction from debt",
+          "even archived cancelled payments prevent implicit obligation cascade deletion",
+          "deleting an unused category removes group pivots while preserving its group",
+          "group deletion preserves categories and only removes memberships",
+          "all twelve registered financial create update and delete operations commit a verified receipt",
+          "super admin explicit owner creates native data for that owner without impersonating their chat",
+          "ordinary actor cannot target another owner or smuggle a foreign category association",
+          "required group selection is clarified instead of silently defaulting to an empty list",
+          "strict native commands reject unknown ownership fields immutable movement links and malformed money",
+          "largest supported monetary bigint remains an exact decimal string in native data and receipt routing",
+          "same timestamp target edits invalidate the original category proposal before confirmation",
+          "material changes after admission fail without effect and cannot resume the old snapshot",
+          "changed group membership invalidates a frozen deletion preview without relying on group timestamp",
+          "obligation proposal detects a materially changed initial movement even with an unchanged timestamp",
+          "a new pending payment changes the frozen obligation association snapshot before dispatch",
+          "two confirmed payment intents cannot exceed remaining balance under concurrent SQL workers",
+          "native HTTP payment and confirmed worker use the same SQL obligation lock and cannot overpay concurrently",
+          "receipt failure rolls back native group and its membership together rather than leaving an unacknowledged effect",
+          "compiled native inventory contains eleven reads plus twelve mutations and all read routes remain accessible",
+          "cancelled claimed DELETE fences a stale worker and preserves the native record",
+          "real process death before UPDATE proves rollback without altering native data",
+          "explicit UPDATE resume preserves source identity native key and exact payload while committing once",
+          "lost DELETE COMMIT acknowledgement recovers its immutable receipt without requiring the deleted row",
+          "standalone compiled worker claims a new financial operation and commits its native group plus receipt",
+          "worker drains and committed non-movement receipt survives process shutdown",
+          "all financial work avoids provider calls and runtime slots",
+          "all execution attempts terminate without orphan leases"
+        ]
+      }
+    },
+    {
+      "stage": "AI-22",
+      "checks": 57,
+      "script_sha256": "3f88592bf192159396c71235864df4cb14c6fe7f13c8e98db987d444cf2f3b53",
+      "status": "passed",
+      "result": {
+        "stage": "AI-22",
+        "scope": "compiled_http_confirmation_worker_disposable_postgresql_all_fourteen_native_business_mutations_no_provider_no_r2",
+        "checks": 57,
+        "exercised_operations": [
+          "businesses/create",
+          "businesses/set_collaborators",
+          "businesses/update",
+          "invoices/create",
+          "invoices/update",
+          "product_logs/create",
+          "product_logs/update",
+          "products/create",
+          "products/update",
+          "provider_contacts/create",
+          "provider_contacts/set_active",
+          "provider_contacts/update",
+          "providers/create",
+          "providers/update"
+        ],
+        "passed": [
+          "business create commits translations and derived description flag with one native receipt",
+          "business update preserves native empty translation-list upsert semantics while updating the derived flag",
+          "explicit empty translation values clear both languages without deleting their stable keys",
+          "collaborator assignment preserves native owner and creates the requested permissions",
+          "empty collaborator actions deactivate the specified collaborator while preserving omitted collaborators",
+          "ordinary actor cannot change a business owned by another user",
+          "provider creation preserves zero false JSON and native lowercase normalization",
+          "provider partial update preserves omitted tax fields and archived state despite DTO create initializers",
+          "contact creation preserves personal casing native values version and omits internal request keys",
+          "native request key replay recovers the AI-created contact and rejects a changed payload",
+          "complete contact replacement explicitly clears optional values and increments version once",
+          "contact status uses native CAS and preserves the other values",
+          "native identical immediate status replay does not increment contact version again",
+          "native changed stale contact payload cannot overwrite the confirmed state",
+          "contact parent scope and backend-owned keys cannot be supplied by model arguments",
+          "product creation commits one native product and matching history snapshot atomically",
+          "product update appends one complete native snapshot while preserving omitted state",
+          "independent history create and update do not mutate the live product",
+          "SQL invoice creation preserves zero false null and cannot invent an object path",
+          "invoice metadata update preserves omitted provider inactive state and zero total",
+          "invoice commands reject arbitrary storage keys and permissive legacy numeric coercion",
+          "all fourteen individual business operations commit exact native receipts",
+          "AI preparation and native provider update both reject transfers leaving linked products or invoices behind",
+          "legacy provider bulk transfer cannot bypass references and rejected batches preserve every selected provider",
+          "legacy bulk product creation rejects incompatible supplier scopes before writing products or logs",
+          "legacy bulk product update rejects mismatched supplier and duplicate targets without partial changes",
+          "native bulk product log failure rolls back every product and appended history row",
+          "human invoice review reparses stored commands preserving explicit integer zero",
+          "human contact review preserves the backend intent key across proposal revisions and creates one native contact",
+          "explicit null clears native product and invoice provider associations without stale ORM relations restoring them",
+          "provider transfer receipt binds the destination while native contacts remain with their parent",
+          "a provider transfer changes contact operation scope and invalidates the former parent business",
+          "same timestamp material product changes invalidate confirmation",
+          "material changes after admission reject old commands before a native effect",
+          "same timestamp supplier changes invalidate a frozen contact proposal",
+          "native global supplier access remains allowed with the target module while business ownership stays unchanged",
+          "super admin can manage a foreign business without transferring its owner",
+          "ordinary actors require the destination business module as well as NodiaAI",
+          "receipt failure rolls back the native product and its appended history together",
+          "real worker death before supplier UPDATE leaves no native effect and permits explicit resume",
+          "resumed supplier UPDATE commits once after duplicate human resume",
+          "lost invoice UPDATE commit acknowledgement reconciles its immutable native receipt",
+          "human cancellation fences a stale business worker before writing",
+          "native HTTP status and confirmed worker share contact CAS without duplicate version increments",
+          "a newly linked native product invalidates the frozen provider-transfer proof before confirmation",
+          "a newly linked native invoice after admission blocks the worker transfer without a receipt or resume",
+          "native product creation and confirmed supplier transfer serialize on the supplier and preserve business associations",
+          "native invoice creation and confirmed supplier transfer serialize on the supplier and preserve business associations",
+          "native bulk product create serializes with confirmed supplier transfer",
+          "native bulk product update serializes with confirmed supplier transfer",
+          "native bulk supplier transfer cannot bypass a confirmed product creation in flight",
+          "valid native bulk supplier transfers remain atomic and preserve requested response order",
+          "standalone compiled worker resolves all native metadata and commits a new business effect",
+          "standalone worker drains with its committed receipt preserved",
+          "all six business resource families remain readable through their native endpoints",
+          "all local business operations avoid AI provider calls and runtime slots",
+          "execution attempts and delivery leases terminate without orphans"
+        ]
+      }
+    }
+  ]
+}

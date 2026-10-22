@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { AiProviderService } from '../ai-provider.service.js';
+import { type ActorReference } from '../../authorization/authority-transaction.js';
 import { CreateAiProviderCatalogDto } from '../dto/create-ai-provider-catalog.dto.js';
-import { AiProviderCatalog } from '../entities/ai-provider-catalog.entity.js';
+import { SaveAiProviderCatalogUseCase } from './save-ai-provider-catalog.use-case.js';
 
 @Injectable()
 export class CreateAiProviderCatalogUseCase {
-  constructor(private readonly aiProviderService: AiProviderService) {}
-
-  async execute(dto: CreateAiProviderCatalogDto): Promise<AiProviderCatalog> {
-    return this.aiProviderService.createCatalog(dto);
+  constructor(private readonly writer: SaveAiProviderCatalogUseCase) {}
+  async execute(dto: CreateAiProviderCatalogDto, actor: ActorReference) {
+    return this.writer.execute(undefined, dto, actor);
   }
 }

@@ -1,0 +1,139 @@
+{
+  "$schema": "./nodia-ai-v1-runtime-policy.schema.json",
+  "policy_version": "nodia-ai-runtime/1",
+  "status": "validated_design_not_runtime",
+  "admission": {
+    "http_json_bytes": 65536,
+    "message_text_utf8_bytes": 32768,
+    "parts_per_message": 8,
+    "title_utf8_bytes": 256,
+    "file_bytes": 20971520,
+    "files_per_message": 4,
+    "message_files_bytes": 41943040,
+    "audio_seconds": 300,
+    "pdf_pages": 100,
+    "image_pixels": 12000000,
+    "attachments_per_chat": 100,
+    "chat_storage_bytes": 104857600,
+    "owner_storage_bytes": 524288000,
+    "upload_seconds": 60,
+    "upload_intent_seconds": 900,
+    "parse_seconds": 15,
+    "parse_memory_mib": 256,
+    "uploads_per_owner": 1,
+    "uploads_global": 2
+  },
+  "results": {
+    "tool_arguments_utf8_bytes": 65536,
+    "tool_result_utf8_bytes": 65536,
+    "json_depth": 16,
+    "json_collection_items": 128,
+    "assembled_context_utf8_bytes": 262144,
+    "assistant_text_utf8_bytes": 32768,
+    "list_default_rows": 25,
+    "list_max_rows": 100,
+    "report_max_groups": 100,
+    "report_max_filters": 20,
+    "provider_stream_bytes": 2097152,
+    "outbox_events_per_activity": 256,
+    "delta_batch_utf8_bytes": 1024,
+    "delta_flush_milliseconds": 250,
+    "sse_connections_per_owner": 2
+  },
+  "budget": {
+    "tool_calls_per_run": 12,
+    "mcp_rpc_messages_per_run": 128,
+    "provider_dispatches_per_run": 3,
+    "compactions_per_run": 1,
+    "delegations_per_run": 1,
+    "steps_per_proposal": 8
+  },
+  "queue": {
+    "active_per_chat": 1,
+    "active_per_owner": 1,
+    "waiting_per_owner": 2,
+    "waiting_global": 32,
+    "foreground_workers": 2,
+    "maintenance_workers": 1,
+    "holders_per_runtime_resource": 1,
+    "wait_seconds": 300,
+    "local_retry_after_seconds": 5
+  },
+  "timing": {
+    "run_seconds": 600,
+    "execution_admission_seconds": 600,
+    "provider_dispatch_seconds": 120,
+    "read_query_seconds": 3,
+    "domain_step_seconds": 15,
+    "proposal_seconds": 900,
+    "confirmation_challenge_seconds": 120,
+    "heartbeat_seconds": 5,
+    "lease_seconds": 30,
+    "cancellation_seconds": 10,
+    "flush_seconds": 10,
+    "drain_seconds": 150,
+    "eligibility_observation_seconds": 300,
+    "secure_human_seconds": 300
+  },
+  "retry": {
+    "pre_dispatch_retries": 2,
+    "pre_dispatch_delay_seconds": [
+      1,
+      3
+    ],
+    "uncertain_dispatch_retries": 0,
+    "cleanup_attempts": 5,
+    "cleanup_delay_seconds": [
+      5,
+      30,
+      120,
+      600
+    ]
+  },
+  "routing": {
+    "source_mode": "token_plan_web",
+    "target_mode": "token_plan_agentic",
+    "same_connection_only": true,
+    "default_enabled": false,
+    "return_to_base_next_turn": true,
+    "fallback_on_error": false,
+    "switch_confirms_writes": false,
+    "api_delegation_enabled": false
+  },
+  "search": {
+    "query_utf8_bytes": 256,
+    "default_rows": 25,
+    "max_rows": 100,
+    "sources": [
+      "title",
+      "owner_message_text",
+      "assistant_message_text"
+    ],
+    "exclude_expired": true
+  },
+  "retention": {
+    "chat_days": 90,
+    "basis": "last_new_owner_message_at_or_created_at",
+    "audit_days_after_chat": 0,
+    "settled_receipt_days_after_chat": 0,
+    "terminal_attempt_days_after_chat": 0,
+    "accepted_preferences": "until_explicit_deletion",
+    "unresolved_work": "minimal_until_reconciled_then_delete",
+    "provider_unknown": "quarantine_no_replay",
+    "sweep_seconds": 900,
+    "batch_chats": 100,
+    "physical_cleanup_target_seconds": 86400,
+    "backup_max_days": 7,
+    "restore_mode": "quarantine_purge_expired_no_job_replay"
+  },
+  "publication_gates": [
+    "postgres_admission_fencing",
+    "shared_profile_all_entrypoints",
+    "durable_budgets_routing_contracts",
+    "modalities_per_exact_adapter",
+    "effect_reconciliation",
+    "storage_late_put_version_cleanup",
+    "backup_rotation_restore",
+    "load_drain_deployment"
+  ]
+}

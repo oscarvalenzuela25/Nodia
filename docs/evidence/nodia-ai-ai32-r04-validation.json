@@ -1,0 +1,1502 @@
+{
+  "stage": "AI-32-R04",
+  "status": "private_lab_revalidation_with_explicit_acceptance_gates",
+  "documentary_approval": false,
+  "observed_at_utc": "2026-10-18T05:20:15Z",
+  "inputs": {
+    "artifact_paths": [
+      ".tmp/ai32-r04-app-layout.py",
+      ".tmp/ai32-r04-catalog-check.log",
+      ".tmp/ai32-r04-doc-check.log",
+      ".tmp/ai32-r04-doc-check.py",
+      ".tmp/ai32-r04-doc-update.py",
+      ".tmp/ai32-r04-knowledge-build.log",
+      ".tmp/ai32-r04-knowledge-check.log",
+      ".tmp/ai32-r04-native-harness-offline.py",
+      ".tmp/ai32-r04-node-observation.log",
+      ".tmp/ai32-r04-node-observation.mjs",
+      ".tmp/ai32-r04-sdk-analysis.json",
+      ".tmp/ai32-r04-web-text-control-offline.py",
+      "docs/evidence/nodia-ai-ai32-r04-activation-health.json",
+      "docs/evidence/nodia-ai-ai32-r04-agentic-audio-webm-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-agentic-image.json",
+      "docs/evidence/nodia-ai-ai32-r04-agentic-pdf.json",
+      "docs/evidence/nodia-ai-ai32-r04-app-layout.json",
+      "docs/evidence/nodia-ai-ai32-r04-audio-analysis.json",
+      "docs/evidence/nodia-ai-ai32-r04-baseline-health.json",
+      "docs/evidence/nodia-ai-ai32-r04-build-attempt01.json",
+      "docs/evidence/nodia-ai-ai32-r04-build.json",
+      "docs/evidence/nodia-ai-ai32-r04-current-mcp-image.json",
+      "docs/evidence/nodia-ai-ai32-r04-final-health.json",
+      "docs/evidence/nodia-ai-ai32-r04-fresh-synthetic-audio.json",
+      "docs/evidence/nodia-ai-ai32-r04-gemini-activation.json",
+      "docs/evidence/nodia-ai-ai32-r04-native-manifest-attempt01.json",
+      "docs/evidence/nodia-ai-ai32-r04-native-manifest.json",
+      "docs/evidence/nodia-ai-ai32-r04-node-observation.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-fresh.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-wav-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-fresh.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-image.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-pdf.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-text-entities.json",
+      "docs/evidence/scripts/test_nodia_ai_ai32_r04_mcp_probe.py",
+      "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests.log",
+      "nodia-server/.tmp/ai32-r04-linux-tests-attempt01.log"
+    ],
+    "build_path": "docs/evidence/nodia-ai-ai32-r04-build.json",
+    "baseline_health_path": "docs/evidence/nodia-ai-ai32-r04-baseline-health.json",
+    "gemini_activation_path": "docs/evidence/nodia-ai-ai32-r04-gemini-activation.json",
+    "final_health_path": "docs/evidence/nodia-ai-ai32-r04-final-health.json",
+    "native_manifest_path": "docs/evidence/nodia-ai-ai32-r04-native-manifest.json",
+    "current_native_probe_paths": [
+      "docs/evidence/nodia-ai-ai32-r04-agentic-audio-webm-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-agentic-image.json",
+      "docs/evidence/nodia-ai-ai32-r04-agentic-pdf.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-fresh.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-wav-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-es.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-fresh.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-image.json",
+      "docs/evidence/nodia-ai-ai32-r04-web-pdf.json"
+    ],
+    "mcp_probe_paths": [
+      "docs/evidence/nodia-ai-ai32-r04-current-mcp-image.json"
+    ],
+    "text_control_paths": [
+      "docs/evidence/nodia-ai-ai32-r04-web-text-entities.json"
+    ],
+    "python_linux_log": "nodia-server/.tmp/ai32-r04-linux-tests.log",
+    "python_windows_log": "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests-final.log",
+    "offline_native_log": ".tmp/ai32-r04-native-harness-offline.log",
+    "offline_text_log": ".tmp/ai32-r04-web-text-control-offline.log"
+  },
+  "history": {
+    "preserved_artifacts": [
+      {
+        "path": "docs/evidence/nodia-ai-ai32-r03-validation.json",
+        "sha256": "98e0a36ae77b912b0779f1de4205c5d5b131ac0a062f501dad39f39847423c60"
+      },
+      {
+        "path": "docs/evidence/nodia-ai-ai32-r02-validation.json",
+        "sha256": "bceb6f7ba1ce3212073c5803032c87e5ef5167148418ace0349f0764717c5fe2"
+      }
+    ],
+    "historical_sources_not_compared_to_current_tree": true
+  },
+  "runtime": {
+    "gemini_image": "sha256:212cffaeefdd5e93f1abae290c4f387a891ddbd65357c223c6f0a3c0224488f3",
+    "activation": {
+      "path": "docs/evidence/nodia-ai-ai32-r04-gemini-activation.json",
+      "sha256": "890e71cd3c41f125569dbcd50ab4dc677c382ace7893be9febd0fa1ee1af8e84"
+    },
+    "health": {
+      "path": "docs/evidence/nodia-ai-ai32-r04-final-health.json",
+      "sha256": "148e76152918c7139f315f71ef19bf3b2fdd2144dadddb268a1cb5b338b2286e"
+    },
+    "native_sources": [
+      {
+        "path": "nodia-gemini-microservice/.dockerignore",
+        "sha256": "7e4cf214735dbe8b3174106f832287dafc75834ce081facd665967ecb7760bcb"
+      },
+      {
+        "path": "nodia-gemini-microservice/Dockerfile",
+        "sha256": "d0b45ead1d60b9b3304f5bba09bf0d6bed398042a4c2a776decef1458fb24221"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_cli.py",
+        "sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_login.py",
+        "sha256": "10e080d2e8c55bd1bf6c1a4926cdbb195cecaed26c0d208fd2551338f0379225"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_login_terminal.py",
+        "sha256": "4586051b5b4cbf158869f15b2c9bffc2bb9b0582a2a8b0deea3c32ebc0ba18c2"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_observation.py",
+        "sha256": "4eb2887a5b912cf495ca20ef96d08a34d9e37e98422be2757d351400de98caeb"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_process_launcher.py",
+        "sha256": "8741c527bbf250f9b20013f67bbd688bd118e83cfad8541a49df45fa62b56f16"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_progress.py",
+        "sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_service.py",
+        "sha256": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e"
+      },
+      {
+        "path": "nodia-gemini-microservice/agentic_tool_gate.py",
+        "sha256": "d4fbbd7462ba5771a43166635112af8db95d20941fcf1deb702c4f0b921eb9bd"
+      },
+      {
+        "path": "nodia-gemini-microservice/analysis_observations.py",
+        "sha256": "fa20fb6bebd75d7a72427a5af06ff4a470a6f7a2a4a6716c7eb944b0ba7702c3"
+      },
+      {
+        "path": "nodia-gemini-microservice/antigravity-cli.lock.json",
+        "sha256": "540c77a421530b75b06270485a0990b66bb13022a700a31feab83d4efeeb68ba"
+      },
+      {
+        "path": "nodia-gemini-microservice/attachment_inspector.py",
+        "sha256": "6b8723a2a91b196dfa83e90a7016b59bd0387e123b78453e7b973f6aa8621da2"
+      },
+      {
+        "path": "nodia-gemini-microservice/attachment_inspector_worker.py",
+        "sha256": "3579be757bb9b7a4fdab96f19843f91133f9bf8e56fc4a555a662a380cb82033"
+      },
+      {
+        "path": "nodia-gemini-microservice/auth.py",
+        "sha256": "27bb7d617a2315cd6899ec67db8caf24dea741779abea9662b1f35c423ce0eca"
+      },
+      {
+        "path": "nodia-gemini-microservice/browser_manager.py",
+        "sha256": "10fa3fae6a51ac943041d8a85d8442d28015d697db70a6afc2f22bf8f3a262e8"
+      },
+      {
+        "path": "nodia-gemini-microservice/durable_login.py",
+        "sha256": "4bf6ba19617f8a23724f10928da7fb12d971911a1aed30f9a66fab604724e2bf"
+      },
+      {
+        "path": "nodia-gemini-microservice/durable_login_routes.py",
+        "sha256": "8000a67577c49adc79ea4891196833e1c0206793a5d668896bd80ab7a11abb87"
+      },
+      {
+        "path": "nodia-gemini-microservice/experiments/nodia_ai_agentic_diagnostics.py",
+        "sha256": "33bc1ef664b11e10933a7b727d7e84a0968db59333d9b1ed7bca1d35f76e375a"
+      },
+      {
+        "path": "nodia-gemini-microservice/experiments/nodia_ai_mcp_fixture.py",
+        "sha256": "8ef578567e89834361383a63a208b82850783d720f42ab4ba7f0896801e20daf"
+      },
+      {
+        "path": "nodia-gemini-microservice/experiments/nodia_ai_web_protocol.py",
+        "sha256": "5b5f38ee4fcad59103299aa19e437e4a150581d37b69b5894c050679fc0809ba"
+      },
+      {
+        "path": "nodia-gemini-microservice/gemini_service.py",
+        "sha256": "5b042c89f9678ff774bd6bbac814c8e579d56b497c9e088c357a226dae2d7bfd"
+      },
+      {
+        "path": "nodia-gemini-microservice/interactive_login.py",
+        "sha256": "38e8ae229d39764394c96fa3f0daaee0b2adb65aa4dba11fbfd977c72c309848"
+      },
+      {
+        "path": "nodia-gemini-microservice/invoice_parser.py",
+        "sha256": "bee80a80d59f8aabf8d3988d01cd4eec1e7bb3f7dc95a96f3bfa2a4ab3de3dec"
+      },
+      {
+        "path": "nodia-gemini-microservice/login_cgroups.py",
+        "sha256": "117c73f407e35c6c63c583311257835fad49d3742d9eb42f17ea2c589e772088"
+      },
+      {
+        "path": "nodia-gemini-microservice/login_request_store.py",
+        "sha256": "de522f93e6e5fe44ededf7a86c1c140360d7a86034b092086725569d43539f61"
+      },
+      {
+        "path": "nodia-gemini-microservice/login_supervisor.py",
+        "sha256": "8859645ee2dde0543348ee34f38bc2bb0c1410e9a2723529aa13a2e38d7a4317"
+      },
+      {
+        "path": "nodia-gemini-microservice/login_viewer.py",
+        "sha256": "b79b69e3effed5dcda9b54d44b26f9140d99f1e0f0c3373a66ec862ea82e8c96"
+      },
+      {
+        "path": "nodia-gemini-microservice/main.py",
+        "sha256": "af758abf948094b5ef5338552174f749bf14aa2d7b61a8c3242e18f30d596f57"
+      },
+      {
+        "path": "nodia-gemini-microservice/native_attachments.py",
+        "sha256": "7bcf7c37a7db9ca2f6b25ab72cb997c04f95daafca82d5faea02feb722dc15ec"
+      },
+      {
+        "path": "nodia-gemini-microservice/native_attempts.py",
+        "sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60"
+      },
+      {
+        "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+        "sha256": "f172662b1e1e870f9699d71032ee7ca7d742f66920e0e14bf4ae029a32aaa6af"
+      },
+      {
+        "path": "nodia-gemini-microservice/native_mcp_stdio.py",
+        "sha256": "7a8b2ca9487fb9c52ab8443f0a51012148012b952f3cdef59f513fa8a7b8332c"
+      },
+      {
+        "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+        "sha256": "634e2fc4a4b8eafccc64e12269df5ebeb5b7e156c0b9993f9fba8a7d373ebea3"
+      },
+      {
+        "path": "nodia-gemini-microservice/nodia_ai_tool_gate.py",
+        "sha256": "8712f62945548d9546f32ffb7a5d508117180b7ae2c33392876da5e804b0aaf1"
+      },
+      {
+        "path": "nodia-gemini-microservice/profile_admission.py",
+        "sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb"
+      },
+      {
+        "path": "nodia-gemini-microservice/request_guard.py",
+        "sha256": "eb352500348e2037d3d3c5ca1c2aa650d8e639924cb05a03394cfedaa3a989ae"
+      },
+      {
+        "path": "nodia-gemini-microservice/requirements.txt",
+        "sha256": "aaf250f1b2f3bd6a5843c85910d0f1001f8883864116d363a278c1b65558205a"
+      },
+      {
+        "path": "nodia-gemini-microservice/run.py",
+        "sha256": "b405f408ae3a990c2928859004a8f1feb9472d8a769ca7fd159335e347f346af"
+      },
+      {
+        "path": "nodia-gemini-microservice/run_tests.py",
+        "sha256": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc"
+      },
+      {
+        "path": "nodia-gemini-microservice/schemas.py",
+        "sha256": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320"
+      },
+      {
+        "path": "nodia-gemini-microservice/scripts/agentic_http_probe.py",
+        "sha256": "f7703863e4c1ec4a67a38d352cece9a668e049bd12714d52e526bb6e1886f2b7"
+      },
+      {
+        "path": "nodia-gemini-microservice/scripts/install_agentic_cli.py",
+        "sha256": "8aeacdac9743984732f298f3aac5b592b0d59ff397c7e3dea6c5026d6fe1511a"
+      },
+      {
+        "path": "nodia-gemini-microservice/scripts/verify_attachment_parser.py",
+        "sha256": "455d562d31425237060fc66a83cb800bf729667ba7a2aee0219b36bce71c2141"
+      },
+      {
+        "path": "nodia-gemini-microservice/scripts/verify_durable_login.py",
+        "sha256": "038368156ae506ea372fcfad9ac565ceaac631a5a9b544006b7c174115d803bd"
+      },
+      {
+        "path": "nodia-gemini-microservice/service_auth.py",
+        "sha256": "2524177ca00df67c9163f8e55a3e95f06082a66a24c3edd8fc5d78fd88b924cb"
+      },
+      {
+        "path": "nodia-gemini-microservice/service_errors.py",
+        "sha256": "4876a8bf47e3a2bd882a21d9dd5ad19d6aea22967f6875ef29c956d327e55068"
+      },
+      {
+        "path": "nodia-gemini-microservice/session_store.py",
+        "sha256": "dd4c37825a3e21f5909067a8d984685be016bead021dcc89ae285933739839e6"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/fixtures/login_api_fixture.py",
+        "sha256": "5ff390f050fc8dc5603515c0188dd50b59e4f164d26da72934b9a40b8f7fe326"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/fixtures/login_cli_fixture.py",
+        "sha256": "abd688c22004d1af8d388506d4181d59f4f4c39db63b630780952be13c5f32c6"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/fixtures/login_supervisor_fixture.py",
+        "sha256": "72951a49de8c5c1bf5e0f03a795cf00abd27456a98629612c1f9b489670ee421"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/fixtures/nodia-ai-ai15-mcp-tools.json",
+        "sha256": "3ba0f6d6fd2934900a21c5689814340854ab465c31e42a88b02f8e64bcaec9dc"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/fixtures/nodia-ai-ai31-mcp-tools.json",
+        "sha256": "bfc339f487bd60372272cb67ba982982040de0fb1f8a300353c7acf63cdcd8d9"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_agentic_cli.py",
+        "sha256": "ad755fe20d9ee08761ab192c6e88ce2693aa3b3f654b3182f025938880391316"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_agentic_login.py",
+        "sha256": "93be42f472a6adf1e3cd620308275189d8e1fafc54d3e4751a4e4a6c66c8451b"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_agentic_native_attachments.py",
+        "sha256": "253de743076cea9341fa8aadf0b47155b8d0057f1aaafdeca5ffef909e1de3c4"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_agentic_progress.py",
+        "sha256": "fae9d5cfda0d4318f6e5723820f99ab60d9aa614466aeb9f64dbbec9cc7ba1ae"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_analysis_observations.py",
+        "sha256": "9284342d5c6ea94a321f2b24dac2d6d37a96db9ae95e5eff6b6268731652401d"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_attachment_inspector.py",
+        "sha256": "d3bb6d6361a309a53b7483998dd903496207810a0b84821ee7ae933d45ee6213"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_browser_manager.py",
+        "sha256": "420cf0878637adbf216d7784722934116cdc0fd44a7b32f23607a8dd7cf7e5d3"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_dual_engine.py",
+        "sha256": "d92f54ef3af5019425236f945c2c8653848db5e8f424ad66710232eaa3da270d"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_durable_login.py",
+        "sha256": "34e80c73d51b658f6f581d62081df162c1927e7aa445848c1edf6e2d325a7d02"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_extraction.py",
+        "sha256": "55b182c36251f68ac8209a9411ac7c5a156f7956fd4da1f5c9570a134c243ba1"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_interactive_login.py",
+        "sha256": "13bb6f682729911e9629ac0738bb8188755be4886d91110195fbf33fb18a265a"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_login_viewer.py",
+        "sha256": "cb320f1ed1392d9d7a859ae2f20ff14a3dd97d75c18fc7ea2fd2c4436f131360"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_native_attachments.py",
+        "sha256": "4cc59ccc1eb91afb5691cd94c27a40b2c827683302e39661f38142ddaec985d1"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_native_attempts.py",
+        "sha256": "7096d4e554e57e63d165469a6d1252929923b9eb580ce749f83980e6d8f105dc"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_native_mcp.py",
+        "sha256": "765746f101c469cec91466fd524e5b46b5c97d4ac11bc2f1350d25ca6478fa77"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_nodia_ai_agentic_diagnostics.py",
+        "sha256": "d3ea8e560ce8cb690ab85ff6272f114256ad8720a8f4a2020d890b1d08a11fa7"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_nodia_ai_chat.py",
+        "sha256": "e12a7e2e4e7094f7e35a77ca1a06995cedc6da3c78199c13289c2020bac2074c"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_nodia_ai_mcp_fixture.py",
+        "sha256": "c6db00c34bbb1ae907e41e1e4a6145143237cf8b487922bc21886ac14db3e8aa"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_nodia_ai_web_admission.py",
+        "sha256": "dcd03a40cbb194ff56f6a451e2d547580d1183092fc20456437545b52e5440c9"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_nodia_ai_web_protocol.py",
+        "sha256": "a7dbf858daf82e0be02d8c85f2ad714f724521fb600b93cacbbd5d73693b2c0d"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_request_guard.py",
+        "sha256": "a273aa28cb004dff736f34b04166376b749639cf8eaaeccc930a449d5e805d85"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_service_auth.py",
+        "sha256": "dc1a6183510423fe13d51189d501f79ca776bdf16a06da7e83f378fc65f782d2"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_session_lifecycle.py",
+        "sha256": "0d958bb300ef852363a3e98db6dbc393483e805eefef4ba92c6517285310f7a9"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_support.py",
+        "sha256": "f5bdfa0bed7b78cd9812a676b210a13cb29766fb2514bb0efbcfbd8a5dd6d0f3"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_adapter.py",
+        "sha256": "cf5068f7391f79effe327a950776e401cb1f9abd324f9581c34e0941e85f17bd"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_audio_transport.py",
+        "sha256": "885144d9d90111493f90a9c07e41a51ac04f5843631294704ab6978d1e8c0dc6"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_candidate_diagnostics.py",
+        "sha256": "3225e789ddffeb5c0fdace29ec8c137ed715004e9ab13ab3200d607779a14f36"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_generation_diagnostics.py",
+        "sha256": "ff4e98852f5d731e65ee5bd6cdd63be0990bd6343f3a05ea9c1603d2c53344bc"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_logout.py",
+        "sha256": "7925b28d7f8fd37e1fec9021675b6a8daccb617cd97df9c3f3dc7c968a0931b3"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_reasoning_adapter.py",
+        "sha256": "000030ecb82eca86e00c29c5e1069b4b6c57a123034d1644e94cbf77606f5170"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_structured_text.py",
+        "sha256": "c87866677c76ebf7d71d2bc9808d58dd6a87b2b9ac0c291d17ac98c8648a71dc"
+      },
+      {
+        "path": "nodia-gemini-microservice/tests/test_web_upload_diagnostics.py",
+        "sha256": "f504693573ba7670f07871e140aae5c53d99b624b6ace5d05ffa375bf4d3bdd5"
+      },
+      {
+        "path": "nodia-gemini-microservice/web_audio_transport.py",
+        "sha256": "8403765c38826fcbeceabaa1a2673598bb74c428830caba4e7c9bf38987d5661"
+      },
+      {
+        "path": "nodia-gemini-microservice/web_candidate_diagnostics.py",
+        "sha256": "dc38d840600f32af6d6ae354bcb01b8db67fc674716c0c6edc82b22dae5d558d"
+      },
+      {
+        "path": "nodia-gemini-microservice/web_generation_diagnostics.py",
+        "sha256": "747065999bdbbd08514bf66e2e25e91100e5eaa136de11b5af2369c77592adcd"
+      },
+      {
+        "path": "nodia-gemini-microservice/web_reasoning_adapter.py",
+        "sha256": "4e2d535c82393d2da1bb339819a54411afafcb0ccf9c5acd1461c9abff5c3171"
+      },
+      {
+        "path": "nodia-gemini-microservice/web_session_cleanup.py",
+        "sha256": "22a25a74a4f5372983a0bd6123d1f870347db11dda0774c29d5fd5176883312e"
+      },
+      {
+        "path": "nodia-gemini-microservice/web_upload_diagnostics.py",
+        "sha256": "786c9e20e52358a8eb3d5a59cee25c1aaef720217fb59c325ba29b76aa6894df"
+      },
+      {
+        "path": "nodia-gemini-microservice/windows_process_job.py",
+        "sha256": "4a4d6c235dd56e02f4a5d245ac1c5977ca318c996fff0938b92ba864e73992b1"
+      }
+    ],
+    "node_sources_checked": 825,
+    "node_and_knowledge_snapshot_unchanged_from_r02": true,
+    "node_adapter_observation": {
+      "artifact": {
+        "path": "docs/evidence/nodia-ai-ai32-r04-node-observation.json",
+        "sha256": "4ab437b6950a3f2c731cdc86e1283463ecf8da586cfe810a68b1bd683c185a53"
+      },
+      "source_files": 3,
+      "exact_native_selection_and_MIME_projection_match": true,
+      "database_writes": 0,
+      "provider_generations": 0,
+      "configured_database_read_only": true
+    },
+    "application_layout": {
+      "artifact": {
+        "path": "docs/evidence/nodia-ai-ai32-r04-app-layout.json",
+        "sha256": "b89149559547ce4af5f3ddc166a1da762f6188cc4aa3e0037ba19a8eb22dc5e2"
+      },
+      "script": {
+        "path": ".tmp/ai32-r04-app-layout.py",
+        "sha256": "7e9b38cde18505c0d950d54aef954abc0af91e5fbebb8df80aa1eadc66413c5f"
+      },
+      "source_and_configuration_mounts_exact": true,
+      "operational_scripts": 0,
+      "source_archives": 0
+    },
+    "native_observations": {
+      "web": {
+        "model_id": "56fdd199312815e2",
+        "effort_id": null,
+        "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+        "available": true,
+        "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+        "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+        "verified_modalities": [
+          "image",
+          "pdf",
+          "audio"
+        ],
+        "verified_attachment_media_types": [
+          "image/png",
+          "application/pdf",
+          "audio/wav",
+          "audio/ogg",
+          "audio/webm"
+        ],
+        "supports_mcp": false,
+        "reason": null
+      },
+      "agentic": {
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high",
+        "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+        "available": true,
+        "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+        "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+        "verified_modalities": [
+          "image",
+          "pdf",
+          "audio"
+        ],
+        "verified_attachment_media_types": [
+          "image/png",
+          "application/pdf",
+          "audio/webm"
+        ],
+        "supports_mcp": true,
+        "reason": null
+      }
+    },
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "held_or_unknown_slots": 0,
+      "migrations": 26,
+      "nodia_ai_tables": 19,
+      "nodia_ai_columns": 267
+    },
+    "native_cleanup": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-18T05:20:15Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    },
+    "units": {
+      "nodia-api": "active",
+      "nodia-ai-worker": "active",
+      "nodia-gemini-lab": "active",
+      "nginx": "active"
+    },
+    "http": {
+      "api": 200,
+      "gemini": 200
+    }
+  },
+  "tests": {
+    "linux": {
+      "executed": 385,
+      "passed": 385,
+      "skipped": 0,
+      "log": {
+        "path": "nodia-server/.tmp/ai32-r04-linux-tests.log",
+        "sha256": "d6623e03887c15319aebe7ae344cf2f11dce286c2d546063e53b85c5df8932d1"
+      }
+    },
+    "windows": {
+      "executed": 385,
+      "passed": 383,
+      "skipped": 2,
+      "log": {
+        "path": "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests-final.log",
+        "sha256": "4161382967623e8d8f89947670ed20547cdd2795b92696d3a835313c1e54a4c0"
+      }
+    },
+    "native_harness": {
+      "executed": 16,
+      "passed": 16,
+      "skipped": 0,
+      "log": {
+        "path": ".tmp/ai32-r04-native-harness-offline.log",
+        "sha256": "809e2dade6bad2f08f9b1356a61ae3843b96722ea1aee000189b0d020807406f"
+      }
+    },
+    "text_harness": {
+      "executed": 5,
+      "passed": 5,
+      "skipped": 0,
+      "log": {
+        "path": ".tmp/ai32-r04-web-text-control-offline.log",
+        "sha256": "8813998eff982aa1eece36e7584433396f337092d5b84eaee9ec775ad6699747"
+      }
+    },
+    "mcp_harness": {
+      "executed": 5,
+      "passed": 5,
+      "skipped": 0,
+      "log": {
+        "path": ".tmp/ai32-r04-mcp-harness-offline.log",
+        "sha256": "6d582199f417bae55b1d9bc8129734cf0a01191333e19feb264be2c492d34b1b"
+      }
+    }
+  },
+  "build_attempts": [
+    {
+      "artifact": {
+        "path": "docs/evidence/nodia-ai-ai32-r04-build-attempt01.json",
+        "sha256": "e798f1837f17f231d4ff4da865287c57c24014896856674abc1cc1c4a1230567"
+      },
+      "status": "failed_offline_test",
+      "candidate_image": "sha256:ef652d478b03e94e8d255d13baadac835a4be85581e2bb86dc873bbc2a2d9281",
+      "linux_test_exit_code": 1,
+      "active_container_restarted": false,
+      "provider_generations": 0
+    },
+    {
+      "artifact": {
+        "path": "docs/evidence/nodia-ai-ai32-r04-build.json",
+        "sha256": "b1de16a97501dc4f8fe37174d604ba35ca062709cc2376a212514110e723cf62"
+      },
+      "status": "passed_offline_test",
+      "candidate_image": "sha256:212cffaeefdd5e93f1abae290c4f387a891ddbd65357c223c6f0a3c0224488f3",
+      "linux_test_exit_code": 0,
+      "active_container_restarted": false,
+      "provider_generations": 0
+    }
+  ],
+  "verification_logs": {
+    "knowledge_check": {
+      "artifact": {
+        "path": ".tmp/ai32-r04-knowledge-check.log",
+        "sha256": "8fcdcfcacefe1bdd4290835d6aaee28da933b8c3e0b343d35b769b583a99be0d"
+      },
+      "result": {
+        "task": "AI-06",
+        "mode": "check",
+        "sources": 55,
+        "excluded": 28,
+        "documents": 27,
+        "fragments": 27,
+        "catalogRelease": "nodia-ai-ai15-reads/1",
+        "releaseId": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50"
+      }
+    },
+    "knowledge_build": {
+      "artifact": {
+        "path": ".tmp/ai32-r04-knowledge-build.log",
+        "sha256": "a4b3dbc680e4ff1b9bf56faf5ac912e822e01c22b4c36a2385540b5ab63aa62c"
+      },
+      "result": {
+        "task": "AI-06",
+        "mode": "build",
+        "sources": 55,
+        "excluded": 28,
+        "documents": 27,
+        "fragments": 27,
+        "catalogRelease": "nodia-ai-ai15-reads/1",
+        "releaseId": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50"
+      }
+    },
+    "catalog": {
+      "artifact": {
+        "path": ".tmp/ai32-r04-catalog-check.log",
+        "sha256": "d6407f98206868ad80d507734bb1e7d12cd47a9f5e2cb79a17dc13ca81c84bd0"
+      },
+      "result": {
+        "stage": "AI-32-R02",
+        "mode": "--check",
+        "status": "passed",
+        "source_hashes": 825,
+        "changed_source_hashes": 11,
+        "unchanged_counts": {
+          "controllerFiles": 45,
+          "registeredControllers": 45,
+          "unregisteredControllers": 0,
+          "handlerOperations": 213,
+          "httpMethodPathPairs": 332,
+          "localModules": 82,
+          "publicOperations": 5,
+          "staticallyComposedModules": 77,
+          "conditionalModules": 5
+        },
+        "before_inventory_sha256": "f691bdfd35be0c89d83ac333a636f854713c9c2e05065107304d35582834335e",
+        "after_inventory_sha256": "45118466fee0879ef8240fc7861d6b5c71ea6054c5ad54b38e1a85a94ecbbcbe"
+      }
+    },
+    "documentation": {
+      "artifact": {
+        "path": ".tmp/ai32-r04-doc-check.log",
+        "sha256": "281842ce8b3dd1baa1e713da999f44fc8e329afd0f6594e0a3ff536966f0c67a"
+      },
+      "result": {
+        "stage": "AI-32-R04",
+        "status": "passed",
+        "documents": 9,
+        "r04_local_links_checked": 26,
+        "draft_approvals_preserved": true,
+        "ai32_acceptance_checkbox_open": true
+      }
+    }
+  },
+  "audio_fixture_comparison": {
+    "artifact": {
+      "path": "docs/evidence/nodia-ai-ai32-r04-audio-analysis.json",
+      "sha256": "58b29cc7fe6f124cfb10b73168c5aca481db21af3f79eb87072951871d08789e"
+    },
+    "initial_original_files_same_as_r03": true,
+    "initial_webm_ogg_encoded_payloads_and_decoded_PCM_identical": true,
+    "fresh_provenance": {
+      "path": "docs/evidence/nodia-ai-ai32-r04-fresh-synthetic-audio.json",
+      "sha256": "62f1c90fd851b940c2a8cf3c634ddf228d481b2a54701aec46fcd35c051a291c"
+    },
+    "fresh_generator": {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r04-fresh-audio.py",
+      "sha256": "fb656fc413e244f7ec699a36709055acb4e4920dad42b519fdefce76c28c6701"
+    },
+    "execution_transcoding_enabled": false,
+    "physical_microphone_used": false
+  },
+  "live": {
+    "current_verified_media_types": {
+      "web": [
+        "application/pdf",
+        "audio/ogg",
+        "audio/wav",
+        "audio/webm",
+        "image/png"
+      ],
+      "agentic": [
+        "application/pdf",
+        "audio/webm",
+        "image/png"
+      ]
+    },
+    "current_native_probes": [
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-agentic-audio-webm-es.json",
+          "sha256": "3fbd90184751a6d74bc8bbc67ade746ed1642b3350b14a56afb21682e28efe5f"
+        },
+        "engine": "agentic",
+        "kind": "audio",
+        "media_type": "audio/webm",
+        "attempt_id": "31cd7d4b-3a05-4aa7-8d9e-3b7d8c291d08",
+        "verified": true,
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "full_json_source_parseable": null,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": null,
+        "explicit_audio_descriptor_observed": null
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-agentic-image.json",
+          "sha256": "775a2adff52a87144db91e708034a8a139c61ff518b233a6547bef12bbe12483"
+        },
+        "engine": "agentic",
+        "kind": "image",
+        "media_type": "image/png",
+        "attempt_id": "b2eee10a-9447-409a-8eb4-f627a502497d",
+        "verified": true,
+        "synthetic_audio_fixture": null,
+        "full_json_source_parseable": null,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": null,
+        "explicit_audio_descriptor_observed": null
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-agentic-pdf.json",
+          "sha256": "d3f29d39c949ddf17c9f63c481bbadbbf25669048d76400eb6fdabd6dd05fc0e"
+        },
+        "engine": "agentic",
+        "kind": "pdf",
+        "media_type": "application/pdf",
+        "attempt_id": "0e3e8f17-6475-4e08-acf7-59b304755f93",
+        "verified": true,
+        "synthetic_audio_fixture": null,
+        "full_json_source_parseable": null,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": null,
+        "explicit_audio_descriptor_observed": null
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-es.json",
+          "sha256": "e6a33ebc5ccbbe1280f24c7c40e9d36596a1ca44278d8330ab8655ee1c065421"
+        },
+        "engine": "web",
+        "kind": "audio",
+        "media_type": "audio/ogg",
+        "attempt_id": "0be948c4-cfef-4656-8896-ca76006444d5",
+        "verified": true,
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "full_json_source_parseable": true,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": true,
+        "explicit_audio_descriptor_observed": true
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-fresh.json",
+          "sha256": "9bbe442584895563a3f78da76f274ab44c661e7a8f3c10a7279952a720402e59"
+        },
+        "engine": "web",
+        "kind": "audio",
+        "media_type": "audio/ogg",
+        "attempt_id": "221761b4-c8b0-4ed3-ba2f-b58072d251b7",
+        "verified": true,
+        "synthetic_audio_fixture": "fresh_unpredictable",
+        "full_json_source_parseable": false,
+        "strict_parser_presentation_normalization_accepted": true,
+        "preparser_equal_to_source": true,
+        "explicit_audio_descriptor_observed": true
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-wav-es.json",
+          "sha256": "22a6cd42972cfd7077d823021197bfa7c1780e05f3e9a313c8cddde18d40779f"
+        },
+        "engine": "web",
+        "kind": "audio",
+        "media_type": "audio/wav",
+        "attempt_id": "a349c4aa-7537-40ad-8915-964b40f92e4e",
+        "verified": true,
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "full_json_source_parseable": true,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": true,
+        "explicit_audio_descriptor_observed": true
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-es.json",
+          "sha256": "dab7e26325f74532838ef77b7cad150fe0964fc9da7f289e0b5096b9083554dc"
+        },
+        "engine": "web",
+        "kind": "audio",
+        "media_type": "audio/webm",
+        "attempt_id": "ebd36395-6a8e-4e28-bdc7-8a97c393f520",
+        "verified": true,
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "full_json_source_parseable": true,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": true,
+        "explicit_audio_descriptor_observed": true
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-fresh.json",
+          "sha256": "fe8b30fde7f1984cc26c9293efdb72cbd1c635b00b71b946793320caf26f5141"
+        },
+        "engine": "web",
+        "kind": "audio",
+        "media_type": "audio/webm",
+        "attempt_id": "21088307-1df2-48fe-b9d5-daddc0e90787",
+        "verified": true,
+        "synthetic_audio_fixture": "fresh_unpredictable",
+        "full_json_source_parseable": true,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": true,
+        "explicit_audio_descriptor_observed": true
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-image.json",
+          "sha256": "839300649f63976c9740a7168269b8f873c777733d7aea33908a66bc06592b6f"
+        },
+        "engine": "web",
+        "kind": "image",
+        "media_type": "image/png",
+        "attempt_id": "f2cf9359-3750-4f51-a820-3d210ae6efe1",
+        "verified": true,
+        "synthetic_audio_fixture": null,
+        "full_json_source_parseable": true,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": true,
+        "explicit_audio_descriptor_observed": null
+      },
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-pdf.json",
+          "sha256": "05e891f5c0f32b3d70dc50e76820a13d62906a8a9a92b414a427e6e0f107635b"
+        },
+        "engine": "web",
+        "kind": "pdf",
+        "media_type": "application/pdf",
+        "attempt_id": "f76d498f-b1c1-473a-a6e6-50f189cc0a5e",
+        "verified": true,
+        "synthetic_audio_fixture": null,
+        "full_json_source_parseable": true,
+        "strict_parser_presentation_normalization_accepted": false,
+        "preparser_equal_to_source": true,
+        "explicit_audio_descriptor_observed": null
+      }
+    ],
+    "current_mcp_probes": [
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-current-mcp-image.json",
+          "sha256": "e1ad7c0fefe6679e012686f71e510e9f35d80f107cabbcd4a0c57ed314fa2964"
+        },
+        "verified": true,
+        "attempt_id": "19880635-54f3-4659-9b4b-890e267357f2",
+        "callback": "synthetic_read_not_business_SQL"
+      }
+    ],
+    "text_controls": [
+      {
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-text-entities.json",
+          "sha256": "3c4c6287ca6f5926a5a29ca4f9765e89c1f1f14a357244df0e9b86074a9f4882"
+        },
+        "attempt_id": "b2410559-2a0f-433a-979b-3e46e66d2830",
+        "passed": true,
+        "literal_entities": true,
+        "verified_current": true,
+        "structured_preservation_exercised": true,
+        "attachment_modalities_proved": false
+      }
+    ],
+    "generation_attempts": 12,
+    "attempt_ids": [
+      "0be948c4-cfef-4656-8896-ca76006444d5",
+      "0e3e8f17-6475-4e08-acf7-59b304755f93",
+      "19880635-54f3-4659-9b4b-890e267357f2",
+      "21088307-1df2-48fe-b9d5-daddc0e90787",
+      "221761b4-c8b0-4ed3-ba2f-b58072d251b7",
+      "31cd7d4b-3a05-4aa7-8d9e-3b7d8c291d08",
+      "a349c4aa-7537-40ad-8915-964b40f92e4e",
+      "b2410559-2a0f-433a-979b-3e46e66d2830",
+      "b2eee10a-9447-409a-8eb4-f627a502497d",
+      "ebd36395-6a8e-4e28-bdc7-8a97c393f520",
+      "f2cf9359-3750-4f51-a820-3d210ae6efe1",
+      "f76d498f-b1c1-473a-a6e6-50f189cc0a5e"
+    ],
+    "attempts": [
+      {
+        "identity": {
+          "engine": "agentic",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "reference": {
+            "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+            "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+            "operation_ref": "31cd7d4b-3a05-4aa7-8d9e-3b7d8c291d08"
+          },
+          "file_sha256": "43e3eed276cee137f2c9d7245659e3b0cce947a21beb5b4c8d827d60910bf82b",
+          "expected_answer_sha256": "1b057f4a611413632846c5f10df105c2c1c322e975dec629bd207b8784569414"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-agentic-audio-webm-es.json",
+          "sha256": "3fbd90184751a6d74bc8bbc67ade746ed1642b3350b14a56afb21682e28efe5f"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "agentic",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "reference": {
+            "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+            "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+            "operation_ref": "b2eee10a-9447-409a-8eb4-f627a502497d"
+          },
+          "file_sha256": "883214485d993b0d847a391f7fb9326d16ea4ae119a7205be258e0880fe837fb",
+          "expected_answer_sha256": "4ff45f4bd7d128596d7cb2a2d193fd416b0a6fa18c5d47dcd0f364bb7d069181"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-agentic-image.json",
+          "sha256": "775a2adff52a87144db91e708034a8a139c61ff518b233a6547bef12bbe12483"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": null,
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "agentic",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "reference": {
+            "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+            "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+            "operation_ref": "0e3e8f17-6475-4e08-acf7-59b304755f93"
+          },
+          "file_sha256": "02cd54496e0cd86232e021a94a6210bc21455fc176877d3d4843ae0121b33f51",
+          "expected_answer_sha256": "7a87089eba3cf1c2089fde23067d3ee40085e55ddbf1fba7c455e1e14fcfae78"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-agentic-pdf.json",
+          "sha256": "d3f29d39c949ddf17c9f63c481bbadbbf25669048d76400eb6fdabd6dd05fc0e"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": null,
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "agentic",
+          "scope": "real_agentic_mcp_and_attachment_synthetic_canary",
+          "model_id": "gemini-3.8-flash-high",
+          "effort_id": "high",
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "reference": {
+            "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+            "session_generation": "12b540cb151a48f9847d0ed103f2c6cb",
+            "operation_ref": "19880635-54f3-4659-9b4b-890e267357f2"
+          },
+          "file_sha256": "e4eabfc3b6406c3b0d9ae07e64326b385e7bc5a2ebca83f22764aa5f6388fb2a",
+          "expected_answer_sha256": "dfb43ceb4e954a815fc6b72270d197b1b8eec34d7a51b4ea7977fad55cb648ed"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-current-mcp-image.json",
+          "sha256": "e1ad7c0fefe6679e012686f71e510e9f35d80f107cabbcd4a0c57ed314fa2964"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": null,
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": false
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "0be948c4-cfef-4656-8896-ca76006444d5"
+          },
+          "file_sha256": "001a04b752e46c40422d2ae057f97f13d510795099e1e0ef86d46f71fc7e7efc",
+          "expected_answer_sha256": "1b057f4a611413632846c5f10df105c2c1c322e975dec629bd207b8784569414"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-es.json",
+          "sha256": "e6a33ebc5ccbbe1280f24c7c40e9d36596a1ca44278d8330ab8655ee1c065421"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "221761b4-c8b0-4ed3-ba2f-b58072d251b7"
+          },
+          "file_sha256": "e44c58ac768cd2a3f160a6f3c69700d06d8e49b057c91d5b387ee4b647fd0551",
+          "expected_answer_sha256": "45347476c557f02765fe98abf1cbefca0904bfcf7c428a756d646bb9de42a12f"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-fresh.json",
+          "sha256": "9bbe442584895563a3f78da76f274ab44c661e7a8f3c10a7279952a720402e59"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": "fresh_unpredictable",
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "a349c4aa-7537-40ad-8915-964b40f92e4e"
+          },
+          "file_sha256": "abd96e103b7396b7c9506b9df3654ce110da2d951f579911cef34ba4795c8f91",
+          "expected_answer_sha256": "1b057f4a611413632846c5f10df105c2c1c322e975dec629bd207b8784569414"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-wav-es.json",
+          "sha256": "22a6cd42972cfd7077d823021197bfa7c1780e05f3e9a313c8cddde18d40779f"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "ebd36395-6a8e-4e28-bdc7-8a97c393f520"
+          },
+          "file_sha256": "43e3eed276cee137f2c9d7245659e3b0cce947a21beb5b4c8d827d60910bf82b",
+          "expected_answer_sha256": "1b057f4a611413632846c5f10df105c2c1c322e975dec629bd207b8784569414"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-es.json",
+          "sha256": "dab7e26325f74532838ef77b7cad150fe0964fc9da7f289e0b5096b9083554dc"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": "initial_r03_identical",
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "21088307-1df2-48fe-b9d5-daddc0e90787"
+          },
+          "file_sha256": "dbce7a9df41a39e4b7ce66f799b5b3b222b19fdbd7bd11cfdef655d348f24ea0",
+          "expected_answer_sha256": "45347476c557f02765fe98abf1cbefca0904bfcf7c428a756d646bb9de42a12f"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-fresh.json",
+          "sha256": "fe8b30fde7f1984cc26c9293efdb72cbd1c635b00b71b946793320caf26f5141"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": "fresh_unpredictable",
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "f2cf9359-3750-4f51-a820-3d210ae6efe1"
+          },
+          "file_sha256": "d620d85d45123a6e7095f476252ef3fee74836b55d363154cd8101029b896346",
+          "expected_answer_sha256": "aac1e08d0afd58f37afa4436376d7cf4356980dd7c52af2b88117f622b152a40"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-image.json",
+          "sha256": "839300649f63976c9740a7168269b8f873c777733d7aea33908a66bc06592b6f"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": null,
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "individual_real_gemini_synthetic_native_canary",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "f76d498f-b1c1-473a-a6e6-50f189cc0a5e"
+          },
+          "file_sha256": "df57478b93e52764fcaad9c62132bd86af56b54877da8206c934140ff5021a58",
+          "expected_answer_sha256": "c5d146cd7c94481e2a83caa9a2d6e05036786ec9402a1c0f7c8049c029f4f59a"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-pdf.json",
+          "sha256": "05e891f5c0f32b3d70dc50e76820a13d62906a8a9a92b414a427e6e0f107635b"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": null,
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": true
+      },
+      {
+        "identity": {
+          "engine": "web",
+          "scope": "real_gemini_web_text_control_no_attachments",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null,
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "reference": {
+            "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+            "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+            "operation_ref": "b2410559-2a0f-433a-979b-3e46e66d2830"
+          },
+          "file_sha256": null,
+          "expected_answer_sha256": "08c3d664226232cd8e8babbb9ad9449fe51e4d2e3c7c9350068f58e64f1b0dc5"
+        },
+        "artifact": {
+          "path": "docs/evidence/nodia-ai-ai32-r04-web-text-entities.json",
+          "sha256": "3c4c6287ca6f5926a5a29ca4f9765e89c1f1f14a357244df0e9b86074a9f4882"
+        },
+        "status": "passed",
+        "synthetic_audio_fixture": null,
+        "semantic_match": true,
+        "native_outcome": "completed",
+        "native_acknowledged": true,
+        "final_selection_match": true,
+        "included_in_current_native_matrix": false
+      }
+    ],
+    "observation_only": [],
+    "automatic_inference_retries": 0,
+    "business_writes": 0,
+    "physical_microphone_used": false
+  },
+  "acceptance": {
+    "r2_configuration_present": false,
+    "r2_data_path_verified": false,
+    "physical_microphone_verified": false,
+    "productive_acceptance": false,
+    "approval": false,
+    "legacy_sql_and_recovery_verified_in_r02": true
+  },
+  "artifacts": [
+    {
+      "path": ".tmp/ai32-r04-app-layout.py",
+      "sha256": "7e9b38cde18505c0d950d54aef954abc0af91e5fbebb8df80aa1eadc66413c5f"
+    },
+    {
+      "path": ".tmp/ai32-r04-catalog-check.log",
+      "sha256": "d6407f98206868ad80d507734bb1e7d12cd47a9f5e2cb79a17dc13ca81c84bd0"
+    },
+    {
+      "path": ".tmp/ai32-r04-doc-check.log",
+      "sha256": "281842ce8b3dd1baa1e713da999f44fc8e329afd0f6594e0a3ff536966f0c67a"
+    },
+    {
+      "path": ".tmp/ai32-r04-doc-check.py",
+      "sha256": "30a5e5d023dcc05aa508df3ed6796ecbb1814c1cda91669a7249e422fed99260"
+    },
+    {
+      "path": ".tmp/ai32-r04-doc-update.py",
+      "sha256": "0ce7a6d9a5cc68aa223b0544b3394070b09b9c413d36db87080c3c64506be930"
+    },
+    {
+      "path": ".tmp/ai32-r04-knowledge-build.log",
+      "sha256": "a4b3dbc680e4ff1b9bf56faf5ac912e822e01c22b4c36a2385540b5ab63aa62c"
+    },
+    {
+      "path": ".tmp/ai32-r04-knowledge-check.log",
+      "sha256": "8fcdcfcacefe1bdd4290835d6aaee28da933b8c3e0b343d35b769b583a99be0d"
+    },
+    {
+      "path": ".tmp/ai32-r04-mcp-harness-offline.log",
+      "sha256": "6d582199f417bae55b1d9bc8129734cf0a01191333e19feb264be2c492d34b1b"
+    },
+    {
+      "path": ".tmp/ai32-r04-native-harness-offline.log",
+      "sha256": "809e2dade6bad2f08f9b1356a61ae3843b96722ea1aee000189b0d020807406f"
+    },
+    {
+      "path": ".tmp/ai32-r04-native-harness-offline.py",
+      "sha256": "ef517d480ec7b4f44e1beed9ade472b4cf5f00a144ac11d409aa14276cbd2865"
+    },
+    {
+      "path": ".tmp/ai32-r04-node-observation.log",
+      "sha256": "a1dd3167de7510fffb5dc7bd27b25035e63882243144745238ce4c293d06deb8"
+    },
+    {
+      "path": ".tmp/ai32-r04-node-observation.mjs",
+      "sha256": "2ff56dc0058f71a4cebae65763d757969689e7123a88b833958dfd71a2be18a7"
+    },
+    {
+      "path": ".tmp/ai32-r04-sdk-analysis.json",
+      "sha256": "396a9d68d6c3721f4197d5cbcab9aa00436f4b9c4b7fa73dca329c305aec4664"
+    },
+    {
+      "path": ".tmp/ai32-r04-web-text-control-offline.log",
+      "sha256": "8813998eff982aa1eece36e7584433396f337092d5b84eaee9ec775ad6699747"
+    },
+    {
+      "path": ".tmp/ai32-r04-web-text-control-offline.py",
+      "sha256": "6028bf9c1afde09bb6055f2504e2e1de63c20c1bfc0ac8ac773453ea16ef4103"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r02-validation.json",
+      "sha256": "bceb6f7ba1ce3212073c5803032c87e5ef5167148418ace0349f0764717c5fe2"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r03-validation.json",
+      "sha256": "98e0a36ae77b912b0779f1de4205c5d5b131ac0a062f501dad39f39847423c60"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-activation-health.json",
+      "sha256": "3defb355ad2c7f82a22a5eb50e73b71c705c756f5a29f720a259e01a8fe457a8"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-agentic-audio-webm-es.json",
+      "sha256": "3fbd90184751a6d74bc8bbc67ade746ed1642b3350b14a56afb21682e28efe5f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-agentic-image.json",
+      "sha256": "775a2adff52a87144db91e708034a8a139c61ff518b233a6547bef12bbe12483"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-agentic-pdf.json",
+      "sha256": "d3f29d39c949ddf17c9f63c481bbadbbf25669048d76400eb6fdabd6dd05fc0e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-app-layout.json",
+      "sha256": "b89149559547ce4af5f3ddc166a1da762f6188cc4aa3e0037ba19a8eb22dc5e2"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-audio-analysis.json",
+      "sha256": "58b29cc7fe6f124cfb10b73168c5aca481db21af3f79eb87072951871d08789e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-baseline-health.json",
+      "sha256": "bc851655f7bb9978c596919aaa80c55ee491ba0906c42f462f5294cad104002e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-build-attempt01.json",
+      "sha256": "e798f1837f17f231d4ff4da865287c57c24014896856674abc1cc1c4a1230567"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-build.json",
+      "sha256": "b1de16a97501dc4f8fe37174d604ba35ca062709cc2376a212514110e723cf62"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-current-mcp-image.json",
+      "sha256": "e1ad7c0fefe6679e012686f71e510e9f35d80f107cabbcd4a0c57ed314fa2964"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-final-health.json",
+      "sha256": "148e76152918c7139f315f71ef19bf3b2fdd2144dadddb268a1cb5b338b2286e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-fresh-synthetic-audio.json",
+      "sha256": "62f1c90fd851b940c2a8cf3c634ddf228d481b2a54701aec46fcd35c051a291c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-gemini-activation.json",
+      "sha256": "890e71cd3c41f125569dbcd50ab4dc677c382ace7893be9febd0fa1ee1af8e84"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-native-manifest-attempt01.json",
+      "sha256": "135ab3fe2a3a571469d1834e89ec1ebeabb2a9409042012ba150da88789b54aa"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-native-manifest.json",
+      "sha256": "b2dac001f7e5fcb3eaf2e739020975fe0cdee14169c4ed732a6b59891df9e5f2"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-node-observation.json",
+      "sha256": "4ab437b6950a3f2c731cdc86e1283463ecf8da586cfe810a68b1bd683c185a53"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-es.json",
+      "sha256": "e6a33ebc5ccbbe1280f24c7c40e9d36596a1ca44278d8330ab8655ee1c065421"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-ogg-fresh.json",
+      "sha256": "9bbe442584895563a3f78da76f274ab44c661e7a8f3c10a7279952a720402e59"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-wav-es.json",
+      "sha256": "22a6cd42972cfd7077d823021197bfa7c1780e05f3e9a313c8cddde18d40779f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-es.json",
+      "sha256": "dab7e26325f74532838ef77b7cad150fe0964fc9da7f289e0b5096b9083554dc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-audio-webm-fresh.json",
+      "sha256": "fe8b30fde7f1984cc26c9293efdb72cbd1c635b00b71b946793320caf26f5141"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-image.json",
+      "sha256": "839300649f63976c9740a7168269b8f873c777733d7aea33908a66bc06592b6f"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-pdf.json",
+      "sha256": "05e891f5c0f32b3d70dc50e76820a13d62906a8a9a92b414a427e6e0f107635b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai32-r04-web-text-entities.json",
+      "sha256": "3c4c6287ca6f5926a5a29ca4f9765e89c1f1f14a357244df0e9b86074a9f4882"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r04-audio-analysis.py",
+      "sha256": "dc002b7de1bc839698f594117069a3639fba47409b10aebae4b48b0d74896090"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r04-fresh-audio.py",
+      "sha256": "fb656fc413e244f7ec699a36709055acb4e4920dad42b519fdefce76c28c6701"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r04-mcp-file-probe.py",
+      "sha256": "edefe16c03753f124e063c886f3c1f001caf3731c8555462f0dacdbfeb7cd1bf"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r04-native-probe.py",
+      "sha256": "f7fa25655014fc3dd41266c602287e71e812007ac2b27ed021d590a8c7b4d14a"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai32-r04-web-text-control.py",
+      "sha256": "b2f51d851e56f7b6b1556e7b07b3aa917d4fd4857538cee3adea5beb281ec27d"
+    },
+    {
+      "path": "docs/evidence/scripts/reconcile-nodia-ai-ai32-r04-validation.cjs",
+      "sha256": "ed751325af412b36b7674db904a40f4eb0d6bb0206bf26a8b96150028436aff7"
+    },
+    {
+      "path": "docs/evidence/scripts/test_nodia_ai_ai32_r04_mcp_probe.py",
+      "sha256": "277f72b9e1cf74ba6f83e61113d413336019f111c668fe21b6730a74aa79e52d"
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests-final.log",
+      "sha256": "4161382967623e8d8f89947670ed20547cdd2795b92696d3a835313c1e54a4c0"
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests.log",
+      "sha256": "594e518670311fed874dfef9a623195d25a9bd4b262f41b69806a0a8eca439de"
+    },
+    {
+      "path": "nodia-server/.tmp/ai32-r04-linux-tests-attempt01.log",
+      "sha256": "f36430cf45d7944422d48364757bde371a5ec7e35ddc73a7ef04b0e5259f3f7e"
+    },
+    {
+      "path": "nodia-server/.tmp/ai32-r04-linux-tests.log",
+      "sha256": "d6623e03887c15319aebe7ae344cf2f11dce286c2d546063e53b85c5df8932d1"
+    }
+  ]
+}

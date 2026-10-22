@@ -1,0 +1,24 @@
+{
+  "stage": "AI-38",
+  "scope": "read_only_development_host_clock_independent_HTTP_Date_comparison",
+  "local_UTC_before": "2026-10-20T16:55:26.217920+00:00",
+  "local_UTC_after": "2026-10-20T16:55:26.259994+00:00",
+  "public_HTTPS_Date": "Tue, 20 Oct 2026 17:01:49 GMT",
+  "HTTPS_origin": "https://www.google.com",
+  "round_trip_seconds": 0.0420655999914743,
+  "HTTP_Date_minus_Windows_midpoint_seconds": 382.761043,
+  "comparison_uncertainty_seconds_at_least": 1.0210327999957372,
+  "HTTP_Date_precision": "whole_second_and_network_delay_not_authenticated_NTP",
+  "Windows_Time_service": {
+    "name": "W32Time",
+    "status": "Stopped",
+    "start_type": "Manual"
+  },
+  "w32tm_query_source_exit_code": 2147943462,
+  "w32tm_raw_message_not_published": true,
+  "interpretation": "Compare with the guest NTP receipt. A VM-Windows difference alone does not identify the incorrect host.",
+  "clock_or_services_modified": false,
+  "configured_database_used": false,
+  "provider_inferences": 0,
+  "source_sha256": "8158ea7720ff415497529aa2fd5a4eeb5457083f8cf2abbb4e3b2597a3d5a525"
+}

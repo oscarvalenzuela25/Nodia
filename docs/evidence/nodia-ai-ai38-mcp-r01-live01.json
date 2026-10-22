@@ -1,0 +1,120 @@
+{
+  "stage": "AI-38-MCP-R01",
+  "scope": "one_real_MCP_nonce_not_domain_acceptance",
+  "started_at_utc": "2026-10-20T19:16:14.908476+00:00",
+  "candidate_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3",
+  "harness_sha256": "95cdfdc53e86cf44c892273185c11ee2d319c636fbb0db6cd39980b12d42c87d",
+  "runner_sha256": "ed3ffa798392c464a5b4c79f6a34f7a1af127ad82925e036eaaa5211d1455483",
+  "maximum_provider_dispatch_requests": 1,
+  "automatic_inference_retries": 0,
+  "configured_SQL_writes": 0,
+  "business_effects": 0,
+  "candidate_adopted": false,
+  "services_restarted_by_driver": false,
+  "raw_logs_retained_privately": true,
+  "dependencies_reused_existing_installation": true,
+  "npm_ci_executed": false,
+  "provider_harness_started": true,
+  "native_pending_identity": false,
+  "selection_sha256": "b8e53053a3656e2738c9023f8a3865c40db61575e88a922bd713d1487c67585f",
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "exit_code": 0,
+  "native_result": {
+    "task": "AI-38",
+    "scope": "exact_configured_connection_mcp_nonce_diagnostic",
+    "status": "passed",
+    "configured_database_read_only": true,
+    "configured_database_modified": false,
+    "configured_selection_modified": false,
+    "available_before": true,
+    "supports_mcp_before": false,
+    "supports_mcp_after": true,
+    "diagnostic_nonce_verified": true,
+    "native_terminal_proof_acknowledged": true,
+    "inference_replayed": false,
+    "native_pending_identity": false,
+    "real_provider_dispatch_requests": 1,
+    "maximum_provider_dispatch_requests": 1,
+    "diagnostics": {
+      "schema_version": 1,
+      "callbacks": 1,
+      "protocol_progress_notifications": 3,
+      "last_rpc_messages": 7,
+      "last_unforwarded_tool_requests": 0,
+      "valid_progress_snapshots": 518,
+      "start_admission": "running",
+      "post_start_not_dispatched_error": false,
+      "attempt_id": "f3b21d6b-50e7-48a6-9a37-dfedf3555f69",
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "session_generation": "2058fda1aff3454f80a11d10d05a1e5e",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "phases": {
+        "verify_configured_selection": 1,
+        "observe_before": 1,
+        "probe": 1,
+        "probe_returned": 1,
+        "acknowledge_completed": 1,
+        "observe_after": 1,
+        "passed": 1,
+        "cleanup": 1
+      },
+      "endpoints": {
+        "acknowledge": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        },
+        "attest": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        },
+        "cancel": {
+          "requests": 0,
+          "completed": 0,
+          "failed": 0
+        },
+        "events": {
+          "requests": 518,
+          "completed": 518,
+          "failed": 0
+        },
+        "observe": {
+          "requests": 2,
+          "completed": 2,
+          "failed": 0
+        },
+        "reconcile": {
+          "requests": 0,
+          "completed": 0,
+          "failed": 0
+        },
+        "results": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        },
+        "start": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        }
+      }
+    }
+  },
+  "status": "passed",
+  "finished_at_utc": "2026-10-20T19:17:28.095137+00:00",
+  "private_log_hashes": {
+    "private-stdout.log": "a69991d066e902464f62c3f36278a074999607e28f6416d280a5eb1ef14e353e",
+    "private-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

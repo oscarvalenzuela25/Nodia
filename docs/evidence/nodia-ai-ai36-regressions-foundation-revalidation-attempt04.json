@@ -1,0 +1,244 @@
+{
+  "stage": "AI-36",
+  "scope": "compiled_historical_regression_revalidation",
+  "group": "foundation-revalidation",
+  "attempt": "attempt04",
+  "status": "failed",
+  "results": [
+    {
+      "harness": "ai12",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at_utc": "2026-10-19T00:23:03.856611+00:00",
+      "completed_at_utc": "2026-10-19T00:23:09.722215+00:00",
+      "test_sha256": "fd4d7465b87d34fa1554dc0cbafe55f9926fc9347c3ab14179e1504b340cabbc",
+      "stdout_sha256": "ee12ade9f8564d03becad6a65f0df1ec6df7ebdce713e8f860207448c41ae687",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assertion_result": {
+        "task": "AI-12",
+        "checks": 22,
+        "passed": [
+          "explicit unpublished release loads no draft documents or tools even when the installed release publishes products",
+          "real admission freezes current release, policy and session grant",
+          "retry recovers the same run before a second provider observation",
+          "first attempt advances context without provider dispatch",
+          "context manifest pins exact history and compiled release",
+          "external call starts only after durable dispatch arming",
+          "shared dispatch budget is durable before provider I/O",
+          "adapter receives canonical history without invented product knowledge",
+          "second attempt completes inference once",
+          "answer, assistant reference and activity close atomically",
+          "successful response releases physical runtime and preserves fence",
+          "background stages and assistant reply do not renew retention",
+          "completed job is never dispatched a second time",
+          "external call starts only after durable dispatch arming",
+          "shared dispatch budget is durable before provider I/O",
+          "adapter receives canonical history without invented product knowledge",
+          "lost response becomes unknown with profile quarantined",
+          "unknown inference does not replay on recovery",
+          "standalone worker composition resolves dependencies without an HTTP listener",
+          "standalone autoLoadEntities registers the run and all eleven M1 entities",
+          "unpublished worker composition instantiates no candidate domain read family",
+          "empty worker setup performs no Redis operation despite later native-effect DI dependencies"
+        ],
+        "external_adapter": "synthetic",
+        "real_inference": false
+      },
+      "orphan_disposable_containers_removed": 0,
+      "new_disposable_containers_remaining": 0
+    },
+    {
+      "harness": "ai12-routing",
+      "status": "failed",
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at_utc": "2026-10-19T00:23:09.762789+00:00",
+      "completed_at_utc": "2026-10-19T00:23:17.632463+00:00",
+      "test_sha256": "605c4c7b0287c8b9755a6cb1b059fdc929803b7e072b4308eca253b742525900",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "6a4aacb6457645b8df35fe14c46300bd323b36eaa0074c508cd1eface4bf7c20",
+      "assertion_result": null,
+      "orphan_disposable_containers_removed": 0,
+      "new_disposable_containers_remaining": 0,
+      "error_category": "AssertionError"
+    },
+    {
+      "harness": "ai14",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at_utc": "2026-10-19T00:23:17.676747+00:00",
+      "completed_at_utc": "2026-10-19T00:23:25.544825+00:00",
+      "test_sha256": "20d610422f8b6dba31fd7732660821a56ad170b9d841ad9d1372194ff0f22888",
+      "stdout_sha256": "20a75f414de68ade19dde5b341e7f1645c660046a2b2c75448a2f4a5d5ed73a1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assertion_result": {
+        "stage": "AI-14",
+        "scope": "compiled_nest_http_postgresql_actual_worker_synthetic_adapter_only",
+        "checks": 40,
+        "passed": [
+          "explicit empty composition publishes no draft capability regardless of the installed publication",
+          "discovery requires authenticated identity",
+          "discovery rejects unbounded unknown query parameters",
+          "unknown capabilities have no executable projection",
+          "ordinary caller without destination assignment cannot discover fixture tools",
+          "destination assignment alone cannot bypass a registered action requirement",
+          "assigned current module and action reveal only explicitly published capabilities",
+          "super admin discovers the same publication without destination assignment or action role",
+          "another ordinary actor sees no capabilities from an unassigned destination",
+          "preparation is described as blocked while its executor is not implemented",
+          "public descriptor identifies exact required and optional fields and contract hash",
+          "public schemas contain no handler, repository, sourceJson, private field or provider secret",
+          "stale catalog version is an explicit HTTP conflict",
+          "describe requires the exact catalog version",
+          "describe and schema share the discovery authorization boundary",
+          "malformed catalog cursors cannot expand discovery",
+          "real worker exposes only grant-frozen read handlers and technical MCP tools",
+          "admission grant freezes verified reads and excludes unimplemented preparation",
+          "typed read uses the checkpoint manager and returns the allowlisted SQL projection",
+          "durable duplicate result rechecks resource authority without repeating the handler",
+          "unknown input fields fail before the domain handler",
+          "invalid handler output commits no public tool result",
+          "all rejected, invalid and replayed requests consume the same durable budget",
+          "completed callback run stores one reusable result despite seven requests",
+          "SQL resource authority revocation prevents cached results",
+          "action revocation prevents replay from the previous grant",
+          "destination module revocation prevents replay from frozen history",
+          "another session cannot reuse the durable execution grant",
+          "changed persisted tool contracts cannot reuse the frozen callback",
+          "registered resolver preserves exact bigint identity and unambiguous cardinality",
+          "multiple actual SQL candidates remain ambiguous rather than selecting the first",
+          "resolver rejects wrong resource projections and uniqueness while another page exists",
+          "resource scopes remain validated filters and unknown resolvers are denied",
+          "direct resolver tool cannot substitute its registered resource before calling the handler",
+          "direct resolver enforces the shared resource, bigint and uniqueness invariants",
+          "valid direct resolver preserves the same authorized entity contract",
+          "durable direct resolver replay also revalidates cached entity provenance",
+          "resolver alias, direct calls and rejected replays share twelve SQL-budgeted requests",
+          "actual SQL budget rejects the thirteenth request without exceeding its frozen bound",
+          "all four actual worker executions remain synthetic with no provider inference"
+        ],
+        "real_business_tools_published": 0
+      },
+      "orphan_disposable_containers_removed": 0,
+      "new_disposable_containers_remaining": 0
+    },
+    {
+      "harness": "ai15-quota-gateway",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at_utc": "2026-10-19T00:23:25.584840+00:00",
+      "completed_at_utc": "2026-10-19T00:23:32.750087+00:00",
+      "test_sha256": "f31a39640b68fb402fd1b508b0d4057c9a0b91c6ec85fff9122e463aa09b1f4f",
+      "stdout_sha256": "35f6443b1490791b66db375bf2f72a292aa569b727f20a10c235c195bba31bf7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assertion_result": {
+        "task": "AI-15",
+        "scope": "zero_inference_native_quota_shape_gateway_regression",
+        "expected_schema_rejection": false,
+        "status": "passed",
+        "native_normalizer_timestamp_type": "number",
+        "native_schema_rejection_observed": false,
+        "gateway_receipts": [
+          {
+            "tool_name": "nodia_ai_providers_health",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_ai_providers_gemini_engines",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_ai_providers_codex_session",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_ai_providers_models",
+            "state": "completed"
+          },
+          {
+            "tool_name": "nodia_invoices_eligible_invoice_connections",
+            "state": "completed"
+          }
+        ],
+        "valid_projections": [
+          {
+            "tool": "nodia_ai_providers_health",
+            "engine": "web",
+            "timestamp_type": "string"
+          },
+          {
+            "tool": "nodia_ai_providers_health",
+            "engine": "agentic",
+            "timestamp_type": "string"
+          },
+          {
+            "tool": "nodia_ai_providers_gemini_engines",
+            "engine": "web",
+            "timestamp_type": "string"
+          },
+          {
+            "tool": "nodia_ai_providers_gemini_engines",
+            "engine": "agentic",
+            "timestamp_type": "string"
+          }
+        ],
+        "provider_inferences": 0,
+        "synthetic_adapter": true,
+        "synthetic_provider_observation": true,
+        "configured_database_modified": false
+      },
+      "orphan_disposable_containers_removed": 0,
+      "new_disposable_containers_remaining": 0
+    },
+    {
+      "harness": "ai16-events",
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "started_at_utc": "2026-10-19T00:23:32.790716+00:00",
+      "completed_at_utc": "2026-10-19T00:23:38.198792+00:00",
+      "test_sha256": "c72621032197807a24ad635a479ef816233a5a9ef6647a3f78374c938b4c7d11",
+      "stdout_sha256": "1caebbfe82e0ee0005a95775f22b193db7b07533283955fec7b61fd49fd927cb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "assertion_result": {
+        "task": "AI-16",
+        "scope": "disposable_postgres_compiled_event_producers",
+        "checks": 19,
+        "passed": [
+          "admission writes one accepted event atomically with the new run",
+          "duplicate admission does not publish another accepted event",
+          "compiled context and inference producers complete the synthetic run exactly once",
+          "state transitions have strictly increasing revisions matching the final run",
+          "conversation event sequence is contiguous bigint text",
+          "callback replay consumes no second receipt or event",
+          "completed tool event references the exact durable receipt without its result or arguments",
+          "message sealing references the committed assistant without duplicating its text",
+          "RPC progress and repeated delivery add no synthetic progress or token events",
+          "reopening stored observation never reexecutes the adapter or tool",
+          "concurrent producers serialize unique contiguous sequences on the conversation row",
+          "concurrent duplicate publication has one identity and one quota cost",
+          "same event key with a different authority manifest is a conflict",
+          "receipt, event and sequence reservation roll back together",
+          "duplicate recovery is allowed before checking exhausted nonterminal quota",
+          "terminal state derives its reserved slot without a caller terminal hint",
+          "terminal transition and derived reservation commit together",
+          "the run event lookup has a dedicated run-sequence index",
+          "chat deletion cascades its event journal and stored tool results without an additional archive"
+        ],
+        "external_adapter": "synthetic",
+        "real_inference": false,
+        "configured_database_used": false
+      },
+      "orphan_disposable_containers_removed": 0,
+      "new_disposable_containers_remaining": 0
+    }
+  ],
+  "manifest_sha256": "c1e12fb13b578ecfc3a21790b280977c981d1b7172c93dc295beb71e9ce066ba",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_cloud_operations": 0,
+  "services_restarted": false
+}

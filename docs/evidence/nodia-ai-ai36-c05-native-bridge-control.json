@@ -1,0 +1,161 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "supplementary_offline_bridge_diagnostic_not_provider_acceptance",
+  "observed_at_utc": "2026-10-19T03:21:11.944570+00:00",
+  "reproduce_command": ".\\nodia-gemini-microservice\\.venv\\Scripts\\python.exe docs/evidence/scripts/nodia-ai-ai36-c05-native-bridge-control.py",
+  "runtime": {
+    "implementation": "CPython",
+    "version": "3.13.1"
+  },
+  "script": {
+    "path": "docs/evidence/scripts/nodia-ai-ai36-c05-native-bridge-control.py",
+    "sha256": "02bec433e2191dfbb9fcd25e37c2c0892d38504d1ad4cb14d2c1df8804f0790d"
+  },
+  "local_imports": [
+    {
+      "path": "nodia-gemini-microservice/agentic_cli.py",
+      "sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08"
+    },
+    {
+      "path": "nodia-gemini-microservice/agentic_observation.py",
+      "sha256": "4eb2887a5b912cf495ca20ef96d08a34d9e37e98422be2757d351400de98caeb"
+    },
+    {
+      "path": "nodia-gemini-microservice/agentic_progress.py",
+      "sha256": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a"
+    },
+    {
+      "path": "nodia-gemini-microservice/attachment_inspector.py",
+      "sha256": "6b8723a2a91b196dfa83e90a7016b59bd0387e123b78453e7b973f6aa8621da2"
+    },
+    {
+      "path": "nodia-gemini-microservice/browser_manager.py",
+      "sha256": "10fa3fae6a51ac943041d8a85d8442d28015d697db70a6afc2f22bf8f3a262e8"
+    },
+    {
+      "path": "nodia-gemini-microservice/gemini_service.py",
+      "sha256": "5b042c89f9678ff774bd6bbac814c8e579d56b497c9e088c357a226dae2d7bfd"
+    },
+    {
+      "path": "nodia-gemini-microservice/invoice_parser.py",
+      "sha256": "bee80a80d59f8aabf8d3988d01cd4eec1e7bb3f7dc95a96f3bfa2a4ab3de3dec"
+    },
+    {
+      "path": "nodia-gemini-microservice/login_viewer.py",
+      "sha256": "b79b69e3effed5dcda9b54d44b26f9140d99f1e0f0c3373a66ec862ea82e8c96"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_attachments.py",
+      "sha256": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_attempts.py",
+      "sha256": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_cli_diagnostics.py",
+      "sha256": "68565bf87e0c37828703b3b3abf82a787158073213ac0bf155494213f6d6e691"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_context_budget.py",
+      "sha256": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_execution_agents.py",
+      "sha256": "73f000fdb9915a4ba2a4fad41f10180783464f3b87b9edc186960b8d6e0a7eef"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+      "sha256": "b658fa4d2e0f4fc014346c4f6e8343a5b83ad9eaa406663f1bb36b93a0c54222"
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_stdio.py",
+      "sha256": "0f3fa1a2e4b88d5aaba7a01ac0a35a20bb11ffb039870c26c8b7fbd12d24d999"
+    },
+    {
+      "path": "nodia-gemini-microservice/nodia_ai_chat.py",
+      "sha256": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0"
+    },
+    {
+      "path": "nodia-gemini-microservice/profile_admission.py",
+      "sha256": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb"
+    },
+    {
+      "path": "nodia-gemini-microservice/schemas.py",
+      "sha256": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320"
+    },
+    {
+      "path": "nodia-gemini-microservice/service_errors.py",
+      "sha256": "4876a8bf47e3a2bd882a21d9dd5ad19d6aea22967f6875ef29c956d327e55068"
+    },
+    {
+      "path": "nodia-gemini-microservice/session_store.py",
+      "sha256": "dd4c37825a3e21f5909067a8d984685be016bead021dcc89ae285933739839e6"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_native_mcp.py",
+      "sha256": "bf25c1a2f90a2fc32c2cb84046b6f5a3c15c733a6bcc47f086c16b11fa997e0a"
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/test_support.py",
+      "sha256": "f5bdfa0bed7b78cd9812a676b210a13cb29766fb2514bb0efbcfbd8a5dd6d0f3"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_audio_transport.py",
+      "sha256": "8403765c38826fcbeceabaa1a2673598bb74c428830caba4e7c9bf38987d5661"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_candidate_diagnostics.py",
+      "sha256": "dc38d840600f32af6d6ae354bcb01b8db67fc674716c0c6edc82b22dae5d558d"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_generation_diagnostics.py",
+      "sha256": "747065999bdbbd08514bf66e2e25e91100e5eaa136de11b5af2369c77592adcd"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_reasoning_adapter.py",
+      "sha256": "4e2d535c82393d2da1bb339819a54411afafcb0ccf9c5acd1461c9abff5c3171"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_session_cleanup.py",
+      "sha256": "22a25a74a4f5372983a0bd6123d1f870347db11dda0774c29d5fd5176883312e"
+    },
+    {
+      "path": "nodia-gemini-microservice/web_upload_diagnostics.py",
+      "sha256": "786c9e20e52358a8eb3d5a59cee25c1aaef720217fb59c325ba29b76aa6894df"
+    }
+  ],
+  "result": {
+    "scope": "offline_actual_bridge_and_supervisor_synthetic_cli_and_callback_results",
+    "one_call_progress_events": 2,
+    "one_call_progress_done": 1,
+    "callbacks": 2,
+    "rpc_messages": 5,
+    "unforwarded_tool_requests": 0,
+    "state": "completed",
+    "rpc_reply_utf8_bytes": [
+      161,
+      448,
+      96156,
+      248
+    ],
+    "real_cli_or_provider_requests": 0,
+    "operational_profiles_or_services_accessed": false
+  },
+  "boundaries": {
+    "real_stdio_bridge_and_supervisor": true,
+    "cli_client_and_terminal_result": "synthetic_test_fixture",
+    "callback_results": "synthetic_test_fixture",
+    "subprocess": "local_python_stdio_bridge_only",
+    "external_network_blocked_by": "tests/test_support.py installed before service imports",
+    "production_services_started_or_restarted": false,
+    "production_data_accessed": false,
+    "real_cli_or_provider_acceptance": false
+  },
+  "limitations": [
+    "Does not execute the Antigravity CLI binary or infer with Gemini.",
+    "Fixture client allows replies above 64 KiB; real CLI parsing limits are not measured.",
+    "Does not identify the cause of the Live02 deadline.",
+    "Two progress events with one DONE can represent one tool invocation."
+  ]
+}

@@ -40,7 +40,7 @@ export const RANSACK_POLICIES = {
   provider: { ...common, business_id: 'uuid', name: 'text', tax: 'number' },
   product: { ...common, ...prices, business_id: 'uuid', provider_id: 'bigint' },
   product_log: {
-    id: 'bigint',
+    id: 'uuid',
     created_at: 'date',
     updated_at: 'date',
     ...prices,

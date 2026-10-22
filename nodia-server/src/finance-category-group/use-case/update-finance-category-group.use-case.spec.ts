@@ -1,3 +1,5 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EntityManager } from 'typeorm';
 import { FinanceCategoryGroupService } from '../finance-category-group.service.js';
@@ -41,6 +43,7 @@ describe('Personal category groups application rules', () => {
       is_active: true,
     });
   beforeEach(() => {
+    service.withScope = financeScopeFixture(manager);
     service.transaction = vi.fn(async (work) => work(manager));
     service.findOwned = vi.fn(async () => group());
     service.save = vi.fn(async (_manager, entity) => entity);
@@ -57,7 +60,7 @@ describe('Personal category groups application rules', () => {
 
   it('omitted selection preserves associations while metadata is updated', async () => {
     const result = await new UpdateFinanceCategoryGroupUseCase(service).execute(
-      '1',
+      actorFixture('1'),
       '10',
       { name: 'New name', is_active: false },
     );
@@ -69,9 +72,13 @@ describe('Personal category groups application rules', () => {
 
   it('empty selection archives existing pivots without hard deletion', async () => {
     service.memberships = vi.fn(async () => [membership('20', '2')]);
-    await new UpdateFinanceCategoryGroupUseCase(service).execute('1', '10', {
-      category_ids: [],
-    });
+    await new UpdateFinanceCategoryGroupUseCase(service).execute(
+      actorFixture('1'),
+      '10',
+      {
+        category_ids: [],
+      },
+    );
     expect(service.saveMemberships).toHaveBeenCalledWith(manager, [
       expect.objectContaining({ id: '20', category_id: '2', is_active: false }),
     ]);
@@ -82,9 +89,13 @@ describe('Personal category groups application rules', () => {
       membership('20', '2', false),
       membership('21', '3'),
     ]);
-    await new UpdateFinanceCategoryGroupUseCase(service).execute('1', '10', {
-      category_ids: ['2', '4'],
-    });
+    await new UpdateFinanceCategoryGroupUseCase(service).execute(
+      actorFixture('1'),
+      '10',
+      {
+        category_ids: ['2', '4'],
+      },
+    );
     expect(service.saveMemberships).toHaveBeenCalledWith(
       manager,
       expect.arrayContaining([
@@ -111,9 +122,13 @@ describe('Personal category groups application rules', () => {
   it('rejects a missing or foreign category before changing any membership', async () => {
     service.lockCategories = vi.fn(async () => []);
     await expect(
-      new UpdateFinanceCategoryGroupUseCase(service).execute('1', '10', {
-        category_ids: ['2'],
-      }),
+      new UpdateFinanceCategoryGroupUseCase(service).execute(
+        actorFixture('1'),
+        '10',
+        {
+          category_ids: ['2'],
+        },
+      ),
     ).rejects.toThrow('finance:category_not_found');
     expect(service.saveMemberships).not.toHaveBeenCalled();
     expect(service.save).not.toHaveBeenCalled();
@@ -122,15 +137,23 @@ describe('Personal category groups application rules', () => {
   it('rejects new inactive categories but preserves inactive historical selection', async () => {
     service.lockCategories = vi.fn(async () => [category('2', false)]);
     await expect(
-      new UpdateFinanceCategoryGroupUseCase(service).execute('1', '10', {
-        category_ids: ['2'],
-      }),
+      new UpdateFinanceCategoryGroupUseCase(service).execute(
+        actorFixture('1'),
+        '10',
+        {
+          category_ids: ['2'],
+        },
+      ),
     ).rejects.toThrow('finance:category_inactive');
     service.memberships = vi.fn(async () => [membership('20', '2')]);
     await expect(
-      new UpdateFinanceCategoryGroupUseCase(service).execute('1', '10', {
-        category_ids: ['2'],
-      }),
+      new UpdateFinanceCategoryGroupUseCase(service).execute(
+        actorFixture('1'),
+        '10',
+        {
+          category_ids: ['2'],
+        },
+      ),
     ).resolves.toBeDefined();
     expect(service.saveMemberships).not.toHaveBeenCalled();
   });
@@ -138,9 +161,13 @@ describe('Personal category groups application rules', () => {
   it('does not expose or update a missing/foreign group', async () => {
     service.findOwned = vi.fn(async () => null);
     await expect(
-      new UpdateFinanceCategoryGroupUseCase(service).execute('2', '10', {
-        name: 'Foreign',
-      }),
+      new UpdateFinanceCategoryGroupUseCase(service).execute(
+        actorFixture('2'),
+        '10',
+        {
+          name: 'Foreign',
+        },
+      ),
     ).rejects.toThrow('finance:category_group_not_found');
     expect(service.findOwned).toHaveBeenCalledWith('2', '10', manager, true);
     expect(service.save).not.toHaveBeenCalled();
@@ -149,7 +176,7 @@ describe('Personal category groups application rules', () => {
   it('hydrates archived categories and projects only public group fields', async () => {
     service.categories = vi.fn(async () => [category('2', false)]);
     const result = await new GetFinanceCategoryGroupUseCase(service).execute(
-      '1',
+      actorFixture('1'),
       '10',
     );
     expect(result.category_count).toBe(1);
@@ -163,12 +190,12 @@ describe('Personal category groups application rules', () => {
 
   it('batches group category counts for the whole page', async () => {
     const result = await new GetFinanceCategoryGroupsUseCase(service).execute(
-      '1',
+      actorFixture('1'),
       new FinanceQueryDto(),
     );
     expect(result.data[0].category_count).toBe(2);
     expect(service.categoryCounts).toHaveBeenCalledTimes(1);
-    expect(service.categoryCounts).toHaveBeenCalledWith('1', ['10']);
+    expect(service.categoryCounts).toHaveBeenCalledWith('1', ['10'], manager);
   });
 
   it('propagates a membership failure for transactional rollback rather than success', async () => {
@@ -176,11 +203,14 @@ describe('Personal category groups application rules', () => {
       throw new Error('synthetic persistence failure');
     });
     await expect(
-      new CreateFinanceCategoryGroupUseCase(service).execute('1', {
-        name: 'Expenses',
-        key: 'expenses',
-        category_ids: ['2'],
-      }),
+      new CreateFinanceCategoryGroupUseCase(service).execute(
+        actorFixture('1'),
+        {
+          name: 'Expenses',
+          key: 'expenses',
+          category_ids: ['2'],
+        },
+      ),
     ).rejects.toThrow('synthetic persistence failure');
     expect(service.insert).toHaveBeenCalledWith(
       manager,
@@ -193,11 +223,14 @@ describe('Personal category groups application rules', () => {
       throw Object.assign(new Error('private SQL'), { code: '23505' });
     });
     await expect(
-      new CreateFinanceCategoryGroupUseCase(service).execute('1', {
-        name: 'Expenses',
-        key: 'expenses',
-        category_ids: [],
-      }),
+      new CreateFinanceCategoryGroupUseCase(service).execute(
+        actorFixture('1'),
+        {
+          name: 'Expenses',
+          key: 'expenses',
+          category_ids: [],
+        },
+      ),
     ).rejects.toThrow('finance:duplicate_key');
   });
 });

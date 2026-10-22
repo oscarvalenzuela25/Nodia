@@ -1,3 +1,4 @@
+import type { FinanceActor } from '../../authorization/authority-transaction.js';
 import {
   BadRequestException,
   ConflictException,
@@ -23,48 +24,61 @@ export class CreateFinanceMovementUseCase {
     private readonly movements: FinanceMovementService,
   ) {}
 
-  async execute(userId: string, dto: CreateFinanceMovementDto) {
-    validateMovementState(dto.type, dto.status);
-    return this.ledger.transaction(async (manager) => {
-      const obligation = dto.obligation_id
-        ? requireOwned(
-            await this.ledger.obligation(manager, userId, dto.obligation_id),
-          )
-        : null;
-      if (obligation !== null) {
-        if (!obligation.is_active)
-          throw new ConflictException('finance:inactive_obligation');
-        if (dto.type !== repaymentType(obligation))
-          throw new BadRequestException('finance:invalid_repayment_direction');
-        const initial = requireInitialMovement(
-          await this.ledger.initialMovements(manager, obligation),
-        );
-        if (initial.status === 'cancelled')
-          throw new ConflictException('finance:cancelled_obligation');
-      }
-      requireActiveCategory(
-        await this.ledger.category(manager, userId, dto.category_id),
-      );
-      const movement = {
-        user_id: userId,
-        name: dto.name,
-        amount: dto.amount,
-        type: dto.type,
-        status: dto.status,
-        category_id: dto.category_id,
-        obligation_id: dto.obligation_id ?? null,
-        is_active: dto.is_active ?? true,
-      };
-      if (obligation !== null)
-        ensureRepaymentCapacity(
-          obligation,
-          await this.ledger.confirmedPaid(manager, obligation),
-          movement,
-        );
-      const saved = await this.ledger.saveMovement(manager, movement);
-      return projectMovement(
-        requireOwned(await this.movements.findOne(userId, saved.id, manager)),
-      );
-    });
+  async execute(actor: FinanceActor, dto: CreateFinanceMovementDto) {
+    return this.ledger.withScope(
+      actor,
+      async ({ manager: scopedManager, ownerId: userId }) => {
+        validateMovementState(dto.type, dto.status);
+        return this.ledger.transaction(async (manager) => {
+          const obligation = dto.obligation_id
+            ? requireOwned(
+                await this.ledger.obligation(
+                  manager,
+                  userId,
+                  dto.obligation_id,
+                ),
+              )
+            : null;
+          if (obligation !== null) {
+            if (!obligation.is_active)
+              throw new ConflictException('finance:inactive_obligation');
+            if (dto.type !== repaymentType(obligation))
+              throw new BadRequestException(
+                'finance:invalid_repayment_direction',
+              );
+            const initial = requireInitialMovement(
+              await this.ledger.initialMovements(manager, obligation),
+            );
+            if (initial.status === 'cancelled')
+              throw new ConflictException('finance:cancelled_obligation');
+          }
+          requireActiveCategory(
+            await this.ledger.category(manager, userId, dto.category_id),
+          );
+          const movement = {
+            user_id: userId,
+            name: dto.name,
+            amount: dto.amount,
+            type: dto.type,
+            status: dto.status,
+            category_id: dto.category_id,
+            obligation_id: dto.obligation_id ?? null,
+            is_active: dto.is_active ?? true,
+          };
+          if (obligation !== null)
+            ensureRepaymentCapacity(
+              obligation,
+              await this.ledger.confirmedPaid(manager, obligation),
+              movement,
+            );
+          const saved = await this.ledger.saveMovement(manager, movement);
+          return projectMovement(
+            requireOwned(
+              await this.movements.findOne(userId, saved.id, manager),
+            ),
+          );
+        }, scopedManager);
+      },
+    );
   }
 }

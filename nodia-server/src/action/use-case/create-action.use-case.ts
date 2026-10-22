@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { CreateActionDto } from '../dto/create-action.dto.js';
-import { ActionService } from '../action.service.js';
-
+import { SaveActionUseCase } from './save-action.use-case.js';
 @Injectable()
 export class CreateActionUseCase {
-  constructor(private readonly actionService: ActionService) {}
-
-  async execute(dto: CreateActionDto) {
-    return this.actionService.create(dto);
+  constructor(private readonly save: SaveActionUseCase) {}
+  execute(dto: CreateActionDto, actor: ActorReference) {
+    return this.save.execute(undefined, dto, actor);
   }
 }

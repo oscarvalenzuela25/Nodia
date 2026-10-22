@@ -1,0 +1,155 @@
+{
+  "stage": "AI-32-R03",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "gates_open",
+  "observed_at_utc": "2026-10-18T04:47:00Z",
+  "harness_sha256": "657c7b453eba6b591aefdcb31b3b38bf8cc00d05522bfc71c6616b36ba96d674",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "verification_semantics": "this_canary_semantic_match_and_completed_ack_and_exact_cached_media_type",
+  "probe": {
+    "engine": "web",
+    "kind": "audio",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null,
+    "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+    "reference": {
+      "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "session_generation": "36de3c4fc3be4031804547fd59f9e3b8",
+      "operation_ref": "9a6ac481-7171-464f-ab04-e955aabfe1e1"
+    },
+    "attempt_id": "9a6ac481-7171-464f-ab04-e955aabfe1e1",
+    "file_bytes": 22775,
+    "media_type": "audio/webm",
+    "file_sha256": "43e3eed276cee137f2c9d7245659e3b0cce947a21beb5b4c8d827d60910bf82b",
+    "expected_answer_sha256": "1b057f4a611413632846c5f10df105c2c1c322e975dec629bd207b8784569414",
+    "answer_normalization": "speech_words_v1",
+    "native_acknowledged": true,
+    "verified": false,
+    "fixture": "synthetic_known_canary",
+    "audio_oracle_source": "explicit_cli_synthetic_text",
+    "http_status": 200,
+    "answer_sha256": "d39e00b50ca8333a927f61f9a51a809188a18329360367f38af9c655840f4c46",
+    "semantic_canary_matches": false,
+    "semantic_diagnostic": {
+      "answer_is_string": true,
+      "answer_chars": 253,
+      "expected_chars": 30,
+      "line_count": 1,
+      "trim_equals": false,
+      "casefold_equals": false,
+      "whitespace_collapse_equals": false,
+      "contains_expected": false,
+      "expected_is_prefix": false,
+      "expected_is_suffix": false,
+      "json_string_decoded_equals": false,
+      "closed_keyword_present": {
+        "audio": true,
+        "transcri": false,
+        "no puedo": false,
+        "no tengo": false,
+        "cannot": false,
+        "can't": false,
+        "unable": false,
+        "unsupported": false,
+        "formato": true,
+        "silencio": false,
+        "vac\u00edo": false,
+        "upload": false,
+        "archivo": true
+      }
+    },
+    "elapsed_seconds": 8.77,
+    "native_outcome": "completed",
+    "cached_modality_verified": false,
+    "exact_format_verified": false
+  },
+  "reply_kind": "answer",
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [],
+    "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+    "session_generation": "36de3c4fc3be4031804547fd59f9e3b8",
+    "supports_mcp": false,
+    "verified_attachment_media_types": []
+  },
+  "diagnostics": [
+    {
+      "engine": null,
+      "attempt_id": "9a6ac481-7171-464f-ab04-e955aabfe1e1",
+      "phase": null,
+      "error_type": null,
+      "failure_category": null,
+      "elapsed_ms": null,
+      "event": "web_success",
+      "reply_format": {},
+      "generation": {
+        "http_status": 200,
+        "upstream_eof_seen": true,
+        "upstream_eof_elapsed_ms": 8257,
+        "candidate_outputs": 6,
+        "recovery_calls": 0,
+        "client_close_calls": 0,
+        "byte_chunks": 13,
+        "body_bytes": 35936,
+        "text_outputs": 6,
+        "structured_text": {
+          "applied": true,
+          "last_equal": true,
+          "candidate_checks": 6,
+          "protected_ampersands_total": 0,
+          "unprotected_html_would_change_outputs": 0,
+          "last_source": {
+            "text_bytes": 280,
+            "sha256": "b184e909921d1a21fcc28d5e4656c1d25a227e2aa0b7fbf48605ed9f0b82e112",
+            "json_parseable": true
+          },
+          "last_output": {
+            "text_bytes": 280,
+            "sha256": "b184e909921d1a21fcc28d5e4656c1d25a227e2aa0b7fbf48605ed9f0b82e112",
+            "json_parseable": true
+          }
+        },
+        "body_pacing": {
+          "first_chunk_elapsed_ms": 3553,
+          "last_chunk_elapsed_ms": 8257,
+          "max_inter_chunk_gap_ms": 2639
+        },
+        "uploads": {
+          "requests": 1,
+          "roundtrips_completed": 1,
+          "failed": 0,
+          "cancelled": 0,
+          "sink_errors": 0,
+          "metadata_errors": 0,
+          "records": [
+            {
+              "ordinal": 1,
+              "started_elapsed_ms": 244,
+              "completed_elapsed_ms": 1133,
+              "duration_ms": 889,
+              "reference_chars": 64,
+              "http_status": 200,
+              "reference_nonempty": true,
+              "reference_prefix_matches": true,
+              "outcome": "http_completed"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T04:47:09Z"
+}

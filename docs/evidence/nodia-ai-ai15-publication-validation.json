@@ -1,0 +1,280 @@
+{
+  "date": "2026-10-16",
+  "task": "AI-15",
+  "status": "publication_build_verified_provider_acceptance_separate",
+  "scope": "repository_publication_source",
+  "checks": [
+    "67 exact executable read/artifact contracts; no write capabilities",
+    "27 selected feature documents; 17 other documents remain excluded",
+    "Approval provenance points to the exact human publication instruction; compiler verifies revision/content hashes",
+    "Every prompt fragment selects only its reviewed read section and exact NodiaAI plus destination-module scope",
+    "A formerly approved document reverted to draft cannot retain an active binding",
+    "Changed schema bytes/hash are rejected before publishing",
+    "A destination-module binding cannot be weakened or replaced",
+    "Explicit-source copy recompiles deterministically; a corrupted deployed fragment fails verification"
+  ],
+  "capabilities": 67,
+  "documents": 27,
+  "fragments": 27,
+  "excludedDocuments": 17,
+  "catalogRelease": "nodia-ai-ai15-reads/1",
+  "releaseId": "5b27b4a3873037c8e850df90a801d84c561545414a8b27de415a3c8ab1f66c96",
+  "fragmentUtf8Bytes": 60822,
+  "sourceHashes": [
+    {
+      "path": "docs/evidence/nodia-ai-ai15-publication-authorization.md",
+      "sha256": "4705ad1d1124ef88de24a2b27bf9e674265cff35cc6073e2e9a5b1a7135d2785"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/README.md",
+      "sha256": "127a5e5d15559dd29afa585d6acbf5bc1cf55c39e4fc5ad5f7884ad787e57144"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+      "sha256": "671f85892afd38ac710e00fb02207d7822826fdcc0f0c7726565dcb5e7daa6f1"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+      "sha256": "629762ec44c0dea4e34744a83769480a1e86105d05af0669a22f33d40e7a5b4a"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+      "sha256": "7313d14131119ca57e8a8472a9a24343fe2f76fac7fe0801215054c89edc3e11"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+      "sha256": "851e62ea11b212d54edf50a8c445bdf73efe1e0deffc951431665a33cf719ae2"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/products.md",
+      "sha256": "fc22bcd7dc2cab1fe69c83d4440c11c3e06a6b76344620b4dda3d55ce243c0df"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+      "sha256": "554dcb858cd39d34b30af5237aafd733fbc00dd8ebbb27c061cefd3060562744"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+      "sha256": "b0109877c253168b32390a30f29514cf4d39c8c2b46eff5958768e51f182409a"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/README.md",
+      "sha256": "5d3af57dc07db4045841251eefe44bcafe94cfa4569ab94da27ab2cd9633543a"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+      "sha256": "c05efe40f9fee14bf9996f9395c0c700a8cc4229000da7a2eb41923ebc5da7f0"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+      "sha256": "6079989af96ecec7c326b10da18bf840f599962f79b32e535a89dc72377e7a91"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+      "sha256": "358c4b18b3073875203addb398a24e659f9da96071f567463542e3dc1a32153c"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+      "sha256": "978bfd8c6667f67d650ee134cf388a92ec158a0b9df8c19e61db081708854d72"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+      "sha256": "8c4458fb045dc4ff4a5e47be3ff1b375ff8bdf0e3bc1d877af8fee32fab1ad6c"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+      "sha256": "06cb6bf7babed7893123a42f53696a28a156c9bb5d3e31aa8bb70b51fb4f6909"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+      "sha256": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/README.md",
+      "sha256": "0507797869183cd88091571aaeb76b7738ea7740b7c466947be6a260ee1c1d37"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/capability-registry-gateway.md",
+      "sha256": "81da212c7587cf5ae6e1f1948388ea4c250dcc0766f5826a14eba3ce8d7d18de"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/chat-admission-retention.md",
+      "sha256": "6908e865f6704e969c413df39158afd04a2cace4aacfd093b487256425b4bc2f"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md",
+      "sha256": "a21887e4cb975029cb8a7c9db764ef75e501d7457f446260d131d5db26067681"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+      "sha256": "f375fce4ccebd1897a486b844c52db99359159a605b9571592f7ff6909d2c90e"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/conversation-persistence.md",
+      "sha256": "977204a21dfa79aa325d0069e6dd2d42c93735390c778f42cc97f0b564771951"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/durable-worker.md",
+      "sha256": "2615f4e74e8f580c2bda1ed83c69ee99ba076239c5ffa806ecfc9a8a42d99880"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/gemini-agentic-viability.md",
+      "sha256": "7f13d655293c59973c33f1f9d356c38f9af938a0a20c245a36aa8ecb8b5926da"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/gemini-web-viability.md",
+      "sha256": "7d1f1d0b463c49fb1488ad51ae50f65a98609e933e85d0832b54e8e01fcc7811"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/knowledge-publication.md",
+      "sha256": "ac19aed77f30e6524f9176cc6250e2726315d58a92c7ed35fbcb62aedeea341e"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/module-authorization.md",
+      "sha256": "cc9de41264ac1fb5900364ccf6c529a1079956c6866a1cb50c2f2407b080228e"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md",
+      "sha256": "b802c793a094ff75cbb39bf3815bf998d0bd83eb027a435889c8995e9ca010da"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/nodia-ai/features/shared-authority.md",
+      "sha256": "cd94885f18a027a47fd0f8dfe8276fe3a3375eda2b47a05185f31d930a304a17"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/README.md",
+      "sha256": "e8037259d10844cbb9c558cbf1e2a8a76f02aa2b5a79fa83ffb9c0cf11140f59"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+      "sha256": "5d463297e54867a1e2132a650a6ef479f8fd088b47e9c5286d764d58fb2d0826"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+      "sha256": "674ccdbd457adc321dbe35ce0ed6a35d5cec20cddf2a590b3f4da15a8ae0af9a"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+      "sha256": "3c86175ea8e8f5689952254b4775ae23be89c441fe02b80475fa5d2b96398be8"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+      "sha256": "e3540cc2c23686d7d41f09762a8b42f7f3496d81eccf4317ca8552d1a40375e5"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/README.md",
+      "sha256": "63f5d8dc52f510e0320ffa03dd15e827bdbbba0ad60d40058624031cc90fbff8"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+      "sha256": "0d379d0948dfad1fa0b9a0892dbd2d6fb3a442a9806c9e302f230898e1dbf396"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+      "sha256": "95448f5b58cb0b7b6f701f0d20a83d2394aa3635e190b0aa36d941ed7878df72"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+      "sha256": "1795ea88e34afdc856a143544426220218ef87be597a21f0c6bce7c4f5451667"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+      "sha256": "0815af692ff10bb58e9e1d15aa6c4a1df94c2ec40f31d7f594e6ab0093e5a84f"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+      "sha256": "bc5442eb08b65cf01ab3fa4ef6bb5ccce2b15d8434002f1e7801e832bee90765"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+      "sha256": "75c27849aa84993d66398e675e32a6fba44b06101f7915809280d8329e0b97a5"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+      "sha256": "bc6a729fa3565bdc258a058027cbf3324a730cea3fdeea3764758b432cade882"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+      "sha256": "379f8962d7f150d84f378ce0e383c73877fa241d9a39ccf34fddd8ae71ff3931"
+    },
+    {
+      "path": "docs/nodia-ai/knowledge/reservations/features/reservations.md",
+      "sha256": "705e990e4e2927902372e520eb79ad021928fc194b4416dc3884edfb04efa12f"
+    },
+    {
+      "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "sha256": "5737565db5d92bb842e8bba583f9ca7274fedb81e32c6131d8c2853d6aef681e"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/get-ai-providers-health.use-case.ts",
+      "sha256": "39eca788a791fe14773c2312a4ff3b7aac81e2bc6231f33bc0bf349e3724fdec"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "sha256": "91ddfdeb080b08b56207ff7d9ab1c02d9d3152cedd1fe63be686407d07089fca"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/ai-settings/use-case/read-ai-settings.use-case.ts",
+      "sha256": "d2896b760fa80a38c5e09308fab4116c4a6938b1d7c9b45f4e93568a0f3fecfd"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+      "sha256": "c289f45edf7e023f20fc2342472d670d5762759807613122aafd494d72080457"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+      "sha256": "64e1028c1948c45207857846f5d199fafce836ae9661edb8e182c35c7a969557"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+      "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+      "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+      "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+      "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+      "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+      "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+      "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+      "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.ts",
+      "sha256": "53dfa39b6253e1e063ac272ceb3f9382e0ec421815c248fa001474c31a1700ce"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+      "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+      "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+    }
+  ],
+  "providerCalls": 0,
+  "configuredDatabaseChanges": false,
+  "limitations": [
+    "This command verifies the actual compiler, publication closure and corrupted/draft rejection; it does not call Gemini or certify provider availability.",
+    "Human provenance is the explicit publication instruction; hashes identify the technically reviewed revision and do not imply a human line-by-line review.",
+    "AI-06 historical evidence is retained; its old empty-corpus harness was not run as current publication acceptance."
+  ]
+}

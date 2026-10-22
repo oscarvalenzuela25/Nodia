@@ -1,0 +1,69 @@
+{
+  "stage": "AI-38-proxy-attachments",
+  "status": "passed",
+  "authentication_kind": "existing_legitimate_session_restored",
+  "fixture_session_or_token_injected": false,
+  "started_at_utc": "2026-10-20T23:02:01.972039+00:00",
+  "finished_at_utc": "2026-10-20T23:09:10.531477+00:00",
+  "time_basis": "VM open/close receipts bound the actual UI sequence; Windows clock is not used for ordering.",
+  "conversation_id": "a69b44aa-5592-4ad7-b69d-b74b48682a56",
+  "attachment_id": "6a140189-de1f-4fb4-946a-9995a4448d86",
+  "synthetic_chat_title": "AI-38 proxy 20 MiB — prueba sintética",
+  "uploaded_file_bytes": 20971520,
+  "upload_success": true,
+  "over_limit_frontend_rejected": true,
+  "owned_attachment_discarded": true,
+  "message_draft_preserved_on_size_rejection": true,
+  "oversize_created_intents": 0,
+  "application_download_exercised": false,
+  "R2_private_download_verified_by_operator": true,
+  "provider_generations": 0,
+  "business_effects": 0,
+  "new_messages": 0,
+  "chat_archived_via_UI": true,
+  "message_draft_cleared": true,
+  "SQL_chat_final": {
+    "path": "docs/evidence/nodia-ai-ai38-attachment-chat-final-r01.json",
+    "sha256": "6e78a58531fc4542a5e408826ec0ef9a985246340947a39603556c31c6fc8dee"
+  },
+  "HTTP_observer": {
+    "begin": {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-observer-begin-r01.json",
+      "sha256": "7b58a762b41dd098d24655516e8b93bb491a953b5ae9772e9e9982ac1f56ff20"
+    },
+    "end": {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-observer-end-r01.json",
+      "sha256": "ed38159abb1199ea809595dc9e177d184e77e74a9916923d581a34e4a5abdc71"
+    }
+  },
+  "observations": [
+    "Existing legitimate session restored; normal session refresh was observed, without reading tokens/cookies.",
+    "A new clearly named synthetic chat was created; only its own selection was configured from the existing Gemini Web catalog.",
+    "The +1 byte PDF selection showed the localized error, created no card or SQL reservation, and retained the message draft.",
+    "Exactly one reservation POST201 and one content PUT200 were observed for the 20 MiB fixture.",
+    "The UI displayed Archivo validado, 20971520 bytes, and the one-page PDF synthetic extraction.",
+    "Quitar adjunto showed Adjunto retirado; the worker subsequently removed the exact R2 object.",
+    "No Enviar mensaje action, provider generation, OCR or business operation was requested.",
+    "The chat was left empty and archived through the ordinary reversible UI, not hard-deleted."
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-over-limit-ui-r01.png",
+      "sha256": "62f32a6d85ac5b3b0e1d1b0301a9cab4f17846d30647f9ce431d5e67f848c36e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-ready-ui-r01.png",
+      "sha256": "ac5ccf8f6adf4e61f5b8ec0f83cc5b4aa8dc316391866690659485223082fe9c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-attachment-removed-ui-r01.png",
+      "sha256": "62f32a6d85ac5b3b0e1d1b0301a9cab4f17846d30647f9ce431d5e67f848c36e"
+    }
+  ],
+  "limits": [
+    "The draft attachment panel has no download action. The 20 MiB GET digest was checked using the private R2 operator observer, not attributed to an application/UI download.",
+    "The existing 4-file/40 MiB message aggregate, other formats and new inference with a 20 MiB native attachment were not reaccepted by this test.",
+    "During initial configuration session renewal was observed and the unapplied drawer had to be reopened; the cause of its closing was not established. Upload and size rejection occurred afterwards.",
+    "Normal archived chat metadata and expired attachment metadata remain subject to existing retention; no extra data archive is created."
+  ]
+}

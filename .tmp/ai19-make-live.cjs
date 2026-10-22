@@ -1,0 +1,1 @@
+const fs=require('fs');let s=fs.readFileSync('.tmp/ai18-live-state.mjs','utf8').replaceAll("stage:'AI-18'","stage:'AI-19'").replaceAll('row.migrations!==23','row.migrations!==24');fs.writeFileSync('.tmp/ai19-live-state.mjs',s);

@@ -1,0 +1,67 @@
+{
+  "stage": "AI-36-C04",
+  "scope": "post_disposable_sql_read_only_health_and_dependency_parity",
+  "status": "passed",
+  "observed_at_utc": "2026-10-19T02:07:58Z",
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "http": {
+    "api": 200,
+    "gemini_health": 200,
+    "proxy": 200
+  },
+  "compiled_files_verified": 2789,
+  "staging_source_files_verified": 2799,
+  "dependency_parity": {
+    "@nestjs/common": {
+      "staging": "12.0.1",
+      "operational_runtime": "12.0.1",
+      "comparison": "exact_version_match"
+    },
+    "@nestjs/core": {
+      "staging": "12.0.1",
+      "operational_runtime": "12.0.1",
+      "comparison": "exact_version_match"
+    },
+    "@nestjs/testing": {
+      "staging": "12.0.1",
+      "operational_runtime": null,
+      "comparison": "test_only_dependency_not_installed_in_operational_runtime"
+    },
+    "@nestjs/typeorm": {
+      "staging": "12.0.1",
+      "operational_runtime": "12.0.1",
+      "comparison": "exact_version_match"
+    },
+    "typeorm": {
+      "staging": "1.1.1",
+      "operational_runtime": "1.1.1",
+      "comparison": "exact_version_match"
+    },
+    "pg": {
+      "staging": "8.23.0",
+      "operational_runtime": "8.23.0",
+      "comparison": "exact_version_match"
+    }
+  },
+  "runtime_policy_hash": "521905d5e90d315f0ecc662a2b143e45dd3de0e6d136e5ba068b288e134683e9",
+  "limits": {
+    "mcp_wire_json_depth": 16,
+    "native_typed_json_decoded_depth": 8,
+    "json_collection_items": 128,
+    "tool_arguments_utf8_bytes": 65536,
+    "tool_result_utf8_bytes": 65536,
+    "assembled_context_utf8_bytes": 262144
+  },
+  "new_candidate_deployed": false,
+  "disposable_containers_remaining": 0,
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "provider_metadata_requests": 0,
+  "storage_operations": 0,
+  "services_restarted": false
+}

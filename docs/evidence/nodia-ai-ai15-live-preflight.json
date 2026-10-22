@@ -1,0 +1,31 @@
+{
+  "task": "AI-15",
+  "phase": "preflight",
+  "status": "passed",
+  "checks": 5,
+  "passed": [
+    "candidate bundle composes all 67 actual typed product ports",
+    "actual registry exposes 67 domain capabilities and three discovery descriptors",
+    "real compiled knowledge release loads through the production loader",
+    "preflight generates no provider inference",
+    "all real native runtime slots released after acknowledgement"
+  ],
+  "turns": [],
+  "downloads": [],
+  "external_observations": [],
+  "dispatches": [],
+  "adapter_dispatch_requests": 0,
+  "maximum_adapter_dispatch_requests": 0,
+  "candidate_release_id": "6ed2552585b9d302f49b38a872f804114d425468477f2de19eb886929591b6d0",
+  "domain_capabilities": 67,
+  "mcp_catalog_tools": 72,
+  "real_gemini_inference": false,
+  "adapter_mocked": false,
+  "product_readers_mocked": false,
+  "synthetic_sql_database": true,
+  "synthetic_http_identity": true,
+  "configured_business_database_modified": false,
+  "configured_provider_selection_modified": false,
+  "storage_objects_created": 0,
+  "invoice_content_download_verified": false
+}

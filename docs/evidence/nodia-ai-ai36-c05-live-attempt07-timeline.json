@@ -1,0 +1,125 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "derived_structural_monotonic_intervals_no_causal_attribution",
+  "source_report_sha256": "e8df906c18817bb50696311be07d58352a580050f378b46c208c855bd085ceae",
+  "source_completed_at_utc": "2026-10-19T18:11:36.259Z",
+  "provider_generations": 1,
+  "runtime_timings": [
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:09:32.282Z",
+        "monotonic_ms": 8779.791117
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:09:35.628Z",
+        "monotonic_ms": 12125.683296
+      },
+      "elapsed_ms": 3345.8921789999986
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:09:35.936Z",
+        "monotonic_ms": 12434.340179
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:09:35.943Z",
+        "monotonic_ms": 12440.563636
+      },
+      "elapsed_ms": 6.223457000000053
+    },
+    {
+      "kind": "observe",
+      "started": {
+        "at_utc": "2026-10-19T18:09:36.009Z",
+        "monotonic_ms": 12507.208337
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:09:39.155Z",
+        "monotonic_ms": 15652.722102
+      },
+      "elapsed_ms": 3145.5137649999997
+    },
+    {
+      "kind": "measure_context",
+      "started": {
+        "at_utc": "2026-10-19T18:09:39.267Z",
+        "monotonic_ms": 15764.742812
+      },
+      "status": "completed",
+      "finished": {
+        "at_utc": "2026-10-19T18:09:39.273Z",
+        "monotonic_ms": 15770.511564
+      },
+      "elapsed_ms": 5.7687519999999495
+    },
+    {
+      "kind": "execute",
+      "attempt_id": "fd73fa9a-310c-4a46-a525-110b733251bb",
+      "phase": "discovery",
+      "started": {
+        "at_utc": "2026-10-19T18:09:39.324Z",
+        "monotonic_ms": 15822.094229
+      },
+      "status": "rejected",
+      "error_code": "mcp_cancelled",
+      "finished": {
+        "at_utc": "2026-10-19T18:11:36.035Z",
+        "monotonic_ms": 132532.560809
+      },
+      "elapsed_ms": 116710.46658
+    }
+  ],
+  "generations": [
+    {
+      "turn": "financial_preview",
+      "run_id": "c8af7984-f506-44d1-8c13-e74534f7f86f",
+      "run_state": "unknown",
+      "attempt_id": "fd73fa9a-310c-4a46-a525-110b733251bb",
+      "phase": "discovery",
+      "started_at_utc": "2026-10-19T18:09:39.326Z",
+      "accepted_start_at_utc": "2026-10-19T18:09:39.337Z",
+      "native_start_request_ms": 11.01089900000079,
+      "execute_elapsed_ms": 116710.70958199998,
+      "terminal_proof_received": false,
+      "terminal_proof_sha256": null,
+      "terminal_proof_outcome": null,
+      "process_closed": null,
+      "callbacks": [],
+      "native_ACK": {
+        "attempt_id": "fd73fa9a-310c-4a46-a525-110b733251bb",
+        "terminal_proof_sha256": "2236db3839356a5b443b23411266b112d6236c3a17791362d24fe31708fd4e5c",
+        "acknowledged_at_utc": "2026-10-19T18:11:36.068Z"
+      },
+      "latest_poll": {
+        "state": "running",
+        "rpc_messages": 6,
+        "unforwarded_tool_requests": 0,
+        "cursor_requested": 0,
+        "event_kinds": {},
+        "event_identities": [],
+        "signature": "595fbe023a9eac20d6902baf279e4121ca6343c68953d1615742c6db94b593fb",
+        "at_utc": "2026-10-19T18:11:35.942Z",
+        "monotonic_ms": 132440.325783
+      },
+      "request_counts": {
+        "start": 1,
+        "mcp/events": 1129,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "response_counts": {
+        "start": 1,
+        "mcp/events": 1129,
+        "mcp/cancel": 1,
+        "acknowledge": 1
+      },
+      "failed_counts": {}
+    }
+  ],
+  "provider_requests_for_derivation": 0
+}

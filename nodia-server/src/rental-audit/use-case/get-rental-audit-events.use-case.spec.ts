@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import { describe, expect, it } from 'vitest';
 import { GetRentalAuditEventsUseCase } from './get-rental-audit-events.use-case.js';
 import { RentalAuditService } from '../rental-audit.service.js';
@@ -27,7 +28,7 @@ describe('Rental audit access and public query', () => {
       1,
     ];
     const result = await new GetRentalAuditEventsUseCase(f.tx, service).execute(
-      '2',
+      actorFixture('2'),
       '10',
       new RentalAuditQueryDto(),
     );
@@ -45,11 +46,11 @@ describe('Rental audit access and public query', () => {
     };
     const useCase = new GetRentalAuditEventsUseCase(f.tx, service);
     await expect(
-      useCase.execute('3', '10', new RentalAuditQueryDto()),
+      useCase.execute(actorFixture('3'), '10', new RentalAuditQueryDto()),
     ).rejects.toThrow('rental:not_found');
     f.table(RentalCollaborator)[0].is_active = false;
     await expect(
-      useCase.execute('2', '10', new RentalAuditQueryDto()),
+      useCase.execute(actorFixture('2'), '10', new RentalAuditQueryDto()),
     ).rejects.toThrow('rental:not_found');
   });
   it('rejects authority filters, unknown actions and unpaired windows', async () => {
@@ -61,7 +62,7 @@ describe('Rental audit access and public query', () => {
       { from_at: '2026-10-01T12:00:00Z' },
     ])
       await expect(
-        useCase.execute('1', '10', input as RentalAuditQueryDto),
+        useCase.execute(actorFixture('1'), '10', input as RentalAuditQueryDto),
       ).rejects.toThrow('rental:invalid_input');
   });
 });

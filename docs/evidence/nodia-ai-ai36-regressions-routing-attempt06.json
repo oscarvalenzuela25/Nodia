@@ -1,0 +1,29 @@
+{
+  "stage": "AI-36",
+  "scope": "compiled_historical_regression_revalidation",
+  "group": "routing-only",
+  "attempt": "attempt06",
+  "status": "failed",
+  "results": [
+    {
+      "harness": "ai12-routing",
+      "status": "failed",
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at_utc": "2026-10-19T00:32:25.973552+00:00",
+      "completed_at_utc": "2026-10-19T00:32:34.192480+00:00",
+      "test_sha256": "f88f08a1c02394cc8a82ef416291c2838d1f973d19f02333d3b80240f4659487",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3d09e9eb6512399cafea1ca6d87dd14c852478cc23a79c0f9695f94df71ec536",
+      "assertion_result": null,
+      "orphan_disposable_containers_removed": 0,
+      "new_disposable_containers_remaining": 0,
+      "error_category": "AssertionError"
+    }
+  ],
+  "manifest_sha256": "52a232c20cd0a5859db4e67bc57757ff53a4a7d35b50c7c73fd529f2e7b3319c",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_cloud_operations": 0,
+  "services_restarted": false
+}

@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from '../rental-common/rental-response.schemas.js';
 import { RentalMutationResultDto } from '../rental-common/dto/rental-mutation-result.dto.js';
 import {
@@ -89,7 +90,7 @@ export class RentalReservationController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.cancelRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -115,7 +116,7 @@ export class RentalReservationController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.completeRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -141,7 +142,7 @@ export class RentalReservationController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.confirmRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -166,7 +167,7 @@ export class RentalReservationController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.createRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
       requestKey,
@@ -180,7 +181,7 @@ export class RentalReservationController {
     @Param() params: RentalResourceParamsDto,
   ) {
     return this.getRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
     );
@@ -195,7 +196,7 @@ export class RentalReservationController {
     @Query() dto: RentalReservationQueryDto,
   ) {
     return this.listRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
     );
@@ -210,7 +211,7 @@ export class RentalReservationController {
     @Body() dto: PreviewRentalCancellationDto,
   ) {
     return this.previewRentalCancellationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -235,7 +236,7 @@ export class RentalReservationController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.startRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -260,7 +261,7 @@ export class RentalReservationController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.updateRentalReservationUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,

@@ -1,0 +1,41 @@
+{
+  "task": "AI-23",
+  "scope": "isolated_synthetic_client_transport_no_business_database_no_provider",
+  "verified_at_utc": "2026-10-17T16:08:05.971772+00:00",
+  "origin": "http://127.0.0.1:5194",
+  "checks": [
+    "Spanish provider/contact preview declares the future provider output without a fabricated ID",
+    "Editor groups repeated names by source step; corrected contact draft and focus survive390x844 resize",
+    "Save creates revision2 with corrected contact while supplier value and future reference remain",
+    "English partial failure displays immutable supplier receipt, failed contact, explicit resume and cancel actions",
+    "Explicit synthetic resume retains supplier bigint9007199254740993 and adds contact bigint9007199254740994 with completed status and success toast"
+  ],
+  "requested_mobile_viewport": [
+    390,
+    844
+  ],
+  "real_user_tab_5174_modified": false,
+  "temporary_tab_closed": true,
+  "viewport_override_reset": true,
+  "qa_service_stopped": true,
+  "screenshots": [
+    {
+      "file": "docs/evidence/nodia-ai-ai23/desktop-partial-receipt-en.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "01924541c97f5f071d1e4dbd8bc8697802514d99dcf3532376881aee7bbaea8c"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai23/desktop-resumed-receipts-en.jpg",
+      "width": 1270,
+      "height": 714,
+      "sha256": "998a466e6228f1663b8cc68036a8b49b5107faed74e2594ad1d21de46dc96f4b"
+    },
+    {
+      "file": "docs/evidence/nodia-ai-ai23/mobile-workflow-editor-es.jpg",
+      "width": 380,
+      "height": 822,
+      "sha256": "c64d32ff8cad25e2095309bed4cd271a0985663d911f27255253381f9340b952"
+    }
+  ]
+}

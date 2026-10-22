@@ -1,0 +1,84 @@
+{
+  "schema": "nodia-ai-ai38-users-scope-fix-v1",
+  "status": "implemented_source_verified_not_adopted",
+  "observed_at_utc_operator_clock": "2026-10-21T02:53:30.223913+00:00",
+  "operational_evidence": {
+    "path": "docs/evidence/nodia-ai-ai38-users-scope-http-metadata-r01.json",
+    "sha256": "83c5e1f5fc0a62a6ad6b4857438b50ea5946a54314db5498fc257ffdba0ceec4",
+    "scope": "bounded_read_only_30_minute_nginx_users_status_only",
+    "GET_users_with_id_eq_400": 1,
+    "GET_users_without_id_eq_200": 4,
+    "GET_users_without_id_eq_304": 1
+  },
+  "cause": "Owner selector sends q[id_eq]; UserFilterDto omitted its declared validator; strict global HTTP validation rejected it before the existing Ransack id policy.",
+  "change": "Only add optional string id_eq to UserFilterDto. Existing bigint policy validates syntax/range and parameterizes SQL. No relaxed whitelist or dynamic fields.",
+  "validation": {
+    "case_tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "test_files": 1,
+    "new_cases": 8,
+    "strict_pipe_and_use_case_service_Ransack_SQL_real": true,
+    "PostgreSQL_network": false,
+    "persistence_terminal_getManyAndCount_mocked": true,
+    "build_exit": 0,
+    "lint_exit": 0,
+    "lint_historical_warnings": 3,
+    "frozen_runtime_accepted_by_this_evidence": false,
+    "checks": [
+      "GetAllUsersUseCase should be defined",
+      "GetAllUsersUseCase should call userService.findAll with the provided query params and return the response",
+      "GetAllUsersUseCase should call userService.findAll with includes=false to omit relations",
+      "GetAllUsersUseCase should return users with modules containing translates when included",
+      "GetAllUsersUseCase: owner selector HTTP filters accepts the selected owner ID through the strict HTTP pipe and parameterizes it without numeric coercion",
+      "GetAllUsersUseCase: owner selector HTTP filters keeps the ordinary unfiltered owner list available",
+      "GetAllUsersUseCase: owner selector HTTP filters rejects unknown HTTP filters instead of relaxing the allowlist",
+      "GetAllUsersUseCase: owner selector HTTP filters rejects a non-string selected ID before querying ({\"value\":[\"1\",\"2\"]})",
+      "GetAllUsersUseCase: owner selector HTTP filters rejects a non-string selected ID before querying ({\"value\":{\"injected\":\"1\"}})",
+      "GetAllUsersUseCase: owner selector HTTP filters rejects a non-string selected ID before querying ({\"value\":1})",
+      "GetAllUsersUseCase: owner selector HTTP filters rejects malformed or out-of-range IDs with the real Ransack policy (1 OR 1=1)",
+      "GetAllUsersUseCase: owner selector HTTP filters rejects malformed or out-of-range IDs with the real Ransack policy (9223372036854775808)"
+    ],
+    "before_fix_observation": "The positive exact-owner case failed in the strict HTTP pipe. The preliminary suite recorded 9 passed / 3 failed; two additional failures were early HTTP rejection before negative-policy expectations. Final negative-policy tests now use parsed DTOs and retain their checks."
+  },
+  "frozen_R02": {
+    "manifest_path": "docs/evidence/nodia-ai-ai38-journal-package-r02.json",
+    "manifest_sha256": "c8f49aa3adb21f63da4d75f84a811ab3b758e90ce57fe8aff2e8d2fc498256ae",
+    "source_dto_sha256": "97dc28dd5cc2ac5e8541ef74a1790c34d9366684103ff793e760c2a1142f2bb4",
+    "compiled_dto_sha256": "7eec6fa949992026561c97cd129b6cffd8f220212012a774761d6d7f478faa70",
+    "contains_fix": false,
+    "operational_package_changed": false
+  },
+  "knowledge_impact": {
+    "reviewed_product_feature": "docs/nodia-ai/knowledge/general-settings/features/users.md",
+    "approved_feature_modified": false,
+    "registry_or_runtime_publication_sources_modified": false,
+    "new_tool_or_permission": false,
+    "MCP_UserQuery_accepts_id_eq": false,
+    "knowledge_release_preserved": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+    "assessment": "Restores the native owner selector request contract. Users reader MCP schema remains closed and unchanged; q[id_eq] is not exposed through nodia_users_list by this fix. Approved card does not pin UserFilterDto; no published fragment changes. Candidate deployment and owner-selector UI acceptance remain pending."
+  },
+  "source_pins": {
+    "nodia-server/src/user/dto/filter-user.dto.ts": "fb22c78a27a86366a993b0a4e77343fd8ac27ebf79bb1ac5c8fd5bf30364feb0",
+    "nodia-server/src/user/use-case/get-all-users.use-case.spec.ts": "ba14cbc15421ff2a99d9fbe7ea0fd5e7419d216a794d5996db16adcb32407a53",
+    "nodia-client/src/components/UserScopeSelect/infrastructure/services.ts": "893968889a6b099034956826c360e0d38d73db6417a3497a9ab25cc28aef228f",
+    "nodia-server/src/main.ts": "80222a2e07ccc93d333737f8a26347a32052d764e7d38d7b2eac983975044966",
+    "nodia-server/src/user/user.service.ts": "eeb9b97d41412112c3b4b1b5a341eb95ea964569634d19d53e9991270c854f8d",
+    "nodia-server/src/common/utils/ransack-query.policies.ts": "d0a3c6f477072d3e25e8ddf212fff4309241b90c158fffe2a914459c5e09d909",
+    "nodia-server/src/common/utils/ransack-query.builder.ts": "42f7992a1f4223b8e4a6bc8bf1b8ad1d9b687ea180fc77055dedfacc40e241d1",
+    "docs/nodia-ai/knowledge/general-settings/features/users.md": "a8617b1ab2635798da0d607c47af3c4d2389dbb93595fcd69c7bd89bdfcd9b63",
+    "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+    "nodia-server/dist/user/dto/filter-user.dto.js": "dccaebb825a97c72e59af975e5441e022ee9d97241f17f89bbad37f69cdefde3"
+  },
+  "effects": {
+    "services_changed": false,
+    "SQL_or_HTTP_mutations": 0,
+    "provider_inferences": 0,
+    "VM_reads": "single bounded nginx metadata projection only"
+  },
+  "limits": [
+    "Networkless TypeORM SQL construction does not prove executing a PostgreSQL query.",
+    "Frozen R02 remains without this source correction; current UI owner retry remains a separate unresolved deployment acceptance issue.",
+    "No authorization policy changes or new MCP filter publication."
+  ]
+}

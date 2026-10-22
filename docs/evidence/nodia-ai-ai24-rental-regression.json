@@ -1,0 +1,80 @@
+{
+  "observed_at_utc": "2026-10-17T17:02:19.926522+00:00",
+  "stage_directory": "/opt/nodia/verification/ai24-20261017",
+  "compiled_production_archive_sha256": "39c24c9cd61ac4ea378df1e36d08fa5e0cafd78bb59b8e4400317b8ce6183427",
+  "knowledge_pin_sha256": "6f8233b3d7a6b57af5fe3317b7cf11a01a2ecedf5977a92216d79d447cf803c3",
+  "scope": "Synthetic disposable PostgreSQL only; no configured database, provider inference, MCP write publication or Gemini acceptance.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "command": "DOTENV_CONFIG_PATH=/dev/null node test/rental.integration.mjs",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "nodia-server/test/rental.integration.mjs",
+      "sha256": "53d2879819bdfac1515dcbe62de0406776624d8cff755d28b14e5d8fe98289fb"
+    },
+    {
+      "path": "nodia-server/test/fixtures/authority.integration.mjs",
+      "sha256": "4fdcb9fb81ab5a0994e18f6b94c5d6a4e17f049d339755b48825341635f12b27"
+    },
+    {
+      "path": "docs/mvp/28-rental-reservations-contracts.md",
+      "sha256": "9b9b4b387fd595f9f234240ca01cd4230124a499c0dd7637e099f70a18989bbf"
+    }
+  ],
+  "extra_inputs": "The unchanged historical native harness and its Markdown route contract were copied separately for verification. Neither additional input changes production dist or the release allowlist.",
+  "result": {
+    "requests": 282,
+    "checks": [
+      "Migration up/down/up preserves existing synthetic data.",
+      "Eleven entities match migration metadata without synchronize.",
+      "Navigation seed is idempotent and does not assign modules to users.",
+      "Accommodations omit timezone and legacy times; rollback refuses to invent missing times.",
+      "Failure while persisting the intent and backend termination before commit leave no effect/audit/operation.",
+      "Statement cancellation and total transaction deadline return safe failures only after rollback.",
+      "1003-row pagination keeps SQL statement count constant; numeric sums, EXPLAIN and pg_dump restoration verified.",
+      "Turnover approvals invalidate after plan/neighbor changes; actual readiness gates start; controlled clock verifies complete.",
+      "SQL faults roll back effects/history; composite FKs, UNIQUE and CHECK reject invalid rows; aggregate CLP exceeds bigint exactly.",
+      "A PostgreSQL lock barrier verifies membership again after committed revocation.",
+      "HTTP workflow: authority, drafts, payments, snapshots, confirmation, cancellation, refund budget, expenses and Airbnb net cash.",
+      "Concurrent same-key house/payment writes, overlapping confirmations and reservation-block races preserve invariants.",
+      "Every successful HTTP operation matches its response schema; all 42 house routes reject outsiders, revoked members and anonymous callers.",
+      "Compiled ESM/Nest dependency injection and 44 Swagger operations match the contract."
+    ]
+  },
+  "checks_count": 14,
+  "postgres_version": "16.15",
+  "native_contract": {
+    "isolation": "READ COMMITTED",
+    "property_write_lock": "FOR UPDATE",
+    "lock_timeout_ms": 2000,
+    "statement_timeout_ms": 5000,
+    "transaction_deadline_ms": 10000,
+    "operations": 44
+  },
+  "query_samples": [
+    {
+      "limit": 1,
+      "statements": 13
+    },
+    {
+      "limit": 100,
+      "statements": 13
+    }
+  ],
+  "reservation_query_samples": [
+    {
+      "limit": 1,
+      "statements": 15
+    },
+    {
+      "limit": 100,
+      "statements": 15
+    }
+  ]
+}

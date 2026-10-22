@@ -1,0 +1,18 @@
+{
+  "stage": "AI-25",
+  "previous_release": "6f8233b3d7a6b57af5fe3317b7cf11a01a2ecedf5977a92216d79d447cf803c3",
+  "release": "fe96f76311b45096287f600108c242477146150653c4720687a11f6de230834f",
+  "changed_manifest_fields": [
+    "registry_sha256",
+    "release_id"
+  ],
+  "published_documents_unchanged": true,
+  "published_fragments_unchanged": true,
+  "capability_contracts_unchanged": true,
+  "new_published_content": false,
+  "reason": "One explicitly indexed draft/unregistered reservation lifecycle source changes only registry digest and release identity",
+  "sources": 48,
+  "excluded": 21,
+  "published_capabilities": 67,
+  "published_fragments": 27
+}

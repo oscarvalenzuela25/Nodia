@@ -1,0 +1,33 @@
+{
+  "stage": "AI-38",
+  "scope": "owned_local_test_cleanup_after_authenticated_UI_and_rollback",
+  "status": "passed",
+  "observed_at_utc_VM": "2026-10-20T22:54:09.208894+00:00",
+  "owned_browser_tab_id": "2",
+  "owned_browser_tab_closed": true,
+  "temporary_viewport_override_reset": true,
+  "owned_tunnel_pid": 90552,
+  "owned_tunnel_identity_and_127_0_0_1_forward_verified_before_stop": true,
+  "owned_tunnel_stopped": true,
+  "port_5174_listeners_remaining": 0,
+  "unrelated_processes_stopped": 0,
+  "services": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "original_runtime_receipt_sha256": "e661c4b4d12bdaf5c8d8e3bdde625c56bc581ce90a45b63503d2712d2a9d784c",
+  "final_runtime_receipt": {
+    "path": "docs/evidence/nodia-ai-ai38-adoption-runtime-final-r04.json",
+    "sha256": "211bf467fa04e570677847d9d7fdab0cf35516d1092c4fe3668e552f877d1b46"
+  },
+  "purge_receipt_sha256": "b35bdc9d50726802402ad3f87138ffae9533cc3b6ea9b081500b5a2e58669698",
+  "authenticated_UI_accepted": true,
+  "provider_generations": 0,
+  "direct_business_SQL_writes": 0,
+  "limits": [
+    "Authentication may persist ordinary session/profile state; no claim of zero total database writes.",
+    "The VM final runtime timestamp follows local browser/tunnel cleanup; cross-host ordering is observed, not atomic."
+  ]
+}

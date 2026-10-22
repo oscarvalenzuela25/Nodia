@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { FinanceOwnerContext } from "../../infrastructure/FinanceOwnerContext";
+import UserScopeSelect from "../../../../components/UserScopeSelect";
+import useAuthStore from "../../../../store/authStore";
+import useGeneralSettingsStore from "../../../../store/generalSettings/generalSettingsStore";
+import { useState, useCallback, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { Box, Tab, Tabs, useMediaQuery } from "@mui/material";
@@ -33,10 +37,15 @@ const TAB_LABELS: Record<FinanceTab, string> = {
   "category-groups": "finance:tabs.category_groups",
 };
 
-const PersonalFinance = () => {
+const FinancePageContent = ({
+  mobile,
+  ownerControl,
+}: {
+  mobile: boolean;
+  ownerControl?: ReactNode;
+}) => {
   const { t } = useTranslation("finance");
-  const theme = useTheme();
-  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedTab = searchParams.get("tab");
   const tab: FinanceTab =
@@ -71,6 +80,7 @@ const PersonalFinance = () => {
         </PageTitleContainer>
         <PageSubtitle>{t("finance:subtitle")}</PageSubtitle>
       </PageHeader>
+      {ownerControl}
       {mobile ? (
         <SelectSingleInput
           label={t("finance:section")}
@@ -146,4 +156,47 @@ const PersonalFinance = () => {
   );
 };
 
-export default PersonalFinance;
+function ScopedPersonalFinance({ mobile }: { mobile: boolean }) {
+  const actorId = useAuthStore((state) => state.user?.id);
+  const isSuperAdmin = useGeneralSettingsStore((state) =>
+    state.roles.includes("super_admin"),
+  );
+  const [ownerId, setOwnerId] = useState<string>();
+  const [locks, setLocks] = useState(0);
+  const busy = useFinanceBusy();
+  const effectiveOwner = isSuperAdmin ? ownerId : undefined;
+  const lock = useCallback(() => {
+    setLocks((value) => value + 1);
+    return () => setLocks((value) => Math.max(0, value - 1));
+  }, []);
+  const scope = useMemo(
+    () => ({ ownerId: effectiveOwner, lock }),
+    [effectiveOwner, lock],
+  );
+  return (
+    <FinanceOwnerContext value={scope}>
+      <FinancePageContent
+        mobile={mobile}
+        ownerControl={
+          isSuperAdmin &&
+          actorId && (
+            <Box sx={{ maxWidth: "48rem", width: "100%" }}>
+              <UserScopeSelect
+                value={effectiveOwner ?? actorId}
+                onChange={(id) => setOwnerId(id === actorId ? undefined : id)}
+                disabled={busy || locks > 0}
+              />
+            </Box>
+          )
+        }
+        key={effectiveOwner ?? actorId ?? "own"}
+      />
+    </FinanceOwnerContext>
+  );
+}
+export default function PersonalFinance() {
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const actorId = useAuthStore((state) => state.user?.id);
+  return <ScopedPersonalFinance mobile={mobile} key={actorId} />;
+}

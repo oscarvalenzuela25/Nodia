@@ -1,0 +1,21 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "single_generation_canary_preflight_only",
+  "attempt": "attempt05",
+  "status": "preflight_failed",
+  "failure_phase": "observer_tool_tmpfs_visibility",
+  "harness_started": false,
+  "actual_provider_generations": 0,
+  "observer_tool_hashes_expected": {
+    "helper": "7b5962f6c8e8f7f5e41763714c7d91e77e457c28e17cac43b747f0b2b0420c30",
+    "parser": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "manifest_sha256": "b58ec78d3668e0d780dc1ec4850ddf5266e2e2aae8cd301d22ed7471dadf8ac8",
+  "archive_sha256": "beca53f00562739caaaa13a8828932b778d5d33b8634f36e85d800f74f6433c2",
+  "harness_sha256": "44b87d3e3a5c04aec6a39dc5180cd8b9a3c1360e9f0847f4fa36f97b259230d5",
+  "runner_sha256": "66a4c4a72986c0222038c1b16773495354ba50260cd0d27c75f8734bcfca2176",
+  "assertion_result": null,
+  "services_restarted": false,
+  "native_application_sources_modified": false,
+  "recorded_at_utc": "2026-10-19T17:55:55.255268+00:00"
+}

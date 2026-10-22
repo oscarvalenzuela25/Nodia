@@ -1,0 +1,158 @@
+{
+  "stage": "AI-38-MCP-R01",
+  "scope": "minimal_public_diagnostics_candidate_offline_only",
+  "label": "ai38-mcp-r01-candidate-build02",
+  "base_image_id": "sha256:0615520cd6d6682eddc08dd886d79952c80265fcf2e7814caa940b92ee8f27aa",
+  "expected_active_container_id": "83f01759821f42b21b8956dd5c6e91f761a59b8e072326c4b2bcc46bdd467ca4",
+  "expected_active_started_at": "2026-10-19T21:22:19.611154456Z",
+  "base_public_sources": {
+    "agentic_cli.py": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+    "agentic_login.py": "10e080d2e8c55bd1bf6c1a4926cdbb195cecaed26c0d208fd2551338f0379225",
+    "agentic_login_terminal.py": "4586051b5b4cbf158869f15b2c9bffc2bb9b0582a2a8b0deea3c32ebc0ba18c2",
+    "agentic_observation.py": "4eb2887a5b912cf495ca20ef96d08a34d9e37e98422be2757d351400de98caeb",
+    "agentic_process_launcher.py": "8741c527bbf250f9b20013f67bbd688bd118e83cfad8541a49df45fa62b56f16",
+    "agentic_progress.py": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+    "agentic_service.py": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e",
+    "agentic_tool_gate.py": "d4fbbd7462ba5771a43166635112af8db95d20941fcf1deb702c4f0b921eb9bd",
+    "analysis_observations.py": "fa20fb6bebd75d7a72427a5af06ff4a470a6f7a2a4a6716c7eb944b0ba7702c3",
+    "attachment_inspector.py": "6b8723a2a91b196dfa83e90a7016b59bd0387e123b78453e7b973f6aa8621da2",
+    "attachment_inspector_worker.py": "3579be757bb9b7a4fdab96f19843f91133f9bf8e56fc4a555a662a380cb82033",
+    "auth.py": "27bb7d617a2315cd6899ec67db8caf24dea741779abea9662b1f35c423ce0eca",
+    "browser_manager.py": "10fa3fae6a51ac943041d8a85d8442d28015d697db70a6afc2f22bf8f3a262e8",
+    "durable_login.py": "4bf6ba19617f8a23724f10928da7fb12d971911a1aed30f9a66fab604724e2bf",
+    "durable_login_routes.py": "8000a67577c49adc79ea4891196833e1c0206793a5d668896bd80ab7a11abb87",
+    "gemini_service.py": "5b042c89f9678ff774bd6bbac814c8e579d56b497c9e088c357a226dae2d7bfd",
+    "interactive_login.py": "38e8ae229d39764394c96fa3f0daaee0b2adb65aa4dba11fbfd977c72c309848",
+    "invoice_parser.py": "bee80a80d59f8aabf8d3988d01cd4eec1e7bb3f7dc95a96f3bfa2a4ab3de3dec",
+    "login_cgroups.py": "117c73f407e35c6c63c583311257835fad49d3742d9eb42f17ea2c589e772088",
+    "login_request_store.py": "de522f93e6e5fe44ededf7a86c1c140360d7a86034b092086725569d43539f61",
+    "login_supervisor.py": "8859645ee2dde0543348ee34f38bc2bb0c1410e9a2723529aa13a2e38d7a4317",
+    "login_viewer.py": "b79b69e3effed5dcda9b54d44b26f9140d99f1e0f0c3373a66ec862ea82e8c96",
+    "main.py": "8e7e4904a095972385208b24740c9556d4d8ba68c94a86faf73177e14fd12278",
+    "native_attachments.py": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+    "native_attempts.py": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+    "native_context_budget.py": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+    "native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "native_mcp_stdio.py": "7016d5735a989b30f61e4dd6108392b3ce5c0e4f62716a5123517bf99925097c",
+    "nodia_ai_chat.py": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0",
+    "nodia_ai_tool_gate.py": "8712f62945548d9546f32ffb7a5d508117180b7ae2c33392876da5e804b0aaf1",
+    "profile_admission.py": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+    "request_guard.py": "c811d3b9468511a49b2ab3d31821608c177009487c18c2b34c8dbb019e7ee866",
+    "run.py": "b405f408ae3a990c2928859004a8f1feb9472d8a769ca7fd159335e347f346af",
+    "run_tests.py": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+    "schemas.py": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320",
+    "service_auth.py": "2524177ca00df67c9163f8e55a3e95f06082a66a24c3edd8fc5d78fd88b924cb",
+    "service_errors.py": "4876a8bf47e3a2bd882a21d9dd5ad19d6aea22967f6875ef29c956d327e55068",
+    "session_store.py": "dd4c37825a3e21f5909067a8d984685be016bead021dcc89ae285933739839e6",
+    "web_audio_transport.py": "8403765c38826fcbeceabaa1a2673598bb74c428830caba4e7c9bf38987d5661",
+    "web_candidate_diagnostics.py": "dc38d840600f32af6d6ae354bcb01b8db67fc674716c0c6edc82b22dae5d558d",
+    "web_generation_diagnostics.py": "747065999bdbbd08514bf66e2e25e91100e5eaa136de11b5af2369c77592adcd",
+    "web_reasoning_adapter.py": "4e2d535c82393d2da1bb339819a54411afafcb0ccf9c5acd1461c9abff5c3171",
+    "web_session_cleanup.py": "22a25a74a4f5372983a0bd6123d1f870347db11dda0774c29d5fd5176883312e",
+    "web_upload_diagnostics.py": "786c9e20e52358a8eb3d5a59cee25c1aaef720217fb59c325ba29b76aa6894df",
+    "windows_process_job.py": "4a4d6c235dd56e02f4a5d245ac1c5977ca318c996fff0938b92ba864e73992b1"
+  },
+  "image_sources": {
+    "native_mcp_sessions.py": "e7350b8d8d1f5d6a34c536b895b78a1df36d4477711bb08dacaa13317bcf5f5f",
+    "native_mcp_stdio.py": "37b77325fff33b8b53ce30bc33c55ae3dd54e2f1e480fb7d515595e44c6cdd20"
+  },
+  "local_public_deltas_intentionally_not_adopted": {
+    "agentic_cli.py": {
+      "base_sha256": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+      "local_sha256": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff"
+    },
+    "agentic_service.py": {
+      "base_sha256": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e",
+      "local_sha256": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200"
+    },
+    "main.py": {
+      "base_sha256": "8e7e4904a095972385208b24740c9556d4d8ba68c94a86faf73177e14fd12278",
+      "local_sha256": "adb1a4508b0dbc9f8d8181ff758692e4e4404990c42829aaa5f59b0606edda5f"
+    },
+    "nodia_ai_chat.py": {
+      "base_sha256": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0",
+      "local_sha256": "d85ac5bf66490fddb5d654dee1c05d1ef6bb3a881a37c5961f86e80e267cde2c"
+    },
+    "request_guard.py": {
+      "base_sha256": "c811d3b9468511a49b2ab3d31821608c177009487c18c2b34c8dbb019e7ee866",
+      "local_sha256": "d007392e0956ea042d57c9cc6569b75acb58dcf259cefd17fc174388d0886dd9"
+    }
+  },
+  "local_only_sources_intentionally_not_adopted": {
+    "invoice_mcp_contract.py": "17011344639028e005606baa6ad86a2e8cb6ce364adfbbd77e71118b55872640"
+  },
+  "test_files": {
+    "fixtures/login_api_fixture.py": "5ff390f050fc8dc5603515c0188dd50b59e4f164d26da72934b9a40b8f7fe326",
+    "fixtures/login_cli_fixture.py": "abd688c22004d1af8d388506d4181d59f4f4c39db63b630780952be13c5f32c6",
+    "fixtures/login_supervisor_fixture.py": "72951a49de8c5c1bf5e0f03a795cf00abd27456a98629612c1f9b489670ee421",
+    "fixtures/nodia-ai-ai15-mcp-tools.json": "3ba0f6d6fd2934900a21c5689814340854ab465c31e42a88b02f8e64bcaec9dc",
+    "fixtures/nodia-ai-ai31-mcp-tools.json": "bfc339f487bd60372272cb67ba982982040de0fb1f8a300353c7acf63cdcd8d9",
+    "test_agentic_cli.py": "ad755fe20d9ee08761ab192c6e88ce2693aa3b3f654b3182f025938880391316",
+    "test_agentic_login.py": "93be42f472a6adf1e3cd620308275189d8e1fafc54d3e4751a4e4a6c66c8451b",
+    "test_agentic_native_attachments.py": "e17ecab7994ed66cb3fcbd76aa63534db933e4484031a09dae7b0d490f1599a1",
+    "test_agentic_progress.py": "fae9d5cfda0d4318f6e5723820f99ab60d9aa614466aeb9f64dbbec9cc7ba1ae",
+    "test_analysis_observations.py": "9284342d5c6ea94a321f2b24dac2d6d37a96db9ae95e5eff6b6268731652401d",
+    "test_attachment_inspector.py": "d3bb6d6361a309a53b7483998dd903496207810a0b84821ee7ae933d45ee6213",
+    "test_attachment_inspector_process.py": "5d9c25024eb05b6af92125c3ccaf0c3a49c03b8f0d3101b8ee9ce1bd56165970",
+    "test_browser_manager.py": "420cf0878637adbf216d7784722934116cdc0fd44a7b32f23607a8dd7cf7e5d3",
+    "test_dual_engine.py": "d92f54ef3af5019425236f945c2c8653848db5e8f424ad66710232eaa3da270d",
+    "test_durable_login.py": "34e80c73d51b658f6f581d62081df162c1927e7aa445848c1edf6e2d325a7d02",
+    "test_extraction.py": "55b182c36251f68ac8209a9411ac7c5a156f7956fd4da1f5c9570a134c243ba1",
+    "test_interactive_login.py": "13bb6f682729911e9629ac0738bb8188755be4886d91110195fbf33fb18a265a",
+    "test_login_viewer.py": "cb320f1ed1392d9d7a859ae2f20ff14a3dd97d75c18fc7ea2fd2c4436f131360",
+    "test_native_attachments.py": "4cc59ccc1eb91afb5691cd94c27a40b2c827683302e39661f38142ddaec985d1",
+    "test_native_attempts.py": "7096d4e554e57e63d165469a6d1252929923b9eb580ce749f83980e6d8f105dc",
+    "test_native_context_budget.py": "b93b871718ad3f35f58c579ffa2b885ffd59542e87ec67dcef8f66425269f569",
+    "test_native_context_ledger.py": "1ab95ca115e66330e3e5dee222a93c981278de7c191c6fbbca6c3fd87b134c47",
+    "test_native_mcp.py": "259664ddb8e4c144271a406c6f63ad1cb330e6b1e0295d71825315f40b6c03da",
+    "test_native_mcp_manifest.py": "69655bede44e04b20ab449f1c07be5fbecdd7c8db8a85810112554ed298080b6",
+    "test_nodia_ai_agentic_diagnostics.py": "d3ea8e560ce8cb690ab85ff6272f114256ad8720a8f4a2020d890b1d08a11fa7",
+    "test_nodia_ai_chat.py": "426e5fa6c73554dab35a964fc597b77ce34070de0f4fc0a69c86bf07eb21694c",
+    "test_nodia_ai_mcp_fixture.py": "c6db00c34bbb1ae907e41e1e4a6145143237cf8b487922bc21886ac14db3e8aa",
+    "test_nodia_ai_web_admission.py": "dcd03a40cbb194ff56f6a451e2d547580d1183092fc20456437545b52e5440c9",
+    "test_nodia_ai_web_protocol.py": "a7dbf858daf82e0be02d8c85f2ad714f724521fb600b93cacbbd5d73693b2c0d",
+    "test_plain_agentic_diagnostics.py": "930398161920ddd14000c8afc98cc610c71f0663c0bb9823ad9a710e6d40a680",
+    "test_request_guard.py": "a273aa28cb004dff736f34b04166376b749639cf8eaaeccc930a449d5e805d85",
+    "test_service_auth.py": "dc1a6183510423fe13d51189d501f79ca776bdf16a06da7e83f378fc65f782d2",
+    "test_session_lifecycle.py": "0d958bb300ef852363a3e98db6dbc393483e805eefef4ba92c6517285310f7a9",
+    "test_support.py": "f5bdfa0bed7b78cd9812a676b210a13cb29766fb2514bb0efbcfbd8a5dd6d0f3",
+    "test_web_adapter.py": "cf5068f7391f79effe327a950776e401cb1f9abd324f9581c34e0941e85f17bd",
+    "test_web_audio_transport.py": "885144d9d90111493f90a9c07e41a51ac04f5843631294704ab6978d1e8c0dc6",
+    "test_web_candidate_diagnostics.py": "3225e789ddffeb5c0fdace29ec8c137ed715004e9ab13ab3200d607779a14f36",
+    "test_web_generation_diagnostics.py": "ff4e98852f5d731e65ee5bd6cdd63be0990bd6343f3a05ea9c1603d2c53344bc",
+    "test_web_logout.py": "7925b28d7f8fd37e1fec9021675b6a8daccb617cd97df9c3f3dc7c968a0931b3",
+    "test_web_reasoning_adapter.py": "000030ecb82eca86e00c29c5e1069b4b6c57a123034d1644e94cbf77606f5170",
+    "test_web_structured_text.py": "c87866677c76ebf7d71d2bc9808d58dd6a87b2b9ac0c291d17ac98c8648a71dc",
+    "test_web_upload_diagnostics.py": "f504693573ba7670f07871e140aae5c53d99b624b6ace5d05ffa375bf4d3bdd5"
+  },
+  "excluded_test_files": {
+    "test_agentic_cli_versions.py": {
+      "sha256": "6529fa8bf056abb72917c2f41b3acc4e5e77abdbf7b6dbfa7a8fdf8a80c37b8a",
+      "test_methods": 11,
+      "reason": "R04 alternate CLI configuration absent from base and intentionally excluded"
+    },
+    "test_agentic_observation_timeout.py": {
+      "sha256": "61ac25b286dcddeaac483eeecebaf6e7b34f4ef1be5cad64baf36ff131de28ec",
+      "test_methods": 5,
+      "reason": "R05 outer metadata timeout change absent from base and intentionally excluded"
+    },
+    "test_invoice_mcp_contract.py": {
+      "sha256": "c4ff2aebc8ec12b10a2f8d0abb63628230d080df1e0d06799b24ef8258b1ce35",
+      "test_methods": 15,
+      "reason": "C03 invoice contract absent from base; diagnostics do not implement it"
+    }
+  },
+  "expected_applicable_tests": 442,
+  "expected_MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "dockerfile_sha256": "988b37a3663ee019137266b00e82e21570f1ce971ccf289ff9f3981048f43779",
+  "freeze_sha256": "9e1dd79b220c9119bc357a0b8cb4b4f3d53a3a7b093250d0303e41c0a77eb919",
+  "inventory_sha256": "a4bcf4451ea8d2878b2211771a4f0e39012d408632a018838f7902c02d7da7e6",
+  "stage_source_sha256": "ac95f9ea795910714cf6386fb6d9ef041928007a0bd88519dec28c396ef44f3f",
+  "profile_or_credentials_included": false,
+  "test_sources_mount_only": true,
+  "provider_requests": 0,
+  "candidate_activation": false,
+  "service_restart": false
+}

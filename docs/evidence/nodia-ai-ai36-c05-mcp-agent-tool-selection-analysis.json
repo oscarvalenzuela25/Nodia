@@ -1,0 +1,56 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "public_installed_CLI_static_Markdown_role_configuration_analysis",
+  "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "evidence_kind": "exact_literal_search_of_public_binary_using_readonly_mmap",
+  "public_evidence": [
+    {
+      "kind": "embedded_changelog_1.1.6",
+      "excerpt": "Markdown agents support `mainAgent`, `subagent`, `hidden`, `inheritMcp`, and `commandExecutionPolicy` frontmatter fields"
+    },
+    {
+      "kind": "Go_type_reflection_yaml_tag",
+      "field": "InheritMCP",
+      "yaml_tag": "inheritMcp,omitempty"
+    },
+    {
+      "kind": "embedded_changelog_fix",
+      "excerpt": "Fixed subagents defined with `enable_mcp_tools=true` failing with unknown tool errors by ensuring the MCP dispatcher meta-tool is available to the subagent executor."
+    }
+  ],
+  "canary_evidence": "docs/evidence/nodia-ai-ai36-c05-live-attempt12-native-diagnostics.json",
+  "canary_result": {
+    "phase": "validating_terminal",
+    "exit_code": 3,
+    "events": 4,
+    "result_status": "ERROR",
+    "stderr_error_categories": [
+      "unknown_tool"
+    ],
+    "result_error_categories": [
+      "unknown_tool"
+    ],
+    "init_agent_check_passed": true,
+    "MCP_RPC_messages": 6,
+    "callbacks": 0
+  },
+  "unknown_tool_token_not_retained": true,
+  "proposed_change_not_applied": {
+    "Markdown_frontmatter": {
+      "inheritMcp": true,
+      "tools_without_attachments": [
+        "finish"
+      ],
+      "tools_with_attachments": [
+        "finish",
+        "view_file"
+      ]
+    },
+    "reason": "Use the documented MCP inheritance field rather than declaring the dispatcher meta-tool as a native tool name."
+  },
+  "interpretation": "The field is present in the installed CLI. Its effective behavior for this main agent and exact MCP environment remains to be verified; the retained diagnostic does not identify the unknown tool token.",
+  "provider_requests": 0,
+  "CLI_executions": 0,
+  "private_profiles_read": 0,
+  "runtime_mutations": 0
+}

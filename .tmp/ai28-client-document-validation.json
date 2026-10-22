@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "markdown_files": 3,
+  "local_links": 34,
+  "broken_links": [],
+  "source_and_frontmatter_checks": "passed",
+  "approval": "unchanged_null",
+  "new_tools_published": 0,
+  "locales": {
+    "es": {
+      "operation_labels": 4,
+      "resources": 2,
+      "fields": 48,
+      "mode_paths": 12
+    },
+    "en": {
+      "operation_labels": 4,
+      "resources": 2,
+      "fields": 48,
+      "mode_paths": 12
+    }
+  }
+}

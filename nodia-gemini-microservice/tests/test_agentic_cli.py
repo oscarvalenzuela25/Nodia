@@ -139,7 +139,9 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(ServiceError) as caught:
             await self.service.analyze_invoice(invoice, model="observed-model")
         self.assertEqual(caught.exception.code, "agentic_timeout")
-        self.assertEqual(self.runner.run.await_count, 2)
+        # Discovery is serial per physical profile; a failed usage probe
+        # prevents launching a second CLI process against that same session.
+        self.assertEqual(self.runner.run.await_count, 1)
         self.assertFalse(any("--input-format" in c.args[0] for c in self.runner.run.await_args_list))
         self.assertIsNone(self.service._snapshot)
 
@@ -322,6 +324,23 @@ class CliBoundaryTest(unittest.IsolatedAsyncioTestCase):
                 await runner.run(["-c", "print('x'*200)"], timeout=3)
             self.assertEqual(output.exception.status, 502)
             self.assertFalse(runner._processes)
+            await runner.close()
+
+    async def test_real_stderr_observer_is_separate_and_cleanup_survives_observer_failure(self):
+        with tempfile.TemporaryDirectory() as folder:
+            runner = CliRunner(CliConfig(Path(sys.executable), "", Path(folder)))
+            chunks = []
+            output, code = await runner.run(["-c", "import sys; print('response'); sys.stderr.write('diagnostic')"],
+                                            timeout=3, stderr_observer=chunks.append)
+            self.assertEqual((output.strip(), code), ("response", 0))
+            self.assertEqual(b"".join(chunks), b"diagnostic")
+            def reject(_):
+                raise ValueError("observer failed")
+            with self.assertRaises(ValueError):
+                await runner.run(["-u", "-c", "import sys,time; sys.stderr.write('diagnostic'); time.sleep(20)"],
+                                 timeout=3, stderr_observer=reject)
+            self.assertFalse(runner._processes)
+            self.assertFalse(runner._jobs)
             await runner.close()
 
 

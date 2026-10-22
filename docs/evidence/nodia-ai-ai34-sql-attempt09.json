@@ -1,0 +1,28 @@
+{
+  "stage": "AI-34",
+  "scope": "compiled_compaction_disposable_postgresql",
+  "attempt": "attempt09",
+  "started_at_utc": "2026-10-18T19:39:49.668343+00:00",
+  "completed_at_utc": "2026-10-18T19:40:00.613754+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "aa421cc7782892a39c5f946575282cf6eac42dd4f12d3ec851f8cc9ec4c7e028",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "assertion_result": {
+    "stage": "AI-34",
+    "completed_checks": 28,
+    "last_checks": [
+      "source fingerprint is checked inside arming before dispatch budget is consumed",
+      "authorized scoped source can be compacted while its module is assigned",
+      "revocation never reuses a snapshot or source payload from a lost module",
+      "current module revocation is applied inside the SQL history projection before content transfer"
+    ]
+  },
+  "error_category": "QueryFailedError",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "c1d70926c5c48c9f7c764686572fb041b4b0933529c5ef6e6177cb18a5654201"
+}

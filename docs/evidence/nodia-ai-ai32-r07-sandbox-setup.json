@@ -1,0 +1,21 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "disposable_sandbox_setup",
+  "purpose": "purge",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T17:53:45.580Z",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "production_services_restarted": false,
+  "credential_values_exported": false,
+  "descriptor_private_path": "/opt/nodia/verification-backups/ai32-r07-purge-d8af1a8e9ba50b26/sandbox.json",
+  "private_descriptor_mode": "0600",
+  "loopback_binding_only": true,
+  "migrations_applied": 26,
+  "synthetic_identities": 3,
+  "compiled_files_verified": 909,
+  "test_dependency_available": true,
+  "owned_container_name": "nodia_ai32_r07_purge_d8af1a8e9ba50b26",
+  "descriptor_contains_no_operational_database_credentials": true,
+  "completed_at_utc": "2026-10-18T17:53:47.829Z"
+}

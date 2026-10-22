@@ -8,6 +8,7 @@ export default defineConfig({
   test: {
     globals: true,
     root: './',
-    include: ['**/*.spec.ts'],
+    // Only repository tests; publication/release staging may contain source copies.
+    include: ['src/**/*.spec.ts'],
   },
 });

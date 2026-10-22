@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD, NestFactory } from '@nestjs/core';
@@ -65,6 +66,53 @@ export async function codexHttpContracts() {
     lastInferenceAt: null,
   };
   runtime.get = async () => profile;
+  const jobs = new Map();
+  const control = {
+    async start(providerId, actorId) {
+      await runtime.get(providerId);
+      if ([...jobs.values()].some((j) => j.state === 'waiting_authorization'))
+        throw codexError('codex_profile_busy', 409);
+      requests++;
+      const job = {
+        id: randomUUID(),
+        state: 'waiting_authorization',
+        verificationUrl: 'https://auth.openai.com/codex/device',
+        userCode: 'TEST-ONLY',
+        reason: null,
+      };
+      jobs.set(job.id, { ...job, providerId, actorId });
+      return job;
+    },
+    async status(providerId, id, actorId) {
+      const job = jobs.get(id);
+      if (!job || job.providerId !== providerId || job.actorId !== actorId)
+        throw codexError('codex_login_not_found', 404);
+      const { providerId: _p, actorId: _a, ...publicJob } = job;
+      return publicJob;
+    },
+    async current(providerId, actorId) {
+      const job = [...jobs.values()].find(
+        (j) =>
+          j.providerId === providerId &&
+          j.actorId === actorId &&
+          j.state === 'waiting_authorization',
+      );
+      return {
+        job: job ? await this.status(providerId, job.id, actorId) : null,
+      };
+    },
+    async cancel(providerId, id, actorId) {
+      const job = await this.status(providerId, id, actorId);
+      const next = {
+        ...job,
+        state: 'cancelled',
+        userCode: null,
+        verificationUrl: null,
+      };
+      jobs.set(id, { ...next, providerId, actorId });
+      return next;
+    },
+  };
   const manager = new ManageCodexSessionUseCase(
     {
       async findProviderById(id) {
@@ -76,6 +124,7 @@ export async function codexHttpContracts() {
       },
     },
     runtime,
+    control,
   );
   const tokens = Reflect.getMetadata('design:paramtypes', AiProviderController);
   class ProbeModule {}
@@ -161,7 +210,10 @@ export async function codexHttpContracts() {
       });
     for (const resource of ['ai-provider', 'ai-providers']) {
       assert.equal((await call(`/${resource}/42/web/session`)).status, 404);
-      assert.equal((await call(`/${resource}/42/web/login`, 'POST')).status, 404);
+      assert.equal(
+        (await call(`/${resource}/42/web/login`, 'POST')).status,
+        404,
+      );
       const path = `/${resource}/42/session`;
       assert.equal((await fetch(base + path)).status, 401);
       allowed = false;

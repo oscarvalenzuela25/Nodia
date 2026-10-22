@@ -1,0 +1,127 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "correction_and_limits_of_retained_native_observations",
+  "observed_at_utc": "2026-10-19T03:27:46Z",
+  "source_artifacts_sha256": {
+    "nodia-ai-ai36-c05-live-attempt02-report.json": "8e22955878ffb0cc24449bb82488d4cb43ce0967504b9757491ab6aa84a1e01a",
+    "nodia-ai-ai36-c05-live-attempt02-native-diagnostics.json": "ad60244a93e346da2a4b5278d7ec75275a30b2508ccadfba97e636c58c2f1dba",
+    "nodia-ai-ai36-c05-live-attempt02-native-source.json": "047bf4e8c438ff94535c2307d7312a2d00561d0561115568c9833b62c71993ca",
+    "nodia-ai-ai36-c05-live-attempt02-quiescence.json": "cc5e98c11b7f9d01dcce2f8bf25fb1a76c13832e72bc83d878a52b392a2c489c"
+  },
+  "native_container": {
+    "id": "c3cdfb9ca3ab71eff4735c344ae0c0d83400b497eb104af21496b593b1bad8af",
+    "image": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+    "started_at": "2026-10-18T20:36:40.116324795Z"
+  },
+  "execution_attempt_id": "9ed028c9-01bf-45dc-9ea2-38765c6507af",
+  "observed_native": {
+    "attempt_id": "9ed028c9-01bf-45dc-9ea2-38765c6507af",
+    "phase": "awaiting_cli_terminal",
+    "state": "unknown",
+    "exception_type": "CancelledError",
+    "elapsed_ms": 108276,
+    "rpc_messages": 7,
+    "callbacks": 1,
+    "exit_code": null,
+    "gate_verified": false,
+    "cli": {
+      "stage": "other_step",
+      "events": 5,
+      "invalid_lines": 0,
+      "stdout_bytes": 4978,
+      "initialized": true,
+      "document_read_completed": false,
+      "result_seen": false,
+      "last_event_age_ms": 6474,
+      "phase": "other_step",
+      "result_status": null,
+      "denied_actions_count": null,
+      "tool_error_categories": [],
+      "tool_event_counts": {
+        "call_mcp_tool": 2
+      },
+      "tool_completed_counts": {
+        "call_mcp_tool": 1
+      },
+      "tool_error_counts": {},
+      "tool_steps": 2,
+      "last_tool": "call_mcp_tool",
+      "terminal_status": "absent",
+      "denied_count": 0,
+      "stderr_bytes": 0,
+      "error_indicator_interpretation": "text_indicator_not_verified_cause",
+      "stderr_error_categories": [],
+      "result_error_categories": [],
+      "result_error_json_utf8_bytes": null
+    },
+    "hook": null,
+    "cli_log": {
+      "state": "observed",
+      "interpretation": "text_indicator_not_verified_cause",
+      "bytes_read": 31191,
+      "lines_scanned": 128,
+      "truncated": true,
+      "transport_indicators": [],
+      "provider_error_indicators": [],
+      "http_statuses": []
+    },
+    "controlled_context": {
+      "scope": "initial_prompt_and_mcp_stdout",
+      "initial_utf8_bytes": 20253,
+      "used_utf8_bytes": 39248,
+      "maximum_utf8_bytes": 262144,
+      "provider_internal_context_tokens": null
+    }
+  },
+  "correction": {
+    "tool_event_counts_counts": "Every tool step_update, including DONE; not unique tool invocations.",
+    "tool_completed_counts_counts": "DONE step_update events.",
+    "conclusion": "Two call_mcp_tool events and one DONE are consistent with one START and one DONE for the single successful finance callback; a second invocation is not established.",
+    "previous_second_invocation_interpretation_retracted": true
+  },
+  "observed_confirmed": {
+    "provider_generations": 2,
+    "selection_callbacks": 1,
+    "successful_finance_callbacks": 1,
+    "native_ACKs": [
+      {
+        "attempt_id": "0143291e-357a-4bf0-bb88-7500aadb2082",
+        "terminal_proof_sha256": "a1f0a8811b1e78452b5a2815258028948c07430cab867ff77cbdcd13568f3a3a",
+        "acknowledged_at_utc": "2026-10-19T03:16:32.601Z"
+      },
+      {
+        "attempt_id": "9ed028c9-01bf-45dc-9ea2-38765c6507af",
+        "terminal_proof_sha256": "2a351a82a3fd97ebef867b88bade8dce825ea7947fa3abcebc568d8208285fc4",
+        "acknowledged_at_utc": "2026-10-19T03:18:33.147Z"
+      }
+    ],
+    "confirmed_human_effects": 0
+  },
+  "not_retained_after_cleanup": {
+    "tool_requests_final": null,
+    "unforwarded_tool_requests_final": null,
+    "rpc_counts_by_method": null,
+    "second_tool_name": null,
+    "second_tool_server": null,
+    "tool_result_accepted_timestamp": null,
+    "per_callback_monotonic_timeline": null
+  },
+  "retention_limits": [
+    "Native terminal log omitted tool_requests and per-RPC metadata.",
+    "ACK removed the owned McpJob; temporary bridge request/response files were cleaned.",
+    "Existing live harness retained callback completion hashes but did not retain poll counters or submit accepted timestamps."
+  ],
+  "conclusion": "Native stage was cancelled while awaiting CLI terminal. Exact reason for absent terminal remains unverified; no evidence establishes malformed JSON, provider quota, a hung second call, or MCP tool budget exhaustion.",
+  "sessions_or_profiles_read": false,
+  "provider_requests_for_this_inspection": 0,
+  "services_restarted": false,
+  "previous_derived_note_sha256": "5662e641b74cb269fb49828adad75d8857c42319624c21f4f1f39c21fc28fbdd",
+  "derived_at_utc": "2026-10-19T03:27:46Z",
+  "derivation_clock_scope": "Read-only UTC clock observation from the laboratory VM; all supplemental source observations use that VM clock. Workstation clocks differ and are not used to order these observations.",
+  "source_observed_at_utc": {
+    "nodia-ai-ai36-c05-live-attempt02-report.json": "2026-10-19T03:18:33.347Z",
+    "nodia-ai-ai36-c05-live-attempt02-native-diagnostics.json": "2026-10-19T03:21:03.612274+00:00",
+    "nodia-ai-ai36-c05-live-attempt02-native-source.json": "2026-10-19T03:24:21.848674+00:00",
+    "nodia-ai-ai36-c05-live-attempt02-quiescence.json": "2026-10-19T03:23:53.280Z"
+  }
+}

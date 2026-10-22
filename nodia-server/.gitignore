@@ -54,3 +54,10 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# AI-09 build-owned subset of canonical docs/mvp runtime policy
+/src/nodia-ai-conversation/config/conversation-policy.json
+/src/nodia-ai-runtime/config/runtime-policy.json
+/src/nodia-ai-context/config/*.json
+/src/nodia-ai/knowledge/
+/src/nodia-ai-tools/config/common-schema.json

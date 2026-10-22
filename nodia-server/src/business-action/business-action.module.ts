@@ -8,17 +8,26 @@ import { CreateBusinessActionUseCase } from './use-case/create-business-action.u
 import { UpdateBusinessActionUseCase } from './use-case/update-business-action.use-case.js';
 import { DeleteBusinessActionUseCase } from './use-case/delete-business-action.use-case.js';
 import { TranslationModule } from '../translation/translation.module.js';
+import { SaveBusinessActionUseCase } from './use-case/save-business-action.use-case.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([BusinessAction]), TranslationModule],
   controllers: [BusinessActionController],
   providers: [
     BusinessActionService,
+    SaveBusinessActionUseCase,
     GetAllBusinessActionsUseCase,
     CreateBusinessActionUseCase,
     UpdateBusinessActionUseCase,
     DeleteBusinessActionUseCase,
   ],
-  exports: [BusinessActionService],
+  exports: [
+    GetAllBusinessActionsUseCase,
+    BusinessActionService,
+    SaveBusinessActionUseCase,
+    CreateBusinessActionUseCase,
+    UpdateBusinessActionUseCase,
+    DeleteBusinessActionUseCase,
+  ],
 })
 export class BusinessActionModule {}

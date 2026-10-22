@@ -1,0 +1,57 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "immutable_owned_MCP_role_candidate_build_and_offline_Linux_QA",
+  "started_at_utc": "2026-10-19T19:03:59.178669+00:00",
+  "status": "failed",
+  "baseline_container": {
+    "container_id": "c3cdfb9ca3ab71eff4735c344ae0c0d83400b497eb104af21496b593b1bad8af",
+    "image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+    "started_at": "2026-10-18T20:36:40.116324795Z"
+  },
+  "archive_sha256": "b0df8a93e18a4d0c8b5324413ea572e9f127b2f37fadd685ac6360571b045402",
+  "manifest_sha256": "0dd4f487bfd3a533ef157514c4f88453d4148ba9ab55165337aa683d5e5c8fce",
+  "image_source_hashes": {
+    "native_execution_agents.py": "634ff3981e81e2bc0b4b14da6d783a5049fee0a76d17f378119b86cd3ae08e87",
+    "native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "public_test_files": 42,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "candidate_activated": false,
+  "test_sources_mount_only": true,
+  "operational_environment_or_profile_mounts": false,
+  "network": "none",
+  "root_filesystem_read_only": true,
+  "build_exit_code": 0,
+  "candidate_image_id": "sha256:3f004c6c170ea79d16a544a788a5189f3afc17d3d68d465cb5092c3099cd0404",
+  "runtime_image_config_unchanged": true,
+  "added_image_layers": 1,
+  "public_source_delta": {
+    "native_cli_diagnostics.py": {
+      "old_sha256": "68565bf87e0c37828703b3b3abf82a787158073213ac0bf155494213f6d6e691",
+      "new_sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+    },
+    "native_execution_agents.py": {
+      "old_sha256": "73f000fdb9915a4ba2a4fad41f10180783464f3b87b9edc186960b8d6e0a7eef",
+      "new_sha256": "634ff3981e81e2bc0b4b14da6d783a5049fee0a76d17f378119b86cd3ae08e87"
+    },
+    "native_mcp_sessions.py": {
+      "old_sha256": "b658fa4d2e0f4fc014346c4f6e8343a5b83ad9eaa406663f1bb36b93a0c54222",
+      "new_sha256": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c"
+    }
+  },
+  "public_source_files_compared": 47,
+  "QA_exit_code": 1,
+  "Linux_tests_total": 431,
+  "Linux_test_seconds": 7.906,
+  "Linux_skips": 0,
+  "QA_logs": {
+    "qa-stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa-stderr.log": "49bb959f87e1e3d16242c028a626309d3271b75bbf2d975647343cb4cda1862b",
+    "build-stdout.log": "9b22f7885cc8f54b34f9b08cb7e431f56c2a1be5f07de4ae214500d2907eb9be",
+    "build-stderr.log": "ec34a09e033b515c85951f12dbaa17dc3090601dd78ed912c6b4548ce882034a"
+  },
+  "operational_container_unchanged": true,
+  "finished_at_utc": "2026-10-19T19:04:15.315611+00:00"
+}

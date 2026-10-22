@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "stage": "AI-37",
+  "status": "verified_isolated_candidate_not_operationally_adopted",
+  "artifacts": [
+    {
+      "path": "docs/evidence/nodia-ai-ai37-quality.json",
+      "sha256": "428758981ea3fc8f28a7dbc93ccb25f0cc7cad1bf48450bfb4e08fdf835996d5"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-candidate04.json",
+      "sha256": "e2125e7db6b3dc0454462651e634d8fb79e520ac76adf2626be64298cda3b80c"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-performance.json",
+      "sha256": "342cce281c950b9fad88c1d2104a7696bfdef2a81d8c3d355b6a74e4c785a177"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-performance-claim-diagnostic.json",
+      "sha256": "ad83e9e6567b896692552d523327ca3fffe935eaeb0c27d9ee0f0567704d43f1"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-performance-claim-equivalence.json",
+      "sha256": "4e328a64adc6051285af292ef601ceaa0b144cd5ef5364bac7699756bb8f8d5e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-operations.json",
+      "sha256": "d43f7ec19e79dce3b4a279acbed8627dc2bc4eb7938d7e37756b68d97b9d2873"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-operations-sql.json",
+      "sha256": "99bea692f38fb880e9073f815b40286e101b5968fa16302302fa27fa0424a3dd"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-recovery.json",
+      "sha256": "f4945bffbbf78561544d00b24099f8c1e01fb2be5e19db37e6f6ddec69261fab"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-recovery-sql-r01.json",
+      "sha256": "94abdea2cc51bcb0d065490bc96e39bf9063785d31988d99a3876d239ab4c967"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-knowledge.json",
+      "sha256": "76b7a76773d1d337ddb4b8fa26aa2cf436c3f9d36875000bebd177406f90ffbc"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai37-operational-state.json",
+      "sha256": "beaced2473754a857b16129f9be5a0bf01d1b4f0a22e8dedcbb6c48e0536a30d"
+    }
+  ],
+  "checks": {
+    "unit_tests": 4274,
+    "unit_files": 237,
+    "performance": 61,
+    "claim_equivalence": 11,
+    "operations_SQL_DI": 17,
+    "recovery_SQL_processes": 33,
+    "quarantine_startup": 4,
+    "historical_fixture_type_diagnostics": 192,
+    "new_fixture_type_diagnostics": 0
+  },
+  "candidate": {
+    "compiled_outputs": 2827,
+    "runtime_assets": 979,
+    "operational_Node_outputs_unchanged": 932
+  },
+  "boundaries": {
+    "provider_inferences": 0,
+    "provider_metadata_requests": 0,
+    "operational_SQL_writes": 0,
+    "operational_SQL_read_only_closure_check": true,
+    "indices_added": 0,
+    "tables_added": 0,
+    "migrations_added": 0,
+    "productive_acceptance": false,
+    "AI36_C05_open": true,
+    "AI36_C05_accumulated_accepted_capabilities": "4/7",
+    "deployment": false
+  },
+  "remaining_gates": [
+    "AI36 real capability acceptance and remaining selective publication are unchanged.",
+    "AI38 environment adoption and productive workload acceptance remain separate.",
+    "Continuous trusted external deletion journal, encrypted backup rotation and all storage versions require environment evidence.",
+    "Restore preparation never authorizes release; reconcile current domain/native state and inventory resources absent in the backup.",
+    "Synthetic storage deletion and warm synthetic timings do not certify R2 cleanup, cold-cache percentiles or SLA."
+  ],
+  "reproducible_consolidator": {
+    "path": "docs/evidence/scripts/validate-nodia-ai-ai37.cjs",
+    "sha256": "82e365f5ebdc718c45de0351ccf65ceb8cfb346e539dac485ac2f92d0849365a"
+  }
+}

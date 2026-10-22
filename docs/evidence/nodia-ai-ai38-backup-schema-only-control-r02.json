@@ -1,0 +1,291 @@
+{
+  "stage": "AI-38",
+  "scope": "schema_only_disposable_restore_constraint_set_diagnostic",
+  "status": "observed_not_backup_acceptance",
+  "configured_SQL_writes": 0,
+  "provider_requests": 0,
+  "business_rows_dumped": false,
+  "real_backup_created": false,
+  "original_database_restored": false,
+  "started_at_utc": "2026-10-20T21:03:40.680692+00:00",
+  "source_locale": {
+    "encoding": "UTF8",
+    "datcollate": "en_US.utf8",
+    "datctype": "en_US.utf8",
+    "datlocprovider": "c"
+  },
+  "restored_locale": {
+    "datctype": "en_US.utf8",
+    "encoding": "UTF8",
+    "datcollate": "en_US.utf8",
+    "datlocprovider": "c"
+  },
+  "locale_fields_equal": true,
+  "original_constraints": 469,
+  "restored_constraints": 469,
+  "exact_constraint_key_sets_equal": true,
+  "exact_definitions_by_key_equal": false,
+  "source_array_sha256": "108061cc368fe99a06c23bf991e0bdaf20dc406549b90f525e7e393b48f73cb8",
+  "restored_array_sha256": "f04af3adc84d7bf08ed4ca37675e9b52f4f58ad63bd64e302d16d8d0a31ae85b",
+  "sorted_source_sha256": "108061cc368fe99a06c23bf991e0bdaf20dc406549b90f525e7e393b48f73cb8",
+  "sorted_restored_sha256": "f04af3adc84d7bf08ed4ca37675e9b52f4f58ad63bd64e302d16d8d0a31ae85b",
+  "changed_constraints": [
+    {
+      "table": "ai_providers",
+      "constraint": "chk_ai_providers_default_mode",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "fb03e785aad6c9a4282cc449b73fdc2f9e6bce7f064b55a78c924b7096434f41",
+      "restore_sha256": "d382d1b614fc4e9430c6d77c8abd0a54a39eb9d1644748eb0b5428b319a13b1b",
+      "source_length": 190,
+      "restore_length": 204,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "finance_movements",
+      "constraint": "ck_finance_movements_status",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "856b53b130072c30fa8281f6fc388bdd61af575c4287cb4d4f0ce5a0bcfede7c",
+      "restore_sha256": "93b211c2211cdc8998fed7e7a3f1598832039ebbf9e26edd1563f04e80257905",
+      "source_length": 353,
+      "restore_length": 381,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "finance_movements",
+      "constraint": "ck_finance_movements_type",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "6b04dedee03d81db2eecc874fbebe0401cfee8626c8f035ada1528f9f60de4b5",
+      "restore_sha256": "907f23d51d8aa5e33edd1b41db69247f9643a8e3f4d8b36b0be0644999ca9805",
+      "source_length": 105,
+      "restore_length": 111,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "finance_obligations",
+      "constraint": "ck_finance_obligations_type",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "9e50c3df87ef3e081504f3354dac796c1595491e2a018752652a32d617878882",
+      "restore_sha256": "f25b4f30863cbd93bf9776182bb6d78945b463bcff35e2934d507bcb0ee60a1e",
+      "source_length": 100,
+      "restore_length": 106,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "nodia_ai_attachments",
+      "constraint": "nodia_ai_attachments_file_name_check",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "6d373aa64469ccb0dbe1b089ddff2aad83351e83119fb42e3cc4e89e57511415",
+      "restore_sha256": "3bcc1f0df92ad2dd562bf4d731b1efeb6fe4fa9d789038a6e5bd295bd1ed92ff",
+      "source_length": 121,
+      "restore_length": 119,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "nodia_ai_context_snapshots",
+      "constraint": "nodia_ai_context_snapshots_builder_contract_version_check",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "fb74d586aa30758b66e9064c3dbd5c30bc4adf0f65982d3cfc812343401eb779",
+      "restore_sha256": "27d9a2f6594e162eddd16c0025da7eef33a990ff9a5644244f6b6c88bace0922",
+      "source_length": 159,
+      "restore_length": 157,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "nodia_ai_conversations",
+      "constraint": "nodia_ai_conversations_title_check",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "ec6400432a382fbb62899e41478528fe32af565423854ab016b1afe5d89ac14d",
+      "restore_sha256": "6e2ffc10b1eb1c9856ddd9b2972be300a742fd8617b017446c396500198a1c82",
+      "source_length": 123,
+      "restore_length": 121,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "rental_expenses",
+      "constraint": "ck_rental_expenses_status",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "437680b7b39e9fb679eaa79b298255862c470bbd7015c192929d9743c04e1535",
+      "restore_sha256": "314523f3888dbf71e15acebc91998d77f907035f4dd11382b2689de048788225",
+      "source_length": 134,
+      "restore_length": 148,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "rental_payments",
+      "constraint": "ck_rental_payments_status",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "c41aca3488067d2ac06b5dd28a54e95f573f3e6e8fd5d395b6006432317446f7",
+      "restore_sha256": "faddd405fc70224a15fe3117e2b0a1a989bfdc580eaa596a8e0717e3b90b210d",
+      "source_length": 109,
+      "restore_length": 115,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "rental_payments",
+      "constraint": "ck_rental_payments_type",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "d78179d1c7278ed37907f6af324eb5e1e174ffe1385ec1e7bf0af70d25d6416e",
+      "restore_sha256": "4eb5625cf07a433fb97219c25c3d7e067f5ae87ab2b7e47a03da393b1093b8ec",
+      "source_length": 105,
+      "restore_length": 111,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "rental_reservations",
+      "constraint": "ck_rental_reservations_channel",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "9ebc16e3832c6befc4f1a60c86e61c0edac444f92599a978db3c4ed3b70ca245",
+      "restore_sha256": "82c73f5d037bf46ed155a7e0d950c57dc09c24d863c88f9b4523dbbf4233253a",
+      "source_length": 168,
+      "restore_length": 190,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "rental_reservations",
+      "constraint": "ck_rental_reservations_status",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "c8b0b96a11bfd0aead9694793af9eba1563ce2c5b9f08997964864f6bcba46e3",
+      "restore_sha256": "95ff2ba1891c2bcf5427306acca02b22a397a93c8aa0b8888375325035c70fd2",
+      "source_length": 206,
+      "restore_length": 236,
+      "equal_ignoring_whitespace": false
+    },
+    {
+      "table": "rental_turnovers",
+      "constraint": "ck_rental_turnovers_cleaning_status",
+      "present_in_source": true,
+      "present_in_restore": true,
+      "source_sha256": "74a836fc5ed8dbae4ed4123d1d0db8ae182d1584ea5753457e504a3a735a9d1e",
+      "restore_sha256": "03d8fb82999fa0bb136160515bd18452bf010d8e0f3821db753b5d70343eb599",
+      "source_length": 153,
+      "restore_length": 167,
+      "equal_ignoring_whitespace": false
+    }
+  ],
+  "parser_checks": [
+    {
+      "table": "ai_providers",
+      "constraint": "chk_ai_providers_default_mode",
+      "original_reparsed_sha256": "d382d1b614fc4e9430c6d77c8abd0a54a39eb9d1644748eb0b5428b319a13b1b",
+      "restored_sha256": "d382d1b614fc4e9430c6d77c8abd0a54a39eb9d1644748eb0b5428b319a13b1b",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "finance_movements",
+      "constraint": "ck_finance_movements_status",
+      "original_reparsed_sha256": "93b211c2211cdc8998fed7e7a3f1598832039ebbf9e26edd1563f04e80257905",
+      "restored_sha256": "93b211c2211cdc8998fed7e7a3f1598832039ebbf9e26edd1563f04e80257905",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "finance_movements",
+      "constraint": "ck_finance_movements_type",
+      "original_reparsed_sha256": "907f23d51d8aa5e33edd1b41db69247f9643a8e3f4d8b36b0be0644999ca9805",
+      "restored_sha256": "907f23d51d8aa5e33edd1b41db69247f9643a8e3f4d8b36b0be0644999ca9805",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "finance_obligations",
+      "constraint": "ck_finance_obligations_type",
+      "original_reparsed_sha256": "f25b4f30863cbd93bf9776182bb6d78945b463bcff35e2934d507bcb0ee60a1e",
+      "restored_sha256": "f25b4f30863cbd93bf9776182bb6d78945b463bcff35e2934d507bcb0ee60a1e",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "nodia_ai_attachments",
+      "constraint": "nodia_ai_attachments_file_name_check",
+      "original_reparsed_sha256": "3bcc1f0df92ad2dd562bf4d731b1efeb6fe4fa9d789038a6e5bd295bd1ed92ff",
+      "restored_sha256": "3bcc1f0df92ad2dd562bf4d731b1efeb6fe4fa9d789038a6e5bd295bd1ed92ff",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "nodia_ai_context_snapshots",
+      "constraint": "nodia_ai_context_snapshots_builder_contract_version_check",
+      "original_reparsed_sha256": "27d9a2f6594e162eddd16c0025da7eef33a990ff9a5644244f6b6c88bace0922",
+      "restored_sha256": "27d9a2f6594e162eddd16c0025da7eef33a990ff9a5644244f6b6c88bace0922",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "nodia_ai_conversations",
+      "constraint": "nodia_ai_conversations_title_check",
+      "original_reparsed_sha256": "6e2ffc10b1eb1c9856ddd9b2972be300a742fd8617b017446c396500198a1c82",
+      "restored_sha256": "6e2ffc10b1eb1c9856ddd9b2972be300a742fd8617b017446c396500198a1c82",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "rental_expenses",
+      "constraint": "ck_rental_expenses_status",
+      "original_reparsed_sha256": "314523f3888dbf71e15acebc91998d77f907035f4dd11382b2689de048788225",
+      "restored_sha256": "314523f3888dbf71e15acebc91998d77f907035f4dd11382b2689de048788225",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "rental_payments",
+      "constraint": "ck_rental_payments_status",
+      "original_reparsed_sha256": "faddd405fc70224a15fe3117e2b0a1a989bfdc580eaa596a8e0717e3b90b210d",
+      "restored_sha256": "faddd405fc70224a15fe3117e2b0a1a989bfdc580eaa596a8e0717e3b90b210d",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "rental_payments",
+      "constraint": "ck_rental_payments_type",
+      "original_reparsed_sha256": "4eb5625cf07a433fb97219c25c3d7e067f5ae87ab2b7e47a03da393b1093b8ec",
+      "restored_sha256": "4eb5625cf07a433fb97219c25c3d7e067f5ae87ab2b7e47a03da393b1093b8ec",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "rental_reservations",
+      "constraint": "ck_rental_reservations_channel",
+      "original_reparsed_sha256": "82c73f5d037bf46ed155a7e0d950c57dc09c24d863c88f9b4523dbbf4233253a",
+      "restored_sha256": "82c73f5d037bf46ed155a7e0d950c57dc09c24d863c88f9b4523dbbf4233253a",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "rental_reservations",
+      "constraint": "ck_rental_reservations_status",
+      "original_reparsed_sha256": "95ff2ba1891c2bcf5427306acca02b22a397a93c8aa0b8888375325035c70fd2",
+      "restored_sha256": "95ff2ba1891c2bcf5427306acca02b22a397a93c8aa0b8888375325035c70fd2",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    },
+    {
+      "table": "rental_turnovers",
+      "constraint": "ck_rental_turnovers_cleaning_status",
+      "original_reparsed_sha256": "03d8fb82999fa0bb136160515bd18452bf010d8e0f3821db753b5d70343eb599",
+      "restored_sha256": "03d8fb82999fa0bb136160515bd18452bf010d8e0f3821db753b5d70343eb599",
+      "parser_exact_match": true,
+      "weakened_TRUE_rejected": true
+    }
+  ],
+  "literal_constraints_exact": 456,
+  "CHECKs_reparsed": 13,
+  "all_constraint_definitions_preserved_after_native_parser": true,
+  "all_weakened_TRUE_counterexamples_rejected": true,
+  "preexisting_container_ids_preserved": true,
+  "owned_containers_remaining": 0,
+  "elapsed_seconds": 5.498,
+  "finished_at_utc": "2026-10-20T21:03:46.178566+00:00"
+}

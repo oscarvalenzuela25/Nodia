@@ -1,0 +1,27 @@
+{
+  "stage": "AI-32",
+  "scope": "real_agentic_mcp_synthetic_readonly_callback",
+  "status": "passed",
+  "generation_requests": 1,
+  "business_writes": 0,
+  "configured_database_modified": false,
+  "automatic_inference_retries": 0,
+  "callbacks": 1,
+  "native_acknowledged": true,
+  "supports_mcp_after": true,
+  "attempt_id": "40ca9b38-6fc5-4e4d-9011-85b81dc03c80",
+  "model_id": "gemini-3.8-flash-high",
+  "effort_id": "high",
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "session_generation": "63c5cff349fc4c60a71d06a3ac1af8d6",
+  "observed_at_utc": "2026-10-18T02:47:20Z",
+  "start_http_status": 200,
+  "nonce_returned": true,
+  "attested": true,
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T02:47:39Z"
+}

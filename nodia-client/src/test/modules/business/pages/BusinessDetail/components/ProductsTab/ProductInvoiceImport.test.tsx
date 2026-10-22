@@ -1403,7 +1403,7 @@ describe("ProductInvoiceImport Component", () => {
 
     await waitFor(() => {
       expect(analyzeBtn).not.toBeDisabled();
-      expect(screen.getByTestId("use-thinking-mode-checkbox")).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "Razonamiento" })).toBeInTheDocument();
     });
 
     // Switch to Mistral (disabled and no thinking support)
@@ -1418,7 +1418,7 @@ describe("ProductInvoiceImport Component", () => {
     });
   });
 
-  it("keeps the assigned model when OCR focus is configured and includes permitted extended thinking", async () => {
+  it("keeps the assigned model when OCR focus is configured and sends the explicit Web level", async () => {
     vi.mocked(businessServices.verifyIaProviders).mockResolvedValueOnce([
       {
         id: "prov-mistral-ocr",
@@ -1459,7 +1459,7 @@ describe("ProductInvoiceImport Component", () => {
     await user.upload(fileInput, file);
 
     // Toggle thinking mode checkbox
-    const thinkingCheckbox = await screen.findByTestId("use-thinking-mode-checkbox");
+    const thinkingCheckbox = await screen.findByRole("button", { name: "Medio" });
     await user.click(thinkingCheckbox);
 
     const analyzeBtn = screen.getByTestId("analyze-invoice-btn");
@@ -1472,7 +1472,8 @@ describe("ProductInvoiceImport Component", () => {
           ai_provider_id: "prov-mistral-ocr",
           model: "mistral-large-latest",
           model_type: "default",
-          extended_thinking: true,
+          thinking_level: "medium",
+          extended_thinking: undefined,
         })
       );
     });
@@ -1766,7 +1767,7 @@ describe("ProductInvoiceImport Component", () => {
           ai_provider_id: "prov-agentic-only",
           mode: "token_plan_agentic",
           thinking_level: undefined,
-          extended_thinking: false,
+          extended_thinking: undefined,
         })
       );
     });

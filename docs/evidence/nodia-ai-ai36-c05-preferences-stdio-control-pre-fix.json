@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "reproduced_manifest_depth_rejection",
+  "scope": "offline_exact_preferences_nine_tool_native_materialization_and_stdio_control",
+  "checks": {
+    "native_catalog_21873_bytes_exact": true,
+    "owned_role_exact_and_single_temporary_server": true,
+    "settings_exact_nine_allowlist_and_native_denials": true,
+    "foreign_server_unknown_tool_and_shell_denied": true,
+    "synthetic_terminal_cleanup_ACK_and_source_profile_preserved": true
+  },
+  "tool_count": 9,
+  "catalog_sha256": "e080d296391b619d8a238aa5617ce0666e0ce3e1180e7f172fd184f3d8563fa6",
+  "native_catalog_utf8_bytes": 21873,
+  "pre_fix_rejection": {
+    "manifest_depth": 17,
+    "catalog_depth": 16,
+    "schema_depths": {
+      "nodia_knowledge_index": 1,
+      "nodia_knowledge_get": 4,
+      "nodia_capabilities_search": 5,
+      "nodia_capabilities_describe": 5,
+      "nodia_entities_search": 5,
+      "nodia_reports_describe": 6,
+      "nodia_reports_run": 6,
+      "nodia_preferences_list": 5,
+      "nodia_preferences_prepare": 14
+    },
+    "tools_list_response_depth": 18,
+    "real_stdio_exit_code": 2,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "initialize_reply_received": false,
+    "exception_type": "ValueError",
+    "exception_category": "JSON depth"
+  },
+  "catalog_artifact_sha256": "cd6e30cfed280bc151684e9bd38161bea310e69334ed6cabfbcebc4bc9c877da",
+  "script_sha256": "9eeb11ad30ce3070f5976e51f95a2d58e2048ac3a2c8f1ad0cf03405979eacca",
+  "MCP_execution_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "source_hashes": {
+    "native_mcp_sessions.py": "01a9d1537d49fba9754161011f5897a257e9178c503140e4f15a166a01dc2a0c",
+    "native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "native_mcp_stdio.py": "0f3fa1a2e4b88d5aaba7a01ac0a35a20bb11ffb039870c26c8b7fbd12d24d999",
+    "native_context_budget.py": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77"
+  },
+  "provider_CLI_executions": 0,
+  "provider_requests": 0,
+  "operational_database_access": 0,
+  "synthetic_business_callbacks": [],
+  "business_preparers_executed": 0,
+  "business_effects": 0,
+  "interpretation": "Exact public descriptors and real Nodia materialization/gate/stdio are exercised. The CLI consumer and business replies are synthetic; this does not prove CLI inheritance, runtime availability, or capability acceptance."
+}

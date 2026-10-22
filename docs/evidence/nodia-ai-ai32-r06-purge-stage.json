@@ -1,0 +1,26 @@
+{
+  "stage": "AI-32-R06",
+  "scope": "compiled_verification_staging",
+  "status": "passed",
+  "compiled_files_verified": 909,
+  "compiled_manifest_sha256": "0293d34fe9d320be6b9f696ebdc094e839d5cf5919f25091aa480ee262dfc3b5",
+  "compiled_source_root": "/opt/nodia/releases/nodia-server-ai15-20261016",
+  "verification_root": "/opt/nodia/verification/ai32-r06-compiled",
+  "test_dependency_versions_compatible": true,
+  "checked_package_versions": {
+    "@nestjs/common": "12.0.1",
+    "@nestjs/core": "12.0.1",
+    "@nestjs/typeorm": "12.0.1",
+    "typeorm": "1.1.1",
+    "reflect-metadata": "0.2.2",
+    "pg": "8.23.0",
+    "rxjs": "7.8.2",
+    "class-validator": "0.15.1",
+    "@aws-sdk/client-s3": "3.1136.0"
+  },
+  "operational_env_copied": false,
+  "production_source_modified": false,
+  "services_restarted": false,
+  "provider_generations": 0,
+  "observed_at_utc": "2026-10-18T16:50:02Z"
+}

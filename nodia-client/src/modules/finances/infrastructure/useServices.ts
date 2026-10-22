@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { FinanceOwnerContext } from "./FinanceOwnerContext";
 import {
   useInfiniteQuery,
   useIsMutating,
@@ -26,6 +28,18 @@ import {
   deleteFinanceRecord,
 } from "./services";
 
+function sameScope(
+  key: readonly unknown[] | undefined,
+  actorId: string | undefined,
+  ownerId: string | undefined,
+) {
+  const query = key?.at(-1);
+  const previousOwner =
+    query && typeof query === "object" && "owner_id" in query
+      ? query.owner_id
+      : undefined;
+  return key?.[1] === actorId && previousOwner === ownerId;
+}
 export const financeKeys = {
   scope: (userId: string | undefined) => ["finance", userId] as const,
   list: (
@@ -41,11 +55,12 @@ export const financeKeys = {
 };
 
 function useFinanceActor() {
+  const { ownerId } = useContext(FinanceOwnerContext);
   const userId = useAuthStore((state) => state.user?.id);
   const authenticated = useAuthStore(
     (state) => state.sessionStatus === "authenticated",
   );
-  return { userId, enabled: Boolean(userId && authenticated) };
+  return { userId, ownerId, enabled: Boolean(userId && authenticated) };
 }
 
 export function useFinanceList<R extends FinanceResource>(
@@ -55,11 +70,21 @@ export function useFinanceList<R extends FinanceResource>(
 ) {
   const actor = useFinanceActor();
   return useQuery({
-    queryKey: financeKeys.list(actor.userId, resource, query),
-    queryFn: ({ signal }) => getFinanceList(resource, query, signal),
+    queryKey: financeKeys.list(actor.userId, resource, {
+      ...query,
+      ...(actor.ownerId ? { owner_id: actor.ownerId } : {}),
+    }),
+    queryFn: ({ signal }) =>
+      getFinanceList(
+        resource,
+        { ...query, ...(actor.ownerId ? { owner_id: actor.ownerId } : {}) },
+        signal,
+      ),
     enabled: actor.enabled && options.enabled !== false,
     placeholderData: (previous, previousQuery) =>
-      previousQuery?.queryKey[1] === actor.userId ? previous : undefined,
+      sameScope(previousQuery?.queryKey, actor.userId, actor.ownerId)
+        ? previous
+        : undefined,
   });
 }
 
@@ -70,8 +95,12 @@ export function useFinanceRecord<R extends FinanceResource>(
 ) {
   const actor = useFinanceActor();
   return useQuery({
-    queryKey: financeKeys.detail(actor.userId, resource, id),
-    queryFn: ({ signal }) => getFinanceRecord(resource, id!, signal),
+    queryKey: [
+      ...financeKeys.detail(actor.userId, resource, id),
+      ...(actor.ownerId ? ["owner", actor.ownerId] : []),
+    ],
+    queryFn: ({ signal }) =>
+      getFinanceRecord(resource, id!, signal, actor.ownerId),
     enabled: actor.enabled && Boolean(id) && enabled,
   });
 }
@@ -84,13 +113,22 @@ export function useFinanceOptions(
 ) {
   const actor = useFinanceActor();
   return useInfiniteQuery({
-    queryKey: ["finance", actor.userId, "options", resource, search, active],
+    queryKey: [
+      "finance",
+      actor.userId,
+      "options",
+      resource,
+      search,
+      active,
+      ...(actor.ownerId ? ["owner", actor.ownerId] : []),
+    ],
     initialPageParam: 1,
     queryFn: ({ pageParam, signal }) =>
       getFinanceList(
         resource,
         {
           page: pageParam,
+          ...(actor.ownerId ? { owner_id: actor.ownerId } : {}),
           limit: 20,
           active,
           ...(search.trim() ? { q: { name_cont: search.trim() } } : {}),
@@ -106,8 +144,17 @@ export function useFinanceOptions(
 export function useFinanceOverview(query: FinanceQuery) {
   const actor = useFinanceActor();
   return useQuery({
-    queryKey: ["finance", actor.userId, "overview", query],
-    queryFn: ({ signal }) => getFinanceOverview(query, signal),
+    queryKey: [
+      "finance",
+      actor.userId,
+      "overview",
+      { ...query, ...(actor.ownerId ? { owner_id: actor.ownerId } : {}) },
+    ],
+    queryFn: ({ signal }) =>
+      getFinanceOverview(
+        { ...query, ...(actor.ownerId ? { owner_id: actor.ownerId } : {}) },
+        signal,
+      ),
     enabled: actor.enabled,
     placeholderData: (previous, previousQuery) =>
       previousQuery?.queryKey[1] === actor.userId ? previous : undefined,
@@ -120,8 +167,19 @@ export function useFinanceSummary(
 ) {
   const actor = useFinanceActor();
   return useQuery({
-    queryKey: ["finance", actor.userId, "summary", kind, query],
-    queryFn: ({ signal }) => getFinanceSummary(kind, query, signal),
+    queryKey: [
+      "finance",
+      actor.userId,
+      "summary",
+      kind,
+      { ...query, ...(actor.ownerId ? { owner_id: actor.ownerId } : {}) },
+    ],
+    queryFn: ({ signal }) =>
+      getFinanceSummary(
+        kind,
+        { ...query, ...(actor.ownerId ? { owner_id: actor.ownerId } : {}) },
+        signal,
+      ),
     enabled: actor.enabled,
     placeholderData: (previous, previousQuery) =>
       previousQuery?.queryKey[1] === actor.userId ? previous : undefined,
@@ -144,7 +202,9 @@ export function useFinanceMutation<R extends FinanceResource>(resource: R) {
     mutationFn: (input: FinanceMutationInput<R>) => {
       if (!actor.enabled || useAuthStore.getState().user?.id !== actor.userId)
         throw new Error("finance:session_changed");
-      return saveFinanceRecord(resource, input);
+      return actor.ownerId
+        ? saveFinanceRecord(resource, input, actor.ownerId)
+        : saveFinanceRecord(resource, input);
     },
     onSuccess: async (_record, input) => {
       if (useAuthStore.getState().user?.id !== actor.userId) return;
@@ -212,7 +272,9 @@ export function useFinanceDelete(resource: FinanceResource) {
     retry: false,
     mutationFn: async (id: string) => {
       requireActor();
-      await deleteFinanceRecord(resource, id);
+      await (actor.ownerId
+        ? deleteFinanceRecord(resource, id, actor.ownerId)
+        : deleteFinanceRecord(resource, id));
       requireActor();
     },
     onSuccess: async () => {
@@ -236,7 +298,9 @@ export function useFinanceDelete(resource: FinanceResource) {
       requireActor();
       let deleted = false;
       try {
-        await getFinanceRecord(resource, id);
+        await (actor.ownerId
+          ? getFinanceRecord(resource, id, undefined, actor.ownerId)
+          : getFinanceRecord(resource, id));
       } catch (error) {
         if (isAxiosError(error) && error.response?.status === 404)
           deleted = true;

@@ -1,0 +1,50 @@
+{
+  "stage": "AI-32-R04",
+  "scope": "offline_fresh_synthetic_spanish_voice_provenance",
+  "generator_sha256": "fb656fc413e244f7ec699a36709055acb4e4920dad42b519fdefce76c28c6701",
+  "voice": {
+    "synthesis_rate": -1,
+    "culture": "es-MX",
+    "engine": "Windows SAPI/System.Speech",
+    "name": "Microsoft Sabina Desktop",
+    "installed_and_enabled_observed": true
+  },
+  "pyav_version": "19.0.1",
+  "format_source": "one_fresh_SAPI_WAV",
+  "speech_words_v1_sha256": "45347476c557f02765fe98abf1cbefca0904bfcf7c428a756d646bb9de42a12f",
+  "formats": {
+    "wav": {
+      "bytes": 162718,
+      "sha256": "082109f5bcafa9d23df954d8e281e33ae05dc9f73e89838d4c57bef8c7e7b682",
+      "duration_seconds": 3.688707,
+      "codec": "pcm_s16le",
+      "wave": {
+        "sample_rate": 22050,
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "frames": 81336,
+        "duration_seconds": 3.688707
+      }
+    },
+    "webm": {
+      "bytes": 30082,
+      "sha256": "dbce7a9df41a39e4b7ce66f799b5b3b222b19fdbd7bd11cfdef655d348f24ea0",
+      "duration_seconds": 3.688708,
+      "decoded_frames": 185,
+      "codec": "opus"
+    },
+    "ogg": {
+      "bytes": 28751,
+      "sha256": "e44c58ac768cd2a3f160a6f3c69700d06d8e49b057c91d5b387ee4b647fd0551",
+      "duration_seconds": 3.688708,
+      "decoded_frames": 185,
+      "codec": "opus"
+    }
+  },
+  "phrase_selection": "one secrets.choice sample from bounded grammatical Spanish vocabularies",
+  "provider_calls": 0,
+  "physical_microphone_recording": false,
+  "private_user_audio_used": false,
+  "expected_text_sent_to_provider_prompt": false,
+  "user_audio_conversion_path_modified": false
+}

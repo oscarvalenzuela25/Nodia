@@ -1,0 +1,59 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "final_affected_document_knowledge_and_script_quality",
+  "status": "passed",
+  "documents": {
+    "stage": "AI-32-R07",
+    "documents": 9,
+    "r07_links_checked": 28,
+    "status": "passed",
+    "document_approval_changed": false,
+    "ai32_technical_checkbox_closed": true
+  },
+  "knowledge": [
+    {
+      "mode": "check",
+      "exit_code": 0,
+      "result": {
+        "task": "AI-06",
+        "mode": "check",
+        "sources": 55,
+        "excluded": 28,
+        "documents": 27,
+        "fragments": 27,
+        "catalogRelease": "nodia-ai-ai15-reads/1",
+        "releaseId": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50"
+      },
+      "log": {
+        "path": ".tmp/ai32-r07-knowledge-check.log",
+        "sha256": "8fcdcfcacefe1bdd4290835d6aaee28da933b8c3e0b343d35b769b583a99be0d"
+      }
+    },
+    {
+      "mode": "build",
+      "exit_code": 0,
+      "result": {
+        "task": "AI-06",
+        "mode": "build",
+        "sources": 55,
+        "excluded": 28,
+        "documents": 27,
+        "fragments": 27,
+        "catalogRelease": "nodia-ai-ai15-reads/1",
+        "releaseId": "6c4ff3a4259aebb2ec0d360c278457daa5cc8d59d46685246823f298c5423d50"
+      },
+      "log": {
+        "path": ".tmp/ai32-r07-knowledge-build.log",
+        "sha256": "a4b3dbc680e4ff1b9bf56faf5ac912e822e01c22b4c36a2385540b5ab63aa62c"
+      }
+    }
+  ],
+  "knowledge_publication_changed": false,
+  "scoped_oxlint_exit_code": 0,
+  "scoped_oxlint_used_absolute_paths": true,
+  "reconciler_syntax_exit_code": 0,
+  "git_diff_check_exit_code": 0,
+  "documentary_approval_changed": false,
+  "application_builds_rerun": false,
+  "server_client_historical_suites_rerun": false
+}

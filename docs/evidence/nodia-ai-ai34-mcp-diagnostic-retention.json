@@ -1,0 +1,31 @@
+{
+  "stage": "AI-34",
+  "scope": "read_only_failed_mcp_original_diagnostic_retention_check",
+  "status": "original_message_not_retained",
+  "attempt_id": "cc39038f-4ff3-4b26-a16f-30ea5467c93e",
+  "observed_at_utc": "2026-10-18T20:31:07Z",
+  "observed": {
+    "temporary_cli_directories": 0,
+    "armed_native_proofs": 0,
+    "terminal_native_proofs": 0,
+    "unknown_markers": 0
+  },
+  "source_evidence": [
+    {
+      "path": "nodia-gemini-microservice/agentic_cli.py",
+      "behavior": "Runner returns decoded stdout and exit code; stderr bytes are discarded after invoking its observer."
+    },
+    {
+      "path": "nodia-gemini-microservice/native_mcp_sessions.py",
+      "behavior": "McpTrace stderr observer retains byte count only; TemporaryDirectory removes cli.log, and acknowledgement forgets the job."
+    }
+  ],
+  "original_stderr_exported": false,
+  "original_provider_error_message": null,
+  "raw_logs_exported": false,
+  "provider_generations": 0,
+  "services_restarted": false,
+  "limitations": [
+    "Exit3 and terminalERROR do not establish an upstream or custom-role cause; the original message cannot be reconstructed from the retained bounded structural projection."
+  ]
+}

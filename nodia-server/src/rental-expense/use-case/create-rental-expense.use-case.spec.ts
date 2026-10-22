@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { CreateRentalExpenseUseCase } from './create-rental-expense.use-case.js';
@@ -43,7 +44,7 @@ describe('Rental expense use cases', () => {
     const f = fixture();
     f.table(RentalProperty)[0].is_active = false;
     const result = await f.create.execute(
-      '2',
+      actorFixture('2'),
       '10',
       { ...draft, notes: '  ' },
       rentalKey,
@@ -58,7 +59,7 @@ describe('Rental expense use cases', () => {
     });
     expect(
       await f.create.execute(
-        '2',
+        actorFixture('2'),
         '10',
         {
           ...draft,
@@ -84,19 +85,24 @@ describe('Rental expense use cases', () => {
       { ...draft, incurred_on: '2026-02-30' },
     ])
       await expect(
-        f.create.execute('1', '10', input as typeof draft, rentalKey),
+        f.create.execute(
+          actorFixture('1'),
+          '10',
+          input as typeof draft,
+          rentalKey,
+        ),
       ).rejects.toThrow('rental:invalid_input');
     expect(f.table(RentalExpense)).toHaveLength(0);
   });
 
   it('rejects unknown authority and a reservation from another scope', async () => {
     const f = fixture();
-    await expect(f.create.execute('3', '10', draft, rentalKey)).rejects.toThrow(
-      'rental:not_found',
-    );
+    await expect(
+      f.create.execute(actorFixture('3'), '10', draft, rentalKey),
+    ).rejects.toThrow('rental:not_found');
     await expect(
       f.create.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { ...draft, reservation_id: '99' },
         rentalKey,
@@ -104,7 +110,7 @@ describe('Rental expense use cases', () => {
     ).rejects.toThrow('rental:not_found');
     await expect(
       f.create.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { ...draft, updated_by: '3' } as typeof draft,
         rentalKey,
@@ -115,13 +121,13 @@ describe('Rental expense use cases', () => {
   it('edits pending amounts, preserves omitted values and explicitly clears nullable information', async () => {
     const f = fixture();
     const result = await f.create.execute(
-      '1',
+      actorFixture('1'),
       '10',
       { ...draft, category: 'Cleaning', notes: 'Original' },
       rentalKey,
     );
     await f.update.execute(
-      '2',
+      actorFixture('2'),
       '10',
       result.resource_id,
       { amount: '9007199254740993', notes: null },
@@ -135,7 +141,7 @@ describe('Rental expense use cases', () => {
     });
     await expect(
       f.update.execute(
-        '1',
+        actorFixture('1'),
         '10',
         result.resource_id,
         {},
@@ -146,9 +152,14 @@ describe('Rental expense use cases', () => {
 
   it('pays once, refuses money rewrites and preserves the original effective date in void audit', async () => {
     const f = fixture();
-    const created = await f.create.execute('1', '10', draft, rentalKey);
+    const created = await f.create.execute(
+      actorFixture('1'),
+      '10',
+      draft,
+      rentalKey,
+    );
     const paid = await f.pay.execute(
-      '1',
+      actorFixture('1'),
       '10',
       created.resource_id,
       { paid_on: '2026-10-03' },
@@ -156,7 +167,7 @@ describe('Rental expense use cases', () => {
     );
     expect(
       await f.pay.execute(
-        '1',
+        actorFixture('1'),
         '10',
         created.resource_id,
         { paid_on: '2026-10-03' },
@@ -165,7 +176,7 @@ describe('Rental expense use cases', () => {
     ).toEqual(paid);
     await expect(
       f.update.execute(
-        '1',
+        actorFixture('1'),
         '10',
         created.resource_id,
         { amount: '6000' },
@@ -173,7 +184,7 @@ describe('Rental expense use cases', () => {
       ),
     ).rejects.toThrow('rental:agreement_immutable');
     await f.void.execute(
-      '1',
+      actorFixture('1'),
       '10',
       created.resource_id,
       { reason: 'Wrong date entry' },
@@ -190,7 +201,7 @@ describe('Rental expense use cases', () => {
     });
     await expect(
       f.pay.execute(
-        '1',
+        actorFixture('1'),
         '10',
         created.resource_id,
         { paid_on: '2026-10-04' },
@@ -204,7 +215,7 @@ describe('Rental expense use cases', () => {
     f.failOn(RentalOperation);
     await expect(
       f.create.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { ...draft, status: 'paid', paid_on: '2026-10-03' },
         rentalKey,

@@ -1,0 +1,18 @@
+{
+  "task": "AI-11/AI-12",
+  "phase": "web",
+  "checks": 5,
+  "passed": [
+    "real provider turn seals exactly once",
+    "real Web returns the synthetic value",
+    "real provider turn seals exactly once",
+    "fresh Web dispatch recovers canonical history",
+    "Web never calls MCP"
+  ],
+  "generationRequests": 2,
+  "maximumGenerations": 6,
+  "real_inference": true,
+  "configured_business_database_modified": false,
+  "business_writes": 0,
+  "selection_source": "Read-only configured Gemini connection; new synthetic database for all chat/worker state"
+}

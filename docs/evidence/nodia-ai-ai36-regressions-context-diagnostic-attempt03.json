@@ -1,0 +1,29 @@
+{
+  "stage": "AI-36",
+  "scope": "compiled_historical_regression_revalidation",
+  "group": "context-diagnostic",
+  "attempt": "attempt03",
+  "status": "failed",
+  "results": [
+    {
+      "harness": "ai15",
+      "status": "failed",
+      "exit_code": 1,
+      "timed_out": false,
+      "started_at_utc": "2026-10-19T00:21:14.835775+00:00",
+      "completed_at_utc": "2026-10-19T00:21:24.307302+00:00",
+      "test_sha256": "09c920b6eb5cd1901f5a2393f3fe92bb00742ebf8bb3a08be1c9013acd7c0e95",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "79d81d1c6f461b1539267fd5c1a90d2428de4eb345d5776d38c53e065be33ded",
+      "assertion_result": null,
+      "orphan_disposable_containers_removed": 0,
+      "new_disposable_containers_remaining": 0,
+      "error_category": "AssertionError"
+    }
+  ],
+  "manifest_sha256": "e1ec9983373ed8fbba9efa776b06dd2b6ec700a66114380acec4bdffa863277a",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_cloud_operations": 0,
+  "services_restarted": false
+}

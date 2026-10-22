@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   BadRequestException,
   ConflictException,
@@ -20,12 +21,13 @@ export class UpdateRentalExpenseUseCase {
     private readonly expenses: RentalExpenseService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: UpdateRentalExpenseDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(UpdateRentalExpenseDto, input);
     const patch = Object.fromEntries(
       Object.entries(dto).filter(([, value]) => value !== undefined),
@@ -34,7 +36,7 @@ export class UpdateRentalExpenseUseCase {
       throw new BadRequestException('rental:invalid_input');
     return this.tx.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'expense.update',

@@ -1,0 +1,93 @@
+{
+  "stage": "AI-32-R03",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T04:48:04Z",
+  "harness_sha256": "657c7b453eba6b591aefdcb31b3b38bf8cc00d05522bfc71c6616b36ba96d674",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "verification_semantics": "this_canary_semantic_match_and_completed_ack_and_exact_cached_media_type",
+  "probe": {
+    "engine": "agentic",
+    "kind": "image",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "reference": {
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "070b4a3da94347ffae1e68855583c8ae",
+      "operation_ref": "44543e87-c48e-46ef-b5e9-e208818a1beb"
+    },
+    "attempt_id": "44543e87-c48e-46ef-b5e9-e208818a1beb",
+    "file_bytes": 11593,
+    "media_type": "image/png",
+    "file_sha256": "4680eeae70b440bb3cd02c9f010a545621b81c1ad24b11849dcb250bdf06799c",
+    "expected_answer_sha256": "00434020aeffdcc10a654623db5509d77f5b74e78b5ae96f5c259ba4372174ea",
+    "answer_normalization": "literal",
+    "native_acknowledged": true,
+    "verified": true,
+    "fixture": "synthetic_known_canary",
+    "http_status": 200,
+    "answer_sha256": "00434020aeffdcc10a654623db5509d77f5b74e78b5ae96f5c259ba4372174ea",
+    "semantic_canary_matches": true,
+    "semantic_diagnostic": {
+      "answer_is_string": true,
+      "answer_chars": 12,
+      "expected_chars": 12,
+      "line_count": 1,
+      "trim_equals": true,
+      "casefold_equals": true,
+      "whitespace_collapse_equals": true,
+      "contains_expected": true,
+      "expected_is_prefix": true,
+      "expected_is_suffix": true,
+      "json_string_decoded_equals": false,
+      "closed_keyword_present": {
+        "audio": false,
+        "transcri": false,
+        "no puedo": false,
+        "no tengo": false,
+        "cannot": false,
+        "can't": false,
+        "unable": false,
+        "unsupported": false,
+        "formato": false,
+        "silencio": false,
+        "vac\u00edo": false,
+        "upload": false,
+        "archivo": false
+      }
+    },
+    "elapsed_seconds": 17.57,
+    "native_outcome": "completed",
+    "cached_modality_verified": true,
+    "exact_format_verified": true
+  },
+  "reply_kind": "answer",
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [
+      "image"
+    ],
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+    "session_generation": "070b4a3da94347ffae1e68855583c8ae",
+    "supports_mcp": false,
+    "verified_attachment_media_types": [
+      "image/png"
+    ]
+  },
+  "diagnostics": [],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T04:48:34Z"
+}

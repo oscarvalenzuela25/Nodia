@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NodiaAI AI-18 — Synthetic mobile confirmation QA</title>
+    <style>
+      body { margin: 0; background: #e8ebf0; font: 14px system-ui, sans-serif; }
+      p { max-width: 390px; margin: 12px auto; }
+      iframe { display: block; width: 390px; height: 800px; margin: 0 auto 24px; border: 1px solid #aeb6c2; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <p>AI-18 synthetic QA only: 390 × 800 CSS px. No real account, Gemini, database or business effects.</p>
+    <iframe id="fixture" title="AI-18 synthetic confirmation on mobile" hidden></iframe>
+    <p id="origin-error" hidden>This fixture requires isolated http://127.0.0.1:5194.</p>
+    <script type="module">
+      if (location.origin === "http://127.0.0.1:5194") {
+        const frame = document.getElementById("fixture");
+        frame.src = "./index.html?lang=en&theme=light&scenario=confirmation-ready";
+        frame.hidden = false;
+      } else {
+        document.getElementById("origin-error").hidden = false;
+      }
+    </script>
+  </body>
+</html>

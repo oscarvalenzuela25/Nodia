@@ -1,0 +1,28 @@
+{
+  "stage": "AI-32-R07",
+  "scope": "owned_disposable_sandbox_teardown",
+  "status": "passed",
+  "provider_generations": 0,
+  "cloud_operations": 0,
+  "configured_database_used": false,
+  "production_services_restarted": false,
+  "credential_values_exported": false,
+  "ledger_objects": 1,
+  "ledger_objects_settled": true,
+  "database_final_counts": {
+    "chats": 0,
+    "attachments": 0,
+    "messages": 0,
+    "parts": 0,
+    "jobs": 0,
+    "invoice_upload_intents": 0,
+    "invoices": 0
+  },
+  "private_ledger_mode_0600": true,
+  "owned_container_removed": true,
+  "private_files_removed": 8,
+  "private_descriptor_and_ledger_removed": true,
+  "private_directory_removed": true,
+  "inspector_temporary_container_removed": true,
+  "observed_at_utc": "2026-10-18T18:05:49Z"
+}

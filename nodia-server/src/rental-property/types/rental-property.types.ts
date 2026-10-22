@@ -3,6 +3,7 @@ import type { RentalProperty } from '../entities/rental-property.entity.js';
 export function rentalPropertyResponse(
   property: RentalProperty,
   owner: boolean,
+  isSuperAdmin = false,
 ) {
   return {
     id: property.id,
@@ -24,9 +25,9 @@ export function rentalPropertyResponse(
     created_at: property.created_at.toISOString(),
     updated_at: property.updated_at.toISOString(),
     membership: {
-      type: owner ? 'owner' : 'collaborator',
-      can_manage_configuration: owner,
-      can_manage_collaborators: owner,
+      type: owner ? 'owner' : isSuperAdmin ? 'super_admin' : 'collaborator',
+      can_manage_configuration: owner || isSuperAdmin,
+      can_manage_collaborators: owner || isSuperAdmin,
     },
   };
 }

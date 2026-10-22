@@ -1,3 +1,4 @@
+import type { ActorReference } from '../../authorization/authority-transaction.js';
 import {
   BadRequestException,
   ConflictException,
@@ -20,12 +21,13 @@ export class UpdateRentalBlockUseCase {
     private readonly blocks: RentalBlockService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: UpdateRentalBlockDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(UpdateRentalBlockDto, input);
     const patch = Object.fromEntries(
       Object.entries(dto).filter(([, value]) => value !== undefined),
@@ -36,7 +38,7 @@ export class UpdateRentalBlockUseCase {
     if (dto.ends_at) patch.ends_at = new Date(dto.ends_at).toISOString();
     return this.tx.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'block.update',

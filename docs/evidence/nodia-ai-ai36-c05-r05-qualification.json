@@ -1,0 +1,71 @@
+{
+  "stage": "AI-36-C05-R05",
+  "scope": "observed_candidate_binary_epoch_failed_MCP_canary_not_qualified_for_business_execution",
+  "status": "failed_native_MCP_canary",
+  "source_artifacts_sha256": {
+    "docs/evidence/nodia-ai-ai36-c05-r05-role-canary02-canary-report.json": "111c7a9a2a7a244b045e942a400cebc48c53880af153c946ab0f0167ac66f900",
+    "docs/evidence/nodia-ai-ai36-c05-r05-role-canary02-runner-report.json": "a1585239cb14e5835a1ce50a18660b742328f3276848c53e1b033c0e8d7fb207",
+    "docs/evidence/nodia-ai-ai36-c05-r05-role-canary02-original-ai15-report.json": "64aee60657aff9b9d3ba9af942e2dcd24fd1adedf4c61379fe2f93e32e8b5740",
+    "docs/evidence/nodia-ai-ai36-c05-r05-role-canary02-binding.json": "3f251dc2168d6ff7a4eef90c4cc97676ffda55b34be48726b99e4f4029bb1fbf",
+    "docs/evidence/nodia-ai-ai36-c05-r05-build01-report.json": "8bae6884285389544a7190d03d687703bc5d0916010f554de1ffb9911eec3b05",
+    "docs/evidence/nodia-ai-ai36-c05-r05-build01-manifest.json": "e0d51ad28f0d038229c2791a3f4f7298c42a7acf3c525fe2778d4a797265c17c",
+    "docs/evidence/nodia-ai-ai36-c05-r05-binary-observation01-report.json": "ef9f1200d42c5b12ef30351171cbb3343e963b25664d2ed87ac7cc08ae2bb1c5",
+    "docs/evidence/nodia-ai-ai36-c05-r05-role-activation-report.json": "a7b34e3ac869940a9aa81287d546be2f1c0768a91231c06e990b9f54941d8cb9"
+  },
+  "source_manifest_sha256": "e0d51ad28f0d038229c2791a3f4f7298c42a7acf3c525fe2778d4a797265c17c",
+  "image_id": "sha256:1a483f3f72de21374e9ba2546dba2df5e07e5a5e7bd4a159a5ee6ca7a444a3fb",
+  "role_policy_sha256": "7820451f2eec37bfdff82b49c9f3e170cd051f9bfdde14eb119ec2d9fc1c85fc",
+  "binary_version": "1.3.1",
+  "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "binary_observation_evidence": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r05-role-canary02-runner-report.json",
+    "sha256": "a1585239cb14e5835a1ce50a18660b742328f3276848c53e1b033c0e8d7fb207"
+  },
+  "binary_observation_artifact": {
+    "path": "docs/evidence/nodia-ai-ai36-c05-r05-binary-observation01-report.json",
+    "sha256": "ef9f1200d42c5b12ef30351171cbb3343e963b25664d2ed87ac7cc08ae2bb1c5"
+  },
+  "epoch": {
+    "id": "e7c6189c3882037830a60adba03ecd4a49145a388210528de400b0513f211da7",
+    "image": "sha256:1a483f3f72de21374e9ba2546dba2df5e07e5a5e7bd4a159a5ee6ca7a444a3fb",
+    "started_at": "2026-10-19T21:19:36.614440711Z",
+    "binary_version": "1.3.1",
+    "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2"
+  },
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_agentic",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high"
+  },
+  "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+  "session_generation_sha256": "aa0869e59dad0ff2a6e57ee422e38d00a60b8d15573562228d50498dc4267eb9",
+  "resource_key_sha256": "232fdc258f8fd67097784bc55bee36fe3978d568e5097d144f0be91d33bdc195",
+  "attempt_id": "cdb0d411-0971-4708-b385-45650abf635f",
+  "terminal_proof": {
+    "attempt_id": "cdb0d411-0971-4708-b385-45650abf635f",
+    "terminal_proof_sha256": "f812681a88d6af2bcc87d13361b36efc298a98a1023987a03aea0ce81a2d7fe6",
+    "outcome": "abandoned_unknown",
+    "process_closed": true,
+    "observed_at_utc": "2026-10-19T21:22:18.395706+00:00"
+  },
+  "acknowledgement": {
+    "attempt_id": "cdb0d411-0971-4708-b385-45650abf635f",
+    "terminal_proof_sha256": "f812681a88d6af2bcc87d13361b36efc298a98a1023987a03aea0ce81a2d7fe6",
+    "acknowledged": true,
+    "request_started_at_utc": "2026-10-19T21:22:18.402Z",
+    "response_received_at_utc": "2026-10-19T21:22:18.405Z"
+  },
+  "diagnostic_nonce_verified": false,
+  "supports_MCP_after": null,
+  "adapter_contract_version": null,
+  "encoding_observed": null,
+  "native_start_requests": 1,
+  "accepted_native_starts": 1,
+  "epoch_MCP_qualified": false,
+  "business_capabilities_accepted_by_canary": 0,
+  "configured_SQL_writes": 0,
+  "configured_selection_modified": false,
+  "derivation_clock_scope": "VM timestamps retained from source artifacts; no local timestamp synthesized.",
+  "diagnostic_limit": "Failed-native-epoch WARN, callback and RPC observations were not retained. Unknown counts and cause remain null; terminal proof and exact cleanup ACK do not qualify MCP."
+}

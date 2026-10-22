@@ -1,0 +1,33 @@
+{
+  "binary_sha512": "f57ad0a04c93e1d13b86bd13c4f35b6577bc0557e6bfd718e9f3a2bdb4504240113f6bbcfefad9f039eb1d5e7e23e0a2623b4b7687882eca86954e485ad9f9c2",
+  "runs": [
+    {
+      "requested_effort": "high",
+      "elapsed_ms": 10034,
+      "exit_code": -9,
+      "timed_out": true,
+      "stdout_bytes": 0,
+      "stderr_bytes": 864,
+      "closed_text_indicators": [
+        "authentication_required_indicator",
+        "deadline_exceeded"
+      ],
+      "valid_zero_token_model_report": false,
+      "reported_model_id": null,
+      "reported_model_matches_exact_request": null
+    }
+  ],
+  "text_indicators_are_not_verified_causes": true,
+  "provider_generations": 0,
+  "network_mode": "none",
+  "profile_mounts": 0,
+  "service_environment_forwarded": false,
+  "application_imports": 0,
+  "raw_text_persisted": false,
+  "stage": "AI-36-C05",
+  "scope": "offline_same_image_empty_home_no_network_CLI_option_control",
+  "image_id": "sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532",
+  "source_sha256": "b00b21e8c6581732226ea2679b6d89b68df5125427fe54a680dd76a11f11f147",
+  "runtime_services_restarted": false,
+  "stored_configuration_changed": false
+}

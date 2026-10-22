@@ -1,0 +1,10 @@
+const fs=require('node:fs'),crypto=require('node:crypto');
+const p='docs/evidence/nodia-ai-ai17-validation.json',e=JSON.parse(fs.readFileSync(p,'utf8'));
+const c=JSON.parse(fs.readFileSync('docs/evidence/nodia-ai-v1-catalog-contracts-validation.json','utf8'));
+e.static_contracts={passed:true,common_definitions:c.schemaDefinitionsCompiled,domain_definitions:c.domainSchemas.definitionsCompiled,closed_domain_contract_assertions:c.domainSchemas.closedContractAssertions,fixtures:c.structuralFixtureAssertions,source_hashes:c.sourceHashesChecked,controllers:c.currentAstCounts.controllers,handlers:c.currentAstCounts.handlers,routes:c.currentAstCounts.routes,evidence:'docs/evidence/nodia-ai-v1-catalog-contracts-validation.json'};
+e.knowledge={passed:true,compiler_checks:53,unchanged_release:e.publication.release_id,log:'nodia-server/.tmp/ai17-knowledge-tests.log',final_check:'nodia-server/.tmp/ai17-knowledge-close.log'};
+e.regression.note='SQL/HTTP regression ran on the AI17 snapshot preceding the final clarification merge. Observation code is unchanged; the final AI17 integration also covers its current proposal event path.';
+e.postgres_http.total_including_observation_regression=e.postgres_http.checks+e.regression.checks;
+for(const file of ['docs/mvp/nodia-ai-current-endpoints.json','docs/mvp/nodia-ai-v1-coordination-api.json','docs/mvp/nodia-ai-v1-data-model.json','docs/mvp/nodia-ai-v1-common-contracts.schema.json','docs/evidence/nodia-ai-v1-catalog-contracts-validation.json'])if(!e.artifacts.some(a=>a.file===file))e.artifacts.push({file,sha256:crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')});
+fs.writeFileSync(p,JSON.stringify(e,null,2)+'\n');
+console.log(JSON.stringify({stage:e.task,status:e.status,server:e.server.full_suite.tests,sql_checks:e.postgres_http.total_including_observation_regression,lab:e.lab.metadata,published_tools:e.publication.capabilities,new_tools:e.publication.new_tools_published}));

@@ -1,0 +1,41 @@
+{
+  "stage": "AI-38",
+  "scope": "exact_native_format_semantic_canary",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T19:54:25.656484+00:00",
+  "source_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_web",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null
+  },
+  "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+  "session_generation": "50d0785bea9d42faadaac151ba7d7445",
+  "attempt_id": "da33b093-a93e-4923-9aef-cd6ca99b8189",
+  "kind": "image",
+  "media_type": "image/png",
+  "file_bytes": 12241,
+  "file_sha256": "72e83ecf222abb59c22b72a9fb2d04921dc7dc1e3297b393366fc64a93d93fbe",
+  "expected_answer_sha256": "9c0bb29a23ca304d7f6d3aaa72deb700e3f7dee18016c216d7a4a347f2526f04",
+  "maximum_generations": 1,
+  "generation_requests": 1,
+  "inference_replayed": false,
+  "configured_SQL_writes": 0,
+  "business_effects": 0,
+  "provider_login_logout": false,
+  "semantic_match": true,
+  "native_acknowledged": true,
+  "native_pending_identity": false,
+  "raw_provider_output_exported": false,
+  "quiet_before": {
+    "jobs": 0,
+    "attempts": 0,
+    "slots": 0
+  },
+  "http_status": 200,
+  "actual_answer_sha256": "9c0bb29a23ca304d7f6d3aaa72deb700e3f7dee18016c216d7a4a347f2526f04",
+  "native_outcome": "completed",
+  "exact_format_verified_after": true,
+  "finished_at_utc": "2026-10-20T19:55:02.736660+00:00"
+}

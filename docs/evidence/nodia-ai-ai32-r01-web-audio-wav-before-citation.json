@@ -1,0 +1,92 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "gates_open",
+  "observed_at_utc": "2026-10-18T03:38:49Z",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "verification_semantics": "this_canary_semantic_match_and_completed_ack_and_exact_cached_modality",
+  "probe": {
+    "engine": "web",
+    "kind": "audio",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null,
+    "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+    "reference": {
+      "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "session_generation": "970a5da2b6904b0c954aa504d8213ff4",
+      "operation_ref": "5798768a-a10d-4d27-af5d-668dbf58f112"
+    },
+    "attempt_id": "5798768a-a10d-4d27-af5d-668dbf58f112",
+    "file_bytes": 113568,
+    "media_type": "audio/wav",
+    "file_sha256": "01c0566cb38ca3e3366e799ce298d61c881b966433a45875253f78bd431ab390",
+    "expected_answer_sha256": "a26c5e0dce40a892145850e954339118ffc1e0a8963c63cc27632916e9fbe215",
+    "answer_normalization": "speech_words_v1",
+    "native_acknowledged": true,
+    "verified": false,
+    "fixture": "synthetic_known_canary",
+    "audio_oracle_source": "explicit_cli_synthetic_text",
+    "http_status": 502,
+    "error_code": "chat_result_unknown",
+    "elapsed_seconds": 7.2,
+    "reconciliation_http_status": 200,
+    "reconciliation_code": null,
+    "native_outcome": "abandoned_unknown",
+    "cached_modality_verified": false
+  },
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [],
+    "supports_mcp": false
+  },
+  "diagnostics": [
+    {
+      "engine": "web",
+      "attempt_id": "5798768a-a10d-4d27-af5d-668dbf58f112",
+      "phase": "reply_validation",
+      "error_type": "JSONDecodeError",
+      "failure_category": null,
+      "elapsed_ms": 7092,
+      "reply_format": {
+        "text_bytes": 66,
+        "leading_category": "object",
+        "json_syntax": {
+          "category": "extra_data",
+          "position": 57,
+          "line": 1,
+          "column": 58,
+          "document_chars": 66,
+          "document_sha256": "7806984847b82221a24787b58aaca08ddb3d5e6166047e6014edeb539e4206f8",
+          "at_end": false,
+          "character_category": "array_open",
+          "previous_category": "object_close",
+          "next_category": "alphanumeric",
+          "ending_category": "array_close"
+        }
+      },
+      "generation": {
+        "http_status": 200,
+        "upstream_eof_seen": true,
+        "upstream_eof_elapsed_ms": 6672,
+        "candidate_outputs": 4,
+        "recovery_calls": 0,
+        "client_close_calls": 0,
+        "text_outputs": 4
+      }
+    }
+  ],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T03:38:57Z"
+}

@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from '../rental-common/rental-response.schemas.js';
 import { RentalMutationResultDto } from '../rental-common/dto/rental-mutation-result.dto.js';
 import {
@@ -67,7 +68,7 @@ export class RentalPropertyController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.createRentalPropertyUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       dto,
       requestKey,
     );
@@ -80,7 +81,10 @@ export class RentalPropertyController {
     @Req() request: AuthRequest,
     @Query() dto: RentalConfigurationQueryDto,
   ) {
-    return this.getRentalPropertiesUseCase.execute(request.auth.user.id, dto);
+    return this.getRentalPropertiesUseCase.execute(
+      actorReference(request.auth),
+      dto,
+    );
   }
   @Get(':propertyId')
   @ApiOperation({ summary: 'GetRentalProperty' })
@@ -90,7 +94,7 @@ export class RentalPropertyController {
     @Param() params: RentalPropertyParamsDto,
   ) {
     return this.getRentalPropertyUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
     );
   }
@@ -112,7 +116,7 @@ export class RentalPropertyController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.updateRentalPropertyUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
       requestKey,

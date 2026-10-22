@@ -1,0 +1,223 @@
+{
+  "task": "AI-09",
+  "date": "2026-10-15",
+  "status": "m1_persistence_verified_locally_runtime_pending",
+  "schema": {
+    "migration": "1792200000000-CreateNodiaAiConversationPersistence",
+    "tables": 11,
+    "columns": 151,
+    "fullModel": {
+      "revision": 3,
+      "tables": 23,
+      "columns": 298,
+      "foreignKeys": 62
+    },
+    "publicRoutesAdded": 0,
+    "designedCoordinationRoutes": 27,
+    "commonContractDefinitions": 121,
+    "structuralFixtures": 212
+  },
+  "server": {
+    "files": 122,
+    "tests": 977,
+    "newCases": 65,
+    "build": "passed",
+    "lint": "passed_with_two_preexisting_provider_unused_import_warnings"
+  },
+  "integration": {
+    "file": "docs/evidence/nodia-ai-ai09-postgres-integration.json",
+    "checks": 70,
+    "postgres": "16",
+    "completeMigrationHistory": true,
+    "upDownUp": true,
+    "configuredDatabaseTouched": false,
+    "providersCalled": false
+  },
+  "regressions": {
+    "ai07": {
+      "task": "AI-07",
+      "scope": "compiled_nest_di_disposable_postgresql16",
+      "checks": 28,
+      "passed": [
+        "repeat seed preserves catalog identities",
+        "concurrent seeds converge on the same catalog identities",
+        "translation failure rejects the entire seed",
+        "failed seed rolls back the preceding module update",
+        "no user assignments from migration/seed",
+        "both module translations exist",
+        "ordinary actor without NodiaAI assignment",
+        "current actor admitted after assignment",
+        "unassigned destination rejected",
+        "discovery resolves current target ID",
+        "revoked destination blocks recovery immediately",
+        "inactive destination rejected",
+        "inactive group blocks NodiaAI",
+        "repeat seed preserves disabled group",
+        "seed does not reactivate NodiaAI",
+        "seed preserves edited translations",
+        "ordinary foreign resource hidden",
+        "existing action missing",
+        "existing action granted via active roles",
+        "revoked role action rejected",
+        "super administrator bypasses assignments while retaining actor",
+        "super administrator cannot author/confirm for another owner",
+        "super administrator role revocation effective immediately",
+        "revoked session rejected even for super administrator",
+        "expired session rejected",
+        "inactive user rejected",
+        "session cannot be used as another actor",
+        "new valid session can recover own resource"
+      ],
+      "configuredDatabaseTouched": false,
+      "providersCalled": false
+    },
+    "ai08": {
+      "task": "AI-08",
+      "scope": "compiled_http_and_domain_ports_disposable_postgresql16",
+      "checks": 39,
+      "passed": [
+        "admin create preserves recipient ownership",
+        "ordinary recipient spoofing denied",
+        "admin without recipient stays in own scope",
+        "admin detail reads explicit recipient",
+        "edit never transfers historical owner",
+        "owner cannot be changed through an update payload",
+        "admin movement belongs to recipient",
+        "cross-owner category association remains rejected",
+        "summary aggregates requested owner only",
+        "admin own summary does not inherit recipient",
+        "admin preserves catalog deletion safeguards",
+        "admin house create separates owner and audit actor",
+        "ordinary unrelated house still hidden",
+        "ordinary cannot create house for another owner",
+        "admin discovers foreign house",
+        "admin update preserves owner and writes real actor",
+        "house ownership is immutable",
+        "rental journal attributes admin effect",
+        "reserved role cannot be disabled",
+        "reserved role key cannot be changed",
+        "reserved role cannot be deleted",
+        "module key immutable in REST update",
+        "module alias shares key protection",
+        "failed associations roll back the preceding user update",
+        "role revocation blocks behind an admitted effect",
+        "revoked admin cannot perform the next foreign effect",
+        "rental transversal access also disappears after role revocation",
+        "waiting repeatable-read query observes preceding revocation",
+        "snapshot port rejects an inherited weaker isolation",
+        "snapshot port preserves repeatable-read isolation in its parent",
+        "NodiaAI port commits under the same actor and transaction",
+        "outer failure rolls back the domain port effect",
+        "worker module revocation fails before invoking its port",
+        "concurrent deactivations preserve one active super administrator",
+        "last-admin association removal rejects the entire update",
+        "create-upsert cannot bypass last-admin protection",
+        "revoked session rejected inside the shared finance boundary",
+        "revoked session rejected inside rental boundary",
+        "revoked session rejected inside administrative write boundary"
+      ],
+      "configuredDatabaseTouched": false,
+      "providersCalled": false
+    }
+  },
+  "policyPackaging": {
+    "canonicalSource": "docs/mvp/nodia-ai-v1-runtime-policy.json",
+    "sourceHash": "1db71c074aa9f9ad0aa0213ab4438293c8583cb10ad783629b1b43a464b4743e",
+    "runtimeRequiresRepositoryDocs": false,
+    "loaderIsolatedChecks": 5,
+    "nestAssetCopyAfterDeleteOutDir": true,
+    "npmDevOrConfiguredApiStarted": false
+  },
+  "knowledge": {
+    "sourceDocuments": 40,
+    "draftUnregistered": 40,
+    "publishedDocuments": 0,
+    "publishedCapabilities": 0,
+    "releaseId": "1b166e1e7f4a2ae831f81750df7251d9e231ce5304310792db7845721aa43249"
+  },
+  "client": {
+    "codeChanged": false,
+    "testsRerun": false,
+    "reason": "No Client UI or transport changes in AI-09; chat page remains unavailable until its implementation stage"
+  },
+  "commands": [
+    "npm run build",
+    "npm test",
+    "npm run lint",
+    "node test/nodia-ai-ai09.integration.mjs",
+    "node test/nodia-ai-authorization.integration.mjs",
+    "node test/nodia-ai-ai08.integration.mjs",
+    "npm run conversation-policy:prepare && npx nest build; load compiled policy asset; npm run knowledge:build && npm run conversation-policy:build",
+    "node docs/evidence/scripts/validate-nodia-ai-catalog-contracts.cjs",
+    "node docs/evidence/scripts/validate-nodia-ai-design.mjs --write",
+    "node docs/evidence/scripts/validate-nodia-ai-ai04.cjs --write",
+    "node docs/evidence/scripts/validate-nodia-ai-ai05.cjs --write",
+    "node docs/evidence/scripts/validate-nodia-ai-ai06.cjs --write"
+  ],
+  "limitations": [
+    "Internal creation/projection/snapshot validation, no public chat endpoints or inference",
+    "Migration executed only in disposable databases; configured schema was not installed or modified",
+    "DDL and SQL purge protocol are not a scheduler, worker or production fencing implementation",
+    "Model selection represents a configured choice, not verified adapter availability; runtime remains AI-11/12",
+    "No production load, deployment, external backup lifecycle or mixed-version rollout acceptance",
+    "Schema JSON enforces structure; same-connection consent, byte limits, projections and used<=budget tested separately in use cases",
+    "Package checksums establish consistency, not human approval or a signed deployment"
+  ],
+  "sourceChecksums": [
+    {
+      "file": "nodia-server/src/migrations/1792200000000-CreateNodiaAiConversationPersistence.ts",
+      "sha256": "943c2a0dfc7e31ca28b449c7879a02cdca4b59d351b311dca38a0cd7472748ad"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/nodia-ai.module.ts",
+      "sha256": "ef3d9c43ead3da96058e4f59de00f79c98b5a1839797de44c423a6f30aeb0f37"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai/nodia-ai-authorization.module.ts",
+      "sha256": "767e60e1d7fc403cd84cf56eda266a5893073398556d150d98fece20eaa1a791"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/use-case/create-nodia-ai-conversation.use-case.ts",
+      "sha256": "14c7b32fb613b95c1c64d89aef3d1acfd55c742ac551b829b8d077d2a0779a9e"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/use-case/validate-nodia-ai-snapshots.use-case.ts",
+      "sha256": "f9e9209772fe03e3197ed4f56c453c68179c03510cad3fb8ad66716e68bbe725"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/use-case/project-nodia-ai-conversation.use-case.ts",
+      "sha256": "9974cd098c4b74476eb373b60074ea89ccb46f803de58661a1cfc1fdd5da8eb7"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-conversation/config/conversation-policy.ts",
+      "sha256": "ba478662b0948cc2f3799e43283d87eb8fbe6fcd69cb85e5bb04c9bbc9060973"
+    },
+    {
+      "file": "nodia-server/scripts/build-nodia-ai-conversation-policy.mjs",
+      "sha256": "b45df9d933b5ddd45b209d16ca7b324d9ced31bef5d5a42d4b2439fd7cb46db7"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai09.integration.mjs",
+      "sha256": "799adfcd3cceba3fa9f94dbdf5274b54e2da482c316d676efd2f53d4083a0535"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-common-contracts.schema.json",
+      "sha256": "df97e62840d75b9ed40365add6db303a74dea2b4ef6185bb16ede696e4b8392d"
+    },
+    {
+      "file": "docs/mvp/nodia-ai-v1-data-model.json",
+      "sha256": "711b5afca5091e80288f845368c43c36e3623613441b1253d550a1c29fd25b1d"
+    }
+  ],
+  "workflow": {
+    "subAgentsUsed": 3,
+    "parallelPreferenceRecordedIn": "AGENTS.md",
+    "integrationAndFinalChecks": "root"
+  },
+  "services": {
+    "configuredApiStarted": false,
+    "providerServicesStarted": false,
+    "disposableContainersCleaned": true,
+    "dockerDesktopRestoredStopped": true
+  }
+}

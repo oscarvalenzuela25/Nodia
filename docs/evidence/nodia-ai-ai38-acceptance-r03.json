@@ -1,0 +1,100 @@
+{
+  "stage": "AI-38",
+  "status": "failed",
+  "scope": "isolated_production_ui_http_sql",
+  "context": {
+    "environment_id": "ai38-isolated-ui-api-sql",
+    "package_manifest_sha256": "0751160bb8cb146acec9dda21daa0226875a2c40f1c898a9c649e69a9583b8e3"
+  },
+  "checked_at": "2026-10-20T16:45:41.684Z",
+  "checks": 5,
+  "results": [
+    "owner preview is rendered by the production component through real HTTP without effects",
+    "opening preview issues no business mutation or confirmation",
+    "server rejects a mismatched preview hash without a financial effect",
+    "unrelated user receives real denial and the UI removes command content",
+    "super_admin can inspect another owner preview but cannot confirm that owner intention"
+  ],
+  "profiles": [],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/3f80ed39-d83f-4a88-bace-3a70337ce046",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/3f80ed39-d83f-4a88-bace-3a70337ce046/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/3f80ed39-d83f-4a88-bace-3a70337ce046",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/3f80ed39-d83f-4a88-bace-3a70337ce046",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/3f80ed39-d83f-4a88-bace-3a70337ce046/review-metadata",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/3f80ed39-d83f-4a88-bace-3a70337ce046",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/nodia-ai/proposals/3f80ed39-d83f-4a88-bace-3a70337ce046/review-metadata",
+      "status": 200
+    }
+  ],
+  "page_errors": [],
+  "external_requests_blocked": [],
+  "source_hashes": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai38-acceptance.integration.mjs",
+      "sha256": "62ea6af6100b636ed8d9a756a7b473e55d1257d9a2a86764bce60e1f80120809"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai-ai38/main.tsx",
+      "sha256": "b1166d0ec5e8e2e3be573b2d90f9c0052f594c353bce192e14549192b167acbd"
+    },
+    {
+      "path": "nodia-client/src/test/manual/nodia-ai-ai38/index.html",
+      "sha256": "c9be06773cfff1d089fe5fedc66fea39958e31754c45fff81f42be0f0a62e512"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai38-acceptance-ui.mjs",
+      "sha256": "4efdcd95712a1248ccf4ad8504c9ef80c2e1929014aa7a55e5530be8a021f7c2"
+    }
+  ],
+  "final_snapshot": null,
+  "api_report": null,
+  "failure": {
+    "name": "TimeoutError",
+    "message": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Monto', exact: true })\u001b[22m\n",
+    "visible_text": "Revisión 1\nLista para revisión\n\nIdentidad del contenido: 716985aa777fd12979c6411c48bf6fdb80b67bfe9f25d75154c69ce5dcd378c4\n\nPropuesta creada el 20 oct 2026, 13:51\n\nVence el 20 oct 2026, 14:06\n\nPaso 1: Crear movimiento\n\nCambio de datos\n\nUsuario destinatario: 1\n\nNombre\nOrigen: petición del usuario\n\nAntes\n\nCampo ausente\n\nDespués\n\nSynthetic AI38 visible expense\nMonto\nOrigen: petición del usuario\n\nAntes\n\nCampo ausente\n\nDespués\n\n20000\nTipo\nOrigen: petición del usuario\n\nAntes\n\nCampo ausente\n\nDespués\n\nGasto\nEstado\nOrigen: petición del usuario\n\nAntes\n\nCampo ausente\n\nDespués\n\nPagado\nCategoría\nOrigen: petición del usuario\n\nAntes\n\nCampo ausente\n\nDespués\n\n1\nPréstamo o deuda\nOrigen: valor predeterminado del contrato\n\nAntes\n\nCampo ausente\n\nDespués\n\nSin valor (null)\nActivo\nOrigen: valor predeterminado del contrato\n\nAntes\n\nCampo ausente\n\nDespués\n\nVerdadero\nCorregir campos registrados\nNombre*\n​\nMonto*\n​\nTipo*\n\nGasto\n\nEstado*\n\nPagado\n\nActivo\nGuardar nueva revisión\nCerrar editor\nConfirmar revisión 1"
+  },
+  "boundaries": {
+    "synthetic_authenticated_transport": true,
+    "synthetic_redis": true,
+    "preparation_via_internal_native_port": true,
+    "natural_language_or_mcp_preparation_verified": false,
+    "real_provider_inferences": 0,
+    "configured_database_writes": 0,
+    "storage_operations": 0,
+    "live_environment_acceptance": false,
+    "product_context_evolution_verified": false,
+    "api_paid_mode_verified": false,
+    "cleanup_verified_separately": true
+  }
+}

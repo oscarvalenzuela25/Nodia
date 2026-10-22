@@ -1,0 +1,33 @@
+{
+  "stage": "AI-38",
+  "scope": "four_independent_Agentic_format_probes_sequential",
+  "status": "control_failed_no_next_probe",
+  "started_at_utc": "2026-10-20T19:46:44.276083+00:00",
+  "source_sha256": "ffb8a14a5f11c387163d7466d5a68549085080297091c319cc6187f9613a6bbd",
+  "helper_sha256": "a808f570cbf05701c850ffb617d45fc1ea03015fc274f0f08fc47bf5cc145084",
+  "qualification_report_sha256": "8dc6a298417ac30818e3d9c541717e128650a28400d63234b24b7d2e7ef98a0f",
+  "qualification_epoch_sha256": "4e4afd7f877bb4dff3e4d697f4a4d78278ccb384f7e2a110cdda8a74d907fd94",
+  "historical_resource_key_compared": false,
+  "maximum_probe_requests": 4,
+  "automatic_inference_retries": 0,
+  "formats_order": [
+    "png",
+    "pdf",
+    "wav",
+    "webm"
+  ],
+  "cases": [],
+  "epoch_before": {
+    "id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at": "2026-10-20T19:14:35.412657745Z",
+    "running": true
+  },
+  "probe_requests_declared_in_reports": 0,
+  "configured_SQL_writes": 0,
+  "services_restarted": false,
+  "selection_modified": false,
+  "unknown_native_state": false,
+  "failure_class": "AssertionError",
+  "finished_at_utc": "2026-10-20T19:46:44.629303+00:00"
+}

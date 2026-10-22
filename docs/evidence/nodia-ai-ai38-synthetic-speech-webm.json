@@ -1,0 +1,19 @@
+{
+  "stage": "AI-38",
+  "status": "converted_and_decoded_synthetic_fixture_not_provider_acceptance",
+  "scope": "synthetic_audio_fixture_conversion_only",
+  "provider_generations": 0,
+  "application_imports": false,
+  "source_sha256": "5ae1d98a5f59d433eadbad31c6304f59c0f24f6c5a54cb27722c30c9ad80cb74",
+  "input_sha256": "ded0091808665288f22fcc8947ffa098ef1149bd12a42591708856f50816abf0",
+  "output_sha256": "6faf3d9f76e7216b105a3b9291f9f671dcfb8edee74818108225405be260d8b0",
+  "output_bytes": 29743,
+  "decoded_duration_seconds": 2.6040833333333335,
+  "codec": "opus",
+  "media_type": "audio/webm",
+  "pyav_version": "19.0.1",
+  "output_location": "/tmp/ai38-synthetic-speech.webm",
+  "profile_access": false,
+  "credentials_access": false,
+  "transcription_verified": false
+}

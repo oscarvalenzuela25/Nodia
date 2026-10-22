@@ -1,0 +1,28 @@
+{
+  "stage": "AI-34",
+  "scope": "compiled_compaction_disposable_postgresql",
+  "attempt": "attempt04",
+  "started_at_utc": "2026-10-18T19:33:26.794498+00:00",
+  "completed_at_utc": "2026-10-18T19:33:33.827280+00:00",
+  "exit_code": 1,
+  "status": "failed",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "fd9cc24696b138d06ac3bacfbdf32e9d79c12d714ef5b8ace92dbd41c7b9d34f",
+  "configured_database_used": false,
+  "provider_generations": 0,
+  "storage_operations": 0,
+  "production_services_restarted": false,
+  "assertion_result": {
+    "stage": "AI-34",
+    "completed_checks": 9,
+    "last_checks": [
+      "SQL source fingerprint changes when an earlier canonical text changes",
+      "rolling back a source mutation restores its exact SQL fingerprint",
+      "history beyond the former collection limit completes via one compacting dispatch and one answer",
+      "snapshot pins a nonempty canonical prefix with an exact source hash and builder contract"
+    ]
+  },
+  "error_category": "AssertionError",
+  "disposable_containers_remaining": 0,
+  "manifest_sha256": "52f5130f6a254545082e48565f34d50e4bd936aaa2d454df7087d12686b6ca98"
+}

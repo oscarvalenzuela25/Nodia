@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
+import { describe, it, expect, vi } from 'vitest';
 import { ConfirmRentalReservationUseCase } from './confirm-rental-reservation.use-case.js';
 import { CreateRentalReservationUseCase } from './create-rental-reservation.use-case.js';
 import { UpdateRentalReservationUseCase } from './update-rental-reservation.use-case.js';
@@ -38,13 +39,42 @@ function command(f: ReturnType<typeof bookingFixture>) {
   };
 }
 describe('Booking lifecycle rules through real use cases', () => {
+  it('changing a draft interval resets preparation with the actual actor bigint identity', async () => {
+    const f = bookingFixture();
+    const query = vi.spyOn(f.ctx.manager, 'query');
+    await new UpdateRentalReservationUseCase(
+      f.transactions,
+      new RentalReservationService(),
+    ).execute(
+      actorFixture('1'),
+      '1',
+      '10',
+      { check_in_on: '2026-10-19' },
+      key,
+    );
+    const reset = query.mock.calls.find(([sql]) =>
+      String(sql).startsWith('UPDATE rental_turnovers SET'),
+    );
+    expect(reset?.[1]).toEqual(['1', '1', '10']);
+    expect(f.rows('RentalReservation')[0]).toMatchObject({
+      check_in_on: '2026-10-19',
+      total_amount: '150000',
+      status: 'draft',
+      updated_by: '1',
+    });
+  });
   it('creates only a draft and its nullable preparation without holding dates', async () => {
     const f = bookingFixture();
     const usecase = new CreateRentalReservationUseCase(
       f.transactions,
       new RentalReservationService(),
     );
-    const result = await usecase.execute('1', '1', command(f), key);
+    const result = await usecase.execute(
+      actorFixture('1'),
+      '1',
+      command(f),
+      key,
+    );
     expect(result.status).toBe('draft');
     expect(f.rows('RentalTurnover')).toHaveLength(2);
     expect(f.rows('RentalTurnover')[1]).toMatchObject({
@@ -70,7 +100,12 @@ describe('Booking lifecycle rules through real use cases', () => {
       new RentalReservationService(),
     );
     await expect(
-      usecase.execute('1', '1', { ...command(f), ...patch } as never, key),
+      usecase.execute(
+        actorFixture('1'),
+        '1',
+        { ...command(f), ...patch } as never,
+        key,
+      ),
     ).rejects.toThrow();
     expect(f.rows('RentalReservation')).toHaveLength(1);
   });
@@ -88,7 +123,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new CreateRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', { ...command(f), ...patch }, key),
+      ).execute(actorFixture('1'), '1', { ...command(f), ...patch }, key),
     ).rejects.toThrow();
   });
   it('computes money above Number precision exactly', async () => {
@@ -97,7 +132,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       f.transactions,
       new RentalReservationService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       { ...command(f), nightly_rate: '4503599627370497', deposit_amount: '0' },
       key,
@@ -113,7 +148,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:deposit_required');
     expect(f.effects).toHaveLength(0);
   });
@@ -128,7 +163,7 @@ describe('Booking lifecycle rules through real use cases', () => {
     const result = await new ConfirmRentalReservationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', {}, key);
+    ).execute(actorFixture('1'), '1', '10', {}, key);
     expect(result.status).toBe('confirmed');
     expect(f.rows('RentalReservation')[0].policy_snapshot).toMatchObject({
       rules: expect.arrayContaining([
@@ -144,7 +179,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:deposit_required');
   });
   it('Airbnb confirmation records explicit platform terms without demanding payout', async () => {
@@ -159,7 +194,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       f.transactions,
       new RentalReservationService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       '10',
       {
@@ -194,7 +229,7 @@ describe('Booking lifecycle rules through real use cases', () => {
         f.transactions,
         new RentalReservationService(),
       ).execute(
-        '1',
+        actorFixture('1'),
         '1',
         '10',
         { platform_policy: { reference: 'COND-1', description: 'Reemplazo' } },
@@ -215,7 +250,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:availability_conflict');
   });
   it('active blocks prevent confirmation', async () => {
@@ -232,7 +267,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:availability_conflict');
   });
   it('requires explicit same-day approval even with a compatible plan', async () => {
@@ -254,7 +289,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:turnover_required');
   });
   it('atomically accepts the current same-day turnover plan during confirmation', async () => {
@@ -275,7 +310,13 @@ describe('Booking lifecycle rules through real use cases', () => {
     const result = await new ConfirmRentalReservationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { same_day_approvals: ['20'] }, key);
+    ).execute(
+      actorFixture('1'),
+      '1',
+      '10',
+      { same_day_approvals: ['20'] },
+      key,
+    );
     expect(result.status).toBe('confirmed');
     expect(f.rows('RentalTurnover')[0].same_day_approved_at).toEqual(f.now);
   });
@@ -286,7 +327,13 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', { same_day_approvals: ['999'] }, key),
+      ).execute(
+        actorFixture('1'),
+        '1',
+        '10',
+        { same_day_approvals: ['999'] },
+        key,
+      ),
     ).rejects.toThrow('rental:invalid_approval');
   });
   it('a voided first payment still freezes the agreement', async () => {
@@ -297,7 +344,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new UpdateRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', { nightly_rate: '60000' }, key),
+      ).execute(actorFixture('1'), '1', '10', { nightly_rate: '60000' }, key),
     ).rejects.toThrow('rental:agreement_immutable');
   });
   it('allows contact correction after confirmation without repricing', async () => {
@@ -307,7 +354,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       f.transactions,
       new RentalReservationService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       '10',
       { guest_contact: 'Nuevo contacto', is_active: false },
@@ -330,7 +377,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new StartRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:turnover_required');
   });
   it('cannot start before arrival or retrospectively after checkout', async () => {
@@ -345,14 +392,14 @@ describe('Booking lifecycle rules through real use cases', () => {
       new StartRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:invalid_transition');
     f.ctx.now = localInstant('2026-10-22', '11:00', f.property.timezone);
     await expect(
       new StartRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:invalid_transition');
   });
   it('starts a prepared stay, completes only at checkout, and preserves archived occupancy', async () => {
@@ -370,20 +417,20 @@ describe('Booking lifecycle rules through real use cases', () => {
         await new StartRentalReservationUseCase(
           f.transactions,
           new RentalReservationService(),
-        ).execute('1', '1', '10', {}, key)
+        ).execute(actorFixture('1'), '1', '10', {}, key)
       ).status,
     ).toBe('in_progress');
     const complete = new CompleteRentalReservationUseCase(
       f.transactions,
       new RentalReservationService(),
     );
-    await expect(complete.execute('1', '1', '10', {}, key)).rejects.toThrow(
-      'rental:invalid_transition',
-    );
+    await expect(
+      complete.execute(actorFixture('1'), '1', '10', {}, key),
+    ).rejects.toThrow('rental:invalid_transition');
     f.ctx.now = localInstant('2026-10-22', '11:00', f.property.timezone);
-    expect((await complete.execute('1', '1', '10', {}, key)).status).toBe(
-      'completed',
-    );
+    expect(
+      (await complete.execute(actorFixture('1'), '1', '10', {}, key)).status,
+    ).toBe('completed');
     expect(f.rows('RentalReservation')[0].is_active).toBe(false);
   });
   it('does not complete a confirmed stay that was never started', async () => {
@@ -394,7 +441,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new CompleteRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:invalid_transition');
   });
   it('rejects forged snapshots and unknown command fields', async () => {
@@ -403,13 +450,25 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', { policy_snapshot: {} } as never, key),
+      ).execute(
+        actorFixture('1'),
+        '1',
+        '10',
+        { policy_snapshot: {} } as never,
+        key,
+      ),
     ).rejects.toThrow();
     await expect(
       new StartRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', { now: '2026-10-20' } as never, key),
+      ).execute(
+        actorFixture('1'),
+        '1',
+        '10',
+        { now: '2026-10-20' } as never,
+        key,
+      ),
     ).rejects.toThrow();
   });
   it('rejects inconsistent existing policy snapshot instead of fabricating fallback terms', async () => {
@@ -423,7 +482,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow();
   });
   it('optional blank references and notes normalize to null', async () => {
@@ -432,7 +491,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       f.transactions,
       new RentalReservationService(),
     ).execute(
-      '1',
+      actorFixture('1'),
       '1',
       { ...command(f), external_reference: '   ', notes: '   ' },
       key,
@@ -466,7 +525,7 @@ describe('Booking lifecycle rules through real use cases', () => {
       new ConfirmRentalReservationUseCase(
         f.transactions,
         new RentalReservationService(),
-      ).execute('1', '1', '10', {}, key),
+      ).execute(actorFixture('1'), '1', '10', {}, key),
     ).rejects.toThrow('rental:turnover_required');
   });
   it('approves the affected future guest turnover for its new preceding guest', async () => {
@@ -493,7 +552,13 @@ describe('Booking lifecycle rules through real use cases', () => {
     const result = await new ConfirmRentalReservationUseCase(
       f.transactions,
       new RentalReservationService(),
-    ).execute('1', '1', '10', { same_day_approvals: ['21'] }, key);
+    ).execute(
+      actorFixture('1'),
+      '1',
+      '10',
+      { same_day_approvals: ['21'] },
+      key,
+    );
     expect(result.status).toBe('confirmed');
     expect(f.rows('RentalTurnover')[1]).toMatchObject({
       previous_reservation_id: '10',

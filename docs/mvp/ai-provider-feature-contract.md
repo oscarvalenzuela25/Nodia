@@ -1,14 +1,22 @@
 # Contrato funcional de conexiones IA y regresiones
 
+Contexto funcional NodiaAI del2026-10-15: [Ajustes Generales](../nodia-ai/knowledge/general-settings/README.md), fichas de[conexiones](../nodia-ai/knowledge/general-settings/features/ai-connections.md), [modelos/salud](../nodia-ai/knowledge/general-settings/features/ai-models-and-health.md) y[credenciales/sesiones](../nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md). [AI-05](51-nodia-ai-ai05-product-knowledge.md) sólo contrasta/documenta; no cambia esta política, configuración, inferencia, requisitos ni publicación.
+
 Decisión explícita 2026-10-12: OpenAI conserva API key y Codex agéntico; su integración token_plan_web fue descartada y retirada por solicitud del usuario. Se conservan los campos y contratos Web que utiliza Gemini. La decisión y evidencia se resumen en [ADR-029](../architecture/decisions/ADR-029-chatgpt-web-browser-adapter.md). [Ensayo VM local](vps-local-vm-lab.md).
 
 Fecha: 2026-10-06. Estado documental: en revisión; requisitos pedidos explícitamente por el usuario e implementados, sin aprobación automática del documento. Complementa los documentos 15/16 y ADR-015. Una modificación que retire un requisito exige una nueva decisión explícita y actualizar sus pruebas; no eliminar funcionalidades por interpretar una política histórica.
 
+Decisión de UI del 2026-10-13: «Cuenta Codex», sus acciones y cuotas aparecen exclusivamente en la pestaña Agéntico de OpenAI. API key conserva su gestión de claves sin ese panel, con independencia del modo predeterminado. Una alerta de autenticación abre primero Agéntico y espera sus consultas antes de mostrar el modal de Codex; cambiar de pestaña no desconecta la sesión.
+
 ## Indicadores del topbar — 2026-10-08
 
-El predeterminado muestra los tres indicadores API/Web/Agéntico, con estado deshabilitado explícito para los modos apagados, consumiendo la misma caché de salud. Verde exige observación de sesión disponible/autenticada; API configurada sin comprobación conserva estado sin verificar en rojo. El clic abre el ID y pestaña exactos en Ajustes IA. Sin predeterminado o permisos, se omite el grupo. La autorización contempla acción `ai:manage` o rol `super_admin`, además del módulo asignado, conforme al backend. Revalidación no desmonta los iconos; un fallo invalida el verde anterior. Contrato, pruebas y límites: [funcionalidad del topbar](../features/ai-providers/topbar-mode-health.md).
+Decisión del2026-10-13: Gemini Web dispone de un [visor de login desde Nodia](../features/ai-providers/gemini-web-login-viewer.md), en desarrollo y producción ([ADR-030](../architecture/decisions/ADR-030-gemini-web-login-viewer.md)). Pantalla y entradas limitadas viajan por la API autenticada/`ai:manage`, con ownership en Server y Python, TTL300s y no-store. No publicar FastAPI/VNC ni exportar contraseñas/cookies. Rechazo de Google y aceptación de cuenta real se distinguen de abrir/controlar correctamente el visor; no modificar Gemini Agentic/API ni Codex. Si el intento desaparece, permitir cerrar/reintentar; errores de envío conservan borrador, visor y mensaje visible.
+
+Por decisión del usuario del2026-10-13, el predeterminado muestra únicamente los indicadores de sus modos habilitados, consumiendo la misma caché de salud. Modos apagados se omiten; sin modos habilitados se omite el grupo. Los flags explícitos false prevalecen sobre el modo histórico. OpenAI sin Web habilitado muestra API/Agéntico. Un modo habilitado sigue visible aunque falte su clave o sesión, con estado pendiente. Web/Agéntico en verde exigen sesión disponible/autenticada. Por decisión explícita del usuario del2026-10-12, API en verde significa exclusivamente clave guardada, sin exigir modelo ni inferencia; tooltip «API key configurada», conservado con datos previos ante fallo de reconsulta. El detalle API y conexiones exclusivamente API no muestran chip de estado; Web/Agéntico lo conservan. El health del backend no cambia a saludable por almacenar una clave. El clic abre el ID y pestaña exactos en Ajustes IA. Sin predeterminado o permisos, se omite el grupo. La autorización contempla acción `ai:manage` o rol `super_admin`, además del módulo asignado, conforme al backend. Revalidación no desmonta los iconos; un fallo invalida el verde de las sesiones. Contrato, pruebas y límites: [funcionalidad del topbar](../features/ai-providers/topbar-mode-health.md).
 
 ## Esquema y separación de responsabilidades
+
+Verificación NodiaAI del 2026-10-16: la ocupación nativa `runtime_busy` no demuestra sesión expirada. Salud conserva valores no verificados; las proyecciones MCP de salud/motores devuelven autenticación desconocida. El timestamp nativo de cuota en segundos Unix se convierte explícitamente a ISO/null en MCP, conservando cero y rechazando fechas inválidas; REST conserva su contrato. La admisión cancelable de Codex convierte únicamente sus errores conocidos de entorno/perfil en observaciones no disponibles, sin inferencia, sin interrumpir otro perfil y sin absorber abortos o errores inesperados de admisión. [Evidencia y límites AI-15](61-nodia-ai-ai15-product-reads.md#publicación-y-verificación-real--2026-10-16).
 
 Instalación vacía 2026-10-10: catálogo inicial de 16 identidades preservado y Moonshot/Kimi añadido por `CompleteAiProviderCatalog1791640000000`, con sus tres canales apagados y sin adaptador nuevo. Gemini/OpenAI conservan sus flags configurables vigentes; insertar identidades no prueba disponibilidad ni amplía el selector de compatibles. Ver [instalación e inventario](database-installation.md) y ADR-027. Ningún modelo, clave o cuota se incorpora al seed.
 
@@ -37,6 +45,10 @@ Entidades TypeORM y migraciones son el contrato del almacenamiento. Los DBML del
 
 ## Etiquetas de cuota Web
 
+Visor Gemini Web simplificado por solicitud explícita del2026-10-13: solo acción «Enviar texto» y ojito de visibilidad dentro del TextInput; conserva borrador/foco al mostrar/ocultar. Quitar botones auxiliares de teclado/scroll/actualización/zoom, conservar clic en pantalla y cancelación del modal. Centrado vertical respecto al input desde600px; xs ancho completo con acción debajo. Recuperación automática de lecturas fallidas cada10s, un toast por episodio, sin repetir mutaciones ni borrar borrador. El polling de health de proveedores sigue120s.
+
+Cambio de cuenta Gemini Web solicitado el2026-10-13: botón «Cambiar cuenta» exclusivo del canal Web, con confirmación del alcance compartido de servidor. Limpiar cliente/renovación, perfil y caché privados antes de abrir otro login; persistir desconexión que impida resucitar la semilla histórica tras reinicio. Operación ocupada409, fallo conserva confirmación y exige reintentar limpieza. API keys/Agentic/Codex independientes. Contrato/operación/pruebas en [visor Gemini](../features/ai-providers/gemini-web-login-viewer.md).
+
 | ID recibido, conservado | Etiqueta de presentación |
 |---|---|
 | `None-11` | Gemini Flash |
@@ -54,7 +66,11 @@ El resumen de proveedores y el panel de detalle reutilizan el mismo diccionario 
 
 **Agentic:** mostrar Low/Medium/High en modelos guardados, aun sin capacidades observadas, como preferencia de configuración por modelo en `thinking_levels[id]`. Para el modelo seleccionado también guardar `thinking_level`; sin modelos se permite guardar la preferencia general, sin asignar un modelo fantasma. No seleccionar Medium automáticamente. Estas opciones no prueban soporte, autenticación ni inferencia. El adaptador CLI autorizado publica disponibilidad/sesión según evidencia real; sin binario/hash/perfil configurados mantiene `session_adapter_unverified`. Enviar la preferencia a `--effort` comprobando el mismo ID en `/model`; rechazar cambios de variante. Ningún toggle crea sesión ni consume Web. Ver [plan 32](32-agentic-cli-implementation-plan.md) y [runbook](agentic-cli-runbook.md).
 
-**Web:** el SDK `gemini-webapi` instalado acepta `generate_content(..., extended_thinking=bool)` y utiliza el valor en el transporte. El microservicio publica `supported_options.extended_thinking` según la firma del SDK, independientemente de las capacidades del modelo. Server normaliza ausencia/valores inválidos como desconocidos; Client solo habilita el switch con soporte confirmado. Guardar `fields.token_plan_web.enable_extended_thinking` y enviarlo al análisis, respetando un override explícito del DTO. El SDK/proveedor puede rechazar el modelo/opción: propagar el error, sin cambiar motor ni modelo. Web no implementa Low/Medium/High; se rechazan explícitamente.
+**Web (integrado el2026-10-13):** selector Bajo/Medio/Alto por modelo en `fields.token_plan_web.thinking_levels[id]`; guardar también `thinking_level` para el modelo seleccionado o preferencia general cuando no hay modelos. Sin selección automática ni herencia API/Agentic. Prioridad de análisis: overrideDTO → entrada propia del mapa (null limpia) → preferencia del modo → ausencia. El booleano histórico se conserva y ejecuta solo si no hay preferencia explícita de nivel; elegir un nivel lo sustituye para esa ejecución, sin migración arbitraria. OCR permite un override temporal independiente por conexión/modelo sin modificar preferencias persistidas. Nivel y booleano explícitos juntos se rechazan, incluso false.
+
+`gemini-webapi==2.1.1` solo publica booleano; `web_reasoning_adapter.py` utiliza un registro externo de observaciones nativas por ID/número de modelo/versión/layout. El perfil comprobado del Flash descubierto transmite Bajo1/Medio4/Alto2 en body80/header15; uploads/auth siguen en el SDK sin sustitución. `supported_options.thinking_levels_by_model` solo incluye perfiles que coinciden con el descubrimiento vivo. Otros modelos continúan configurables; un nivel explícito sin perfil produce422 y `can_use_model:false`, sin sustitución, inferencia ni fallback. Registro ausente/inválido y SDK/layout incompatible conservan errores explícitos. La aceptación del parámetro no acredita profundidad interna ni cuota.
+
+OCR integrado privado en Ubuntu: Bajo/Medio/Alto devolvieron200 con factura sintética y ocho comprobaciones correctas por nivel. Se separa disponibilidad Gemini de R2: extracción en memoria requiere URL/token privado, no almacenamiento; guardar adjuntos conserva su contrato R2. [Implementación/evidencia](../features/ai-providers/gemini-web-login-viewer.md), [ADR-031](../architecture/decisions/ADR-031-gemini-web-reasoning-levels.md). Pruebas y aceptación VPS documentadas por separado; no generalizar un perfil a otras cuentas/modelos.
 
 No deducir razonamiento de “Pro”, “Flash”, “Thinking” o “Gemini”. No afirmar que el proveedor razonó solo porque aceptó configurar un booleano. La integración CLI Windows con cuenta real y documentos sintéticos se comprobó por separado; suites unitarias aisladas sin cuota. Cuenta Linux-VPS y pantalla real pendientes.
 
@@ -78,12 +94,12 @@ No deducir razonamiento de “Pro”, “Flash”, “Thinking” o “Gemini”
 | Agentic sin adaptador/modelos | Preferencia configurable; estado indisponible intacto y sin ejecución Web. |
 | Login Agentic desde otro equipo | Botón independiente en detalle Gemini/Agentic; enlace/código oficial remoto, sesión compartida explícita y verificación no generativa antes de éxito. Sin cambios de modelos, claves, catálogo o sesión Web. |
 | Alerta de salud Agentic | Adaptador disponible sin sesión → aviso de sesión pendiente y modal de autenticación; adaptador caído/estado desconocido → reconsulta real, sin abrir edición del proveedor. Sesión disponible → sin alerta. Etiquetas/categorías ES/EN, controles bloqueados durante petición y sin éxito ficticio tras error. |
-| Comprobación unificada de salud | `GET /ai-providers/health` incluye `engines` de la misma observación usada para badges/alertas, una consulta privada por petición compartida entre conexiones. Client consume una sola caché, polling 30 s y reconsulta manual única; no consulta `gemini-engines` en paralelo. Falta de observación → estado sin verificar. Con API predeterminada conserva la observación de sesiones habilitadas sin afirmar inferencia API. |
+| Comprobación unificada de salud | `GET /ai-providers/health` incluye `engines` de la misma observación usada para badges/alertas, una consulta privada por petición compartida entre conexiones. Client consume una sola caché, polling/staleTime120s por solicitud del2026-10-13 y reconsulta manual única; carga inicial e invalidaciones de configuración/login conservadas. No consulta `gemini-engines` en paralelo. Liveness Docker y cachés privadas de sesión/cuota conservan sus plazos. Falta de observación → estado sin verificar. Con API predeterminada conserva la observación de sesiones habilitadas sin afirmar inferencia API. |
 | Login concurrente, actor ajeno y cancelación | Un trabajo por microservicio, ownership por actor autenticado, análisis Agentic bloqueado; cancelación/plazo/shutdown limpian procesos y admisión incluso antes de iniciar la tarea. |
 | Identidad real en las cinco rutas de login | `X-Nodia-Actor-Id` conserva `users.id` como cadena decimal canónica positiva dentro del rango BIGINT PostgreSQL; aceptar IDs superiores a `Number.MAX_SAFE_INTEGER` sin confundir IDs adyacentes. Rechazar UUID, ausencia, signos, ceros iniciales, espacios y desbordamientos. |
 | Error de validación interna en login | GET/current y errores de actor no se presentan como código OAuth inválido. 422 público por código únicamente en POST/code con categoría privada explícita `login_invalid_code`; otros 422 privados son fallo de integración/502. Sin reflejar inputs ni cuerpos privados. |
 | OAuth malformado/cuerpos excesivos | Enlace Google/callback/PKCE validado, código acotado sin controles, respuestas sin tokens ni trazas; límites HTTP y `no-store`, sin terminal genérica ni reintentos ocultos. |
-| Tarjeta resumen API (OpenAI / Gemini) | Distingue canal API habilitado de tarjeta vacía; panel con modelo, OCR, razonamiento, conteo y máscara de clave seleccionada (`display_hint`); sin secretos completos; requisitos pendientes dirigen a configurar en detalle; falta de evidencia mantiene "Sin verificar" sin inventar latencia, fechas o cuota. |
+| Tarjeta resumen API (OpenAI / Gemini) | Distingue canal API habilitado de tarjeta vacía; panel con modelo, OCR, razonamiento, conteo y máscara de clave seleccionada (`display_hint`); sin secretos completos; requisitos pendientes dirigen a configurar en detalle. Sin chip en conexiones exclusivamente API; API del topbar verde por clave guardada, sin acreditar inferencia ni inventar latencia, fechas o cuota. |
 | Mutación rechazada | Modal e inputs intactos, feedback específico seguro y posibilidad de reintentar. |
 
 Pruebas de componentes en Client, casos de uso en Server, integración PostgreSQL desechable (`test:ai-api:integration`) y runner aislado `nodia-gemini-microservice/run_tests.py`. Ver la evidencia ejecutada y limitaciones en `19-prelaunch-review.md`.
@@ -146,6 +162,66 @@ La petición del usuario fija local primero y QA temporal con TryCloudflare desp
 
 El usuario solicita una vista más cómoda en celular con menos padding interno. AiProviders conserva los contratos y reduce paneles de listado/detalle/modelos a12px en xs, sin duplicar los16px externos de PageContent. El detalle móvil usa su cabecera propia; escritorio conserva la cabecera general. Pestañas verticales en xs, horizontales desde sm y navegación de teclado correspondiente, misma conexión/modo seleccionado sin mutaciones al cambiar vista/ancho. Nombres/IDs dinámicos envuelven; preferencia de razonamiento y foco OCR se apilan. Panel Web con label flexible y switch dentro del ancho a320px; cuotas desconocidas siguen sin cifras inventadas.
 
-API keys presenta tarjetas en xs y tabla650px desde sm, manteniendo una consulta paginada por conexión, la máscara recibida, el switch de selección y papelera directa. Paginar/redimensionar no dispara peticiones por tarjeta ni cambia la selección global. Pendientes bloquean los controles; errores de guardado/borrado conservan formulario/confirmación y permiten reintentar. El badge del detalle distingue `unverified` (Sin verificar / Unverified, color neutro) de `unconfigured`.
+API keys presenta tarjetas en xs y tabla650px desde sm, manteniendo una consulta paginada por conexión, la máscara recibida, el switch de selección y papelera directa. Paginar/redimensionar no dispara peticiones por tarjeta ni cambia la selección global. Pendientes bloquean los controles; errores de guardado/borrado conservan formulario/confirmación y permiten reintentar. El chip del detalle se reserva a Web/Agéntico; distingue `unverified` (Sin verificar / Unverified, color neutro) de `unconfigured`.
 
 Regresiones añadidas: selección de clave inactiva bloqueada en tarjetas, confirmación y reintento de borrado, paginación remota sin N+1, navegación vertical por teclado sin guardar otro predeterminado y estado sin verificar. Fixture aislado en `src/test/manual/ai-providers`: no usa cuentas reales, no autentica ni ejecuta inferencias. La evidencia visual no acredita disponibilidad de ningún proveedor; aceptación física y pendientes operativos previos permanecen abiertos.
+
+
+## Ampliación NodiaAI AI-11/AI-12 — 2026-10-15
+
+El adaptador de conversación privado comparte admisión por perfil físico con OCR,
+login, discovery, refresh y logout. Login retiene reserva hasta el cierre real;
+discovery Agentic deja de ejecutar comandos paralelos sobre el mismo perfil. La
+configuración por conexión no multiplica capacidad de una misma sesión. Ante una
+generación incierta, el marcador mínimo persistente conserva cuarentena sin replay,
+incluido tras reinicio de proceso. No libera el perfil el borrado de un chat ni un
+nuevo login. La conciliación privada exige una prueba nativa de cierre ligada a
+la identidad exacta; si el proceso cayó antes de producirla o el marcador histórico
+no tiene identidad, la resolución manual y su interfaz siguen AI-20/37. El recibo
+mínimo se elimina con acuse posterior al commit SQL, sin conservar mensajes.
+
+Regresión: intentar login/OCR/discovery/refresh/logout mientras chat posee el perfil
+rechaza antes del SDK; cancelar login antes de iniciar libera sólo cuando finaliza
+la tarea. Cancelar una generación o perder su respuesta conserva unknown, bloquea
+los consumidores del mismo perfil y no reenvía. Dos perfiles distintos conservan
+capacidad independiente. Modelos/esfuerzos exactos se validan contra observación
+viva y protocolo soportado, sin fallback. `configuration_generation` se deriva de
+la configuración propia del modo y `session_generation` cambia al reemplazar
+cliente/autenticar; ninguna es una cuota ni prueba nueva de inferencia.
+
+Web acepta únicamente conversación/solicitud de delegación; no hay tools Web.
+Agentic conversacional se ejecuta en home/cwd descartables, MCP vacío y hook global
+sólo `finish` con recibo validado. Para conocimiento técnico, Server puede registrar
+un catálogo cerrado y atender callbacks mediante start/events/results, sin URLs de
+retorno ni credenciales internas en el CLI. Se aplican presupuestos de protocolo,
+autorización vigente y cierre real antes de la prueba terminal. `supports_mcp`
+exige prueba explícita completa del loop real, perfil/sesión/modelo/esfuerzo,
+generación de configuración y protocolo; no habilitarlo por autenticación ni health.
+El gateway de negocio sigue AI-14. No cambia OCR, API key, selección dinámica ni
+disponibilidad histórica de Codex. La suite aislada no equivale a aceptación con
+cuenta real del nuevo runtime.
+
+El límite de12 solicitudes por run incluye cada `tools/call`, aunque resulte
+inválido, denegado o sea un replay. Native cuenta antes de validar; el intento13
+termina el puente sin reenviar un callback. Los eventos IPC transportan el total
+acumulado `tool_requests`; el polling privado entrega `unforwarded_tool_requests`
+como total menos callbacks emitidos a Server. El adaptador valida monotonía y
+presupuesto combinado. Server reserva sólo el delta oculto por intento junto al
+avance RPC, y cada callback visible reserva durablemente una solicitud antes de
+validación o recuperación idempotente, mediante una transacción separada que no
+se revierte por el rechazo posterior. Repetir progreso no consume dos veces;
+recuperar un resultado previo no repite efectos ni vuelve gratuita la solicitud.
+Delegación y cambios de etapa conservan los contadores del mismo run.
+
+Evidencia aislada del presupuesto final: Windows235 casos Python (233 correctos y
+dos omisiones históricas de symlinks), Linux235/235 en imagen final con red
+deshabilitada y sin montar cuentas, y55 casos unitarios del adaptador Server.
+Estos resultados no certifican la aceptación final del worker con cuenta Gemini;
+esa comprobación queda separada en la evidencia de integración real.
+
+
+## AI-34 — contexto largo y límite observable
+
+[Entrega80](80-nodia-ai-ai34-long-context-compaction.md) añade medición privada del prompt nativo inicial, reserva del primer listado MCP y contador acumulado de respuestas JSON-RPC completas bajo el mismo techo de 256 KiB de Nodia. No informa una ventana de tokens del proveedor ni altera el modelo/esfuerzo/motor elegido. La compactación conserva la selección exacta y no habilita herramientas, archivos ni continuación nativa opaca.
+
+Registro de investigación AI-34: los canarios iniciales verificaron SQL y Web (extracción/continuidad); Agentic largo y una llamada MCP breve agotaron el plazo después del mensaje inicial, sin callbacks. Los intentos fueron conciliados y acusados sin replay; autenticación/catálogo/ready y cuota compartida observada no acreditaban inferencia. La instrumentación posterior detectó herramientas ajenas durante texto; un agente propio de sólo finalización permitió verificar compactación y continuidad Agentic, con citas y recibos terminales. Un rol MCP experimental terminó ERROR y se retiró, conservando el transporte y gate anterior. No se atribuye una causa que el diagnóstico no conservó ni se inventa la sintaxis de MCP en agentes personalizados. [Entrega80](80-nodia-ai-ai34-long-context-compaction.md) mantiene los resultados posteriores, imágenes, recibos y estado de aceptación vigente; estos antecedentes no lo sustituyen. Reiniciar invalida las pruebas locales de modalidad: las pruebas de texto/MCP no revalidan adjuntos por MIME. No se registran prompts ni secretos en el diagnóstico estructural.

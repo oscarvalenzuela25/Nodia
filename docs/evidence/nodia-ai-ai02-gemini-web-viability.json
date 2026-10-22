@@ -1,0 +1,194 @@
+{
+  "task": "AI-02",
+  "date": "2026-10-14",
+  "status": "spike_completed_candidate_viable_runtime_unpublished",
+  "initialObservation": {
+    "source": "private /web/status via authorized VM",
+    "authenticated": false,
+    "has_browser_profile": true,
+    "inference_attempted": false
+  },
+  "initialRun": {
+    "conversation_loop_passed": true,
+    "generation_invocations": 7,
+    "synthetic_provider_chats_cleanup": true,
+    "runtime_restored": true,
+    "observed_at": "2026-10-14T23:13:33.895711+00:00",
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_web",
+      "model_id": "56fdd199312815e2"
+    },
+    "limitations": [
+      "Initial recall prompts supplied expected values; these checks alone do not prove rehydration. Superseded by strengthened run without values in recall question."
+    ]
+  },
+  "authoritativeLiveRun": {
+    "lab_owner_stopped": true,
+    "runtime_restored": true,
+    "probe_exit_code": 0,
+    "probe": {
+      "task": "AI-02",
+      "protocol": "nodia.synthetic.json-loop.v1",
+      "observed_at": "2026-10-14T23:15:26.124065+00:00",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_web",
+        "model_id": "56fdd199312815e2"
+      },
+      "sdk_version": "2.1.1",
+      "environment": "linux-local-vm",
+      "native_function_calling": false,
+      "fixture_only": true,
+      "checks": [
+        {
+          "name": "authenticated",
+          "passed": true
+        },
+        {
+          "name": "exact_discovered_selection",
+          "passed": true
+        },
+        {
+          "name": "ocr_rejected_while_chat_owns_slot",
+          "passed": true
+        },
+        {
+          "name": "validated_turn_1",
+          "passed": true,
+          "elapsed_seconds": 6.32,
+          "kind": "tool_request"
+        },
+        {
+          "name": "natural_language_read_request",
+          "passed": true
+        },
+        {
+          "name": "validated_turn_2",
+          "passed": true,
+          "elapsed_seconds": 4.85,
+          "kind": "answer"
+        },
+        {
+          "name": "read_result_continuation",
+          "passed": true
+        },
+        {
+          "name": "validated_turn_3",
+          "passed": true,
+          "elapsed_seconds": 10.69,
+          "kind": "tool_request"
+        },
+        {
+          "name": "natural_language_prepare_request",
+          "passed": true
+        },
+        {
+          "name": "validated_turn_4",
+          "passed": true,
+          "elapsed_seconds": 7.09,
+          "kind": "answer"
+        },
+        {
+          "name": "preview_result_continuation",
+          "passed": true
+        },
+        {
+          "name": "preview_not_executed",
+          "passed": true
+        },
+        {
+          "name": "validated_turn_5",
+          "passed": true,
+          "elapsed_seconds": 4.69,
+          "kind": "answer"
+        },
+        {
+          "name": "opaque_continuation_rehydrated",
+          "passed": true
+        },
+        {
+          "name": "validated_turn_6",
+          "passed": true,
+          "elapsed_seconds": 7.03,
+          "kind": "answer"
+        },
+        {
+          "name": "canonical_history_rehydrated",
+          "passed": true
+        },
+        {
+          "name": "validated_turn_7",
+          "passed": true,
+          "elapsed_seconds": 4.96,
+          "kind": "answer"
+        },
+        {
+          "name": "model_does_not_request_confirmation_tool",
+          "passed": true
+        }
+      ],
+      "business_writes": 0,
+      "published_capabilities": 0,
+      "model_label": "gemini-flash",
+      "login_guard_during_chat": "admits_login_shared_slot_missing",
+      "conversation_loop_passed": true,
+      "generation_invocations": 7,
+      "synthetic_provider_chats_cleanup": true
+    },
+    "recallQuestionsSupplyExpectedValues": false
+  },
+  "postRestore": {
+    "authenticated": true,
+    "has_browser_profile": true,
+    "api": "active",
+    "gemini": "active",
+    "nginx": "active"
+  },
+  "offline": {
+    "newTestsPassed": 21,
+    "deployedRegressionTestsPassed": 151,
+    "scope": "isolated synthetic fixtures, installed SDK and three deployed source hashes matched checkout",
+    "login_guard_during_chat": "admits_login_shared_slot_missing",
+    "deployedSourceHashes": {
+      "gemini_service.py": "8204187ec8daa1fd281f9918ed4c84b6d6c978e998433c90437d648d56f2dd9b",
+      "main.py": "50fd429b2801004610293b2148149d7fc4e2db44a24f3c4174606bcbc7a3deec",
+      "interactive_login.py": "df08816c6b952a204f3ac415e45b5cc7db32a7d4441916dabf63d9eaf1e27a6a"
+    }
+  },
+  "decision": {
+    "conversation": "viable_for_observed_selection_protocol",
+    "tools": "unpublished",
+    "nativeMcp": "not_verified",
+    "nativeFunctionCalling": "not_used",
+    "canonicalHistoryRequired": true,
+    "opaqueContinuation": "optional_optimization_only",
+    "adapterStatesTable": "no_decision_to_enable_from_this_same_client_reconstruction"
+  },
+  "limitations": [
+    "No production chat API, UI or domain tools",
+    "Fixture preparation never writes business data or confirms",
+    "Opaque ChatSession reconstruction in same client; process crash/restart not tested live",
+    "Transport failure, timeout and cancellation tested offline, not a live provider outage",
+    "Login shared-slot exclusion absent; must be implemented before chat runtime publication",
+    "Canonical-history replay is not compacted-context validation or context-window discovery",
+    "One configured/discovered selection in local Linux VM; no certification of other models, Agentic or public VPS",
+    "Fourteen synthetic generation invocations across two independent runs; no automatic inference retry; provider HTTP request count not measured",
+    "Initial recall checks were weak and are superseded by the second run without expected values in the question",
+    "No conversation data or auth credentials in this artifact"
+  ],
+  "files": [
+    "nodia-gemini-microservice/experiments/nodia_ai_web_protocol.py",
+    "nodia-gemini-microservice/experiments/probe_nodia_ai_web.py",
+    "nodia-gemini-microservice/tests/test_nodia_ai_web_protocol.py",
+    "nodia-gemini-microservice/tests/test_nodia_ai_web_admission.py",
+    "docs/evidence/nodia-ai-ai02-fixture-protocol.schema.json"
+  ],
+  "probeSourceHashes": {
+    "nodia-gemini-microservice/experiments/nodia_ai_web_protocol.py": "5b5f38ee4fcad59103299aa19e437e4a150581d37b69b5894c050679fc0809ba",
+    "nodia-gemini-microservice/experiments/probe_nodia_ai_web.py": "75bd69e40c723f28992ad48b89c7c0b1f7b0406cec3e7b76140593405df2249b",
+    "nodia-gemini-microservice/tests/test_nodia_ai_web_protocol.py": "a7dbf858daf82e0be02d8c85f2ad714f724521fb600b93cacbbd5d73693b2c0d",
+    "nodia-gemini-microservice/tests/test_nodia_ai_web_admission.py": "dcd03a40cbb194ff56f6a451e2d547580d1183092fc20456437545b52e5440c9",
+    "docs/evidence/nodia-ai-ai02-fixture-protocol.schema.json": "83df579a0cb0acbd7f76b6397c383d47fc1787d7b723b4e91d48d9ff9b279e46"
+  }
+}

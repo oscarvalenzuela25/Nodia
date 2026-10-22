@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "stage": "AI-29 R01",
+  "scope": "Codex durable native login lifecycle; synthetic Linux process proof",
+  "checked_at": "2026-10-17T22:11:20.701763+00:00",
+  "status": "passed",
+  "environment": {
+    "os": "Linux",
+    "node": "24",
+    "network_calls_to_provider": false,
+    "database_used": false,
+    "real_codex_cli_used": false,
+    "real_credentials_used": false,
+    "profile": "ephemeral /tmp/ncl-* removed by harness",
+    "deployment": "isolated /tmp/ai29-r01-codex-20261017; no application deployment"
+  },
+  "unit_tests": {
+    "path": "nodia-server/src/ai-provider/use-case/manage-codex-session.use-case.spec.ts",
+    "passed": 25,
+    "duration_seconds": 1.01
+  },
+  "checks": [
+    "Independent API and worker processes: ownership, private IPC/journal, no duplicate start and certified cancellation",
+    "Preexisting authentication is not proof this attempt completed",
+    "Supervisor SIGKILL after admission: unknown until group closure and exact profile-lock retirement",
+    "Exec gate kill-before-journal: native never executed; restart recovers exact lock certificate",
+    "Exec gate kill-before-release: native never executed; restart recovers exact lock certificate",
+    "success: terminal evidence, closure, ACK/prune and lost ACK retry",
+    "failed: terminal evidence, closure, ACK/prune and lost ACK retry",
+    "bad-url: terminal evidence, closure, ACK/prune and lost ACK retry",
+    "startup-failure: terminal evidence, closure, ACK/prune and lost ACK retry",
+    "early-success: terminal evidence, closure, ACK/prune and lost ACK retry",
+    "Leader exit alone is insufficient: owned PGID descendant is also stopped",
+    "Cross-process cancellation tombstone fences delayed start",
+    "100 expired ACK records and guards prune without admission deadlock"
+  ],
+  "check_count": 13,
+  "process_harness": {
+    "path": "nodia-server/test/codex-login-supervisor.integration.mjs",
+    "exit_code": 0,
+    "duration_seconds": 12.002
+  },
+  "quality": {
+    "typescript_build": {
+      "passed": true,
+      "incremental": false,
+      "output": ".tmp/ai29-codex-dist"
+    },
+    "oxlint_errors": 0,
+    "oxlint_warnings": 0,
+    "format_passed": true
+  },
+  "limitations": [
+    "No account authentication or inference was attempted.",
+    "The pinned real Codex executable was not executed.",
+    "Process-group closure is proved for fixture descendants remaining in the owned PGID; this does not prove containment of children that create a different session or PGID.",
+    "Windows remains gated.",
+    "The harness tests SIGKILL and independent API/worker processes, not actual VM power loss; file and directory fsync ordering is implemented."
+  ],
+  "source_hashes": [
+    {
+      "path": "nodia-server/src/ai-provider/use-case/manage-codex-session.use-case.ts",
+      "sha256": "5cc188c4b7a90c9ed9933356975071679cdf03518438c496368e1aec77118fcc"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/manage-codex-session.use-case.spec.ts",
+      "sha256": "f18fc393348ae58a93cbbd7d88831fee2486f8fb168c3899617e2fa6b5d90c65"
+    },
+    {
+      "path": "nodia-server/test/codex-http.integration.mjs",
+      "sha256": "e339a0184c5fb401327a4e4034696411974eeffdf11e89fd5cd1cb500081895d"
+    },
+    {
+      "path": "nodia-server/test/codex-login-supervisor.integration.mjs",
+      "sha256": "4ac6e7cb4b31f941e78573918ff5bd02352e61adf4ddb32c0b7e3a6cfa83b87b"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-contract.ts",
+      "sha256": "ce0a43fba3d0f5e2562a2891b83a52bc06c48929ca3e8ce25457f7656282c151"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-rpc.ts",
+      "sha256": "e89665ad8d4ab4b9f299f3b4d24585e5276b373194c876f02d8a7fc4fe7a82ff"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-process-ownership.ts",
+      "sha256": "312c912087906182b1fc28e8f30ab9bdd39b6db060b14af4c3b7f2fca7894d47"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-login-journal.ts",
+      "sha256": "f7240a396e98f81a76fe1879134c83b44adfb5aaea26e63e2ade065281619d80"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-login-control.ts",
+      "sha256": "8b83e4a665caaef4c1e2e1c740680d4c83bfca93c5b79716a5573b1cde0d780d"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-login-supervisor.ts",
+      "sha256": "f2d747280b388b7c65b856df2008f4c6183936fed32cab952ea841f7d22dd530"
+    }
+  ],
+  "compiled_hashes": [
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-contract.js",
+      "sha256": "e97179aa078373f05431e7d8af428965d1ca34ced8be5e1614ea71351dbd6590"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-document.js",
+      "sha256": "abd397b2a1770c16248ac68e3e2b85f892f457b54308d0849330dff714e19571"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-login-control.js",
+      "sha256": "870fc988419db15541ce01fb523edadc3f18ee75851c8ad0d91f2d985c09cc41"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-login-journal.js",
+      "sha256": "e7d691c31c9e159f11cbcef73b6bafdd713c5cace1e2d6a99cff653e4fac55a6"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-login-supervisor.js",
+      "sha256": "6f16e1aa8ed23cbf5112a3bd44e42f277149abb9b1eb242c27c195781167b0ab"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-process-ownership.js",
+      "sha256": "42facc73c97f0214f074d788c7f148282f8a2477c797c70ee3e7cd85909c2a28"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-rpc.js",
+      "sha256": "48904745f8c9d6b685a8bce1ce5e357e960c24a3806f7aa8caed30ead45ce4a5"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-runtime.module.js",
+      "sha256": "2c71c93084914f50e505336d2b6496d08833b41f33f232c6ce48a98805eb9c7e"
+    },
+    {
+      "path": "nodia-server/.tmp/ai29-codex-dist/common/ai/codex/codex-runtime.service.js",
+      "sha256": "0dff411d81bbaa61fb8803737b917b785b84b2a87a256f00f0d9cccf5984c18a"
+    }
+  ],
+  "http_contracts": {
+    "path": "nodia-server/test/codex-http.integration.mjs",
+    "passed": true,
+    "scope": "Compiled routes and real guards; synthetic storage/account lifecycle only",
+    "assertions": [
+      "401/403 before dispatch",
+      "strict DTO and mode validation",
+      "BIGINT actor isolation",
+      "human response no-store",
+      "cancel and safe native failures"
+    ]
+  }
+}

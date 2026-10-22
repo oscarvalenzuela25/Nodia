@@ -320,6 +320,7 @@ export function bookingFixture() {
     },
   } as unknown as EntityManager;
   const ctx: RentalContext = {
+    isSuperAdmin: false,
     manager,
     property,
     actorId: '1',

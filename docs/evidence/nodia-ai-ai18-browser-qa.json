@@ -1,0 +1,25 @@
+{
+  "stage": "AI-18",
+  "scope": "actual_react_components_with_synthetic_transport_only",
+  "verified_at_utc": "2026-10-17T04:42:31.283Z",
+  "desktop": "ES dark, exact proposal open; scalar amount edit beyond Number safe range, new revision/hash, explicit synthetic confirmation; production gate represented accurately",
+  "mobile": "EN light, iframe390x800, registered editor, revision2 and synthetic queued operation",
+  "covered": [
+    "human button over exact revision",
+    "no implicit confirmation from text",
+    "editable bigint remains string",
+    "edit produces new revision and hash",
+    "unavailable executor disables confirmation",
+    "mobile full-width actions and registered controls"
+  ],
+  "screenshots": [
+    "outputs/nodia-ai-ai18-gate-synthetic.png",
+    "outputs/nodia-ai-ai18-confirmed-synthetic.png",
+    "outputs/nodia-ai-ai18-mobile-synthetic.png"
+  ],
+  "limitations": [
+    "No real Gemini inference or domain write",
+    "No physical phone, virtual keyboard or full authenticated shell acceptance",
+    "Synthetic queued admission is not completed business execution"
+  ]
+}

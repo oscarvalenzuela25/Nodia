@@ -103,7 +103,16 @@ export function rentalTestFixture() {
   const manager = {
     getRepository: repository,
     async query(sql: string, params: string[] = []) {
-      if (sql.startsWith('SET LOCAL')) return [];
+      if (sql.startsWith('SET LOCAL') || sql.startsWith('LOCK TABLE'))
+        return [];
+      if (sql.includes('AS "actorId"')) {
+        const user = table(User).find(
+          (row) => row.id === params[0] && row.is_active,
+        );
+        return user
+          ? [{ actorId: params[0], sessionId: params[1], isSuperAdmin: false }]
+          : [];
+      }
       if (sql.includes('SUM(amount)') && sql.includes('FROM rental_payments')) {
         const rows = table(RentalPayment).filter(
           (row) =>

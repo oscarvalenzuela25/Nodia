@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "stage": "AI-38",
+  "status": "authorized_exact_29_historical_dump_cleanup_complete_and_independently_verified",
+  "authorization_source": "explicit_current_user_message",
+  "plan_sha256": "dd9421d7339e13408c972f3fbd4424bae2253eb85141789fe01081fc9433526b",
+  "selected_dump_files_removed": 29,
+  "selected_bytes_removed": 7561623,
+  "remaining_selected_paths": 0,
+  "parent_directories_preserved": 29,
+  "preserved_snapshot_entries_total_including_parents": 26118,
+  "preserved_snapshot_entries_by_kind": {
+    "directory": 6296,
+    "file": 19822
+  },
+  "neighbor_digest_before_equals_after": true,
+  "durable_unlink_intents": 29,
+  "durable_absence_receipts": 29,
+  "removed_inodes_held_by_FD_or_maps": 0,
+  "registered_encrypted_backups_preserved_exactly": 4,
+  "R2_backup_ID_size_digest_capture_expiry_preserved": true,
+  "R2_uploads_deletes_or_CAS_writes_by_this_operation": 0,
+  "journal_era_and_key_ID_preserved": true,
+  "services_and_PIDs_and_configuration_and_schema_and_provider_preserved": true,
+  "runtime_manifest_sha256": "c8f49aa3adb21f63da4d75f84a811ab3b758e90ce57fe8aff2e8d2fc498256ae",
+  "SQL_and_native_pending": 0,
+  "SQL_operational_writes": 0,
+  "production_migrations": 0,
+  "provider_requests": 0,
+  "service_changes": 0,
+  "operator_keys_preserved_metadata_check_only": true,
+  "safety_tests": {
+    "Linux_synthetic_cases": 10,
+    "failures": 0,
+    "errors": 0,
+    "receipt": "docs/evidence/nodia-ai-ai38-legacy-backups-delete-tests-r02.json",
+    "source_sha256": "d7af53fcb074e5f6801e284c257505f2ca721856fb7d085153302abe9dc46196",
+    "receipt_sha256": "4e47da1bd17d643028cf85a69cc9b0ad5681256b425dac12d20c908d6255138a"
+  },
+  "full_product_suite_rerun": false,
+  "production_behavior_changed": false,
+  "private_metadata_ledger_and_snapshot_retained_for_evidence": true,
+  "physical_erasure_claimed": false,
+  "other_exports_snapshots_or_provider_versions_inventoried": false,
+  "runtime_policy_revision": 14,
+  "new_document_approval_or_capability_publication": false,
+  "AI38_complete": false,
+  "sources_sha256": {
+    "docs/evidence/scripts/nodia-ai-ai38-legacy-backups-delete-tests.py": "d7af53fcb074e5f6801e284c257505f2ca721856fb7d085153302abe9dc46196",
+    "docs/evidence/scripts/nodia-ai-ai38-legacy-backups-delete.py": "94c1e2540208952571fb1f464d6df9a8aaf09f3ca6467a89ba48d632f9c24a1e",
+    "docs/evidence/scripts/nodia-ai-ai38-legacy-backups-inspect-r01.py": "642d7e8d242fdcb6356459f4f28e2a7cb87aa77290ce7a7c6eb360f32f44e8dd",
+    "docs/evidence/scripts/nodia-ai-ai38-legacy-backups-inspect.py": "b1bedcf761297599da3636ce35428fd8c8cef0ffb0c63b2ed03fe6ce92ba5489",
+    "docs/evidence/scripts/nodia-ai-ai38-legacy-current-protection.mjs": "85e224f091187123393cf29edde118124cfa356194bb77268953a1704821c19d",
+    "docs/evidence/scripts/nodia-ai-ai38-legacy-delete-environment.py": "c5a749b6c15d1279d76f5739af3498330f1fb14dd8f52c99d4fb96e229d5d4c9",
+    "docs/evidence/scripts/nodia-ai-ai38-legacy-delete-verify.py": "cc0d0983191651c14987fe037d392da8eb05ca93652b04af63e06ae95d125a29"
+  },
+  "receipts": [
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-delete-authorization-r01.json",
+      "sha256": "d6368c051d95e67e5f1060b87e956dea6949362b18bf6d64965aa233833bde66"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-delete-environment-after-r01.json",
+      "sha256": "3a354440904e640a19f60f7bdfd45e3544500060da6666ea43d4015dca6bd229"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-delete-environment-before-r01.json",
+      "sha256": "ec5b06088c171ce53a8f74540dd3cab80c9e8c885a00f83e0894d7bc15a80f6b"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-delete-protection-after-r01.json",
+      "sha256": "c5616bf61d3ef01544cc296aba574a8a8b840c40c916dabb04c2fc5095a2903e"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-delete-protection-before-r01.json",
+      "sha256": "bded6806fbdc6792378c0fa5ac1c5f2a5ec0ad8d94bf8cf854accf7325f4e7e4"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-delete-result-r01.json",
+      "sha256": "a941b75c3cd9948b89d69fa308625c26d733dc341ed02491b6635ca78d6ccef9"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-legacy-delete-verification-r01.json",
+      "sha256": "9ccc69b4740e48549c24581e3e8f83eca661e3e3bf48a44ead21655a57719f4e"
+    }
+  ],
+  "knowledge_check": {
+    "exit": 0,
+    "sources": 59,
+    "excluded": 28,
+    "published_documents": 31,
+    "published_fragments": 31,
+    "published_capabilities": 74,
+    "release": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+    "log_sha256": "aa39245d48901c3aeba98037d9040100ff0221eb258d9e37e8d11ed7e6cfbbd9"
+  },
+  "local_markdown_links_checked": 587,
+  "syntax_AST_sources_checked": 4,
+  "documentation_sha256": {
+    "docs/evidence/nodia-ai-ai38-legacy-delete-r01.md": "68224a55c5b42ed78fcf11d295873c27e471c9ca4bdf140e947e887c25f99e75",
+    "docs/mvp/README.md": "becb4357d677be2b600ea8704aa7f6adf00c7316ce88e160b9a1d64ba9820fa1",
+    "docs/mvp/00-progress.md": "156bf08697af909017ebc4302585b0a4f4647fb839a926dfa64ef7d403b87898",
+    "docs/mvp/84-nodia-ai-ai38-environment-acceptance.md": "7600630503b883d0203b370ed66adfa28c52f1dda94821f3bd4b014f56d0a2a9",
+    "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md": "4e7e84c9fa7fece9ed71e771d442bc527c21291a325efece93550dc70884e227",
+    "ops/nodia-ai-backups/journal.md": "9698123a277bc180efe73996cac25b770cab559f84955f8e8a306f0ede57aa30"
+  },
+  "preserved_previous_draft": {
+    "revision": 13,
+    "path": "docs/evidence/nodia-ai-ai38-legacy-delete-runtime-policy-before.md",
+    "sha256": "43ba45986cf864c09aeb1309fc72e723ebf67cca18603f453a4ec58b1e7f1f7d"
+  }
+}

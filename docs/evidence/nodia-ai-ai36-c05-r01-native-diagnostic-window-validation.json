@@ -1,0 +1,74 @@
+{
+  "stage": "AI-36-C05-R01",
+  "scope": "bounded_native_cli_log_indicator_classification_only_not_timeout_resolution",
+  "observed_at_utc": "2026-10-19T17:44:17.011530+00:00",
+  "source_before_deployed_sha256": "68565bf87e0c37828703b3b3abf82a787158073213ac0bf155494213f6d6e691",
+  "source_after": {
+    "path": "nodia-gemini-microservice/native_cli_diagnostics.py",
+    "sha256": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "tests_source": {
+    "path": "nodia-gemini-microservice/tests/test_native_mcp.py",
+    "sha256": "5cefc3b1c14c5a5d47096fe30cd591167e0944a0aa7f3b3b25c7e918b774d665"
+  },
+  "production_change": "Classify every admitted bounded log byte; keep disjoint head/tail windows independent and preserve byte ceiling and closed categories.",
+  "regression_before": {
+    "test_class": "NativeCliLogDiagnosticTests",
+    "tests": 6,
+    "failures": 1,
+    "failing_subcase": "middle_131_lines_HTTP503_omitted"
+  },
+  "focused_after": {
+    "tests": 7,
+    "failures": 0
+  },
+  "windows_full_suite": {
+    "command": ".\\.venv\\Scripts\\python.exe run_tests.py",
+    "tests": 439,
+    "passed": 437,
+    "skipped": 2,
+    "failures": 0,
+    "duration_seconds": 13.649,
+    "log": {
+      "path": ".tmp/ai36-c05-r01-python-windows-window-function.log",
+      "sha256": "f656ecb2ed3db993cefbc7bf6d28a6f19ef9edc14058e038e5464b67d14592c9"
+    }
+  },
+  "compilation": {
+    "command": ".\\.venv\\Scripts\\python.exe -m py_compile native_cli_diagnostics.py tests/test_native_mcp.py",
+    "exit_code": 0
+  },
+  "byte_ceiling": 131072,
+  "historical_line_window_metadata_ceiling": 128,
+  "coverage": [
+    "head_middle_tail_131_lines",
+    "large_file_head_and_tail_only",
+    "unread_middle_not_claimed",
+    "incomplete_boundary_indicator",
+    "no_error",
+    "private_content_excluded",
+    "unknown_categories_and_statuses_excluded",
+    "disjoint_head_tail_no_fabricated_status",
+    "pure_window_input_validation"
+  ],
+  "functional_impact": "Only supplementary private diagnostics; no change to validation, outcome, permissions, tool contracts, prompts, models, deadlines or inference retries.",
+  "knowledge_impact": "No business capability, product rule, context instruction or publication change; no knowledge card source references native_cli_diagnostics.py.",
+  "deployment_performed": false,
+  "services_restarted": false,
+  "provider_requests": 0,
+  "timeout_cause_identified": false,
+  "limitations": [
+    "No Linux execution or real-provider acceptance in this validation.",
+    "Byte windows still omit the unread center of files larger than the cap.",
+    "Indicators are not verified provider responses or causal evidence.",
+    "Historical pre-fix classifier control remains immutable and records its original source hash."
+  ],
+  "regression_cross_window_before": {
+    "source_sha256": "3919ddf5e3acff1c5ff471396c3cab01fe32d64df7e2f98f7abf949abbd4d61a",
+    "tests": 6,
+    "failures": 1,
+    "false_positive_status": 503,
+    "expected_statuses": []
+  },
+  "classifier_tool_export": "_classify_admitted_log_windows(tuple_of_one_or_two_admitted_byte_windows)"
+}

@@ -6,7 +6,7 @@ import {
 } from "../../../../../../config/httpFeedback";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
 import type { FC } from "react";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -40,6 +40,7 @@ import AlertBanner from "../AlertBanner";
 import SyncModelsModal from "./components/SyncModelsModal";
 import AgenticLoginModal from "../AgenticLoginModal";
 import CodexSessionPanel from "../CodexSessionPanel";
+import GeminiWebAccountButton from "../GeminiWebAccountButton";
 import {
   useAiProviders,
   useAiProvidersHealth,
@@ -53,6 +54,7 @@ import type { SupportedModelDef } from "../../infrastructure/types";
 import {
   getObservedWebQuota,
   getWebQuotaLabelKey,
+  getObservedSessionStatus,
 } from "../../infrastructure/observations";
 import type { ProviderDetailProps } from "./types";
 import {
@@ -100,6 +102,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const { t, i18n } = useTranslation(["ai_providers", "core"]);
   const isMobile = useMediaQuery(useTheme().breakpoints.down("sm"));
   const codexLoginRef = useRef<{ manage: () => void } | null>(null);
+  const codexLoginIntent = useRef<string | null>(null);
   const [agenticLoginOpen, setAgenticLoginOpen] = useState(false);
 
   // Queries
@@ -374,12 +377,6 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   };
   const selectedModel = localSelectedModel ?? activeDbModel;
 
-  // SDK transport option; this does not certify a model's reasoning capability.
-  const supportsReasoning =
-    geminiEnginesData?.web?.supported_options?.extended_thinking === true;
-
-  const extendedThinkingEnabled = modeFields.enable_extended_thinking === true;
-
   // Informative OCR focus model scoped to active mode
   const ocrFocusedModelId =
     (modeFields?.ocr_focus_model as string) ||
@@ -403,6 +400,17 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     modelsFetching ||
     updateProviderMutation.isPending ||
     syncModelsMutation.isPending;
+
+  useEffect(() => {
+    if (codexLoginIntent.current !== providerId) {
+      codexLoginIntent.current = null;
+      return;
+    }
+    if (!isBusy && providerKey === "openai" && activeTab === "token_plan_agentic" && codexLoginRef.current) {
+      codexLoginIntent.current = null;
+      codexLoginRef.current.manage();
+    }
+  }, [activeTab, providerId, providerKey, isBusy]);
 
   // Modals
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
@@ -457,48 +465,6 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const handleOpenSyncModal = () => {
     if (!canSyncModels) return;
     setIsSyncModalOpen(true);
-  };
-
-  const handleToggleExtendedThinking = async (checked: boolean) => {
-    if (!currentDbProvider?.id || updateProviderMutation.isPending) return;
-    const modeKey = activeTab || currentDbProvider.default_mode || null;
-    if (
-      modeKey !== "token_plan_web" &&
-      modeKey !== "token_plan_agentic" &&
-      modeKey !== "api_key"
-    )
-      return;
-    const currentModeData =
-      (currentDbProvider.fields?.[modeKey] as Record<string, unknown>) || {};
-    const isDefaultMode = (currentDbProvider.default_mode || null) === modeKey;
-
-    try {
-      await updateProviderMutation.mutateAsync({
-        id: currentDbProvider.id,
-        data: {
-          fields: {
-            ...currentDbProvider.fields,
-            [modeKey]: {
-              ...currentModeData,
-              enable_extended_thinking: checked,
-            },
-            ...(isDefaultMode ? { enable_extended_thinking: checked } : {}),
-          },
-        },
-      });
-      sileo.success({
-        title: t(
-          "ai_providers:detail.extended_thinking_saved",
-          "Preferencia de razonamiento extendido actualizada",
-        ),
-      });
-      refetchProviders();
-    } catch (error) {
-      sileo.error({
-        title: t("core:server_error_toast"),
-        description: getHttpErrorMessage(error),
-      });
-    }
   };
 
   const handleToggleOcrFocus = async (modelId: string) => {
@@ -648,7 +614,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     }
   };
 
-  const statusType = currentHealthProvider?.status || "unconfigured";
+  const defaultChannel = currentDbProvider?.default_mode ?? (currentHealthProvider?.mode === "web_session"
+    ? "token_plan_web" : currentHealthProvider?.mode);
+  const statusType = activeTab !== defaultChannel && (activeTab === "token_plan_web" || activeTab === "token_plan_agentic")
+    ? getObservedSessionStatus(activeTab === "token_plan_web" ? geminiEnginesData?.web
+      : providerKey === "openai" ? currentHealthProvider?.codexSession : geminiEnginesData?.agentic)
+    : currentHealthProvider?.status || "unconfigured";
   const statusLabel =
     statusType === "healthy"
       ? t("ai_providers:detail.status_healthy", "Disponible")
@@ -761,7 +732,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
               {t("ai_providers:detail.active_provider", "Proveedor Activo")}:
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <StatusDot
+              {activeTab !== "api_key" && <StatusDot
                 color={
                   statusType === "healthy"
                     ? "#10b981"
@@ -769,7 +740,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                       ? "#f59e0b"
                       : "#64748b"
                 }
-              />
+              />}
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                 {providerName}
               </Typography>
@@ -791,7 +762,9 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                 />
               )}
             </Box>
-            <StatusPill statusType={statusType}>{statusLabel}</StatusPill>
+            {(activeTab === "token_plan_web" || activeTab === "token_plan_agentic") && (
+              <StatusPill statusType={statusType}>{statusLabel}</StatusPill>
+            )}
           </BreadcrumbBox>
 
           <Box
@@ -943,7 +916,13 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             disabled={isBusy}
             onAuthenticateAgentic={
               providerKey === "openai"
-                ? () => codexLoginRef.current?.manage()
+                ? () => {
+                    if (activeTab === "token_plan_agentic") codexLoginRef.current?.manage();
+                    else {
+                      codexLoginIntent.current = providerId;
+                      setSelectedTab("token_plan_agentic");
+                    }
+                  }
                 : providerKey === "gemini"
                   ? () => setAgenticLoginOpen(true)
                   : undefined
@@ -1268,7 +1247,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                       (modeFields.thinking_levels as Record<string, unknown>) ??
                       {};
                     const savedThinkingLevel =
-                      codexModel && Object.hasOwn(levels, model.id)
+                      (codexModel || activeTab === "token_plan_web") && Object.hasOwn(levels, model.id)
                         ? levels[model.id]
                         : (levels[model.id] ??
                           (isSelected ? modeFields.thinking_level : undefined));
@@ -1494,7 +1473,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
 
                         {/* API and Agentic reasoning preference per model */}
                         {(activeTab === "token_plan_agentic" ||
-                          activeTab === "api_key") && (
+                          activeTab === "token_plan_web" || activeTab === "api_key") && (
                           <Box
                             sx={(theme) => ({
                               display: "flex",
@@ -1555,6 +1534,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                             <ToggleButtonGroup
                               size="small"
                               exclusive
+                              aria-label={t("ai_providers:detail.reasoning_model_label", { model: model.displayName || model.name || model.id })}
                               value={savedThinkingLevel ?? null}
                               onChange={(_, val) => {
                                 if (typeof val === "string")
@@ -1588,7 +1568,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                                   value={level}
                                   data-testid={`thinking-level-${level}-${model.id}`}
                                 >
-                                  {t(`ai_providers:detail.level_${level}`, {
+                                  {t(`ai_providers:detail.${activeTab === "token_plan_web" ? "web_level" : "level"}_${level}`, {
                                     defaultValue: level,
                                   })}
                                 </ToggleButton>
@@ -1634,13 +1614,15 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
             </Skeleton>
 
             {/* EXTENDED THINKING SECTION (WEB MODE ONLY) */}
-            {(activeTab === "api_key" ||
+            {(activeTab === "api_key" || activeTab === "token_plan_web" ||
               (activeTab === "token_plan_agentic" &&
                 providerKey !== "openai")) && (
               <Box sx={{ mt: 1 }}>
                 <Typography variant="body2" color="text.secondary">
                   {t(
-                    activeTab === "api_key"
+                    activeTab === "token_plan_web"
+                      ? "ai_providers:detail.web_reasoning_preference"
+                      : activeTab === "api_key"
                       ? "ai_providers:detail.api_reasoning_preference"
                       : "ai_providers:detail.agentic_reasoning_preference",
                   )}
@@ -1661,103 +1643,18 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                   >
                     {(["low", "medium", "high"] as const).map((level) => (
                       <ToggleButton key={level} value={level}>
-                        {t(`ai_providers:detail.level_${level}`)}
+                        {t(`ai_providers:detail.${activeTab === "token_plan_web" ? "web_level" : "level"}_${level}`)}
                       </ToggleButton>
                     ))}
                   </ToggleButtonGroup>
                 )}
               </Box>
             )}
-            {activeTab === "token_plan_web" && (
-              <Box sx={{ mt: 1 }}>
-                <SwitchWrapper>
-                  <StyledFormControlLabel
-                    control={
-                      <StyledSwitch
-                        checked={extendedThinkingEnabled}
-                        disabled={!supportsReasoning || isBusy}
-                        onChange={(e) =>
-                          handleToggleExtendedThinking(e.target.checked)
-                        }
-                      />
-                    }
-                    label={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 0.5,
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            flexWrap: "wrap",
-                          }}
-                        >
-                          <PsychologyOutlinedIcon
-                            sx={{
-                              fontSize: 20,
-                              color: supportsReasoning
-                                ? "primary.main"
-                                : "text.disabled",
-                            }}
-                          />
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ fontWeight: 700 }}
-                          >
-                            {t(
-                              "ai_providers:detail.extended_thinking_title",
-                              "Razonamiento Extendido",
-                            )}
-                          </Typography>
-                          {supportsReasoning ? (
-                            <Chip
-                              size="small"
-                              label={t(
-                                "ai_providers:detail.extended_thinking_supported",
-                                "Razonamiento Soportado",
-                              )}
-                              color="primary"
-                              sx={{
-                                height: 20,
-                                fontSize: "0.6875rem",
-                                fontWeight: 700,
-                              }}
-                            />
-                          ) : (
-                            <Chip
-                              size="small"
-                              label={t(
-                                "ai_providers:detail.extended_thinking_not_supported",
-                                "No disponible para este modelo",
-                              )}
-                              variant="outlined"
-                              sx={{ height: 20, fontSize: "0.6875rem" }}
-                            />
-                          )}
-                        </Box>
-                        <Typography variant="caption" color="text.secondary">
-                          {supportsReasoning
-                            ? t(
-                                "ai_providers:detail.extended_thinking_desc",
-                                "Habilita pasos de deliberación y razonamiento profundo previo a la respuesta. Aplica solo a modelos con capacidad de razonamiento detectada.",
-                              )
-                            : t(
-                                "ai_providers:detail.extended_thinking_not_supported",
-                                "Este modelo no cuenta con capacidad de razonamiento extendido.",
-                              )}
-                        </Typography>
-                      </Box>
-                    }
-                    labelPlacement="start"
-                  />
-                </SwitchWrapper>
-              </Box>
+            {activeTab === "token_plan_web" && typeof modeFields.enable_extended_thinking === "boolean"
+              && modeFields.thinking_level === undefined && (
+              <Alert severity="info">{t("ai_providers:detail.web_legacy_reasoning")}</Alert>
             )}
+
           </DetailPanel>
 
           {/* SUBPANEL: REMOTE WEB SESSION */}
@@ -1879,6 +1776,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                     size="large"
                     startIcon={<LanguageOutlinedIcon />}
                     onClick={onRenewSession}
+                    disabled={isBusy}
                     sx={{
                       py: 1.5,
                       px: 3,
@@ -1893,6 +1791,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                       "Iniciar Sesión en Navegador Remoto",
                     )}
                   </Button>
+                  {providerKey === "gemini" && onRenewSession && <GeminiWebAccountButton key={providerId} disabled={isBusy} onLogin={onRenewSession} />}
                   <Typography variant="caption" color="text.secondary">
                     {t(
                       "ai_providers:detail.remote_browser_caption",
@@ -2065,7 +1964,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
         </>
       )}
 
-      {providerKey === "openai" && currentDbProvider && (
+      {providerKey === "openai" && activeTab === "token_plan_agentic" && currentDbProvider && (
         <CodexSessionPanel
           ref={codexLoginRef}
           key={providerId}

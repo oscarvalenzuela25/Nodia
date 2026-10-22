@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ModuleGroup } from './entities/module-group.entity.js';
-import { CreateModuleGroupDto } from './dto/create-module-group.dto.js';
-import { UpdateModuleGroupDto } from './dto/update-module-group.dto.js';
-import { GetModuleGroupsDto } from './dto/get-module-groups.dto.js';
-import { applyRansack, validateRansackEnvelope } from '../common/utils/ransack-query.builder.js';
-import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
-import { GetModuleGroupsResponse } from './types/module-group.types.js';
-import { TranslationService } from '../translation/translation.service.js';
+import { Repository, type EntityManager } from 'typeorm';
 import { RedisService } from '../common/redis/redis.service.js';
+import {
+  applyRansack,
+  validateRansackEnvelope,
+} from '../common/utils/ransack-query.builder.js';
+import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
+import { TranslationService } from '../translation/translation.service.js';
+import { GetModuleGroupsDto } from './dto/get-module-groups.dto.js';
+import { ModuleGroup } from './entities/module-group.entity.js';
+import { GetModuleGroupsResponse } from './types/module-group.types.js';
 
 @Injectable()
 export class ModuleGroupService {
@@ -17,25 +18,28 @@ export class ModuleGroupService {
     @InjectRepository(ModuleGroup)
     private readonly moduleGroupRepository: Repository<ModuleGroup>,
     private readonly translationService: TranslationService,
-    private readonly redisService: RedisService,
+    _redisService: RedisService,
   ) {}
 
-  async findAll({
-    page = 1,
-    limit = 10,
-    all = false,
-    q,
-  }: GetModuleGroupsDto): Promise<GetModuleGroupsResponse> {
-    const qb = this.moduleGroupRepository.createQueryBuilder('module_group');
+  async findAll(
+    { page = 1, limit = 10, all = false, q }: GetModuleGroupsDto,
+    manager?: EntityManager,
+  ): Promise<GetModuleGroupsResponse> {
+    const qb = (
+      manager?.getRepository(ModuleGroup) ?? this.moduleGroupRepository
+    ).createQueryBuilder('module_group');
     validateRansackEnvelope(q);
 
     applyRansack(qb, q, 'module_group', RANSACK_POLICIES.module_group);
+    if (manager && !/^id\s/i.test(String(q?.s ?? '')))
+      qb.addOrderBy('module_group.id', 'ASC');
 
     if (all) {
       const rawData = await qb.getMany();
       const data = await this.translationService.attachTranslations(
         'module_groups',
         rawData,
+        manager,
       );
       return {
         data: data as any,
@@ -56,6 +60,7 @@ export class ModuleGroupService {
     const data = await this.translationService.attachTranslations(
       'module_groups',
       rawData,
+      manager,
     );
     const total_pages = Math.ceil(total_items / limit);
 
@@ -70,8 +75,10 @@ export class ModuleGroupService {
     };
   }
 
-  async findOne(id: string): Promise<ModuleGroup> {
-    const moduleGroup = await this.moduleGroupRepository.findOne({
+  async findOne(id: string, manager?: EntityManager): Promise<ModuleGroup> {
+    const moduleGroup = await (
+      manager?.getRepository(ModuleGroup) ?? this.moduleGroupRepository
+    ).findOne({
       where: { id },
     });
 
@@ -82,54 +89,7 @@ export class ModuleGroupService {
     return this.translationService.attachTranslationsToOne(
       'module_groups',
       moduleGroup,
+      manager,
     ) as any;
-  }
-
-  async create(createDto: CreateModuleGroupDto): Promise<ModuleGroup> {
-    const existing = await this.moduleGroupRepository.findOne({
-      where: { key: createDto.key },
-    });
-    if (existing) {
-      return this.update(existing.id, createDto);
-    }
-
-    const { translates, ...groupData } = createDto;
-    const moduleGroup = this.moduleGroupRepository.create(groupData);
-    const savedGroup = await this.moduleGroupRepository.save(moduleGroup);
-
-    if (translates && translates.length > 0) {
-      await this.translationService.saveTranslations(
-        'module_groups',
-        savedGroup.id,
-        translates,
-      );
-    }
-
-    await this.redisService.delByPattern('auth:context:*');
-
-    return this.findOne(savedGroup.id);
-  }
-
-  async update(id: string, updateDto: UpdateModuleGroupDto): Promise<ModuleGroup> {
-    const moduleGroup = await this.moduleGroupRepository.findOne({ where: { id } });
-    if (!moduleGroup) {
-      throw new NotFoundException(`ModuleGroup with ID "${id}" not found`);
-    }
-
-    const { translates, ...rest } = updateDto;
-    Object.assign(moduleGroup, rest);
-    await this.moduleGroupRepository.save(moduleGroup);
-
-    if (translates !== undefined) {
-      await this.translationService.updateTranslations(
-        'module_groups',
-        id,
-        translates,
-      );
-    }
-
-    await this.redisService.delByPattern('auth:context:*');
-
-    return this.findOne(id);
   }
 }

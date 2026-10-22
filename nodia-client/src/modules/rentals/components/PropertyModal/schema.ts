@@ -39,6 +39,10 @@ const integerInput = (min: number, max: number) =>
       "rental:validation_integer",
     );
 export const propertySchema = z.object({
+  owner_id: z
+    .string()
+    .regex(/^[1-9]\d*$/, "rental:validation_required")
+    .optional(),
   name: requiredText,
   location: nullableText(500),
   max_guests: integerInput(1, 1000),

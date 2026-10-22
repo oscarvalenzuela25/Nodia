@@ -1,0 +1,31 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "bounded_preparation_and_single_provider_dispatch_deadline_unit_validation",
+  "status": "passed",
+  "unit_tests": 43,
+  "unit_test_files": 2,
+  "scoped_oxlint_exit_code": 0,
+  "global_build_executed": false,
+  "provider_requests": 0,
+  "operational_deployments": 0,
+  "policy_schema_changes": 0,
+  "database_schema_changes": 0,
+  "sources": {
+    "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.ts": "20ad2f7995818b6d1ece3fd36d6c43a094fa978c33349fb04656ce4f9f6a1406",
+    "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-stage.use-case.spec.ts": "f2f864cf8051c9ab365429807a5e66b44407f70464b3f3d0174cdb8671fcde36",
+    "nodia-server/src/nodia-ai-runtime/types/worker.types.ts": "135f75240d94f935fadbc3aa8ccc2f436d9080c1e89004af0dae71b636bbc03c",
+    "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.spec.ts": "166cb03c5e71faf8788ec7a2002b2434168f53084220acb5f24ea76fbf48814d"
+  },
+  "coverage": [
+    "preparation15_commit2_provider115_completes132",
+    "unarmed_preparation120",
+    "pending_commit_unknown_no_late_send",
+    "overdue_preparation_timer_before_arm_and_after_commit",
+    "overdue_preparation_and_provider_checkpoints_before_and_inside_SQL",
+    "second_arming_does_not_renew_window",
+    "job_and_run_deadline_clamps",
+    "wall_clock_rollback_does_not_extend_turn",
+    "worker_real_stage_drain_before_and_after_arming",
+    "existing_cancellation_lease_and_unknown_regressions_preserved"
+  ]
+}

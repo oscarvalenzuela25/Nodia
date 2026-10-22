@@ -1,0 +1,187 @@
+{
+  "task": "AI-20",
+  "status": "implemented_and_verified_private_lab",
+  "verified_at_utc": "2026-10-17T05:26:50.524179+00:00",
+  "scope": "single_local_confirmed_financial_effect_worker_sql_recovery_human_cancel_resume_not_mcp_preparer_publication",
+  "server": {
+    "full_suite": {
+      "tests": 1922,
+      "files": 177,
+      "passed": true,
+      "log": "nodia-server/.tmp/ai20-server-tests.log",
+      "final_required_di": true
+    },
+    "build": {
+      "passed": true,
+      "log": "nodia-server/.tmp/ai20-build.log"
+    },
+    "lint": {
+      "errors": 0,
+      "preexisting_warnings": 3,
+      "log": "nodia-server/.tmp/ai20-lint.log"
+    }
+  },
+  "client": {
+    "full_suite": {
+      "tests": 1326,
+      "files": 201,
+      "passed": true,
+      "log": "nodia-client/.tmp/ai20-client-full-tests.log"
+    },
+    "focused": {
+      "tests": 121,
+      "files": 9,
+      "passed": true,
+      "log": "nodia-client/.tmp/ai20-client-tests.log"
+    },
+    "build_and_typecheck": {
+      "passed": true,
+      "log": "nodia-client/.tmp/ai20-client-build.log"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0,
+      "log": "nodia-client/.tmp/ai20-client-lint.log"
+    },
+    "browser": "docs/evidence/nodia-ai-ai20-browser-qa.json"
+  },
+  "postgres": {
+    "checks": 36,
+    "evidence": "docs/evidence/nodia-ai-ai20-postgres-integration.json",
+    "regression_checks": 169,
+    "regression_evidence": [
+      "docs/evidence/nodia-ai-ai20-financial-effect-regression.json",
+      "docs/evidence/nodia-ai-ai20-confirmation-regression.json",
+      "docs/evidence/nodia-ai-ai20-proposal-regression.json",
+      "docs/evidence/nodia-ai-ai20-events-regression.json",
+      "docs/evidence/nodia-ai-ai20-observation-regression.json"
+    ],
+    "scope": "compiled_Nest_native_Finance_real_disposable_PostgreSQL_and_process_faults",
+    "fixtures_disposed": true,
+    "configured_database_used": false,
+    "provider_calls": 0,
+    "note": "Historical AI17/18/19 explicit empty-admission overrides preserve their fail-closed scenarios now that native admission is enabled; malformed immutable binding now requires exact invalid_persisted_state500."
+  },
+  "lab": {
+    "activation": "docs/evidence/nodia-ai-ai20-lab-activation.json",
+    "state": "docs/evidence/nodia-ai-ai20-live-state.json",
+    "stage": "AI-20",
+    "scope": "read_only_configured_private_lab",
+    "observed_at_utc": "2026-10-17T05:31:29.662Z",
+    "migrations": 24,
+    "tables": 18,
+    "columns": 239,
+    "challenges": 0,
+    "executions": 0,
+    "execution_steps": 0,
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "knowledge_release": "057a331b12f05ae08f9f9b9a565d5349d17b7a2375e8852981f19c29d992a20e",
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "production_executor_registrations": 1,
+    "native_business_execution_enabled": true,
+    "configured_business_writes": 0,
+    "new_migrations": 0,
+    "new_tables": 0,
+    "new_columns": 0
+  },
+  "release": {
+    "final_archive_sha256": "544f7e8f3896cb7e64bcced5dcb852a68d011832c27913eae7196cbad5ea4db1",
+    "last_sql_test_archive_sha256": "54a21509b2e3a7be2d6681b7a0ed0b00f33b68a829f975284010b79a5d05522a",
+    "files": 814,
+    "deployed_dist_files_verified_equal_to_final_archive": 790,
+    "final_archive_fixture_only_difference": "AI17/AI19 test labels/assertions, no runtime difference"
+  },
+  "knowledge": {
+    "source_documents": 45,
+    "excluded_documents": 18,
+    "published_capabilities": 67,
+    "published_fragments": 27,
+    "release_id": "057a331b12f05ae08f9f9b9a565d5349d17b7a2375e8852981f19c29d992a20e",
+    "publication_changed": false,
+    "draft_fiches_updated": 5,
+    "validation": "docs/evidence/nodia-ai-ai20-knowledge-validation.json"
+  },
+  "contracts": {
+    "validation": "docs/evidence/nodia-ai-ai20-contract-validation.json",
+    "schemas": 132,
+    "coordination_routes": 31,
+    "implemented_coordination_routes": 27,
+    "ast_controllers": 43,
+    "ast_handlers": 204,
+    "ast_routes": 323,
+    "ast_modules": 61,
+    "source_hashes": 540
+  },
+  "artifacts": [
+    {
+      "file": "docs/mvp/66-nodia-ai-ai20-execution-recovery.md",
+      "sha256": "7f20b6013bb4fa6d4d6dbd468d5a4155a9e3944e3493378f6ca8924fff693a0f"
+    },
+    {
+      "file": "docs/architecture/decisions/ADR-047-nodia-ai-local-execution-recovery.md",
+      "sha256": "f608c8c7aaa8a6ee26fc6d97b0cf893d5f83ff49f4f76a6286bd6b6aedcbb713"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-worker.module.ts",
+      "sha256": "5a823aee09be27a8a5cf6eec22b6ab28629faa1287580d30accef93c914b9fbc"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-runtime/use-case/run-nodia-ai-worker.use-case.ts",
+      "sha256": "ea4b8d9efe1e133f1fc435e3f107c4845b174bcc240495126eb40435817eaa46"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/use-case/claim-nodia-ai-execution.use-case.ts",
+      "sha256": "b6fc90f0a4f9f86c97bf6f7f2465215ab247337fe57b972d44d7986b617225dc"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/use-case/execute-nodia-ai-financial-execution.use-case.ts",
+      "sha256": "af951e4a9befeb76ba6a24bccb7c6bb70be2bec425c00eb66d329a3ffb2c1b4a"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/use-case/recover-nodia-ai-executions.use-case.ts",
+      "sha256": "4b16da125115c6541b28691e7d2d2cb4c70d06536edfa6925f6f70ee80c1ecb4"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-execution/nodia-ai-execution.service.ts",
+      "sha256": "8921c74c7ee399d54e25b3d0e9788651d58f3239c3aa8265b72507fadea87bcd"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/use-case/control-nodia-ai-execution.use-case.ts",
+      "sha256": "0da32d296944a469925cc7a8dea7d066a8ffb41085126ee52274be7a13d277e1"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/use-case/get-nodia-ai-execution.use-case.ts",
+      "sha256": "daf7ad2ae94be57e0e4d01a8db4b5b970f734ad5eb65a745a8dd99c22d13b065"
+    },
+    {
+      "file": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+      "sha256": "aa206d9797aec177312d4ec44b2ce68edd9b9766f6db595123022f6a33cd0a2d"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai20.integration.mjs",
+      "sha256": "2d03a0ccf8ebc71b3e3da57812d0383b2208151ae6197a079c6fb500ad6e6917"
+    },
+    {
+      "file": "nodia-server/test/nodia-ai-ai20-worker.fixture.mjs",
+      "sha256": "4b444df8cef0d3bc1001f08bf174550dad6ffa4ba82c57370f327fd46be13c2a"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/infrastructure/useExecution.ts",
+      "sha256": "132616fa15d9a72deb4ba7bce69c82dd757e7cd0a2309bbd0f4e65eeb547f65f"
+    },
+    {
+      "file": "nodia-client/src/modules/nodiaAi/components/ConfirmedExecution/ConfirmedExecution.tsx",
+      "sha256": "f0ce0b7aa3bf1422c7b94638bf41936e02279c78f2208bafb2469a78ed224197"
+    }
+  ],
+  "limitations": [
+    "Only one local finance movement step; other writes/sequences remain later stages",
+    "MCP preparation remains unpublished; no claim that Gemini produced these confirmed proposals",
+    "Browser QA uses synthetic transport; PostgreSQL/native effects verified separately on disposable data",
+    "No financial test rows created in configured application database",
+    "Independent provider/R2/publication/load/restore/production acceptance gates remain in their respective stages"
+  ]
+}

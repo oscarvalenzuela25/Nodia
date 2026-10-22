@@ -99,7 +99,7 @@ describe('ProviderCard observed status', () => {
       expect(screen.getByText('ChatGPT / OpenAI')).toBeInTheDocument();
       expect(screen.getByText('Canal configurado: API Key')).toBeInTheDocument();
       expect(screen.getByText('Predeterminado')).toBeInTheDocument();
-      expect(screen.getByText('SIN VERIFICAR')).toBeInTheDocument();
+      expect(screen.queryByText('SIN VERIFICAR')).not.toBeInTheDocument();
 
       // Service State & Last Check
       expect(screen.getByText('API configurada; inferencia sin verificar')).toBeInTheDocument();
@@ -159,8 +159,21 @@ describe('ProviderCard observed status', () => {
       };
 
       render(<ProviderCard provider={deactivatedProvider} totalProviders={2} />);
-      expect(screen.getByText('DESACTIVADO')).toBeInTheDocument();
+      expect(screen.queryByText('DESACTIVADO')).not.toBeInTheDocument();
       expect(screen.getByText('Proveedor desactivado')).toBeInTheDocument();
+    });
+    it('keeps the status chip when a token plan is enabled alongside API', async () => {
+      await i18n.changeLanguage('es');
+      render(<ProviderCard provider={{...apiProvider, use_token_plan_agentic:true,
+        codexSession:{available:true,authenticated:true,planType:null,checkedAt:null,reason:null,quotas:null,lastInferenceAt:null,usageAllowed:null}}} />);
+      expect(screen.getByText('Disponible')).toBeInTheDocument();
+      expect(screen.queryByText('SIN VERIFICAR')).not.toBeInTheDocument();
+    });
+    it('does not borrow API health when a subscription observation is absent', async () => {
+      await i18n.changeLanguage('es');
+      render(<ProviderCard provider={{...apiProvider, use_token_plan_agentic:true, status:'healthy',statusBadge:'API HEALTH'}} />);
+      expect(screen.getByText('Sin verificar')).toBeInTheDocument();
+      expect(screen.queryByText('API HEALTH')).not.toBeInTheDocument();
     });
 
     it('falls into empty card only when provider has no connection channels configured', async () => {
@@ -183,7 +196,7 @@ describe('ProviderCard observed status', () => {
       };
 
       render(<ProviderCard provider={unconfiguredProvider} />);
-      expect(screen.getByText('SIN CONFIGURAR')).toBeInTheDocument();
+      expect(screen.queryByText('SIN CONFIGURAR')).not.toBeInTheDocument();
       expect(screen.getByText(/Configura un modo disponible/i)).toBeInTheDocument();
     });
   });

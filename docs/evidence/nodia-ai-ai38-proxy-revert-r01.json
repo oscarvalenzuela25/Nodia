@@ -1,0 +1,58 @@
+{
+  "phase": "revert",
+  "status": "passed",
+  "started_at_utc": "2026-10-20T23:01:43.851744+00:00",
+  "source_sha256": "bf51cfd468e19eb4620d9244186f1a3de00ceb9e4cb9c2414e7210f0797961eb",
+  "site_before_sha256": "2f96d9f04d2bc2eba6e1d8bc126ec7d4a5c5b5202bfa3238d87d23e94c52a857",
+  "services_before": {
+    "nodia-api": {
+      "MainPID": "2319424",
+      "ExecMainStartTimestampMonotonic": "222722848067",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "2319425",
+      "ExecMainStartTimestampMonotonic": "222722849222",
+      "ActiveState": "active"
+    },
+    "nodia-gemini-lab": {
+      "MainPID": "0",
+      "ExecMainStartTimestampMonotonic": "209720064851",
+      "ActiveState": "active"
+    },
+    "nginx": {
+      "MainPID": "1004",
+      "ExecMainStartTimestampMonotonic": "4214746",
+      "ActiveState": "active"
+    }
+  },
+  "API_or_provider_restarts_requested": false,
+  "database_writes_or_provider_calls": 0,
+  "site_after_sha256": "73ba13298b743adc8ed179c09f68ff232fced7546be0e2288072d1457bc12945",
+  "nginx_test_passed": true,
+  "nginx_reload_passed": true,
+  "services_after": {
+    "nodia-api": {
+      "MainPID": "2319424",
+      "ExecMainStartTimestampMonotonic": "222722848067",
+      "ActiveState": "active"
+    },
+    "nodia-ai-worker": {
+      "MainPID": "2319425",
+      "ExecMainStartTimestampMonotonic": "222722849222",
+      "ActiveState": "active"
+    },
+    "nodia-gemini-lab": {
+      "MainPID": "0",
+      "ExecMainStartTimestampMonotonic": "209720064851",
+      "ActiveState": "active"
+    },
+    "nginx": {
+      "MainPID": "1004",
+      "ExecMainStartTimestampMonotonic": "4214746",
+      "ActiveState": "active"
+    }
+  },
+  "rollback_of_database": false,
+  "finished_at_utc": "2026-10-20T23:01:43.891033+00:00"
+}

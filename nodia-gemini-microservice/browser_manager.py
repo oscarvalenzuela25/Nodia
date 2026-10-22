@@ -11,6 +11,8 @@ from loguru import logger
 from playwright.async_api import BrowserContext, Playwright, async_playwright
 from gemini_webapi import GeminiClient
 from session_store import save_session
+import session_store
+from login_viewer import LoginViewer
 
 BASE_DIR = Path(__file__).resolve().parent
 PROFILE_DIR = BASE_DIR / "browser_profile"
@@ -32,14 +34,14 @@ def has_system_chrome() -> bool:
         return Path("/usr/bin/google-chrome").exists()
     return False
 
-def update_env_file(secure_1psid: str, secure_1psidts: str) -> None:
+def update_env_file(secure_1psid: str, secure_1psidts: str, *, explicit_login: bool = True) -> None:
     """Atomically update login cookies without discarding service configuration."""
     if not secure_1psid or not secure_1psidts or any(
         character in value for value in (secure_1psid, secure_1psidts) for character in "\r\n"
     ):
         raise ValueError("Invalid Gemini cookies")
     # The mounted session directory is writable even when Docker binds .env read-only.
-    save_session(secure_1psid, secure_1psidts)
+    save_session(secure_1psid, secure_1psidts, explicit_login=explicit_login)
 
     if not ENV_FILE.exists():
         content = (
@@ -112,6 +114,7 @@ class BrowserCookieManager:
         self.profile_dir = PROFILE_DIR
         self.profile_dir.mkdir(parents=True, exist_ok=True)
         self.last_refresh_time: Optional[float] = None
+        self.viewer = LoginViewer()
 
     async def _extract_cookies(self, context: BrowserContext) -> Dict[str, str]:
         """Extracts __Secure-1PSID and __Secure-1PSIDTS from the browser context."""
@@ -159,6 +162,12 @@ class BrowserCookieManager:
                 context = await self._launch_context(playwright, headless=False)
                 try:
                     page = context.pages[0] if context.pages else await context.new_page()
+                    self.viewer.attach(page)
+                    def select_login_page(new_page):
+                        nonlocal page
+                        page = new_page
+                        self.viewer.attach(new_page)
+                    context.on("page", select_login_page)
                     try:
                         await page.goto("https://gemini.google.com/app", timeout=60000)
                     except Exception as error:
@@ -183,6 +192,7 @@ class BrowserCookieManager:
                                 if psid and psidts:
                                     test_client = None
                                     try:
+                                        os.environ["GEMINI_COOKIE_PATH"] = str(session_store.SESSION_FILE.parent)
                                         test_client = GeminiClient(psid, psidts)
                                         await test_client.init(timeout=10, auto_refresh=False)
                                         if test_client.account_status.name != "UNAUTHENTICATED":
@@ -197,7 +207,8 @@ class BrowserCookieManager:
                             logger.debug("Login polling failed: {}", type(error).__name__)
                         await asyncio.sleep(2)
                 finally:
-                    await context.close()
+                    self.viewer.clear()
+                    await asyncio.wait_for(context.close(), timeout=5)
 
             if not extracted_cookies:
                 return {"success": False, "message": "No se completó el inicio de sesión o se cerró la ventana."}
@@ -230,7 +241,7 @@ class BrowserCookieManager:
                     if not cookies.get("secure_1psid") or not cookies.get("secure_1psidts"):
                         logger.warning("Headless refresh did not obtain both Gemini cookies.")
                         return None
-                    update_env_file(cookies["secure_1psid"], cookies["secure_1psidts"])
+                    update_env_file(cookies["secure_1psid"], cookies["secure_1psidts"], explicit_login=False)
                     self.last_refresh_time = time.time()
                     return cookies
                 except Exception as error:

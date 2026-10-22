@@ -1,0 +1,85 @@
+{
+  "stage": "AI-33",
+  "scope": "Synthetic HTTP browser fixture; no operational database, provider or business writes",
+  "checked_on": "2026-10-18T18:30:28.653Z",
+  "checks": {
+    "catalog_five_keys": true,
+    "business_selector_preview_matches": true,
+    "exact_confirmation_one_challenge_one_post": true,
+    "accepted_list_refresh": true,
+    "composer_draft_preserved": true,
+    "connection_writes": 0,
+    "message_writes": 0,
+    "list_error_visible_with_server_message_and_toast": true,
+    "error_recovery_without_page_reload": true,
+    "languages": [
+      "es",
+      "en"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewport_overflow": [
+      {
+        "width": 320,
+        "scroll": 320,
+        "dialog": 320
+      },
+      {
+        "dialog": [
+          {
+            "client": 560,
+            "scroll": 560,
+            "width": 560
+          }
+        ],
+        "scroll": 599,
+        "width": 599
+      },
+      {
+        "dialog": [
+          {
+            "client": 560,
+            "scroll": 560,
+            "width": 560
+          }
+        ],
+        "scroll": 600,
+        "width": 600
+      },
+      {
+        "dialog": [
+          {
+            "client": 560,
+            "scroll": 560,
+            "width": 560
+          }
+        ],
+        "scroll": 900,
+        "width": 900
+      },
+      {
+        "dialog": [
+          {
+            "client": 560,
+            "scroll": 560,
+            "width": 560
+          }
+        ],
+        "scroll": 1440,
+        "width": 1440
+      }
+    ]
+  },
+  "screenshots": [
+    "docs/evidence/nodia-ai-ai33-ui-dark.png",
+    "docs/evidence/nodia-ai-ai33-ui-light-mobile.png",
+    "docs/evidence/nodia-ai-ai33-ui-light-error-mobile.png"
+  ],
+  "limitations": [
+    "No new Gemini inference or MCP preference tool publication verified",
+    "Original hardcoded synthetic preview fixture corrected before final exact-preview verification",
+    "Full responsive geometry measured; screenshot timing after viewport changes verified with fresh capture"
+  ]
+}

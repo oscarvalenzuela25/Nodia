@@ -1,0 +1,44 @@
+{
+  "stage": "AI-29-R01",
+  "status": "passed",
+  "passed": true,
+  "scope": "final_private_vm_read_only_health_and_compiled_parity",
+  "observed_at_utc": "2026-10-18T01:02:29Z",
+  "units": {
+    "nodia-api": "active",
+    "nodia-ai-worker": "active",
+    "nodia-gemini-lab": "active",
+    "nginx": "active"
+  },
+  "http": {
+    "api": 200,
+    "gemini": 200
+  },
+  "dist_tree_sha256": "5e5d25640bf441cfe50b071b25d0caae2d9fdb9fad14f37cd6bfea1e5e82d225",
+  "dist_tree_hash_algorithm": "sha256 of compact sorted-key JSON path/sha256 array from Python sorted(Path.rglob('*'))",
+  "compiled_dist_files_verified": 873,
+  "compiled_stage_and_runtime_equal": true,
+  "final_package_files_verified": 933,
+  "final_package_archive_sha256": "cf925902077a9bea441f3a32e2991f2b51f37ec6f9457d16527ad32d52d2d44e",
+  "final_package_manifest_sha256": "6ca8c8d4014b51d10acca4d9824f832c0ba1ac1954fd453e941495446991c8a6",
+  "knowledge_release": "e22bfcc46cf8a538b502543d61dfd43a7d77d933a1cea6bd533b279ea1ead591",
+  "quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0,
+    "migrations": 25
+  },
+  "host_containment_proof_as_service_uid": {
+    "version": 1,
+    "previous_roots": 0
+  },
+  "provider_authentication_or_inference_verified_by_health": false,
+  "configured_database_written": false,
+  "provider_request_started": false,
+  "profile_files_copied_or_hashed": false,
+  "desktop_http": {
+    "client": 200,
+    "api_tunnel": 200
+  },
+  "desktop_observed_at_utc": "2026-10-18T00:56:19.030624+00:00"
+}

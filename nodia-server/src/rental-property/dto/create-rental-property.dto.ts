@@ -1,6 +1,7 @@
 import { IsInt, Min, Max } from 'class-validator';
 import {
   IsTimezone,
+  IsRentalId,
   IsLocalTime,
   IsRentalPercent,
   IsRentalMoney,
@@ -12,6 +13,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean } from 'class-validator';
 
 export class CreateRentalPropertyDto {
+  @ApiPropertyOptional() @OptionalDefined() @IsRentalId() owner_id?: string;
   @ApiProperty() @RentalText() name!: string;
   @ApiPropertyOptional() @OptionalDefined() @IsTimezone() timezone?: string;
   @ApiProperty({ minimum: 1, maximum: 1000 })

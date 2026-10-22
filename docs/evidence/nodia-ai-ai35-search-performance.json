@@ -1,0 +1,1401 @@
+{
+  "task": "AI-35",
+  "status": "passed",
+  "scope": "compiled_wide_search_paired_postgresql16_synthetic_content",
+  "volume": {
+    "conversations": 20000,
+    "messages": 200000,
+    "parts": 200000,
+    "text_bytes": "84000018",
+    "gin_index_bytes": "13795328"
+  },
+  "profiles": {
+    "Synthetic": {
+      "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+      "samples": [
+        {
+          "pair": 0,
+          "with_index": false,
+          "execution_ms": 3919.724,
+          "planning_ms": 1.558,
+          "shared_hit_blocks": 1400797,
+          "shared_read_blocks": 4156,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 0,
+          "with_index": true,
+          "execution_ms": 3995.54,
+          "planning_ms": 1.849,
+          "shared_hit_blocks": 1400829,
+          "shared_read_blocks": 4124,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 1,
+          "with_index": true,
+          "execution_ms": 3732.956,
+          "planning_ms": 1.426,
+          "shared_hit_blocks": 1400861,
+          "shared_read_blocks": 4092,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 1,
+          "with_index": false,
+          "execution_ms": 3733.768,
+          "planning_ms": 1.736,
+          "shared_hit_blocks": 1400893,
+          "shared_read_blocks": 4060,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 2,
+          "with_index": false,
+          "execution_ms": 3731.222,
+          "planning_ms": 4.613,
+          "shared_hit_blocks": 1400974,
+          "shared_read_blocks": 3979,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 2,
+          "with_index": true,
+          "execution_ms": 3909.79,
+          "planning_ms": 2.055,
+          "shared_hit_blocks": 1400991,
+          "shared_read_blocks": 3962,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 3,
+          "with_index": true,
+          "execution_ms": 3680.426,
+          "planning_ms": 1.414,
+          "shared_hit_blocks": 1401023,
+          "shared_read_blocks": 3930,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 3,
+          "with_index": false,
+          "execution_ms": 3856.886,
+          "planning_ms": 2.82,
+          "shared_hit_blocks": 1401055,
+          "shared_read_blocks": 3898,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 4,
+          "with_index": false,
+          "execution_ms": 3641.221,
+          "planning_ms": 1.614,
+          "shared_hit_blocks": 1401087,
+          "shared_read_blocks": 3866,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 4,
+          "with_index": true,
+          "execution_ms": 3513.51,
+          "planning_ms": 2.426,
+          "shared_hit_blocks": 1401119,
+          "shared_read_blocks": 3834,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "before_ms": 3733.768,
+      "after_ms": 3732.956,
+      "ratio": 0.9997825253202663,
+      "same_plan_all_samples": true,
+      "gin_index_used": false,
+      "plan_sha256": "9f34c4045feb2aa6827723009780b8e9ce1b2e6dd5bfa5073012ee266b8d8bad"
+    },
+    "searchable message body": {
+      "query_sha256": "e19f95d007237273ec1f8dc444e1962fc14169ea5fa52466bbb5cfb7a0a367dd",
+      "samples": [
+        {
+          "pair": 0,
+          "with_index": false,
+          "execution_ms": 1269.659,
+          "planning_ms": 0.889,
+          "shared_hit_blocks": 1401247,
+          "shared_read_blocks": 3706,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 0,
+          "with_index": true,
+          "execution_ms": 1289.106,
+          "planning_ms": 1.007,
+          "shared_hit_blocks": 1401279,
+          "shared_read_blocks": 3674,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 1,
+          "with_index": true,
+          "execution_ms": 1287.001,
+          "planning_ms": 0.838,
+          "shared_hit_blocks": 1401311,
+          "shared_read_blocks": 3642,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 1,
+          "with_index": false,
+          "execution_ms": 1386.052,
+          "planning_ms": 0.915,
+          "shared_hit_blocks": 1401343,
+          "shared_read_blocks": 3610,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 2,
+          "with_index": false,
+          "execution_ms": 1329.31,
+          "planning_ms": 0.913,
+          "shared_hit_blocks": 1401375,
+          "shared_read_blocks": 3578,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 2,
+          "with_index": true,
+          "execution_ms": 1384.761,
+          "planning_ms": 0.995,
+          "shared_hit_blocks": 1401407,
+          "shared_read_blocks": 3546,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 3,
+          "with_index": true,
+          "execution_ms": 1279.672,
+          "planning_ms": 0.867,
+          "shared_hit_blocks": 1401439,
+          "shared_read_blocks": 3514,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 3,
+          "with_index": false,
+          "execution_ms": 1359.566,
+          "planning_ms": 0.895,
+          "shared_hit_blocks": 1401471,
+          "shared_read_blocks": 3482,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 4,
+          "with_index": false,
+          "execution_ms": 1331.326,
+          "planning_ms": 0.922,
+          "shared_hit_blocks": 1401503,
+          "shared_read_blocks": 3450,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "pair": 4,
+          "with_index": true,
+          "execution_ms": 1284.594,
+          "planning_ms": 1.096,
+          "shared_hit_blocks": 1401535,
+          "shared_read_blocks": 3418,
+          "plan": {
+            "node": "Limit",
+            "relation": null,
+            "index": null,
+            "plans": [
+              {
+                "node": "LockRows",
+                "relation": null,
+                "index": null,
+                "plans": [
+                  {
+                    "node": "Sort",
+                    "relation": null,
+                    "index": null,
+                    "plans": [
+                      {
+                        "node": "Seq Scan",
+                        "relation": "nodia_ai_conversations",
+                        "index": null,
+                        "plans": [
+                          {
+                            "node": "Nested Loop",
+                            "relation": null,
+                            "index": null,
+                            "plans": [
+                              {
+                                "node": "Nested Loop",
+                                "relation": null,
+                                "index": null,
+                                "plans": [
+                                  {
+                                    "node": "Seq Scan",
+                                    "relation": "nodia_ai_messages",
+                                    "index": null
+                                  },
+                                  {
+                                    "node": "Index Scan",
+                                    "relation": "nodia_ai_message_parts",
+                                    "index": "nodia_ai_message_parts_pkey"
+                                  }
+                                ]
+                              },
+                              {
+                                "node": "Index Scan",
+                                "relation": "nodia_ai_conversations",
+                                "index": "nodia_ai_conversations_pkey"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "before_ms": 1331.326,
+      "after_ms": 1287.001,
+      "ratio": 0.9667061260728026,
+      "same_plan_all_samples": true,
+      "gin_index_used": false,
+      "plan_sha256": "9f34c4045feb2aa6827723009780b8e9ce1b2e6dd5bfa5073012ee266b8d8bad"
+    }
+  },
+  "method": "5 paired warm EXPLAIN ANALYZE BUFFERS samples per profile; AB/BA alternating index presence; no-index DROP INDEX rolled back; no rebuild between paired samples.",
+  "configured_database_touched": false,
+  "providers_called": false,
+  "r2_called": false,
+  "services_restarted": false,
+  "cleanup": {
+    "disposable_postgresql_removed": true
+  },
+  "limitations": [
+    "Synthetic warm-cache timings; these are not production percentiles.",
+    "This experiment isolates index presence in wide-query reads; index creation, storage and write costs remain separate."
+  ],
+  "source_harness_path": "nodia-server/test/nodia-ai-ai35-search-performance.integration.mjs",
+  "source_harness_sha256": "23f69ebd70130a411d58f553e4c15d628eb0365fa0f71e184e6ab0c8b5dd0010",
+  "compiled_stage_manifest_sha256": "b63561f3707653edb1a469c332bc5bd58a11fa0410b3f4ed2c20bf43019c82aa",
+  "source_validation": {
+    "path": "docs/evidence/nodia-ai-ai35-sql-validation-attempt04.json",
+    "sha256": "6542906593fe6272e577ae5ea4c52e942790272731464cacfd9838069560fe3a",
+    "checks": 47
+  },
+  "initial_unpaired_comparison": {
+    "RareBodyBenchmark": {
+      "before_ms": 1171.965,
+      "after_ms": 7.852,
+      "ratio": 0.006699858784178709
+    },
+    "RareTitleBenchmark": {
+      "before_ms": 1120.697,
+      "after_ms": 6.999,
+      "ratio": 0.006245220608246476
+    },
+    "AbsentBenchmarkPhrase": {
+      "before_ms": 1178.548,
+      "after_ms": 7.016,
+      "ratio": 0.0059530880371440114
+    },
+    "Synthetic": {
+      "before_ms": 1367.23,
+      "after_ms": 1371.647,
+      "ratio": 1.003230619573883
+    },
+    "searchable message body": {
+      "before_ms": 1336.941,
+      "after_ms": 1452.66,
+      "ratio": 1.08655505366355
+    },
+    "xy": {
+      "before_ms": 1135.916,
+      "after_ms": 1094.729,
+      "ratio": 0.9637411569165326
+    }
+  },
+  "cache_state": "Warm-up performed for both states; shared reads remain observable; fully resident or cold-cache state is not claimed.",
+  "interpretation": {
+    "same_wide_plan_with_or_without_index": true,
+    "wide_plan_uses_gin": false,
+    "initial_body_broad_regression_percent": 8.655505366355,
+    "paired_body_broad_change_percent": -3.3293873927197404,
+    "initial_regression_reproduced_by_index_presence": false,
+    "cause_of_absolute_timing_variation": "unknown",
+    "wide_queries_still_costly": true,
+    "statement_timeout_ms": 5000,
+    "statement_timeout_source": "nodia-server/src/authorization/authority-transaction.ts",
+    "per_page_end_to_end_sla_claimed": false
+  }
+}

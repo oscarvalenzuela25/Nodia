@@ -4,6 +4,11 @@ import { describe, it, expect, vi } from "vitest";
 import TextInput from "../../../../../src/components/inputs/TextInput";
 
 describe("TextInput", () => {
+  it("renders a trailing control and links an external description without replacing its label", () => {
+    render(<><TextInput label="Texto" value="dato" onChange={vi.fn()} aria-describedby="text-help" endAdornment={<button>Mostrar</button>} /><p id="text-help">Ayuda externa</p></>);
+    expect(screen.getByLabelText("Texto")).toHaveAccessibleDescription("Ayuda externa");
+    expect(screen.getByRole("button", { name: "Mostrar" })).toBeInTheDocument();
+  });
   it("renders label, placeholder, value and handles input", async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();

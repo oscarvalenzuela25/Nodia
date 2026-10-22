@@ -1,0 +1,189 @@
+{
+  "stage": "AI-32-R04",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "passed",
+  "observed_at_utc": "2026-10-18T05:15:03Z",
+  "harness_sha256": "f7fa25655014fc3dd41266c602287e71e812007ac2b27ed021d590a8c7b4d14a",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "verification_semantics": "this_canary_semantic_match_and_completed_ack_and_exact_cached_media_type",
+  "probe": {
+    "engine": "web",
+    "kind": "audio",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null,
+    "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+    "reference": {
+      "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+      "operation_ref": "21088307-1df2-48fe-b9d5-daddc0e90787"
+    },
+    "attempt_id": "21088307-1df2-48fe-b9d5-daddc0e90787",
+    "file_bytes": 30082,
+    "media_type": "audio/webm",
+    "file_sha256": "dbce7a9df41a39e4b7ce66f799b5b3b222b19fdbd7bd11cfdef655d348f24ea0",
+    "expected_answer_sha256": "45347476c557f02765fe98abf1cbefca0904bfcf7c428a756d646bb9de42a12f",
+    "answer_normalization": "speech_words_v1",
+    "native_acknowledged": true,
+    "verified": true,
+    "fixture": "synthetic_known_canary",
+    "audio_oracle_source": "explicit_cli_synthetic_text",
+    "http_status": 200,
+    "answer_sha256": "45347476c557f02765fe98abf1cbefca0904bfcf7c428a756d646bb9de42a12f",
+    "semantic_canary_matches": true,
+    "semantic_diagnostic": {
+      "answer_is_string": true,
+      "answer_chars": 39,
+      "expected_chars": 40,
+      "line_count": 1,
+      "trim_equals": false,
+      "casefold_equals": false,
+      "whitespace_collapse_equals": false,
+      "contains_expected": false,
+      "expected_is_prefix": false,
+      "expected_is_suffix": false,
+      "json_string_decoded_equals": false,
+      "closed_keyword_present": {
+        "audio": false,
+        "transcri": false,
+        "no puedo": false,
+        "no tengo": false,
+        "cannot": false,
+        "can't": false,
+        "unable": false,
+        "unsupported": false,
+        "formato": false,
+        "silencio": false,
+        "vac\u00edo": false,
+        "upload": false,
+        "archivo": false
+      }
+    },
+    "elapsed_seconds": 20.97,
+    "native_outcome": "completed",
+    "cached_modality_verified": true,
+    "exact_format_verified": true
+  },
+  "reply_kind": "answer",
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [
+      "image",
+      "pdf",
+      "audio"
+    ],
+    "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+    "session_generation": "57a98c3f122f4c4091bb3e3afe0cfbf1",
+    "supports_mcp": false,
+    "verified_attachment_media_types": [
+      "image/png",
+      "application/pdf",
+      "audio/wav",
+      "audio/ogg",
+      "audio/webm"
+    ]
+  },
+  "diagnostics": [
+    {
+      "engine": null,
+      "attempt_id": "21088307-1df2-48fe-b9d5-daddc0e90787",
+      "phase": null,
+      "error_type": null,
+      "failure_category": null,
+      "elapsed_ms": null,
+      "event": "web_success",
+      "reply_format": {},
+      "generation": {
+        "http_status": 200,
+        "upstream_eof_seen": true,
+        "upstream_eof_elapsed_ms": 20427,
+        "candidate_outputs": 4,
+        "recovery_calls": 0,
+        "client_close_calls": 0,
+        "byte_chunks": 11,
+        "body_bytes": 23070,
+        "text_outputs": 4,
+        "structured_text": {
+          "applied": true,
+          "last_equal": true,
+          "candidate_checks": 4,
+          "protected_ampersands_total": 0,
+          "unprotected_html_would_change_outputs": 0,
+          "last_source": {
+            "text_bytes": 66,
+            "sha256": "c22422f596dc7274470873910e1530742e4a3ca9c26e83759cee21d05cd477c4",
+            "json_parseable": true
+          },
+          "last_output": {
+            "text_bytes": 66,
+            "sha256": "c22422f596dc7274470873910e1530742e4a3ca9c26e83759cee21d05cd477c4",
+            "json_parseable": true
+          },
+          "preparser_equal_to_source": true,
+          "last_preparser": {
+            "selection_source": "primary",
+            "card_prefix_detected": false,
+            "card_payload_available": null,
+            "selected_payload": {
+              "text_bytes": 66,
+              "sha256": "c22422f596dc7274470873910e1530742e4a3ca9c26e83759cee21d05cd477c4",
+              "json_parseable": true,
+              "top_level_kind": "object",
+              "diagnostic_limit_exceeded": false,
+              "syntax": null
+            }
+          }
+        },
+        "body_pacing": {
+          "first_chunk_elapsed_ms": 2938,
+          "last_chunk_elapsed_ms": 20427,
+          "max_inter_chunk_gap_ms": 15010
+        },
+        "uploads": {
+          "requests": 1,
+          "roundtrips_completed": 1,
+          "failed": 0,
+          "cancelled": 0,
+          "sink_errors": 0,
+          "metadata_errors": 0,
+          "records": [
+            {
+              "ordinal": 1,
+              "started_elapsed_ms": 231,
+              "completed_elapsed_ms": 850,
+              "duration_ms": 619,
+              "reference_chars": 64,
+              "http_status": 200,
+              "reference_nonempty": true,
+              "reference_prefix_matches": true,
+              "outcome": "http_completed"
+            }
+          ]
+        },
+        "audio_transport": {
+          "scoped": true,
+          "applied": true,
+          "input_files": 1,
+          "audio_files": 1,
+          "audio_media_types": [
+            "audio/webm"
+          ],
+          "descriptor_version": "explicit-audio/1"
+        }
+      }
+    }
+  ],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T05:15:24Z"
+}

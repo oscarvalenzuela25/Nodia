@@ -1,0 +1,18 @@
+{
+  "observation": "configured_selection_only",
+  "rows": [
+    {
+      "connection_id": "2",
+      "is_active": true,
+      "use_token_plan_web": true,
+      "use_token_plan_agentic": true,
+      "provider_key": "gemini",
+      "can_use_token_plan_web": true,
+      "can_use_token_plan_agentic": true,
+      "web_model": "56fdd199312815e2",
+      "web_effort": null,
+      "agentic_model": "gemini-3.8-flash-high",
+      "agentic_effort": "high"
+    }
+  ]
+}

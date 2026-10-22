@@ -28,5 +28,13 @@ import { UpdateFinanceCategoryGroupUseCase } from './use-case/update-finance-cat
     CreateFinanceCategoryGroupUseCase,
     UpdateFinanceCategoryGroupUseCase,
   ],
+  exports: [
+    FinanceCategoryGroupService,
+    GetFinanceCategoryGroupsUseCase,
+    GetFinanceCategoryGroupUseCase,
+    CreateFinanceCategoryGroupUseCase,
+    UpdateFinanceCategoryGroupUseCase,
+    DeleteFinanceCategoryGroupUseCase,
+  ],
 })
 export class FinanceCategoryGroupModule {}

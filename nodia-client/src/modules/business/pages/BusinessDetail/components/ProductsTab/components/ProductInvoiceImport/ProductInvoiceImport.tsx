@@ -13,7 +13,8 @@ import {
   Checkbox,
   Chip,
   CircularProgress,
-  FormControlLabel,
+  ToggleButton,
+  ToggleButtonGroup,
   Grid,
   IconButton,
   Paper,
@@ -101,7 +102,7 @@ export const ProductInvoiceImport: FC<Props> = ({
   onCancel,
   onSuccess,
 }) => {
-  const { t } = useTranslation(["business", "core"]);
+  const { t } = useTranslation(["business", "core", "ai_providers"]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const resultsSectionRef = useRef<HTMLDivElement | null>(null);
   const shouldScrollToResults = useRef<boolean>(false);
@@ -126,7 +127,9 @@ export const ProductInvoiceImport: FC<Props> = ({
   }, [iaProvidersData]);
 
   const [lastUsedProvider, setLastUsedProvider] = useState<VerifyIaProviderItem | null>(null);
-  const [useThinkingMode, setUseThinkingMode] = useState<boolean>(false);
+  const [webReasoningOverride, setWebReasoningOverride] = useState<{
+    providerId: string; model: string; level: "low" | "medium" | "high";
+  } | null>(null);
   const [selectedAiProviderId, setSelectedAiProviderId] = useState<string | null>(null);
   const [modeSelection, setModeSelection] = useState<{ providerId: string; mode: InvoiceAiMode } | null>(null);
   const usableProviders = useMemo(() => {
@@ -141,7 +144,9 @@ export const ProductInvoiceImport: FC<Props> = ({
     ? (enabledModes.includes(requestedMode) ? requestedMode : null)
     : (defaultMode && enabledModes.includes(defaultMode) ? defaultMode : enabledModes[0] ?? null);
   const aiConfiguration = resolveInvoiceAiConfiguration(currentAiProvider, selectedAiMode);
-  const currentSupportsThinking = aiConfiguration.supportsThinking;
+  const currentWebReasoningLevel = webReasoningOverride !== null && webReasoningOverride.providerId === currentAiProvider?.id
+    && webReasoningOverride.model === aiConfiguration.model
+    ? webReasoningOverride.level : aiConfiguration.thinkingLevel;
   const activeModes = enabledModes.map((value) => ({
     value,
     label: `${t(`business:mode_${value}`)}${currentAiProvider?.default_mode === value ? ` (${t("business:default_badge")})` : ""}`,
@@ -290,9 +295,9 @@ export const ProductInvoiceImport: FC<Props> = ({
     setLastUsedProvider(provider);
     const targetModel = configuration.model;
     const modelType = "default" as const;
-    const shouldSendThinking = effectiveMode === "token_plan_web" && useThinkingMode && configuration.supportsThinking;
-    const effectiveThinkingLevel = effectiveMode === "token_plan_agentic" || effectiveMode === "api_key"
-      ? configuration.thinkingLevel : undefined;
+    const effectiveThinkingLevel = effectiveMode === "token_plan_web"
+      && webReasoningOverride?.providerId === provider.id && webReasoningOverride.model === targetModel
+      ? webReasoningOverride.level : configuration.thinkingLevel;
 
     setIsPreparingDraft(true);
     let transport: Awaited<ReturnType<typeof observation.start>> | undefined;
@@ -305,7 +310,7 @@ export const ProductInvoiceImport: FC<Props> = ({
         model: targetModel,
         model_type: modelType,
         mode: effectiveMode,
-        extended_thinking: effectiveMode === "api_key" ? undefined : shouldSendThinking,
+        extended_thinking: undefined,
         thinking_level: effectiveThinkingLevel,
       };
       transport = await observation.start(params);
@@ -647,33 +652,20 @@ export const ProductInvoiceImport: FC<Props> = ({
               />
             </Box>
 
-            {/* Thinking Mode Checkbox (ONLY for token_plan_web) */}
-            {Boolean(file && currentSupportsThinking && selectedAiMode === "token_plan_web") && (
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Tooltip
-                  title={t("business:use_thinking_mode_tooltip")}
-                  arrow
-                  placement="top"
-                >
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={useThinkingMode}
-                        onChange={(e) => setUseThinkingMode(e.target.checked)}
-                        disabled={isBusy}
-                        size="small"
-                        color="primary"
-                        data-testid="use-thinking-mode-checkbox"
-                      />
-                    }
-                    label={
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {t("business:use_thinking_mode")}
-                      </Typography>
-                    }
-                    sx={{ m: 0, userSelect: "none" }}
-                  />
-                </Tooltip>
+            {Boolean(file && selectedAiMode === "token_plan_web" && currentAiProvider) && (
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1, alignItems: { xs: "stretch", sm: "center" } }}>
+                <Typography variant="body2">{t("ai_providers:detail.reasoning_level_label")}</Typography>
+                <ToggleButtonGroup exclusive disabled={isBusy} value={currentWebReasoningLevel ?? null}
+                  aria-label={t("ai_providers:detail.reasoning_level_label")}
+                  sx={{ minHeight: 44, "& .MuiToggleButton-root": { flex: { xs: 1, sm: "initial" } } }}
+                  onChange={(_event, level: "low" | "medium" | "high" | null) => {
+                    if (level && currentAiProvider) setWebReasoningOverride({ providerId: currentAiProvider.id,
+                      model: aiConfiguration.model, level });
+                  }}>
+                  {(["low", "medium", "high"] as const).map((level) => <ToggleButton key={level} value={level}>
+                    {t(`ai_providers:detail.web_level_${level}`)}
+                  </ToggleButton>)}
+                </ToggleButtonGroup>
               </Box>
             )}
           </Box>
@@ -727,7 +719,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                         if (val) {
                           setSelectedAiProviderId(val);
                           setModeSelection(null);
-                          setUseThinkingMode(false);
+                          setWebReasoningOverride(null);
                         }
                       }}
                       placeholder={t(
@@ -751,7 +743,7 @@ export const ProductInvoiceImport: FC<Props> = ({
                         onChange={(val) => {
                           if (currentAiProvider && isInvoiceAiMode(val)) {
                             setModeSelection({ providerId: currentAiProvider.id, mode: val });
-                            setUseThinkingMode(false);
+                            setWebReasoningOverride(null);
                           }
                         }}
                         placeholder={t(

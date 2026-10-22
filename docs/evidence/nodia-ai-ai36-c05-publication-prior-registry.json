@@ -1,0 +1,3255 @@
+{
+  "schema_version": 1,
+  "catalog_release": "nodia-ai-ai15-reads/1",
+  "context_module_route": "/tools/nodia-ai",
+  "source_paths": [
+    "docs/nodia-ai/knowledge/businesses/README.md",
+    "docs/nodia-ai/knowledge/businesses/features/active-invoice-analysis.md",
+    "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
+    "docs/nodia-ai/knowledge/businesses/features/confirmed-business-effects.md",
+    "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
+    "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
+    "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
+    "docs/nodia-ai/knowledge/businesses/features/products.md",
+    "docs/nodia-ai/knowledge/businesses/features/supplier-contacts.md",
+    "docs/nodia-ai/knowledge/businesses/features/suppliers.md",
+    "docs/nodia-ai/knowledge/general-settings/README.md",
+    "docs/nodia-ai/knowledge/general-settings/features/actions-and-business-actions.md",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-connections.md",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-credentials-and-sessions.md",
+    "docs/nodia-ai/knowledge/general-settings/features/ai-models-and-health.md",
+    "docs/nodia-ai/knowledge/general-settings/features/confirmed-administration.md",
+    "docs/nodia-ai/knowledge/general-settings/features/confirmed-ai-configuration.md",
+    "docs/nodia-ai/knowledge/general-settings/features/modules-and-groups.md",
+    "docs/nodia-ai/knowledge/general-settings/features/roles.md",
+    "docs/nodia-ai/knowledge/general-settings/features/secure-ai-interaction.md",
+    "docs/nodia-ai/knowledge/general-settings/features/users.md",
+    "docs/nodia-ai/knowledge/nodia-ai/README.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/accepted-preferences.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/attachments-and-voice.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/capability-registry-gateway.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/chat-admission-retention.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/conversation-coordination.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/conversation-organization.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/conversation-persistence.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/durable-worker.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/gemini-agentic-viability.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/gemini-web-viability.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/knowledge-publication.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/long-context-compaction.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/module-authorization.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/restricted-reports.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/runtime-policy.md",
+    "docs/nodia-ai/knowledge/nodia-ai/features/shared-authority.md",
+    "docs/nodia-ai/knowledge/personal-finance/README.md",
+    "docs/nodia-ai/knowledge/personal-finance/features/categories-and-groups.md",
+    "docs/nodia-ai/knowledge/personal-finance/features/confirmed-movement-effect.md",
+    "docs/nodia-ai/knowledge/personal-finance/features/movements.md",
+    "docs/nodia-ai/knowledge/personal-finance/features/obligations.md",
+    "docs/nodia-ai/knowledge/personal-finance/features/summaries.md",
+    "docs/nodia-ai/knowledge/reservations/README.md",
+    "docs/nodia-ai/knowledge/reservations/features/audit-and-recovery.md",
+    "docs/nodia-ai/knowledge/reservations/features/availability-and-calendar.md",
+    "docs/nodia-ai/knowledge/reservations/features/blocks.md",
+    "docs/nodia-ai/knowledge/reservations/features/cancellation-policies.md",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-configuration.md",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-money.md",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-occupancy-preparation.md",
+    "docs/nodia-ai/knowledge/reservations/features/confirmed-reservation-lifecycle.md",
+    "docs/nodia-ai/knowledge/reservations/features/expenses.md",
+    "docs/nodia-ai/knowledge/reservations/features/payments-and-refunds.md",
+    "docs/nodia-ai/knowledge/reservations/features/preparation.md",
+    "docs/nodia-ai/knowledge/reservations/features/properties-and-collaborators.md",
+    "docs/nodia-ai/knowledge/reservations/features/reservations.md"
+  ],
+  "capabilities": [
+    {
+      "capability_id": "nodia_actions_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "DetailInput",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "Action",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_actions_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "ActionQuery",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "ActionPage",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_events_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/ai-settings/use-case/read-ai-settings.use-case.ts",
+          "sha256": "d2896b760fa80a38c5e09308fab4116c4a6938b1d7c9b45f4e93568a0f3fecfd"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "EventsInput",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "EventsResult",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_providers_catalog_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/ai-settings/use-case/read-ai-settings.use-case.ts",
+          "sha256": "d2896b760fa80a38c5e09308fab4116c4a6938b1d7c9b45f4e93568a0f3fecfd"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "CatalogInput",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "CatalogResult",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_providers_codex_session",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.ts",
+          "sha256": "53dfa39b6253e1e063ac272ceb3f9382e0ec421815c248fa001474c31a1700ce"
+        },
+        {
+          "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "CodexInput",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "CodexResult",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_providers_gemini_engines",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.ts",
+          "sha256": "53dfa39b6253e1e063ac272ceb3f9382e0ec421815c248fa001474c31a1700ce"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "EmptyInput",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "EnginesResult",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_providers_health",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.ts",
+          "sha256": "53dfa39b6253e1e063ac272ceb3f9382e0ec421815c248fa001474c31a1700ce"
+        },
+        {
+          "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+        },
+        {
+          "path": "nodia-server/src/ai-provider/use-case/get-ai-providers-health.use-case.ts",
+          "sha256": "39eca788a791fe14773c2312a4ff3b7aac81e2bc6231f33bc0bf349e3724fdec"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "EmptyInput",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "HealthResult",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_providers_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/ai-settings/use-case/read-ai-settings.use-case.ts",
+          "sha256": "d2896b760fa80a38c5e09308fab4116c4a6938b1d7c9b45f4e93568a0f3fecfd"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "ProvidersInput",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "ProvidersResult",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_providers_models",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.ts",
+          "sha256": "53dfa39b6253e1e063ac272ceb3f9382e0ec421815c248fa001474c31a1700ce"
+        },
+        {
+          "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "ModelsInput",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "ModelsResult",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_ai_providers_supported_providers",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/ai-settings/use-case/read-ai-settings.use-case.ts",
+          "sha256": "d2896b760fa80a38c5e09308fab4116c4a6938b1d7c9b45f4e93568a0f3fecfd"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "SupportedInput",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "SupportedResult",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_api_keys_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/ai-settings/use-case/read-ai-settings.use-case.ts",
+          "sha256": "d2896b760fa80a38c5e09308fab4116c4a6938b1d7c9b45f4e93568a0f3fecfd"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "KeysInput",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/ai-settings.schema.json",
+        "definition": "KeysResult",
+        "sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_business_actions_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "DetailInput",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "BusinessAction",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_business_actions_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/actions"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "BusinessActionQuery",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "BusinessActionPage",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_businesses_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "BusinessesGetInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "BusinessesGetResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_businesses_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "BusinessesListInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "BusinessesListResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_categories_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "CategoryInput",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "Category",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_categories_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "CategoryQuery",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "CategoryPage",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "CategoryInput",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "GroupDetail",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_category_groups_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "CategoryQuery",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "GroupPage",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_movements_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "CategoryInput",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "Movement",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_movements_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "MovementQuery",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "MovementPage",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_obligations_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "CategoryInput",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "Obligation",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_obligations_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "ObligationQuery",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "ObligationPage",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_summaries_by_category",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "SummaryQuery",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "SummaryPage",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_summaries_by_category_group",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "SummaryQuery",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "GroupSummaryPage",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_finance_summaries_overview",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/finance/use-case/execute-nodia-ai-finance-read.use-case.ts",
+          "sha256": "c053170ca037bdb46545e84e09340e881825c9f1f65f813c96c8ebfaf9dd3b4f"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "MovementQuery",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/finance.schema.json",
+        "definition": "Overview",
+        "sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_invoices_eligible_invoice_connections",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.ts",
+          "sha256": "53dfa39b6253e1e063ac272ceb3f9382e0ec421815c248fa001474c31a1700ce"
+        },
+        {
+          "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "EmptyInput",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+        "definition": "EligibleResult",
+        "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_invoices_file",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read_artifact",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+          "sha256": "c289f45edf7e023f20fc2342472d670d5762759807613122aafd494d72080457"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+        "definition": "InvoiceFileInput",
+        "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+        "definition": "InvoiceFileResult",
+        "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_invoices_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "InvoicesGetInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "InvoicesGetResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_invoices_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "InvoicesListInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "InvoicesListResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_module_groups_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/modules"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "GroupQuery",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "GroupPage",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_modules_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/modules"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "DetailInput",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "ModuleDetail",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_modules_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/modules"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "ModuleQuery",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "ModulePage",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_product_logs_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductLogsGetInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductLogsGetResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_product_logs_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductLogsListInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductLogsListResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_product_logs_query",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductLogsQueryInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductLogsQueryResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_products_export_csv",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read_artifact",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+          "sha256": "c289f45edf7e023f20fc2342472d670d5762759807613122aafd494d72080457"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+        "definition": "ProductsExportInput",
+        "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+        "definition": "ProductsExportResult",
+        "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_products_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductsGetInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductsGetResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_products_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductsListInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProductsListResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_provider_contacts_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProviderContactsListInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProviderContactsListResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_providers_export_csv",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read_artifact",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/artifacts/use-case/execute-nodia-ai-artifact.use-case.ts",
+          "sha256": "c289f45edf7e023f20fc2342472d670d5762759807613122aafd494d72080457"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+        "definition": "ProvidersExportInput",
+        "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/artifacts.schema.json",
+        "definition": "ProvidersExportResult",
+        "sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_providers_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProvidersGetInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProvidersGetResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_providers_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/business"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
+          "sha256": "0654501def5cf3869c27b87d12afbdb4642988e6ed627df49ec0210f1af6cc20"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProvidersListInput",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
+        "definition": "ProvidersListResult",
+        "sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_audit_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalAuditListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalAuditListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_blocks_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalBlocksGetInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalBlocksGetOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_blocks_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalBlocksListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalBlocksListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_calendar_availability",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCalendarAvailabilityInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCalendarAvailabilityOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_calendar_calendar",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCalendarCalendarInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCalendarCalendarOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCancellationPoliciesGetInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCancellationPoliciesGetOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_cancellation_policies_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCancellationPoliciesListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCancellationPoliciesListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_candidates",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCollaboratorsCandidatesInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCollaboratorsCandidatesOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_collaborators_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCollaboratorsListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalCollaboratorsListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_expenses_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalExpensesGetInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalExpensesGetOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_expenses_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalExpensesListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalExpensesListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_payments_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPaymentsGetInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPaymentsGetOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_payments_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPaymentsListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPaymentsListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_properties_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPropertiesGetInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPropertiesGetOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_properties_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPropertiesListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalPropertiesListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_reservations_cancellation_preview",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalReservationsCancellationPreviewInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalReservationsCancellationPreviewOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_reservations_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalReservationsGetInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalReservationsGetOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_reservations_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalReservationsListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalReservationsListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_summaries_overview",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalSummariesOverviewInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalSummariesOverviewOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalTurnoversGetInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalTurnoversGetOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_rental_turnovers_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/tools/reservations"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/reservations/use-case/nodia-ai-reservations-family.use-case.ts",
+          "sha256": "287c28b49caa454cb7e6f1f186505c0589f0e479b3dec8b133dd96f106c7792a"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalTurnoversListInput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
+        "definition": "RentalTurnoversListOutput",
+        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_roles_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/roles"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "DetailInput",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "RoleDetail",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_roles_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/roles"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "RoleQuery",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "RolePage",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    },
+    {
+      "capability_id": "nodia_users_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/settings/users"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-products/core-settings/use-case/execute-nodia-ai-core-settings-read.use-case.ts",
+          "sha256": "c8e3ba54ce7f92d56e6c553f25613edaad5b75a125563df84a83c290bc28ad0c"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "UserQuery",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/core-settings.schema.json",
+        "definition": "UserPage",
+        "sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-ai15-postgres-integration.json",
+        "docs/evidence/nodia-ai-ai15-external-validation.json",
+        "docs/evidence/nodia-ai-ai15-artifacts-integration.json",
+        "docs/evidence/nodia-ai-ai15-live-local.json",
+        "docs/evidence/nodia-ai-ai15-live-artifacts.json",
+        "docs/evidence/nodia-ai-ai15-live-routing-interrupted.json",
+        "docs/evidence/nodia-ai-ai15-live-external-final.json",
+        "docs/evidence/nodia-ai-ai15-live-quota-gateway-final.json",
+        "docs/evidence/nodia-ai-ai15-live-codex-root-postfix.json"
+      ]
+    }
+  ],
+  "bindings": [
+    {
+      "document_id": "businesses.businesses-and-collaborators",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_businesses_get",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        {
+          "capability_id": "nodia_businesses_list",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/business"
+      ]
+    },
+    {
+      "document_id": "businesses.invoice-analysis",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_invoices_eligible_invoice_connections",
+          "revision": 1,
+          "input_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5",
+          "output_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/business"
+      ]
+    },
+    {
+      "document_id": "businesses.invoices-and-files",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_invoices_file",
+          "revision": 1,
+          "input_schema_sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794",
+          "output_schema_sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        },
+        {
+          "capability_id": "nodia_invoices_get",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        {
+          "capability_id": "nodia_invoices_list",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/business"
+      ]
+    },
+    {
+      "document_id": "businesses.product-logs",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_product_logs_get",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        {
+          "capability_id": "nodia_product_logs_list",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        {
+          "capability_id": "nodia_product_logs_query",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/business"
+      ]
+    },
+    {
+      "document_id": "businesses.products",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_products_export_csv",
+          "revision": 1,
+          "input_schema_sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794",
+          "output_schema_sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        },
+        {
+          "capability_id": "nodia_products_get",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        {
+          "capability_id": "nodia_products_list",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/business"
+      ]
+    },
+    {
+      "document_id": "businesses.supplier-contacts",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_provider_contacts_list",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/business"
+      ]
+    },
+    {
+      "document_id": "businesses.suppliers",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_providers_export_csv",
+          "revision": 1,
+          "input_schema_sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794",
+          "output_schema_sha256": "3af6747459edb184204a85d824f8b5a093ff1bec72c41b3f9bbf673e3dfd8794"
+        },
+        {
+          "capability_id": "nodia_providers_get",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        },
+        {
+          "capability_id": "nodia_providers_list",
+          "revision": 1,
+          "input_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7",
+          "output_schema_sha256": "ffa50078aeb3fa3751f22f4f809e877583a11fc4c228101e64919d1ffae619c7"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/business"
+      ]
+    },
+    {
+      "document_id": "general-settings.actions-and-business-actions",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_actions_get",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        {
+          "capability_id": "nodia_actions_list",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        {
+          "capability_id": "nodia_business_actions_get",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        {
+          "capability_id": "nodia_business_actions_list",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/actions"
+      ]
+    },
+    {
+      "document_id": "general-settings.ai-connections",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_ai_providers_catalog_list",
+          "revision": 1,
+          "input_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f",
+          "output_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        {
+          "capability_id": "nodia_ai_providers_list",
+          "revision": 1,
+          "input_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f",
+          "output_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        {
+          "capability_id": "nodia_ai_providers_supported_providers",
+          "revision": 1,
+          "input_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f",
+          "output_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ]
+    },
+    {
+      "document_id": "general-settings.ai-credentials-and-sessions",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_ai_providers_codex_session",
+          "revision": 1,
+          "input_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5",
+          "output_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        {
+          "capability_id": "nodia_api_keys_list",
+          "revision": 1,
+          "input_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f",
+          "output_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ]
+    },
+    {
+      "document_id": "general-settings.ai-models-and-health",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_ai_events_list",
+          "revision": 1,
+          "input_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f",
+          "output_schema_sha256": "f72eaf408b23c59bfdc2e27df5d553361a8d6b06ba1e0cff3cc88529f373d60f"
+        },
+        {
+          "capability_id": "nodia_ai_providers_gemini_engines",
+          "revision": 1,
+          "input_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5",
+          "output_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        {
+          "capability_id": "nodia_ai_providers_health",
+          "revision": 1,
+          "input_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5",
+          "output_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        },
+        {
+          "capability_id": "nodia_ai_providers_models",
+          "revision": 1,
+          "input_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5",
+          "output_schema_sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/ai-providers"
+      ]
+    },
+    {
+      "document_id": "general-settings.modules-and-groups",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_module_groups_list",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        {
+          "capability_id": "nodia_modules_get",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        {
+          "capability_id": "nodia_modules_list",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/modules"
+      ]
+    },
+    {
+      "document_id": "general-settings.roles",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_roles_get",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        },
+        {
+          "capability_id": "nodia_roles_list",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/roles"
+      ]
+    },
+    {
+      "document_id": "general-settings.users",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_users_list",
+          "revision": 1,
+          "input_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06",
+          "output_schema_sha256": "58274bdef8cd94c54152ad237389cca640956f4e3ce6f7ed3cb32c2bb5fddc06"
+        }
+      ],
+      "required_module_routes": [
+        "/settings/users"
+      ]
+    },
+    {
+      "document_id": "personal-finance.categories-and-groups",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_finance_categories_get",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        {
+          "capability_id": "nodia_finance_categories_list",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        {
+          "capability_id": "nodia_finance_category_groups_get",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        {
+          "capability_id": "nodia_finance_category_groups_list",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ]
+    },
+    {
+      "document_id": "personal-finance.movements",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_finance_movements_get",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        {
+          "capability_id": "nodia_finance_movements_list",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ]
+    },
+    {
+      "document_id": "personal-finance.obligations",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_finance_obligations_get",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        {
+          "capability_id": "nodia_finance_obligations_list",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ]
+    },
+    {
+      "document_id": "personal-finance.summaries",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_finance_summaries_by_category",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        {
+          "capability_id": "nodia_finance_summaries_by_category_group",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        },
+        {
+          "capability_id": "nodia_finance_summaries_overview",
+          "revision": 1,
+          "input_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21",
+          "output_schema_sha256": "c5204924a366346629e9df80889e5639f80781a2b4309a18a30ac85f1ac20b21"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/finances-personal"
+      ]
+    },
+    {
+      "document_id": "reservations.audit-and-recovery",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_audit_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.availability-and-calendar",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_calendar_availability",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_calendar_calendar",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.blocks",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_blocks_get",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_blocks_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.cancellation-policies",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_cancellation_policies_get",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_cancellation_policies_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.expenses",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_expenses_get",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_expenses_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.payments-and-refunds",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_payments_get",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_payments_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.preparation",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_turnovers_get",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_turnovers_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.properties-and-collaborators",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_collaborators_candidates",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_collaborators_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_properties_get",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_properties_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    },
+    {
+      "document_id": "reservations.reservations",
+      "fragment_id": "ai15-reads",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Lecturas disponibles en AI-15"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_rental_reservations_cancellation_preview",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_reservations_get",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_reservations_list",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        },
+        {
+          "capability_id": "nodia_rental_summaries_overview",
+          "revision": 1,
+          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
+          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        }
+      ],
+      "required_module_routes": [
+        "/tools/reservations"
+      ]
+    }
+  ]
+}

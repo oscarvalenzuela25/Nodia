@@ -1,0 +1,998 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+  "$defs": {
+    "DetailInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": ["id"]
+    },
+    "ActionQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": ["active", "inactive", "all"]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "description_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|description|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    },
+    "BusinessActionQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": ["active", "inactive", "all"]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "has_description_eq": {
+              "type": "boolean"
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|has_description|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    },
+    "ModuleQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": ["active", "inactive", "all"]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "link_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "link_eq": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "module_group_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "module_group_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|link|icon|module_group_id|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    },
+    "GroupQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": ["active", "inactive", "all"]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    },
+    "RoleQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": ["active", "inactive", "all"]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "actions_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "actions_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "actions_key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "actions_key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    },
+    "UserQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": ["active", "inactive", "all"]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "name_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "email_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "email_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "roles_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "roles_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "modules_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "modules_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|email|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    },
+    "Action": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": ["string", "null"],
+          "maxLength": 5000
+        },
+        "translates": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "es": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "en": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "required": ["key", "es", "en"]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "description"
+      ]
+    },
+    "BusinessAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "has_description": {
+          "type": "boolean"
+        },
+        "translates": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "es": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "en": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "required": ["key", "es", "en"]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "has_description"
+      ]
+    },
+    "Module": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "module_group_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "link": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "icon": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "translates": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "es": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "en": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "required": ["key", "es", "en"]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "module_group_id",
+        "link",
+        "icon"
+      ]
+    },
+    "Group": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "icon": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "translates": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "es": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "en": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "required": ["key", "es", "en"]
+          }
+        }
+      },
+      "required": ["id", "key", "is_active", "created_at", "updated_at", "icon"]
+    },
+    "Role": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "translates": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "es": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "en": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "required": ["key", "es", "en"]
+          }
+        }
+      },
+      "required": ["id", "key", "is_active", "created_at", "updated_at"]
+    },
+    "ModuleDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "module_group_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "link": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "icon": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "translates": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "es": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "en": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "required": ["key", "es", "en"]
+          }
+        },
+        "module_group": {
+          "$ref": "#/$defs/Group"
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "module_group_id",
+        "link",
+        "icon"
+      ]
+    },
+    "RoleDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "translates": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "es": {
+                "type": "string",
+                "maxLength": 2048
+              },
+              "en": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "required": ["key", "es", "en"]
+          }
+        },
+        "actions": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "actions"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": ["string", "null"],
+          "maxLength": 255
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "image_url": {
+          "type": ["string", "null"],
+          "maxLength": 8192
+        }
+      },
+      "required": [
+        "id",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "name",
+        "email",
+        "image_url"
+      ]
+    },
+    "Meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "total_items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "total_pages": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": ["page", "limit", "total_items", "total_pages"]
+    },
+    "ActionPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Action"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "BusinessActionPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/BusinessAction"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "ModulePage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Module"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "GroupPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Group"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "RolePage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/Role"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "UserPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/User"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/Meta"
+        }
+      },
+      "required": ["data", "meta"]
+    }
+  }
+}

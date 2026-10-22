@@ -1,0 +1,8 @@
+{
+  "classification": "fixture_incorrect_empty_table_assumption",
+  "stderr_sha256": "cee87c78fcfe5f0f43f231c08129852c37e2539901d14af0c97e929deea83234",
+  "reason": "Successful chat inference retains a free fenced runtime-slot row; the fixture incorrectly required an empty table.",
+  "correction": "Assert the slot cardinality does not increase during the secure worker pause and there are zero non-free slots. Preserve all no-effect and human-channel assertions.",
+  "production_change_required": false,
+  "compiled_execution_identical": true
+}

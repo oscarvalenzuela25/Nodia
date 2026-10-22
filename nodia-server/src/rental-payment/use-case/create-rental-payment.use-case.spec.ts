@@ -1,3 +1,4 @@
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import 'reflect-metadata';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { CreateRentalPaymentUseCase } from './create-rental-payment.use-case.js';
@@ -32,7 +33,12 @@ describe('CreateRentalPaymentUseCase', () => {
       f.tx,
       new RentalPaymentService(),
     );
-    const result = await useCase.execute('2', '10', input, rentalKey);
+    const result = await useCase.execute(
+      actorFixture('2'),
+      '10',
+      input,
+      rentalKey,
+    );
     expect(result).toMatchObject({
       operation: 'payment.create',
       resource_type: 'payment',
@@ -62,10 +68,15 @@ describe('CreateRentalPaymentUseCase', () => {
       new RentalPaymentService(),
     );
     const exact = { ...input, amount: '200000' };
-    const first = await useCase.execute('1', '10', exact, rentalKey);
+    const first = await useCase.execute(
+      actorFixture('1'),
+      '10',
+      exact,
+      rentalKey,
+    );
     expect(
       await useCase.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { ...exact, notes: null, method: null, reference: null },
         rentalKey,
@@ -74,10 +85,15 @@ describe('CreateRentalPaymentUseCase', () => {
     expect(f.table(RentalPayment)).toHaveLength(1);
     expect(f.table(RentalAuditEvent)).toHaveLength(1);
     await expect(
-      useCase.execute('1', '10', { ...input, amount: '1' }, rentalKey),
+      useCase.execute(
+        actorFixture('1'),
+        '10',
+        { ...input, amount: '1' },
+        rentalKey,
+      ),
     ).rejects.toThrow('rental:idempotency_conflict');
     await expect(
-      useCase.execute('1', '10', input, secondRentalKey),
+      useCase.execute(actorFixture('1'), '10', input, secondRentalKey),
     ).rejects.toThrow('rental:overpayment');
   });
 
@@ -87,14 +103,14 @@ describe('CreateRentalPaymentUseCase', () => {
       f.tx,
       new RentalPaymentService(),
     );
-    await expect(useCase.execute('3', '10', input, rentalKey)).rejects.toThrow(
-      'rental:not_found',
-    );
-    await useCase.execute('2', '10', input, rentalKey);
+    await expect(
+      useCase.execute(actorFixture('3'), '10', input, rentalKey),
+    ).rejects.toThrow('rental:not_found');
+    await useCase.execute(actorFixture('2'), '10', input, rentalKey);
     f.table(RentalCollaborator)[0].is_active = false;
-    await expect(useCase.execute('2', '10', input, rentalKey)).rejects.toThrow(
-      'rental:not_found',
-    );
+    await expect(
+      useCase.execute(actorFixture('2'), '10', input, rentalKey),
+    ).rejects.toThrow('rental:not_found');
     expect(f.table(RentalPayment)).toHaveLength(1);
   });
 
@@ -116,7 +132,7 @@ describe('CreateRentalPaymentUseCase', () => {
     ])
       await expect(
         useCase.execute(
-          '1',
+          actorFixture('1'),
           '10',
           payload as unknown as typeof input,
           rentalKey,
@@ -133,7 +149,7 @@ describe('CreateRentalPaymentUseCase', () => {
       new RentalPaymentService(),
     );
     await useCase.execute(
-      '1',
+      actorFixture('1'),
       '10',
       { ...input, amount: '9007199254740993' },
       rentalKey,
@@ -155,7 +171,7 @@ describe('CreateRentalPaymentUseCase', () => {
       new RentalPaymentService(),
     );
     await useCase.execute(
-      '1',
+      actorFixture('1'),
       '10',
       {
         ...input,
@@ -196,25 +212,25 @@ describe('CreateRentalPaymentUseCase', () => {
       new RentalPaymentService(),
     );
     await useCase.execute(
-      '1',
+      actorFixture('1'),
       '10',
       { ...input, type: 'refund', amount: '12000' },
       rentalKey,
     );
     await expect(
       useCase.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { ...input, type: 'refund', amount: '9000' },
         secondRentalKey,
       ),
     ).rejects.toThrow('rental:refund_exceeds_approved');
     await expect(
-      useCase.execute('1', '10', input, secondRentalKey),
+      useCase.execute(actorFixture('1'), '10', input, secondRentalKey),
     ).rejects.toThrow('rental:invalid_transition');
     await expect(
       useCase.execute(
-        '1',
+        actorFixture('1'),
         '10',
         { ...input, type: 'refund', amount: '8000', occurred_on: '2026-10-02' },
         secondRentalKey,
@@ -229,9 +245,9 @@ describe('CreateRentalPaymentUseCase', () => {
       f.tx,
       new RentalPaymentService(),
     );
-    await expect(useCase.execute('1', '10', input, rentalKey)).rejects.toThrow(
-      'rental:server_error',
-    );
+    await expect(
+      useCase.execute(actorFixture('1'), '10', input, rentalKey),
+    ).rejects.toThrow('rental:server_error');
     expect(f.table(RentalPayment)).toHaveLength(0);
     expect(f.table(RentalAuditEvent)).toHaveLength(0);
     expect(f.table(RentalReservation)[0].policy_snapshot).toBeNull();
@@ -250,7 +266,7 @@ describe('CreateRentalPaymentUseCase', () => {
     };
     await expect(
       new CreateRentalPaymentUseCase(f.tx, new RentalPaymentService()).execute(
-        '1',
+        actorFixture('1'),
         '10',
         input,
         rentalKey,
@@ -271,7 +287,7 @@ describe('CreateRentalPaymentUseCase', () => {
     f.failOn(RentalOperation);
     await expect(
       new CreateRentalPaymentUseCase(f.tx, new RentalPaymentService()).execute(
-        '1',
+        actorFixture('1'),
         '10',
         input,
         rentalKey,
@@ -291,7 +307,7 @@ describe('CreateRentalPaymentUseCase', () => {
     const result = await new CreateRentalPaymentUseCase(
       f.tx,
       new RentalPaymentService(),
-    ).execute('1', '10', input, rentalKey);
+    ).execute(actorFixture('1'), '10', input, rentalKey);
     expect(result.status).toBe('confirmed');
     expect(f.table(RentalOperation)).toHaveLength(1);
     expect(f.table(RentalPayment)).toHaveLength(1);

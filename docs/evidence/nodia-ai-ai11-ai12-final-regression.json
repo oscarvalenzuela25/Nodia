@@ -1,0 +1,38 @@
+{
+  "task": "AI-11/AI-12 final regression",
+  "checked_at_utc": "2026-10-16T02:51:25.4886230Z",
+  "unit_tests": {
+    "tests": 1240,
+    "passed": 1240,
+    "failed": 0,
+    "files": 142,
+    "runner": "Vitest 4.1.11",
+    "real_inference": false
+  },
+  "postgres": {
+    "routing_checks": 33,
+    "context_checks": 20,
+    "postgres_major": 16,
+    "database_scope": "Disposable isolated fixtures only",
+    "external_adapter": "synthetic",
+    "real_inference": false
+  },
+  "quality": {
+    "scoped_oxlint": "passed",
+    "inventory_reconciliation": "passed",
+    "catalog_contracts": "passed",
+    "knowledge_check": "passed"
+  },
+  "catalog": {
+    "modules": 45,
+    "controllers": 35,
+    "handlers": 185,
+    "routes": 304,
+    "source_hashes": 264,
+    "coordination_routes": 27,
+    "published_documents": 0,
+    "published_fragments": 0,
+    "excluded_drafts": 43
+  },
+  "configured_business_database_modified": false
+}

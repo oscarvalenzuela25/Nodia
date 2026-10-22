@@ -1,0 +1,93 @@
+{
+  "observed_at_utc": "2026-10-17T17:39:39.689343+00:00",
+  "stage_directory": "/opt/nodia/verification/ai25-20261017",
+  "compiled_production_archive_sha256": "d36ac0b2a9aeb99d93027cf25c1895db2745fbc7d371c5024e8896559e6d720e",
+  "knowledge_pin_sha256": "fe96f76311b45096287f600108c242477146150653c4720687a11f6de230834f",
+  "scope": "Synthetic disposable PostgreSQL only; no configured database mutation, provider inference, MCP write publication or Gemini acceptance.",
+  "operational_services_untouched": true,
+  "disposable_containers_removed": true,
+  "docker_postcheck": [
+    "nodia-gemini-microservice",
+    "nodia-lab-postgres-1",
+    "nodia-lab-redis-1"
+  ],
+  "command": "node test/nodia-ai-ai25.integration.mjs",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "path": "nodia-server/test/nodia-ai-ai25.integration.mjs",
+      "sha256": "042b52eae21634a8aaeecb4d148bf5ce2f122421d928d59bbd235020a3889e29"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai25-worker.fixture.mjs",
+      "sha256": "0ac4a07acf14b636807d0a4f8bbc6a66ef2d91f1a29f22f0df6629fb267651b3"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai.integration.fixture.mjs",
+      "sha256": "6d595c1fa88e29c42149573dc9bdcb805a7b495aee39ac5cac4c50147bc806df"
+    }
+  ],
+  "result": {
+    "stage": "AI-25",
+    "scope": "compiled_http_confirmation_worker_disposable_postgresql_six_native_booking_lifecycle_mutations_no_provider",
+    "checks": 39,
+    "exercised_operations": [
+      "rental_reservations/cancel",
+      "rental_reservations/complete",
+      "rental_reservations/confirm",
+      "rental_reservations/create",
+      "rental_reservations/start",
+      "rental_reservations/update"
+    ],
+    "passed": [
+      "availability is an observation without hold reservation payment or native journal",
+      "missing required booking fields yield clarification instead of fabricating hours price or deposit",
+      "create commits only a draft and nullable preparation with exact agreement but no money or occupancy",
+      "native replay normalizes explicit defaults and does not duplicate reservation turnover or journal",
+      "draft interval update recomputes agreement and resets preparation using actual actor identity",
+      "a direct booking cannot confirm without a received positive agreed deposit",
+      "first monetary record freezes agreement while harmless guest metadata remains editable",
+      "preparing confirmation neither occupies dates nor changes the native state",
+      "confirmation preserves the paid policy snapshot despite current policy edits and records no extra payment",
+      "an archived confirmed booking still occupies its interval",
+      "conflicting drafts and real payments are allowed but confirmation rejects occupancy",
+      "cancellation preview proposes refund on frozen policy without cancellation journal or refund row",
+      "cancel commits approved frozen refund and monetary ledger hash without paying a refund or collecting remaining balance",
+      "native cancellation replay canonicalizes equivalent instants and preserves its original response and journal",
+      "cancelled occupancy is released while original history and receipt stay available",
+      "cancelled bookings do not reopen and cancellation cannot invent a future effective notice",
+      "a changed payment ledger invalidates exact cancellation even when refund amount is unchanged at zero",
+      "material same timestamp agreement changes invalidate confirmation without relying on updated_at",
+      "failed cancellation receipt restores native phase snapshots money journal and audit atomically",
+      "platform confirmation requires explicit external conditions and no fabricated settlement payment",
+      "platform cancellation records an explicit external resolution and creates no refund payment",
+      "same day turnover availability distinguishes a valid plan from explicit approval",
+      "explicit exact confirmation approves affected same day turnover without fabricating completed cleaning",
+      "new native occupancy after human admission prevents overlapping confirmation at execution",
+      "an inserted preceding guest refreshes and explicitly approves the already confirmed future transition",
+      "a changed real preparation after confirmation prevents start dispatch",
+      "start uses actual preparation and completion waits for checkout even in an archived house",
+      "archived houses reject new agreements and confirmation while retaining cancellation and historical settlement",
+      "a permitted collaborator creates under real authorship without impersonating owner",
+      "super administrator preserves actual authorship on foreign owner resources",
+      "destination module revocation before execution blocks the native writer",
+      "session revocation before execution cannot apply a confirmed update",
+      "receipt failure rolls back draft turnover native operation and audit in the same transaction",
+      "real child process death after claim leaves no booking effect and allows explicit resume",
+      "duplicate human resume commits one native agreement edit and receipt",
+      "lost cancellation COMMIT response recovers its exact receipt without duplicate journal or effects",
+      "all six commercial reservation operations execute through compiled native writers",
+      "local effects never invoke a provider or acquire inference slots",
+      "execution attempts and leases finish without orphans"
+    ]
+  },
+  "test_harness_change_after_compiled_archive": "Only the synthetic platformDraft helper was corrected to assign a unique external_reference to each independent Airbnb reservation. No production dist was patched. Current test source hash was verified on the VM.",
+  "previous_attempts_not_acceptance": [
+    {
+      "completed_checks": 21,
+      "original_harness_sha256": "07b3128d480e8fa24326b67226d4f3b4b7ae4e84e1e6427af134d5cf7a0a1267",
+      "reason": "Synthetic helper reused an external reference on multiple reservations of the same property and channel; the native uniqueness constraint correctly rejected it.",
+      "resolution": "Unique synthetic external_reference for each independent platform reservation; complete suite rerun successfully."
+    }
+  ]
+}

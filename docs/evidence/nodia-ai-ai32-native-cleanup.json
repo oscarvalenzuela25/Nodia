@@ -1,0 +1,13 @@
+{
+  "unknown_markers": 0,
+  "armed_native_proofs": 0,
+  "terminal_native_proofs": 0,
+  "temporary_attachment_directories": 0,
+  "temporary_cli_directories": 0,
+  "stage": "AI-32",
+  "scope": "post_native_probe_cleanup",
+  "source_files": 84,
+  "source_drift_files": [],
+  "configured_database_modified": false,
+  "all_new_attempts_acknowledged": true
+}

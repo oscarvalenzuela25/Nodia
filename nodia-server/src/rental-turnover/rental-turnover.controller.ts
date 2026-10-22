@@ -1,3 +1,4 @@
+import { actorReference } from '../authorization/authority-transaction.js';
 import { rentalResponseSchema } from '../rental-common/rental-response.schemas.js';
 import { RentalMutationResultDto } from '../rental-common/dto/rental-mutation-result.dto.js';
 import {
@@ -72,7 +73,7 @@ export class RentalTurnoverController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.approveSameDayRentalTurnoverUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,
@@ -87,7 +88,7 @@ export class RentalTurnoverController {
     @Param() params: RentalResourceParamsDto,
   ) {
     return this.getRentalTurnoverUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
     );
@@ -102,7 +103,7 @@ export class RentalTurnoverController {
     @Query() dto: RentalTurnoverQueryDto,
   ) {
     return this.listRentalTurnoverUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       dto,
     );
@@ -125,7 +126,7 @@ export class RentalTurnoverController {
     @Headers('idempotency-key') requestKey: string,
   ) {
     return this.updateRentalTurnoverUseCase.execute(
-      request.auth.user.id,
+      actorReference(request.auth),
       params.propertyId,
       params.id,
       dto,

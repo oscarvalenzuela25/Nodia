@@ -1,0 +1,10 @@
+{
+  "path": ".tmp/ai38-client-candidate01/nodia-client",
+  "manifest_sha256": "0c54fcafebe607a661b169288daa92fe12ca7110278d94eac9160478214ee49b",
+  "build_outputs": 171,
+  "production_source_count": 647,
+  "package_lock_sha256": "d3a7e7e7eceffd629aae1b664498b9a042f2660ea92b719aa9d8803ef7dc231d",
+  "scope": "local_Client_production_build_not_deployment",
+  "target_origin_and_proxy_verified": false,
+  "deployment": false
+}

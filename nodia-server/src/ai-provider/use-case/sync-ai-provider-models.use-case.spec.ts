@@ -3,6 +3,9 @@ import { SyncAiProviderModelsUseCase } from './sync-ai-provider-models.use-case.
 import type { AiProviderService } from '../ai-provider.service.js';
 import type { GeminiService } from '../../common/ai/gemini.service.js';
 import { AiConnectionMode } from '../types/ai-provider.types.js';
+import { AiProviderService as RealAiProviderService } from '../ai-provider.service.js';
+import { SaveAiProviderConfigurationUseCase } from './save-ai-provider-configuration.use-case.js';
+import { configurationFixture } from '../../../test/fixtures/ai-provider-configuration.fixture.js';
 
 describe('SyncAiProviderModelsUseCase', () => {
   let useCase: SyncAiProviderModelsUseCase;
@@ -12,7 +15,7 @@ describe('SyncAiProviderModelsUseCase', () => {
   beforeEach(() => {
     aiProviderServiceMock = {
       findProviderById: vi.fn(),
-      updateProviderFields: vi.fn(),
+      mergeDiscoveredModels: vi.fn(),
       getActiveApiKeySecret: vi.fn(),
     };
     geminiServiceMock = {
@@ -76,11 +79,10 @@ describe('SyncAiProviderModelsUseCase', () => {
     expect(result.models[0].displayName).toBe('Gemini 3.8 Flash');
     expect(result.models[1].capabilities).toContain('reasoning');
     expect(result.tokenPlan?.authenticated).toBe(true);
-    expect(aiProviderServiceMock.updateProviderFields).toHaveBeenCalledWith(
+    expect(aiProviderServiceMock.mergeDiscoveredModels).toHaveBeenCalledWith(
       '1',
-      expect.objectContaining({
-        token_plan_web: expect.objectContaining({ available_models: expect.any(Array) }),
-      }),
+      'token_plan_web',
+      result.models,
     );
   });
 
@@ -146,13 +148,19 @@ describe('SyncAiProviderModelsUseCase', () => {
   });
 
   it('rejects API mode without reading a key, network calls or persisting a catalogue', async () => {
-    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({ id: '1', key: 'gemini', mode: AiConnectionMode.WEB_SESSION } as never);
+    vi.mocked(aiProviderServiceMock.findProviderById!).mockResolvedValue({
+      id: '1',
+      key: 'gemini',
+      mode: AiConnectionMode.WEB_SESSION,
+    } as never);
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
-    await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow('El canal API no está habilitado');
+    await expect(useCase.execute('1', { mode: 'api_key' })).rejects.toThrow(
+      'El canal API no está habilitado',
+    );
     expect(fetchMock).not.toHaveBeenCalled();
     expect(aiProviderServiceMock.getActiveApiKeySecret).not.toHaveBeenCalled();
-    expect(aiProviderServiceMock.updateProviderFields).not.toHaveBeenCalled();
+    expect(aiProviderServiceMock.mergeDiscoveredModels).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
 
@@ -218,7 +226,7 @@ describe('SyncAiProviderModelsUseCase', () => {
       isRecommended: false,
     });
     expect(result.models[0]).not.toHaveProperty('role');
-    expect(aiProviderServiceMock.updateProviderFields).not.toHaveBeenCalled();
+    expect(aiProviderServiceMock.mergeDiscoveredModels).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -238,7 +246,78 @@ describe('SyncAiProviderModelsUseCase', () => {
         models,
       });
       await expect(useCase.execute('1')).rejects.toMatchObject({ status: 502 });
-      expect(aiProviderServiceMock.updateProviderFields).not.toHaveBeenCalled();
+      expect(
+        aiProviderServiceMock.mergeDiscoveredModels,
+      ).not.toHaveBeenCalled();
     },
   );
+  it('merges discovery after remote I/O without overwriting a concurrently confirmed model, effort or hidden fields', async () => {
+    const f = configurationFixture();
+    const update = vi.fn(
+      async (_id: string, patch: { fields?: Record<string, unknown> }) => {
+        Object.assign(f.existing, patch);
+        return {};
+      },
+    );
+    const repository = Object.assign(f.providerRepo, {
+      manager: f.manager,
+      update,
+    });
+    Object.assign(f.manager, {
+      transaction: async (
+        work: (manager: typeof f.manager) => Promise<unknown>,
+      ) => work(f.manager),
+    });
+    const service = new RealAiProviderService(
+      repository as never,
+      null as never,
+      null as never,
+      f.catalogRepo as never,
+      f.translations,
+    );
+    let release!: (value: unknown) => void;
+    let entered!: () => void;
+    const started = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
+    const remote = new Promise((resolve) => {
+      release = resolve;
+    });
+    const gemini = {
+      getModelsAndQuota: vi.fn(() => {
+        entered();
+        return remote;
+      }),
+    };
+    const sync = new SyncAiProviderModelsUseCase(service, gemini as never);
+    const pending = sync.execute(f.existing.id, { mode: 'token_plan_web' });
+    await started;
+    await new SaveAiProviderConfigurationUseCase(
+      f.source,
+      f.translations,
+    ).execute(
+      f.existing.id,
+      {
+        name: 'Confirmed meanwhile',
+        fields: {
+          token_plan_web: {
+            selected_model: 'new-confirmed-model',
+            thinking_levels: { 'new-confirmed-model': 'new-effort' },
+          },
+        },
+      },
+      f.actor,
+    );
+    release({ authenticated: true, models: [{ id: 'freshly-discovered-id' }] });
+    await pending;
+    expect(f.existing.name).toBe('Confirmed meanwhile');
+    expect(f.existing.fields.token_plan_web).toMatchObject({
+      selected_model: 'new-confirmed-model',
+      secret: 'synthetic-mode-secret',
+      thinking_levels: { 'new-confirmed-model': 'new-effort', other: 'low' },
+      available_models: [{ id: 'freshly-discovered-id' }],
+    });
+    expect(f.existing.fields.legacy.token).toBe('synthetic-private-value');
+    expect(update).toHaveBeenCalledTimes(1);
+  });
 });

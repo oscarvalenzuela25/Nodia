@@ -21,7 +21,9 @@ function fixture() {
   };
   const rolesQuery = { innerJoin() { return this; }, where() { return this; },
     andWhere() { return this; }, async getCount() { return 0; } };
-  const translations = { saveTranslations: vi.fn(), updateTranslations: vi.fn() };
+  const translations = { saveTranslations: vi.fn(), updateTranslations: vi.fn(), attachTranslationsToOne: vi.fn(async (_source, item) => item) };
+  const manager = { query: vi.fn(async () => []), getRepository: vi.fn(() => repository) };
+  Object.assign(repository, { findOne: vi.fn(async () => business), manager: { transaction: vi.fn(async (work) => work(manager)) } });
   const service = new BusinessService(
     repository as unknown as Dependencies[0], {} as Dependencies[1],
     {} as Dependencies[2], {} as Dependencies[3], {} as Dependencies[4],
@@ -61,7 +63,7 @@ describe('Business description through create/update use cases', () => {
     const dto = await pipe.transform({ translates: [{ key: 'description', es: '', en: '' }] }, { type: 'body', metatype: UpdateBusinessDto });
     const result = await new UpdateBusinessUseCase(service).execute('9601aa95-dd70-4af3-a5cf-50dd553a4ae9', '42', dto);
     expect(result.has_description).toBe(false);
-    expect(translations.updateTranslations).toHaveBeenCalledWith('businesses', result.id, [{ key: 'description', es: '', en: '' }]);
+    expect(translations.updateTranslations).toHaveBeenCalledWith('businesses', result.id, [{ key: 'description', es: '', en: '' }], expect.objectContaining({ getRepository: expect.any(Function) }));
   });
 
   it.each([

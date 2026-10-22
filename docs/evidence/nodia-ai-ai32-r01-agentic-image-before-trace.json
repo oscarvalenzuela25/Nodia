@@ -1,0 +1,73 @@
+{
+  "stage": "AI-32-R01",
+  "scope": "individual_real_gemini_synthetic_native_canary",
+  "status": "gates_open",
+  "observed_at_utc": "2026-10-18T03:18:21Z",
+  "generation_requests": 1,
+  "maximum_generations": 1,
+  "automatic_inference_retries": 0,
+  "credentials_logged": false,
+  "provider_response_text_stored": false,
+  "provider_configuration_modified": false,
+  "configured_database_modified": false,
+  "probe": {
+    "engine": "agentic",
+    "kind": "image",
+    "model_id": "gemini-3.8-flash-high",
+    "effort_id": "high",
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "reference": {
+      "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+      "session_generation": "4ace843391d841cf96e9728510fd0bf4",
+      "operation_ref": "bc297ff7-8f5d-4c9b-8c30-927c789a8604"
+    },
+    "attempt_id": "bc297ff7-8f5d-4c9b-8c30-927c789a8604",
+    "file_bytes": 10602,
+    "media_type": "image/png",
+    "file_sha256": "c449d13b212c1be62138aa8cbcf931cc0ecb125d6ea870c1c788b85e8c5cf207",
+    "expected_answer_sha256": "3bf611bae6d9b64d4a2b77d2f8f74a47aa7927788071b6a6459a184c8dbc9483",
+    "answer_normalization": "literal",
+    "native_acknowledged": true,
+    "verified": false,
+    "fixture": "synthetic_known_canary",
+    "http_status": 502,
+    "error_code": "chat_result_unknown",
+    "elapsed_seconds": 94.39,
+    "reconciliation_http_status": 200,
+    "reconciliation_code": null,
+    "native_outcome": "abandoned_unknown"
+  },
+  "observation_after": {
+    "http_status": 200,
+    "available": true,
+    "reason": null,
+    "verified_modalities": [],
+    "supports_mcp": false
+  },
+  "diagnostics": [
+    {
+      "engine": "agentic",
+      "attempt_id": "bc297ff7-8f5d-4c9b-8c30-927c789a8604",
+      "phase": "generation",
+      "error_type": "ServiceError",
+      "failure_category": "attachment_cli_unexpected_tool",
+      "elapsed_ms": 94328,
+      "reply_format": {},
+      "generation": {
+        "http_status": null,
+        "upstream_eof_seen": null,
+        "upstream_eof_elapsed_ms": null,
+        "candidate_outputs": null,
+        "recovery_calls": null,
+        "client_close_calls": null,
+        "text_outputs": null
+      }
+    }
+  ],
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "held_or_unknown_slots": 0
+  },
+  "completed_at_utc": "2026-10-18T03:20:12Z"
+}

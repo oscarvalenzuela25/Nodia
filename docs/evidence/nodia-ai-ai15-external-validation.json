@@ -1,0 +1,124 @@
+{
+  "stage": "AI-15",
+  "status": "five_external_reads_implemented_isolated_verification_unpublished",
+  "scope": "Closed typed candidate external adapters; native SQL snapshots and native provider use cases; remote adapters synthetic. No real account, inference, publication, deployment, or configured database writes.",
+  "checked_on": "2026-10-16",
+  "unit_tests": {
+    "passed": 69,
+    "files": 5,
+    "external_use_case_tests": 10,
+    "log": "nodia-server/.tmp/ai15-external-unit.log"
+  },
+  "postgresql": {
+    "stage": "AI-15",
+    "scope": "native_sql_snapshots_external_synthetic_adapters_no_inference",
+    "checks": 22,
+    "passed": [
+      "nodia_ai_providers_health: remote observation runs with zero SQL after the snapshot transaction commits",
+      "nodia_ai_providers_health: closed public output excludes arbitrary fields and credentials",
+      "nodia_ai_providers_health: fresh authorized snapshot has the same replay fingerprint without redispatch",
+      "nodia_ai_providers_gemini_engines: remote observation runs with zero SQL after the snapshot transaction commits",
+      "nodia_ai_providers_gemini_engines: closed public output excludes arbitrary fields and credentials",
+      "nodia_ai_providers_gemini_engines: fresh authorized snapshot has the same replay fingerprint without redispatch",
+      "nodia_ai_providers_models: remote observation runs with zero SQL after the snapshot transaction commits",
+      "nodia_ai_providers_models: closed public output excludes arbitrary fields and credentials",
+      "nodia_ai_providers_models: fresh authorized snapshot has the same replay fingerprint without redispatch",
+      "nodia_ai_providers_codex_session: remote observation runs with zero SQL after the snapshot transaction commits",
+      "nodia_ai_providers_codex_session: closed public output excludes arbitrary fields and credentials",
+      "nodia_ai_providers_codex_session: fresh authorized snapshot has the same replay fingerprint without redispatch",
+      "nodia_invoices_eligible_invoice_connections: remote observation runs with zero SQL after the snapshot transaction commits",
+      "nodia_invoices_eligible_invoice_connections: closed public output excludes arbitrary fields and credentials",
+      "nodia_invoices_eligible_invoice_connections: fresh authorized snapshot has the same replay fingerprint without redispatch",
+      "multiple API connections resolve selected encrypted keys from the batched snapshot without N+1 SQL",
+      "native API eligibility reads only synthetic selected secrets without exposing them",
+      "ciphertext rotation invalidates a pending snapshot even without a timestamp change",
+      "configuration changed during observation is rejected by fresh SQL verification",
+      "ordinary target-module revocation wins before final result publication",
+      "a late adapter response after cancellation is discarded",
+      "session revocation wins before final result publication"
+    ],
+    "domain_external_reads": 5,
+    "provider_inferences": 0,
+    "configured_database_changes": 0
+  },
+  "bounded_execution": {
+    "preparation": "snapshot SQL with root and key cardinality policy limits before hydration; selected secret resolved by shared native eligibility policy from batched encrypted keys without N+1 queries",
+    "execution": "after snapshot commit, propagated AbortSignal, no SQL during execute in all five actual domain use cases",
+    "verification": "fresh authority, module/session checks and SHA256 snapshot before response; replay requires same fingerprint without redispatch",
+    "native_profiles": "shared singleton Codex supervisor; busy caller cannot interrupt someone else; cancellation stops only own admitted lease",
+    "gemini_response_bytes": 262144,
+    "gemini_response_limit_kind": "local defensive observation transport ceiling, not provider quota"
+  },
+  "source_hashes": [
+    {
+      "path": "nodia-server/src/nodia-ai-products/external/external-read.family.ts",
+      "sha256": "ebfe96b278af48869f54edfbe3fc41de3c17089f8fcf4a1d2d26e23fa9520785"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/external/external-reads.module.ts",
+      "sha256": "0f8edb3f00ea4f4f83ea4ab4e6b59ccd5c2316bce3718ba1ed99b404a2d8d017"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.ts",
+      "sha256": "00e8fa16cb8a294643132026c44fd7de62f80df7f3817e17f374e1a13f5b66d2"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.spec.ts",
+      "sha256": "c473f5a07c8c4b4766b44dfd96224fca457a17972d8e867fa9b5d472ca5695b8"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/external.schema.json",
+      "sha256": "361623239c3fdcb1dd8afd8972de9eb3dde7bcff9cbb6638bb5bfb724062e9b5"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/types/provider-read-execution.types.ts",
+      "sha256": "971fbd1408d39c929accfb421d51c35ee9254014745c5e01eee91960bc5a8467"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/ai-provider.module.ts",
+      "sha256": "5f7cf7bdefcfe0dbe01221bd39d2a415b25fd47e535a0c7c71985eb54a449e5b"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/ai-provider.service.ts",
+      "sha256": "23f25867c02902550833992c47463fc56def98c667ed9110193c1a02ce41dd93"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/get-ai-providers-health.use-case.ts",
+      "sha256": "3f8e60ccf21a66e88184d41236d6409560c808f8812a427a90cc05cc9b2e4771"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/use-case/get-selectable-models.use-case.ts",
+      "sha256": "984158ae1b5cc4f97636997803b3986b9a9ec4e300ff6e058001186e8c3ce76d"
+    },
+    {
+      "path": "nodia-server/src/invoice/use-case/verify-ia-providers.use-case.ts",
+      "sha256": "b345881ee50a97036c18e2fb03ed9c41682cb9c92028f7fa8d33fcb9f4f44bfe"
+    },
+    {
+      "path": "nodia-server/src/common/ai/gemini.service.ts",
+      "sha256": "79ad834a7011f811975059fb2d714a1b7ac76e8507bcd75bf9748bae3f80ab2e"
+    },
+    {
+      "path": "nodia-server/src/common/ai/api-provider.service.ts",
+      "sha256": "239a5aba77d9a8c888c7bc845608497b6e8c04cef9d8e886d1b93e5cfb416723"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "sha256": "78830268311a1fd2c84143c66841478e90e9fbc8cc6aa7a4e9f97cf081a6332b"
+    },
+    {
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.module.ts",
+      "sha256": "6ff53d61e97ce2599508c64c6b9f31abf99c8a8b4d2af0c55bf02ff2e31f7b5e"
+    },
+    {
+      "path": "nodia-server/test/nodia-ai-ai15-external.integration.mjs",
+      "sha256": "d46b65f459f2cccda881e9a3787405fdb0ed44930fcaedbaa29d62e8d0012ee9"
+    }
+  ],
+  "not_verified": [
+    "Real remote endpoint behavior and account availability",
+    "Gemini inference with these five product tools",
+    "Deployment and capability publication",
+    "All registered candidate tools in the production conversation"
+  ]
+}

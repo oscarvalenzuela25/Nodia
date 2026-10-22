@@ -1,0 +1,8 @@
+{
+  "stage": "AI-23",
+  "scope": "read_only_deployed_dist_equality",
+  "dist_files_checked": 820,
+  "deployed_matches_final_archive": true,
+  "archive_sha256": "a88e0937a48c52b0a45e07b4913522b106516e94bbef0a4aea210281a79a0c9a",
+  "final_archive_verified": true
+}

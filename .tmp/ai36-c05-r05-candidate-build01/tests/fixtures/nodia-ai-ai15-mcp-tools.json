@@ -1,0 +1,6523 @@
+[
+  {
+    "name": "nodia_knowledge_index",
+    "description": "List published Nodia product knowledge fragments authorized for this conversation. This grants no business operation.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    }
+  },
+  {
+    "name": "nodia_knowledge_get",
+    "description": "Read specific published knowledge fragments from the authorized index by exact ID; no business records or executable instructions.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fragment_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      },
+      "required": [
+        "fragment_ids"
+      ]
+    }
+  },
+  {
+    "name": "nodia_capabilities_search",
+    "description": "Discover verified Nodia capabilities authorized for this conversation; an empty result enables no business operation.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+        },
+        "module_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "urn:nodia:nodia-ai:v1:common-draft",
+      "$defs": {
+        "CatalogSearchInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 256,
+              "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+            },
+            "module_key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "cursor": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_capabilities_describe",
+    "description": "Describe one exact authorized capability and its contract. This does not execute a change.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tool_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "catalog_version": {
+          "$ref": "#/$defs/CatalogVersion"
+        }
+      },
+      "required": [
+        "tool_name",
+        "catalog_version"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "urn:nodia:nodia-ai:v1:common-draft",
+      "$defs": {
+        "CatalogDescribeInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tool_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "catalog_version": {
+              "$ref": "#/$defs/CatalogVersion"
+            }
+          },
+          "required": [
+            "tool_name",
+            "catalog_version"
+          ]
+        },
+        "CatalogVersion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Opaque version of structural tool contracts; not an availability observation",
+          "maxLength": 128
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_entities_search",
+    "description": "Resolve an entity using a registered resource resolver. Ambiguous matches require a human choice.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "catalog_version": {
+          "$ref": "#/$defs/CatalogVersion"
+        },
+        "resource_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "term": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+        },
+        "scope": {
+          "$ref": "#/$defs/PublicScope"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "catalog_version",
+        "resource_key",
+        "term",
+        "scope"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "urn:nodia:nodia-ai:v1:common-draft",
+      "$defs": {
+        "BigintId": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "description": "Canonical positive decimal; runtime BigInt validation must enforce PostgreSQL max 9223372036854775807"
+        },
+        "CatalogVersion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Opaque version of structural tool contracts; not an availability observation",
+          "maxLength": 128
+        },
+        "DomainUuid": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID resource identity; actual resource decides representation"
+        },
+        "EntitySearchInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "catalog_version": {
+              "$ref": "#/$defs/CatalogVersion"
+            },
+            "resource_key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "term": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "description": "Bounded Unicode query; Server also validates at most 1024 UTF-8 bytes."
+            },
+            "scope": {
+              "$ref": "#/$defs/PublicScope"
+            },
+            "cursor": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          },
+          "required": [
+            "catalog_version",
+            "resource_key",
+            "term",
+            "scope"
+          ]
+        },
+        "PublicScope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "subject_user_id": {
+              "$ref": "#/$defs/BigintId"
+            },
+            "property_id": {
+              "$ref": "#/$defs/BigintId"
+            },
+            "business_id": {
+              "$ref": "#/$defs/DomainUuid"
+            },
+            "provider_id": {
+              "$ref": "#/$defs/BigintId"
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_actions_get",
+    "description": "Read Nodia settings actions get. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "DetailInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_actions_list",
+    "description": "Read Nodia settings actions list. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "description_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|description|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "ActionQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "key_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "description_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|key|description|is_active|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_events_list",
+    "description": "Read bounded events metadata. Configuration does not prove a live session, model availability or inference.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "provider_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "api_key_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "actor_user_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "event_type_eq": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "reason_code_eq": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/ai-settings-read/1",
+      "$defs": {
+        "EventsInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "provider_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "api_key_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "actor_user_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "event_type_eq": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "reason_code_eq": {
+                  "type": "string",
+                  "maxLength": 64
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_providers_catalog_list",
+    "description": "Read bounded catalog metadata. Configuration does not prove a live session, model availability or inference.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/ai-settings-read/1",
+      "$defs": {
+        "CatalogInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_providers_codex_session",
+    "description": "Observe codex through the existing provider adapter outside SQL. Session, configuration and discovery do not prove inference. Unknown remains null; no automatic provider change.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        }
+      },
+      "required": [
+        "provider_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/external-read/1",
+      "$defs": {
+        "CodexInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "provider_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          "required": [
+            "provider_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_providers_gemini_engines",
+    "description": "Observe engines through the existing provider adapter outside SQL. Session, configuration and discovery do not prove inference. Unknown remains null; no automatic provider change.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/external-read/1",
+      "$defs": {
+        "EmptyInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_providers_health",
+    "description": "Observe health through the existing provider adapter outside SQL. Session, configuration and discovery do not prove inference. Unknown remains null; no automatic provider change.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/external-read/1",
+      "$defs": {
+        "EmptyInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_providers_list",
+    "description": "Read bounded providers metadata. Configuration does not prove a live session, model availability or inference.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "name_cont": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "key_eq": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "catalog_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "is_default_eq": {
+              "type": "boolean"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/ai-settings-read/1",
+      "$defs": {
+        "ProvidersInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 256
+                },
+                "key_eq": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "catalog_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "is_default_eq": {
+                  "type": "boolean"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_providers_models",
+    "description": "Observe models through the existing provider adapter outside SQL. Session, configuration and discovery do not prove inference. Unknown remains null; no automatic provider change.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "mode": {
+          "enum": [
+            "api_key",
+            "token_plan_web",
+            "token_plan_agentic"
+          ]
+        }
+      },
+      "required": [
+        "provider_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/external-read/1",
+      "$defs": {
+        "ModelsInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "provider_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "mode": {
+              "enum": [
+                "api_key",
+                "token_plan_web",
+                "token_plan_agentic"
+              ]
+            }
+          },
+          "required": [
+            "provider_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_ai_providers_supported_providers",
+    "description": "Read bounded supported metadata. Configuration does not prove a live session, model availability or inference.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/ai-settings-read/1",
+      "$defs": {
+        "SupportedInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_api_keys_list",
+    "description": "Read bounded keys metadata. Configuration does not prove a live session, model availability or inference.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "provider_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            },
+            "label_cont": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "is_selected_eq": {
+              "type": "boolean"
+            },
+            "health_state_eq": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/ai-settings-read/1",
+      "$defs": {
+        "KeysInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "provider_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$"
+                },
+                "label_cont": {
+                  "type": "string",
+                  "maxLength": 256
+                },
+                "is_selected_eq": {
+                  "type": "boolean"
+                },
+                "health_state_eq": {
+                  "type": "string",
+                  "maxLength": 64
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_business_actions_get",
+    "description": "Read Nodia settings business actions get. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "DetailInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_business_actions_list",
+    "description": "Read Nodia settings business actions list. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "has_description_eq": {
+              "type": "boolean"
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|has_description|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "BusinessActionQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "key_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "has_description_eq": {
+                  "type": "boolean"
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|key|has_description|is_active|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_businesses_get",
+    "description": "Read a business accessible to the current actor.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "BusinessesGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Uuid"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "Uuid": {
+          "type": "string",
+          "format": "uuid",
+          "maxLength": 36
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_businesses_list",
+    "description": "List accessible businesses with bounded filters; all_businesses requires super_admin.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "q": {
+          "$ref": "#/$defs/BusinessesFilters"
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "all_businesses": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "BusinessesFilters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "has_description_eq": {
+              "type": "boolean"
+            },
+            "s": {
+              "type": "string",
+              "enum": [
+                "id asc",
+                "id desc",
+                "name asc",
+                "name desc",
+                "created_at asc",
+                "created_at desc",
+                "updated_at asc",
+                "updated_at desc"
+              ]
+            }
+          },
+          "required": []
+        },
+        "BusinessesListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "$ref": "#/$defs/BusinessesFilters"
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "all_businesses": {
+              "type": "boolean"
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_categories_get",
+    "description": "Read personal finance categories get using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "CategoryInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_categories_list",
+    "description": "Read personal finance categories list using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "key_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "CategoryQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_category_groups_get",
+    "description": "Read personal finance category groups get using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "CategoryInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_category_groups_list",
+    "description": "Read personal finance category groups list using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "key_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "CategoryQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_movements_get",
+    "description": "Read personal finance movements get using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "CategoryInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_movements_list",
+    "description": "Read personal finance movements list using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "type_eq": {
+              "enum": [
+                "income",
+                "expense"
+              ]
+            },
+            "status_eq": {
+              "enum": [
+                "pending",
+                "received",
+                "paid",
+                "cancelled"
+              ]
+            },
+            "created_at_gteq": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "created_at_lt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|type|status|created_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        },
+        "category_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "category_group_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "obligation_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "MovementQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "type_eq": {
+                  "enum": [
+                    "income",
+                    "expense"
+                  ]
+                },
+                "status_eq": {
+                  "enum": [
+                    "pending",
+                    "received",
+                    "paid",
+                    "cancelled"
+                  ]
+                },
+                "created_at_gteq": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "created_at_lt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|type|status|created_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            },
+            "category_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "category_group_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "obligation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_obligations_get",
+    "description": "Read personal finance obligations get using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "CategoryInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_obligations_list",
+    "description": "Read personal finance obligations list using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "key_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+            },
+            "type_eq": {
+              "enum": [
+                "loan",
+                "debt"
+              ]
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "ObligationQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+                },
+                "type_eq": {
+                  "enum": [
+                    "loan",
+                    "debt"
+                  ]
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_summaries_by_category",
+    "description": "Read personal finance summaries by category using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "key_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+            },
+            "type_eq": {
+              "enum": [
+                "income",
+                "expense"
+              ]
+            },
+            "status_eq": {
+              "enum": [
+                "pending",
+                "received",
+                "paid",
+                "cancelled"
+              ]
+            },
+            "created_at_gteq": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "created_at_lt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": []
+        },
+        "category_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "category_group_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "obligation_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "SummaryQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+                },
+                "type_eq": {
+                  "enum": [
+                    "income",
+                    "expense"
+                  ]
+                },
+                "status_eq": {
+                  "enum": [
+                    "pending",
+                    "received",
+                    "paid",
+                    "cancelled"
+                  ]
+                },
+                "created_at_gteq": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "created_at_lt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": []
+            },
+            "category_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "category_group_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "obligation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_summaries_by_category_group",
+    "description": "Read personal finance summaries by category group using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "key_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+            },
+            "type_eq": {
+              "enum": [
+                "income",
+                "expense"
+              ]
+            },
+            "status_eq": {
+              "enum": [
+                "pending",
+                "received",
+                "paid",
+                "cancelled"
+              ]
+            },
+            "created_at_gteq": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "created_at_lt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": []
+        },
+        "category_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "category_group_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "obligation_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "SummaryQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|key|created_at|updated_at) (asc|desc)$"
+                },
+                "type_eq": {
+                  "enum": [
+                    "income",
+                    "expense"
+                  ]
+                },
+                "status_eq": {
+                  "enum": [
+                    "pending",
+                    "received",
+                    "paid",
+                    "cancelled"
+                  ]
+                },
+                "created_at_gteq": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "created_at_lt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": []
+            },
+            "category_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "category_group_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "obligation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_finance_summaries_overview",
+    "description": "Read personal finance summaries overview using current owner authority. Amounts and IDs are exact decimal strings; filters default to active.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "type_eq": {
+              "enum": [
+                "income",
+                "expense"
+              ]
+            },
+            "status_eq": {
+              "enum": [
+                "pending",
+                "received",
+                "paid",
+                "cancelled"
+              ]
+            },
+            "created_at_gteq": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "created_at_lt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|type|status|created_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        },
+        "category_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "category_group_ids": {
+          "type": "array",
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "maxLength": 19
+          }
+        },
+        "obligation_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-finance-read-v1.schema.json",
+      "$defs": {
+        "MovementQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "type_eq": {
+                  "enum": [
+                    "income",
+                    "expense"
+                  ]
+                },
+                "status_eq": {
+                  "enum": [
+                    "pending",
+                    "received",
+                    "paid",
+                    "cancelled"
+                  ]
+                },
+                "created_at_gteq": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "created_at_lt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|type|status|created_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            },
+            "category_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "category_group_ids": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "obligation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_invoices_eligible_invoice_connections",
+    "description": "Observe eligible through the existing provider adapter outside SQL. Session, configuration and discovery do not prove inference. Unknown remains null; no automatic provider change.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/external-read/1",
+      "$defs": {
+        "EmptyInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {},
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_invoices_file",
+    "description": "Obtain a private invoice-file reference; the current file is reauthorized and streamed when a human downloads.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Bigint"
+        }
+      },
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "nodia-ai-artifacts/1",
+      "$defs": {
+        "Bigint": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "InvoiceFileInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Bigint"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_invoices_get",
+    "description": "Read an invoice summary. Its total is invoiced money, not a payment.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "InvoicesGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_invoices_list",
+    "description": "List invoice summaries by business, commercial provider, code or issue-date bounds.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "q": {
+          "$ref": "#/$defs/InvoicesFilters"
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "InvoicesFilters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "business_id_eq": {
+              "$ref": "#/$defs/Uuid"
+            },
+            "provider_id_eq": {
+              "$ref": "#/$defs/Id"
+            },
+            "provider_id_in": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "maxItems": 100
+            },
+            "code_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_eq": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "maxItems": 100
+            },
+            "issue_date_gteq": {
+              "type": "string",
+              "format": "date"
+            },
+            "issue_date_lteq": {
+              "type": "string",
+              "format": "date"
+            },
+            "s": {
+              "type": "string",
+              "enum": [
+                "id asc",
+                "id desc",
+                "code asc",
+                "code desc",
+                "total_amount asc",
+                "total_amount desc",
+                "created_at asc",
+                "created_at desc",
+                "updated_at asc",
+                "updated_at desc"
+              ]
+            }
+          },
+          "required": []
+        },
+        "InvoicesListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "$ref": "#/$defs/InvoicesFilters"
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          "required": []
+        },
+        "Uuid": {
+          "type": "string",
+          "format": "uuid",
+          "maxLength": 36
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_module_groups_list",
+    "description": "Read Nodia settings module groups list. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "GroupQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "key_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|key|is_active|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_modules_get",
+    "description": "Read Nodia settings modules get. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "DetailInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_modules_list",
+    "description": "Read Nodia settings modules list. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "link_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "link_eq": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "module_group_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "module_group_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|link|icon|module_group_id|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "ModuleQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "key_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "link_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "link_eq": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "module_group_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "module_group_id_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$",
+                    "maxLength": 19
+                  }
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|key|link|icon|module_group_id|is_active|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_product_logs_get",
+    "description": "Read a historical product snapshot by UUID; a snapshot is not a sale.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "ProductLogsGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Uuid"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "Uuid": {
+          "type": "string",
+          "format": "uuid",
+          "maxLength": 36
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_product_logs_list",
+    "description": "List bounded historical product snapshots with permitted filters.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "q": {
+          "$ref": "#/$defs/ProductLogsFilters"
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "ProductLogsFilters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "product_id_eq": {
+              "$ref": "#/$defs/Id"
+            },
+            "product_id_in": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "maxItems": 100
+            },
+            "code_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_eq": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "maxItems": 100
+            },
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "s": {
+              "type": "string",
+              "enum": [
+                "id asc",
+                "id desc",
+                "name asc",
+                "name desc",
+                "code asc",
+                "code desc",
+                "sale_price asc",
+                "sale_price desc",
+                "created_at asc",
+                "created_at desc",
+                "updated_at asc",
+                "updated_at desc"
+              ]
+            }
+          },
+          "required": []
+        },
+        "ProductLogsListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "$ref": "#/$defs/ProductLogsFilters"
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_product_logs_query",
+    "description": "Query historical product snapshots for explicit product IDs or codes.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "q": {
+          "$ref": "#/$defs/ProductLogsFilters"
+        },
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "maxItems": 100
+        },
+        "codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "maxItems": 100
+        },
+        "s": {
+          "type": "string",
+          "enum": [
+            "id asc",
+            "id desc",
+            "name asc",
+            "name desc",
+            "code asc",
+            "code desc",
+            "sale_price asc",
+            "sale_price desc",
+            "created_at asc",
+            "created_at desc",
+            "updated_at asc",
+            "updated_at desc"
+          ]
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "ProductLogsFilters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "product_id_eq": {
+              "$ref": "#/$defs/Id"
+            },
+            "product_id_in": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "maxItems": 100
+            },
+            "code_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_eq": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "maxItems": 100
+            },
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "s": {
+              "type": "string",
+              "enum": [
+                "id asc",
+                "id desc",
+                "name asc",
+                "name desc",
+                "code asc",
+                "code desc",
+                "sale_price asc",
+                "sale_price desc",
+                "created_at asc",
+                "created_at desc",
+                "updated_at asc",
+                "updated_at desc"
+              ]
+            }
+          },
+          "required": []
+        },
+        "ProductLogsQueryInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "$ref": "#/$defs/ProductLogsFilters"
+            },
+            "product_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "maxItems": 100
+            },
+            "codes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "maxItems": 100
+            },
+            "s": {
+              "type": "string",
+              "enum": [
+                "id asc",
+                "id desc",
+                "name asc",
+                "name desc",
+                "code asc",
+                "code desc",
+                "sale_price asc",
+                "sale_price desc",
+                "created_at asc",
+                "created_at desc",
+                "updated_at asc",
+                "updated_at desc"
+              ]
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_products_export_csv",
+    "description": "Obtain a private CSV reference for products; data is generated from current records at authenticated download, not a historical snapshot.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "business_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "lang": {
+          "$ref": "#/$defs/Language"
+        }
+      },
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "nodia-ai-artifacts/1",
+      "$defs": {
+        "Language": {
+          "type": "string",
+          "pattern": "^(es|en)(?:-[A-Za-z]{2})?$",
+          "maxLength": 5
+        },
+        "ProductsExportInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "business_id": {
+              "$ref": "#/$defs/Uuid"
+            },
+            "lang": {
+              "$ref": "#/$defs/Language"
+            }
+          }
+        },
+        "Uuid": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_products_get",
+    "description": "Read current product prices, stock and commercial associations.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "ProductsGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_products_list",
+    "description": "List current products with permitted code, name, provider, stock and price-variation filters.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "q": {
+          "$ref": "#/$defs/ProductsFilters"
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "ProductsFilters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "business_id_eq": {
+              "$ref": "#/$defs/Uuid"
+            },
+            "provider_id_eq": {
+              "$ref": "#/$defs/Id"
+            },
+            "provider_id_in": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Id"
+              },
+              "maxItems": 100
+            },
+            "code_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_eq": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "maxItems": 100
+            },
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "name_eq": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "name_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "maxItems": 100
+            },
+            "name_not_eq": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "name_not_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_not_eq": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "code_not_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "maxItems": 100
+            },
+            "provider_id_null": {
+              "type": "boolean"
+            },
+            "provider_id_not_null": {
+              "type": "boolean"
+            },
+            "stock_gteq": {
+              "type": "number"
+            },
+            "stock_lteq": {
+              "type": "number"
+            },
+            "stock_status_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "out",
+                  "low",
+                  "normal"
+                ]
+              },
+              "maxItems": 3
+            },
+            "price_change_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "increased",
+                  "decreased",
+                  "unchanged"
+                ]
+              },
+              "maxItems": 3
+            },
+            "s": {
+              "type": "string",
+              "enum": [
+                "id asc",
+                "id desc",
+                "name asc",
+                "name desc",
+                "code asc",
+                "code desc",
+                "stock asc",
+                "stock desc",
+                "sale_price asc",
+                "sale_price desc",
+                "created_at asc",
+                "created_at desc",
+                "updated_at asc",
+                "updated_at desc"
+              ]
+            }
+          },
+          "required": []
+        },
+        "ProductsListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "$ref": "#/$defs/ProductsFilters"
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          "required": []
+        },
+        "Uuid": {
+          "type": "string",
+          "format": "uuid",
+          "maxLength": 36
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_provider_contacts_list",
+    "description": "List a commercial supplier’s contacts, phones and schedules.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "$ref": "#/$defs/Id"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "search": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        }
+      },
+      "required": [
+        "provider_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "ProviderContactsListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "provider_id": {
+              "$ref": "#/$defs/Id"
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "search": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          "required": [
+            "provider_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_providers_export_csv",
+    "description": "Obtain a private CSV reference for commercial suppliers; data is generated from current records at authenticated download, not a historical snapshot.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "business_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "lang": {
+          "$ref": "#/$defs/Language"
+        },
+        "ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Bigint"
+          }
+        }
+      },
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "nodia-ai-artifacts/1",
+      "$defs": {
+        "Bigint": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "Language": {
+          "type": "string",
+          "pattern": "^(es|en)(?:-[A-Za-z]{2})?$",
+          "maxLength": 5
+        },
+        "ProvidersExportInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "business_id": {
+              "$ref": "#/$defs/Uuid"
+            },
+            "lang": {
+              "$ref": "#/$defs/Language"
+            },
+            "ids": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/Bigint"
+              }
+            }
+          }
+        },
+        "Uuid": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_providers_get",
+    "description": "Read a commercial supplier summary; this is not an AI provider.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "Id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "ProvidersGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_providers_list",
+    "description": "List commercial suppliers by business, name and activity.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "q": {
+          "$ref": "#/$defs/ProvidersFilters"
+        },
+        "activity": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/schemas/nodia-ai/business/v1",
+      "$defs": {
+        "ProvidersFilters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "business_id_eq": {
+              "$ref": "#/$defs/Uuid"
+            },
+            "s": {
+              "type": "string",
+              "enum": [
+                "id asc",
+                "id desc",
+                "name asc",
+                "name desc",
+                "tax asc",
+                "tax desc",
+                "created_at asc",
+                "created_at desc",
+                "updated_at asc",
+                "updated_at desc"
+              ]
+            }
+          },
+          "required": []
+        },
+        "ProvidersListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "$ref": "#/$defs/ProvidersFilters"
+            },
+            "activity": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          "required": []
+        },
+        "Uuid": {
+          "type": "string",
+          "format": "uuid",
+          "maxLength": 36
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_audit_list",
+    "description": "Nodia Reservas: rental_audit / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {},
+              "required": []
+            },
+            "resource_type": {
+              "type": "string",
+              "enum": [
+                "property",
+                "collaborator",
+                "policy",
+                "reservation",
+                "payment",
+                "expense",
+                "block",
+                "turnover"
+              ]
+            },
+            "resource_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "property.create",
+                "property.update",
+                "collaborator.create",
+                "collaborator.update",
+                "policy.create",
+                "policy.update",
+                "reservation.create",
+                "reservation.update",
+                "reservation.confirm",
+                "reservation.start",
+                "reservation.complete",
+                "reservation.cancel",
+                "payment.create",
+                "payment.void",
+                "expense.create",
+                "expense.update",
+                "expense.pay",
+                "expense.void",
+                "block.create",
+                "block.update",
+                "turnover.update",
+                "turnover.approve_same_day"
+              ],
+              "maxLength": 5000
+            },
+            "from_at": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 35
+            },
+            "to_at": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 35
+            }
+          },
+          "required": [],
+          "dependentRequired": {
+            "from_at": [
+              "to_at"
+            ],
+            "to_at": [
+              "from_at"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalAuditListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {},
+                  "required": []
+                },
+                "resource_type": {
+                  "type": "string",
+                  "enum": [
+                    "property",
+                    "collaborator",
+                    "policy",
+                    "reservation",
+                    "payment",
+                    "expense",
+                    "block",
+                    "turnover"
+                  ]
+                },
+                "resource_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "property.create",
+                    "property.update",
+                    "collaborator.create",
+                    "collaborator.update",
+                    "policy.create",
+                    "policy.update",
+                    "reservation.create",
+                    "reservation.update",
+                    "reservation.confirm",
+                    "reservation.start",
+                    "reservation.complete",
+                    "reservation.cancel",
+                    "payment.create",
+                    "payment.void",
+                    "expense.create",
+                    "expense.update",
+                    "expense.pay",
+                    "expense.void",
+                    "block.create",
+                    "block.update",
+                    "turnover.update",
+                    "turnover.approve_same_day"
+                  ],
+                  "maxLength": 5000
+                },
+                "from_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 35
+                },
+                "to_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 35
+                }
+              },
+              "required": [],
+              "dependentRequired": {
+                "from_at": [
+                  "to_at"
+                ],
+                "to_at": [
+                  "from_at"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_blocks_get",
+    "description": "Nodia Reservas: rental_blocks / get. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "property_id",
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalBlocksGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "property_id",
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_blocks_list",
+    "description": "Nodia Reservas: rental_blocks / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "reason_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "starts_at asc",
+                    "starts_at desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "active": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "starts_at": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 35
+            },
+            "ends_at": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 35
+            }
+          },
+          "required": [],
+          "dependentRequired": {
+            "starts_at": [
+              "ends_at"
+            ],
+            "ends_at": [
+              "starts_at"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalBlocksListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "reason_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "starts_at asc",
+                        "starts_at desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "active": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "all"
+                  ]
+                },
+                "starts_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 35
+                },
+                "ends_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 35
+                }
+              },
+              "required": [],
+              "dependentRequired": {
+                "starts_at": [
+                  "ends_at"
+                ],
+                "ends_at": [
+                  "starts_at"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_calendar_availability",
+    "description": "Nodia Reservas: rental_calendar / availability. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "check_in_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "check_out_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "check_in_time": {
+              "type": "string",
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+              "maxLength": 5
+            },
+            "check_out_time": {
+              "type": "string",
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+              "maxLength": 5
+            },
+            "exclude_reservation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "check_in_on",
+            "check_out_on",
+            "check_in_time",
+            "check_out_time"
+          ]
+        }
+      },
+      "required": [
+        "property_id",
+        "query"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalCalendarAvailabilityInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "check_in_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "check_out_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "check_in_time": {
+                  "type": "string",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                  "maxLength": 5
+                },
+                "check_out_time": {
+                  "type": "string",
+                  "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+                  "maxLength": 5
+                },
+                "exclude_reservation_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                }
+              },
+              "required": [
+                "check_in_on",
+                "check_out_on",
+                "check_in_time",
+                "check_out_time"
+              ]
+            }
+          },
+          "required": [
+            "property_id",
+            "query"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_calendar_calendar",
+    "description": "Nodia Reservas: rental_calendar / calendar. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "from_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "to_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "include_non_occupying": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          "required": [
+            "from_on",
+            "to_on"
+          ],
+          "dependentRequired": {
+            "from_on": [
+              "to_on"
+            ],
+            "to_on": [
+              "from_on"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id",
+        "query"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalCalendarCalendarInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "from_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "to_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "include_non_occupying": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              },
+              "required": [
+                "from_on",
+                "to_on"
+              ],
+              "dependentRequired": {
+                "from_on": [
+                  "to_on"
+                ],
+                "to_on": [
+                  "from_on"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id",
+            "query"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_cancellation_policies_get",
+    "description": "Nodia Reservas: rental_cancellation_policies / get. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "property_id",
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalCancellationPoliciesGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "property_id",
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_cancellation_policies_list",
+    "description": "Nodia Reservas: rental_cancellation_policies / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "name asc",
+                    "name desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "active": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalCancellationPoliciesListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "name asc",
+                        "name desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "active": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "all"
+                  ]
+                }
+              },
+              "required": []
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_collaborators_candidates",
+    "description": "Nodia Reservas: rental_collaborators / candidates. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "search": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 100
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          },
+          "required": [
+            "search"
+          ]
+        }
+      },
+      "required": [
+        "property_id",
+        "query"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalCollaboratorsCandidatesInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "search": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 100
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20
+                }
+              },
+              "required": [
+                "search"
+              ]
+            }
+          },
+          "required": [
+            "property_id",
+            "query"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_collaborators_list",
+    "description": "Nodia Reservas: rental_collaborators / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "position_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "created_at asc",
+                    "created_at desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "active": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalCollaboratorsListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "position_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "created_at asc",
+                        "created_at desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "active": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "all"
+                  ]
+                }
+              },
+              "required": []
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_expenses_get",
+    "description": "Nodia Reservas: rental_expenses / get. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "property_id",
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalExpensesGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "property_id",
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_expenses_list",
+    "description": "Nodia Reservas: rental_expenses / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "incurred_on asc",
+                    "incurred_on desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "reservation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "paid",
+                "voided"
+              ]
+            },
+            "category": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "from_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "to_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            }
+          },
+          "required": [],
+          "dependentRequired": {
+            "from_on": [
+              "to_on"
+            ],
+            "to_on": [
+              "from_on"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalExpensesListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "incurred_on asc",
+                        "incurred_on desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "reservation_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "paid",
+                    "voided"
+                  ]
+                },
+                "category": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "from_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "to_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                }
+              },
+              "required": [],
+              "dependentRequired": {
+                "from_on": [
+                  "to_on"
+                ],
+                "to_on": [
+                  "from_on"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_payments_get",
+    "description": "Nodia Reservas: rental_payments / get. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "property_id",
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalPaymentsGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "property_id",
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_payments_list",
+    "description": "Nodia Reservas: rental_payments / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "reference_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "occurred_on asc",
+                    "occurred_on desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "reservation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "payment",
+                "refund"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "confirmed",
+                "voided"
+              ]
+            },
+            "from_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "to_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            }
+          },
+          "required": [],
+          "dependentRequired": {
+            "from_on": [
+              "to_on"
+            ],
+            "to_on": [
+              "from_on"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalPaymentsListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "reference_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "occurred_on asc",
+                        "occurred_on desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "reservation_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "payment",
+                    "refund"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "confirmed",
+                    "voided"
+                  ]
+                },
+                "from_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "to_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                }
+              },
+              "required": [],
+              "dependentRequired": {
+                "from_on": [
+                  "to_on"
+                ],
+                "to_on": [
+                  "from_on"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_properties_get",
+    "description": "Nodia Reservas: rental_properties / get. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalPropertiesGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_properties_list",
+    "description": "Nodia Reservas: rental_properties / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "name asc",
+                    "name desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "active": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalPropertiesListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "name asc",
+                        "name desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "active": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "all"
+                  ]
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_reservations_cancellation_preview",
+    "description": "Nodia Reservas: rental_reservations / cancellation_preview. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "command": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cancelled_at": {
+              "type": "string",
+              "format": "date-time",
+              "maxLength": 35
+            },
+            "refund_amount": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$",
+              "maxLength": 18
+            },
+            "resolution_note": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "cancelled_at"
+          ]
+        }
+      },
+      "required": [
+        "property_id",
+        "id",
+        "command"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalReservationsCancellationPreviewInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "command": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cancelled_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "maxLength": 35
+                },
+                "refund_amount": {
+                  "type": "string",
+                  "pattern": "^(0|[1-9][0-9]*)$",
+                  "maxLength": 18
+                },
+                "resolution_note": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "cancelled_at"
+              ]
+            }
+          },
+          "required": [
+            "property_id",
+            "id",
+            "command"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_reservations_get",
+    "description": "Nodia Reservas: rental_reservations / get. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "property_id",
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalReservationsGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "property_id",
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_reservations_list",
+    "description": "Nodia Reservas: rental_reservations / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "guest_name_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "external_reference_cont": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "check_in_on asc",
+                    "check_in_on desc",
+                    "created_at asc",
+                    "created_at desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "active": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "status_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "confirmed",
+                  "in_progress",
+                  "completed",
+                  "cancelled"
+                ]
+              },
+              "maxItems": 5,
+              "uniqueItems": true
+            },
+            "channel_in": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "whatsapp",
+                  "airbnb",
+                  "facebook",
+                  "other"
+                ]
+              },
+              "maxItems": 4,
+              "uniqueItems": true
+            },
+            "from_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "to_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            }
+          },
+          "required": [],
+          "dependentRequired": {
+            "from_on": [
+              "to_on"
+            ],
+            "to_on": [
+              "from_on"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalReservationsListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "guest_name_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "external_reference_cont": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "check_in_on asc",
+                        "check_in_on desc",
+                        "created_at asc",
+                        "created_at desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "active": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive",
+                    "all"
+                  ]
+                },
+                "status_in": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "confirmed",
+                      "in_progress",
+                      "completed",
+                      "cancelled"
+                    ]
+                  },
+                  "maxItems": 5,
+                  "uniqueItems": true
+                },
+                "channel_in": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "whatsapp",
+                      "airbnb",
+                      "facebook",
+                      "other"
+                    ]
+                  },
+                  "maxItems": 4,
+                  "uniqueItems": true
+                },
+                "from_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "to_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                }
+              },
+              "required": [],
+              "dependentRequired": {
+                "from_on": [
+                  "to_on"
+                ],
+                "to_on": [
+                  "from_on"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_summaries_overview",
+    "description": "Nodia Reservas: rental_summaries / overview. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "from_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "to_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            }
+          },
+          "required": [
+            "from_on",
+            "to_on"
+          ],
+          "dependentRequired": {
+            "from_on": [
+              "to_on"
+            ],
+            "to_on": [
+              "from_on"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id",
+        "query"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalSummariesOverviewInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "from_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "to_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                }
+              },
+              "required": [
+                "from_on",
+                "to_on"
+              ],
+              "dependentRequired": {
+                "from_on": [
+                  "to_on"
+                ],
+                "to_on": [
+                  "from_on"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id",
+            "query"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_turnovers_get",
+    "description": "Nodia Reservas: rental_turnovers / get. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "property_id",
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalTurnoversGetInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "property_id",
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_rental_turnovers_list",
+    "description": "Nodia Reservas: rental_turnovers / list. Lectura autorizada sin modificar datos.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "property_id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        },
+        "query": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "s": {
+                  "type": "string",
+                  "enum": [
+                    "planned_ready_at asc",
+                    "planned_ready_at desc"
+                  ]
+                }
+              },
+              "required": []
+            },
+            "cleaning_status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "in_progress",
+                "completed"
+              ]
+            },
+            "incoming_reservation_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "linen_ready": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false",
+                "unknown"
+              ]
+            },
+            "from_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            },
+            "to_on": {
+              "type": "string",
+              "format": "date",
+              "maxLength": 10
+            }
+          },
+          "required": [],
+          "dependentRequired": {
+            "from_on": [
+              "to_on"
+            ],
+            "to_on": [
+              "from_on"
+            ]
+          }
+        }
+      },
+      "required": [
+        "property_id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/nodia-ai/reservations.schema.json",
+      "$defs": {
+        "RentalTurnoversListInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property_id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "query": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "q": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "s": {
+                      "type": "string",
+                      "enum": [
+                        "planned_ready_at asc",
+                        "planned_ready_at desc"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "cleaning_status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "in_progress",
+                    "completed"
+                  ]
+                },
+                "incoming_reservation_id": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "linen_ready": {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false",
+                    "unknown"
+                  ]
+                },
+                "from_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                },
+                "to_on": {
+                  "type": "string",
+                  "format": "date",
+                  "maxLength": 10
+                }
+              },
+              "required": [],
+              "dependentRequired": {
+                "from_on": [
+                  "to_on"
+                ],
+                "to_on": [
+                  "from_on"
+                ]
+              }
+            }
+          },
+          "required": [
+            "property_id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_roles_get",
+    "description": "Read Nodia settings roles get. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "maxLength": 19
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "DetailInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_roles_list",
+    "description": "Read Nodia settings roles list. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "actions_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "actions_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "actions_key_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "actions_key_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|key|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "RoleQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "key_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "actions_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "actions_id_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$",
+                    "maxLength": 19
+                  }
+                },
+                "actions_key_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "actions_key_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|key|is_active|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  },
+  {
+    "name": "nodia_users_list",
+    "description": "Read Nodia settings users list. List requests are paginated, active by default, and return explicit public fields. No credentials or authentication identifiers.",
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "active": {
+          "enum": [
+            "active",
+            "inactive",
+            "all"
+          ]
+        },
+        "q": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "name_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "email_cont": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "email_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "maxLength": 2048
+              }
+            },
+            "roles_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "roles_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "modules_id_eq": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "maxLength": 19
+            },
+            "modules_id_in": {
+              "type": "array",
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,18}$",
+                "maxLength": 19
+              }
+            },
+            "s": {
+              "type": "string",
+              "pattern": "^(id|name|email|is_active|created_at|updated_at) (asc|desc)$"
+            }
+          },
+          "required": []
+        }
+      },
+      "required": [],
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://nodia.local/contracts/nodia-ai-core-settings-read-v1.schema.json",
+      "$defs": {
+        "UserQuery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "active": {
+              "enum": [
+                "active",
+                "inactive",
+                "all"
+              ]
+            },
+            "q": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "name_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "email_cont": {
+                  "type": "string",
+                  "maxLength": 2048
+                },
+                "email_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 2048
+                  }
+                },
+                "roles_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "roles_id_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$",
+                    "maxLength": 19
+                  }
+                },
+                "modules_id_eq": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "maxLength": 19
+                },
+                "modules_id_in": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[1-9][0-9]{0,18}$",
+                    "maxLength": 19
+                  }
+                },
+                "s": {
+                  "type": "string",
+                  "pattern": "^(id|name|email|is_active|created_at|updated_at) (asc|desc)$"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  }
+]

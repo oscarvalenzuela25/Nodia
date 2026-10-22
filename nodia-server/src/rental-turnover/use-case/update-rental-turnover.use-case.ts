@@ -1,4 +1,5 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import type { ActorReference } from '../../authorization/authority-transaction.js';
+import { Injectable } from '@nestjs/common';
 import { RentalTransactionService } from '../../rental-common/rental-transaction.service.js';
 import {
   validateRentalDto,
@@ -7,11 +8,10 @@ import {
 import {
   calendarStay,
   immediateNeighbors,
-  refreshPlan,
-  planValid,
 } from '../../rental-common/rental-calendar.rules.js';
 import { RentalTurnoverService } from '../rental-turnover.service.js';
 import { UpdateRentalTurnoverDto } from '../dto/update-rental-turnover.dto.js';
+import { applyRentalTurnoverUpdate } from '../types/rental-turnover.rules.js';
 @Injectable()
 export class UpdateRentalTurnoverUseCase {
   constructor(
@@ -19,17 +19,18 @@ export class UpdateRentalTurnoverUseCase {
     private readonly turnovers: RentalTurnoverService,
   ) {}
   async execute(
-    actorId: string,
+    actor: ActorReference,
     propertyId: string,
     id: string,
     input: UpdateRentalTurnoverDto,
     requestKey: string,
   ) {
+    const actorId = actor.userId;
     const dto = await validateRentalDto(UpdateRentalTurnoverDto, input);
     requireNonEmptyUpdate(dto);
     return this.transactions.mutate(
       {
-        actorId,
+        actor,
         propertyId,
         requestKey,
         operation: 'turnover.update',
@@ -47,40 +48,17 @@ export class UpdateRentalTurnoverUseCase {
           ctx.property.timezone,
         );
         const { previous } = await immediateNeighbors(ctx, incoming);
-        const row = refreshPlan(original, previous);
+        const row = applyRentalTurnoverUpdate(
+          original,
+          incoming,
+          previous,
+          ctx.property.minimum_turnover_minutes,
+          ctx.now,
+          dto,
+        );
         const keys = Object.keys(dto).filter(
           (key) => dto[key as keyof typeof dto] !== undefined,
         );
-        const oldLinen = row.linen_ready;
-        const oldPlanned = row.planned_ready_at?.getTime() ?? null;
-        for (const key of keys) {
-          if (key === 'planned_ready_at' || key === 'ready_at')
-            row[key] = dto[key] ? new Date(dto[key]) : null;
-          else Object.assign(row, { [key]: dto[key as keyof typeof dto] });
-        }
-        if (
-          oldLinen !== row.linen_ready ||
-          oldPlanned !== (row.planned_ready_at?.getTime() ?? null)
-        )
-          row.same_day_approved_at = null;
-        if (
-          row.planned_ready_at !== null &&
-          !planValid(
-            row,
-            incoming,
-            previous,
-            ctx.property.minimum_turnover_minutes,
-          )
-        )
-          throw new BadRequestException('rental:invalid_turnover_plan');
-        if (
-          row.ready_at !== null &&
-          (row.linen_ready !== true ||
-            row.cleaning_status !== 'completed' ||
-            row.ready_at > ctx.now ||
-            (previous && row.ready_at.getTime() < previous.ends_at))
-        )
-          throw new BadRequestException('rental:invalid_turnover_ready');
         row.updated_by = actorId;
         const saved = await this.turnovers.save(ctx.manager, row);
         return {

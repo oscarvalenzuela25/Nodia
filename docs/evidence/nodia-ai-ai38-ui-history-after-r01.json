@@ -1,0 +1,9 @@
+{
+  "scope": "DOM_rendered_message_articles_only",
+  "conversation_sha256": "e5aff7d747c5a27c6f890f749323901c5a235d6e8a99a2087b696351fb05fc0c",
+  "article_count": 2,
+  "message_articles_sha256": "dd494d05824faced40a465036e5008d2ab4b151439f484a58a9fbe6b55a931d1",
+  "history_matches_before": true,
+  "loaded_SPA_retained_without_reload": true,
+  "plaintext_saved": false
+}

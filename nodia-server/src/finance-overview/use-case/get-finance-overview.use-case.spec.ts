@@ -1,3 +1,5 @@
+import { financeScopeFixture } from '../../authorization/use-case/authority.fixture.js';
+import { actorFixture } from '../../authorization/use-case/authority.fixture.js';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -16,32 +18,27 @@ import { GetFinanceOverviewUseCase } from './get-finance-overview.use-case.js';
 function fixture() {
   const manager = {} as EntityManager;
   const service = {
+    withScope: financeScopeFixture(manager),
     snapshot: vi.fn((operation: (tx: EntityManager) => Promise<unknown>) =>
       operation(manager),
     ),
-    totals: vi
-      .fn()
-      .mockResolvedValue({
-        income_amount: '9007199254740995',
-        expense_amount: '9007199254741000',
-        movement_count: '25',
-        pending_count: '2',
-        cancelled_count: '1',
-      }),
-    counts: vi
-      .fn()
-      .mockResolvedValue({
-        categories: '3',
-        category_groups: '2',
-        loans: '1',
-        debts: '0',
-      }),
-    obligationBalances: vi
-      .fn()
-      .mockResolvedValue({
-        loan_remaining_amount: '60000',
-        debt_remaining_amount: '0',
-      }),
+    totals: vi.fn().mockResolvedValue({
+      income_amount: '9007199254740995',
+      expense_amount: '9007199254741000',
+      movement_count: '25',
+      pending_count: '2',
+      cancelled_count: '1',
+    }),
+    counts: vi.fn().mockResolvedValue({
+      categories: '3',
+      category_groups: '2',
+      loans: '1',
+      debts: '0',
+    }),
+    obligationBalances: vi.fn().mockResolvedValue({
+      loan_remaining_amount: '60000',
+      debt_remaining_amount: '0',
+    }),
   };
   return {
     service,
@@ -59,7 +56,7 @@ describe('GetFinanceOverviewUseCase', () => {
       q: { created_at_gteq: '2026-10-01T00:00:00Z' },
       category_group_ids: ['7', '8'],
     });
-    const result = await useCase.execute('12', query);
+    const result = await useCase.execute(actorFixture('12'), query);
     expect(result.totals).toEqual({
       income_amount: '9007199254740995',
       expense_amount: '9007199254741000',
@@ -109,7 +106,10 @@ describe('GetFinanceOverviewUseCase', () => {
   ])('rejects malformed filters before any persistence: %j', async (input) => {
     const { useCase, service } = fixture();
     await expect(
-      useCase.execute('12', Object.assign(new FinanceQueryDto(), input)),
+      useCase.execute(
+        actorFixture('12'),
+        Object.assign(new FinanceQueryDto(), input),
+      ),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(service.snapshot).not.toHaveBeenCalled();
   });
@@ -119,9 +119,9 @@ describe('GetFinanceOverviewUseCase', () => {
     service.obligationBalances.mockRejectedValue(
       new Error('synthetic unavailable'),
     );
-    await expect(useCase.execute('12', new FinanceQueryDto())).rejects.toThrow(
-      'synthetic unavailable',
-    );
+    await expect(
+      useCase.execute(actorFixture('12'), new FinanceQueryDto()),
+    ).rejects.toThrow('synthetic unavailable');
   });
 
   it('rejects invalid repository aggregates rather than coercing them to money', async () => {
@@ -134,7 +134,7 @@ describe('GetFinanceOverviewUseCase', () => {
       cancelled_count: '0',
     });
     await expect(
-      useCase.execute('12', new FinanceQueryDto()),
+      useCase.execute(actorFixture('12'), new FinanceQueryDto()),
     ).rejects.toBeInstanceOf(InternalServerErrorException);
   });
 

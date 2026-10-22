@@ -1,0 +1,18 @@
+{
+  "scope": "read_only_observer_ownership_metadata_preflight",
+  "exec_uid": 10001,
+  "exec_gid": 10001,
+  "home_uid": 10001,
+  "home_gid": 986,
+  "marker_parent_uid": 10001,
+  "marker_parent_gid": 10001,
+  "home_regular_directory": true,
+  "marker_parent_regular_directory": true,
+  "baseline_temp_directories": 0,
+  "baseline_unknown_markers": 0,
+  "profile_bytes_read": false,
+  "provider_requests": 0,
+  "observed_at_utc": "2026-10-19T17:48:23.105398+00:00",
+  "owner_uids_match": true
+}
+

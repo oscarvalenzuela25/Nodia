@@ -1,0 +1,37 @@
+{
+  "stage": "AI-36-C05",
+  "scope": "one_fresh_High_observation_GO13_no_inference_retry",
+  "status": "passed",
+  "observed_at_utc": "2026-10-19T19:21:44.546Z",
+  "source_sha256": "9f79f5f3ae6dd5c8533b104b75aa4fc5adce5787753bdb5a1546ebfe1400bf8a",
+  "observations": [
+    {
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "available": false,
+      "reason": "agentic_unavailable",
+      "supports_mcp": false,
+      "elapsed_ms": 12064.849246,
+      "observed_at_utc": "2026-10-19T19:21:32.504Z",
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "session_generation_sha256": "12725b26006737b4b18038f662ae65b8471a0873f2deb7f7bcd0370119b0c75d",
+      "verified_modalities": [],
+      "verified_attachment_media_types": []
+    }
+  ],
+  "quiet": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "metadata_requests": 1,
+  "can_proceed_to_one_canary": false,
+  "modality_canaries_executed": 0,
+  "services_restarted": false
+}

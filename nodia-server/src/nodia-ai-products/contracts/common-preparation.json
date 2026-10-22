@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:nodia:nodia-ai:common-preparation:1",
+  "$defs": {
+    "McpPreferencePrepareInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operation": {},
+        "partial": {},
+        "draft_id": {},
+        "expected_draft_revision": {}
+      },
+      "required": ["operation", "partial"],
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "operation": {
+              "const": "create"
+            },
+            "partial": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "scope_key": {
+                  "enum": ["finance", "business", "rental"]
+                },
+                "key": {
+                  "enum": [
+                    "expense_category_id",
+                    "income_category_id",
+                    "business_id",
+                    "supplier_id",
+                    "property_id"
+                  ]
+                },
+                "scope": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {},
+                      "required": []
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "business_id": {
+                          "$ref": "#/$defs/ProtocolId"
+                        }
+                      },
+                      "required": ["business_id"]
+                    }
+                  ]
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 36
+                }
+              },
+              "required": [],
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "key": {
+                        "const": "expense_category_id"
+                      }
+                    },
+                    "required": ["key"]
+                  },
+                  "then": {
+                    "properties": {
+                      "scope_key": {
+                        "const": "finance"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/BigintId"
+                      },
+                      "scope": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {},
+                        "required": []
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "key": {
+                        "const": "income_category_id"
+                      }
+                    },
+                    "required": ["key"]
+                  },
+                  "then": {
+                    "properties": {
+                      "scope_key": {
+                        "const": "finance"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/BigintId"
+                      },
+                      "scope": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {},
+                        "required": []
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "key": {
+                        "const": "business_id"
+                      }
+                    },
+                    "required": ["key"]
+                  },
+                  "then": {
+                    "properties": {
+                      "scope_key": {
+                        "const": "business"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/ProtocolId"
+                      },
+                      "scope": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {},
+                        "required": []
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "key": {
+                        "const": "supplier_id"
+                      }
+                    },
+                    "required": ["key"]
+                  },
+                  "then": {
+                    "properties": {
+                      "scope_key": {
+                        "const": "business"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/BigintId"
+                      },
+                      "scope": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "business_id": {
+                            "$ref": "#/$defs/ProtocolId"
+                          }
+                        },
+                        "required": ["business_id"]
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "key": {
+                        "const": "property_id"
+                      }
+                    },
+                    "required": ["key"]
+                  },
+                  "then": {
+                    "properties": {
+                      "scope_key": {
+                        "const": "rental"
+                      },
+                      "value": {
+                        "$ref": "#/$defs/BigintId"
+                      },
+                      "scope": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {},
+                        "required": []
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "draft_id": {
+              "$ref": "#/$defs/ProtocolId"
+            },
+            "expected_draft_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": ["operation", "partial"],
+          "dependentRequired": {
+            "draft_id": ["expected_draft_revision"],
+            "expected_draft_revision": ["draft_id"]
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "operation": {
+              "const": "update"
+            },
+            "partial": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "$ref": "#/$defs/ProtocolId"
+                },
+                "expected_revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483646
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 36
+                }
+              },
+              "required": []
+            },
+            "draft_id": {
+              "$ref": "#/$defs/ProtocolId"
+            },
+            "expected_draft_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": ["operation", "partial"],
+          "dependentRequired": {
+            "draft_id": ["expected_draft_revision"],
+            "expected_draft_revision": ["draft_id"]
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "operation": {
+              "const": "delete"
+            },
+            "partial": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "$ref": "#/$defs/ProtocolId"
+                },
+                "expected_revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483646
+                }
+              },
+              "required": []
+            },
+            "draft_id": {
+              "$ref": "#/$defs/ProtocolId"
+            },
+            "expected_draft_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": ["operation", "partial"],
+          "dependentRequired": {
+            "draft_id": ["expected_draft_revision"],
+            "expected_draft_revision": ["draft_id"]
+          }
+        }
+      ]
+    }
+  }
+}
