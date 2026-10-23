@@ -191,6 +191,28 @@ cuando sus perfiles son distintos. El login mantiene su reserva hasta el cierre
 real de la tarea, incluso al cancelar antes de su primera instrucción. Discovery
 Agentic ejecuta los comandos no generativos en serie contra ese perfil.
 
+AI-38, 2026-10-22: salud y elegibilidad Agentic usan el contexto explícito
+`observation`, con FIFO por perfil físico, un dueño y hasta cuatro esperas.
+Sus presupuestos totales de12/18s incluyen espera y comprobación; la limpieza
+del CLI debe terminar antes de liberar y puede exceder ese plazo de trabajo.
+Cada solicitud revalida su selección, sin compartir resultados entre modelos.
+`operation`/`reserve`, login, ejecución y cuarentena siguen siendo exclusivos y
+rechazan ocupación real. Las etiquetas de propósito sólo instrumentan al dueño;
+no conceden capacidad. Los eventos cerrados acquire/wait/reject/release incluyen
+nonce de reserva y duración, sin ruta/hash de perfil, cuenta, modelo o mensajes.
+Ver [ADR-071](../docs/architecture/decisions/ADR-071-bounded-agentic-profile-observations.md)
+y la [aceptación y límites de esta época](../docs/evidence/nodia-ai-ai38-profile-reservation-r01.md):
+recargas verificadas; el canario MCP falló conciliado y no reatestó modalidades.
+
+Continuación AI-38 del mismo día: el [nuevo canario y la revalidación por modo](../docs/evidence/nodia-ai-ai38-mcp-post-list-r01.md)
+acreditan MCP y PNG/PDF/WAV/WebM Agentic en FIX073f, sin restart o cambios de
+adaptador/permisos/modelo. El rechazo RPC previo a initialize no impide el nuevo
+éxito y no demuestra la causa del timeout histórico. Web registra tres timeouts
+de generación sin candidata, también en PNG; cada cierre renueva el cliente e
+invalida sus pruebas anteriores. La última generación Web no acredita formatos,
+aunque sesión/catálogo sean observables. Sus positivos anteriores son históricos;
+mantener desconocido y cierre/ACK, sin reparar JSON o repetir inferencias.
+
 Antes de una generación se escribe un marcador mínimo `.unknown` en
 `session_state/runtime_admission/`. Una respuesta validada lo elimina. Error,
 cancelación o caída después de despacho conservan la cuarentena también tras un
@@ -319,3 +341,15 @@ Su respuesta cerrada `nodia-ai-context-budget/1` distingue el prompt inicial exa
 El puente MCP contabiliza además cada respuesta JSON-RPC completa entregada al CLI, incluidos listados, errores y replays. Una reclamación persistente por intento impide reiniciar el contador al relanzar el puente; un marcador de fallo se comprueba antes de aceptar la respuesta final del CLI. El exceso rechaza contenido entero, sin truncado, replay automático ni reversión de callbacks ya confirmados. Los resultados inciertos conservan el supervisor y conciliación existentes. Los identificadores RPC tienen un límite propio validado para que la reserva del primer listado sea comprobable.
 
 Este presupuesto abarca el contenido observable bajo control de Nodia. No demuestra la ventana de tokens ni el razonamiento/contexto privado del SDK/CLI, ni transforma tamaños de archivos multimodales en tokens. Binarios conservan sus límites de admisión e inspección separados. La compactación se ejecuta desde el worker con la selección exacta vigente y sin exponer herramientas; la memoria validada pertenece al backend, no a una sesión opaca del proveedor. Pruebas offline, SQL, cuenta real y activación se registran separadamente en la entrega80.
+
+## AI-38 — Recuperación Web R04 y aceptación por época
+
+La [investigación del stream Web](../docs/evidence/nodia-ai-ai38-web-stream-r01.md) y la [entrega técnica R04](../docs/evidence/nodia-ai-ai38-web-stream-recovery-r04.md) corrigen la coordinación entre watchdog y deadline exclusivamente en el chat/probes de NodiaAI. Para un presupuesto de 120 s, el watchdog se acota a 55 s mientras el caller conserva 120 s; el SDK puede leer el historial del mismo CID sin reenviar la generación. Timeout/watchdog originales se restauran siempre; OCR omite el argumento y mantiene su comportamiento. Las ramas de cola/análisis del SDK usan su timeout original y una respuesta tardía todavía puede agotar el plazo.
+
+La construcción explícita del servicio deshabilita sólo el namespace de logs del SDK para evitar texto del proveedor o referencias privadas; conserva handlers y diagnósticos Nodia. Si una recuperación fallida cerró el transporte del cliente actual, sólo el nuevo flujo de chat invalida su flag inicializado; la próxima observación explícita reconstruye la generación. No se repite automáticamente el intento incierto. La prueba de privacidad falla al retirar únicamente la guarda del constructor, y vuelve a pasar con ella.
+
+R04 está adoptada en la imagen `6b9e…`, época `2026-10-22T21:50:29.621768018Z`, con 49 fuentes Python, 496 pruebas Linux y 527 Windows, incluidas dos omisiones históricas. Se conserva la selección, el paquete Server, dependencias, configuración, mounts y perfil; las pruebas en memoria de épocas anteriores deben renovarse. Texto Web nuevo completo en 42,6 s/ACK sin recuperación; PNG nuevo falla con APIError a los 119 s, sin candidata pese a cinco lecturas de historial del mismo CID, y queda conciliado con ACK. La sesión Web actual no acredita formatos. MCP High completa un callback/nonce y ACK en 54 s; PNG/PDF/WAV/WebM Agentic pasan semántica, cierre y ACK en la misma sesión/época R04, sin pendientes. Un nuevo control Web completa texto en 4,67 s tras renovar su sesión, sin adjuntos ni recuperación; el texto correcto no acredita formatos. La continuación suma 12 generaciones, ocho completadas y cuatro desconocidas conciliadas con ACK, sin replay ni efectos comerciales. No se repitió aceptación UI, R2 o micrófono físico. AI-38 permanece parcial por Web y los demás gates; no se atribuye la causa del silencio upstream al parser, cuota o proveedor sin evidencia.
+
+El inventario final conserva 49 fuentes Python, 42 distribuciones y el paquete Server owner-r01 de 3.879 miembros y 2.851 outputs dist. SQL permanece idéntico; API, worker y timers activos y cero pendientes nativos o SQL.
+
+El [inicio de AI-39](../docs/mvp/85-nodia-ai-ai39-codex-runtime.md) y [ADR-072 propuesto](../docs/architecture/decisions/ADR-072-nodia-ai-provider-runtime-adapters.md) corresponden a contratos y canal privado de Codex en Server: base de 4.475 pruebas, 62 comprobaciones parciales e inicialización/thread nativos sin cuenta ni inferencia. No activan un runtime/adaptador Codex, nuevas herramientas ni UI en este microservicio, ni sustituyen la aceptación propia del proveedor.

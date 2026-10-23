@@ -1,0 +1,120 @@
+{
+  "scope": "one_real_MCP_nonce_callback_and_ACK_no_business_effect",
+  "status": "passed",
+  "source_sha256": "118554a41d3403695c41a9c86007eb36a610f98855f5cc7c8c22d542fdaab7ba",
+  "harness_sha256": "95cdfdc53e86cf44c892273185c11ee2d319c636fbb0db6cd39980b12d42c87d",
+  "Server_manifest_sha256": "4c3fe6d600adab362a71c5f76357383e98aa7acda7c93aa73e61bfb29c626f92",
+  "native_epoch_before": {
+    "id": "c4814c5a184b55cd95c751ed904d0c957c0311148f8732169928ce6c3b2d5bd3",
+    "image": "sha256:6b9e2f7e3273f89c4c2285c852135213bb82a3391bfe06895f523554033acb49",
+    "started_at": "2026-10-22T21:50:29.621768018Z"
+  },
+  "began_at_utc": "2026-10-22T21:55:53.309119+00:00",
+  "maximum_provider_generation_requests": 1,
+  "automatic_inference_retries": 0,
+  "configured_SQL_writes": 0,
+  "business_effects": 0,
+  "services_restarted": false,
+  "raw_stdout_stderr_saved": false,
+  "provider_harness_started": true,
+  "native_pending_identity": false,
+  "selection": {
+    "status": "exact_connection_2_selection_read_only",
+    "quiet": {
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0
+    },
+    "configured_selection_from_database": true
+  },
+  "selection_sha256": "66b26e9c467041b1e05dd932df13ad537c10f4c27cdaa6f05342d6d3dd92115f",
+  "exit_code": 0,
+  "native_result": {
+    "status": "passed",
+    "configured_database_read_only": true,
+    "configured_database_modified": false,
+    "configured_selection_modified": false,
+    "available_before": true,
+    "supports_mcp_before": false,
+    "supports_mcp_after": true,
+    "diagnostic_nonce_verified": true,
+    "native_terminal_proof_acknowledged": true,
+    "inference_replayed": false,
+    "native_pending_identity": false,
+    "real_provider_dispatch_requests": 1,
+    "maximum_provider_dispatch_requests": 1,
+    "diagnostics": {
+      "schema_version": 1,
+      "callbacks": 1,
+      "protocol_progress_notifications": 3,
+      "last_rpc_messages": 7,
+      "last_unforwarded_tool_requests": 0,
+      "valid_progress_snapshots": 341,
+      "start_admission": "running",
+      "attempt_id": "2508e3d9-038e-452b-80bf-c964f11d092e",
+      "post_start_not_dispatched_error": false,
+      "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+      "session_generation": "e57c9b94bb9e45508eacebcff0e48fb2",
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "phases": {
+        "verify_configured_selection": 1,
+        "observe_before": 1,
+        "probe": 1,
+        "probe_returned": 1,
+        "acknowledge_completed": 1,
+        "observe_after": 1,
+        "passed": 1,
+        "cleanup": 1
+      },
+      "endpoints": {
+        "observe": {
+          "requests": 2,
+          "completed": 2,
+          "failed": 0
+        },
+        "start": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        },
+        "events": {
+          "requests": 341,
+          "completed": 341,
+          "failed": 0
+        },
+        "results": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        },
+        "attest": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        },
+        "cancel": {
+          "requests": 0,
+          "completed": 0,
+          "failed": 0
+        },
+        "reconcile": {
+          "requests": 0,
+          "completed": 0,
+          "failed": 0
+        },
+        "acknowledge": {
+          "requests": 1,
+          "completed": 1,
+          "failed": 0
+        }
+      }
+    }
+  },
+  "same_native_epoch_after": true,
+  "finished_at_utc": "2026-10-22T21:56:47.576239+00:00"
+}

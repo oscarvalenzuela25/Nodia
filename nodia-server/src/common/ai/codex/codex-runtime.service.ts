@@ -17,6 +17,9 @@ import {
   type FileHandle,
 } from 'node:fs/promises';
 import { CodexRpc } from './codex-rpc.js';
+import { CodexChatAdmissionError } from './codex-chat-contract.js';
+import { CodexChatJournal } from './codex-chat-journal.js';
+import { codexChatRuntimeFingerprint } from './codex-chat-acceptance.js';
 import {
   codexProcessIdentity,
   type CodexProcessIdentity,
@@ -42,11 +45,16 @@ type Profile = {
   models?: { expires: number; promise: Promise<CodexModel[]> };
   lastInferenceAt: string | null;
   closing?: Promise<void>;
+  chat?: boolean;
 };
 
 @Injectable()
 export class CodexRuntimeService implements OnModuleDestroy {
   private readonly profiles = new Map<string, Promise<Profile>>();
+  private readonly sessionSnapshots = new Map<
+    string,
+    { expires: number; generation: string; session: Promise<CodexSession> }
+  >();
   private readonly idleTimer = setInterval(() => {
     for (const [id, pending] of this.profiles)
       void pending
@@ -61,7 +69,11 @@ export class CodexRuntimeService implements OnModuleDestroy {
   private async create(
     id: string,
     signal?: AbortSignal,
-    beforeNativeStart?: (identity: CodexProcessIdentity) => Promise<void>,
+    beforeNativeStart?: (
+      identity: CodexProcessIdentity,
+      rpc: CodexRpc,
+    ) => Promise<void>,
+    chat = false,
   ): Promise<Profile> {
     signal?.throwIfAborted();
     if (
@@ -194,11 +206,11 @@ export class CodexRuntimeService implements OnModuleDestroy {
       await lock.sync();
       if (beforeNativeStart) {
         if (!runtimeIdentity) throw codexError('codex_login_unknown', 409);
-        await beforeNativeStart(runtimeIdentity);
+        await beforeNativeStart(runtimeIdentity, rpc);
         signal?.throwIfAborted();
         rpc.releaseStartGate();
       }
-      await rpc.initialize();
+      await rpc.initialize(chat ? { experimentalChatApi: true } : undefined);
       signal?.throwIfAborted();
       return {
         rpc,
@@ -208,12 +220,19 @@ export class CodexRuntimeService implements OnModuleDestroy {
         busy: false,
         lastUsed: Date.now(),
         lastInferenceAt: null,
+        chat,
       };
     } catch (error) {
       await rpc?.close();
       if (cwd) await rm(cwd, { recursive: true, force: true });
       await lock.close();
       await rm(lockPath, { force: true });
+      if (chat)
+        throw new CodexChatAdmissionError(
+          error instanceof CodexOperationException
+            ? error.code
+            : 'codex_runtime_unavailable',
+        );
       throw error;
     } finally {
       signal?.removeEventListener('abort', cancel);
@@ -239,18 +258,35 @@ export class CodexRuntimeService implements OnModuleDestroy {
       process.platform === 'win32' ? 'codex.exe' : 'codex',
     );
   }
+  /** Actual native executable and executed chat boundary, without account files. */
+  chatFingerprint(): Promise<string> {
+    return codexChatRuntimeFingerprint(this.executable());
+  }
   async get(
     id: string,
     signal?: AbortSignal,
-    beforeNativeStart?: (identity: CodexProcessIdentity) => Promise<void>,
+    beforeNativeStart?: (
+      identity: CodexProcessIdentity,
+      rpc: CodexRpc,
+    ) => Promise<void>,
+    chat = false,
   ): Promise<Profile> {
     signal?.throwIfAborted();
     if (!/^[1-9]\d{0,18}$/.test(id) || BigInt(id) > 9223372036854775807n)
       throw new BadRequestException('Identificador de conexión inválido.');
     if (this.stopping) throw codexError('codex_runtime_unavailable');
     if (!this.profiles.has(id)) {
+      if (
+        !chat &&
+        process.platform === 'linux' &&
+        process.env.NODIA_CODEX_ENABLED === 'true'
+      )
+        await new CodexChatJournal().assertNoPending(id);
+      // The disk barrier yielded: another caller may have installed the owner.
+      if (this.profiles.has(id))
+        return this.get(id, signal, beforeNativeStart, chat);
       if (this.profiles.size >= 4) throw codexError('codex_profile_busy', 503);
-      const p = this.create(id, signal, beforeNativeStart).catch(
+      const p = this.create(id, signal, beforeNativeStart, chat).catch(
         (error: unknown) => {
           this.profiles.delete(id);
           throw error;
@@ -277,21 +313,41 @@ export class CodexRuntimeService implements OnModuleDestroy {
               reject(error);
             },
           );
+        }).catch(async (error) => {
+          // A gated caller cannot abandon creation while it may still persist or
+          // release a native child. Await its own cleanup certificate first.
+          if (beforeNativeStart) {
+            try {
+              await pending;
+            } catch (settled) {
+              if (settled instanceof CodexChatAdmissionError) throw settled;
+            }
+          }
+          throw error;
         })
       : await pending;
     if (!p.rpc.alive || p.closing) {
       await this.stop(id);
-      return this.get(id, signal, beforeNativeStart);
+      return this.get(id, signal, beforeNativeStart, chat);
     }
     p.lastUsed = Date.now();
     return p;
   }
+  async rotateChatGeneration(id: string) {
+    this.sessionSnapshots.delete(id);
+    if (process.platform === 'linux')
+      await new CodexChatJournal().identity(id, true);
+  }
   async acquire(
     id: string,
     signal?: AbortSignal,
-    beforeNativeStart?: (identity: CodexProcessIdentity) => Promise<void>,
+    beforeNativeStart?: (
+      identity: CodexProcessIdentity,
+      rpc: CodexRpc,
+    ) => Promise<void>,
+    chat = false,
   ) {
-    const profile = await this.get(id, signal, beforeNativeStart);
+    const profile = await this.get(id, signal, beforeNativeStart, chat);
     signal?.throwIfAborted();
     if (profile.busy) throw codexError('codex_profile_busy', 409);
     profile.busy = true;
@@ -303,6 +359,110 @@ export class CodexRuntimeService implements OnModuleDestroy {
         this.invalidate(id);
       },
     };
+  }
+  /** Chat never upgrades an existing OCR/login transport or interrupts its owner. */
+  async acquireChat(
+    id: string,
+    signal: AbortSignal,
+    beforeNativeStart: (
+      identity: CodexProcessIdentity,
+      rpc: CodexRpc,
+    ) => Promise<void>,
+  ) {
+    if (
+      process.env.NODIA_CODEX_ENABLED !== 'true' ||
+      process.platform !== 'linux'
+    )
+      throw new CodexChatAdmissionError('codex_runtime_unavailable');
+    try {
+      await this.releaseIdle(id);
+    } catch (error) {
+      if (
+        error instanceof CodexOperationException &&
+        error.code === 'codex_profile_busy'
+      )
+        throw new CodexChatAdmissionError(error.code);
+      throw error;
+    }
+    let lease: Awaited<ReturnType<CodexRuntimeService['acquire']>>;
+    try {
+      lease = await this.acquire(id, signal, beforeNativeStart, true);
+    } catch (error) {
+      if (
+        error instanceof CodexOperationException &&
+        error.code === 'codex_profile_busy'
+      )
+        throw new CodexChatAdmissionError(error.code);
+      throw error;
+    }
+    if (!lease.profile.chat) {
+      lease.release();
+      throw codexError('codex_profile_busy', 409);
+    }
+    return lease;
+  }
+  /** Caller has already proved the old native group empty; never reclaim a live owner. */
+  async recoverClosedChat(
+    id: string,
+    owner: CodexProcessIdentity,
+    native: CodexProcessIdentity,
+  ) {
+    const { sameCodexProcess, assertCodexGroupEmpty } =
+      await import('./codex-process-ownership.js');
+    if (await sameCodexProcess(owner))
+      throw codexError('codex_profile_busy', 409);
+    await assertCodexGroupEmpty(native.group);
+    if (this.profiles.has(id)) throw codexError('codex_profile_busy', 409);
+    const root = resolve(
+      process.env.NODIA_CODEX_PROFILE_ROOT ||
+        join(homedir(), '.local', 'share', 'nodia', 'codex'),
+    );
+    const file = join(root, id, 'nodia.lock');
+    let h: FileHandle;
+    try {
+      const { constants } = await import('node:fs');
+      h = await open(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+    } catch (e) {
+      if (e && typeof e === 'object' && 'code' in e && e.code === 'ENOENT')
+        return;
+      throw e;
+    }
+    try {
+      const stat = await h.stat();
+      if (
+        !stat.isFile() ||
+        stat.uid !== process.getuid?.() ||
+        (stat.mode & 0o077) !== 0 ||
+        stat.size > 4096
+      )
+        throw codexError('codex_login_unknown', 409);
+      const value = JSON.parse(await h.readFile('utf8')) as Record<
+        string,
+        unknown
+      >;
+      if (
+        value.serverPid !== owner.pid ||
+        value.serverBirth !== owner.birth ||
+        value.serverBoot !== owner.boot ||
+        value.runtimePid !== native.pid ||
+        value.runtimeBirth !== native.birth ||
+        value.runtimeBoot !== native.boot ||
+        value.gated !== true
+      )
+        throw codexError('codex_login_unknown', 409);
+      const current = await lstat(file);
+      if (current.ino !== stat.ino || current.dev !== stat.dev)
+        throw codexError('codex_login_unknown', 409);
+      await rm(file);
+      const directory = await open(dirname(file), 'r');
+      try {
+        await directory.sync();
+      } finally {
+        await directory.close();
+      }
+    } finally {
+      await h.close();
+    }
   }
   invalidate(id: string) {
     void this.profiles
@@ -317,7 +477,7 @@ export class CodexRuntimeService implements OnModuleDestroy {
   private async exclusiveObservation<T>(
     id: string,
     signal: AbortSignal,
-    work: () => Promise<T>,
+    work: (profile: Profile) => Promise<T>,
   ): Promise<T> {
     signal.throwIfAborted();
     const lease = await this.acquire(id, signal);
@@ -329,23 +489,44 @@ export class CodexRuntimeService implements OnModuleDestroy {
     signal.addEventListener('abort', cancel, { once: true });
     try {
       signal.throwIfAborted();
-      const result = await work();
+      const result = await work(lease.profile);
       signal.throwIfAborted();
       return result;
     } finally {
       signal.removeEventListener('abort', cancel);
-      if (stop) await stop.catch(() => undefined);
-      lease.release();
+      try {
+        await (stop ?? this.stop(id));
+      } finally {
+        lease.release();
+      }
     }
   }
-  async observe(id: string, signal?: AbortSignal): Promise<CodexSession> {
-    if (signal) {
+  private async ownedProfile(id: string, profile: Profile): Promise<Profile> {
+    const current = await this.profiles.get(id);
+    if (
+      current !== profile ||
+      !current.busy ||
+      current.closing ||
+      !current.rpc.alive
+    )
+      throw codexError('codex_profile_busy', 409);
+    return current;
+  }
+  async observe(
+    id: string,
+    signal?: AbortSignal,
+    owned?: Profile,
+  ): Promise<CodexSession> {
+    if (!owned) {
+      const observationSignal = signal ?? new AbortController().signal;
       try {
-        return await this.exclusiveObservation(id, signal, () =>
-          this.observe(id),
+        return await this.exclusiveObservation(
+          id,
+          observationSignal,
+          (profile) => this.observe(id, undefined, profile),
         );
       } catch (error) {
-        signal.throwIfAborted();
+        observationSignal.throwIfAborted();
         // Failure to acquire a runtime is an observation, not a failed inference.
         // Preserve unexpected failures and never interrupt another profile owner.
         if (
@@ -369,7 +550,7 @@ export class CodexRuntimeService implements OnModuleDestroy {
     }
     let p: Profile;
     try {
-      p = await this.get(id);
+      p = await this.ownedProfile(id, owned);
     } catch {
       return {
         available: false,
@@ -433,28 +614,61 @@ export class CodexRuntimeService implements OnModuleDestroy {
       }
     })();
     p.observation = { expires: Date.now() + 30_000, promise };
+    if (
+      process.platform === 'linux' &&
+      process.env.NODIA_CODEX_ENABLED === 'true'
+    ) {
+      const identity = await new CodexChatJournal().identity(id);
+      if (!this.sessionSnapshots.has(id) && this.sessionSnapshots.size >= 4)
+        this.sessionSnapshots.delete(
+          this.sessionSnapshots.keys().next().value!,
+        );
+      this.sessionSnapshots.set(id, {
+        expires: p.observation.expires,
+        generation: identity.runtimeSessionId,
+        session: promise,
+      });
+    }
     return promise;
   }
   async snapshot(id: string, signal?: AbortSignal): Promise<CodexSession> {
     signal?.throwIfAborted();
-    if (!this.profiles.has(id))
-      return {
-        available: false,
-        authenticated: null,
-        planType: null,
-        checkedAt: null,
-        reason: 'codex_runtime_unverified',
-        quotas: null,
-        lastInferenceAt: null,
-        usageAllowed: null,
-      };
-    return this.observe(id, signal);
+    const cached = this.sessionSnapshots.get(id);
+    if (cached && cached.expires > Date.now()) {
+      try {
+        const current = await new CodexChatJournal().identity(id, false, false);
+        signal?.throwIfAborted();
+        if (current.runtimeSessionId === cached.generation)
+          return await cached.session;
+      } catch {
+        signal?.throwIfAborted();
+      }
+    }
+    this.sessionSnapshots.delete(id);
+    return {
+      available: false,
+      authenticated: null,
+      planType: null,
+      checkedAt: null,
+      reason: 'codex_runtime_unverified',
+      quotas: null,
+      lastInferenceAt: null,
+      usageAllowed: null,
+    };
   }
-  async listModels(id: string, signal?: AbortSignal): Promise<CodexModel[]> {
-    if (signal)
-      return this.exclusiveObservation(id, signal, () => this.listModels(id));
-    const p = await this.get(id);
-    if (!(await this.observe(id)).authenticated)
+  async listModels(
+    id: string,
+    signal?: AbortSignal,
+    owned?: Profile,
+  ): Promise<CodexModel[]> {
+    if (!owned)
+      return this.exclusiveObservation(
+        id,
+        signal ?? new AbortController().signal,
+        (profile) => this.listModels(id, undefined, profile),
+      );
+    const p = await this.ownedProfile(id, owned);
+    if (!(await this.observe(id, undefined, p)).authenticated)
       throw codexError('codex_session_required', 409);
     if (p.models && p.models.expires > Date.now()) return p.models.promise;
     const promise = (async () => {
@@ -501,6 +715,14 @@ export class CodexRuntimeService implements OnModuleDestroy {
     const p = await pending;
     p.closing ??= (async () => {
       await p.rpc.close();
+      const snapshot = this.sessionSnapshots.get(id);
+      if (snapshot && p.lastInferenceAt) {
+        const lastInferenceAt = p.lastInferenceAt;
+        snapshot.session = snapshot.session.then((session) => ({
+          ...session,
+          lastInferenceAt,
+        }));
+      }
       await rm(p.cwd, { recursive: true, force: true });
       await p.lock.close();
       await rm(p.lockPath, { force: true });

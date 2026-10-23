@@ -1,0 +1,57 @@
+{
+  "ADR_required": false,
+  "SQL_or_provider_requests": 0,
+  "VM_operations": 0,
+  "all_archive_bytes_match_manifest": true,
+  "archive_members_including_manifest": 3880,
+  "archive_sha256": "1214928cc4e6b0bb58cd20ffa7f18364b90f1603ecc46dc8352dcc57fc360b5a",
+  "baseline_manifest_sha256": "c8f49aa3adb21f63da4d75f84a811ab3b758e90ce57fe8aff2e8d2fc498256ae",
+  "build_exit": 0,
+  "knowledge_release": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+  "limits": [
+    "Focused tests use a real strict validation pipe, use case, UserService and Ransack/TypeORM SQL builder; persistence terminal is mocked and no PostgreSQL socket is opened.",
+    "Build/package evidence does not prove deployed HTTP behavior, authenticated owner-selector UI, current provider availability, or a 62-table/29-migration live schema; these require runtime acceptance.",
+    "The source fix only restores native HTTP id_eq. It does not widen the closed MCP UserQuery contract or publish a capability."
+  ],
+  "lint_exit": 0,
+  "lint_historical_warnings": 3,
+  "manifest_sha256": "4c3fe6d600adab362a71c5f76357383e98aa7acda7c93aa73e61bfb29c626f92",
+  "migrations_schema_dependencies_journal_and_publication_unchanged_by_package": true,
+  "observed_at_utc_operator_clock": "2026-10-22T17:37:03.451380+00:00",
+  "only_four_reviewed_DTO_members_changed": true,
+  "other_3875_baseline_members_preserved": true,
+  "schema": "nodia-ai-ai38-owner-deploy-QA-v1",
+  "source_pins": {
+    ".tmp/ai38-owner-deploy-build-r01.log": "9282cb481ec486c9aad142494e776afefe444e791c39fb179987f5002b57de1a",
+    ".tmp/ai38-owner-deploy-lint-r01.log": "bf902d879594dd130d9c54fd009b25660b8a7b5a8be2e388e7d272e804ee3776",
+    ".tmp/ai38-owner-deploy-unit-r01.json": "86b632e7793f4ae6c647deb8b41f2211d9790cf829446010e2dc19dadf343998",
+    "docs/evidence/scripts/nodia-ai-ai38-owner-deploy-package.py": "c1691c1ec794719976d8d497bb81a0caa8338c9101f8fd23390e35038932ee44",
+    "docs/evidence/scripts/validate-nodia-ai-ai38-owner-deploy-package.py": "34e6adced5d9bb297278049c3d26fe557520faf28ff8e9429bc21eff8085ed20",
+    "nodia-server/src/common/utils/ransack-query.builder.ts": "42f7992a1f4223b8e4a6bc8bf1b8ad1d9b687ea180fc77055dedfacc40e241d1",
+    "nodia-server/src/common/utils/ransack-query.policies.ts": "d0a3c6f477072d3e25e8ddf212fff4309241b90c158fffe2a914459c5e09d909",
+    "nodia-server/src/main.ts": "80222a2e07ccc93d333737f8a26347a32052d764e7d38d7b2eac983975044966",
+    "nodia-server/src/user/use-case/get-all-users.use-case.spec.ts": "ba14cbc15421ff2a99d9fbe7ea0fd5e7419d216a794d5996db16adcb32407a53",
+    "nodia-server/src/user/user.service.ts": "eeb9b97d41412112c3b4b1b5a341eb95ea964569634d19d53e9991270c854f8d"
+  },
+  "status": "passed_offline_frozen_package_not_deployed",
+  "test_cases": [
+    "GetAllUsersUseCase should be defined",
+    "GetAllUsersUseCase should call userService.findAll with the provided query params and return the response",
+    "GetAllUsersUseCase should call userService.findAll with includes=false to omit relations",
+    "GetAllUsersUseCase should return users with modules containing translates when included",
+    "GetAllUsersUseCase: owner selector HTTP filters accepts the selected owner ID through the strict HTTP pipe and parameterizes it without numeric coercion",
+    "GetAllUsersUseCase: owner selector HTTP filters keeps the ordinary unfiltered owner list available",
+    "GetAllUsersUseCase: owner selector HTTP filters rejects unknown HTTP filters instead of relaxing the allowlist",
+    "GetAllUsersUseCase: owner selector HTTP filters rejects a non-string selected ID before querying ({\"value\":[\"1\",\"2\"]})",
+    "GetAllUsersUseCase: owner selector HTTP filters rejects a non-string selected ID before querying ({\"value\":{\"injected\":\"1\"}})",
+    "GetAllUsersUseCase: owner selector HTTP filters rejects a non-string selected ID before querying ({\"value\":1})",
+    "GetAllUsersUseCase: owner selector HTTP filters rejects malformed or out-of-range IDs with the real Ransack policy (1 OR 1=1)",
+    "GetAllUsersUseCase: owner selector HTTP filters rejects malformed or out-of-range IDs with the real Ransack policy (9223372036854775808)"
+  ],
+  "test_counts": {
+    "failed": 0,
+    "files": 1,
+    "passed": 12,
+    "skipped": 0
+  }
+}

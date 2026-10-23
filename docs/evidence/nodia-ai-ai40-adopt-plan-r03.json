@@ -1,0 +1,8 @@
+{
+  "release": "/opt/nodia/releases/nodia-server-ai40-r03",
+  "manifest_sha256": "0e769ded9a0a36e6d62a17415ea15d1843ce48735ff746ce5e238c5c3b2ea341",
+  "files": 4060,
+  "dist_outputs": 2887,
+  "knowledge_release": "49935f292d476721ee9825fcc6e0cbce434da0d2461e2f6dd5a758faeb6840ca",
+  "codex_profile_root": "/var/lib/nodia/codex"
+}

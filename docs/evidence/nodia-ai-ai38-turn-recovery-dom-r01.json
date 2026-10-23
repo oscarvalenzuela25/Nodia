@@ -1,0 +1,15 @@
+{
+  "schema": "ai38-turn-recovery-DOM-v1",
+  "scope": "rendered_DOM_not_SQL_or_provider_attestation",
+  "observed_at_operator_clock": "2026-10-22T18:05:49.436Z",
+  "composer_enabled": true,
+  "reply_A_exact_count": 1,
+  "reply_B_exact_count": 1,
+  "visible": {
+    "busy_message_visible": false,
+    "main_script": "/assets/index-Dif38oFQ.js"
+  },
+  "generation_messages_sent_by_operator": 2,
+  "new_business_confirmations": 0,
+  "prior_receipt_note": "reopened-dom-r01 exact-text count did not match nested Alert; AX and screenshot are authoritative for earlier busy state"
+}

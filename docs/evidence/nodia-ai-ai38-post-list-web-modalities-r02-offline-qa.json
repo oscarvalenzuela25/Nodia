@@ -1,0 +1,46 @@
+{
+  "stage": "AI-38",
+  "scope": "new_Web_session_four_exact_format_canaries_offline_controls",
+  "status": "passed_offline_not_live",
+  "checked_at_utc": "2026-10-22T20:54:17.773130+00:00",
+  "source_pins": {
+    "docs/evidence/scripts/nodia-ai-ai38-post-list-web-modalities-r02.py": "7c5c13e26145fe2dc45c0288cce32e8224fff802da36141f33a7305e81f934ce",
+    "docs/evidence/scripts/nodia-ai-ai38-post-list-web-modalities-r02-tests.py": "d5aedc746ff725d9e2d84809f5ad9a592f4d9006a5b958263c6e0ebed6ccb63f",
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reattest-modalities-r01.py": "f51d16a67b73a5eb5f5eaa6beee4bad1ae06d0e1af0d7641487887835af843d3",
+    "docs/evidence/scripts/nodia-ai-ai38-verifications-modalities.py": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131"
+  },
+  "tests": 2,
+  "failures": 0,
+  "errors": 0,
+  "duration_seconds": 0.002,
+  "VM_calls": 0,
+  "SQL_calls": 0,
+  "provider_calls": 0,
+  "generations": 0,
+  "maximum_new_generations_when_authorized": 4,
+  "planned_order": [
+    "wav",
+    "webm",
+    "png",
+    "pdf"
+  ],
+  "Agentic_generations": 0,
+  "new_work": "/opt/nodia/verification/ai38-modalities-post-list-web-r02",
+  "prerequisites": {
+    "MCP_report_sha256": "4b9f81b07217e5d01b28158edc6e60b2a46c78e1117b5101a1cb7ff48c81dbdd",
+    "MCP_epoch_sha256": "2de48ac8425fcdee787668f7e9e5c2b756ec40d8e7bf2679d30c01b9ef7379e9",
+    "prior_partial_cohort_sha256": "4ec350c3e20a580eaa8df80a65f5fd5a325a7cc4608721a5ddd051ed26914fe4"
+  },
+  "guarantees": [
+    "Prior partial cohort exact7generations/6completed semantic probes and original WebWAV abandoned_unknown acknowledged with pendingfalse. Historical aggregateunknownflag is not treated as an open identity.",
+    "Read-only exactDB2 production projection and fresh Agentic/Web observe reuse frozen f51d SNAPSHOT.",
+    "New Web session must differ from old cohort; selection/configuration/resource remain exact, same fresh binding throughout four formats.",
+    "Agentic same prior binding and liveMCPplus4MIMEs verified before/after; no Agentic generations repeated.",
+    "One new Web attempt per format, UUIDnot in prior7attempts, no retry; nativeunknown/semanticfailure/sessiondrift stops before nextformat.",
+    "Final Web observation must expose all4MIMEs on newbinding, Agentic retainsMCP+4MIMEs; no copied/imported runtime verification sets."
+  ],
+  "limitations": [
+    "No VM or provider execution by this task. Live acceptance requires root review and exclusive provider GO.",
+    "A later Web timeout may change its generation again; this stops the cohort and does not reuse earlier format proof."
+  ]
+}

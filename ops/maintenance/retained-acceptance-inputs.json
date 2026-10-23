@@ -1,0 +1,51 @@
+{
+  "archive": "ops/lab/artifacts/retained-acceptance-inputs-2026-10-23.zip",
+  "archive_sha256": "963383e3c87641ec87d6d339eff6e9ff7dc591285f6fee3eab3bc995eea59e86",
+  "files": [
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests-final.log",
+      "sha256": "4161382967623e8d8f89947670ed20547cdd2795b92696d3a835313c1e54a4c0",
+      "bytes": 84334
+    },
+    {
+      "path": ".tmp/ai40-global-unit-r03.json",
+      "sha256": "a6a373909ebd4b2b978c02194ed98d7a38085bb8b031331bf33ddfc018b4590a",
+      "bytes": 1825782
+    },
+    {
+      "path": ".tmp/ai40-client-tests-busy-final-r02.json",
+      "sha256": "d8181b4b1cc7035aa6903a645e8fc91a8598a8eaa27f14d609b49290db38ff1a",
+      "bytes": 656714
+    },
+    {
+      "path": ".tmp/ai40-client-busy-window-final-r01.json",
+      "sha256": "22b78ce914f7178695398bc5b318c570bb23f47af03e155624baa3acdddeb254",
+      "bytes": 48183
+    },
+    {
+      "path": ".tmp/ai40-collection-red-r01.json",
+      "sha256": "5a8676bf3e457d15047c71b000e91694536f421474e7a217828cfac4b608f029",
+      "bytes": 13162
+    },
+    {
+      "path": ".tmp/ai40-collection-green-r01.json",
+      "sha256": "2189a29dfae8655fa7a57703c2e8cf19d15d576c29b8144ae56b4e3f33532743",
+      "bytes": 17538
+    },
+    {
+      "path": ".tmp/ai40-client-tests-final-r05.json",
+      "sha256": "8138fc2ad7612ba1823e6d84634114528dcf6ba3255b694d8c4f881b9d3d55cc",
+      "bytes": 652281
+    },
+    {
+      "path": "ops/lab/remote.py",
+      "sha256": "577cfe77a970264b8d2bb96371cc422dc174642529dea5f21725a06edcd8ffcf",
+      "bytes": 1280
+    },
+    {
+      "path": "ops/lab/artifacts/ai38-owner-adopt-plan-r01.json",
+      "sha256": "e7ec7318b193650fac0c5ff77d42e1b6ccd5f67325c9ea13c7a0e8c9b1ef7bce",
+      "bytes": 181
+    }
+  ]
+}

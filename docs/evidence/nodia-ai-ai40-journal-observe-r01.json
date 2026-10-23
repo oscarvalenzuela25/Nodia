@@ -1,0 +1,1 @@
+{"exit": 0, "error_code": null, "stderr_bytes": 0, "status": {"operation": "status", "coverage_from": "2026-10-20T23:52:27.154Z", "updated_at": "2026-10-23T01:07:10.274Z", "first_sequence": 1, "last_sequence": 0, "entries": 0, "unconfirmed": 0, "coverage_closed_at": null, "backups": 11, "expired_backups": 0, "release_authorized": false}}

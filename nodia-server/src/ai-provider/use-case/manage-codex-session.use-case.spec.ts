@@ -233,19 +233,18 @@ describe('Codex durable login policy', () => {
 describe('Codex use case authorization boundary', () => {
   function setup() {
     const providers = {
-      findProviderById: vi
-        .fn()
-        .mockResolvedValue({
-          id: '42',
-          is_active: true,
-          catalog: { key: 'openai', is_active: true },
-        }),
+      findProviderById: vi.fn().mockResolvedValue({
+        id: '42',
+        is_active: true,
+        catalog: { key: 'openai', is_active: true },
+      }),
     };
     const runtime = {
       releaseIdle: vi.fn().mockResolvedValue(undefined),
       observe: vi.fn(),
       acquire: vi.fn(),
       invalidate: vi.fn(),
+      rotateChatGeneration: vi.fn().mockResolvedValue(undefined),
     };
     const logins = {
       start: vi.fn().mockImplementation(async (_p, _a, _r, _e, release) => {
@@ -321,6 +320,10 @@ describe('Codex use case authorization boundary', () => {
       release,
     });
     await expect(useCase.logout('42')).rejects.toThrow('fixture');
+    expect(runtime.rotateChatGeneration).toHaveBeenCalledWith('42');
+    expect(
+      runtime.rotateChatGeneration.mock.invocationCallOrder[0],
+    ).toBeLessThan(request.mock.invocationCallOrder[0]);
     expect(release).toHaveBeenCalledOnce();
   });
 });

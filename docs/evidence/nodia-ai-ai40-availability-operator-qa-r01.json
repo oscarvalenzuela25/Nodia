@@ -1,0 +1,13 @@
+{
+  "stage": "AI40",
+  "scope": "availability_adoption_operator_unit",
+  "observed_at_host_utc": "2026-10-23T02:29:12.857811+00:00",
+  "exit_code": 0,
+  "tests": 16,
+  "passed": 16,
+  "driver_sha256": "d34a2d92fdadca4901282a4cc3ccf75d5948901e4a5c8a14e1915df1cf1f9b87",
+  "tests_sha256": "aa1971986ccbb43ec31e89bb7e49ea443ffc33e4a61715ccc382cb36383ea4dd",
+  "VM_used": false,
+  "provider_requests": 0,
+  "service_changes": 0
+}

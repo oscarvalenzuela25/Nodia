@@ -1,0 +1,256 @@
+{
+  "schema": "ai38-web-stream-diag-v1",
+  "observed_VM_utc": "2026-10-22T21:25:19.554365+00:00",
+  "attempt_id": "3d0ff243-158a-4b68-beff-eec1ea739c45",
+  "window_begin_VM_utc": "2026-10-22T21:21:18Z",
+  "window_end_VM_utc": "2026-10-22T21:23:22Z",
+  "native_epoch": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z"
+  },
+  "same_epoch_after": true,
+  "installed_SDK_versions": {
+    "gemini-webapi": "2.1.1",
+    "curl-cffi": "0.16.3"
+  },
+  "records": [
+    {
+      "timestamp_VM_utc": "2026-10-22T21:21:20.008027989Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_started",
+      "task_role": "generation",
+      "elapsed_ms": 0
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:21:20.309285757Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_completed",
+      "task_role": "generation",
+      "elapsed_ms": 301
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:21:20.309311458Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "generation_started",
+      "task_role": "generation",
+      "elapsed_ms": 301
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:21:20.309357158Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "request_started",
+      "task_role": "generation",
+      "elapsed_ms": 301
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:21:21.605796166Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "response_opened",
+      "task_role": "generation",
+      "elapsed_ms": 1598
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:21:21.605822666Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "first_body_chunk",
+      "task_role": "generation",
+      "elapsed_ms": 1598
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:22:21.659690483Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_started",
+      "task_role": "background_activity",
+      "elapsed_ms": 61652
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:22:21.926055207Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_completed",
+      "task_role": "background_activity",
+      "elapsed_ms": 61918
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:23:20.008991292Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "cancellation_requested",
+      "task_role": "caller",
+      "elapsed_ms": 120001
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:23:20.009021192Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "client_close_started",
+      "task_role": "caller",
+      "elapsed_ms": 120001
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:23:20.011146221Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "client_close_completed",
+      "task_role": "caller",
+      "elapsed_ms": 120003
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:23:20.011342724Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "stream_exit_started",
+      "task_role": "generation",
+      "elapsed_ms": 120003
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:23:20.011396725Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "stream_exit_completed",
+      "task_role": "generation",
+      "elapsed_ms": 120003
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:23:20.011457625Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "generation_cancelled",
+      "task_role": "generation",
+      "elapsed_ms": 120004
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:23:20.011708229Z",
+      "event": "nodia_ai_chat_failure",
+      "engine": "web",
+      "phase": "generation",
+      "error_type": "TimeoutError",
+      "failure_category": null,
+      "elapsed_ms": 120004,
+      "web_generation": {
+        "elapsed_ms": 120004,
+        "http_status": 200,
+        "byte_chunks": 2,
+        "body_bytes": 224,
+        "candidate_outputs": 0,
+        "activity_calls": 2,
+        "recovery_calls": 0,
+        "client_close_calls": 1,
+        "sink_errors": 0,
+        "upstream_eof_elapsed_ms": null,
+        "attached": true,
+        "last_phase": "generation_cancelled",
+        "cancelled_at_phase": "first_body_chunk",
+        "upstream_eof_seen": false,
+        "events": [
+          {
+            "phase": "activity_started",
+            "task_role": "generation",
+            "elapsed_ms": 0
+          },
+          {
+            "phase": "activity_completed",
+            "task_role": "generation",
+            "elapsed_ms": 301
+          },
+          {
+            "phase": "generation_started",
+            "task_role": "generation",
+            "elapsed_ms": 301
+          },
+          {
+            "phase": "request_started",
+            "task_role": "generation",
+            "elapsed_ms": 301
+          },
+          {
+            "phase": "response_opened",
+            "task_role": "generation",
+            "elapsed_ms": 1598
+          },
+          {
+            "phase": "first_body_chunk",
+            "task_role": "generation",
+            "elapsed_ms": 1598
+          },
+          {
+            "phase": "activity_started",
+            "task_role": "background_activity",
+            "elapsed_ms": 61652
+          },
+          {
+            "phase": "activity_completed",
+            "task_role": "background_activity",
+            "elapsed_ms": 61918
+          },
+          {
+            "phase": "cancellation_requested",
+            "task_role": "caller",
+            "elapsed_ms": 120001
+          },
+          {
+            "phase": "client_close_started",
+            "task_role": "caller",
+            "elapsed_ms": 120001
+          },
+          {
+            "phase": "client_close_completed",
+            "task_role": "caller",
+            "elapsed_ms": 120003
+          },
+          {
+            "phase": "stream_exit_started",
+            "task_role": "generation",
+            "elapsed_ms": 120003
+          },
+          {
+            "phase": "stream_exit_completed",
+            "task_role": "generation",
+            "elapsed_ms": 120003
+          },
+          {
+            "phase": "generation_cancelled",
+            "task_role": "generation",
+            "elapsed_ms": 120004
+          }
+        ],
+        "uploads": {
+          "requests": 0,
+          "roundtrips_completed": 0,
+          "failed": 0,
+          "cancelled": 0,
+          "sink_errors": 0,
+          "metadata_errors": 0,
+          "records": []
+        },
+        "body_pacing": {
+          "first_chunk_elapsed_ms": 1598,
+          "last_chunk_elapsed_ms": 60559,
+          "max_inter_chunk_gap_ms": 58961
+        },
+        "audio_transport": {
+          "scoped": false,
+          "applied": false,
+          "input_files": null,
+          "audio_files": null,
+          "audio_media_types": [],
+          "descriptor_version": null
+        },
+        "output_shape": {
+          "text_nonempty": null,
+          "text_delta_nonempty": null,
+          "thoughts_present": null,
+          "thoughts_empty": null,
+          "candidates_count": null,
+          "media_count": null,
+          "first_yield_elapsed_ms": null,
+          "last_yield_elapsed_ms": null,
+          "first_text_elapsed_ms": null,
+          "text_outputs": 0,
+          "thoughts_only_outputs": 0,
+          "empty_outputs": 0,
+          "unclassified_outputs": 0
+        }
+      }
+    }
+  ],
+  "record_count": 15,
+  "raw_logs_audio_text_messages_tokens_or_headers_saved": false,
+  "HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "service_changes": 0
+}

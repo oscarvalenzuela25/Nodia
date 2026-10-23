@@ -1,0 +1,1 @@
+{"busctl_installed": true, "socket_exists": true, "socket_uid": 0, "socket_gid": 0, "socket_mode": "0o644", "is_socket": false, "query_exit": 1, "stderr_bytes": 44, "categories": ["Permission denied", "Failed to connect"], "secret_service_registered": false}

@@ -1,0 +1,53 @@
+{
+  "stage": "AI-38",
+  "scope": "VM_staging_and_files_only_preflight_no_provider",
+  "status": "passed",
+  "checked_at_utc": "2026-10-22T19:50:34.788690+00:00",
+  "remote_directory": "/opt/nodia/verification/ai38-profile-modalities-r01",
+  "staging": {
+    "scope": "public_harness_and_synthetic_audio_staging_only",
+    "status": "passed",
+    "SQL_calls": 0,
+    "provider_calls": 0,
+    "service_restarts": 0,
+    "files": {
+      "speech.wav": {
+        "bytes": 114886,
+        "sha256": "ded0091808665288f22fcc8947ffa098ef1149bd12a42591708856f50816abf0"
+      },
+      "nodia-ai-ai38-verifications-modalities.py": {
+        "bytes": 14608,
+        "sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131"
+      },
+      "speech.webm": {
+        "bytes": 29743,
+        "sha256": "6faf3d9f76e7216b105a3b9291f9f671dcfb8edee74818108225405be260d8b0"
+      },
+      "nodia-ai-ai38-profile-reattest-modalities-r01.py": {
+        "bytes": 21399,
+        "sha256": "f51d16a67b73a5eb5f5eaa6beee4bad1ae06d0e1af0d7641487887835af843d3"
+      }
+    }
+  },
+  "preflight": {
+    "status": "passed",
+    "scope": "files_only",
+    "packet_outputs_verified": 2933,
+    "SQL_calls": 0,
+    "provider_calls": 0,
+    "generations": 0,
+    "proofs_restored": false
+  },
+  "capture_sha256": {
+    "staging_stdout": "b2d868a2dd8178762da689bd2ce99b46abb37ee6b50b7d234c7f1a4951162061",
+    "preflight_stdout": "48597f98c655111054f80b83483c3a89c7d6b8a3afea768886d382de0ca5b264"
+  },
+  "limitations": [
+    "Files-only preflight does not open configured DB or call native service, and restores no runtime proofs.",
+    "Live generation phase remains pending fresh MCP acceptance and root-exclusive execution."
+  ],
+  "service_restarts": 0,
+  "SQL_calls": 0,
+  "provider_calls": 0,
+  "generations": 0
+}

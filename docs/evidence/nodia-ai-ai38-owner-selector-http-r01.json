@@ -1,0 +1,56 @@
+{
+  "scope": "bounded_read_only_nginx_users_metadata_only",
+  "window_begin_utc": "2026-10-22T17:40:00+00:00",
+  "window_end_utc": "2026-10-22T17:49:11.384803+00:00",
+  "adoption_began_utc": "2026-10-22T17:47:05+00:00",
+  "adoption_completed_utc": "2026-10-22T17:47:25.609039+00:00",
+  "maximum_bytes_per_log": 4194304,
+  "maximum_log_files": 2,
+  "sources": [
+    {
+      "name": "access.log",
+      "inode": 3673396,
+      "device": 2050,
+      "size_at_read": 38972,
+      "read_start_offset": 0,
+      "bytes_read": 38972
+    },
+    {
+      "name": "access.log.1",
+      "inode": 3683192,
+      "device": 2050,
+      "size_at_read": 9866,
+      "read_start_offset": 0,
+      "bytes_read": 9866
+    }
+  ],
+  "full_window_scanned": true,
+  "counts": [
+    {
+      "phase": "after_adoption_owner_fix",
+      "method": "GET",
+      "endpoint": "users",
+      "status": 200,
+      "id_eq_filter_present": true,
+      "count": 1,
+      "first_matched_utc": "2026-10-22T17:47:54+00:00",
+      "last_matched_utc": "2026-10-22T17:47:54+00:00"
+    },
+    {
+      "phase": "after_adoption_owner_fix",
+      "method": "GET",
+      "endpoint": "users",
+      "status": 304,
+      "id_eq_filter_present": false,
+      "count": 1,
+      "first_matched_utc": "2026-10-22T17:47:54+00:00",
+      "last_matched_utc": "2026-10-22T17:47:54+00:00"
+    }
+  ],
+  "timestamp_precision": "nginx_seconds; transition classification conservative at boundary",
+  "source_sha256": "774663427248482be7e563b1f579f2311c455529bcf1d54cac64d9c078111527",
+  "raw_logs_queries_parameter_values_identities_credentials_emitted": false,
+  "network_requests": 0,
+  "services_changed": false,
+  "log_files_modified": false
+}

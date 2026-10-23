@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "nodia_ai_ai38_turn_availability_source_qa",
+  "local_date": "2026-10-22",
+  "environment": "windows_local_synthetic_tests",
+  "changes_deployed_by_this_agent": false,
+  "provider_inference_executed_by_this_agent": false,
+  "contracts_changed": false,
+  "checks": [
+    {
+      "isolated_from_heavy_compilation": true,
+      "duration_seconds": 147.22,
+      "tests_passed": 1802,
+      "exit_code": 0,
+      "tool_clock_start": "14:46:21",
+      "files_passed": 229,
+      "command": "npm run test"
+    },
+    {
+      "command": "npm run typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run lint",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "modules_transformed": 2709,
+      "chunk_size_warning": true
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx",
+      "sha256": "93cc1fbf79d0e0075d60e8abbed93f4029eb8d5f9e21acb84defa189de6c77d9"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts",
+      "sha256": "9d294b2649fea9ffcd1e978d98994a2cda55d7477761ba51bfb1090e853af42f"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+      "sha256": "e14cfb3552eff1db8e5808a53c6ccf22e42dd33c9e50b44a8c033eed23b8bbd9"
+    },
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/eligibilityPresentation.ts",
+      "sha256": "5c23edb2037bb89fa0e55027ef41b0e0be84e9b7bdd6e0db146818e2fd8217f2"
+    },
+    {
+      "path": "nodia-client/src/translate/en/nodiaAi.json",
+      "sha256": "ad10f02fbccfabf87168b6ab643a100f6b520ca796eea07aee6b0f87f2c4b32d"
+    },
+    {
+      "path": "nodia-client/src/translate/es/nodiaAi.json",
+      "sha256": "45332ecf8969b6f727f72dfabfc78a9067de4f83189b795525503a6d73b6b80a"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/useServices.test.tsx",
+      "sha256": "3d0497c7080e6609f54232040bfbe6c18c1b33e5f7245dbffa0719c4279b13ed"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+      "sha256": "f7bac54fd09b10d9557f18d6b1184b6daa60d7403cc8c76922f7f46b6e48ae82"
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/eligibilityPresentation.test.ts",
+      "sha256": "51efc1367694ac5eb84f9ae4aeacd1364aa4a1869fa5c715ee7a04ec54c7fb6b"
+    }
+  ],
+  "frozen_client_manifest_sha256": "cdc832c045cb26a4050d4fcceb979b9b7ef910b3ce3471c56c05cd7f219a1a93",
+  "limitations": [
+    "Synthetic tests do not prove live provider availability or inference.",
+    "Deployment and live authenticated UI acceptance belong to the parent task.",
+    "Earlier full suites ran concurrently with a build; the final isolated run supersedes them."
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "scope": "closed_profile_reservation_events_and_HTTP_metadata_not_payloads",
+  "status": "observed",
+  "source_sha256": "eedca5c9f3bc546ca8ddfd3f7719745914cd2d4308d20e4dce64afccaf7d43f2",
+  "began_at_utc": "2026-10-22T19:46:46+00:00",
+  "finished_at_utc": "2026-10-22T19:47:55+00:00",
+  "native_epoch": {
+    "id": "3733fbf3876bf3583e5ca3c8b5ee7124f7ca7616a448f447eccd7c1d9938be54",
+    "image": "sha256:32dfd5144d841b6ce7de155d8533dccdc0c8518d8f40d01b4b556a087187a6d3",
+    "started_at": "2026-10-22T19:32:16.119742741Z"
+  },
+  "same_native_epoch_after": true,
+  "reservation_events": [
+    {
+      "timestamp_utc": "2026-10-22T19:46:53.176301+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "0e80ceb51c3641a7957a0205dfb6987d",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:46:53.176482+00:00",
+      "event": "acquire",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "96b668cf939f469fa44889b801add5e4",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:46:53.795766+00:00",
+      "event": "reject",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "0e80ceb51c3641a7957a0205dfb6987d",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 620,
+      "quarantined": false,
+      "reason": "runtime_busy"
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:46:53.906762+00:00",
+      "event": "release",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "96b668cf939f469fa44889b801add5e4",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 730,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:46:59.028024+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "0e80ceb51c3641a7957a0205dfb6987d",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 5852,
+      "quarantined": false,
+      "reason": null
+    }
+  ],
+  "HTTP_metadata": [
+    {
+      "timestamp_utc": "2026-10-22T19:46:48.667861+00:00",
+      "method": "GET",
+      "endpoint": "liveness",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:46:53.795855+00:00",
+      "method": "POST",
+      "endpoint": "observe",
+      "status": 409
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:46:59.028277+00:00",
+      "method": "GET",
+      "endpoint": "health",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:47:18.749077+00:00",
+      "method": "GET",
+      "endpoint": "liveness",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:47:48.833621+00:00",
+      "method": "GET",
+      "endpoint": "liveness",
+      "status": 200
+    }
+  ],
+  "closed_owner_correlations": [
+    {
+      "rejected_at_utc": "2026-10-22T19:46:53.795766+00:00",
+      "request_engine": "agentic",
+      "request_purpose": "eligibility",
+      "reservation_nonce": "0e80ceb51c3641a7957a0205dfb6987d",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "owner_age_ms": 620,
+      "owner_acquisition_observed": true,
+      "owner_acquired_at_utc": "2026-10-22T19:46:53.176301+00:00",
+      "owner_nonquarantined_release_before_rejection": false,
+      "owner_nonquarantined_release_after_rejection": true,
+      "owner_released_at_utc": "2026-10-22T19:46:59.028024+00:00",
+      "quarantined": false,
+      "live_owner_chain_observed": true
+    }
+  ],
+  "malformed_diagnostic_lines": 0,
+  "raw_logs_or_credential_bytes_saved": false,
+  "requested_since_window_may_omit_an_owner_acquired_before_it": true,
+  "holder_chain_is_based_on_instrumented_reservation_nonce_not_HTTP_coincidence": true,
+  "cross_request_origin_not_proven_without_separate_exclusive_trial": true,
+  "HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "service_changes": 0
+}

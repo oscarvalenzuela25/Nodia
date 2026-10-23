@@ -225,49 +225,59 @@ class ChatAdapter:
         }
         if resource is None:
             return observation
-        async with self.profiles.operation(engine):
-            try:
-                if engine == "web":
-                    await self.web.init_client()
-                    if not self.web.is_initialized or self.web.client is None:
-                        observation["reason"] = "session_required"
-                        return observation
-                    from importlib.metadata import version
-                    if version("gemini-webapi") != "2.1.1":
-                        observation["reason"] = "adapter_protocol_unverified"
-                        return observation
-                    matches = [model for model in self.web.discovered_models() if model.model_id == request.model_id]
-                    if len(matches) != 1:
-                        observation["reason"] = "model_unavailable"
-                        return observation
-                    self.web_options(request)
-                else:
-                    status = await self.agentic.get_status()
-                    if not status["available"] or not status["has_active_session"]:
-                        observation["reason"] = status.get("reason") or "session_required"
-                        return observation
-                    if self.agentic.runner.config.version not in CHAT_CLI_VERSIONS:
-                        observation["reason"] = "adapter_protocol_unverified"
-                        return observation
-                    if len([m for m in status["models"] if m["id"] == request.model_id]) != 1:
-                        observation["reason"] = "model_unavailable"
-                        return observation
-                    options = ["--model", request.model_id]
-                    if request.effort_id is not None:
-                        options += ["--effort", request.effort_id]
-                    raw, code = await self.agentic.runner.run(["-p", "/model", "--output-format", "json", "--print-timeout", "10s", *options], timeout=10)
-                    if code != 0 or command_data(raw, "model").get("id") != request.model_id:
-                        observation["reason"] = "model_option_mismatch"
-                        return observation
-                mcp = getattr(self, "mcp_sessions", None)
-                supports = bool(engine == "agentic" and mcp is not None and request.configuration_generation is not None
-                    and mcp.supports(resource, self.session_generation(engine), request.model_id, request.effort_id, request.configuration_generation))
-                attachment_selection = type("AttachmentSelection", (), {"resource_key": resource, "session_generation": self.session_generation(engine), "model_id": request.model_id, "effort_id": request.effort_id, "configuration_generation": request.configuration_generation})()
-                observation.update(available=True, reason=None, session_generation=self.session_generation(engine), supports_mcp=supports,
-                    verified_modalities=[kind for kind in ("image", "pdf", "audio") if self.attachment_proofs.supports(engine, attachment_selection, kind)],
-                    verified_attachment_media_types=self.attachment_proofs.media_types(engine, attachment_selection))
-            except (ServiceError, AuthError) as error:
-                observation["reason"] = error.code if isinstance(error, ServiceError) else "session_required"
+        admission = (self.profiles.observation(engine, purpose="eligibility", timeout_seconds=18)
+                     if engine == "agentic" else self.profiles.operation(engine, purpose="eligibility"))
+        try:
+            async with admission:
+                try:
+                    if engine == "web":
+                        await self.web.init_client()
+                        if not self.web.is_initialized or self.web.client is None:
+                            observation["reason"] = "session_required"
+                            return observation
+                        from importlib.metadata import version
+                        if version("gemini-webapi") != "2.1.1":
+                            observation["reason"] = "adapter_protocol_unverified"
+                            return observation
+                        matches = [model for model in self.web.discovered_models() if model.model_id == request.model_id]
+                        if len(matches) != 1:
+                            observation["reason"] = "model_unavailable"
+                            return observation
+                        self.web_options(request)
+                    else:
+                        status = await self.agentic.get_status()
+                        if not status["available"] or not status["has_active_session"]:
+                            observation["reason"] = status.get("reason") or "session_required"
+                            return observation
+                        if self.agentic.runner.config.version not in CHAT_CLI_VERSIONS:
+                            observation["reason"] = "adapter_protocol_unverified"
+                            return observation
+                        if len([m for m in status["models"] if m["id"] == request.model_id]) != 1:
+                            observation["reason"] = "model_unavailable"
+                            return observation
+                        options = ["--model", request.model_id]
+                        if request.effort_id is not None:
+                            options += ["--effort", request.effort_id]
+                        raw, code = await self.agentic.runner.run(["-p", "/model", "--output-format", "json", "--print-timeout", "10s", *options], timeout=10)
+                        if code != 0 or command_data(raw, "model").get("id") != request.model_id:
+                            observation["reason"] = "model_option_mismatch"
+                            return observation
+                    mcp = getattr(self, "mcp_sessions", None)
+                    supports = bool(engine == "agentic" and mcp is not None and request.configuration_generation is not None
+                        and mcp.supports(resource, self.session_generation(engine), request.model_id, request.effort_id, request.configuration_generation))
+                    attachment_selection = type("AttachmentSelection", (), {"resource_key": resource, "session_generation": self.session_generation(engine), "model_id": request.model_id, "effort_id": request.effort_id, "configuration_generation": request.configuration_generation})()
+                    observation.update(available=True, reason=None, session_generation=self.session_generation(engine), supports_mcp=supports,
+                        verified_modalities=[kind for kind in ("image", "pdf", "audio") if self.attachment_proofs.supports(engine, attachment_selection, kind)],
+                        verified_attachment_media_types=self.attachment_proofs.media_types(engine, attachment_selection))
+                except (ServiceError, AuthError) as error:
+                    observation["reason"] = error.code if isinstance(error, ServiceError) else "session_required"
+        except ServiceError as error:
+            # The bounded preflight is non-generative. Preserve a typed
+            # negative observation rather than a transport-unknown result.
+            # Actual execution/login/quarantine conflicts remain HTTP409.
+            if engine != "agentic" or error.code != "agentic_timeout":
+                raise
+            observation["reason"] = "agentic_timeout"
         return observation
 
     def web_options(self, request: ChatSelection) -> dict[str, object]:
@@ -330,7 +340,7 @@ class ChatAdapter:
             raise ServiceError("attempt_already_dispatched", "El intento ya fue admitido; no se reenviará.", 409)
         if len(self.attempts) >= self.maximum_attempts:
             raise ServiceError("adapter_admission_capacity", "Se requiere drenar y reiniciar el adaptador.", 503)
-        async with self.profiles.operation(engine):
+        async with self.profiles.operation(engine, purpose="execution"):
             if engine == "web":
                 if not self.web.is_initialized or self.web.client is None:
                     raise ServiceError("session_required", "Verifica la sesión Web antes de ejecutar.", 503)
@@ -367,6 +377,7 @@ class ChatAdapter:
                     if engine == "web":
                         output = await self.web._generate_content(prompt, model=matches[0], diagnostics=diagnostics,
                             preserve_structured_text=True,
+                            chat_budget_seconds=request.timeout_seconds,
                             native_attachment_media_types=[item.media_type for item in request.attachments] or None,
                             **({"files": attachment_paths} if attachment_paths else {}), **options)
                         phase = "reply_validation"

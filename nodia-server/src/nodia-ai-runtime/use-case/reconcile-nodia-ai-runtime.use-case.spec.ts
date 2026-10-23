@@ -68,6 +68,45 @@ function setup() {
   return { ...f, runtime, request, proof, native, cleanup, usecase, admin };
 }
 describe('ReconcileNodiaAiRuntimeUseCase', () => {
+  it('does not release a Codex slot using another connection proof with matching native fields', async () => {
+    const f = setup();
+    f.admin();
+    const request = {
+      ...f.request,
+      engine: 'agentic' as const,
+      resourceKey: 'codex-profile:' + 'a'.repeat(64),
+      adapterIdentity: {
+        providerKey: 'openai' as const,
+        contractVersion: 'nodia-ai-codex-chat/1' as const,
+        connectionId: '4',
+      },
+    };
+    f.job.recovery_descriptor = runtimeProofDescriptor(request);
+    f.attempt.runtime_resource_key = request.resourceKey;
+    f.runtime.findSlot.mockResolvedValue({
+      resource_key: request.resourceKey,
+      state: 'unknown',
+      fence: '1',
+      external_operation_ref: request.operationRef,
+    });
+    f.native.reconcile.mockResolvedValueOnce({
+      ...f.proof,
+      ...request,
+      adapterIdentity: { ...request.adapterIdentity, connectionId: '5' },
+    });
+    await expect(
+      f.usecase.execute(
+        { userId: '1', sessionId: f.grant.session_public_id! },
+        f.job.id,
+      ),
+    ).rejects.toThrow('invalid_terminal_proof');
+    expect(f.cleanup.execute).not.toHaveBeenCalled();
+    expect(
+      f.query.mock.calls.some(([sql]) =>
+        sql.includes("runtime_slots SET state='free'"),
+      ),
+    ).toBe(false);
+  });
   it('publishes the reconciled terminal revision only after the matching native proof and current operator authority', async () => {
     const f = setup();
     f.admin();

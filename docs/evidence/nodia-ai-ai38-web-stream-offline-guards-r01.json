@@ -1,0 +1,29 @@
+{
+  "schema": "ai38-web-stream-operational-offline-guards-v1",
+  "status": "passed",
+  "guard_suites": [
+    {
+      "command": "python docs/evidence/scripts/nodia-ai-ai38-web-stream-adopt-tests-r01.py",
+      "tests": 19,
+      "exit": 0
+    },
+    {
+      "command": "python docs/evidence/scripts/nodia-ai-ai38-web-stream-mcp-control-tests-r01.py",
+      "tests": 5,
+      "exit": 0
+    }
+  ],
+  "actual_adoption_receipt_guard_passed": true,
+  "actual_adoption_receipt_sha256": "2e3261f12a3ec1e665d4f8dbc0e21317c03e40e6d75bf154f6f186b8956313bc",
+  "source_hashes": {
+    "scripts/nodia-ai-ai38-web-stream-build-r01.py": "a6e2acc0b1f28a2ad54c6f9e633c7b30aaa96da1ef6fe19500694d8c769898b9",
+    "scripts/nodia-ai-ai38-web-stream-adopt-r01.py": "c948c3c70f4237e6919ba0fcd424d2fb21f60806e6a86c56a9e885781107465c",
+    "scripts/nodia-ai-ai38-web-stream-adopt-tests-r01.py": "ce893a0fa2dcee01f4bf8e3277ae7decdc31fd49e3e40bc7e82f1d6de7797d08",
+    "scripts/nodia-ai-ai38-web-stream-package-r01.py": "0f95b8182c5a4dda9a2f7d4522a10c24377d7d32d178c5f8aade61b8a7b3ac41",
+    "scripts/nodia-ai-ai38-web-stream-mcp-r01.py": "acc116ba478b6338c35d3f6b3afe26170a80e496823bdbdd57c241e0948e09b7",
+    "scripts/nodia-ai-ai38-web-stream-mcp-control-tests-r01.py": "603940a2edcf3a2a0d44689a9e45f8d7f73909de3cd48f9e6cf66afdd1011468",
+    "scripts/nodia-ai-ai38-web-stream-final-r01.py": "db405e8a988c13bfe53af41b1e96e1ea28280831dd8bf4ba6d31951dcb083143"
+  },
+  "scope": "pure decision guards and actual receipt parsing, not a new provider or runtime test",
+  "provider_requests_by_checks": 0
+}

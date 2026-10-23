@@ -1,0 +1,14 @@
+{
+  "stage": "AI39",
+  "status": "diagnostic_test_overlay_not_activated",
+  "base_manifest_sha256": "c9863c8b6ea852a9da4077384058ea581a07c1d763449be59a74dfdd1e979548",
+  "manifest_sha256": "d6391ddc5f2f26a952a6e495f0ff1d123ecaa38c86a92c2d91ffe250f45555c0",
+  "changed_test_sources": {
+    "nodia-server/test/nodia-ai-ai39.integration.mjs": "d156e8520717a3b84d141cf8a2ad3f832d27594caa584e583b8cc296c9032f57",
+    "nodia-server/test/fixtures/codex-chat-peer.mjs": "c22e9363d489fcff9d5d43493d5a6125c65fe1b5b451adee7f04aeecd604d27f"
+  },
+  "production_sources_changed": 0,
+  "services_changed": 0,
+  "configured_SQL_writes": 0,
+  "provider_requests": 0
+}

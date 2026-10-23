@@ -1,0 +1,80 @@
+{
+  "schema": "ai38-web-stream-recovery-independent-review/1",
+  "stage": "AI-38",
+  "revision": "R04",
+  "date": "2026-10-22",
+  "scope": "independent_source_packaging_and_offline_SDK_review_no_runtime",
+  "verdict": "source_review_passed_controlled_adoption_requires_Linux_QA",
+  "archive_sha256": "1e49e74e9d65cd8d532f78c42f51b118fc2d542a2cb450b51272bd8282661e29",
+  "manifest_sha256": "468e0a66b11a0bd00ed88b01bfa9ebc56cc1e611b05efa30d9dbd0e3e79cc54d",
+  "reviewed_sources": {
+    "gemini_service.py": "0617b30f35727d03ccd3ee4f804d86984d69f5314b4f2a8f10d658579614cb3d",
+    "nodia_ai_chat.py": "a25bc89db5946ca246bda1d243a75b38ed3d18ec8a3bb5cd42bad90619f3f7a8",
+    "web_chat_recovery.py": "c93fb4ebadc9310ccb4f7ae547cc5c2af33098cfbf9e7bc890233914cabab0b8"
+  },
+  "independent_tests": {
+    "command": "./.venv/Scripts/python.exe -m unittest discover -s tests -p test_web_chat_recovery.py -v",
+    "platform": "Windows",
+    "executed": 10,
+    "passed": 10,
+    "skipped": 0,
+    "exit_code": 0,
+    "test_source_sha256": "64a324ff43ab804bb01fcaa75c78c6c9628bf35b6718fce11f447f65cc2940be",
+    "actual_pinned_SDK_generate_decorator_stream_parser_and_read_chat_used": true,
+    "transport_startup_maintenance_and_clock_simulated": true,
+    "network_or_account_used": false,
+    "cases": [
+      "same_fresh_CID_history_recovery_without_new_generation",
+      "success_without_recovery",
+      "empty_history_failure_without_regeneration",
+      "cancellation_during_history",
+      "SDK_refusal_text_absent_from_sinks_Nodia_event_retained",
+      "next_explicit_init_rotates_generation_after_failure",
+      "non_chat_OCR_error_lifecycle_preserved",
+      "absent_budget_is_noop",
+      "small_budget_restoration",
+      "invalid_budgets_rejected"
+    ]
+  },
+  "review_checks": {
+    "one_StreamGenerate_per_simulated_attempt": true,
+    "read_history_uses_current_generation_fresh_CID": true,
+    "current_retry_zero_preserved": true,
+    "outer_chat_deadline_still_at_most_120_seconds": true,
+    "model_provider_mode_unchanged": true,
+    "scoped_watchdog_120_to_55_for_120_second_turn_restored_in_finally": true,
+    "SDK_timeout_300_preserved": true,
+    "OCR_requests_and_watchdog_settings_unchanged_when_budget_absent": true,
+    "SDK_namespace_silenced_at_service_construction_not_import": true,
+    "Nodia_diagnostics_and_existing_handlers_retained": true,
+    "failed_chat_invalidates_initialized_only_for_same_client_with_closed_transport": true,
+    "next_reconnection_remains_explicit_and_rotates_owned_session_generation": true,
+    "successful_history_recovery_keeps_initialized_and_generation": true,
+    "cancel_unknown_reconcile_and_ACK_contract_unchanged": true,
+    "reversing_five_reviewed_service_edits_equals_exact_live_base": true,
+    "live_base_service_sha256": "5b042c89f9678ff774bd6bbac814c8e579d56b497c9e088c357a226dae2d7bfd",
+    "overlay_chat_equals_single_budget_argument_patch_to_pinned_live_source": true,
+    "live_base_chat_sha256": "ca8fdd4dcdee34ede7059dc71d35a88d0da2cc9253ff592d4ebf032f0dc0c356",
+    "image_source_set_exactly_three_files": true,
+    "whole_workspace_adoption_excluded": true,
+    "frozen_test_sources_retained": 46,
+    "test_sources_in_archive": 47
+  },
+  "pre_adoption_gate": {
+    "Linux_offline_QA_expected_tests": 496,
+    "result_at_review_freeze": "pending_other_agent",
+    "root_controls_adoption_and_runtime_revalidation": true
+  },
+  "limitations": [
+    "The scoped watchdog targets observed idle frames, not SDK queueing/thinking branches.",
+    "Late headers or heartbeats can still exhaust the unchanged caller deadline; recovery is not guaranteed.",
+    "The SDK history lookup is tied to the fresh CID; matching RID is not independently verified.",
+    "Synthetic tests prove local control flow and privacy, not provider root cause, live recovery or current attachment acceptance.",
+    "Existing SDK raw logs are suppressed for this service process, including OCR; Nodia-owned operational categories remain available."
+  ],
+  "provider_requests": 0,
+  "runtime_mutations": 0,
+  "credentials_read": false,
+  "provider_payloads_continuation_identifiers_or_raw_logs_saved": false,
+  "sources_modified_by_reviewer": false
+}

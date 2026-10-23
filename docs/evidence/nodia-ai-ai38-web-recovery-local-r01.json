@@ -1,0 +1,32 @@
+{
+  "observed_local_utc": "2026-10-22T21:57:52.2150975Z",
+  "listeners": [
+    {
+      "pid": 96468,
+      "port": 3100,
+      "address": "::1"
+    },
+    {
+      "pid": 8840,
+      "port": 5174,
+      "address": "0.0.0.0"
+    },
+    {
+      "pid": 96468,
+      "port": 3100,
+      "address": "127.0.0.1"
+    }
+  ],
+  "http": [
+    {
+      "status": 200,
+      "url": "http://localhost:5174/"
+    },
+    {
+      "status": 404,
+      "url": "http://127.0.0.1:3100/"
+    }
+  ],
+  "browser_actions": 0,
+  "provider_requests": 0
+}

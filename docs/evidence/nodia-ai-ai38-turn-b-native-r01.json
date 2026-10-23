@@ -1,0 +1,102 @@
+{
+  "schema": "ai38-turn-native-r01",
+  "status": "metadata_observed_read_only",
+  "turn": "B",
+  "observed_at_VM_utc": "2026-10-22T18:01:16.124558+00:00",
+  "source_sha256": "4d2166bc00320063db39e5e0e5af6be41cdddc0e612a1381a28ff1f48ca4a2ac",
+  "SQL": {
+    "transaction": {
+      "read_only": "on",
+      "isolation": "repeatable read",
+      "observed_at": "2026-10-22T18:01:16.106Z"
+    },
+    "runs": [
+      {
+        "id": "b4c1221c-549b-48ce-80d1-f5dd790c4cd7",
+        "conversation_id": "a160f615-ea41-4a05-831d-acdbb413ec4d",
+        "state": "completed",
+        "phase": "inference",
+        "created_at": "2026-10-22T17:57:07.121Z",
+        "completed_at": "2026-10-22T17:57:33.289Z",
+        "provider_dispatches_used": 1,
+        "tool_calls_used": 0,
+        "mcp_rpc_messages_used": 6
+      }
+    ],
+    "attempts": [
+      {
+        "id": "f60e6f14-6830-443e-8312-dc9576050bdb",
+        "external_operation_ref": null,
+        "phase": "completed",
+        "stage_key": "context",
+        "started_at": "2026-10-22T17:57:09.286Z",
+        "ended_at": "2026-10-22T17:57:09.586Z"
+      },
+      {
+        "id": "6066fff1-4f73-4a03-a09d-5796fabc6d6c",
+        "external_operation_ref": "6066fff1-4f73-4a03-a09d-5796fabc6d6c",
+        "phase": "completed",
+        "stage_key": "inference",
+        "started_at": "2026-10-22T17:57:09.596Z",
+        "ended_at": "2026-10-22T17:57:33.288Z"
+      }
+    ]
+  },
+  "container_epoch": {
+    "Id": "802d6d8792ff9c6f2c8d491b151e984966f854661da172cb6887f69fb8912678",
+    "Image": "sha256:b8efad6217a4f04cb135db027fd899c1826b39c3a16154cca79f1b4f0deb977e",
+    "started_at": "2026-10-20T19:14:35.412657745Z"
+  },
+  "same_container_epoch_after": true,
+  "log_window": {
+    "since": "2026-10-22T17:57:07.121000+00:00",
+    "until": "2026-10-22T18:01:16.124558+00:00",
+    "bytes_read": 78493,
+    "raw_emitted": false,
+    "raw_saved": false
+  },
+  "per_attempt": [
+    {
+      "attempt_id": "6066fff1-4f73-4a03-a09d-5796fabc6d6c",
+      "HTTP_200_ACK_count": 1,
+      "ACK_HTTP_metadata_observed": true,
+      "exact_terminal_diagnostics": null,
+      "terminal_diagnostic_status": "not_read_unknown",
+      "route_counts": [
+        {
+          "method": "POST",
+          "endpoint": "acknowledge",
+          "status": 200,
+          "count": 1
+        },
+        {
+          "method": "POST",
+          "endpoint": "events",
+          "status": 200,
+          "count": 196
+        }
+      ]
+    }
+  ],
+  "all_attempt_ACK_HTTP_200_observed": true,
+  "native_artifact_counts": {
+    "unknown_markers": 0,
+    "native_proof_files": 0,
+    "temporary_attachment_directories": 0,
+    "temporary_cli_directories": 0
+  },
+  "global_native_artifacts_absent": true,
+  "provider_requests": 0,
+  "configured_SQL_writes": 0,
+  "ACK_or_reconcile_requested": false,
+  "services_restarted": false,
+  "profile_bytes_read": false,
+  "proof_token_files_opened": false,
+  "terminal_payloads_or_model_documents_parsed": false,
+  "limits": [
+    "HTTP ACK observations do not expose or reconstruct terminal proof tokens.",
+    "Exact native terminal diagnostic counters and classifications remain unknown; only SQL run counters and closed access-route metadata are reported.",
+    "Artifact absence alone does not establish why a proof disappeared; file names are counted without opening proof, token, payload or profile bytes.",
+    "No HTTP callback, acknowledgement, reconciliation, provider inference or service mutation is invoked by this observer."
+  ]
+}

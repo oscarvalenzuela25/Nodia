@@ -1,0 +1,156 @@
+{
+  "stage": "AI-38",
+  "scope": "four_new_Web_format_canaries_no_Agentic_generation",
+  "status": "stopped_no_replay_no_next_probe",
+  "source_sha256": "7c5c13e26145fe2dc45c0288cce32e8224fff802da36141f33a7305e81f934ce",
+  "cohort_base_sha256": "f51d16a67b73a5eb5f5eaa6beee4bad1ae06d0e1af0d7641487887835af843d3",
+  "helper_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+  "MCP_sha256": "4b9f81b07217e5d01b28158edc6e60b2a46c78e1117b5101a1cb7ff48c81dbdd",
+  "MCP_epoch_sha256": "2de48ac8425fcdee787668f7e9e5c2b756ec40d8e7bf2679d30c01b9ef7379e9",
+  "prior_cohort_sha256": "4ec350c3e20a580eaa8df80a65f5fd5a325a7cc4608721a5ddd051ed26914fe4",
+  "maximum_generations": 4,
+  "generation_requests_declared": 2,
+  "inference_replays": 0,
+  "Agentic_generations": 0,
+  "cases": [
+    {
+      "mode": "web",
+      "format": "wav",
+      "work": "/opt/nodia/verification/ai38-modalities-post-list-web-r02-wav",
+      "status": "passed",
+      "helper_report": {
+        "stage": "AI-38",
+        "scope": "exact_native_format_semantic_canary",
+        "status": "passed",
+        "started_at_utc": "2026-10-22T21:01:34.730487+00:00",
+        "source_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_web",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null
+        },
+        "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+        "session_generation": "1765b12e570849a3a3e856c639c287ed",
+        "attempt_id": "de541539-896f-41a1-a17a-9f7ccbb0311b",
+        "kind": "audio",
+        "media_type": "audio/wav",
+        "file_bytes": 114886,
+        "file_sha256": "ded0091808665288f22fcc8947ffa098ef1149bd12a42591708856f50816abf0",
+        "expected_answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+        "maximum_generations": 1,
+        "generation_requests": 1,
+        "inference_replayed": false,
+        "configured_SQL_writes": 0,
+        "business_effects": 0,
+        "provider_login_logout": false,
+        "semantic_match": true,
+        "native_acknowledged": true,
+        "native_pending_identity": false,
+        "raw_provider_output_exported": false,
+        "quiet_before": {
+          "jobs": 0,
+          "attempts": 0,
+          "slots": 0
+        },
+        "http_status": 200,
+        "actual_answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+        "native_outcome": "completed",
+        "exact_format_verified_after": true,
+        "finished_at_utc": "2026-10-22T21:02:01.951679+00:00"
+      },
+      "report_sha256": "0f60e7ad918fb3e971899219c53996d9be4494953e80c0b11f55591f5f1afd26"
+    },
+    {
+      "mode": "web",
+      "format": "webm",
+      "work": "/opt/nodia/verification/ai38-modalities-post-list-web-r02-webm",
+      "status": "starting",
+      "helper_report": {
+        "stage": "AI-38",
+        "scope": "exact_native_format_semantic_canary",
+        "status": "gates_open",
+        "started_at_utc": "2026-10-22T21:02:02.811851+00:00",
+        "source_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+        "selection": {
+          "connection_id": "2",
+          "mode": "token_plan_web",
+          "model_id": "56fdd199312815e2",
+          "effort_id": null
+        },
+        "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+        "session_generation": "1765b12e570849a3a3e856c639c287ed",
+        "attempt_id": "8b99a0b9-7dbe-480c-9470-d4e52ede29a7",
+        "kind": "audio",
+        "media_type": "audio/webm",
+        "file_bytes": 29743,
+        "file_sha256": "6faf3d9f76e7216b105a3b9291f9f671dcfb8edee74818108225405be260d8b0",
+        "expected_answer_sha256": "d1d983dc01270064fa19a1e2b741b87ab4b1107edb06208f7d4ca72b7f5453ad",
+        "maximum_generations": 1,
+        "generation_requests": 1,
+        "inference_replayed": false,
+        "configured_SQL_writes": 0,
+        "business_effects": 0,
+        "provider_login_logout": false,
+        "semantic_match": false,
+        "native_acknowledged": true,
+        "native_pending_identity": false,
+        "raw_provider_output_exported": false,
+        "quiet_before": {
+          "jobs": 0,
+          "attempts": 0,
+          "slots": 0
+        },
+        "http_status": 502,
+        "error_code": "chat_result_unknown",
+        "native_outcome": "abandoned_unknown",
+        "exact_format_verified_after": false,
+        "finished_at_utc": "2026-10-22T21:04:09.245888+00:00"
+      },
+      "report_sha256": "a31888f7fd06c1cd1393317d1fc32825212c812419bb467cd1baef57805a3deb"
+    }
+  ],
+  "unknown_native_state": false,
+  "epoch": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at_utc": "2026-10-22T19:48:35.342867871Z",
+    "running": true
+  },
+  "formats_order": [
+    "wav",
+    "webm",
+    "png",
+    "pdf"
+  ],
+  "configured_SQL_writes": 0,
+  "services_restarted": false,
+  "business_effects": 0,
+  "started_at_utc": "2026-10-22T21:01:24.024646+00:00",
+  "Agentic_binding": {
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_agentic",
+      "model_id": "gemini-3.8-flash-high",
+      "effort_id": "high"
+    },
+    "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+    "session_generation": "78dc64a0fa7e46f7a63e28d7c02b51e5",
+    "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d"
+  },
+  "Web_binding": {
+    "selection": {
+      "connection_id": "2",
+      "mode": "token_plan_web",
+      "model_id": "56fdd199312815e2",
+      "effort_id": null
+    },
+    "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+    "session_generation": "1765b12e570849a3a3e856c639c287ed",
+    "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039"
+  },
+  "Web_session_changed_from_prior": true,
+  "failure_class": "ControlError",
+  "failure_code": "native_state_not_closed_completed_ACK",
+  "finished_at_utc": "2026-10-22T21:04:09.302498+00:00"
+}

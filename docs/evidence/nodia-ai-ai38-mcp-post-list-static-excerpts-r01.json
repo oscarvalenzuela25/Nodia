@@ -1,0 +1,43 @@
+{
+  "scope": "bounded_public_installed_binary_literals_not_runtime_or_source_attribution",
+  "static_excerpts": {
+    "resources/list": {
+      "offset": 84945419,
+      "static_binary_excerpt": "ALIMAGE_TO_VIDEOELASTIC_SEARCH[MISSING_NAME]ListWorkspacesListIdentitiesTYPE_DIRECTORYListOperationsresources/listresources/readnil connectioninput_requiredcalling %s: %vnotifications/Mcp-Session-Id%s: %w: %w: %vcalling %q: %wInsert newlineKeyClearScreenHalf page downSearch in filecli.cycle_modenavigation.tabInse",
+      "excerpt_sha256": "1d85254fca6885af181e7fbdef39c3b8ce74559d44f291cc759e0a5343b82179"
+    },
+    "prompts/list": {
+      "offset": 84758199,
+      "static_binary_excerpt": "all><%s>.*?</%s><tool_%s>.*$\"TargetFile\"ListTriggersListProjectsTYPE_SYMLINKDISCONNECTEDGetOperationprompts/list%q before %qinvalid JSONtask_optionsHalf page upGo to bottomGo To BottomToggle Shellctrl+shift+-ctrl+shift+zClose SearchInstAltMatchunexpected )altmatch -> anynotnl -> IPV4_OR_IPV6GOPROTODEBUG<unknown",
+      "excerpt_sha256": "7a6d231c5b71f19ee83ce9051da08631f76bf6e93fd249b275d5dc76faddeccc"
+    },
+    "tools/list": {
+      "offset": 35284905,
+      "static_binary_excerpt": "iders/mcp/mcp.(*mcpToolCaller).CallTool.func1.type:.eq.SM8II.google3/third_party/jetski/cortex/core/tools/listpluginaccounts/listpluginaccounts.NewListPluginAccountsTool.google3/third_party/jetski/cortex/core/tools/listpluginaccounts/listpluginaccounts.(*ListPluginAccountsTool).Name.google3/third_party/jetski",
+      "excerpt_sha256": "416699ecb58e2d376db3e4c455086ce6a479aa7f0b27b23b29ea10db061bea56"
+    },
+    "notifications/initialized": {
+      "offset": 85729055,
+      "static_binary_excerpt": "IDENTITY_TYPE_UNSPECIFIEDIDENTITY_TYPE_GROUP_AGENTPERMISSION_GRANT_LIST_ASKPassword for '%s' on '%s'notifications/initializedtool name cannot be emptymissing required \"params\"metadata.google.internal.compute: Received %d `%s`parsing hooks from %s: %wnavigation.half_page_downvim.insert.insert_newlineunsupported hook type: %q",
+      "excerpt_sha256": "d88739fd494e7ae33028497c0289bbc233ade5ff3605d537a43de193cd87ef96"
+    },
+    "notifications/cancelled": {
+      "offset": 85621890,
+      "static_binary_excerpt": "20b-maasTRIGGER_STATE_COMPLETEDDIFF_CHANGE_TYPE_INSERTDIFF_CHANGE_TYPE_DELETEChatClientServerServicenotifications/cancelledunresponsive subprocessinvalid content type %qerror reading event: %vduplicate message ID %qjsonrpc2 internal errorinvalid array index: %sat start of object namewriting plugin.json: %wstaging MCP serv",
+      "excerpt_sha256": "418c388460ecdb00e6d1b3e79f85f14ca6cc297bbd59d249805bf11ece802944"
+    },
+    "logging/setLevel": {
+      "offset": 85108911,
+      "static_binary_excerpt": "WO_KTASK_UNSPECIFIEDinvalid type: %T</tool_response>model is missingListEnvironmentsDisconnectPluginlogging/setLevelsubscriber_countserver run startfailureThresholdmetadata request${extensionPath}${workspacePath}Clear CLI screenManage subagentsCancel best of ncli.clear_screenedit.open_editornavigation.rightInstRune",
+      "excerpt_sha256": "2e7595dcbfa9a2d0ae76dfd7d4c1aa5a54769ea530961a9fe1068ed9295f467a"
+    },
+    "inputSchema": {
+      "offset": 90865057,
+      "static_binary_excerpt": ".R.name.%..description.. .(.B..A.R.description.?..input_schema.. .(.2..google.protobuf.StructB..A.R.inputSchema.]..annotations.. .(.26.google.internal.cloud.code.v1internal.ToolAnnotationsB..A.R.annotations\"....ToolAnnotations....title.. .(.B..A.R.title.)..read_only_hint.. .(.B..A.R.readOnlyHint....destructive",
+      "excerpt_sha256": "62f7c1f524f4a38dfe932cd1287023f2f448100671107937b1ee59b4775aa4bf"
+    }
+  },
+  "CLI_executed": false,
+  "profile_or_session_opened": false
+}
+

@@ -1,0 +1,69 @@
+{
+  "scope": "closed_terminal_metadata_for_exact_finished_attempt_not_provider_cause",
+  "observed_at_VM_utc": "2026-10-22T21:34:38.838278+00:00",
+  "source_sha256": "b572bad9277ec4840e2e81c66a698f1050aa69fc1336c70fa45fe7a15b8f58dd",
+  "native_epoch": {
+    "id": "b20db84410938175ca00002b56ec3fef9b894af1399413b2fabbbbd36bcfab96",
+    "image": "sha256:985ba983fec5789671ceaa53c98103fbbf5b81c07938e6d10b2099034e2c0306",
+    "started_at": "2026-10-22T21:25:38.245485678Z"
+  },
+  "window_begin_utc": "2026-10-22T21:31:03Z",
+  "window_end_utc": "2026-10-22T21:33:16Z",
+  "terminal_records": [
+    {
+      "timestamp_utc": "2026-10-22T21:33:13.942393035Z",
+      "attempt_id": "3879eb7f-3489-4f86-b097-a6fbcdc02a5b",
+      "phase": "running_cli",
+      "state": "unknown",
+      "exception_type": "TimeoutError",
+      "elapsed_ms": 119047,
+      "rpc_messages": 6,
+      "callbacks": 0,
+      "exit_code": null,
+      "gate_verified": false,
+      "cli": {
+        "tool_steps": 0,
+        "last_tool": "none",
+        "terminal_status": "absent",
+        "denied_count": 0,
+        "stderr_bytes": 0,
+        "stderr_error_categories": [],
+        "result_error_categories": []
+      },
+      "cli_log": {
+        "state": "observed",
+        "transport_indicators": [],
+        "provider_error_indicators": [],
+        "text_indicators_are_not_verified_cause": true
+      },
+      "rpc": {
+        "state": "observed",
+        "events": 6,
+        "unknown_events": 0,
+        "methods": {
+          "initialize": 1,
+          "notifications_initialized": 1,
+          "other": 3,
+          "ping": 0,
+          "tools_call": 0,
+          "tools_list": 1
+        },
+        "responses": {
+          "error": 1,
+          "notification": 3,
+          "success": 2,
+          "unknown": 0
+        },
+        "tools_list_successes": 1,
+        "reply_construction_not_cli_consumption": true
+      }
+    }
+  ],
+  "terminal_record_count": 1,
+  "logging_module_origin_not_encoded_in_runtime_prefix": true,
+  "exact_attempt_and_closed_terminal_schema_verified": true,
+  "raw_logs_headers_bodies_or_account_files_saved": false,
+  "HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "service_changes": 0
+}

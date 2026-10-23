@@ -106,6 +106,24 @@ describe("AiProviderIndicators", () => {
     await act(() => client.invalidateQueries({ queryKey: ["ai-providers-health"] }));
     await waitFor(() => expectColor("Agéntico", "Success"));
   });
+  it("shows an expired Codex snapshot as unverified while retaining explicit credential and usage denials", async () => {
+    const data = fixture(); const provider = data.providers[0];
+    provider.key = "openai"; provider.use_token_plan_web = false;
+    provider.codexSession = { available: false, authenticated: null, usageAllowed: null, planType: null,
+      reason: "codex_runtime_unverified", checkedAt: null, lastInferenceAt: null, quotas: null };
+    vi.mocked(getAiProvidersHealth).mockResolvedValue(data); const client = setup();
+    await screen.findByRole("group");
+    expect(button("Agéntico")).toHaveAccessibleName(/Sin verificar/);
+    expect(button("Agéntico")).not.toHaveAccessibleName(/Necesita revisión/);
+    vi.mocked(getAiProvidersHealth).mockResolvedValue({ ...data, providers: [{ ...provider,
+      codexSession: { ...provider.codexSession, available: true, authenticated: false, reason: "codex_session_required" } }] });
+    await act(() => client.invalidateQueries({ queryKey: ["ai-providers-health"] }));
+    await waitFor(() => expect(button("Agéntico")).toHaveAccessibleName(/Necesita revisión/));
+    vi.mocked(getAiProvidersHealth).mockResolvedValue({ ...data, providers: [{ ...provider,
+      codexSession: { ...provider.codexSession, usageAllowed: false } }] });
+    await act(() => client.invalidateQueries({ queryKey: ["ai-providers-health"] }));
+    await waitFor(() => expect(button("Agéntico")).toHaveAccessibleName(/Necesita revisión/));
+  });
   it("treats missing/malformed observations as unverified and disabled providers as needing review", async () => {
     const data = fixture(); data.engines = null;
     vi.mocked(getAiProvidersHealth).mockResolvedValue(data); const client = setup();

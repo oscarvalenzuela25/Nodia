@@ -1,0 +1,84 @@
+{
+  "stage": "AI39",
+  "scope": "isolated_compiled_Linux_JSONL_protocol",
+  "status": "passed",
+  "began_VM_utc": "2026-10-22T23:25:07.263574+00:00",
+  "finished_VM_utc": "2026-10-22T23:25:09.486702+00:00",
+  "fixture": {
+    "status": "passed",
+    "cases": [
+      {
+        "case": "startup_snapshot_barrier",
+        "passed": true,
+        "elapsed_ms": 235,
+        "snapshots": 4,
+        "native_server_requests": 0
+      },
+      {
+        "case": "burst80_duplicate_call_once",
+        "passed": true,
+        "elapsed_ms": 174,
+        "notifications": 80,
+        "native_server_requests": 2,
+        "gateway_calls": 1,
+        "unforwarded_requests": 1
+      },
+      {
+        "case": "durable_barrier_before_gateway",
+        "passed": true,
+        "elapsed_ms": 221,
+        "gateway_calls_before_barrier": 0,
+        "gateway_calls_after_barrier": 1
+      },
+      {
+        "case": "oversized_partial_before_close",
+        "passed": true,
+        "elapsed_ms": 208,
+        "frames": 1,
+        "observed_overflow_before_close": true,
+        "bytes": 2097153,
+        "gateway_calls": 0
+      },
+      {
+        "case": "durable_failure_blocks_callback",
+        "passed": true,
+        "elapsed_ms": 173,
+        "gateway_calls": 0,
+        "native_closed": true
+      },
+      {
+        "case": "overflow18MiB_true_count_before_close",
+        "passed": true,
+        "elapsed_ms": 561,
+        "frames": 9,
+        "bytes": 18876888,
+        "observed_overflow_before_close": true,
+        "gateway_calls": 0
+      },
+      {
+        "case": "hidden_handshake_request_is_charged_and_rejected",
+        "passed": true,
+        "elapsed_ms": 149,
+        "native_server_requests": 1,
+        "rejected_requests": 1,
+        "unforwarded_requests": 1,
+        "gateway_calls": 0
+      }
+    ],
+    "process_groups_closed": 7,
+    "inference_requests": 0,
+    "account_reads": 0,
+    "sql_queries": 0,
+    "simulated_peer": true,
+    "real_jsonl_processes": true
+  },
+  "exit_code": 0,
+  "fixture_resources_cleaned": true,
+  "source_manifest_sha256": "cf074455a38b0d84e169cb0ba93a980af6fe095cb1fec9c0eb72d932b1e0e651",
+  "stdout_bytes": 1184,
+  "stderr_bytes": 0,
+  "private_output_emitted": false,
+  "provider_requests": 0,
+  "operational_services_changed": 0,
+  "configured_database_or_credentials_used": false
+}

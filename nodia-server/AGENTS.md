@@ -58,7 +58,7 @@ Usa esta tabla para determinar qué skill(s) activar según la tarea:
 | **Diseñar arquitectura backend, autenticación (JWT/RBAC), background jobs, streaming o middleware** | `nodejs-backend-patterns` | `skills/nodejs-backend-patterns/SKILL.md` |
 | **Tomar decisiones de arquitectura en Node.js, variables de entorno, async patterns o seguridad general** | `nodejs-best-practices` | `skills/nodejs-best-practices/SKILL.md` |
 | **Tipos complejos en TypeScript, genéricos, DTOs dinámicos, utility types o resolver errores de tipos** | `typescript-advanced-types` | `skills/typescript-advanced-types/SKILL.md` |
-| **Escribir, arreglar o ejecutar pruebas de casos de uso, mocks/spies o comprobaciones de integración aisladas permitidas** | `vitest` | `skills/vitest/SKILL.md` |
+| **Escribir, arreglar o ejecutar pruebas de lógica atómica, casos de uso, mocks/spies o integración aislada justificada** | `vitest` | `skills/vitest/SKILL.md` |
 | **Revisar código, validar sintaxis, corregir lints tras editar archivos o antes de finalizar la tarea** | `oxlint` | `skills/oxlint/SKILL.md` |
 
 ---
@@ -107,7 +107,7 @@ Usa esta tabla para determinar qué skill(s) activar según la tarea:
 * **Ruta:** `skills/vitest/SKILL.md`
 * **Propósito:** Testing ultra rápido con Vitest y Vite (compatible con la API de Jest, nativo para ESM y TypeScript).
 * **Cuándo activarla:**
-  - Al escribir o actualizar pruebas unitarias de casos de uso (`use-case/*.spec.ts`); no crear unit tests de servicios ni controladores.
+  - Al escribir o actualizar pruebas unitarias de casos de uso y unidades de lógica (funciones, validadores, políticas y helpers); no crear suites de mera delegación de servicios ni controladores.
   - Al crear mocks de repositorios de TypeORM o servicios externos usando `vi.fn()` o `vi.spyOn()`.
   - Al preparar comprobaciones de integración/HTTP aisladas cuando sean necesarias para garantías que los mocks no prueban, respetando el alcance y la política local.
   - Al validar cobertura de código (`npm run test:cov`).
@@ -154,14 +154,15 @@ Usa esta tabla para determinar qué skill(s) activar según la tarea:
    - **Caso de uso (`use-case/`):** Encapsula las reglas y flujos de negocio. Inyecta el servicio o repositorios necesarios.
    - **Servicio / Repositorio:** Encapsula TypeORM y operaciones de base de datos.
 
-4. **Política Estricta de Testing (Solo Casos de Uso):**
-   - **REGLA OBLIGATORIA:** **Únicamente se testean Casos de Uso (`use-case/*.spec.ts`)**.
-   - **PROHIBIDO:** No crear pruebas para controladores (`*.controller.spec.ts`) ni servicios (`*.service.spec.ts`), ya que son pruebas de bajo valor y acoplamiento innecesario.
-   - Toda prueba unitaria debe residir junto a su caso de uso (`use-case/<nombre>.use-case.spec.ts`) y simular dependencias externas con Vitest (`vi.fn()`).
-   - Ejecutar las reglas reales del caso de uso: permisos, ámbito, conflictos y efectos. No simular precisamente la regla bajo prueba ni considerar una aserción de delegación como evidencia de seguridad/atomicidad.
-   - Mantener la lógica de negocio comprobable en casos de uso y los servicios dedicados a persistencia. Las garantías de DB/DI que requieran integración se verifican de forma aislada; no añadir suites unitarias de controlador/servicio ni declarar verificadas garantías ausentes.
+4. **Política de Testing de Lógica Atómica (acordada el 2026-10-23):**
+   - Priorizar la unidad más pequeña que posee la regla: funciones puras, validadores, políticas, parsers, transformaciones, helpers y casos de uso con comportamiento de negocio. Probar resultados observables, errores, límites, permisos, ámbito, conflictos y efectos pertinentes.
+   - Mantener cada prueba unitaria junto a su unidad real (`<nombre>.spec.ts`); los casos de uso conservan `use-case/<nombre>.use-case.spec.ts`. No mover ni disfrazar un helper como caso de uso para poder probarlo.
+   - Ejecutar la regla real y simular únicamente fronteras externas con Vitest. Una aserción de llamada a un mock no demuestra autorización, integridad ni atomicidad. No crear suites para controladores o servicios que solo delegan o encapsulan persistencia; extraer lógica comprobable cuando reduzca acoplamiento, sin abstracciones artificiales.
+   - Reservar integración puntual y aislada para garantías que los tests unitarios no prueban: validación HTTP real, permisos entre capas, SQL, restricciones, transacciones, concurrencia, idempotencia o DI. Justificar el riesgo y limitar el escenario; no duplicar toda la matriz unitaria ni una suite por recurso.
+   - Prohibidos tests espejo de la implementación, snapshots masivos y pruebas añadidas solo para elevar volumen/cobertura. Una regresión debe detectar el defecto anterior o una garantía contractual concreta.
+   - Esta política sustituye la restricción anterior de probar solo casos de uso. No autoriza retirar pruebas existentes, quitar assertions o desactivar checks sin revisar y conservar las garantías vigentes.
 
 5. **Verificación de Calidad antes de Finalizar Cualquier Tarea:**
    - `npm run build`: Debe compilar con 0 errores TypeScript.
    - `npm run lint`: Debe pasar con 0 errores de Oxlint.
-   - `npm run test`: Las pruebas de Vitest deben pasar en verde (solo casos de uso).
+   - `npm run test`: Las pruebas de Vitest deben pasar en verde conforme a la política de lógica atómica y casos de uso. Para ediciones solo documentales, validar contenido, enlaces y consistencia sin ejecutar la suite de producto por rutina.

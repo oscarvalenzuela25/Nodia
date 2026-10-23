@@ -1,0 +1,23 @@
+{
+  "schema": "ai38-profile-fix-source-QA-v1",
+  "phase": "bounded_observational_admission",
+  "command": ".venv/Scripts/python.exe run_tests.py",
+  "environment": "Windows_offline_guarded_current_workspace_not_frozen_runtime_parity",
+  "exit": 0,
+  "tests_discovered": 505,
+  "tests_passed": 503,
+  "platform_skips": 2,
+  "seconds": 15.959,
+  "log_sha256": "68c0cba33d35f57667f484a088c225d5d28593d5bdc12cc483308af6cd7767bb",
+  "source_pins": {
+    "main.py": "9ebbaa4a3cb226cb2beb911690b8e168d35ad4409232d0da1d38ab36f8d5ec8c",
+    "nodia_ai_chat.py": "c691d75fb1ee87842def0c34c77349cadf8252e22ae89cd3d91059d60f0104e9",
+    "durable_login.py": "4e8296bd58976519b8a49a36c2fa380038e9fc8e99bcddd4e0dea44402956151",
+    "native_mcp_sessions.py": "4e05adbd35fd2391e05f54952d839bbb3d7c14d3145609474ee6b2a1f6cbbb20",
+    "profile_admission.py": "341e0faf3b2c5c473a760b92119e89bc4821452fa98d49c497dc94f545b0406b",
+    "tests/test_profile_admission_diagnostics.py": "2ca3a486d511284e64aa92a4089936d251ee58de4beda8f65531e5b9f96ee0ff",
+    "tests/test_profile_observation_admission.py": "b42e8b32fb916b47c24afb73295fabde7083e9d8e6adba7192658d134086ae37",
+    "tests/test_agentic_profile_observations.py": "58f0c659b19758808489497e06b103e94078d5d3b193c7a36858d54210c96bc3"
+  },
+  "live_inference_or_VM_changes_by_this_check": 0
+}

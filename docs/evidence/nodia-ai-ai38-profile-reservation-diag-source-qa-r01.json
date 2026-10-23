@@ -1,0 +1,20 @@
+{
+  "schema": "ai38-profile-diag-source-QA-v1",
+  "phase": "diagnostic_only_no_admission_policy_change",
+  "command": ".venv/Scripts/python.exe run_tests.py",
+  "environment": "Windows_offline_guarded",
+  "exit": 0,
+  "tests_discovered": 483,
+  "tests_passed": 481,
+  "platform_skips": 2,
+  "seconds": 17.468,
+  "log_sha256": "28bc91871c73d5f4c5f0304ea8a41b72f366b8757de7184d692580e1bb3f8811",
+  "production_source_pins": {
+    "main.py": "557aaccaa11f3bc90af1560a411e0e6c1f3495e52857775bed8ac13566b12358",
+    "nodia_ai_chat.py": "ca75d5949990ce3d1f75465deee03d7baec994563256e572d7346065d20c32ce",
+    "durable_login.py": "4e8296bd58976519b8a49a36c2fa380038e9fc8e99bcddd4e0dea44402956151",
+    "native_mcp_sessions.py": "4e05adbd35fd2391e05f54952d839bbb3d7c14d3145609474ee6b2a1f6cbbb20",
+    "profile_admission.py": "7287e9a2b4ad4a804876dfb58187ba781aa723a38f143c2f722ce4d0a5c6fc73"
+  },
+  "live_inference_or_VM_changes_by_this_check": 0
+}

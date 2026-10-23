@@ -46,6 +46,26 @@ function effortPreferences(preferred: unknown) {
   if (identifier(preferred, 256)) options.add(preferred);
   return Array.from(options, (effort_id) => ({ effort_id, label: effort_id }));
 }
+function codexEfforts(value: unknown) {
+  // Persisted discovery is advisory; missing/invalid metadata never manufactures support.
+  // Keep the same bound and identifier contract as the native Codex model parser.
+  if (!Array.isArray(value)) return [];
+  if (value.length > 32)
+    throw new ServiceUnavailableException(
+      'nodia_ai:connection_catalog_too_large',
+    );
+  if (
+    !value.every(
+      (effort): effort is string =>
+        typeof effort === 'string' && /^[a-z][a-z0-9_-]{0,31}$/.test(effort),
+    )
+  )
+    return [];
+  return Array.from(new Set(value), (effort_id) => ({
+    effort_id,
+    label: effort_id,
+  }));
+}
 export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
   const fields = configurationRecord(row.fields);
   return {
@@ -110,14 +130,21 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
             : identifier(model.name, 1024)
               ? model.name
               : model.id,
-          efforts: effortPreferences(preferred),
+          efforts:
+            row.provider_key === 'openai'
+              ? mode === 'token_plan_agentic'
+                ? codexEfforts(model.supportedReasoningEfforts)
+                : []
+              : effortPreferences(preferred),
         });
       }
       if (selected && !modelMap.has(selected))
         modelMap.set(selected, {
           model_id: selected,
           label: selected,
-          efforts: effortPreferences(rawEffort),
+          // An orphaned selection stays visible for correction, without inventing options.
+          efforts:
+            row.provider_key === 'openai' ? [] : effortPreferences(rawEffort),
         });
       return {
         mode,
@@ -131,7 +158,7 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
         tools:
           mode === 'token_plan_web' ||
           mode === 'api_key' ||
-          row.provider_key !== 'gemini'
+          !['gemini', 'openai'].includes(row.provider_key)
             ? ('unsupported' as const)
             : ('unknown' as const),
         observed_at: null,

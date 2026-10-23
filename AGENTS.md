@@ -4,7 +4,7 @@
 
 - **Cero complacencia ("No dar por el lado"):** Cuestionar técnicamente cualquier propuesta o decisión que genere deuda técnica, acoplamiento innecesario o riesgos en producción. Si una idea o implementación tiene fisuras, señalarla de inmediato con fundamentos técnicos y proponer la alternativa superior.
 - **Visión de futuro (Escalabilidad y Performance):** Evaluar siempre el impacto a mediano y largo plazo: cuellos de botella en base de datos, consultas N+1, uso de memoria, concurrencia, idempotencia, resiliencia ante caídas de servicios externos, costos de APIs, sobrecarga de red y estados innecesarios en frontend.
-- **Mejora continua y rigor de ingeniería:** Priorizar la arquitectura más limpia, desacoplada y mantenible. Exigir cobertura de tests de valor (casos de uso en backend, componentes en cliente), contratos estrictos entre frontend y backend, manejo exhaustivo de errores, observabilidad y tipado estricto sin atajos ni parches temporales.
+- **Mejora continua y rigor de ingeniería:** Priorizar la arquitectura más limpia, desacoplada y mantenible. Exigir pruebas de valor sobre lógica atómica (funciones, validadores, políticas, custom hooks, componentes atómicos y casos de uso), contratos estrictos entre frontend y backend, manejo exhaustivo de errores, observabilidad y tipado estricto sin atajos ni parches temporales.
 
 ## Fuente de verdad
 
@@ -173,7 +173,7 @@ Skills disponibles en `nodia-client/skills/`:
 - Seguir estrictamente el patrón modular vertical de recursos detallado en `nodia-server/AGENTS.md` (modelo de referencia `src/user/`).
 - **Controladores delgados (Skinny Controllers):** Solo definen rutas HTTP, Swagger y validan DTOs; delegan inmediatamente a Casos de Uso (`use-case/`). Cero lógica de negocio.
 - **Entidades TypeORM:** En relaciones bidireccionales, usar obligatoriamente `Relation<T>` de TypeORM para evitar errores de referencia circular (`ReferenceError`) en Node.js ESM.
-- **Testing exclusivo de Casos de Uso:** Únicamente se crean y mantienen pruebas unitarias para casos de uso (`use-case/*.use-case.spec.ts`). Está terminantemente prohibido crear pruebas de controladores o servicios (`*.controller.spec.ts`, `*.service.spec.ts`), priorizando tests que aporten verdadero valor de negocio.
+- **Testing de lógica atómica (2026-10-23):** Priorizar funciones puras, validadores, políticas, parsers, transformaciones, helpers y casos de uso, probando su regla real junto a su unidad. Se elimina la exclusividad anterior de `use-case/`; no disfrazar helpers como casos de uso. No crear suites para controladores/servicios que sólo delegan o encapsulan persistencia. Conservar integración puntual y aislada para garantías entre capas, DB, transacciones, concurrencia, idempotencia y autorización que una unidad no demuestra.
 
 ## Proveedores de IA y credenciales
 
@@ -210,3 +210,11 @@ Skills disponibles en `nodia-client/skills/`:
 - **Verificación Previa a la Entrega:** Antes de entregar, probar datos ausentes, respuestas inválidas, servicio caído y configuración histórica. Indicar con precisión técnica qué se comprobó realmente y qué sigue pendiente.
 
 
+
+
+## Pruebas de valor, temporales y finales de línea
+
+- Priorizar regresiones de lógica en funciones, custom hooks y componentes atómicos. Probar comportamiento observable, errores y límites con el contexto mínimo. No generar por rutina suites de páginas, secciones completas o aplicaciones, ni duplicar sus combinaciones ya cubiertas en unidades pequeñas. Los recorridos integrados se justifican por un riesgo concreto entre unidades.
+- No usar cantidad de tests/cobertura como objetivo ni añadir tests espejo o snapshots masivos. No quitar pruebas existentes sin evaluar qué garantías deben conservarse o trasladarse a unidades pequeñas.
+- Texto propio y archivos editables en UTF-8/LF. `.gitattributes` y `.editorconfig` ya fijan LF; verificar los bytes al escribir desde scripts en Windows. No normalizar binarios, dependencias, secretos, perfiles ni sesiones. Los hashes históricos describen sus bytes originales: consultar el archivo de originales y su manifiesto en `ops/maintenance/`, sin reescribir evidencias para simular paridad.
+- Generar experimentos, reportes intermedios y logs en `.tmp/` o `output/` ignorados. Conservar en `docs/evidence/` sólo evidencia duradera útil y consolidada, sin secretos. Paquetes locales de recuperación en `ops/lab/artifacts/`, con catálogo; el helper compartido de la VM está en `ops/lab/remote.py`. No acumular copias por cada intento ni usar temporales como única dependencia de un proceso mantenido.

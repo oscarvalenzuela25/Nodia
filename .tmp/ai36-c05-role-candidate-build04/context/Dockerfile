@@ -1,2 +1,0 @@
-FROM sha256:b110dbdc78b0f6ec80c98d7ca5c0afe8e8e7fab3a9c46dc60b7eeee0f6855532
-COPY --chown=10001:10001 native_execution_agents.py native_mcp_sessions.py native_cli_diagnostics.py /app/

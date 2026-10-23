@@ -1,0 +1,1 @@
+{"stage": "AI40", "scope": "api_mount_namespace", "pid": "2980010", "paths": {"/run/nodia-runtime/bus": {"exit": 0, "is_socket": true}, "/run/user/10000/bus": {"exit": 1, "is_socket": false}}, "credential_reads": 0}

@@ -24,6 +24,11 @@ export function modeHealth(provider: AiProviderHealthItem, mode: ProviderMode, h
   const key = typeof provider.key === "string" ? provider.key.toLowerCase() : "";
   const session = key === "openai" && mode === "token_plan_agentic" ? provider.codexSession
     : ["gemini", "google"].includes(key) ? health.engines?.[mode === "token_plan_web" ? "web" : "agentic"] : undefined;
+  // An expired process-local snapshot has no current account observation.
+  // Preserve explicit credential/usage denials; absence is not either denial.
+  if (key === "openai" && mode === "token_plan_agentic"
+    && provider.codexSession?.reason === "codex_runtime_unverified"
+    && provider.codexSession.authenticated === null && provider.codexSession.usageAllowed !== false) return "unverified";
   if (session?.available === false || session?.authenticated === false
     || (key === "openai" && mode === "token_plan_agentic" && provider.codexSession?.usageAllowed === false)) return "needs_review";
   return session?.available === true && session.authenticated === true ? "session_ready" : "unverified";

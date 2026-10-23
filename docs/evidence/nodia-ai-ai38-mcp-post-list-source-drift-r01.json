@@ -1,0 +1,35 @@
+{
+  "scope": "public_source_hashes_only",
+  "observed_remote_receipt_sha256": "4d0132a0e77e3d96d9f7c79b69f81d949b75632fd98db2249b5f01d19dd7bdea",
+  "remote_matches_FIX_plan": true,
+  "remote_count": 47,
+  "local_count": 48,
+  "shared_identical": 42,
+  "shared_changed": {
+    "main.py": {
+      "VM": "f5d449e606947fd23afdc0e766566ffa04e5055bd2087969667045216dbfc55a",
+      "local": "9ebbaa4a3cb226cb2beb911690b8e168d35ad4409232d0da1d38ab36f8d5ec8c"
+    },
+    "nodia_ai_chat.py": {
+      "VM": "ca8fdd4dcdee34ede7059dc71d35a88d0da2cc9253ff592d4ebf032f0dc0c356",
+      "local": "c691d75fb1ee87842def0c34c77349cadf8252e22ae89cd3d91059d60f0104e9"
+    },
+    "agentic_service.py": {
+      "VM": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e",
+      "local": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200"
+    },
+    "agentic_cli.py": {
+      "VM": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+      "local": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff"
+    },
+    "request_guard.py": {
+      "VM": "c811d3b9468511a49b2ab3d31821608c177009487c18c2b34c8dbb019e7ee866",
+      "local": "d007392e0956ea042d57c9cc6569b75acb58dcf259cefd17fc174388d0886dd9"
+    }
+  },
+  "local_only": [
+    "invoice_mcp_contract.py"
+  ],
+  "remote_only": [],
+  "local_workspace_not_runtime_parity": true
+}

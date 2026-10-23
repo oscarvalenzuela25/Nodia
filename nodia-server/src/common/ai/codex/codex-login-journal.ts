@@ -63,7 +63,11 @@ function certificate(value: unknown): value is CodexProcessIdentity | null {
   );
 }
 export class CodexLoginJournal {
-  constructor(private readonly configuredRoot?: string) {}
+  constructor(
+    private readonly configuredRoot?: string,
+    private readonly journalDirectory:
+      'login-jobs' | 'chat-jobs' = 'login-jobs',
+  ) {}
   async root() {
     if (process.platform !== 'linux' || process.getuid?.() === undefined)
       throw codexError('codex_runtime_unavailable');
@@ -77,7 +81,7 @@ export class CodexLoginJournal {
       profileRoot === homedir()
     )
       throw codexError('codex_runtime_unavailable');
-    const root = join(profileRoot, 'login-jobs');
+    const root = join(profileRoot, this.journalDirectory);
     for (const path of [profileRoot, root]) {
       await mkdir(path, { recursive: true, mode: 0o700 });
       const info = await lstat(path);

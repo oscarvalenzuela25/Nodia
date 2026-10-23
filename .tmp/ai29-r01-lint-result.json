@@ -1,6 +1,0 @@
-{
-  "exit_code": 0,
-  "command": "npm run lint",
-  "observed_at_utc": "2026-10-17T22:35:48.9599697Z",
-  "log": ".tmp/ai29-r01-lint-final.log"
-}

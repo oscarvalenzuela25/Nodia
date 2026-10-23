@@ -1,0 +1,75 @@
+{
+  "schema": "ai38-profile-reservation-probe-v1",
+  "status": "metadata_trial_completed_not_causal_acceptance",
+  "provider_generation_requests": 0,
+  "configured_SQL_writes": 0,
+  "automatic_retries": 0,
+  "request_headers_or_bodies_saved": false,
+  "service_credentials_emitted": false,
+  "observations": [
+    {
+      "operation": "observe",
+      "returned": true,
+      "available": true,
+      "supports_mcp": false,
+      "reason": null
+    },
+    {
+      "operation": "health",
+      "returned": true,
+      "agentic_available": true,
+      "agentic_session_active": true,
+      "reason": null
+    }
+  ],
+  "phase": "fix",
+  "trial": "B",
+  "began_at_utc": "2026-10-22T19:51:31.026Z",
+  "source_sha256": "73bb41c204f83de2d34ea6f5f4356d9c4f486a9e91bb48d4a06a388202d1a5f4",
+  "server_manifest_sha256": "4c3fe6d600adab362a71c5f76357383e98aa7acda7c93aa73e61bfb29c626f92",
+  "native_epoch_before": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z"
+  },
+  "connection_id": "2",
+  "selection_sha256": "e896bbe43545ff1a163a37c81ee6b8291b04dab23113513ddf47798f587d225e",
+  "configured_selection_from_SQL": true,
+  "configured_selection_changed": false,
+  "configured_database_read_only": true,
+  "quiet_before": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "wait_before_calls_seconds": 31,
+  "inter_request_offset_ms": 100,
+  "HTTP_requests": [
+    {
+      "endpoint": "observe",
+      "method": "POST",
+      "started_at_utc": "2026-10-22T19:52:02.054Z",
+      "completed_at_utc": "2026-10-22T19:52:10.827Z",
+      "status": 200
+    },
+    {
+      "endpoint": "health",
+      "method": "GET",
+      "started_at_utc": "2026-10-22T19:52:02.146Z",
+      "completed_at_utc": "2026-10-22T19:52:10.830Z",
+      "status": 200
+    }
+  ],
+  "calls_began_at_utc": "2026-10-22T19:52:02.044Z",
+  "quiet_after": {
+    "pending_jobs": 0,
+    "open_attempts": 0,
+    "retained_slots": 0
+  },
+  "native_epoch_after": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z"
+  },
+  "completed_at_utc": "2026-10-22T19:52:10.854Z"
+}

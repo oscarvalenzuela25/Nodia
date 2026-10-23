@@ -1,0 +1,23 @@
+{
+  "schema": "ai38-owner-knowledge-final-v1",
+  "command": "npm run knowledge:check",
+  "exit": 0,
+  "mode": "check_only_no_build_or_publication",
+  "summary": {
+    "task": "AI-06",
+    "mode": "check",
+    "sources": 59,
+    "excluded": 28,
+    "documents": 31,
+    "fragments": 31,
+    "catalogRelease": "nodia-ai-ai15-reads/1",
+    "releaseId": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130"
+  },
+  "runtime_policy_revision": 16,
+  "runtime_policy_document_status": "draft",
+  "runtime_policy_integration_status": "unregistered",
+  "runtime_policy_approval": null,
+  "runtime_policy_sha256": "8414f40e3eb7ba5d984f944cd10130a1bb4c1ea83f0840302a6c7808dbba532a",
+  "VM_operations": 0,
+  "provider_calls": 0
+}

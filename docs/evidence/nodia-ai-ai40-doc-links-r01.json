@@ -1,0 +1,17 @@
+{
+  "stage": "AI40",
+  "scope": "final_documentation_links",
+  "local_links_checked": 737,
+  "missing_local_targets": 0,
+  "document_sha256": {
+    "docs/mvp/README.md": "41c07b36b2a5af367fb62e463038648e9dde2daac1241294b4adc0d5e462255b",
+    "docs/mvp/00-progress.md": "7f56489ac4dbdb67436e790b84784a8b6bb378eaad804b9c4477aded349830c4",
+    "docs/mvp/86-nodia-ai-ai40-codex-acceptance.md": "a02701ce97fa533481f9c9a56fbbfe91949b5bc2e0e8d496b1da5c33350f36fe",
+    "docs/nodia-ai/knowledge/README.md": "4bba22d2f6d3ee7d82f6aac28f13f4b2b0de5f23e090cdae855374535a4c2888",
+    "docs/nodia-ai/knowledge/nodia-ai/features/context-execution.md": "d85e20954ee8c9ee924acc850e320eff40807de75e020ba4ef133cd646a584a8",
+    "docs/evidence/nodia-ai-ai40-delivery-runbook-r01.md": "725d4e1f5fc862537c8e56fece0b3c447f8c3e58876fd57936ec9d967e393705"
+  },
+  "knowledge_build_receipt": "docs/evidence/nodia-ai-ai40-final-checks-r01.json",
+  "approval_inferred": false,
+  "services_or_SQL_modified": false
+}

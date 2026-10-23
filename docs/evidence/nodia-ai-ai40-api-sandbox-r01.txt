@@ -1,0 +1,9 @@
+ReadOnlyPaths=
+InaccessiblePaths=
+PrivateTmp=yes
+PrivateUsers=no
+ProtectHome=yes
+RestrictAddressFamilies=~
+BindPaths=
+BindReadOnlyPaths=/run/user/10000/bus:/run/nodia-runtime/bus:rbind
+KeyringMode=private

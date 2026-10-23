@@ -1,0 +1,37 @@
+{
+  "stage": "AI-38",
+  "scope": "one_new_deliberate_MCP_diagnostic_wrapper_offline_guards",
+  "status": "passed_offline_not_live",
+  "checked_at_utc": "2026-10-22T20:37:11.896540+00:00",
+  "source_pins": {
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reservation-mcp-post-list.py": "16639cd163a533ea7ee6b268fffd915a83c861c3e63960ad25e71edc5e6b51e9",
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reservation-mcp-post-list-tests.py": "ec5ca80409c031f2c32d707a910acf0ced9db79e5560d2cc79fcfb451dac7020",
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reservation-mcp.py": "118554a41d3403695c41a9c86007eb36a610f98855f5cc7c8c22d542fdaab7ba",
+    "nodia-server/test/nodia-ai-ai38-mcp-diagnostic.mjs": "95cdfdc53e86cf44c892273185c11ee2d319c636fbb0db6cd39980b12d42c87d",
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reattest-modalities-r01.py": "f51d16a67b73a5eb5f5eaa6beee4bad1ae06d0e1af0d7641487887835af843d3"
+  },
+  "tests": 2,
+  "failures": 0,
+  "errors": 0,
+  "duration_seconds": 0.016,
+  "VM_calls": 0,
+  "SQL_calls": 0,
+  "provider_calls": 0,
+  "generations": 0,
+  "maximum_new_live_generations_when_authorized": 1,
+  "planned_new_work": "/opt/nodia/verification/ai38-profile-reservation-fix-mcp-post-list-r01",
+  "prior_report_sha256": "ac7e222e730f8ffa454562753d57d40e8ceafd6c05964da29b14cca9459f5a94",
+  "prior_terminal_sha256": "08ff1610072052ac787605e2cf1e627364cdeb1e47579e8c22584dfa3fe54b7c",
+  "guarantees": [
+    "Requires explicit --execute-one-new-diagnostic plus prior closed ACK and same exact container/image/start epoch.",
+    "Reuses frozen driver118554 and harness95cdf unchanged, with only process-local WORK redirected to a new directory.",
+    "Frozen driver verifies exact DB2 configured selection and SQL quiet under read-only connection before at most1start.",
+    "No old attempt ID passed into new harness; different UUID required; no loop or automatic retry.",
+    "Existing new work blocks any second invocation. No restart, login, model fallback or business effects.",
+    "Success retains the same public-report and qualification-epoch shape accepted by unchanged eight-format wrapperf51d."
+  ],
+  "limitations": [
+    "Only synthetic control tests executed. Real MCP recovery and format proof acceptance remain pending root-exclusive provider window.",
+    "Root coordinates current native quiescence; SQL quiet remains enforced inside the frozen base driver."
+  ]
+}

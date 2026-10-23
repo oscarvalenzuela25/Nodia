@@ -73,6 +73,7 @@ export class ManageCodexSessionUseCase {
     await this.connection(providerId);
     const lease = await this.runtime.acquire(providerId);
     try {
+      await this.runtime.rotateChatGeneration(providerId);
       await lease.profile.rpc.request('account/logout');
       this.runtime.invalidate(providerId);
       return { disconnected: true };

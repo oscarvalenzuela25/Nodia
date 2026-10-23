@@ -1,0 +1,48 @@
+{
+  "stage": "AI-38",
+  "scope": "synthetic_ASGI_real_profile_gate_observational_coordination",
+  "status": "passed",
+  "checked_at_utc": "2026-10-22T19:36:50.583124+00:00",
+  "test_file": "nodia-gemini-microservice/tests/test_agentic_profile_observations.py",
+  "test_sha256": "58f0c659b19758808489497e06b103e94078d5d3b193c7a36858d54210c96bc3",
+  "test_names": [
+    "test_health_refresh_serializes_eligibility_without_false_unavailability",
+    "test_health_waits_for_eligibility_and_preserves_authenticated_status",
+    "test_different_selection_waits_then_checks_its_own_model",
+    "test_health_cancellation_keeps_reservation_until_fake_cli_cleanup_finishes",
+    "test_cancelled_waiter_does_not_cancel_health_owner_or_leak_admission",
+    "test_wait_timeout_is_typed_negative_observation_without_cancelling_owner",
+    "test_execution_reservation_stays_exclusive_for_health_and_eligibility",
+    "test_independent_web_profile_does_not_block_agentic_observation"
+  ],
+  "tests": 8,
+  "failures": 0,
+  "errors": 0,
+  "duration_seconds": 0.605,
+  "fake_cli_version": "1.3.1",
+  "production_source_pins": {
+    "nodia-gemini-microservice/profile_admission.py": "341e0faf3b2c5c473a760b92119e89bc4821452fa98d49c497dc94f545b0406b",
+    "nodia-gemini-microservice/main.py": "9ebbaa4a3cb226cb2beb911690b8e168d35ad4409232d0da1d38ab36f8d5ec8c",
+    "nodia-gemini-microservice/nodia_ai_chat.py": "c691d75fb1ee87842def0c34c77349cadf8252e22ae89cd3d91059d60f0104e9",
+    "nodia-gemini-microservice/agentic_service.py": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200"
+  },
+  "diag_r02_frozen_test_sha256": "aa846e4f1c3bd88c83c38ff9433f85ba09d3ebc89122fcc85276bd13a404b3ed",
+  "real_CLI_processes": 0,
+  "real_provider_generations": 0,
+  "VM_mutations": 0,
+  "external_network_calls": 0,
+  "limitations": [
+    "Synthetic runner accepts only usage/models/model metadata commands; no real account or provider inference tested.",
+    "Linux B8 surgical-overlay QA and live availability acceptance remain separate."
+  ],
+  "checks": [
+    "health then eligibility serialize, reverse direction serialize",
+    "distinct selections each check their own model, maximum one metadata command active",
+    "owner cancellation retains gate through CLI cleanup",
+    "waiter cancellation does not cancel owner, later admission recovers",
+    "real execution reservation remains runtime_busy with no metadata CLI calls",
+    "independent Web profile does not block Agentic",
+    "short synthetic wait deadline maps to HTTP200 availablefalse reasonagentic_timeout without cancelling owner",
+    "available metadata observation never grants MCP proof"
+  ]
+}

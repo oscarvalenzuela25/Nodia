@@ -1,0 +1,304 @@
+{
+  "scope": "bounded_read_only_probe_HTTP_metadata_not_causal_attribution",
+  "window_begin_utc": "2026-10-22T17:59:00+00:00",
+  "window_end_utc": "2026-10-22T18:07:33.508683+00:00",
+  "timeline": [
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T17:59:00.972774+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "nginx",
+      "timestamp_utc": "2026-10-22T17:59:27+00:00",
+      "method": "GET",
+      "endpoint": "ai_providers_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T17:59:27.910139+00:00",
+      "method": "GET",
+      "endpoint": "native_engines_status",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T17:59:31.056449+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:00:01.138008+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "nginx",
+      "timestamp_utc": "2026-10-22T18:00:08+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:00:08.672315+00:00",
+      "method": "POST",
+      "endpoint": "native_agentic_observe",
+      "status": 409
+    },
+    {
+      "source": "nginx",
+      "timestamp_utc": "2026-10-22T18:00:13+00:00",
+      "method": "GET",
+      "endpoint": "ai_providers_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:00:13.045241+00:00",
+      "method": "GET",
+      "endpoint": "native_engines_status",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:00:31.218831+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:01:01.300399+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "nginx",
+      "timestamp_utc": "2026-10-22T18:01:23+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 401
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:01:31.383083+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "nginx",
+      "timestamp_utc": "2026-10-22T18:01:32+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:01:32.640972+00:00",
+      "method": "POST",
+      "endpoint": "native_agentic_observe",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:02:01.465066+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:02:31.547516+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:03:01.628874+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "nginx",
+      "timestamp_utc": "2026-10-22T18:03:30+00:00",
+      "method": "GET",
+      "endpoint": "ai_providers_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:03:30.807213+00:00",
+      "method": "GET",
+      "endpoint": "native_engines_status",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:03:31.711517+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:04:01.794291+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:04:31.875379+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:05:01.961273+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:05:32.041907+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "nginx",
+      "timestamp_utc": "2026-10-22T18:05:36+00:00",
+      "method": "GET",
+      "endpoint": "ai_providers_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:05:36.985191+00:00",
+      "method": "GET",
+      "endpoint": "native_engines_status",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:06:02.126378+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:06:32.208858+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:07:02.290344+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    },
+    {
+      "source": "docker_native_access",
+      "timestamp_utc": "2026-10-22T18:07:32.374141+00:00",
+      "method": "GET",
+      "endpoint": "native_health",
+      "status": 200
+    }
+  ],
+  "counts": [
+    {
+      "source": "docker_native_access",
+      "endpoint": "native_agentic_observe",
+      "method": "POST",
+      "status": 200,
+      "count": 1
+    },
+    {
+      "source": "docker_native_access",
+      "endpoint": "native_agentic_observe",
+      "method": "POST",
+      "status": 409,
+      "count": 1
+    },
+    {
+      "source": "docker_native_access",
+      "endpoint": "native_engines_status",
+      "method": "GET",
+      "status": 200,
+      "count": 4
+    },
+    {
+      "source": "docker_native_access",
+      "endpoint": "native_health",
+      "method": "GET",
+      "status": 200,
+      "count": 18
+    },
+    {
+      "source": "nginx",
+      "endpoint": "ai_providers_health",
+      "method": "GET",
+      "status": 200,
+      "count": 4
+    },
+    {
+      "source": "nginx",
+      "endpoint": "connection_eligibility",
+      "method": "GET",
+      "status": 200,
+      "count": 2
+    },
+    {
+      "source": "nginx",
+      "endpoint": "connection_eligibility",
+      "method": "GET",
+      "status": 401,
+      "count": 1
+    }
+  ],
+  "nginx": {
+    "inode": 3673396,
+    "device": 2050,
+    "size_at_read": 133051,
+    "start_offset": 0,
+    "max_bytes": 4194304,
+    "full_window_scanned": true
+  },
+  "docker": {
+    "max_lines": 10000,
+    "max_bytes": 4194304,
+    "scanned_lines": 67,
+    "tail_ceiling_reached": false,
+    "stdout_stderr_persisted": false
+  },
+  "timestamp_precision": "nginx_seconds; Docker timestamp describes log delivery and need not equal request start",
+  "source_sha256": "9574526384de5e912635cac35b64c297114686838d9b6ea49a4bdfaf8cf9f012",
+  "code_route_sources": [
+    "nodia-server/src/ai-provider/ai-provider.controller.ts",
+    "nodia-server/src/nodia-ai-attachment/nodia-ai-attachment.controller.ts",
+    "nodia-gemini-microservice/main.py"
+  ],
+  "raw_logs_queries_values_identities_headers_bodies_emitted": false,
+  "response_reasons_observed": false,
+  "concurrency_or_cause_proven_by_timestamps": false,
+  "HTTP_requests": 0,
+  "provider_requests": 0,
+  "services_changed": false,
+  "configurations_changed": false
+}

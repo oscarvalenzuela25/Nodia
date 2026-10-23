@@ -1,0 +1,18 @@
+{
+  "scope": "one_deliberate_new_diagnostic_not_automatic_retry",
+  "source_sha256": "16639cd163a533ea7ee6b268fffd915a83c861c3e63960ad25e71edc5e6b51e9",
+  "base_driver_sha256": "118554a41d3403695c41a9c86007eb36a610f98855f5cc7c8c22d542fdaab7ba",
+  "harness_sha256": "95cdfdc53e86cf44c892273185c11ee2d319c636fbb0db6cd39980b12d42c87d",
+  "prior_report_sha256": "ac7e222e730f8ffa454562753d57d40e8ceafd6c05964da29b14cca9459f5a94",
+  "prior_terminal_sha256": "08ff1610072052ac787605e2cf1e627364cdeb1e47579e8c22584dfa3fe54b7c",
+  "prior_closed_attempt_id": "486e16be-f1e1-4b53-b19b-b34fe2a62ae2",
+  "new_attempt_id": "f24ce22a-d516-455d-8f3c-1f791ccb4adb",
+  "prior_identity_passed_to_harness": false,
+  "maximum_new_generations": 1,
+  "automatic_retries": 0,
+  "configured_SQL_writes": 0,
+  "services_restarted": false,
+  "same_native_epoch": true,
+  "new_report_sha256": "4b9f81b07217e5d01b28158edc6e60b2a46c78e1117b5101a1cb7ff48c81dbdd",
+  "observed_at_utc": "2026-10-22T20:47:45.831735+00:00"
+}

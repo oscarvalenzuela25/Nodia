@@ -120,7 +120,7 @@ function fixture() {
   const summary = {
     conversation_id: 'chat',
     revision: 4,
-    selection,
+    selection: structuredClone(selection),
   } as unknown as NodiaAiConversationSummary;
   const chat = {
     id: 'chat',
@@ -156,6 +156,34 @@ function fixture() {
 }
 
 describe('Prepare NodiaAI admission', () => {
+  it('freezes a private Codex identity independently from mutable adapter objects', async () => {
+    const f = fixture();
+    f.summary.selection!.mode = 'token_plan_agentic'; f.chat.selected_mode = 'token_plan_agentic';
+    const identityValue = { providerKey: 'openai', contractVersion: 'nodia-ai-codex-chat/1', connectionId: '2' };
+    Object.assign(f.eligibility, { resourceKey: 'codex-profile:' + 'a'.repeat(64),
+      source: 'codex_live_session_and_catalog', adapterContractVersion: 'nodia-ai-codex-chat/1', adapterIdentity: identityValue,
+      verifiedModalities: ['image'], verifiedAttachmentMediaTypes: ['image/png'] });
+    const observation = await f.subject.observe(identity, f.summary);
+    identityValue.connectionId = '4';
+    const prepared = await f.subject.prepare(f.manager, f.actor, f.chat, now, observation);
+    expect(prepared.contextManifest.adapter_identity).toEqual({ provider_key: 'openai', contract_version: 'nodia-ai-codex-chat/1', connection_id: '2' });
+    expect(Object.isFrozen(observation.eligibility.adapterIdentity)).toBe(true);
+    expect(prepared.contextManifest.verified_modalities).toEqual([]);
+    expect(prepared.contextManifest.verified_attachment_media_types).toEqual([]);
+    expect(prepared.allowedOperations).toEqual(expect.arrayContaining(['chat:respond']));
+  });
+  it.each(['connection', 'source', 'contract', 'web', 'implicit_prefix'])('does not admit a forged Codex %s identity', async (change) => {
+    const f = fixture(); f.summary.selection!.mode = 'token_plan_agentic'; f.chat.selected_mode = 'token_plan_agentic';
+    Object.assign(f.eligibility, { resourceKey: 'codex-profile:' + 'a'.repeat(64), source: 'codex_live_session_and_catalog',
+      adapterContractVersion: 'nodia-ai-codex-chat/1', adapterIdentity: { providerKey: 'openai',
+        contractVersion: 'nodia-ai-codex-chat/1', connectionId: change === 'connection' ? '4' : '2' } });
+    if (change === 'source') Object.assign(f.eligibility, { source: 'gemini_live_session_and_catalog' });
+    if (change === 'contract') Object.assign(f.eligibility, { adapterContractVersion: 'nodia-ai-gemini-chat/1' });
+    if (change === 'web') { f.summary.selection!.mode = 'token_plan_web'; f.chat.selected_mode = 'token_plan_web'; }
+    if (change === 'implicit_prefix') { Reflect.deleteProperty(f.eligibility, 'adapterIdentity'); Reflect.deleteProperty(f.eligibility, 'adapterContractVersion'); }
+    const observation = await f.subject.observe(identity, f.summary);
+    await expect(f.subject.prepare(f.manager, f.actor, f.chat, now, observation)).rejects.toThrow('eligibility_changed');
+  });
   it('freezes verified technical contracts without granting unpublished business operations', async () => {
     const f = fixture();
     const observation = await f.subject.observe(identity, f.summary);

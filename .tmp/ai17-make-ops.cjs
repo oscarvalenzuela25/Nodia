@@ -1,7 +1,0 @@
-const fs=require('node:fs');
-let db=fs.readFileSync('.tmp/ai16-lab-db.mjs','utf8').replaceAll('IndexNodiaAiRunEvents1792300000000','CreateNodiaAiProposalPersistence1792400000000').replaceAll('1792300000000-IndexNodiaAiRunEvents','1792400000000-CreateNodiaAiProposalPersistence');
-fs.writeFileSync('.tmp/ai17-lab-db.mjs',db);
-let activate=fs.readFileSync('.tmp/ai16-activate-lab.py','utf8').replaceAll('ai16-20261016-final','ai17-20261016-final').replaceAll('nodia-ai16-20261016','nodia-ai17-20261016').replaceAll('ai16-lab-db.mjs','ai17-lab-db.mjs').replaceAll('ai16-before-observation','ai17-before-proposals').replaceAll('.pending-dist-ai16','.pending-dist-ai17').replaceAll("baseline['migrations']==20","baseline['migrations']==21").replaceAll("after['migrations']==21","after['migrations']==22").replaceAll("'stage':'AI-16'","'stage':'AI-17'").replaceAll("'new_tables':0,'new_columns':0,'new_indexes':1","'new_tables':4,'new_columns':40,'new_indexes':5").replace('# Index-only migration remains backward compatible with the saved distribution.','# Additive M2 tables remain backward compatible; code rollback preserves their content.');
-fs.writeFileSync('.tmp/ai17-activate-lab.py',activate);
-let prepare=fs.readFileSync('.tmp/ai17-prepare-lab.py','utf8').replaceAll('/opt/nodia/verification/ai17-20261016','/opt/nodia/verification/ai17-20261016-final');
-fs.writeFileSync('.tmp/ai17-prepare-final.py',prepare);

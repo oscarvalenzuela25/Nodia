@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { ReconcileGeminiNodiaAiRuntimeUseCase } from './reconcile-gemini-nodia-ai-runtime.use-case.js';
 import type { NodiaAiAdapterTransport } from '../nodia-ai-adapter.service.js';
 import type { NodiaAiRuntimeProofRequest } from '../../nodia-ai-runtime/types/reconciliation.types.js';
+import { parseNativeTerminalProof } from '../native-terminal-proof.js';
 
 const request: NodiaAiRuntimeProofRequest = {
   engine: 'web',
@@ -35,6 +36,37 @@ function setup() {
   };
 }
 describe('ReconcileGeminiNodiaAiRuntimeUseCase', () => {
+  it('rejects a Codex identity before reconcile or ACK even when its prefix is forged as Gemini', async () => {
+    const f = setup();
+    const codex: NodiaAiRuntimeProofRequest = {
+      ...request,
+      engine: 'agentic',
+      adapterIdentity: {
+        providerKey: 'openai',
+        contractVersion: 'nodia-ai-codex-chat/1',
+        connectionId: '4',
+      },
+    };
+    await expect(
+      f.usecase.reconcile(codex, new AbortController().signal),
+    ).rejects.toThrow('invalid_reconciliation');
+    await expect(
+      f.usecase.acknowledge(
+        {
+          ...codex,
+          terminalProofId: f.value.terminal_proof_id,
+          processClosed: true,
+          outcome: 'completed',
+          observedAt: new Date(),
+        },
+        new AbortController().signal,
+      ),
+    ).rejects.toThrow('invalid_reconciliation');
+    expect(f.transport.request).not.toHaveBeenCalled();
+    expect(() => parseNativeTerminalProof(f.value, codex)).toThrow(
+      'adapter_terminal_proof_invalid',
+    );
+  });
   it('accepts only a native terminal proof tied to the exact original attempt and profile', async () => {
     const f = setup();
     const result = await f.usecase.reconcile(

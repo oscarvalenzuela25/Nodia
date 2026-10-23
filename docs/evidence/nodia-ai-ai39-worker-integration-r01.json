@@ -1,0 +1,47 @@
+{
+  "stage": "AI39",
+  "scope": "isolated_compiled_SQL_and_process_integration",
+  "status": "failed",
+  "began_VM_utc": "2026-10-22T22:54:29.873845+00:00",
+  "finished_VM_utc": "2026-10-22T22:54:38.214873+00:00",
+  "exit_code": 1,
+  "timed_out": false,
+  "fixture": {
+    "stage": "AI39 compiled integration",
+    "failed": true,
+    "checks": 0,
+    "passed": [],
+    "scenarios": [],
+    "error": {
+      "name": "Error",
+      "code": "synthetic_initialization_error",
+      "initialization": {
+        "kind": "initialization_error",
+        "name": "Error",
+        "component": null,
+        "index": null
+      }
+    },
+    "provider_inferences": 0,
+    "synthetic_readiness_override": true
+  },
+  "fixture_containers_before": [],
+  "fixture_containers_after": [],
+  "fixture_profile_directories_before": [],
+  "fixture_profile_directories_after": [],
+  "fixture_resources_cleaned": true,
+  "stdout_bytes": 400,
+  "stderr_bytes": 921,
+  "private_output_emitted": false,
+  "source_manifest_sha256": "c9863c8b6ea852a9da4077384058ea581a07c1d763449be59a74dfdd1e979548",
+  "public_files_verified": 4293,
+  "configured_database_or_credentials_used": false,
+  "operational_services_changed": 0,
+  "provider_inferences": 0,
+  "remote_native_account_or_model_requests": 0,
+  "fixture_error_source_lines": [
+    115,
+    144,
+    238
+  ]
+}

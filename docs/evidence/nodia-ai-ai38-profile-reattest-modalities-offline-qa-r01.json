@@ -1,0 +1,35 @@
+{
+  "stage": "AI-38",
+  "scope": "successor_eight_native_format_cohort_offline_controls",
+  "status": "passed_offline_not_live",
+  "checked_at_utc": "2026-10-22T19:43:23.929244+00:00",
+  "source_pins": {
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reattest-modalities-r01.py": "f51d16a67b73a5eb5f5eaa6beee4bad1ae06d0e1af0d7641487887835af843d3",
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reattest-modalities-tests.py": "18d800f0a33da027e58e05cf777f764b68a35abfe90fa04c16ac8a8f5d2b9023",
+    "docs/evidence/scripts/nodia-ai-ai38-verifications-modalities.py": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131"
+  },
+  "tests": 8,
+  "failures": 0,
+  "errors": 0,
+  "duration_seconds": 1.004,
+  "node_snapshot_syntax_check": "passed",
+  "real_provider_calls": 0,
+  "real_generations": 0,
+  "SQL_calls": 0,
+  "VM_mutations": 0,
+  "guarantees": [
+    "Import and --preflight-files inert: no subprocess, SQL, provider or proof restoration.",
+    "Requires fresh one-generation acknowledged MCP nonce and closed same-container capture, exact expected image.",
+    "Configured model/effort come from production DB projection for id2; read-only connection, exact id, no model fixtures or fallback in wrapper.",
+    "Maximum8 distinct native starts, Agentic then Web, exact format helper unchanged at616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131.",
+    "Web preflight false/unknown preserves its actual safe reason and skips its4generations; Agentic may proceed if fresh proof valid.",
+    "Every format requires completed terminal ACK and semantic/exact-MIME verification; unknown native state, timeout, config/epoch drift or mismatch stops before next generation.",
+    "No rerouting, retries, SQL mutations, business tool calls, login/logout, restart or inherited old verification sets."
+  ],
+  "limitations": [
+    "Not executed on VM; live proof restoration remains pending parent/driver authorization and exclusive provider window.",
+    "Files-only preflight uses tiny synthetic header fixtures solely to verify inert controls; it does not prove audio semantics.",
+    "Local tests and file hashes do not certify the deployed environment or a provider account."
+  ],
+  "preflight_files_validated_frozen_packet_files": 2933
+}

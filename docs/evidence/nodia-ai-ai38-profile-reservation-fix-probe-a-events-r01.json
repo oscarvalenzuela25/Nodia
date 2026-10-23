@@ -1,0 +1,144 @@
+{
+  "scope": "closed_profile_reservation_events_and_HTTP_metadata_not_payloads",
+  "status": "observed",
+  "source_sha256": "f5a5b63ad30b73ad3bd11a1644fb2298c570a208bae27da75fde4361d27158b0",
+  "began_at_utc": "2026-10-22T19:50:41.642000+00:00",
+  "finished_at_utc": "2026-10-22T19:50:52.412000+00:00",
+  "native_epoch": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z"
+  },
+  "same_native_epoch_after": true,
+  "reservation_events": [
+    {
+      "timestamp_utc": "2026-10-22T19:50:42.665235+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "717603448a8d4b06b97645a856a112f0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:50:42.665267+00:00",
+      "event": "acquire",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "d5f35a17b59641b0a3a043d7b7a1186a",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:50:42.777743+00:00",
+      "event": "wait",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "717603448a8d4b06b97645a856a112f0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 113,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:50:43.447659+00:00",
+      "event": "release",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "d5f35a17b59641b0a3a043d7b7a1186a",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 782,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:50:48.193878+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "717603448a8d4b06b97645a856a112f0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 5529,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:50:48.194171+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "d6ddf09cd83c4beca5a6ea1eaaacd26c",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:50:51.387039+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "d6ddf09cd83c4beca5a6ea1eaaacd26c",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 3193,
+      "quarantined": false,
+      "reason": null
+    }
+  ],
+  "HTTP_metadata": [
+    {
+      "timestamp_utc": "2026-10-22T19:50:48.194616+00:00",
+      "method": "GET",
+      "endpoint": "health",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:50:51.387192+00:00",
+      "method": "POST",
+      "endpoint": "observe",
+      "status": 200
+    }
+  ],
+  "closed_owner_correlations": [],
+  "wait_blocking_owner_correlations": [
+    {
+      "wait_at_utc": "2026-10-22T19:50:42.777743+00:00",
+      "request_engine": "agentic",
+      "request_purpose": "eligibility",
+      "blocking_owner_reservation_nonce": "717603448a8d4b06b97645a856a112f0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "blocking_owner_acquisition_observed": true,
+      "blocking_owner_nonquarantined_release_observed": true,
+      "blocking_owner_released_at_utc": "2026-10-22T19:50:48.193878+00:00",
+      "later_same_engine_purpose_acquisitions": [
+        {
+          "timestamp_utc": "2026-10-22T19:50:48.194171+00:00",
+          "reservation_nonce": "d6ddf09cd83c4beca5a6ea1eaaacd26c"
+        }
+      ],
+      "waiter_request_identity_not_available": true,
+      "same_request_wait_to_acquire_proven": false,
+      "later_acquire_reservation_nonce_is_not_blocking_owner_nonce": true
+    }
+  ],
+  "malformed_diagnostic_lines": 0,
+  "raw_logs_or_credential_bytes_saved": false,
+  "requested_since_window_may_omit_an_owner_acquired_before_it": true,
+  "holder_chain_is_based_on_instrumented_reservation_nonce_not_HTTP_coincidence": true,
+  "cross_request_origin_not_proven_without_separate_exclusive_trial": true,
+  "HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "service_changes": 0
+}

@@ -63,9 +63,9 @@ Al especificar o ampliar funciones de producto, aplicar el [estándar de context
 6. Mantener tipado estricto en TypeScript; evitar `any` innecesario.
 7. No crear themes MUI en componentes de modulo; la composicion del theme debe quedarse en `MUIProvider`.
    - Para tablas con paginado, seguir el [patrón de diseño de Modules](../docs/mvp/07-design-constraints.md#patrón-de-tablas-paginadas--confirmado-el-2026-10-04): barra superior, contenedor con cabecera/fila/paginado y adaptación móvil.
-8. Todo componente que contenga logica debe tener un archivo de test correspondiente en `src/test`.
-9. `src/test` debe replicar la estructura de directorios de `src`: por ejemplo, el test de `src/modules/auth/pages/Login/Login.tsx` debe ubicarse en `src/test/modules/auth/pages/Login/Login.test.tsx`.
-10. Si `src/test` o la ruta espejo necesaria no existen al crear o modificar un componente con logica, se deben crear junto con su archivo `*.test.tsx`.
+8. Probar la lógica en la unidad más pequeña que la posee: funciones, validadores, custom hooks y componentes atómicos con comportamiento propio. Extraer lógica de páginas/secciones a hooks o funciones cuando reduzca acoplamiento y permita probarla directamente; no crear abstracciones solo para satisfacer un test.
+9. `src/test` debe replicar la ruta de la unidad probada en `src`: por ejemplo, `src/hooks/useAuth.tsx` se prueba en `src/test/hooks/useAuth.test.tsx`. No exigir un test adicional de página por lógica ya cubierta en sus unidades.
+10. Crear la ruta espejo y su archivo `*.test.ts` o `*.test.tsx` al incorporar una regresión de valor. Las páginas, layouts y secciones compuestas no requieren una suite por defecto; aplicar la política de la sección **Tests**.
 11. Estados de carga: usar `boneyard-js` (`Skeleton`) obligatoriamente para `isLoading` (primer fetch sin datos en caché) en tablas, paneles informativos y objetos de datos no accionables. Prohibido re-renderizar skeletons en `isFetching` o `isMutating` (refetch o mutación con datos existentes); usar soft loading (representación interna y sutil) o ningún cambio que altere la UI.
 12. Botones, formularios, menús e inputs: ante cualquier petición en curso (`isLoading`, `isFetching` o `isMutating`), el estado debe representarse exclusivamente como `disabled` o `loading` (sin skeletons) para evitar dobles envíos o interacciones inválidas. No tienen estado vacío ni estado de error custom en la vista si el endpoint falla o viene vacío; permanecen vacíos en su estado normal.
 13. Estados vacíos: prohibido dejar vistas o contenedores en blanco o nulos (`null`). Si un endpoint responde vacío, mostrar un Empty State con mensaje informativo (genérico o custom) y llamado a la acción (CTA) si corresponde, usando traducción i18n.
@@ -96,6 +96,11 @@ Al especificar o ampliar funciones de producto, aplicar el [estándar de context
 
 ## Tests
 
+- Política acordada con el usuario el 2026-10-23: priorizar pruebas unitarias de funciones puras, validadores, transformaciones, custom hooks y componentes atómicos que tengan lógica observable. Probar entradas, salidas, transiciones, interacción, accesibilidad funcional y efectos pertinentes, incluidos errores y casos límite.
+- Mantener la unidad real bajo prueba; simular sus fronteras externas, sin sustituir la regla que se quiere verificar. Los hooks se prueban de forma aislada y los componentes con el mínimo contexto necesario, evitando montar toda la sección o aplicación.
+- No crear por rutina suites de UI para páginas/secciones completas ni repetir las combinaciones ya verificadas en unidades pequeñas. Reservar pruebas de integración o recorridos UI puntuales para riesgos concretos entre unidades (por ejemplo, borrador conservado ante error, foco o confirmación humana); explicar qué garantía no demuestra una prueba unitaria y usar el montaje mínimo.
+- No escribir tests espejo de la implementación, snapshots masivos, assertions de mera delegación ni tests de markup/estilos estáticos sin comportamiento. La cantidad de tests y el porcentaje de cobertura no sustituyen una regresión observable que falle ante el defecto anterior.
+- Esta política orienta pruebas nuevas y las revisadas por un cambio; no autoriza borrar suites existentes, quitar assertions o desactivar checks sin evaluar y conservar las garantías que aportan.
 - Runner: Vitest con entorno `jsdom`.
 - Componentes: React Testing Library, `@testing-library/jest-dom` y `@testing-library/user-event`.
 - Ubicacion obligatoria: `src/test/**/*.test.{ts,tsx}`.

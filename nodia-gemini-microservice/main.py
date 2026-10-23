@@ -149,14 +149,14 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
                     if state.profiles.identity("agentic") is None:
                         await state.agentic.initialize()
                     else:
-                        async with state.profiles.operation("agentic"):
+                        async with state.profiles.operation("agentic", purpose="startup"):
                             await state.agentic.initialize()
                 except ServiceError as error:
                     if error.code != "runtime_busy":
                         raise
                     state.agentic_start_deferred = True
             try:
-                async with state.profiles.operation("web"):
+                async with state.profiles.operation("web", purpose="startup"):
                     await state.web.init_client()
             except Exception as error:
                 logger.warning("Initial Gemini connection failed: {}", type(error).__name__)
@@ -235,7 +235,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
         return HealthResponse(status="ok")
 
     async def web_status() -> WebStatusResponse:
-        async with application.state.profiles.operation("web"):
+        async with application.state.profiles.operation("web", purpose="health_status"):
             return await unlocked_web_status()
 
     async def unlocked_web_status() -> WebStatusResponse:
@@ -270,7 +270,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
     async def agentic_status():
         if application.state.profiles.identity("agentic") is None:
             return AgenticStatusResponse.model_validate(await application.state.agentic.get_status())
-        async with application.state.profiles.operation("agentic"):
+        async with application.state.profiles.observation("agentic", purpose="health_status", timeout_seconds=12):
             if application.state.agentic_start_deferred:
                 await application.state.agentic.initialize()
                 application.state.agentic_start_deferred = False
@@ -291,7 +291,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
         existing = application.state.agentic_login.status(None, actor)
         if existing and existing["state"] in ("running", "waiting_code", "verifying"):
             return existing
-        reservation = profiles.reserve("agentic")
+        reservation = profiles.reserve("agentic", purpose="login")
         try:
             return await application.state.agentic_login.start(actor, reservation.release)
         except BaseException:
@@ -356,7 +356,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
     @application.get("/models")
     @application.get("/web/models")
     async def get_models():
-        async with application.state.profiles.operation("web"):
+        async with application.state.profiles.operation("web", purpose="discovery"):
             return await application.state.web.get_models_and_quota()
 
     async def run_login() -> bool:
@@ -371,7 +371,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
     @application.post("/auth/login/start", response_model=LoginJobResponse)
     async def start_login(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
         application.state.web.assert_login_allowed()
-        reservation = application.state.profiles.reserve("web")
+        reservation = application.state.profiles.reserve("web", purpose="login")
         try:
             job = application.state.login.start(run_login, actor, reservation.release)
         except BaseException:
@@ -386,7 +386,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
     async def logout_web(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
         if application.state.login.is_active:
             raise ServiceError("web_session_busy", "Cancela el inicio de sesión Web en curso antes de cambiar de cuenta.", 409)
-        async with application.state.profiles.operation("web"):
+        async with application.state.profiles.operation("web", purpose="logout"):
             await application.state.web.disconnect()
         return WebLogoutResponse(status="disconnected")
 
@@ -441,7 +441,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
     async def refresh_auth():
         web = application.state.web
         try:
-            async with application.state.profiles.operation("web"):
+            async with application.state.profiles.operation("web", purpose="refresh"):
                 await web.recover_auth(web.client)
         except AuthError:
             raise ServiceError("session_expired", "La sesión de Gemini Web necesita renovarse.") from None
@@ -487,7 +487,7 @@ def create_app(*, web_service: Any = None, agentic_service: Any = None,
                     dispatched = True
                 if identifier:
                     application.state.observations.emit(identifier, stage)
-            async with application.state.profiles.operation(options.engine):
+            async with application.state.profiles.operation(options.engine, purpose="execution"):
                 try:
                     result = await execute_analysis(file, options, service, application.state.temp_dir, application.state.limits, progress)
                     if dispatched:

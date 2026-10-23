@@ -1,0 +1,1 @@
+{"stage": "AI40", "diagnostic": {"error_type": "ValueError", "code": "operator_command_failed"}, "failed_commands": [{"executable": "docker", "scripts": [], "exit": 1, "stdout_bytes": 3, "stderr_bytes": 40}], "services_changed": 0, "provider_requests": 0, "raw_details_emitted": false}

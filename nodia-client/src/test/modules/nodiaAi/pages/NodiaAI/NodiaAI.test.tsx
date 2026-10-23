@@ -11,7 +11,8 @@ import NodiaAI from "../../../../../modules/nodiaAi/pages/NodiaAI";
 import { mainInstance } from "../../../../../config/api";
 import { notifyHttpError } from "../../../../../config/httpFeedback";
 import useAuthStore from "../../../../../store/authStore";
-import type { NodiaAiDetail, NodiaAiMessagePage, NodiaAiSelection } from "../../../../../modules/nodiaAi/infrastructure/types";
+import useGeneralSettingsStore from "../../../../../store/generalSettings/generalSettingsStore";
+import type { NodiaAiConnection, NodiaAiDetail, NodiaAiMessagePage, NodiaAiSelection } from "../../../../../modules/nodiaAi/infrastructure/types";
 import { chatId, conversation, detail, messageId, run, selection } from "../../infrastructure/fixtures";
 import { acceptedEvent, observation, toolEvent } from "../../infrastructure/observationFixtures";
 import { proposal, proposalEvent, readonlyReview, execution } from "../../infrastructure/proposalFixtures";
@@ -27,6 +28,7 @@ let other: NodiaAiDetail;
 let navigate: ReturnType<typeof useNavigate>;
 const otherChatId = "44444444-4444-4444-8444-444444444444";
 let available: boolean;
+let eligibilityReason: string;
 let writes: {url: string; body: Record<string, unknown>}[];
 let reads: {url: string; params: Record<string, unknown>}[];
 let messageItems: unknown[];
@@ -41,6 +43,11 @@ const catalog = {items: [{connection_id: selection.connection_id, label: "Synthe
   {mode: agentic.mode, configured_selection: agentic, models: [{model_id: agentic.model_id, label: "Synthetic Agentic model", efforts: []}], configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unknown", observed_at: null, block_reason: null},
 ]}], next_cursor: null};
 
+let extraConnections: NodiaAiConnection[] = [];
+const codexSelection: NodiaAiSelection = { connection_id: "9007199254740995", mode: "token_plan_agentic", model_id: "ai40-synthetic-codex", effort_id: "new-observed-effort" };
+const codexConnection: NodiaAiConnection = { connection_id: codexSelection.connection_id, label: "AI40 synthetic Codex account", provider_key: "openai", is_active: true,
+  modes: [{ mode: codexSelection.mode, configured_selection: codexSelection, models: [{ model_id: codexSelection.model_id, label: "AI40 discovered Codex model", efforts: [{ effort_id: "new-observed-effort", label: "New observed effort" }] }], configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unknown", observed_at: null, block_reason: null }],
+};
 function response(config: InternalAxiosRequestConfig, data: unknown) { return {config, data, status: 200, statusText: "OK", headers: new AxiosHeaders()}; }
 function rejected(config: InternalAxiosRequestConfig, status: number, message: string): never {
   throw new AxiosError(message, "ERR_BAD_REQUEST", config, undefined, {...response(config, {message}), status});
@@ -67,10 +74,10 @@ function setupTransport() {
     if (url.endsWith("/review-metadata")) return response(config, readonlyReview);
     if (url === `/nodia-ai/runs/${run.run_id}`) return response(config, { ...run, state: "completed", completed_at: conversation.created_at });
     if (url === "/nodia-ai/conversations") return response(config, {items: [current.conversation, other.conversation], next_cursor: null});
-    if (url === "/nodia-ai/connections") return response(config, catalog);
+    if (url === "/nodia-ai/connections") return response(config, { ...catalog, items: [...catalog.items, ...extraConnections] });
     if (url.endsWith("/eligibility")) {
-      const observed = {...selection, mode: params?.mode, model_id: params?.model_id, effort_id: params?.effort_id ?? null};
-      return response(config, {selection: observed, available, reason: available ? null : "nodia_ai:adapter_unavailable", observed_at: null, supports_mcp: false, routing_target: available ? routingTarget : null});
+      const observed = {...selection, connection_id: url.split("/").at(-2), mode: params?.mode, model_id: params?.model_id, effort_id: params?.effort_id ?? null};
+      return response(config, {selection: observed, available, reason: available ? null : eligibilityReason, observed_at: null, supports_mcp: false, routing_target: available ? routingTarget : null});
     }
     if (url.endsWith("/messages")) return response(config, {conversation_id: url.includes(otherChatId) ? otherChatId : chatId, items: url.includes(otherChatId) ? [] : messageItems, next_cursor: null});
     if (url === `/nodia-ai/conversations/${chatId}`) return response(config, current);
@@ -92,15 +99,80 @@ async function readyComposer() {
   return input;
 }
 beforeEach(() => {
-  current = structuredClone(detail); available = true; writes = []; reads = []; messageItems = []; eventItems = []; admitAction = undefined; patchAction = undefined;
+  extraConnections = []; useGeneralSettingsStore.getState().clearContext();
+  current = structuredClone(detail); available = true; eligibilityReason = "nodia_ai:adapter_unavailable"; writes = []; reads = []; messageItems = []; eventItems = []; admitAction = undefined; patchAction = undefined;
   other = {...structuredClone(detail), conversation: {...structuredClone(conversation), conversation_id: otherChatId, title: "Other synthetic chat", revision: 2}};
   client = new QueryClient({queryCache: new QueryCache({onError: notifyHttpError}), defaultOptions: {queries: {retry: false}, mutations: {retry: false}}});
   useAuthStore.setState({user: {id: "9", name: "Synthetic owner"}, token: "synthetic-test-only", expiresAt: Date.now() + 600000, sessionStatus: "authenticated", sessionVersion: 1, isRefreshing: false});
   setupTransport();
 });
-afterEach(() => { client.clear(); mainInstance.defaults.adapter = originalAdapter; useAuthStore.setState({token: null, user: null, sessionStatus: "anonymous"}); });
+afterEach(() => { useGeneralSettingsStore.getState().clearContext(); client.clear(); mainInstance.defaults.adapter = originalAdapter; useAuthStore.setState({token: null, user: null, sessionStatus: "anonymous"}); });
 
 describe("NodiaAI page with synthetic authenticated HTTP", () => {
+  it("changes Gemini and Codex explicitly between turns, preserving history, composer identity, draft and return focus", async () => {
+    extraConnections = [codexConnection];
+    messageItems = [{ message_id: messageId, run_id: null, seq: "1", role: "assistant", status: "sealed", visibility: "visible", author_user_id: null, created_at: conversation.created_at, sealed_at: conversation.created_at, parts: [{ kind: "text", text: "AI40 previous decisions stay in this conversation" }] }];
+    patchAction = config => {
+      const body = JSON.parse(config.data as string) as { selection: NodiaAiSelection };
+      current.conversation = { ...current.conversation, selection: body.selection, revision: current.conversation.revision + 1 };
+      return response(config, current.conversation);
+    };
+    const user = userEvent.setup(); openPage(); const composer = await readyComposer();
+    await user.type(composer, "AI40 next message stays unsent");
+    const settings = screen.getByRole("button", { name: "Configuración" });
+    const selectOption = async (field: string, label: string) => {
+      await user.click(screen.getByRole("button", { name: field }));
+      await user.click(await screen.findByRole("option", { name: label }));
+    };
+    await user.click(settings);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Conexión" })).not.toHaveAttribute("aria-disabled", "true"));
+    await selectOption("Conexión", codexConnection.label);
+    await selectOption("Modo", i18n.t("nodiaAi:modes.token_plan_agentic"));
+    expect(writes).toEqual([]);
+    expect(screen.getByRole("button", { name: "Modelo" })).toHaveTextContent("AI40 discovered Codex model");
+    expect(screen.queryByRole("switch", { name: "Alternar automáticamente a Agentic" })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(settings).toHaveFocus());
+    expect(screen.getByRole("textbox", { name: "Mensaje" })).toBe(composer);
+    expect(composer).toHaveValue("AI40 next message stays unsent");
+    expect(screen.getByText("AI40 previous decisions stay in this conversation")).toBeInTheDocument();
+    expect(writes).toHaveLength(1);
+    expect(writes[0]).toEqual({ url: `/nodia-ai/conversations/${chatId}/selection`, body: { expected_conversation_revision: 1, selection: codexSelection } });
+    await user.click(settings);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Conexión" })).not.toHaveAttribute("aria-disabled", "true"));
+    await selectOption("Conexión", "Synthetic connection");
+    await selectOption("Modo", i18n.t("nodiaAi:modes.token_plan_web"));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Aplicar configuración" })).toBeEnabled());
+    await user.click(screen.getByRole("button", { name: "Aplicar configuración" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(composer).toHaveValue("AI40 next message stays unsent");
+    expect(screen.getByText("AI40 previous decisions stay in this conversation")).toBeInTheDocument();
+    expect(writes).toHaveLength(2);
+    expect(writes[1].body).toEqual({ expected_conversation_revision: 2, selection });
+    expect(writes.every(entry => entry.url.endsWith("/selection"))).toBe(true);
+  });
+
+  it("requires both provider management permission and its assigned module for the private account link, including revocation", async () => {
+    extraConnections = [codexConnection];
+    current.conversation.selection = codexSelection;
+    const user = userEvent.setup(); openPage(); const composer = await readyComposer();
+    await user.type(composer, "AI40 private draft");
+    await user.click(screen.getByRole("button", { name: "Configuración" }));
+    await screen.findByText(i18n.t("nodiaAi:configuration.codex_description"));
+    const linkName = i18n.t("nodiaAi:configuration.codex_manage");
+    expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
+    await act(() => useGeneralSettingsStore.setState({ isLoaded: true, actions: [{ key: "ai:manage", description: null, translates: [] }] }));
+    expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
+    await act(() => useGeneralSettingsStore.setState({ modules: [{ module_group_key: "synthetic", translates: [], modules: [{ key: "ai-providers", link: "/settings/ai-providers", translates: [] }] }] }));
+    expect(screen.getByRole("link", { name: linkName })).toHaveAttribute("href", `/settings/ai-providers?provider=${codexSelection.connection_id}&mode=token_plan_agentic`);
+    await act(() => useGeneralSettingsStore.setState({ actions: [] }));
+    expect(screen.queryByRole("link", { name: linkName })).not.toBeInTheDocument();
+    expect(composer).toHaveValue("AI40 private draft");
+    expect(writes).toEqual([]);
+  });
+
   it("keeps the visible message anchor when an older page resolves before React Query delivers the DOM update", async () => {
     const item = (position: number): NodiaAiMessagePage["items"][number] => ({
       message_id: `90000000-0000-4000-8000-${String(position).padStart(12, "0")}`, run_id: null, seq: String(position), role: "assistant", status: "sealed",
@@ -640,6 +712,97 @@ describe("NodiaAI page with synthetic authenticated HTTP", () => {
     expect(screen.getByRole("button", {name: "Enviar mensaje"})).toBeDisabled();
     expect(screen.getByRole("textbox", {name: "Mensaje"})).toBeDisabled();
     expect(reads.filter(entry => entry.url.endsWith("/eligibility")).every(entry => entry.params.model_id === selection.model_id)).toBe(true);
+    expect(writes).toEqual([]);
+  });
+
+  it("refreshes a busy observation once when the same turn finishes, preserving the next draft", async () => {
+    const user = userEvent.setup(); openPage();
+    const composer = await readyComposer();
+    await user.type(composer, "Keep my next draft while the previous work completes");
+    current.current_run = { ...run, state: "running" };
+    available = false; eligibilityReason = "nodia_ai:runtime_busy";
+    await act(() => client.invalidateQueries({ queryKey: ["nodia-ai", "9", 1, "detail", chatId] }));
+    await act(() => client.invalidateQueries({ predicate: query => query.queryKey[3] === "eligibility" }));
+    expect(await screen.findByText("La sesión está ocupada. Vuelve a comprobar cuando termine la operación.")).toBeInTheDocument();
+    expect(composer).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Volver a comprobar" })).not.toBeInTheDocument();
+    const before = reads.filter(entry => entry.url.endsWith("/eligibility")).length;
+    available = true;
+    current.current_run = { ...run, state: "completed", completed_at: conversation.created_at };
+    await act(() => client.invalidateQueries({ queryKey: ["nodia-ai", "9", 1, "detail", chatId] }));
+    await waitFor(() => expect(composer).toBeEnabled());
+    expect(reads.filter(entry => entry.url.endsWith("/eligibility"))).toHaveLength(before + 1);
+    expect(composer).toHaveValue("Keep my next draft while the previous work completes");
+    expect(writes).toEqual([]);
+  });
+
+  it("preserves the next draft and composer node while a terminal profile waits for native acknowledgement", async () => {
+    const user = userEvent.setup(); openPage();
+    const composer = await readyComposer();
+    await user.type(composer, "Keep this draft during native acknowledgement");
+    current.current_run = { ...run, state: "running" };
+    await act(() => client.invalidateQueries({ queryKey: ["nodia-ai", "9", 1, "detail", chatId] }));
+    await screen.findByText("NodiaAI está trabajando");
+    available = false; eligibilityReason = "nodia_ai:runtime_busy";
+    current.current_run = { ...run, state: "completed", completed_at: conversation.created_at };
+    await act(() => client.invalidateQueries({ queryKey: ["nodia-ai", "9", 1, "detail", chatId] }));
+    await screen.findByText("La sesión está ocupada. Vuelve a comprobar cuando termine la operación.");
+    expect(composer).toBeDisabled();
+    expect(composer).toHaveValue("Keep this draft during native acknowledgement");
+    available = true;
+    await waitFor(() => expect(composer).toBeEnabled(), { timeout: 2500 });
+    expect(screen.getByRole("textbox", { name: "Mensaje" })).toBe(composer);
+    expect(composer).toHaveValue("Keep this draft during native acknowledgement");
+    expect(writes).toEqual([]);
+  });
+
+  it("recovers a busy selection after reopening through one explicit GET without changing its configuration", async () => {
+    current.current_run = { ...run, state: "completed", completed_at: conversation.created_at };
+    available = false; eligibilityReason = "nodia_ai:runtime_busy";
+    const user = userEvent.setup(); openPage();
+    await screen.findByText("La sesión está ocupada. Vuelve a comprobar cuando termine la operación.");
+    expect(screen.getByRole("textbox", { name: "Mensaje" })).toBeDisabled();
+    const before = reads.filter(entry => entry.url.endsWith("/eligibility")).length;
+    available = true;
+    await user.click(screen.getByRole("button", { name: "Volver a comprobar" }));
+    await readyComposer();
+    expect(reads.filter(entry => entry.url.endsWith("/eligibility"))).toHaveLength(before + 1);
+    expect(reads.filter(entry => entry.url.endsWith("/eligibility")).every(entry => entry.params.model_id === selection.model_id)).toBe(true);
+    expect(writes).toEqual([]);
+  });
+
+  it("keeps a persistent rejection blocked after rechecking and never renders an unknown raw reason", async () => {
+    available = false; eligibilityReason = "private-provider-text-that-must-not-be-rendered";
+    const user = userEvent.setup(); openPage();
+    await screen.findByText("Configura una selección disponible antes de enviar mensajes.");
+    const retry = screen.getByRole("button", { name: "Volver a comprobar" });
+    await waitFor(() => expect(retry).toBeEnabled());
+    await user.click(retry);
+    await waitFor(() => expect(retry).toBeEnabled());
+    expect(screen.queryByText(eligibilityReason)).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Mensaje" })).toBeDisabled();
+    expect(reads.filter(entry => entry.url.endsWith("/eligibility"))).toHaveLength(2);
+    expect(writes).toEqual([]);
+  });
+
+  it("blocks a previously available selection when its recheck fails, preserving the draft for explicit recovery", async () => {
+    const user = userEvent.setup(); openPage();
+    const composer = await readyComposer();
+    await user.type(composer, "Keep my draft after availability fails");
+    const base = mainInstance.defaults.adapter;
+    if (typeof base !== "function") throw new Error("Missing synthetic adapter");
+    let failing = true;
+    mainInstance.defaults.adapter = async config => config.url?.endsWith("/eligibility") && failing
+      ? rejected(config, 503, "Synthetic unavailable service") : base(config);
+    await act(() => client.invalidateQueries({ predicate: query => query.queryKey[3] === "eligibility" }));
+    await screen.findByText("No pudimos comprobar la disponibilidad de esta selección.");
+    expect(composer).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    expect(composer).toHaveValue("Keep my draft after availability fails");
+    failing = false;
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await waitFor(() => expect(composer).toBeEnabled());
+    expect(composer).toHaveValue("Keep my draft after availability fails");
     expect(writes).toEqual([]);
   });
 

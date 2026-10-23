@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "stage": "AI-40",
+  "scope": "Local synthetic client QA after bounded native acknowledgement recovery and Codex snapshot presentation fix",
+  "observed_at_host_utc": "2026-10-23T02:36:07.884139+00:00",
+  "global": {
+    "stage": "AI-40 client busy recovery final global unit tests",
+    "command": [
+      "npm.cmd",
+      "run",
+      "test",
+      "--",
+      "--maxWorkers=2",
+      "--reporter=json",
+      "--outputFile=../.tmp/ai40-client-tests-busy-final-r02.json"
+    ],
+    "started_at_host_utc": "2026-10-23T02:27:06.561037+00:00",
+    "finished_at_host_utc": "2026-10-23T02:35:33.131264+00:00",
+    "exit_code": 0,
+    "source_files": 1068,
+    "source_sha256_before": "b7816b8870e76f45a35f1614ee7c4a5870c6b0a18cb99f74fc53475e07d71eed",
+    "source_sha256_after": "b7816b8870e76f45a35f1614ee7c4a5870c6b0a18cb99f74fc53475e07d71eed",
+    "source_hash_algorithm": "SHA256 of sorted compact JSON mapping root-relative POSIX src file paths to SHA256 bytes",
+    "sources_unchanged": true,
+    "changed_sources": [],
+    "test_report": ".tmp/ai40-client-tests-busy-final-r02.json",
+    "test_report_sha256": "d8181b4b1cc7035aa6903a645e8fc91a8598a8eaa27f14d609b49290db38ff1a",
+    "stdout_sha256": "27a02944474196bfd040b95a7040e18bde6bea7ad98d35d19227458088bca656",
+    "stderr_sha256": "2c8009bc0783885cc851ccf5a31205d8632f2669d5facdc25f7d70d3b0f05cb5",
+    "real_account_or_provider_acceptance": false,
+    "summary": {
+      "numTotalTests": 1823,
+      "numPassedTests": 1823,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "files": 229
+  },
+  "global_summary_sha256": "74646e32fb395136d424e12ad67c00374590235acc826e8cedde86338d29bc89",
+  "focused": {
+    "report": ".tmp/ai40-client-busy-focused-final-r06.json",
+    "sha256": "aa18f80edaaac9c3165c8c926548fb8db014366673c00189a8f6959db12e0e97",
+    "passed": 126,
+    "failed": 0,
+    "files": 4
+  },
+  "typecheck": {
+    "command": [
+      "npm.cmd",
+      "run",
+      "typecheck"
+    ],
+    "exit_code": 0
+  },
+  "lint": {
+    "scope": "Five changed frontend and test files",
+    "exit_code": 0
+  },
+  "build": {
+    "command": [
+      "npm.cmd",
+      "run",
+      "build"
+    ],
+    "exit_code": 0,
+    "known_warnings": [
+      "Chunk larger than 500 kB; no chunk policy changed"
+    ]
+  },
+  "global_runs_in_this_fix": 1,
+  "real_account_or_provider_acceptance": false,
+  "VM_operations": 0,
+  "browser_operations": 0
+}

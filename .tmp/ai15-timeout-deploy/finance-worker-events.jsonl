@@ -1,2 +1,0 @@
-{"error_code": null, "error_type": "EntityMetadataNotFoundError", "event": "nodia_ai_tool_execution_failed", "phase": "native_read", "sql_state": null}
-{"dispatched": true, "error_code": null, "error_type": "EntityMetadataNotFoundError", "event": "nodia_ai_stage_execution_failed", "lost_lease": false, "phase": "handler", "signal_aborted": false, "sql_state": null}

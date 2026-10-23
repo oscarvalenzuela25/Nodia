@@ -1,0 +1,51 @@
+{
+  "command_whitelist": [
+    "/usage",
+    "models",
+    "/model"
+  ],
+  "duration_seconds": 0.547,
+  "environment": "windows_local_synthetic_asgi",
+  "errors": 0,
+  "external_requests": 0,
+  "failures": 0,
+  "generative_dispatches": 0,
+  "kind": "ai38_agentic_profile_asgi_diag",
+  "limitations": [
+    "Synthetic concurrency is not a live owner attribution.",
+    "Current DIAG preserves metadata contention HTTP409; FIX expectations need the agreed coordination contract.",
+    "No browser, account or business data was used."
+  ],
+  "local_date": "2026-10-22",
+  "maximum_concurrent_cli_asserted": 1,
+  "phase": "DIAG_fail_fast_observations",
+  "real_components": [
+    "ASGI_routes",
+    "ProfileAdmission",
+    "ChatAdapter",
+    "AntigravityAgentService"
+  ],
+  "scenarios": [
+    "health_owner_rejects_eligibility_then_recovery",
+    "eligibility_owner_rejects_health_then_recovery",
+    "distinct_selection_not_reused",
+    "cancellation_retains_lease_until_cleanup",
+    "execution_lease_stays_exclusive",
+    "independent_physical_profiles"
+  ],
+  "schema_version": 1,
+  "source_sha256_at_receipt": {
+    "nodia-gemini-microservice/agentic_service.py": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200",
+    "nodia-gemini-microservice/main.py": "557aaccaa11f3bc90af1560a411e0e6c1f3495e52857775bed8ac13566b12358",
+    "nodia-gemini-microservice/nodia_ai_chat.py": "ca75d5949990ce3d1f75465deee03d7baec994563256e572d7346065d20c32ce",
+    "nodia-gemini-microservice/profile_admission.py": "7287e9a2b4ad4a804876dfb58187ba781aa723a38f143c2f722ce4d0a5c6fc73",
+    "nodia-gemini-microservice/tests/test_agentic_profile_observations.py": "0a4b0a6b221e904c3d4cce8f9a7b869c3b1b207c7e5a45edd14b3da197cad77a"
+  },
+  "synthetic_dependencies": [
+    "CLI_runner",
+    "Web_browser_service",
+    "profile_directories",
+    "service_credential"
+  ],
+  "tests_run": 6
+}

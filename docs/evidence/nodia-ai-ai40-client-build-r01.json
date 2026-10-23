@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "stage": "AI-40",
+  "scope": "Preserved frontend build and prior global QA pins; no new global test run",
+  "observed_at_host_utc": "2026-10-23T02:09:26.857905+00:00",
+  "source_snapshot": {
+    "path": ".tmp/ai40-client-source-final-r01.json",
+    "sha256": "9d3b99c5ca2d5b62e3f058ac96e202ed3047b3ded2829c6ed5c77d9b90880030",
+    "sources": [
+      {
+        "path": "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx",
+        "sha256": "dfc90e7beb3328d3c2a7b3d29d23d14349561ab7f8601943299baed9957632ba",
+        "matches_snapshot": true
+      },
+      {
+        "path": "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/types.ts",
+        "sha256": "7910f9a67afb140ab3264efc540f909869561d97d1b1584864e94ab634f6ae9f",
+        "matches_snapshot": true
+      },
+      {
+        "path": "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx",
+        "sha256": "8f77878eab0d6dff88ab0c6406eb95b869f9af4305b04ee6099c2c8166dc0a6e",
+        "matches_snapshot": true
+      },
+      {
+        "path": "nodia-client/src/translate/es/nodiaAi.json",
+        "sha256": "43e3ef54dfdf6e39e5312af2dc7c758ffe1c2b34190bb2f9a058d9d604529471",
+        "matches_snapshot": true
+      },
+      {
+        "path": "nodia-client/src/translate/en/nodiaAi.json",
+        "sha256": "8cee72220e2a61cf9aab0522707568e015853767b1f03f0e8dda28e5b84b90a9",
+        "matches_snapshot": true
+      },
+      {
+        "path": "nodia-client/src/test/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.test.tsx",
+        "sha256": "4aff8a5631542061bafbfff4f3109d24876f2d28a7c2382c5b37b355ab134635",
+        "matches_snapshot": true
+      },
+      {
+        "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+        "sha256": "4340185002bdce02517edb8491612dff2d78d6a664acbfae8e2b42f9586e811a",
+        "matches_snapshot": true
+      }
+    ]
+  },
+  "compiled_assets": [
+    {
+      "path": "nodia-client/dist/assets/NodiaAI-CJ5QP4nt.js",
+      "bytes": 56726,
+      "sha256": "bcd4dd1737c90cc000ca3bdb91b5b71a846b27cf52d2aad34d4246036b561959",
+      "matches_snapshot": true
+    }
+  ],
+  "global_unit_qa": {
+    "summary_path": ".tmp/ai40-client-global-final-summary-r05.json",
+    "summary_sha256": "2f5824194a98f952c0ab29099ba08aed68503a32a53f10931431eee026f82ac9",
+    "test_report_path": ".tmp/ai40-client-tests-final-r05.json",
+    "test_report_sha256": "8138fc2ad7612ba1823e6d84634114528dcf6ba3255b694d8c4f881b9d3d55cc",
+    "passed": 1809,
+    "failed": 0,
+    "pending": 0,
+    "files": 229,
+    "source_files": 1071,
+    "source_sha256_before": "b1c4115efd8f22b6dd368e0adc48e46c81b9eecc535da83575968bc7f2368fc2",
+    "source_sha256_after": "b1c4115efd8f22b6dd368e0adc48e46c81b9eecc535da83575968bc7f2368fc2",
+    "sources_unchanged_during_QA": true,
+    "rerun_in_this_step": false
+  },
+  "authenticated_UI_verification": {
+    "served_by": "Vite dev server",
+    "port": 5174,
+    "compiled_build_adopted_for_UI_acceptance": false,
+    "deployment_limitation": "Stop/start of the compiled frontend deployment was rejected by approval policy",
+    "provenance": "Reported by the parent operator; this local manifest does not independently attest browser or VM execution"
+  },
+  "VM_operations": 0,
+  "browser_operations": 0,
+  "provider_generations": 0,
+  "production_changes": false
+}

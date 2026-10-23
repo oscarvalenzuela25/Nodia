@@ -295,7 +295,7 @@ class NativeMcpSessions:
             raise ServiceError("mcp_adapter_unverified","El protocolo MCP exacto todavía no está verificado.",409)
         if not adapter.agentic.is_available() or adapter.agentic.runner is None:
             raise ServiceError("agentic_unavailable","El adaptador Agentic no está disponible.",503)
-        reservation=adapter.profiles.reserve("agentic")
+        reservation=adapter.profiles.reserve("agentic", purpose="mcp_execution")
         try:
             status=await adapter.agentic.get_status()
             if not status["has_active_session"] or len([m for m in status["models"] if m["id"]==request.model_id])!=1:

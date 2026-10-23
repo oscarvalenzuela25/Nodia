@@ -1,0 +1,33 @@
+{
+  "stage": "AI40",
+  "scope": "final_offline_checks",
+  "observed_at_host_utc": "2026-10-23T02:46:40.418942+00:00",
+  "checks": [
+    {
+      "command": [
+        "npm.cmd",
+        "run",
+        "knowledge:check"
+      ],
+      "exit_code": 0,
+      "stdout": "\n> nodia-server@0.0.1 knowledge:check\n> node scripts/build-nodia-ai-knowledge.mjs --check\n\n{\"task\":\"AI-06\",\"mode\":\"check\",\"sources\":59,\"excluded\":28,\"documents\":31,\"fragments\":31,\"catalogRelease\":\"nodia-ai-ai15-reads/1\",\"releaseId\":\"49935f292d476721ee9825fcc6e0cbce434da0d2461e2f6dd5a758faeb6840ca\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "tsx', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-client/src/test/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.test.tsx', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-client/src/test/modules/nodiaAi/infrastructure/useServices.test.tsx', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-client/src/translate/en/nodiaAi.json', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-client/src/translate/es/nodiaAi.json', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-gemini-microservice/README.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-gemini-microservice/gemini_service.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-gemini-microservice/main.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-gemini-microservice/native_mcp_sessions.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-gemini-microservice/nodia_ai_chat.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-gemini-microservice/profile_admission.py', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.spec.ts', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'nodia-server/src/nodia-ai-context/use-case/process-nodia-ai-stage.use-case.ts', CRLF will be replaced by LF the next time Git touches it\n"
+    }
+  ],
+  "Server_R03_workspace_files_verified": 4054,
+  "Server_R03_mismatches": [],
+  "historical_AI15_checker_failure_preserved_in": "docs/evidence/nodia-ai-ai40-checks-qa-r01.json",
+  "provider_requests": 0,
+  "service_changes": 0,
+  "new_publication": false
+}

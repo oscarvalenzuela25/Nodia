@@ -139,13 +139,62 @@ export function useNodiaAiMessages(id: string | null, polling = false) {
     isLoading: query.isLoading, isFetching: query.isFetching, isError: query.isError, isSuccess: query.isSuccess,
     hasNextPage: query.hasNextPage, isFetchingNextPage: query.isFetchingNextPage, fetchNextPage: query.fetchNextPage, refetch: query.refetch };
 }
-export function useNodiaAiEligibility(selection: NodiaAiSelection | null) {
+export function useNodiaAiEligibility(
+  selection: NodiaAiSelection | null,
+  activity?: { conversationId: string | null; active: boolean },
+) {
   const { scope, enabled } = useScope();
-  return useQuery({
+  const client = useQueryClient();
+  const [userId, sessionVersion] = scope;
+  const key = hashKey(nodiaAiKeys.eligibility(scope, selection));
+  const conversationId = activity?.conversationId ?? null;
+  const active = activity?.active ?? false;
+  const previous = useRef({ key, conversationId, active });
+  const pendingRefresh = useRef<{ key: string; initial: boolean; additionalReads: number } | null>(null);
+  const query = useQuery({
     queryKey: nodiaAiKeys.eligibility(scope, selection),
     queryFn: ({ signal }) => getNodiaAiEligibility(selection!, signal),
     enabled: enabled && selection !== null, retry: false, staleTime: 0, gcTime: 0,
   });
+  useEffect(() => {
+    const before = previous.current;
+    previous.current = { key, conversationId, active };
+    if (!enabled || active || before.key !== key || before.conversationId !== conversationId)
+      pendingRefresh.current = null;
+    // A preflight observed during a turn can report a busy profile. Read once
+    // after its work ends; do not poll the provider or replay any operation.
+    if (enabled && selection !== null && conversationId !== null && before.key === key
+      && before.conversationId === conversationId && before.active && !active)
+      pendingRefresh.current = { key, initial: true, additionalReads: 0 };
+    // Let an earlier observation settle first: otherwise React Query can reuse
+    // its initial promise and retain an observation taken while work was active.
+    const refresh = pendingRefresh.current;
+    if (!refresh || refresh.key !== key || query.isFetching || !enabled || selection === null) return;
+    const invalidate = () => client.invalidateQueries({ queryKey: nodiaAiKeys.eligibility([userId, sessionVersion], selection), exact: true });
+    if (refresh.initial) {
+      refresh.initial = false;
+      void invalidate();
+      return;
+    }
+    // SQL completion precedes native acknowledgement. Only a definite busy
+    // observation gets this short, bounded GET-only recovery window; HTTP and
+    // credential failures are never retried, and no operation is resubmitted.
+    // Own UI observation window (21 seconds), not a provider SLA: it spans the
+    // current 5-second maintenance heartbeat and a nominal 15-second ACK step.
+    const delays = [1000, 5000, 15000] as const;
+    const delay = delays[refresh.additionalReads];
+    if (query.isError || query.data?.available !== false || query.data.reason !== "nodia_ai:runtime_busy" || delay === undefined) {
+      pendingRefresh.current = null;
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (pendingRefresh.current !== refresh || !isCurrentScope([userId, sessionVersion])) return;
+      refresh.additionalReads++;
+      void invalidate();
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [active, client, conversationId, enabled, key, query.isFetching, query.isError, query.dataUpdatedAt, query.data, selection, sessionVersion, userId]);
+  return query;
 }
 
 function isCurrentScope(scope: Scope): boolean {

@@ -71,11 +71,13 @@ export class ObserveNodiaAiEligibilityUseCase {
     );
     const target =
       selection.mode === 'token_plan_web' &&
+      before.provider_key === 'gemini' &&
       configuredTarget?.configuration === 'configured'
         ? configuredTarget.configured_selection
         : null;
     const supported =
-      before.provider_key === 'gemini' && selection.mode !== 'api_key';
+      (before.provider_key === 'gemini' && selection.mode !== 'api_key') ||
+      (before.provider_key === 'openai' && selection.mode === 'token_plan_agentic');
     const enabled = mode.configuration !== 'disabled';
     const [baseObservation, targetObservation] = await Promise.all([
       supported && enabled ? this.observe(selection) : Promise.resolve(null),

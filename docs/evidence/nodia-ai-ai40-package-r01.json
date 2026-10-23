@@ -1,0 +1,19 @@
+{
+  "stage": "AI40",
+  "status": "frozen_not_activated",
+  "plan": {
+    "release": "/opt/nodia/releases/nodia-server-ai40-r01",
+    "manifest_sha256": "5815fc87fb5e7ce600267470774dddd9eaafdbae6ead388d0589b982205b4429",
+    "files": 4060,
+    "dist_outputs": 2887,
+    "knowledge_release": "49935f292d476721ee9825fcc6e0cbce434da0d2461e2f6dd5a758faeb6840ca",
+    "codex_profile_root": "/var/lib/nodia/codex"
+  },
+  "plan_sha256": "e53e4eb9400bb96d988b416311291f09593962111ec425bb6b3587606e93c9df",
+  "manifest_path": "docs/evidence/nodia-ai-ai40-server-package-r01.json",
+  "archive_sha256": "07b6becba4195ce1ee678d7aab5a6f8fcd6bb0ed05dbf2f7f8d3cadad8f8968c",
+  "ops_and_backup_entry_preserved": true,
+  "secret_or_dependencies_embedded": false,
+  "service_changes": 0,
+  "provider_requests": 0
+}

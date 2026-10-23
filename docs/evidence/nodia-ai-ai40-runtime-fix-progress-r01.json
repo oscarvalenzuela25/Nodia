@@ -1,0 +1,1 @@
+{"files": ["adopt-after.json", "adopt-backup.json", "adopt-before.json", "deployment.lock", "descriptor-0.private", "descriptor-1.private", "descriptor-2.private"], "services": {"nodia-api": "active", "nodia-ai-worker": "active", "nginx": "active", "nodia-gemini-lab": "active"}, "observe_only": true}

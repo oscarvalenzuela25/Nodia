@@ -1,1 +1,0 @@
-const fs=require('fs');for(const f of fs.readdirSync('docs/evidence').filter(f=>/^nodia-ai-ai18-.*regression/.test(f))){const v=JSON.parse(fs.readFileSync('docs/evidence/'+f));console.log(JSON.stringify({file:f,checks:v.checks,scope:v.scope}));}

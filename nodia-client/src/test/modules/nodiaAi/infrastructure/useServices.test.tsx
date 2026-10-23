@@ -6,9 +6,9 @@ import useAuthStore from "../../../../store/authStore";
 import {
   useAdmitNodiaAiMessage, useCreateNodiaAiConversation, useNodiaAiConversation,
   useNodiaAiCatalog, useNodiaAiConversations, useNodiaAiMessages, useSetNodiaAiRouting,
-  useUpdateNodiaAiConversation, isNodiaAiAccessDenied,
+  useUpdateNodiaAiConversation, useNodiaAiEligibility, isNodiaAiAccessDenied,
 } from "../../../../modules/nodiaAi/infrastructure/useServices";
-import { chatId, conversation, detail, messageId, run } from "./fixtures";
+import { chatId, conversation, detail, messageId, run, selection } from "./fixtures";
 
 const mocks = vi.hoisted(() => ({
   getNodiaAiConversations: vi.fn(), getNodiaAiCatalog: vi.fn(), getNodiaAiConversation: vi.fn(),
@@ -31,7 +31,7 @@ describe("NodiaAI data lifecycle", () => {
     client = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}});
     authenticate("9");
   });
-  afterEach(() => { cleanup(); client.clear(); useAuthStore.setState({token: null, user: null, sessionStatus: "anonymous"}); });
+  afterEach(() => { cleanup(); client.clear(); useAuthStore.setState({token: null, user: null, sessionStatus: "anonymous"}); vi.useRealTimers(); });
 
   it("keeps pagination server-side and isolates cached chats after an account/session change", async () => {
     mocks.getNodiaAiConversations.mockImplementation(async (params: {cursor?: string}) => ({items: [{...conversation, title: params.cursor ? "Older" : "Current"}], next_cursor: params.cursor ? null : "older-cursor"}));
@@ -178,6 +178,170 @@ describe("NodiaAI data lifecycle", () => {
     expect(mocks.getNodiaAiMessages).toHaveBeenCalledTimes(1);
     rerender({polling: false});
     await waitFor(() => expect(mocks.getNodiaAiMessages).toHaveBeenCalledTimes(2));
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("rechecks exact availability once after work finishes without replaying a message", async () => {
+    const unavailable = { selection, available: false, reason: "nodia_ai:runtime_busy", observed_at: null, supports_mcp: false, routing_target: null };
+    mocks.getNodiaAiEligibility.mockResolvedValueOnce(unavailable).mockResolvedValue({ ...unavailable, available: true, reason: null });
+    const { result, rerender } = renderHook(({ active }) => useNodiaAiEligibility(selection, { conversationId: chatId, active }),
+      { initialProps: { active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.data?.available).toBe(false));
+    rerender({ active: true });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(1);
+    rerender({ active: false });
+    await waitFor(() => expect(result.current.data?.available).toBe(true));
+    rerender({ active: false });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(2);
+    expect(mocks.getNodiaAiEligibility.mock.calls.every(call => call[0] === selection)).toBe(true);
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("does not loop when the terminal availability recheck fails", async () => {
+    mocks.getNodiaAiEligibility.mockResolvedValueOnce({ selection, available: true }).mockRejectedValue(new Error("offline"));
+    const { result, rerender } = renderHook(({ active }) => useNodiaAiEligibility(selection, { conversationId: chatId, active }),
+      { initialProps: { active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    rerender({ active: false });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    rerender({ active: false });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(2);
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("recovers when native acknowledgement arrives six seconds after SQL completion, using only bounded reads", async () => {
+    const busy = { selection, available: false, reason: "nodia_ai:runtime_busy" };
+    mocks.getNodiaAiEligibility.mockResolvedValueOnce({ ...busy, available: true, reason: null })
+      .mockResolvedValueOnce(busy).mockResolvedValueOnce(busy).mockResolvedValue({ ...busy, available: true, reason: null });
+    const { result, rerender } = renderHook(({ active }) => useNodiaAiEligibility(selection, { conversationId: chatId, active }),
+      { initialProps: { active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    vi.useFakeTimers();
+    await act(async () => { rerender({ active: false }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+    expect(result.current.data?.available).toBe(false);
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(2);
+    await act(async () => { await vi.advanceTimersByTimeAsync(1001); });
+    expect(result.current.data?.available).toBe(false);
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(3);
+    await act(async () => { await vi.advanceTimersByTimeAsync(5001); });
+    expect(result.current.data?.available).toBe(true);
+    await act(async () => { await vi.advanceTimersByTimeAsync(20_000); });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(4);
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+    expect(mocks.setNodiaAiSelection).not.toHaveBeenCalled();
+  });
+
+  it("stops checking a persistently busy terminal profile after three additional GETs over twenty-one seconds", async () => {
+    mocks.getNodiaAiEligibility.mockResolvedValue({ selection, available: false, reason: "nodia_ai:runtime_busy" });
+    const { result, rerender } = renderHook(({ active }) => useNodiaAiEligibility(selection, { conversationId: chatId, active }),
+      { initialProps: { active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    vi.useFakeTimers();
+    await act(async () => { rerender({ active: false }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+    for (const delay of [1001, 5001, 15001]) await act(async () => { await vi.advanceTimersByTimeAsync(delay); });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(5);
+    await act(async () => { await vi.advanceTimersByTimeAsync(60_000); });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(5);
+    expect(result.current.data?.available).toBe(false);
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it.each(["session_required", "adapter_unavailable", "model_unavailable"])("does not recheck terminal %s observations", async reason => {
+    mocks.getNodiaAiEligibility.mockResolvedValue({ selection, available: false, reason: `nodia_ai:${reason}` });
+    const { result, rerender } = renderHook(({ active }) => useNodiaAiEligibility(selection, { conversationId: chatId, active }),
+      { initialProps: { active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    vi.useFakeTimers();
+    await act(async () => { rerender({ active: false }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(60_000); });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not retry an HTTP failure reached during native acknowledgement recovery", async () => {
+    mocks.getNodiaAiEligibility.mockResolvedValueOnce({ selection, available: true, reason: null })
+      .mockResolvedValueOnce({ selection, available: false, reason: "nodia_ai:runtime_busy" })
+      .mockRejectedValue(new Error("synthetic outage"));
+    const { result, rerender } = renderHook(({ active }) => useNodiaAiEligibility(selection, { conversationId: chatId, active }),
+      { initialProps: { active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    vi.useFakeTimers();
+    await act(async () => { rerender({ active: false }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1001); });
+    expect(result.current.isError).toBe(true);
+    await act(async () => { await vi.advanceTimersByTimeAsync(60_000); });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(3);
+  });
+
+  it.each(["chat", "selection", "account", "logout", "unmount", "new_turn"] as const)("cancels scheduled completion reads on %s changes", async change => {
+    mocks.getNodiaAiEligibility.mockImplementation(async selected => ({ selection: selected, available: false, reason: "nodia_ai:runtime_busy" }));
+    const initial = { selected: selection, id: chatId, active: true };
+    const { result, rerender, unmount } = renderHook(({ selected, id, active }) => useNodiaAiEligibility(selected, { conversationId: id, active }),
+      { initialProps: initial, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    vi.useFakeTimers();
+    await act(async () => { rerender({ ...initial, active: false }); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      if (change === "unmount") unmount();
+      else if (change === "account") authenticate("10", 2);
+      else if (change === "logout") useAuthStore.setState({ token: null, user: null, sessionStatus: "anonymous" });
+      else rerender({ ...initial, active: change === "new_turn", id: change === "chat" ? messageId : chatId,
+        selected: change === "selection" ? { ...selection, model_id: "synthetic-other-model" } : selection });
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    const callsAfterChange = mocks.getNodiaAiEligibility.mock.calls.length;
+    await act(async () => { await vi.advanceTimersByTimeAsync(60_000); });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(callsAfterChange);
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("waits for an initial in-flight observation before the single completion read", async () => {
+    const unavailable = { selection, available: false, reason: "nodia_ai:runtime_busy" };
+    let finish: (value: typeof unavailable) => void = () => {};
+    mocks.getNodiaAiEligibility.mockReturnValueOnce(new Promise<typeof unavailable>(resolve => { finish = resolve; }))
+      .mockResolvedValue({ ...unavailable, available: true, reason: null });
+    const { result, rerender } = renderHook(({ active }) => useNodiaAiEligibility(selection, { conversationId: chatId, active }),
+      { initialProps: { active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isFetching).toBe(true));
+    rerender({ active: false });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(1);
+    await act(async () => { finish(unavailable); });
+    await waitFor(() => expect(result.current.data?.available).toBe(true));
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(2);
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("does not treat navigation to another idle chat as completion of the previous chat", async () => {
+    mocks.getNodiaAiEligibility.mockResolvedValue({ selection, available: false });
+    const { result, rerender } = renderHook(({ id, active }) => useNodiaAiEligibility(selection, { conversationId: id, active }),
+      { initialProps: { id: chatId, active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    rerender({ id: messageId, active: false });
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(1);
+    expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
+  });
+
+  it("does not add a completion read across account or selection changes", async () => {
+    mocks.getNodiaAiEligibility.mockImplementation(async (selected) => ({ selection: selected, available: false }));
+    const { result, rerender } = renderHook(({ selected, active }) => useNodiaAiEligibility(selected, { conversationId: chatId, active }),
+      { initialProps: { selected: selection, active: true }, wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    const changed = { ...selection, model_id: "synthetic-other-model" };
+    rerender({ selected: changed, active: false });
+    await waitFor(() => expect(result.current.data?.selection).toEqual(changed));
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(2);
+    rerender({ selected: changed, active: true });
+    act(() => {
+      authenticate("10", 2);
+      rerender({ selected: changed, active: false });
+    });
+    await waitFor(() => expect(result.current.isFetching).toBe(false));
+    expect(mocks.getNodiaAiEligibility).toHaveBeenCalledTimes(3);
     expect(mocks.admitNodiaAiMessage).not.toHaveBeenCalled();
   });
 

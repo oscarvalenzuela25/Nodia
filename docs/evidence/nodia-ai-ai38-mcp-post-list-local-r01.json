@@ -1,0 +1,34 @@
+{
+  "schema": "ai38-mcp-post-list-local-v1",
+  "status": "observed",
+  "observed_at_operator_utc": "2026-10-22T21:05:11.4802382Z",
+  "vite_pid": 8840,
+  "vite_workspace_identity_matches": true,
+  "bridge_pid": 96468,
+  "own_bridge_identity_matches": true,
+  "listeners": [
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 3100,
+      "OwningProcess": 96468
+    },
+    {
+      "LocalAddress": "0.0.0.0",
+      "LocalPort": 5174,
+      "OwningProcess": 8840
+    },
+    {
+      "LocalAddress": "127.0.0.1",
+      "LocalPort": 3100,
+      "OwningProcess": 96468
+    }
+  ],
+  "bridge_loopback_only": true,
+  "HTTP_status": 200,
+  "nginx_root_HTTP_status": 404,
+  "vite_entry_script_present": true,
+  "HTTP_body_or_command_lines_emitted": false,
+  "new_UI_window_opened": false,
+  "services_retained_for_user": true,
+  "VM_mutations": 0
+}

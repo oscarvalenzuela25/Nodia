@@ -10,6 +10,7 @@ from dotenv import dotenv_values
 from loguru import logger
 from web_generation_diagnostics import DiagnosticWebClient as GeminiClient, WebGenerationDiagnostics, observe_generation, preserve_structured_output
 from web_audio_transport import native_audio_transport
+from web_chat_recovery import chat_recovery_budget
 from gemini_webapi.exceptions import (APIError, AuthError, ModelInvalidError, UsageLimitExceededError,
     TemporarilyBlockedError, TimeoutError as ProviderTimeout)
 from invoice_parser import build_invoice_prompt, clean_and_parse_invoice_json, is_refusal_response
@@ -27,6 +28,10 @@ ENV_FILE = Path(__file__).resolve().parent / ".env"
 
 class GeminiWebService:
     def __init__(self, generation_timeout: float = 300):
+        # The SDK logs provider text/continuation IDs even with verbose=False.
+        # This process owns its SDK: silence that namespace at explicit service
+        # construction, preserving Nodia diagnostics and existing log handlers.
+        logger.disable("gemini_webapi")
         self.browser_manager = BrowserCookieManager()
         self.session_generation = uuid4().hex
         self.secure_1psid = ""
@@ -380,12 +385,14 @@ class GeminiWebService:
 
     async def _generate_content(self, prompt: str, *, diagnostics: WebGenerationDiagnostics | None = None,
                                 preserve_structured_text: bool = False,
-                                native_attachment_media_types: list[str] | None = None, **options: Any) -> Any:
+                                native_attachment_media_types: list[str] | None = None,
+                                chat_budget_seconds: float | None = None, **options: Any) -> Any:
         active_client = self.client
         with observe_generation(active_client, diagnostics):
             async def generate():
                 with (native_audio_transport(active_client, options.get("files"), native_attachment_media_types),
-                      preserve_structured_output(active_client, preserve_structured_text) as structured):
+                      preserve_structured_output(active_client, preserve_structured_text) as structured,
+                      chat_recovery_budget(active_client, chat_budget_seconds)):
                     result = await active_client.generate_content(prompt, current_retry=0, **options)
                     if structured is not None:
                         structured.verify(result, record=False)
@@ -408,6 +415,14 @@ class GeminiWebService:
                     finally:
                         operation.cancel()
                         await asyncio.gather(operation, return_exceptions=True)
+                raise
+            except Exception:
+                # A failed SDK history recovery can close its HTTP client while
+                # the Nodia wrapper still says initialized. The next explicit
+                # observation must rebuild it and rotate the session generation.
+                if (chat_budget_seconds is not None and self.client is active_client
+                        and active_client is not None and active_client.client is None):
+                    self.is_initialized = False
                 raise
 
     async def analyze_invoice(self, file_path: Path, provider_fields: Optional[Dict[str, Any]] = None,

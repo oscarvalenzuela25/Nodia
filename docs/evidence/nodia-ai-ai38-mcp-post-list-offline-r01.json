@@ -1,0 +1,116 @@
+{
+  "scope": "synthetic_real_stdio_offline_counterexamples_not_provider_cause",
+  "status": "passed",
+  "source_sha256": "59538afbe86c37b537a493d2710a0e9af541045d60524b9623577be6ba0ebe4b",
+  "runtime_FIX_public_source_pins": {
+    "native_mcp_stdio.py": "37b77325fff33b8b53ce30bc33c55ae3dd54e2f1e480fb7d515595e44c6cdd20",
+    "native_mcp_sessions.py": "4e05adbd35fd2391e05f54952d839bbb3d7c14d3145609474ee6b2a1f6cbbb20",
+    "native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe"
+  },
+  "cases": [
+    {
+      "synthetic_error_method": "resources/list",
+      "error_before_list": true,
+      "exit_code": 0,
+      "RPC_messages": 6,
+      "tool_requests": 0,
+      "methods": {
+        "initialize": 1,
+        "notifications_initialized": 1,
+        "other": 3,
+        "tools_list": 1
+      },
+      "responses": {
+        "success": 2,
+        "notification": 3,
+        "error": 1
+      },
+      "error_ordinals": [
+        3
+      ],
+      "list_success_ordinals": [
+        4
+      ],
+      "last_response": {
+        "method": "other",
+        "response": "notification",
+        "error_code": null
+      },
+      "ping_after_error_observed_on_stdout": false
+    },
+    {
+      "synthetic_error_method": "prompts/list",
+      "error_before_list": false,
+      "exit_code": 0,
+      "RPC_messages": 6,
+      "tool_requests": 0,
+      "methods": {
+        "initialize": 1,
+        "notifications_initialized": 1,
+        "tools_list": 1,
+        "other": 3
+      },
+      "responses": {
+        "success": 2,
+        "notification": 3,
+        "error": 1
+      },
+      "error_ordinals": [
+        4
+      ],
+      "list_success_ordinals": [
+        3
+      ],
+      "last_response": {
+        "method": "other",
+        "response": "notification",
+        "error_code": null
+      },
+      "ping_after_error_observed_on_stdout": false
+    },
+    {
+      "synthetic_error_method": "resources/list",
+      "error_before_list": true,
+      "exit_code": 0,
+      "RPC_messages": 7,
+      "tool_requests": 0,
+      "methods": {
+        "initialize": 1,
+        "notifications_initialized": 1,
+        "other": 3,
+        "tools_list": 1,
+        "ping": 1
+      },
+      "responses": {
+        "success": 3,
+        "notification": 3,
+        "error": 1
+      },
+      "error_ordinals": [
+        3
+      ],
+      "list_success_ordinals": [
+        4
+      ],
+      "last_response": {
+        "method": "ping",
+        "response": "success",
+        "error_code": null
+      },
+      "ping_after_error_observed_on_stdout": true
+    }
+  ],
+  "facts": [
+    "Two distinct synthetic methods and opposite error/list ordering produce the same retained aggregate and last_response.",
+    "An unsupported request returns -32602 without terminating the bridge; subsequent tools/list and ping replies reach synthetic stdout.",
+    "These fixtures do not identify the actual other methods, prove CLI consumption, or explain the live timeout."
+  ],
+  "real_CLI_executions": 0,
+  "VM_calls": 0,
+  "network_calls": 0,
+  "SQL_calls": 0,
+  "provider_generations": 0,
+  "bridge_subprocesses": 3,
+  "temporary_synthetic_workspaces_closed": true
+}

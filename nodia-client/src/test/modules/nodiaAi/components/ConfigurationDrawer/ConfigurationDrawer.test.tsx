@@ -10,7 +10,7 @@ import i18n from "../../../../../translate";
 const web: NodiaAiSelection = { connection_id: "22", mode: "token_plan_web", model_id: "fixture-web", effort_id: null };
 const agentic: NodiaAiSelection = { connection_id: "22", mode: "token_plan_agentic", model_id: "fixture-agent", effort_id: "deep" };
 const connections: NodiaAiConnection[] = [{
-  connection_id: "22", label: "Fixture connection", provider_key: "fixture-provider", is_active: true,
+  connection_id: "22", label: "Fixture connection", provider_key: "gemini", is_active: true,
   modes: [
     { mode: "token_plan_web", configuration: "configured", authentication: "unknown", inference: "unknown", tools: "unsupported", observed_at: null, block_reason: null, configured_selection: web, models: [
       { model_id: "fixture-web", label: "Web configured", efforts: [] },
@@ -26,6 +26,17 @@ const eligibility: NodiaAiEligibility = {
   selection: web, available: true, reason: null, observed_at: null, supports_mcp: false,
   routing_target: { selection: { ...agentic, mode: "token_plan_agentic" }, configuration_generation: "fixture-configuration", session_generation: "fixture-session" },
 };
+
+// A second, independent account with synthetic dynamically discovered options.
+const codexSelection: NodiaAiSelection = { connection_id: "9007199254740993", mode: "token_plan_agentic", model_id: "fixture-codex-discovered", effort_id: "extended-fixture" };
+const codexConnection: NodiaAiConnection = {
+  connection_id: codexSelection.connection_id, label: "Synthetic Codex account", provider_key: "openai", is_active: true,
+  modes: [{ ...connections[0].modes[1], configured_selection: codexSelection, models: [
+    { model_id: codexSelection.model_id, label: "Codex discovered model", efforts: [{ effort_id: "extended-fixture", label: "Extended observed" }, { effort_id: "new-fixture-effort", label: "New observed intensity" }] },
+  ] }],
+};
+const codexEligibility: NodiaAiEligibility = { selection: codexSelection, available: true, reason: null, observed_at: "2026-10-22T12:00:00.000Z", supports_mcp: false, routing_target: null };
+
 const key = (name: string) => i18n.t(`nodiaAi:configuration.${name}`);
 function props(overrides: Partial<ConfigurationDrawerProps> = {}): ConfigurationDrawerProps {
   return {
@@ -43,6 +54,83 @@ async function choose(field: string, option: string) {
 }
 
 describe("NodiaAI ConfigurationDrawer", () => {
+  it("selects Codex explicitly by connection ID and uses only discovered model and effort options", async () => {
+    const settings = props({ connections: [...connections, codexConnection] });
+    const { rerender } = render(<ConfigurationDrawer {...settings} />);
+    await choose("connection", codexConnection.label);
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(null);
+    expect(settings.onApply).not.toHaveBeenCalled();
+    await choose("mode", i18n.t("nodiaAi:modes.token_plan_agentic"));
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(codexSelection);
+    expect(screen.getByRole("button", { name: key("model") })).toHaveTextContent("Codex discovered model");
+    expect(screen.getByRole("button", { name: key("effort") })).toHaveTextContent("Extended observed");
+    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+    rerender(<ConfigurationDrawer {...settings} eligibility={codexEligibility} />);
+    expect(screen.getByText(key("mcp_unverified"))).toBeInTheDocument();
+    await choose("effort", "New observed intensity");
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith({ ...codexSelection, effort_id: "new-fixture-effort" });
+    expect(screen.queryByText(key("mcp_unverified"))).not.toBeInTheDocument();
+    expect(settings.onApply).not.toHaveBeenCalled();
+  });
+
+  it("shows verified MCP only for the exact current observation and does not confuse chat availability with tools", () => {
+    const settings = props({ connections: [codexConnection], selection: codexSelection, eligibility: codexEligibility });
+    const { rerender } = render(<ConfigurationDrawer {...settings} />);
+    expect(screen.getByText(key("available"))).toBeInTheDocument();
+    expect(screen.getByText(key("mcp_unverified"))).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: key("apply") })).toBeEnabled();
+    rerender(<ConfigurationDrawer {...settings} eligibility={{ ...codexEligibility, supports_mcp: true }} />);
+    expect(screen.getByText(key("mcp_verified"))).toBeInTheDocument();
+    rerender(<ConfigurationDrawer {...settings} eligibility={{ ...codexEligibility, supports_mcp: true }} eligibilityBusy />);
+    expect(screen.queryByText(key("mcp_verified"))).not.toBeInTheDocument();
+    rerender(<ConfigurationDrawer {...settings} eligibility={{ ...codexEligibility, supports_mcp: true }} eligibilityError="Synthetic failure" />);
+    expect(screen.queryByText(key("mcp_verified"))).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+  });
+
+  it("opens only the exact Codex account management route in another tab when authorized", () => {
+    const settings = props({ connections: [codexConnection], selection: codexSelection, eligibility: codexEligibility });
+    const { rerender } = render(<ConfigurationDrawer {...settings} />);
+    expect(screen.queryByRole("link", { name: key("codex_manage") })).not.toBeInTheDocument();
+    rerender(<ConfigurationDrawer {...settings} canManageConnection />);
+    const link = screen.getByRole("link", { name: key("codex_manage") });
+    expect(link).toHaveAttribute("href", `/settings/ai-providers?provider=${codexSelection.connection_id}&mode=token_plan_agentic`);
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.getByText(key("codex_private_login"))).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(settings.onApply).not.toHaveBeenCalled();
+  });
+
+  it("does not offer OpenAI Web from a historical catalog and blocks a historical Web selection without substitution", async () => {
+    const historicWeb = { ...web, connection_id: codexSelection.connection_id };
+    const historical: NodiaAiConnection = { ...codexConnection, modes: [...codexConnection.modes, { ...connections[0].modes[0], configured_selection: historicWeb }] };
+    const settings = props({ connections: [historical], selection: codexSelection, eligibility: codexEligibility });
+    const { rerender } = render(<ConfigurationDrawer {...settings} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: key("mode") }));
+    expect(screen.queryByRole("option", { name: i18n.t("nodiaAi:modes.token_plan_web") })).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    rerender(<ConfigurationDrawer {...settings} open={false} />);
+    rerender(<ConfigurationDrawer {...settings} selection={historicWeb} eligibility={{ ...eligibility, selection: historicWeb, routing_target: { ...eligibility.routing_target!, selection: { ...agentic, connection_id: historicWeb.connection_id, mode: "token_plan_agentic" } } }} />);
+    expect(screen.getByText(key("openai_web_disabled"))).toBeInTheDocument();
+    expect(screen.queryByText(key("available"))).not.toBeInTheDocument();
+    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(historicWeb);
+    expect(settings.onApply).not.toHaveBeenCalled();
+  });
+
+  it("does not apply disabled Codex configuration even when a previous observation was available", () => {
+    render(<ConfigurationDrawer {...props({ connections: [{ ...codexConnection, modes: codexConnection.modes.map(item => ({ ...item, configuration: "disabled" })) }], selection: codexSelection, eligibility: codexEligibility })} />);
+    expect(screen.getByRole("button", { name: key("apply") })).toBeDisabled();
+    expect(screen.getByRole("button", { name: key("model") })).toHaveTextContent("Codex discovered model");
+    expect(screen.getByText(key("mode_disabled"))).toBeInTheDocument();
+    expect(screen.queryByText(key("available"))).not.toBeInTheDocument();
+    expect(screen.queryByText(key("mcp_unverified"))).not.toBeInTheDocument();
+  });
+
   it("reports the exact configured selection and only applies opt-in routing after explicit confirmation", async () => {
     const user = userEvent.setup(); const settings = props();
     render(<ConfigurationDrawer {...settings} />);

@@ -6,6 +6,26 @@ import { NodiaAiAdapterError } from '../../nodia-ai-adapter/types/nodia-ai-adapt
 
 const input = { mode: 'token_plan_web', model_id: 'synthetic-web' };
 describe('ObserveNodiaAiEligibilityUseCase', () => {
+  it('observes only exact OpenAI Agentic without proposing a Web delegation target', async () => {
+    const f = connectionFixture(); f.row.provider_key = 'openai';
+    Object.assign(f.observation, { source: 'codex_live_session_and_catalog', adapterContractVersion: 'nodia-ai-codex-chat/1',
+      resourceKey: 'codex-profile:' + 'a'.repeat(64), supportsMcp: false,
+      adapterIdentity: { providerKey: 'openai', contractVersion: 'nodia-ai-codex-chat/1', connectionId: '2' } });
+    const result = await new ObserveNodiaAiEligibilityUseCase(f.connections, f.authorize, f.adapter)
+      .execute(testIdentity, '2', { mode: 'token_plan_agentic', model_id: 'synthetic-agentic' });
+    expect(result).toMatchObject({ available: true, supports_mcp: false, routing_target: null });
+    expect(f.transport.observe).toHaveBeenCalledExactlyOnceWith({ connection_id: '2', mode: 'token_plan_agentic', model_id: 'synthetic-agentic', effort_id: null });
+    expect(JSON.stringify(result)).not.toContain('codex-profile');
+    expect(result).not.toHaveProperty('adapterIdentity');
+  });
+  it('does not promote configured OpenAI Agentic when its live observation is unavailable', async () => {
+    const f = connectionFixture(); f.row.provider_key = 'openai';
+    f.transport.observe.mockRejectedValue(new NodiaAiAdapterError('session_required', 'not_dispatched'));
+    const result = await new ObserveNodiaAiEligibilityUseCase(f.connections, f.authorize, f.adapter)
+      .execute(testIdentity, '2', { mode: 'token_plan_agentic', model_id: 'synthetic-agentic' });
+    expect(result).toMatchObject({ available: false, supports_mcp: false, routing_target: null, reason: 'nodia_ai:session_required' });
+    expect(f.transport.observe).toHaveBeenCalledTimes(1);
+  });
   it('checks another explicit effort without persisting global defaults or substituting the configured effort', async () => {
     const f = connectionFixture();
     const before = JSON.stringify(f.row.fields);

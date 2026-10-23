@@ -67,6 +67,6 @@ Un chat nuevo, configurado con la misma conexión Gemini, modelo y esfuerzo, con
 
 El primer clic de envío del chat nuevo mostró un error antes de admisión: SQL verificó cero mensajes, runs, jobs e intentos, sin dispatch. No se atribuye su causa al proveedor o a una renovación de sesión sólo por el toast. Tras comprobar ausencia de efectos y disponibilidad, el siguiente envío creó el único mensaje/run de esta prueba. Ninguna inferencia incierta fue reenviada.
 
-![Respuesta Agentic completada en la página](../../outputs/nodia-ai-ai15-gemini-mcp-real-success.png)
+![Respuesta Agentic completada en la página](nodia-ai-ai15-gemini-mcp-real-success.png)
 
 La regresión queda integrada en `npm run test:nodia-ai:worker-metadata` y al final de `npm run test:nodia-ai:products`; usar `npm run build` completo para regenerar todos los assets. El conjunto de verificación final conserva 1.516 pruebas Server, 1.250 Client y 266 Python Linux, más los ensayos SQL/lectores de evidencia separados. VM y servicios permanecen encendidos. AI-15 sigue con sus gates independientes de R2 binario y aceptación externa/routing completa; AI-16 no iniciado. No afirmar que este arreglo explica también los timeouts históricos de 119 segundos sin callbacks: su causa no se reprodujo.

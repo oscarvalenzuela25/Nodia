@@ -1,0 +1,140 @@
+{
+  "schema": "ai38-live-ui-http-observer-v1",
+  "action": "end",
+  "status": "bounded_chronological_metadata_observed_not_response_payload_acceptance",
+  "source_sha256": "1587fd82495866362cc77d88b469ff4a0bc789bbc80d83356eb4223eeff63e9d",
+  "began_at_utc": "2026-10-22T17:54:05.297624+00:00",
+  "finished_at_utc": "2026-10-22T17:59:11.872650+00:00",
+  "device": 2050,
+  "inode": 3673396,
+  "offset_begin": 40061,
+  "offset_end": 120419,
+  "bounded_bytes": 80358,
+  "subsequent_bytes_excluded": 0,
+  "acceptance_conversation_sha256": "ceb08fb97c86411d5e49d7ba5ed14a6eee471675b060ee13668b94b8869a96cb",
+  "cursor_sha256": "3401daa28e9a7d4b77ab20bde6fad1999eaafdf1d05ecf00a46a501e3baa91ca",
+  "timeline": [
+    {
+      "timestamp_utc": "2026-10-22T17:54:11+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 200,
+      "known_connection_matches": true,
+      "known_mode_matches": true,
+      "known_model_matches": true,
+      "known_effort_matches": true,
+      "known_selection_exact_match": true
+    },
+    {
+      "timestamp_utc": "2026-10-22T17:54:47+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 200,
+      "known_connection_matches": true,
+      "known_mode_matches": true,
+      "known_model_matches": true,
+      "known_effort_matches": true,
+      "known_selection_exact_match": true
+    },
+    {
+      "timestamp_utc": "2026-10-22T17:55:36+00:00",
+      "method": "POST",
+      "endpoint": "acceptance_message_admission",
+      "status": 202
+    },
+    {
+      "timestamp_utc": "2026-10-22T17:56:13+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 200,
+      "known_connection_matches": true,
+      "known_mode_matches": true,
+      "known_model_matches": true,
+      "known_effort_matches": true,
+      "known_selection_exact_match": true
+    },
+    {
+      "timestamp_utc": "2026-10-22T17:57:07+00:00",
+      "method": "POST",
+      "endpoint": "acceptance_message_admission",
+      "status": 202
+    },
+    {
+      "timestamp_utc": "2026-10-22T17:57:22+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 200,
+      "known_connection_matches": true,
+      "known_mode_matches": true,
+      "known_model_matches": true,
+      "known_effort_matches": true,
+      "known_selection_exact_match": true
+    },
+    {
+      "timestamp_utc": "2026-10-22T17:57:42+00:00",
+      "method": "GET",
+      "endpoint": "connection_eligibility",
+      "status": 200,
+      "known_connection_matches": true,
+      "known_mode_matches": true,
+      "known_model_matches": true,
+      "known_effort_matches": true,
+      "known_selection_exact_match": true
+    }
+  ],
+  "matched_lines": 7,
+  "ignored_lines": 323,
+  "unparseable_lines": 0,
+  "counts": [
+    {
+      "endpoint": "acceptance_message_admission",
+      "method": "POST",
+      "status": 202,
+      "count": 2
+    },
+    {
+      "endpoint": "connection_eligibility",
+      "method": "GET",
+      "status": 200,
+      "count": 5
+    }
+  ],
+  "acceptance_proposal_sha256": null,
+  "acceptance_execution_sha256": null,
+  "acceptance_movement_sha256": null,
+  "start_anchor_verified": true,
+  "start_anchor_bytes": 4096,
+  "copytruncate_regrowth_with_identical_anchor_not_excluded": true,
+  "raw_log_saved": false,
+  "credentials_emitted": false,
+  "provider_requests": 0,
+  "limits": [
+    "nginx_status_is_not_provider_or_business_acceptance",
+    "refresh_or_login_may_write_legitimate_session_state",
+    "requests_are_not_attributed_to_a_unique_browser_without_a_separate_exclusive_UI_window",
+    "no_query_body_referer_user_agent_or_identity_is_preserved",
+    "no_service_changes_or_rotated_log_search",
+    "proposal_execution_relationship_to_chat_requires_separate_SQL_or_UI_evidence",
+    "no_HTTP_body_or_confirmation_nonce_is_read_or_stored"
+  ],
+  "timeline_schema": "ai38-turn-http-timeline-v1",
+  "timeline_source_sha256": "b702a83e96e12c368d05547e67c1629bd28fb58fb86c0fb58414e3f59fe2a008",
+  "supplied_completion_correlations": [
+    {
+      "turn": "A",
+      "externally_supplied_completed_at_utc": "2026-10-22T17:56:04.142000+00:00",
+      "strictly_later_known_selection_GET_count": 3,
+      "first_strictly_later_GET_utc": "2026-10-22T17:56:13+00:00"
+    },
+    {
+      "turn": "B",
+      "externally_supplied_completed_at_utc": "2026-10-22T17:57:33.289000+00:00",
+      "strictly_later_known_selection_GET_count": 1,
+      "first_strictly_later_GET_utc": "2026-10-22T17:57:42+00:00"
+    }
+  ],
+  "timestamp_precision": "nginx_seconds; same-second events are not ordered against SQL subsecond timestamps",
+  "query_parameter_values_emitted": false,
+  "raw_request_targets_emitted": false,
+  "HTTP_body_semantics_or_eligibility_reason_observed": false
+}

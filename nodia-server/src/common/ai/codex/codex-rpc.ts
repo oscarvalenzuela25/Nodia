@@ -17,6 +17,10 @@ import {
   codexError,
   codexObject,
 } from './codex-contract.js';
+import type {
+  CodexChatToolChannel,
+  CodexServerRequestId,
+} from './codex-chat-tool-channel.js';
 
 const MAX_FRAME = 2 * 1024 * 1024;
 type Pending = {
@@ -24,6 +28,14 @@ type Pending = {
   reject: (error: unknown) => void;
   timer: NodeJS.Timeout;
 };
+export interface CodexProtocolProgress {
+  frames: number;
+  requests: number;
+  bytes: number;
+  /** Includes requests rejected before the private channel can admit them. */
+  unforwardedRequests: number;
+  overflow: boolean;
+}
 
 /** One versioned JSONL connection. No stderr/payload is ever logged or returned. */
 export class CodexRpc extends EventEmitter {
@@ -33,6 +45,22 @@ export class CodexRpc extends EventEmitter {
   private buffer = '';
   private nextId = 0;
   private closed = false;
+  private experimentalChatApi = false;
+  private chatToolChannel: CodexChatToolChannel | undefined;
+  private readonly pendingChatRequests = new Set<CodexServerRequestId>();
+  private protocolObserver:
+    ((progress: CodexProtocolProgress) => Promise<void>) | undefined;
+  private protocolTail: Promise<void> = Promise.resolve();
+  private protocolQueued = 0;
+  private protocolOverflow = false;
+  private protocolProgress: CodexProtocolProgress = {
+    frames: 0,
+    requests: 0,
+    bytes: 0,
+    unforwardedRequests: 0,
+    overflow: false,
+  };
+  private protocolReceived = { frames: 0, requests: 0, bytes: 0 };
   get ownedPid() {
     return this.child.pid ?? null;
   }
@@ -148,23 +176,115 @@ export class CodexRpc extends EventEmitter {
         // Bound each frame before parsing, including partial JSON/UTF-8.
         let newline: number;
         while ((newline = this.buffer.indexOf('\n')) >= 0) {
-          if (Buffer.byteLength(this.buffer.slice(0, newline)) > MAX_FRAME)
-            throw codexError('codex_protocol_invalid');
           const raw = this.buffer.slice(0, newline);
           this.buffer = this.buffer.slice(newline + 1);
-          if (raw.trim()) this.receive(codexObject(JSON.parse(raw)));
+          if (this.protocolObserver) this.observedFrame(raw);
+          else {
+            if (Buffer.byteLength(raw) > MAX_FRAME)
+              throw codexError('codex_protocol_invalid');
+            if (raw.trim()) this.receive(codexObject(JSON.parse(raw)));
+          }
         }
-        if (Buffer.byteLength(this.buffer) > MAX_FRAME)
-          throw codexError('codex_protocol_invalid');
+        if (Buffer.byteLength(this.buffer) > MAX_FRAME) {
+          if (this.protocolObserver) {
+            this.observedFrame(this.buffer, true);
+            this.buffer = '';
+          } else throw codexError('codex_protocol_invalid');
+        }
       } catch {
         this.fail(codexError('codex_protocol_invalid', 502));
         void this.close().catch(() => undefined);
       }
     });
   }
+  /** One owner installs a content-free, awaited observer before any chat RPC. */
+  observeProtocol(
+    observer: (progress: CodexProtocolProgress) => Promise<void>,
+  ): () => Promise<void> {
+    if (this.closed || this.protocolObserver)
+      throw codexError('codex_runtime_unavailable');
+    this.protocolObserver = observer;
+    return async () => {
+      await this.protocolTail;
+      if (this.protocolObserver === observer) this.protocolObserver = undefined;
+    };
+  }
+  private observedFrame(raw: string, partial = false) {
+    if (this.protocolOverflow || this.closed) return;
+    const bytes = Buffer.byteLength(raw);
+    let message: Record<string, unknown> | undefined;
+    try {
+      if (!partial && bytes <= MAX_FRAME && raw.trim())
+        message = codexObject(JSON.parse(raw));
+    } catch {
+      /* Persist invalid frame before closing. */
+    }
+    const request =
+      !!message &&
+      typeof message.method === 'string' &&
+      Object.hasOwn(message, 'id');
+    const overflow =
+      partial ||
+      bytes > MAX_FRAME ||
+      this.protocolReceived.frames >= 10000 ||
+      this.protocolReceived.bytes + bytes > 16 * 1024 * 1024;
+    this.protocolOverflow ||= overflow;
+    this.protocolReceived = {
+      frames: this.protocolReceived.frames + 1,
+      requests: this.protocolReceived.requests + (request ? 1 : 0),
+      bytes: this.protocolReceived.bytes + bytes,
+    };
+    const snapshot = { ...this.protocolReceived, overflow };
+    const observer = this.protocolObserver!;
+    this.protocolQueued++;
+    this.protocolTail = this.protocolTail
+      .then(async () => {
+        this.protocolProgress = {
+          ...snapshot,
+          unforwardedRequests:
+            this.protocolProgress.unforwardedRequests +
+            (request && (overflow || !this.chatToolChannel) ? 1 : 0),
+        };
+        await observer({ ...this.protocolProgress });
+        if (overflow || (!message && raw.trim()))
+          throw codexError('codex_protocol_invalid', 502);
+        if (!this.closed && message) this.receive(message);
+      })
+      .catch(() => {
+        this.fail(codexError('codex_protocol_invalid', 502));
+        void this.close().catch(() => undefined);
+      })
+      .finally(() => {
+        this.protocolQueued--;
+      });
+  }
+  /** Called only for an admitted request which never reached the Nodia gateway. */
+  recordUnforwardedRequest(): Promise<void> {
+    if (!this.protocolObserver || this.closed)
+      return Promise.reject(codexError('codex_runtime_unavailable'));
+    const observer = this.protocolObserver;
+    const work = this.protocolTail.then(async () => {
+      this.protocolProgress.unforwardedRequests++;
+      if (
+        this.protocolProgress.unforwardedRequests >
+        this.protocolProgress.requests
+      )
+        throw codexError('codex_protocol_invalid', 502);
+      await observer({ ...this.protocolProgress });
+    });
+    this.protocolTail = work.catch(() => {
+      this.fail(codexError('codex_protocol_invalid', 502));
+      void this.close().catch(() => undefined);
+    });
+    return work;
+  }
   private receive(message: Record<string, unknown>) {
     if (typeof message.method === 'string') {
       if ('id' in message) {
+        if (this.chatToolChannel) {
+          this.receiveChatRequest(message);
+          return;
+        }
         // OCR owns no interactive tools, permissions or dynamic tool outputs.
         this.send({
           id: message.id,
@@ -186,6 +306,68 @@ export class CodexRpc extends EventEmitter {
     if ('error' in message) p.reject(codexError('codex_runtime_unavailable'));
     else if ('result' in message) p.resolve(message.result);
     else p.reject(codexError('codex_protocol_invalid', 502));
+  }
+  /**
+   * Caller must own the physical profile lease and bind an exact thread/turn.
+   * initialize's capability alone never opens this channel. OCR never calls it.
+   */
+  openChatToolChannel(channel: CodexChatToolChannel): () => void {
+    if (this.closed || !this.experimentalChatApi || this.chatToolChannel)
+      throw codexError('codex_runtime_unavailable');
+    this.chatToolChannel = channel;
+    return () => {
+      if (this.chatToolChannel !== channel) return;
+      this.chatToolChannel = undefined;
+      channel.close();
+    };
+  }
+  private receiveChatRequest(message: Record<string, unknown>): void {
+    const channel = this.chatToolChannel!;
+    const id = message.id;
+    if (
+      !(
+        (typeof id === 'string' &&
+          id.length > 0 &&
+          Buffer.byteLength(id) <= 128) ||
+        (typeof id === 'number' && Number.isSafeInteger(id))
+      ) ||
+      this.pendingChatRequests.size >= 32 ||
+      this.pendingChatRequests.has(id)
+    ) {
+      // A duplicate in-flight RPC ID cannot receive two contradictory replies.
+      this.protocolOverflow = true;
+      this.chatToolChannel?.close();
+      const close = () => {
+        this.fail(codexError('codex_protocol_invalid', 502));
+        void this.close().catch(() => undefined);
+      };
+      if (this.protocolObserver)
+        void this.recordUnforwardedRequest()
+          .finally(close)
+          .catch(() => undefined);
+      else close();
+      return;
+    }
+    this.pendingChatRequests.add(id);
+    void Promise.resolve()
+      .then(() => channel.handle(String(message.method), message.params, id))
+      .then((reply) => {
+        if (this.closed || this.chatToolChannel !== channel) return;
+        this.send({ id, ...reply });
+        if ('error' in reply) this.emit('toolRejected');
+      })
+      .catch(() => {
+        if (this.closed || this.chatToolChannel !== channel) return;
+        try {
+          this.send({
+            id,
+            error: { code: -32603, message: 'Tool request failed' },
+          });
+        } catch {
+          this.fail(codexError('codex_protocol_invalid', 502));
+        }
+      })
+      .finally(() => this.pendingChatRequests.delete(id));
   }
   private send(value: unknown) {
     if (this.closed || !this.child.stdin.writable)
@@ -215,9 +397,12 @@ export class CodexRpc extends EventEmitter {
       }
     });
   }
-  async initialize() {
+  async initialize(options?: { experimentalChatApi?: boolean }) {
     await this.request('initialize', {
       clientInfo: { name: 'nodia', title: 'Nodia', version: '0.0.1' },
+      ...(options?.experimentalChatApi === true
+        ? { capabilities: { experimentalApi: true } }
+        : {}),
     });
     this.send({ method: 'initialized', params: {} });
     const config = codexObject(
@@ -244,6 +429,7 @@ export class CodexRpc extends EventEmitter {
     ) {
       throw codexError('codex_runtime_unavailable');
     }
+    this.experimentalChatApi = options?.experimentalChatApi === true;
   }
   private fail(error: unknown = codexError('codex_runtime_unavailable')) {
     if (this.closed) return;
@@ -254,6 +440,9 @@ export class CodexRpc extends EventEmitter {
       p.reject(error);
     }
     this.pending.clear();
+    this.chatToolChannel?.close();
+    this.chatToolChannel = undefined;
+    this.pendingChatRequests.clear();
     this.emit('closed');
   }
   async close() {

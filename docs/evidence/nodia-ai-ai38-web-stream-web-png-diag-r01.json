@@ -1,0 +1,356 @@
+{
+  "schema": "ai38-web-stream-diag-v1",
+  "observed_VM_utc": "2026-10-22T21:31:23.559901+00:00",
+  "attempt_id": "aa874322-fef7-4799-87b1-7e00900759d2",
+  "window_begin_VM_utc": "2026-10-22T21:28:39Z",
+  "window_end_VM_utc": "2026-10-22T21:30:48Z",
+  "native_epoch": {
+    "id": "b20db84410938175ca00002b56ec3fef9b894af1399413b2fabbbbd36bcfab96",
+    "image": "sha256:985ba983fec5789671ceaa53c98103fbbf5b81c07938e6d10b2099034e2c0306",
+    "started_at": "2026-10-22T21:25:38.245485678Z"
+  },
+  "same_epoch_after": true,
+  "installed_SDK_versions": {
+    "gemini-webapi": "2.1.1",
+    "curl-cffi": "0.16.3"
+  },
+  "records": [
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:40.988928841Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_started",
+      "task_role": "generation",
+      "elapsed_ms": 2
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:41.263875202Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_completed",
+      "task_role": "generation",
+      "elapsed_ms": 277
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:41.266330537Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "upload_started",
+      "task_role": null,
+      "elapsed_ms": null,
+      "upload": {
+        "ordinal": 1,
+        "started_elapsed_ms": 279,
+        "completed_elapsed_ms": null,
+        "duration_ms": null,
+        "http_status": null,
+        "outcome": "pending",
+        "reference_nonempty": null,
+        "reference_prefix_matches": null
+      }
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:41.993736451Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "upload_http_completed",
+      "task_role": null,
+      "elapsed_ms": null,
+      "upload": {
+        "ordinal": 1,
+        "started_elapsed_ms": 279,
+        "completed_elapsed_ms": 1007,
+        "duration_ms": 727,
+        "http_status": 200,
+        "outcome": "http_completed",
+        "reference_nonempty": true,
+        "reference_prefix_matches": true
+      }
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:41.993840453Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_started",
+      "task_role": "generation",
+      "elapsed_ms": 1007
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:42.288555892Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_completed",
+      "task_role": "generation",
+      "elapsed_ms": 1301
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:42.288583992Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "generation_started",
+      "task_role": "generation",
+      "elapsed_ms": 1302
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:42.288785995Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "request_started",
+      "task_role": "generation",
+      "elapsed_ms": 1302
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:44.058582150Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "response_opened",
+      "task_role": "generation",
+      "elapsed_ms": 3071
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:28:44.058768752Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "first_body_chunk",
+      "task_role": "generation",
+      "elapsed_ms": 3072
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:17.064526999Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_started",
+      "task_role": "background_activity",
+      "elapsed_ms": 96077
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:17.368974995Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "activity_completed",
+      "task_role": "background_activity",
+      "elapsed_ms": 96382
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:40.989888760Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "cancellation_requested",
+      "task_role": "caller",
+      "elapsed_ms": 120003
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:40.989937760Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "client_close_started",
+      "task_role": "caller",
+      "elapsed_ms": 120003
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:40.992662699Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "client_close_completed",
+      "task_role": "caller",
+      "elapsed_ms": 120006
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:40.992801401Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "stream_exit_started",
+      "task_role": "generation",
+      "elapsed_ms": 120006
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:40.992812901Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "stream_exit_completed",
+      "task_role": "generation",
+      "elapsed_ms": 120006
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:40.992908602Z",
+      "event": "nodia_ai_web_progress",
+      "phase": "generation_cancelled",
+      "task_role": "generation",
+      "elapsed_ms": 120006
+    },
+    {
+      "timestamp_VM_utc": "2026-10-22T21:30:40.993220907Z",
+      "event": "nodia_ai_chat_failure",
+      "engine": "web",
+      "phase": "generation",
+      "error_type": "TimeoutError",
+      "failure_category": null,
+      "elapsed_ms": 120006,
+      "web_generation": {
+        "elapsed_ms": 120006,
+        "http_status": 200,
+        "byte_chunks": 2,
+        "body_bytes": 224,
+        "candidate_outputs": 0,
+        "activity_calls": 3,
+        "recovery_calls": 0,
+        "client_close_calls": 1,
+        "sink_errors": 0,
+        "upstream_eof_elapsed_ms": null,
+        "attached": true,
+        "last_phase": "generation_cancelled",
+        "cancelled_at_phase": "first_body_chunk",
+        "upstream_eof_seen": false,
+        "events": [
+          {
+            "phase": "activity_started",
+            "task_role": "generation",
+            "elapsed_ms": 2
+          },
+          {
+            "phase": "activity_completed",
+            "task_role": "generation",
+            "elapsed_ms": 277
+          },
+          {
+            "phase": "activity_started",
+            "task_role": "generation",
+            "elapsed_ms": 1007
+          },
+          {
+            "phase": "activity_completed",
+            "task_role": "generation",
+            "elapsed_ms": 1301
+          },
+          {
+            "phase": "generation_started",
+            "task_role": "generation",
+            "elapsed_ms": 1302
+          },
+          {
+            "phase": "request_started",
+            "task_role": "generation",
+            "elapsed_ms": 1302
+          },
+          {
+            "phase": "response_opened",
+            "task_role": "generation",
+            "elapsed_ms": 3071
+          },
+          {
+            "phase": "first_body_chunk",
+            "task_role": "generation",
+            "elapsed_ms": 3072
+          },
+          {
+            "phase": "activity_started",
+            "task_role": "background_activity",
+            "elapsed_ms": 96077
+          },
+          {
+            "phase": "activity_completed",
+            "task_role": "background_activity",
+            "elapsed_ms": 96382
+          },
+          {
+            "phase": "cancellation_requested",
+            "task_role": "caller",
+            "elapsed_ms": 120003
+          },
+          {
+            "phase": "client_close_started",
+            "task_role": "caller",
+            "elapsed_ms": 120003
+          },
+          {
+            "phase": "client_close_completed",
+            "task_role": "caller",
+            "elapsed_ms": 120006
+          },
+          {
+            "phase": "stream_exit_started",
+            "task_role": "generation",
+            "elapsed_ms": 120006
+          },
+          {
+            "phase": "stream_exit_completed",
+            "task_role": "generation",
+            "elapsed_ms": 120006
+          },
+          {
+            "phase": "generation_cancelled",
+            "task_role": "generation",
+            "elapsed_ms": 120006
+          }
+        ],
+        "uploads": {
+          "requests": 1,
+          "roundtrips_completed": 1,
+          "failed": 0,
+          "cancelled": 0,
+          "sink_errors": 0,
+          "metadata_errors": 0,
+          "records": [
+            {
+              "ordinal": 1,
+              "started_elapsed_ms": 279,
+              "completed_elapsed_ms": 1007,
+              "duration_ms": 727,
+              "http_status": 200,
+              "outcome": "http_completed",
+              "reference_nonempty": true,
+              "reference_prefix_matches": true
+            }
+          ]
+        },
+        "body_pacing": {
+          "first_chunk_elapsed_ms": 3072,
+          "last_chunk_elapsed_ms": 61579,
+          "max_inter_chunk_gap_ms": 58507
+        },
+        "audio_transport": {
+          "scoped": false,
+          "applied": false,
+          "input_files": null,
+          "audio_files": null,
+          "audio_media_types": [],
+          "descriptor_version": null
+        },
+        "output_shape": {
+          "text_nonempty": null,
+          "text_delta_nonempty": null,
+          "thoughts_present": null,
+          "thoughts_empty": null,
+          "candidates_count": null,
+          "media_count": null,
+          "first_yield_elapsed_ms": null,
+          "last_yield_elapsed_ms": null,
+          "first_text_elapsed_ms": null,
+          "text_outputs": 0,
+          "thoughts_only_outputs": 0,
+          "empty_outputs": 0,
+          "unclassified_outputs": 0
+        },
+        "stream_frames": {
+          "streams": 1,
+          "inspected_bytes": 224,
+          "frames": 2,
+          "parts": 2,
+          "unclassified_parts": 0,
+          "invalid_json_frames": 0,
+          "inner_json_parts": 2,
+          "invalid_inner_json_parts": 0,
+          "status_list_parts": 0,
+          "candidate_list_parts": 0,
+          "candidates": 0,
+          "candidate_id_parts": 0,
+          "completed_indicator_parts": 0,
+          "final_context_parts": 0,
+          "data_analysis_parts": 0,
+          "observer_errors": 0,
+          "enabled": true,
+          "cid_present": true,
+          "rid_present": true,
+          "limit_exceeded": false,
+          "incomplete_at_close": false,
+          "error_categories": {
+            "usage_limit": 0,
+            "model_inconsistent": 0,
+            "model_header_invalid": 0,
+            "ip_blocked": 0,
+            "temporary_1013": 0,
+            "other": 0
+          }
+        }
+      }
+    }
+  ],
+  "record_count": 19,
+  "raw_logs_audio_text_messages_tokens_or_headers_saved": false,
+  "HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "service_changes": 0
+}

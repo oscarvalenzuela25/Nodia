@@ -54,7 +54,7 @@ class DurableLoginRequests:
                     raise ServiceError("login_request_mismatch", "El plazo del intento cambió.", 409)
             else:
                 self.store.prune()
-                reservation = self.profiles.reserve(engine)
+                reservation = self.profiles.reserve(engine, purpose="login")
                 record = self._new(key, request_id, engine, actor, provider, deadline)
                 try:
                     record["containment"] = self.containment.create(key)

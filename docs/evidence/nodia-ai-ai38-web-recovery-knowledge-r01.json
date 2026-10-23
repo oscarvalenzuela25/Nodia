@@ -1,0 +1,35 @@
+{
+  "schema": "ai38-web-recovery-knowledge-v1",
+  "command": "npm run knowledge:check",
+  "mode": "check_only_no_build_or_publication",
+  "exit": 0,
+  "summary": {
+    "task": "AI-06",
+    "mode": "check",
+    "sources": 59,
+    "excluded": 28,
+    "documents": 31,
+    "fragments": 31,
+    "catalogRelease": "nodia-ai-ai15-reads/1",
+    "releaseId": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130"
+  },
+  "report_local_links_verified": 74,
+  "features": [
+    {
+      "name": "runtime-policy",
+      "revision": 19,
+      "status": "draft_unregistered_partial",
+      "approval": null,
+      "sha256": "b07e48e59d71efc257e385238db0a1963001d66a9b2e1496153cd82519f162d2"
+    },
+    {
+      "name": "context-execution",
+      "revision": 15,
+      "status": "draft_unregistered_partial",
+      "approval": null,
+      "sha256": "c3c6251bf37ff0784024f1350c186ac21b3219751fda477e864b3425b350bee7"
+    }
+  ],
+  "VM_operations": 0,
+  "provider_calls": 0
+}

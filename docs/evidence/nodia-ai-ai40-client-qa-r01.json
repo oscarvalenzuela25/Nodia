@@ -1,0 +1,33 @@
+{
+  "stage": "AI-40 client final global unit tests",
+  "command": [
+    "npm.cmd",
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=2",
+    "--reporter=json",
+    "--outputFile=../.tmp/ai40-client-tests-final-r05.json"
+  ],
+  "started_at_host_utc": "2026-10-23T00:31:41.830844+00:00",
+  "finished_at_host_utc": "2026-10-23T00:40:30.225587+00:00",
+  "exit_code": 0,
+  "source_files": 1071,
+  "source_sha256_before": "b1c4115efd8f22b6dd368e0adc48e46c81b9eecc535da83575968bc7f2368fc2",
+  "source_sha256_after": "b1c4115efd8f22b6dd368e0adc48e46c81b9eecc535da83575968bc7f2368fc2",
+  "sources_unchanged": true,
+  "changed_sources": [],
+  "test_report": "C:\\Users\\Oscar\\Desktop\\Nodia\\.tmp\\ai40-client-tests-final-r05.json",
+  "test_report_sha256": "8138fc2ad7612ba1823e6d84634114528dcf6ba3255b694d8c4f881b9d3d55cc",
+  "summary": {
+    "numTotalTests": 1809,
+    "numPassedTests": 1809,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "success": true
+  },
+  "files": 229,
+  "stdout_sha256": "7f6fa6d79be7eebc8b47c4c38c023030b1eed33b5eed15bb5ee332176cc569c3",
+  "stderr_sha256": "2c8009bc0783885cc851ccf5a31205d8632f2669d5facdc25f7d70d3b0f05cb5",
+  "real_account_or_provider_acceptance": false
+}

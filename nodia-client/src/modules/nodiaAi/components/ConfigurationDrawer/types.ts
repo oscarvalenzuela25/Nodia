@@ -28,5 +28,6 @@ export interface ConfigurationDrawerProps {
   onRetry: () => void;
   hasMore: boolean;
   onLoadMore: () => void;
+  canManageConnection?: boolean;
   onApply: (change: NodiaAiConfigurationChange) => Promise<void>;
 }

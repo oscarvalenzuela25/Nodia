@@ -57,6 +57,10 @@ Los ejemplos genéricos de las skills no son configuración obligatoria. En part
 
 ## Verificación
 
+- Política acordada con el usuario el 2026-10-23: priorizar pruebas de lógica en funciones pequeñas, parsers, validadores, políticas, transformaciones y unidades de estado/admisión con responsabilidad acotada. Probar entradas, salidas, errores, límites y transiciones observables; mantener la unidad real bajo prueba y simular solo sus fronteras externas.
+- No montar toda la aplicación ni duplicar un recorrido por endpoint por rutina. Reservar integración puntual y aislada para garantías entre unidades que no demuestra una prueba unitaria, como autenticación HTTP real, lifecycle, cancelación/cierre, aislamiento de perfiles o protocolo CLI; justificar el riesgo y utilizar el montaje mínimo.
+- Evitar pruebas de mera delegación, tests espejo de la implementación y snapshots masivos. La cantidad de pruebas o cobertura no acredita calidad: cada regresión debe detectar un defecto o una garantía contractual concreta. No crear abstracciones artificiales para hacer testeable una delegación sin lógica.
+- Esta política guía pruebas nuevas y las revisadas por un cambio; no autoriza borrar suites existentes, quitar assertions o desactivar checks sin evaluar y conservar sus garantías. Mantener separados unit tests sintéticos, integración aislada y verificación con cuenta real.
 - Ejecutar `./.venv/Scripts/python.exe run_tests.py` en Windows o `./.venv/bin/python run_tests.py` en Linux. El runner instala el aislamiento antes del descubrimiento; no ejecutar integración real dentro de la suite unitaria.
 - Seguir ADR-009 y ADR-016/plan 32: CLI con hash/version/perfil verificados, hooks de documento exacto/finalización y cierre de procesos. Integración real separada (`test/agentic-cli.integration.mjs --live-cli`); nunca sustituir Agentic por Web ni habilitarlo con marcadores/keys.
 - Para cambios de autenticación, probar acceso sin token, token incorrecto y token correcto. Para navegador/sesión, probar cancelación, timeout, persistencia y recuperación sin abrir Chrome real ni usar cookies reales.

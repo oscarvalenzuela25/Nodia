@@ -1,0 +1,48 @@
+{
+  "schema": "ai38-post-list-Web-binding-v1",
+  "status": "observed_read_only",
+  "snapshot": {
+    "connection_id": "2",
+    "provider_key": "gemini",
+    "selections": {
+      "agentic": {
+        "connection_id": "2",
+        "mode": "token_plan_agentic",
+        "model_id": "gemini-3.8-flash-high",
+        "effort_id": "high"
+      },
+      "web": {
+        "connection_id": "2",
+        "mode": "token_plan_web",
+        "model_id": "56fdd199312815e2",
+        "effort_id": null
+      }
+    },
+    "quiet": {
+      "jobs": 0,
+      "attempts": 0,
+      "slots": 0
+    },
+    "mode_fields_sha256": "0ffe07965997c958d92d3e2a117444aeefe8083b2a374d2fe63c0d1d89f7013d",
+    "updated_at": "2026-10-14T01:17:41.273Z",
+    "observed": {
+      "available": true,
+      "source": "native_observation",
+      "reason": null,
+      "selection": {
+        "connection_id": "2",
+        "mode": "token_plan_web",
+        "model_id": "56fdd199312815e2",
+        "effort_id": null
+      },
+      "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+      "session_generation": "1765b12e570849a3a3e856c639c287ed",
+      "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+      "supports_mcp": false,
+      "verified_attachment_media_types": []
+    }
+  },
+  "configured_SQL_writes": 0,
+  "provider_generations": 0,
+  "raw_stderr_emitted": false
+}

@@ -1,5 +1,7 @@
 # Contexto funcional de productos para NodiaAI
 
+Continuación AI-40: [Codex en la ficha de contexto y ejecución](nodia-ai/features/context-execution.md#aceptación-acotada-ai-40-en-linux), [especificación86](../../mvp/86-nodia-ai-ai40-codex-acceptance.md) y [validación acotada](../../evidence/nodia-ai-ai40-validation-r02.json). La ficha conserva draft/unregistered; estas pruebas no amplían las capacidades publicadas.
+
 Esta es la ubicación canónica de las explicaciones que permiten a NodiaAI entender los productos de Nodia. Convención establecida por solicitud del usuario el 2026-10-14. Aplica al especificar un producto nuevo, ampliar una funcionalidad o cambiar sus reglas. La incorporación de este estándar no aprueba especificaciones ni implementa su publicación en el chatbot.
 
 Los requisitos aprobados de producto, los ADR y los contratos efectivos del backend mantienen su autoridad. Estas fichas explican su significado y enlazan sus fuentes; no mantienen una segunda copia de DTOs, esquemas o reglas técnicas. Ante diferencias, registrar la discrepancia y resolverla antes de publicar contexto operativo.

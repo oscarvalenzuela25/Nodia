@@ -1,1 +1,0 @@
-const fs=require('fs'),s=JSON.parse(fs.readFileSync('docs/mvp/nodia-ai-v1-common-contracts.schema.json'));for(const name of ['StepStatus','ToolResultRef','PublicProposal','ExecutionChangedEvent'])console.log(JSON.stringify({name,schema:s.$defs[name]},null,2));

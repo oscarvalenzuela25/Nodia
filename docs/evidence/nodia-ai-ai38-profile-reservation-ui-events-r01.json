@@ -1,0 +1,468 @@
+{
+  "scope": "closed_profile_reservation_events_and_HTTP_metadata_not_payloads",
+  "status": "observed",
+  "source_sha256": "f5a5b63ad30b73ad3bd11a1644fb2298c570a208bae27da75fde4361d27158b0",
+  "began_at_utc": "2026-10-22T19:57:51+00:00",
+  "finished_at_utc": "2026-10-22T19:59:38+00:00",
+  "native_epoch": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z"
+  },
+  "same_native_epoch_after": true,
+  "reservation_events": [
+    {
+      "timestamp_utc": "2026-10-22T19:57:55.814655+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "532854347ab54f7da506ce28c0d11df4",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:57:55.814669+00:00",
+      "event": "acquire",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "bed8f96c4ba54d3fa9e1ff7ea02f3d57",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:57:56.204490+00:00",
+      "event": "wait",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "532854347ab54f7da506ce28c0d11df4",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 390,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:57:56.550542+00:00",
+      "event": "release",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "bed8f96c4ba54d3fa9e1ff7ea02f3d57",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 736,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:00.503942+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "532854347ab54f7da506ce28c0d11df4",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 4690,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:00.504034+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "177aee03c55d498ba3ee584db2bd3fa2",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:03.962978+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "177aee03c55d498ba3ee584db2bd3fa2",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 3459,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:15.386643+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "6efa5e117ceb44088a0dbc7470642d6d",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:15.387214+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "6efa5e117ceb44088a0dbc7470642d6d",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:15.387226+00:00",
+      "event": "acquire",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "3e09081b74404837b3b3802dbf7e2679",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:15.387700+00:00",
+      "event": "release",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "3e09081b74404837b3b3802dbf7e2679",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 1,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:15.777453+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "bd51e7665ca84b0daf9f0b3f64806406",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:19.335005+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "bd51e7665ca84b0daf9f0b3f64806406",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 3557,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:41.019934+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "e2d5a791532e4f21abe5c868b2527ea0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:41.019981+00:00",
+      "event": "acquire",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "d1df53a981d7492a9708e47b79556534",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:41.413280+00:00",
+      "event": "wait",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "e2d5a791532e4f21abe5c868b2527ea0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 393,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:41.793484+00:00",
+      "event": "release",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "d1df53a981d7492a9708e47b79556534",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 774,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:46.776021+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "e2d5a791532e4f21abe5c868b2527ea0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 5756,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:46.776106+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "e971989ebc1f47b5ab4e1e49f1758c39",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:49.775967+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "e971989ebc1f47b5ab4e1e49f1758c39",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 3000,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:08.299275+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "6e1a432636834860967e20c872b1c737",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:08.299399+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "health_status",
+      "reservation_nonce": "6e1a432636834860967e20c872b1c737",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:08.299522+00:00",
+      "event": "acquire",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "c871aec187a94f939d76d36632cb3810",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:08.300511+00:00",
+      "event": "release",
+      "engine": "web",
+      "purpose": "health_status",
+      "reservation_nonce": "c871aec187a94f939d76d36632cb3810",
+      "owner_engine": "web",
+      "owner_purpose": "health_status",
+      "elapsed_ms": 1,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:08.691084+00:00",
+      "event": "acquire",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "14976d748a2e4cf28666a6cdfe5b8888",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 0,
+      "quarantined": false,
+      "reason": null
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:12.751867+00:00",
+      "event": "release",
+      "engine": "agentic",
+      "purpose": "eligibility",
+      "reservation_nonce": "14976d748a2e4cf28666a6cdfe5b8888",
+      "owner_engine": "agentic",
+      "owner_purpose": "eligibility",
+      "elapsed_ms": 4061,
+      "quarantined": false,
+      "reason": null
+    }
+  ],
+  "HTTP_metadata": [
+    {
+      "timestamp_utc": "2026-10-22T19:58:00.504685+00:00",
+      "method": "GET",
+      "endpoint": "health",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:03.963153+00:00",
+      "method": "POST",
+      "endpoint": "observe",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:07.044796+00:00",
+      "method": "GET",
+      "endpoint": "liveness",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:15.387880+00:00",
+      "method": "GET",
+      "endpoint": "health",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:19.335165+00:00",
+      "method": "POST",
+      "endpoint": "observe",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:37.126845+00:00",
+      "method": "GET",
+      "endpoint": "liveness",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:46.776804+00:00",
+      "method": "GET",
+      "endpoint": "health",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:58:49.776044+00:00",
+      "method": "POST",
+      "endpoint": "observe",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:07.209851+00:00",
+      "method": "GET",
+      "endpoint": "liveness",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:08.300686+00:00",
+      "method": "GET",
+      "endpoint": "health",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:12.751996+00:00",
+      "method": "POST",
+      "endpoint": "observe",
+      "status": 200
+    },
+    {
+      "timestamp_utc": "2026-10-22T19:59:37.291483+00:00",
+      "method": "GET",
+      "endpoint": "liveness",
+      "status": 200
+    }
+  ],
+  "closed_owner_correlations": [],
+  "wait_blocking_owner_correlations": [
+    {
+      "wait_at_utc": "2026-10-22T19:57:56.204490+00:00",
+      "request_engine": "agentic",
+      "request_purpose": "eligibility",
+      "blocking_owner_reservation_nonce": "532854347ab54f7da506ce28c0d11df4",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "blocking_owner_acquisition_observed": true,
+      "blocking_owner_nonquarantined_release_observed": true,
+      "blocking_owner_released_at_utc": "2026-10-22T19:58:00.503942+00:00",
+      "later_same_engine_purpose_acquisitions": [
+        {
+          "timestamp_utc": "2026-10-22T19:58:00.504034+00:00",
+          "reservation_nonce": "177aee03c55d498ba3ee584db2bd3fa2"
+        },
+        {
+          "timestamp_utc": "2026-10-22T19:58:15.777453+00:00",
+          "reservation_nonce": "bd51e7665ca84b0daf9f0b3f64806406"
+        },
+        {
+          "timestamp_utc": "2026-10-22T19:58:46.776106+00:00",
+          "reservation_nonce": "e971989ebc1f47b5ab4e1e49f1758c39"
+        },
+        {
+          "timestamp_utc": "2026-10-22T19:59:08.691084+00:00",
+          "reservation_nonce": "14976d748a2e4cf28666a6cdfe5b8888"
+        }
+      ],
+      "waiter_request_identity_not_available": true,
+      "same_request_wait_to_acquire_proven": false,
+      "later_acquire_reservation_nonce_is_not_blocking_owner_nonce": true
+    },
+    {
+      "wait_at_utc": "2026-10-22T19:58:41.413280+00:00",
+      "request_engine": "agentic",
+      "request_purpose": "eligibility",
+      "blocking_owner_reservation_nonce": "e2d5a791532e4f21abe5c868b2527ea0",
+      "owner_engine": "agentic",
+      "owner_purpose": "health_status",
+      "blocking_owner_acquisition_observed": true,
+      "blocking_owner_nonquarantined_release_observed": true,
+      "blocking_owner_released_at_utc": "2026-10-22T19:58:46.776021+00:00",
+      "later_same_engine_purpose_acquisitions": [
+        {
+          "timestamp_utc": "2026-10-22T19:58:46.776106+00:00",
+          "reservation_nonce": "e971989ebc1f47b5ab4e1e49f1758c39"
+        },
+        {
+          "timestamp_utc": "2026-10-22T19:59:08.691084+00:00",
+          "reservation_nonce": "14976d748a2e4cf28666a6cdfe5b8888"
+        }
+      ],
+      "waiter_request_identity_not_available": true,
+      "same_request_wait_to_acquire_proven": false,
+      "later_acquire_reservation_nonce_is_not_blocking_owner_nonce": true
+    }
+  ],
+  "malformed_diagnostic_lines": 0,
+  "raw_logs_or_credential_bytes_saved": false,
+  "requested_since_window_may_omit_an_owner_acquired_before_it": true,
+  "holder_chain_is_based_on_instrumented_reservation_nonce_not_HTTP_coincidence": true,
+  "cross_request_origin_not_proven_without_separate_exclusive_trial": true,
+  "HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "service_changes": 0
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "ai38-profile-reservation-UI-v1",
+  "status": "passed_sampled_reload_recovery",
+  "source": "authenticated_Vite_UI_actual_microservice_FIX",
+  "conversation_id": "a160f615-ea41-4a05-831d-acdbb413ec4d",
+  "initial_open_and_three_reloads": [
+    {
+      "case": "initial_open",
+      "observed_at_operator_clock": "2026-10-22T19:51:46.799Z",
+      "browser_entry_scripts": [
+        "/@vite/client",
+        "/src/main.tsx"
+      ],
+      "checking": false,
+      "composer_enabled": true,
+      "input_value_empty": true,
+      "turn_a_count": 2,
+      "turn_b_count": 2,
+      "turn_completed": true,
+      "url": "http://localhost:5174/tools/nodia-ai?chat=a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "visible_busy": false
+    },
+    {
+      "case": "reload_1",
+      "observed_at_operator_clock": "2026-10-22T19:52:12.418Z",
+      "browser_entry_scripts": [
+        "/@vite/client",
+        "/src/main.tsx"
+      ],
+      "checking": false,
+      "composer_enabled": true,
+      "input_value_empty": true,
+      "turn_a_count": 2,
+      "turn_b_count": 2,
+      "turn_completed": true,
+      "url": "http://localhost:5174/tools/nodia-ai?chat=a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "visible_busy": false
+    },
+    {
+      "case": "reload_2",
+      "observed_at_operator_clock": "2026-10-22T19:52:39.715Z",
+      "browser_entry_scripts": [
+        "/@vite/client",
+        "/src/main.tsx"
+      ],
+      "checking": false,
+      "composer_enabled": true,
+      "input_value_empty": true,
+      "turn_a_count": 2,
+      "turn_b_count": 2,
+      "turn_completed": true,
+      "url": "http://localhost:5174/tools/nodia-ai?chat=a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "visible_busy": false
+    },
+    {
+      "case": "reload_3",
+      "observed_at_operator_clock": "2026-10-22T19:52:52.255Z",
+      "browser_entry_scripts": [
+        "/@vite/client",
+        "/src/main.tsx"
+      ],
+      "checking": false,
+      "composer_enabled": true,
+      "input_value_empty": true,
+      "turn_a_count": 2,
+      "turn_b_count": 2,
+      "turn_completed": true,
+      "url": "http://localhost:5174/tools/nodia-ai?chat=a160f615-ea41-4a05-831d-acdbb413ec4d",
+      "visible_busy": false
+    }
+  ],
+  "manual_retry_clicks": 0,
+  "new_messages_sent": 0,
+  "new_business_confirmations": 0,
+  "credential_or_token_storage_accessed": false,
+  "entrypoint": "Vite_5174_current_workspace_not_frozen_Client_distribution",
+  "asserted_scope": "sampled_metadata_reloads_and_existing_history_not_new_inference_or_MCP",
+  "screenshot": "docs/evidence/nodia-ai-ai38-profile-reservation-ui-r01.png",
+  "VM_window_begin_utc": "2026-10-22T19:57:51Z",
+  "operator_clock_not_used_for_VM_log_correlation": true,
+  "VM_window_end_utc": "2026-10-22T19:59:38Z",
+  "screenshot_sha256": "b43f429fa7c3db9cea3bf90033f9087cb41054f7874c92c5e19513b89aa97b63"
+}

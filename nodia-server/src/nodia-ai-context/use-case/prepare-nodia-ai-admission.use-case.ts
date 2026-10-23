@@ -30,6 +30,7 @@ import { NODIA_AI_KNOWLEDGE_TOOLS } from './execute-nodia-ai-knowledge-tool.use-
 import { SelectNodiaAiTurnToolsUseCase } from '../../nodia-ai-tools/use-case/select-nodia-ai-turn-tools.use-case.js';
 import { NodiaAiToolSelectionFlowUseCase } from '../../nodia-ai-tools/use-case/nodia-ai-tool-selection-flow.use-case.js';
 import { NodiaAiKnownPreDispatchError } from '../../nodia-ai-runtime/types/worker.types.js';
+import { observationIdentityManifest } from './nodia-ai-observation-identity.js';
 
 @Injectable()
 export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer {
@@ -57,8 +58,9 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
       revision: chat.revision,
       selection: structuredClone(chat.selection),
       toolProfileId: options?.toolProfileId,
-      eligibility: await this.adapter.observe(chat.selection),
+      eligibility: structuredClone(await this.adapter.observe(chat.selection)),
     };
+    if (observation.eligibility.adapterIdentity) Object.freeze(observation.eligibility.adapterIdentity);
     Object.freeze(observation.selection);
     Object.freeze(observation.eligibility);
     Object.freeze(observation);
@@ -103,6 +105,10 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
       !observation.eligibility.resourceKey
     )
       throw new ServiceUnavailableException('nodia_ai:mode_unavailable');
+    let adapterManifest: ReturnType<typeof observationIdentityManifest>;
+    try { adapterManifest = observationIdentityManifest(selection, observation.eligibility); }
+    catch { throw new ConflictException('nodia_ai:eligibility_changed'); }
+    const codex = adapterManifest.adapter_identity !== undefined;
     await this.adapter.verifyConfiguration(
       selection,
       observation.eligibility.configurationGeneration,
@@ -168,11 +174,12 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
       catalogVersion: knowledge.catalog_release,
       contextManifest: {
         schema_version: 1,
+        ...adapterManifest,
         verified_modalities: [
-          ...(observation.eligibility.verifiedModalities ?? []),
+          ...(!codex ? observation.eligibility.verifiedModalities ?? [] : []),
         ],
         verified_attachment_media_types: [
-          ...(observation.eligibility.verifiedAttachmentMediaTypes ?? []),
+          ...(!codex ? observation.eligibility.verifiedAttachmentMediaTypes ?? [] : []),
         ],
         knowledge_release: knowledge.release_id,
         resource_key: observation.eligibility.resourceKey,

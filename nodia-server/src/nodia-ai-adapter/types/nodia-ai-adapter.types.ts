@@ -11,20 +11,35 @@ export const NODIA_AI_MCP_CATALOG_LIMITS = Object.freeze({
   descriptionUtf8Bytes: 2048,
 });
 
-export interface NodiaAiAdapterObservation {
+export interface NodiaAiAdapterObservationBase {
   available: boolean;
   observedAt: Date;
-  source: 'gemini_live_session_and_catalog';
   resourceKey: string | null;
   configurationGeneration: string;
   sessionGeneration: string;
-  adapterContractVersion: 'nodia-ai-gemini-chat/1';
   supportsMcp: boolean;
   verifiedModalities?: readonly ('image' | 'pdf' | 'audio')[];
   /** Exact formats proved in this selection/session; category summaries never authorize originals. */
   verifiedAttachmentMediaTypes?: readonly string[];
   reason: string | null;
 }
+export type NodiaAiAdapterObservation = NodiaAiAdapterObservationBase &
+  (
+    | {
+        source: 'gemini_live_session_and_catalog';
+        adapterContractVersion: 'nodia-ai-gemini-chat/1';
+        adapterIdentity?: undefined;
+      }
+    | {
+        source: 'codex_live_session_and_catalog';
+        adapterContractVersion: 'nodia-ai-codex-chat/1';
+        adapterIdentity: {
+          providerKey: 'openai';
+          contractVersion: 'nodia-ai-codex-chat/1';
+          connectionId: string;
+        };
+      }
+  );
 export const NODIA_AI_NATIVE_MEDIA_TYPES = Object.freeze({
   'image/png': 'image',
   'image/jpeg': 'image',
@@ -42,10 +57,14 @@ export function isNodiaAiNativeFormatVerified(
   kind: string,
   mediaType: string | null,
 ): boolean {
-  return mediaType !== null &&
+  return (
+    mediaType !== null &&
     Object.hasOwn(NODIA_AI_NATIVE_MEDIA_TYPES, mediaType) &&
-    NODIA_AI_NATIVE_MEDIA_TYPES[mediaType as keyof typeof NODIA_AI_NATIVE_MEDIA_TYPES] === kind &&
-    verified?.includes(mediaType) === true;
+    NODIA_AI_NATIVE_MEDIA_TYPES[
+      mediaType as keyof typeof NODIA_AI_NATIVE_MEDIA_TYPES
+    ] === kind &&
+    verified?.includes(mediaType) === true
+  );
 }
 export interface NodiaAiAdapterTool {
   name: string;
@@ -88,7 +107,10 @@ export interface NodiaAiContextMeasureInput {
   selection: NodiaAiSelection;
   canonicalPrompt: string;
   tools?: readonly NodiaAiAdapterTool[];
-  attachments?: readonly { kind: 'image' | 'pdf' | 'audio'; media_type?: string }[];
+  attachments?: readonly {
+    kind: 'image' | 'pdf' | 'audio';
+    media_type?: string;
+  }[];
 }
 /** Observable initial prompt only; SDK/CLI internal token windows remain unknown. */
 export interface NodiaAiContextMeasurement {
@@ -111,6 +133,8 @@ export interface NodiaAiAdapterRequest {
   resourceKey: string;
   sessionGeneration: string;
   configurationGeneration: string;
+  /** Fenced worker authority; never supplied by a model or a public request. */
+  onLeaseCheck?: (signal: AbortSignal) => Promise<void>;
   attachments?: readonly {
     kind: 'image' | 'pdf' | 'audio';
     media_type: string;

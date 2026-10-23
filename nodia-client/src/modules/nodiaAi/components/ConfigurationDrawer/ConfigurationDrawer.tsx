@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { Alert, Box, Button, IconButton, LinearProgress, Typography } from "@mui/material";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { useTranslation } from "react-i18next";
+import { nodiaAiEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import type { NodiaAiMode, NodiaAiSelection } from "../../infrastructure/types";
 import type { ConfigurationDrawerProps } from "./types";
@@ -31,7 +32,7 @@ function ConfigurationForm(props: ConfigurationDrawerProps & {
     connections, selection, onClose, routingEnabled, onSelectionChange,
     eligibility, eligibilityBusy, eligibilityError, onRetryEligibility,
     isLoading, isFetching, isSaving, readOnly, error, onRetry,
-    hasMore, onLoadMore, onApply, titleId, submitting, setSubmitting,
+    hasMore, onLoadMore, onApply, canManageConnection, titleId, submitting, setSubmitting,
   } = props;
   const [connectionId, setConnectionId] = useState<string | null>(selection?.connection_id ?? null);
   const [mode, setMode] = useState<NodiaAiMode | null>(selection?.mode ?? null);
@@ -55,21 +56,27 @@ function ConfigurationForm(props: ConfigurationDrawerProps & {
   const fieldsDisabled = controlsBusy || readOnly;
   const exactEligibility = sameSelection(eligibility?.selection ?? null, draftSelection) ? eligibility : null;
   const target = exactEligibility?.routing_target;
-  const canRoute = mode === "token_plan_web" && exactEligibility?.available === true
+  const configurationDisabled = !!connection && (!connection.is_active || modeConfig?.configuration === "disabled");
+  const codex = connection?.provider_key === "openai" && mode === "token_plan_agentic";
+  const unsupportedWeb = connection?.provider_key === "openai" && mode === "token_plan_web";
+  const canRoute = !configurationDisabled && connection?.provider_key === "gemini" && mode === "token_plan_web" && exactEligibility?.available === true
     && target?.selection.connection_id === connectionId && target.selection.mode === "token_plan_agentic";
   const selectionMissing = connectionId !== null && (!connection || (mode !== null && !modeConfig)
     || (modelId !== null && !model) || (effortId !== null && !model?.efforts.some(item => item.effort_id === effortId)));
   const canApply = !fieldsDisabled && !eligibilityBusy && !error && !eligibilityError
     && !selectionMissing && draftSelection !== null && exactEligibility?.available === true
-    && mode !== "api_key" && (!automaticRouting || canRoute);
+    && connection?.is_active === true && modeConfig?.configuration !== "disabled"
+    && mode !== "api_key" && !unsupportedWeb && (!automaticRouting || canRoute);
 
   const modeLabel = (value: NodiaAiMode) => t(`nodiaAi:modes.${value}`);
   const effortLabel = (value: string, label: string) => ["low", "medium", "high"].includes(value)
     ? t(`nodiaAi:effort_levels.${value}`) : label;
   const connectionOptions = connections.map(item => ({ value: item.connection_id, label: item.label }));
   if (connectionId && !connection) connectionOptions.push({ value: connectionId, label: t("nodiaAi:configuration.missing_connection", { id: connectionId }) });
-  const modeOptions = (connection?.modes ?? []).map(item => ({ value: item.mode, label: modeLabel(item.mode) }));
-  if (mode && !modeConfig) modeOptions.push({ value: mode, label: modeLabel(mode) });
+  const modeOptions = (connection?.modes ?? [])
+    .filter(item => connection?.provider_key !== "openai" || item.mode !== "token_plan_web")
+    .map(item => ({ value: item.mode, label: modeLabel(item.mode) }));
+  if (mode && (!modeConfig || unsupportedWeb)) modeOptions.push({ value: mode, label: modeLabel(mode) });
   const modelOptions = (modeConfig?.models ?? []).map(item => ({ value: item.model_id, label: item.label }));
   if (modelId && !model) modelOptions.push({ value: modelId, label: t("nodiaAi:configuration.missing_model", { id: modelId }) });
   const effortOptions = (model?.efforts ?? []).map(item => ({ value: item.effort_id, label: effortLabel(item.effort_id, item.label) }));
@@ -128,17 +135,35 @@ function ConfigurationForm(props: ConfigurationDrawerProps & {
           disabled={fieldsDisabled || !model || model.efforts.length === 0} placeholder={t("nodiaAi:configuration.unassigned_effort")}
           onChange={setEffortId} />
         <Typography variant="caption" color="text.secondary">{t("nodiaAi:configuration.effort_preference")}</Typography>
+        {configurationDisabled && <Alert severity="warning">{t("nodiaAi:configuration.mode_disabled")}</Alert>}
         {selectionMissing && <Alert severity="warning">{t("nodiaAi:configuration.selection_missing")}</Alert>}
         {mode === "api_key" && <Alert severity="info">{t("nodiaAi:configuration.api_deferred")}</Alert>}
+        {unsupportedWeb && <Alert severity="warning">{t("nodiaAi:configuration.openai_web_disabled")}</Alert>}
+        {codex && <Box>
+          <Typography variant="body2" color="text.secondary">{t("nodiaAi:configuration.codex_description")}</Typography>
+          {canManageConnection && <Button component="a"
+            href={`/settings/ai-providers?provider=${encodeURIComponent(connectionId!)}&mode=token_plan_agentic`}
+            target="_blank" rel="noopener noreferrer" disabled={fieldsDisabled}
+            sx={{ mt: 1, minHeight: 44, width: { xs: "100%", sm: "auto" } }}>
+            {t("nodiaAi:configuration.codex_manage")}
+          </Button>}
+          <Typography variant="caption" component="p" color="text.secondary" sx={{ mt: 1, mb: 0 }}>{t("nodiaAi:configuration.codex_private_login")}</Typography>
+        </Box>}
         {eligibilityError && <Alert severity="error" action={<Button color="inherit" disabled={controlsBusy || eligibilityBusy} onClick={onRetryEligibility}>{t("nodiaAi:configuration.retry")}</Button>}>{eligibilityError}</Alert>}
-        {draftSelection && !eligibilityError && mode !== "api_key" && <Alert severity={exactEligibility?.available ? "success" : "info"}>
+        {draftSelection && !unsupportedWeb && !configurationDisabled && !eligibilityError && mode !== "api_key" && <Alert severity={exactEligibility?.available ? "success" : "info"}>
           {t(eligibilityBusy ? "nodiaAi:configuration.checking" : exactEligibility?.available
             ? "nodiaAi:configuration.available" : "nodiaAi:configuration.unavailable")}
+          {!eligibilityBusy && exactEligibility?.available === false && <Typography variant="body2">
+            {t(`nodiaAi:${nodiaAiEligibilityReasonKey(exactEligibility.reason)}`)}
+          </Typography>}
           {exactEligibility?.available === false && !selectionMissing && <Button color="inherit"
             disabled={fieldsDisabled} onClick={onRetryEligibility}
             sx={{ display: "flex", mt: 1, minHeight: 44, width: { xs: "100%", sm: "auto" } }}>
             {t("nodiaAi:configuration.check_again")}
           </Button>}
+        </Alert>}
+        {!configurationDisabled && mode === "token_plan_agentic" && exactEligibility?.available === true && !eligibilityBusy && !eligibilityError && <Alert severity={exactEligibility.supports_mcp ? "success" : "info"}>
+          {t(exactEligibility.supports_mcp ? "nodiaAi:configuration.mcp_verified" : "nodiaAi:configuration.mcp_unverified")}
         </Alert>}
         {canRoute && <SwitchWrapper>
           <RoutingLabel labelPlacement="start" label={t("nodiaAi:configuration.automatic_agentic")}

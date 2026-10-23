@@ -1,0 +1,1 @@
+{"pid": "2965141", "env": {"HOME": "/var/lib/nodia", "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/nodia-runtime/bus", "XDG_RUNTIME_DIR": "/run/nodia-runtime", "NODIA_CODEX_PROFILE_ROOT": null, "NODIA_CODEX_ENABLED": null, "DOTENV_CONFIG_PATH": "/opt/nodia/releases/nodia-server-ai15-20261016/.env", "NODE_ENV": null}, "cwd": "/opt/nodia/releases/nodia-server-ai40-r01"}

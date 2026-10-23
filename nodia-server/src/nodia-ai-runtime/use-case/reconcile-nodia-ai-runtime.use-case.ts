@@ -18,6 +18,7 @@ import {
 import { lockNodiaAiQueue } from '../queue-lock.js';
 import { publishNodiaAiRunChanged } from '../../nodia-ai-run/event-journal.js';
 import {
+  assertRuntimeTerminalProof,
   readRuntimeProofRequest,
   runtimeProofDescriptor,
 } from './runtime-reconciliation-descriptor.js';
@@ -102,19 +103,11 @@ export class ReconcileNodiaAiRuntimeUseCase {
       snapshot.request,
       AbortSignal.timeout(this.policy.timing.domain_step_seconds * 1000),
     );
-    if (
-      proof.engine !== snapshot.request.engine ||
-      proof.attemptId !== snapshot.request.attemptId ||
-      proof.resourceKey !== snapshot.request.resourceKey ||
-      proof.sessionGeneration !== snapshot.request.sessionGeneration ||
-      proof.operationRef !== snapshot.request.operationRef ||
-      proof.processClosed !== true ||
-      !uuid.test(proof.terminalProofId) ||
-      !['completed', 'abandoned_unknown'].includes(proof.outcome) ||
-      !(proof.observedAt instanceof Date) ||
-      !Number.isFinite(proof.observedAt.getTime())
-    )
+    try {
+      assertRuntimeTerminalProof(snapshot.request, proof);
+    } catch {
       throw new ConflictException('nodia_ai:invalid_terminal_proof');
+    }
     await this.runtime.transaction(async (manager) => {
       await lockAuthority(manager);
       await lockNodiaAiQueue(manager);

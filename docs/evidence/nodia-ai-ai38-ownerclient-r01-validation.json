@@ -1,0 +1,394 @@
+{
+  "API_url": "/api/v1",
+  "Google_public_client_hash_preserved": true,
+  "VM_operations": 0,
+  "additional_JSON_and_public_inputs_pinned": true,
+  "all_178_archive_members_verified": true,
+  "all_47_output_changes_explained": [
+    {
+      "after": "dist/assets/Actions-COK1sRNX.js",
+      "before": "dist/assets/Actions-CXlM3JOT.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/AiProviders-D6Xra7ds.js",
+      "before": "dist/assets/AiProviders-69QkVd19.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Attachments-CezYrkpr.js",
+      "before": "dist/assets/Attachments-BHbH9X6m.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Business-BLqPsf6z.js",
+      "before": "dist/assets/Business-DVsXRACv.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/BusinessCollaboratorModal-BV_Io45X.js",
+      "before": "dist/assets/BusinessCollaboratorModal-BhONbukE.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/BusinessDetail-CIHkGHcp.js",
+      "before": "dist/assets/BusinessDetail-BRlPeSFP.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Checkbox-CIOMA8Pd.js",
+      "before": "dist/assets/Checkbox-CZflqvRU.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/DateInput-BpZ3JoqY.js",
+      "before": "dist/assets/DateInput-CGcotAMt.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/DateTimeInput-DnglHCrC.js",
+      "before": "dist/assets/DateTimeInput-BdvTJ1h7.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/FilterChips-C7ni5ZXc.js",
+      "before": "dist/assets/FilterChips-BHtWCR_o.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Home-BxHd4Djp.js",
+      "before": "dist/assets/Home-vzTAkaBl.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/index-Dif38oFQ.js",
+      "before": "dist/assets/index-BY0b-zcW.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Login-BlTi_iPA.js",
+      "before": "dist/assets/Login-Djsp9BTQ.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Maintenance-WC-t3D4A.js",
+      "before": "dist/assets/Maintenance-DXoFVr-b.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/MobileRecordCard-vq6t23IY.js",
+      "before": "dist/assets/MobileRecordCard-B3v-r5MA.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/MobileRecordCard-BBwENFTr.js",
+      "before": "dist/assets/MobileRecordCard-DSP3mapf.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/MobileShortcutDialog-kvb9D6Kh.js",
+      "before": "dist/assets/MobileShortcutDialog-BzCs16rl.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Modules-BaNudW5p.js",
+      "before": "dist/assets/Modules-BsLnHGJf.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/NotFound-CEDhuvMd.js",
+      "before": "dist/assets/NotFound-Cd4WlpE_.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/PersonalFinance-Cft6ZBxe.js",
+      "before": "dist/assets/PersonalFinance-D0RcTdK9.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/phoneNumbers-_b0OR2No.js",
+      "before": "dist/assets/phoneNumbers-CjYOnzww.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Preferences-D2966TZu.js",
+      "before": "dist/assets/Preferences-B3l9I_pH.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/ProviderContacts-CRflaTek.js",
+      "before": "dist/assets/ProviderContacts-CnscW1vw.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/RentalReservations-CjqLoPd8.js",
+      "before": "dist/assets/RentalReservations-BxfRKKuC.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/ReportObservation-Bwif4B__.js",
+      "before": "dist/assets/ReportObservation-D3BVINBw.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Roles-CNPRTNyo.js",
+      "before": "dist/assets/Roles-DlYHQdSs.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/SelectMultipleInput-ux1nlWbd.js",
+      "before": "dist/assets/SelectMultipleInput-Jf0pEybw.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/SelectSingleInput-K8jm-MXc.js",
+      "before": "dist/assets/SelectSingleInput-BzwXFidr.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/styles-Cd8Si7I_.js",
+      "before": "dist/assets/styles-CGGGl-eH.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/styles-D2Qmu5B7.js",
+      "before": "dist/assets/styles-CJet0gx3.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/styles-QABPu59O.js",
+      "before": "dist/assets/styles-CYZxbgGA.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/TranslationInput-BYvURIfa.js",
+      "before": "dist/assets/TranslationInput-CM8WiEiy.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useAuth-d3ZdzSWj.js",
+      "before": "dist/assets/useAuth-BdOU40tP.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useInfiniteQuery-CYqhNOri.js",
+      "before": "dist/assets/useInfiniteQuery-FAgVIJJ6.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useIsFetching-Dv7q0KkH.js",
+      "before": "dist/assets/useIsFetching-DqMNnOrb.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useMutation-BNvYSaaM.js",
+      "before": "dist/assets/useMutation-DBn5jau9.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useMutationState-BL_RCpxI.js",
+      "before": "dist/assets/useMutationState-FMXSeTOu.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useObservation-DFlVJDut.js",
+      "before": "dist/assets/useObservation-DOnWUhIX.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useQuery-DeiOj-jB.js",
+      "before": "dist/assets/useQuery-F0PFejb5.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/Users-BPViSk0y.js",
+      "before": "dist/assets/Users-BO1Izbr4.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/UserScopeSelect-BHJcJVaO.js",
+      "before": "dist/assets/UserScopeSelect-B1D55Ji8.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/useServices-DyJnLXuR.js",
+      "before": "dist/assets/useServices-BOIDPH_g.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/webLogin-5Lik_Cob.js",
+      "before": "dist/assets/webLogin-Cdnc3qdj.js",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/index.html",
+      "before": "dist/index.html",
+      "reason": "only_content_hash_references_changed"
+    },
+    {
+      "after": "dist/assets/api-d1C59FeB.js",
+      "before": "dist/assets/api-ARnSH-iB.js",
+      "reason": "only_two_exact_ES_EN_eligibility_reasons_objects_plus_content_hash_references"
+    },
+    {
+      "after": "dist/assets/NodiaAI-ChAvl5cd.js",
+      "before": "dist/assets/NodiaAI-BNGZ_Mve.js",
+      "reason": "reviewed_NodiaAI_freshness_retry_logic"
+    },
+    {
+      "after": "dist/assets/useServices-C6qggEp7.js",
+      "before": "dist/assets/useServices-BFmamFUU.js",
+      "reason": "reviewed_NodiaAI_freshness_retry_logic"
+    }
+  ],
+  "archive_sha256": "176f6e9306d1a694b31907355599efc8718d8405587f23a01f3a462597721ca3",
+  "byte_identical_outputs": [
+    "dist/assets/AddCircleOutlined-Cc_bJK7K.js",
+    "dist/assets/Alert-twFAiCNz.js",
+    "dist/assets/ArrowBackOutlined-9eQ4t9so.js",
+    "dist/assets/attachmentSchemas-DfJaKbB4.js",
+    "dist/assets/BaseModal-BqCit9d1.js",
+    "dist/assets/BlockOutlined-BDyu7bC_.js",
+    "dist/assets/BusinessPagination-CXNruH9g.js",
+    "dist/assets/Button-BWFKXJib.js",
+    "dist/assets/CheckCircleOutlined-DEoHg-C-.js",
+    "dist/assets/CloseOutlined-D4RKsfSI.js",
+    "dist/assets/ConfirmDialog-CxubSvad.js",
+    "dist/assets/ContentCopy-qWZsDgWo.js",
+    "dist/assets/createSvgIcon-Bg6mhHqj.js",
+    "dist/assets/DeleteOutlined-D2FbwLP1.js",
+    "dist/assets/dm-sans-latin-300-normal-C46oWILc.woff2",
+    "dist/assets/dm-sans-latin-300-normal-CsNfKS1n.woff",
+    "dist/assets/dm-sans-latin-400-normal-BwCSEQnW.woff",
+    "dist/assets/dm-sans-latin-400-normal-CW0RaeGs.woff2",
+    "dist/assets/dm-sans-latin-500-normal-B9HHJjqV.woff2",
+    "dist/assets/dm-sans-latin-500-normal-Dr3UlScf.woff",
+    "dist/assets/dm-sans-latin-700-normal-CUSSCpQX.woff",
+    "dist/assets/dm-sans-latin-700-normal-DvUfVpUG.woff2",
+    "dist/assets/dm-sans-latin-ext-300-normal-COYJju1g.woff",
+    "dist/assets/dm-sans-latin-ext-300-normal-WGwOtXxi.woff2",
+    "dist/assets/dm-sans-latin-ext-400-normal-BjWJ59Pq.woff",
+    "dist/assets/dm-sans-latin-ext-400-normal-BtiwyxMk.woff2",
+    "dist/assets/dm-sans-latin-ext-500-normal-BJfUCQsA.woff2",
+    "dist/assets/dm-sans-latin-ext-500-normal-DR84L5F-.woff",
+    "dist/assets/dm-sans-latin-ext-700-normal-BLI3TTWz.woff",
+    "dist/assets/dm-sans-latin-ext-700-normal-CJIcxD6K.woff2",
+    "dist/assets/ExpandLess-d-bO5rcG.js",
+    "dist/assets/getThemeProps-lGVeNMii.js",
+    "dist/assets/HolidayVillageOutlined-BTJrT77h.js",
+    "dist/assets/hooks-BNQWnpaZ.js",
+    "dist/assets/index-DLMTkNwc.css",
+    "dist/assets/InputSearch-qMhlbeIS.js",
+    "dist/assets/inter-cyrillic-300-normal-BnqRxXuy.woff2",
+    "dist/assets/inter-cyrillic-300-normal-LR1W_oT8.woff",
+    "dist/assets/inter-cyrillic-400-normal-HOLc17fK.woff",
+    "dist/assets/inter-cyrillic-400-normal-obahsSVq.woff2",
+    "dist/assets/inter-cyrillic-500-normal-BasfLYem.woff2",
+    "dist/assets/inter-cyrillic-500-normal-CxZf_p3X.woff",
+    "dist/assets/inter-cyrillic-700-normal-CjBOestx.woff2",
+    "dist/assets/inter-cyrillic-700-normal-DrXBdSj3.woff",
+    "dist/assets/inter-cyrillic-ext-300-normal-CgCALhwJ.woff2",
+    "dist/assets/inter-cyrillic-ext-300-normal-RId2JxDB.woff",
+    "dist/assets/inter-cyrillic-ext-400-normal-BQZuk6qB.woff2",
+    "dist/assets/inter-cyrillic-ext-400-normal-DQukG94-.woff",
+    "dist/assets/inter-cyrillic-ext-500-normal-B0yAr1jD.woff2",
+    "dist/assets/inter-cyrillic-ext-500-normal-BmqWE9Dz.woff",
+    "dist/assets/inter-cyrillic-ext-700-normal-BjwYoWNd.woff2",
+    "dist/assets/inter-cyrillic-ext-700-normal-LO58E6JB.woff",
+    "dist/assets/inter-greek-300-normal-BrhSP0vQ.woff",
+    "dist/assets/inter-greek-300-normal-DmGD3g_f.woff2",
+    "dist/assets/inter-greek-400-normal-B4URO6DV.woff2",
+    "dist/assets/inter-greek-400-normal-q2sYcFCs.woff",
+    "dist/assets/inter-greek-500-normal-BIZE56-Y.woff2",
+    "dist/assets/inter-greek-500-normal-Xzm54t5V.woff",
+    "dist/assets/inter-greek-700-normal-BUv2fZ6O.woff",
+    "dist/assets/inter-greek-700-normal-C3JjAnD8.woff2",
+    "dist/assets/inter-greek-ext-300-normal-DLbbeei1.woff",
+    "dist/assets/inter-greek-ext-300-normal-l2DDyC6M.woff2",
+    "dist/assets/inter-greek-ext-400-normal-DGGRlc-M.woff2",
+    "dist/assets/inter-greek-ext-400-normal-KugGGMne.woff",
+    "dist/assets/inter-greek-ext-500-normal-2j5mBUwD.woff",
+    "dist/assets/inter-greek-ext-500-normal-C4iEst2y.woff2",
+    "dist/assets/inter-greek-ext-700-normal-BoQ6DsYi.woff",
+    "dist/assets/inter-greek-ext-700-normal-qfdV9bQt.woff2",
+    "dist/assets/inter-latin-300-normal-BVlfKGgI.woff2",
+    "dist/assets/inter-latin-300-normal-i8F0SvXL.woff",
+    "dist/assets/inter-latin-400-normal-C38fXH4l.woff2",
+    "dist/assets/inter-latin-400-normal-CyCys3Eg.woff",
+    "dist/assets/inter-latin-500-normal-BL9OpVg8.woff",
+    "dist/assets/inter-latin-500-normal-Cerq10X2.woff2",
+    "dist/assets/inter-latin-700-normal-BLAVimhd.woff",
+    "dist/assets/inter-latin-700-normal-Yt3aPRUw.woff2",
+    "dist/assets/inter-latin-ext-300-normal-CPgO9Ksf.woff2",
+    "dist/assets/inter-latin-ext-300-normal-Dp1L8vcn.woff",
+    "dist/assets/inter-latin-ext-400-normal-77YHD8bZ.woff",
+    "dist/assets/inter-latin-ext-400-normal-C1nco2VV.woff2",
+    "dist/assets/inter-latin-ext-500-normal-BxGbmqWO.woff",
+    "dist/assets/inter-latin-ext-500-normal-CV4jyFjo.woff2",
+    "dist/assets/inter-latin-ext-700-normal-Ca8adRJv.woff2",
+    "dist/assets/inter-latin-ext-700-normal-TidjK2hL.woff",
+    "dist/assets/inter-vietnamese-300-normal-Bdr24Bqb.woff2",
+    "dist/assets/inter-vietnamese-300-normal-DDGmYYdT.woff",
+    "dist/assets/inter-vietnamese-400-normal-Bbgyi5SW.woff",
+    "dist/assets/inter-vietnamese-400-normal-DMkecbls.woff2",
+    "dist/assets/inter-vietnamese-500-normal-DOriooB6.woff2",
+    "dist/assets/inter-vietnamese-500-normal-mJboJaSs.woff",
+    "dist/assets/inter-vietnamese-700-normal-BZaoP0fm.woff",
+    "dist/assets/inter-vietnamese-700-normal-DlLaEgI2.woff2",
+    "dist/assets/isMuiElement-Bj-IU5b7.js",
+    "dist/assets/karmatic-arcade-Ce2JsoxT.ttf",
+    "dist/assets/KeyboardArrowDown-Bx9c2LDD.js",
+    "dist/assets/ListItemButton-BpW5OM8I.js",
+    "dist/assets/ListItemText-DuN88Xz1.js",
+    "dist/assets/Menu-DzVpEt1c.js",
+    "dist/assets/MoreVert-D9jbiLzf.js",
+    "dist/assets/QueryErrorAlert-Bg5DMEkJ.js",
+    "dist/assets/queryKeys-xo688uGf.js",
+    "dist/assets/react-CbmfqnAI.js",
+    "dist/assets/react-dom-BxxZFAS7.js",
+    "dist/assets/RentalReservations-Bp-TPsKS.css",
+    "dist/assets/reportSchemas-CpvCksTU.js",
+    "dist/assets/rolldown-runtime-B0Z9INg1.js",
+    "dist/assets/routes-B1nYRRXA.js",
+    "dist/assets/RtlProvider-BuqJysNE.js",
+    "dist/assets/schemas-0yt7uMpO.js",
+    "dist/assets/skeletons-D5J2DTHI.js",
+    "dist/assets/styled-EgpUIBzs.js",
+    "dist/assets/styles-C21WpeNG.js",
+    "dist/assets/TablePagination-41psArmQ.js",
+    "dist/assets/TableRow-DL83t2gs.js",
+    "dist/assets/Tabs-Dz9s_Xdj.js",
+    "dist/assets/TextField-CD2q6ZuU.js",
+    "dist/assets/TextInput-DTclHMVK.js",
+    "dist/assets/ToggleButtonGroup-Be9lhIPd.js",
+    "dist/assets/useThemeProps-BrqCOpg5.js",
+    "dist/assets/VisibilityOutlined-f-gq1A3I.js",
+    "dist/assets/zod-BXmjric2.js",
+    "dist/favicon.svg",
+    "dist/icons.svg",
+    "dist/logo-transparent.png"
+  ],
+  "deployment": false,
+  "limits": [
+    "No authenticated browser, HTTP, provider inference, temporal availability or nginx adoption is proved by this offline package validation.",
+    "Historical JSON source hashes were not recorded. Exact ES/EN additions are verified against the compiled baseline after normalizing import hashes; this is not a reconstructed historical JSON source manifest."
+  ],
+  "manifest_sha256": "cdc832c045cb26a4050d4fcceb979b9b7ef910b3ce3471c56c05cd7f219a1a93",
+  "observed_at_utc_operator_clock": "2026-10-22T17:48:34.507267+00:00",
+  "only_ES_EN_reason_objects_changed_in_shared_translation_transport_chunk": true,
+  "outputs": 171,
+  "provider_requests": 0,
+  "schema": "nodia-ai-ai38-ownerclient-validation-v1",
+  "source_comparison": {
+    "added": 1,
+    "changed": 3,
+    "new": 648,
+    "old": 647,
+    "removed": 0,
+    "unchanged": 644
+  },
+  "stage_helper_sha256": "649f259cbac7b75ef6e437ac9de8d962b2b85c31402d8de9fcd7f9c8cf7103cd",
+  "stage_helper_syntax_validated_not_executed": true,
+  "status": "passed_offline_not_deployed",
+  "validator_sha256": "3de5d1552fe0dde4608e3f1eaeae06a2145c897a90e887aceac5eb94f6de6288"
+}

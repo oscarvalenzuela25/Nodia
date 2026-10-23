@@ -1,0 +1,35 @@
+{
+  "schema": "ai38-web-stream-text-control-v1",
+  "status": "passed",
+  "attempt_id": "1f61b2ad-5e88-4627-a410-96fe72567abb",
+  "selection": {
+    "connection_id": "2",
+    "mode": "token_plan_web",
+    "model_id": "56fdd199312815e2",
+    "effort_id": null
+  },
+  "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+  "reference": {
+    "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+    "session_generation": "66cff290bc1e400b9443c8fae12b67bf",
+    "operation_ref": "1f61b2ad-5e88-4627-a410-96fe72567abb"
+  },
+  "started_VM_utc": "2026-10-22T22:02:59.010339+00:00",
+  "maximum_generations": 1,
+  "generation_requests": 1,
+  "inference_replayed": false,
+  "attachments": [],
+  "SQL_writes": 0,
+  "business_effects": 0,
+  "native_acknowledged": true,
+  "native_pending_identity": false,
+  "semantic_match": true,
+  "expected_answer_sha256": "7458b1e1e24a52bcc5c923884010abb268bfed5cc70918071264c67750b6cedc",
+  "helper_sha256": "616077cd82abaad224002a9c8a758d8b8d7e98d0991679d290b7edd380763131",
+  "source_sha256": "2670f1a77374e79cf5c27ddb950a32c6a45300d75caaee044fb181cf66bdf595",
+  "private_payloads_emitted": false,
+  "http_status": 200,
+  "actual_answer_sha256": "7458b1e1e24a52bcc5c923884010abb268bfed5cc70918071264c67750b6cedc",
+  "native_outcome": "completed",
+  "finished_VM_utc": "2026-10-22T22:03:03.680255+00:00"
+}

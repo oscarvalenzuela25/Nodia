@@ -1,0 +1,14 @@
+{
+  "schema": "ai38-turn-live-DOM-v1",
+  "scope": "authenticated_browser_observation_not_SQL_or_provider_attestation",
+  "observed_at_operator_clock": "2026-10-22T17:54:08.509Z",
+  "chat": "a160f615-ea41-4a05-831d-acdbb413ec4d",
+  "main_script": "/assets/index-Dif38oFQ.js",
+  "reply_A_exact_count": 1,
+  "reply_B_exact_count": 1,
+  "composer_enabled": false,
+  "busy_message_visible": 0,
+  "generation_messages_sent_by_operator": 2,
+  "new_business_confirmations": 0,
+  "phase": "reopened_after_B"
+}

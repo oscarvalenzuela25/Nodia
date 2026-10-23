@@ -129,7 +129,11 @@ export async function runCodexLoginSupervisor(
     void (async () => {
       await persist('verifying');
       runtime.invalidate(record!.providerId);
-      const session = await runtime.observe(record!.providerId);
+      const session = await runtime.observe(
+        record!.providerId,
+        undefined,
+        lease!.profile,
+      );
       await finish(
         session.authenticated === true ? 'succeeded' : 'failed',
         session.authenticated === true ? null : 'codex_session_required',
@@ -250,6 +254,7 @@ export async function runCodexLoginSupervisor(
       await persist('running', null, native);
       if (abort.signal.aborted || Date.parse(record!.expiresAt) <= Date.now())
         return;
+      await runtime.rotateChatGeneration(record!.providerId);
       lease.profile.rpc.on('notification', notification);
       lease.profile.rpc.on('closed', closed);
       const value = codexObject(

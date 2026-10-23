@@ -1,0 +1,1 @@
+{"bus_descriptor_bytes": 0, "address_count": 0, "addresses": [], "units": {"nodia-bus": {"pid": "825", "public_env": {"HOME": "/var/lib/nodia"}}, "nodia-keyring": {"pid": "829", "public_env": {"HOME": "/var/lib/nodia", "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/10000/bus", "XDG_RUNTIME_DIR": "/run/user/10000"}}}}

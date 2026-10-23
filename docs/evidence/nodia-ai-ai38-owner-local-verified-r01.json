@@ -1,0 +1,12 @@
+{
+  "response_body_emitted": false,
+  "listener_5174_matches": true,
+  "vite_script_present": true,
+  "schema": "ai38-local-restore-verification-v1",
+  "source_receipt": "docs/evidence/nodia-ai-ai38-owner-local-restored-r01.json",
+  "workspace_identity_matches": true,
+  "vite_pid": 8840,
+  "own_tunnel_65028_absent": true,
+  "observed_at_operator_utc": "2026-10-22T18:09:18.3192353Z",
+  "http_status": 200
+}

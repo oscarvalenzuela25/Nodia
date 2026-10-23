@@ -1,2 +1,0 @@
-const fs=require('fs'),path=require('path');
-for(const dir of ['nodia-ai-confirmation/use-case','nodia-ai-proposal/use-case','nodia-ai-proposal-review/use-case'])for(const f of fs.readdirSync('nodia-server/src/'+dir)){if(!f.endsWith('.ts'))continue;const p='nodia-server/src/'+dir+'/'+f;let s=fs.readFileSync(p,'utf8');s=s.replace("../../nodia-ai-conversation/use-case/get-nodia-ai-conversation.use-case.js'","../../nodia-ai-conversation/types/conversation-id.js'");fs.writeFileSync(p,s);}

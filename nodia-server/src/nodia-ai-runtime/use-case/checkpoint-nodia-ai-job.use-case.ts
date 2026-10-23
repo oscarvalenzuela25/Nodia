@@ -122,7 +122,7 @@ export class CheckpointNodiaAiJobUseCase {
     onLocalRejection?: (error: NodiaAiKnownPreDispatchError) => void,
   ): Promise<void> {
     await this.execute(claim, async (manager) => {
-      const rejectBeforeArming = (code: string): never => {
+      const rejectBeforeArming: (code: string) => never = (code) => {
         const error = new NodiaAiKnownPreDispatchError(code);
         // This exact error originates before the durable dispatch phase is written.
         // A replaced/lost transaction response must still be treated as unknown.
@@ -145,6 +145,8 @@ export class CheckpointNodiaAiJobUseCase {
         left.model_id === right.model_id &&
         left.effort_id === right.effort_id;
       const delegated = !sameSelection(selection, claim.run.selection_snapshot);
+      if (delegated && (runtime?.adapterIdentity !== undefined || claim.run.context_manifest.adapter_identity !== undefined))
+        rejectBeforeArming('nodia_ai:invalid_selection');
       if (delegated) {
         const target = claim.run.routing_snapshot.target;
         const conversation = await this.runtime.lockConversation(
@@ -198,6 +200,34 @@ export class CheckpointNodiaAiJobUseCase {
       }
       if (selection.mode !== 'api_key' && !runtime)
         throw new NodiaAiLostLeaseError();
+      const sessionGeneration = delegated
+        ? claim.run.routing_snapshot.target?.session_generation
+        : claim.run.context_manifest.session_generation;
+      let descriptor: ReturnType<typeof runtimeProofDescriptor> | undefined;
+      if (runtime?.adapterIdentity !== undefined || claim.run.context_manifest.adapter_identity !== undefined) {
+        const identity = runtime?.adapterIdentity;
+        const stored = claim.run.context_manifest.adapter_identity;
+        if (delegated || selection.mode !== 'token_plan_agentic' || !runtime || !identity ||
+          !stored || typeof stored !== 'object' || Array.isArray(stored) || Object.keys(stored).length !== 3 ||
+          stored.provider_key !== identity.providerKey || stored.contract_version !== identity.contractVersion ||
+          stored.connection_id !== identity.connectionId || identity.connectionId !== selection.connection_id ||
+          runtime.sessionGeneration !== sessionGeneration || typeof sessionGeneration !== 'string')
+          rejectBeforeArming('nodia_ai:eligibility_changed');
+        try {
+          descriptor = runtimeProofDescriptor({ engine: 'agentic', adapterIdentity: identity,
+            attemptId: claim.attempt.id, operationRef: runtime.operationRef,
+            resourceKey: runtime.resourceKey, sessionGeneration });
+        } catch {
+          rejectBeforeArming('nodia_ai:eligibility_changed');
+        }
+      } else if (runtime?.resourceKey.startsWith('codex-profile:')) {
+        // A Codex resource without an explicit identity must never become a Gemini descriptor.
+        rejectBeforeArming('nodia_ai:eligibility_changed');
+      } else if (runtime && typeof sessionGeneration === 'string' && /^[a-f0-9]{32}$/.test(sessionGeneration) && selection.mode !== 'api_key') {
+        descriptor = runtimeProofDescriptor({ engine: selection.mode === 'token_plan_web' ? 'web' : 'agentic',
+          attemptId: claim.attempt.id, operationRef: runtime.operationRef,
+          resourceKey: runtime.resourceKey, sessionGeneration });
+      }
       if (runtime) {
         const slots: { resource_key: string }[] = await manager.query(
           "SELECT resource_key FROM nodia_ai_runtime_slots WHERE resource_key=$1 AND state='held' AND job_id=$2 AND holder_worker_id=$3 AND fence=$4 AND external_operation_ref=$5 AND lease_until>clock_timestamp() FOR UPDATE",
@@ -232,22 +262,7 @@ export class CheckpointNodiaAiJobUseCase {
           runtime?.operationRef ?? null,
         ],
       );
-      const sessionGeneration = delegated
-        ? claim.run.routing_snapshot.target?.session_generation
-        : claim.run.context_manifest.session_generation;
-      if (
-        runtime &&
-        typeof sessionGeneration === 'string' &&
-        /^[a-f0-9]{32}$/.test(sessionGeneration) &&
-        selection.mode !== 'api_key'
-      ) {
-        const descriptor = runtimeProofDescriptor({
-          engine: selection.mode === 'token_plan_web' ? 'web' : 'agentic',
-          attemptId: claim.attempt.id,
-          operationRef: runtime.operationRef,
-          resourceKey: runtime.resourceKey,
-          sessionGeneration,
-        });
+      if (descriptor) {
         await manager.query(
           'UPDATE nodia_ai_jobs SET recovery_descriptor=$2::jsonb WHERE id=$1',
           [claim.job.id, JSON.stringify(descriptor)],

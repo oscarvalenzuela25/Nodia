@@ -1,0 +1,116 @@
+{
+  "schema": "ai38-web-recovery-bindings-v1",
+  "status": "observed_read_only",
+  "adoption_sha256": "ea836c0b31c767359567e3b6a52d558ee69ccfde6062bfa3bf4200df931a1643",
+  "helper_sha256": "f51d16a67b73a5eb5f5eaa6beee4bad1ae06d0e1af0d7641487887835af843d3",
+  "packet_files_verified": 2933,
+  "native_epoch": {
+    "container_id": "c4814c5a184b55cd95c751ed904d0c957c0311148f8732169928ce6c3b2d5bd3",
+    "image_id": "sha256:6b9e2f7e3273f89c4c2285c852135213bb82a3391bfe06895f523554033acb49",
+    "started_at_utc": "2026-10-22T21:50:29.621768018Z"
+  },
+  "same_epoch_after": true,
+  "snapshots": [
+    {
+      "mode": "agentic",
+      "began_VM_utc": "2026-10-22T22:03:10.219483+00:00",
+      "ended_VM_utc": "2026-10-22T22:03:19.206515+00:00",
+      "snapshot": {
+        "connection_id": "2",
+        "provider_key": "gemini",
+        "selections": {
+          "agentic": {
+            "connection_id": "2",
+            "mode": "token_plan_agentic",
+            "model_id": "gemini-3.8-flash-high",
+            "effort_id": "high"
+          },
+          "web": {
+            "connection_id": "2",
+            "mode": "token_plan_web",
+            "model_id": "56fdd199312815e2",
+            "effort_id": null
+          }
+        },
+        "quiet": {
+          "jobs": 0,
+          "attempts": 0,
+          "slots": 0
+        },
+        "mode_fields_sha256": "0ffe07965997c958d92d3e2a117444aeefe8083b2a374d2fe63c0d1d89f7013d",
+        "updated_at": "2026-10-14T01:17:41.273Z",
+        "observed": {
+          "available": true,
+          "source": "native_observation",
+          "reason": null,
+          "selection": {
+            "connection_id": "2",
+            "mode": "token_plan_agentic",
+            "model_id": "gemini-3.8-flash-high",
+            "effort_id": "high"
+          },
+          "configuration_generation": "6813c032f8e39ad2018aff0f313b0e33c6391b6950ba05a462732a2e9dff2a4b",
+          "session_generation": "e57c9b94bb9e45508eacebcff0e48fb2",
+          "resource_key": "gemini-profile:433e10d914ee92a1484882d4a4860fcde80cd41f4abc6fb53ce17f97f0904e7d",
+          "supports_mcp": true,
+          "verified_attachment_media_types": [
+            "image/png",
+            "application/pdf",
+            "audio/wav",
+            "audio/webm"
+          ]
+        }
+      }
+    },
+    {
+      "mode": "web",
+      "began_VM_utc": "2026-10-22T22:03:19.223498+00:00",
+      "ended_VM_utc": "2026-10-22T22:03:19.578558+00:00",
+      "snapshot": {
+        "connection_id": "2",
+        "provider_key": "gemini",
+        "selections": {
+          "agentic": {
+            "connection_id": "2",
+            "mode": "token_plan_agentic",
+            "model_id": "gemini-3.8-flash-high",
+            "effort_id": "high"
+          },
+          "web": {
+            "connection_id": "2",
+            "mode": "token_plan_web",
+            "model_id": "56fdd199312815e2",
+            "effort_id": null
+          }
+        },
+        "quiet": {
+          "jobs": 0,
+          "attempts": 0,
+          "slots": 0
+        },
+        "mode_fields_sha256": "0ffe07965997c958d92d3e2a117444aeefe8083b2a374d2fe63c0d1d89f7013d",
+        "updated_at": "2026-10-14T01:17:41.273Z",
+        "observed": {
+          "available": true,
+          "source": "native_observation",
+          "reason": null,
+          "selection": {
+            "connection_id": "2",
+            "mode": "token_plan_web",
+            "model_id": "56fdd199312815e2",
+            "effort_id": null
+          },
+          "configuration_generation": "6b5a6bd6be8a5923c8558b0017dc748e9c7ec709af0bae68f36a8f143d1818e2",
+          "session_generation": "66cff290bc1e400b9443c8fae12b67bf",
+          "resource_key": "gemini-profile:3fc8967048d3ae5fc3dede63d2cdfe1b80aa908e8c2c643b4f6008e40cab5039",
+          "supports_mcp": false,
+          "verified_attachment_media_types": []
+        }
+      }
+    }
+  ],
+  "native_observe_requests": 2,
+  "configured_SQL_writes": 0,
+  "provider_generation_requests": 0,
+  "raw_credentials_or_responses_emitted": false
+}

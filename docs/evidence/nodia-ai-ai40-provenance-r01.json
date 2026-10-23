@@ -1,0 +1,38 @@
+{
+  "task": "AI40",
+  "phase": "implementation_provenance_only",
+  "applied": true,
+  "registry_before_sha256": "fda8f9817555cc590da3ce9df59212b9312f62604c838f189d2fbcb505747b3d",
+  "implementation_sources_changed": [
+    {
+      "capability_id": "nodia_ai_providers_codex_session",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "50d8706ad2824f21c0b7b926049fc53de0764d15144e2cca11df3617010c3f2c",
+      "after_sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
+    },
+    {
+      "capability_id": "nodia_ai_providers_health",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "50d8706ad2824f21c0b7b926049fc53de0764d15144e2cca11df3617010c3f2c",
+      "after_sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
+    },
+    {
+      "capability_id": "nodia_ai_providers_models",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "50d8706ad2824f21c0b7b926049fc53de0764d15144e2cca11df3617010c3f2c",
+      "after_sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
+    },
+    {
+      "capability_id": "nodia_invoices_eligible_invoice_connections",
+      "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
+      "before_sha256": "50d8706ad2824f21c0b7b926049fc53de0764d15144e2cca11df3617010c3f2c",
+      "after_sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
+    }
+  ],
+  "published_capability_count": 74,
+  "capabilities_added_or_removed": 0,
+  "contracts_or_scopes_changed": 0,
+  "new_approvals": 0,
+  "operational_publication_or_deployment": false,
+  "registry_after_sha256": "410e309156d78f8d52c0f8503b5806f8cec3348249764660c5b5d03e046f459a"
+}

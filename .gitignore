@@ -39,3 +39,20 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Disposable development and test outputs
+.tmp/
+.temp/
+/outputs/
+*.tsbuildinfo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.vitest/
+playwright-report/
+test-results/
+htmlcov/
+.coverage
+
+# Local recovery packages; catalogued in ops/maintenance
+/ops/lab/artifacts/

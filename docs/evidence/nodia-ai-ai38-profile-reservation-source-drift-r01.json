@@ -1,0 +1,44 @@
+{
+  "scope": "public_Python_local_vs_live_image_inventory_not_claim_of_five_only_semantic_change",
+  "base_count": 47,
+  "local_count": 48,
+  "changed": {
+    "agentic_cli.py": {
+      "base": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+      "local": "0397bfc364326036d77bf8c65e4c8162312d27ac23fd025c2b10e6d6199625ff"
+    },
+    "agentic_service.py": {
+      "base": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e",
+      "local": "a8ca51286a3c69f1055f8e9392d2e006ef4c0ee4df011fa00b116793b29fa200"
+    },
+    "durable_login.py": {
+      "base": "4bf6ba19617f8a23724f10928da7fb12d971911a1aed30f9a66fab604724e2bf",
+      "local": "4e8296bd58976519b8a49a36c2fa380038e9fc8e99bcddd4e0dea44402956151"
+    },
+    "main.py": {
+      "base": "8e7e4904a095972385208b24740c9556d4d8ba68c94a86faf73177e14fd12278",
+      "local": "557aaccaa11f3bc90af1560a411e0e6c1f3495e52857775bed8ac13566b12358"
+    },
+    "native_mcp_sessions.py": {
+      "base": "e7350b8d8d1f5d6a34c536b895b78a1df36d4477711bb08dacaa13317bcf5f5f",
+      "local": "4e05adbd35fd2391e05f54952d839bbb3d7c14d3145609474ee6b2a1f6cbbb20"
+    },
+    "nodia_ai_chat.py": {
+      "base": "9369112263311172132eb7d47f1d8c835354460835482394c089134e42fdeef0",
+      "local": "ca75d5949990ce3d1f75465deee03d7baec994563256e572d7346065d20c32ce"
+    },
+    "profile_admission.py": {
+      "base": "46426d6920fbf249c6769a5d4fc1f55d1a114b35ae8e348020fe77be0c9a8bdb",
+      "local": "7287e9a2b4ad4a804876dfb58187ba781aa723a38f143c2f722ce4d0a5c6fc73"
+    },
+    "request_guard.py": {
+      "base": "c811d3b9468511a49b2ab3d31821608c177009487c18c2b34c8dbb019e7ee866",
+      "local": "d007392e0956ea042d57c9cc6569b75acb58dcf259cefd17fc174388d0886dd9"
+    }
+  },
+  "added": {
+    "invoice_mcp_contract.py": "17011344639028e005606baa6ad86a2e8cb6ce364adfbbd77e71118b55872640"
+  },
+  "preserved": 39,
+  "image_mutations": 0
+}

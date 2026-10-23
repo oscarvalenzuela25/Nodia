@@ -1,0 +1,68 @@
+{
+  "schema": "ai38-web-stream-recovery-QA-and-adoption-v1",
+  "status": "passed_technical_QA_no_provider_acceptance_claim",
+  "final_revision": "R04",
+  "source_receipts": {
+    "nodia-ai-ai38-web-stream-recovery-build-r04.json": "9c6709a9864b5f257a8bac16df2491c5c0e22a2f5573d918daf98167485a370d",
+    "nodia-ai-ai38-web-stream-recovery-adopt-plan-r04.json": "f0ed5fa6c2d9de4eebb1223042e08c0360f77bae904a064e5a210b1adc1b510a",
+    "nodia-ai-ai38-web-stream-recovery-adopt-preflight-r04.json": "c7224b761762d786837cd4c812560f0804a057121ca0cb8bc9721ae76147e222",
+    "nodia-ai-ai38-web-stream-recovery-adopt-r04.json": "2c2f27b89cf9c5707e27fb426a4d1c73b4052509e0495308839cc9dcfd7d230a",
+    "nodia-ai-ai38-web-stream-recovery-adopt-VM-binding-r04.json": "bd7b38522ed75c77a263afb22ff034994fea365e35fd6e0eee29461856a5ea89",
+    "nodia-ai-ai38-web-stream-recovery-privacy-mutation-r02.json": "d83cfb9602d52f56858dbc69b9dc4fcf69506c87863907f94ca9a86ed3667cb8",
+    "nodia-ai-ai38-web-stream-recovery-selective-patch-r04.json": "8bdf85a290147a4c46a1031d1ac84cc6b740d8ca1cf87234dcee130447a2da97"
+  },
+  "Linux": {
+    "tests": 496,
+    "skips": 0,
+    "exit": 0,
+    "network": "none",
+    "read_only": true,
+    "profile_or_credentials_mounted": false
+  },
+  "Windows": {
+    "tests": 527,
+    "passed": 525,
+    "platform_skips": 2,
+    "exit": 0,
+    "log_sha256": "9b14c74f0514d78696492e36440dc451a490b80da0c58bbe63b9718d173cb4d3"
+  },
+  "new_recovery_tests": 10,
+  "operator_guards": {
+    "adoption_tests": 19,
+    "fresh_MCP_tests": 5,
+    "actual_R04_adopt_guard_passed": true
+  },
+  "private_log_regression_mutation": {
+    "expected_test_failures": 1,
+    "errors": 0,
+    "production_constructor_without_guard_rejected": true
+  },
+  "image_sources": {
+    "gemini_service.py": "0617b30f35727d03ccd3ee4f804d86984d69f5314b4f2a8f10d658579614cb3d",
+    "nodia_ai_chat.py": "a25bc89db5946ca246bda1d243a75b38ed3d18ec8a3bb5cd42bad90619f3f7a8",
+    "web_chat_recovery.py": "c93fb4ebadc9310ccb4f7ae547cc5c2af33098cfbf9e7bc890233914cabab0b8"
+  },
+  "target_public_python_files": 49,
+  "delta_existing_python": 2,
+  "added_python": 1,
+  "non_modified_base_python": 46,
+  "epoch": {
+    "container_id": "c4814c5a184b55cd95c751ed904d0c957c0311148f8732169928ce6c3b2d5bd3",
+    "image_id": "sha256:6b9e2f7e3273f89c4c2285c852135213bb82a3391bfe06895f523554033acb49",
+    "started_at_utc": "2026-10-22T21:50:29.621768018Z"
+  },
+  "root_only_provider_window": true,
+  "provider_requests_by_this_agent": 0,
+  "business_effects": 0,
+  "configured_SQL_writes": 0,
+  "schema_changes": 0,
+  "application_source_frozen_after_R04": true,
+  "scope_limits": [
+    "Idle stream branch only; SDK queueing/thinking retain original timeout",
+    "Caller deadline remains120seconds; late headers/heartbeats may still exhaust it",
+    "History is read for the fresh CID; SDK does not compare streamed RID with recovered RID",
+    "Physical profile admission remains mandatory; scoped watchdog is not a new mutex",
+    "Gemini and modality acceptance from older epochs must be reverified",
+    "R01/R02/R03 recovery images were isolated candidates and never adopted"
+  ]
+}

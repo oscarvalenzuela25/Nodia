@@ -7,6 +7,219 @@ import { connectionFixture } from './nodia-ai-connections.fixture.js';
 import { testIdentity } from './conversation-admission.fixture.js';
 
 describe('ListNodiaAiConnectionsUseCase', () => {
+  it('keeps OpenAI Agentic tools unknown until an independent live observation and leaves Web/API unsupported', async () => {
+    const f = connectionFixture();
+    f.row.provider_key = 'openai';
+    const result = await new ListNodiaAiConnectionsUseCase(
+      f.connections,
+      f.authorize,
+      f.policy,
+    ).execute(testIdentity, {});
+    const item = result.items[0];
+    expect(
+      item.modes.find((mode) => mode.mode === 'token_plan_agentic'),
+    ).toMatchObject({
+      tools: 'unknown',
+      authentication: 'unknown',
+      inference: 'unknown',
+      observed_at: null,
+    });
+    expect(
+      item.modes
+        .filter((mode) => mode.mode !== 'token_plan_agentic')
+        .map((mode) => mode.tools),
+    ).toEqual(['unsupported', 'unsupported']);
+    expect(f.transport.observe).not.toHaveBeenCalled();
+  });
+  it('projects only discovered Codex efforts per model without static options or unsupported saved preferences', async () => {
+    const f = connectionFixture();
+    f.row.provider_key = 'openai';
+    f.row.fields = {
+      token_plan_agentic: {
+        selected_model: 'synthetic-codex-one',
+        thinking_level: 'historical-unsupported',
+        thinking_levels: { 'synthetic-codex-two': 'other-unsupported' },
+        available_models: [
+          {
+            id: 'synthetic-codex-one',
+            supportedReasoningEfforts: [
+              'future_effort',
+              'minimal',
+              'future_effort',
+            ],
+            secret: 'synthetic-never-public',
+          },
+          {
+            id: 'synthetic-codex-two',
+            supportedReasoningEfforts: ['second_effort'],
+          },
+        ],
+      },
+    };
+    const result = await new ListNodiaAiConnectionsUseCase(
+      f.connections,
+      f.authorize,
+      f.policy,
+    ).execute(testIdentity, {});
+    const mode = result.items[0].modes[2];
+    expect(mode.configured_selection?.effort_id).toBe('historical-unsupported');
+    expect(mode.models).toEqual([
+      {
+        model_id: 'synthetic-codex-one',
+        label: 'synthetic-codex-one',
+        efforts: [
+          { effort_id: 'future_effort', label: 'future_effort' },
+          { effort_id: 'minimal', label: 'minimal' },
+        ],
+      },
+      {
+        model_id: 'synthetic-codex-two',
+        label: 'synthetic-codex-two',
+        efforts: [{ effort_id: 'second_effort', label: 'second_effort' }],
+      },
+    ]);
+    expect(JSON.stringify(result)).not.toContain('synthetic-never-public');
+    expect(f.transport.observe).not.toHaveBeenCalled();
+  });
+  it.each([
+    undefined,
+    null,
+    'future_effort',
+    { future_effort: true },
+    ['future_effort', 1],
+    ['future_effort', ''],
+    ['future_effort', 'x'.repeat(33)],
+    [{ reasoningEffort: 'future_effort' }],
+  ])(
+    'does not fabricate Codex efforts from missing or malformed saved discovery %j',
+    async (supportedReasoningEfforts) => {
+      const f = connectionFixture();
+      f.row.provider_key = 'openai';
+      f.row.fields = {
+        token_plan_agentic: {
+          selected_model: 'synthetic-codex',
+          thinking_level: 'historical-effort',
+          available_models: [
+            { id: 'synthetic-codex', supportedReasoningEfforts },
+          ],
+        },
+      };
+      const result = await new ListNodiaAiConnectionsUseCase(
+        f.connections,
+        f.authorize,
+        f.policy,
+      ).execute(testIdentity, {});
+      expect(result.items[0].modes[2]).toMatchObject({
+        configured_selection: { effort_id: 'historical-effort' },
+        models: [{ model_id: 'synthetic-codex', efforts: [] }],
+        authentication: 'unknown',
+        inference: 'unknown',
+        tools: 'unknown',
+      });
+    },
+  );
+  it('preserves an orphaned Codex model and explicit null effort without inventing a catalog', async () => {
+    const f = connectionFixture();
+    f.row.provider_key = 'openai';
+    f.row.fields = {
+      token_plan_agentic: {
+        selected_model: 'synthetic-historical',
+        thinking_levels: { 'synthetic-historical': null },
+        thinking_level: 'historical-general',
+      },
+    };
+    const result = await new ListNodiaAiConnectionsUseCase(
+      f.connections,
+      f.authorize,
+      f.policy,
+    ).execute(testIdentity, {});
+    expect(result.items[0].modes[2]).toMatchObject({
+      configured_selection: {
+        model_id: 'synthetic-historical',
+        effort_id: null,
+      },
+      models: [{ model_id: 'synthetic-historical', efforts: [] }],
+    });
+  });
+  it('does not project Codex effort metadata into OpenAI API or Web modes', async () => {
+    const f = connectionFixture();
+    f.row.provider_key = 'openai';
+    const fields = {
+      selected_model: 'synthetic-mode-specific',
+      available_models: [
+        {
+          id: 'synthetic-mode-specific',
+          supportedReasoningEfforts: ['future_effort'],
+        },
+      ],
+    };
+    f.row.fields = {
+      api_key: fields,
+      token_plan_web: fields,
+      token_plan_agentic: fields,
+    };
+    const result = await new ListNodiaAiConnectionsUseCase(
+      f.connections,
+      f.authorize,
+      f.policy,
+    ).execute(testIdentity, {});
+    expect(result.items[0].modes.map((mode) => mode.models[0].efforts)).toEqual(
+      [[], [], [{ effort_id: 'future_effort', label: 'future_effort' }]],
+    );
+  });
+  it('rejects an oversized Codex effort catalog instead of silently truncating it', async () => {
+    const f = connectionFixture();
+    f.row.provider_key = 'openai';
+    f.row.fields = {
+      token_plan_agentic: {
+        available_models: [
+          {
+            id: 'synthetic-codex',
+            supportedReasoningEfforts: Array.from(
+              { length: 33 },
+              (_, index) => `synthetic_${index}`,
+            ),
+          },
+        ],
+      },
+    };
+    await expect(
+      new ListNodiaAiConnectionsUseCase(
+        f.connections,
+        f.authorize,
+        f.policy,
+      ).execute(testIdentity, {}),
+    ).rejects.toThrow('nodia_ai:connection_catalog_too_large');
+  });
+  it('preserves Gemini configurable effort preferences independently of Codex discovery metadata', async () => {
+    const f = connectionFixture();
+    f.row.fields = {
+      token_plan_agentic: {
+        selected_model: 'synthetic-gemini',
+        thinking_level: 'synthetic-preferred',
+        available_models: [
+          {
+            id: 'synthetic-gemini',
+            supportedReasoningEfforts: ['codex-only-effort'],
+          },
+        ],
+      },
+    };
+    const result = await new ListNodiaAiConnectionsUseCase(
+      f.connections,
+      f.authorize,
+      f.policy,
+    ).execute(testIdentity, {});
+    expect(
+      result.items[0].modes[2].models[0].efforts.map(
+        (option) => option.effort_id,
+      ),
+    ).toEqual(['low', 'medium', 'high', 'synthetic-preferred']);
+    expect(result.items[0].modes[2].configured_selection?.effort_id).toBe(
+      'synthetic-preferred',
+    );
+    expect(result.items[0].modes[2].tools).toBe('unknown');
+  });
   it('pages by UTF-8 response bytes between whole connections without skipping rows', async () => {
     const f = connectionFixture();
     const largeFields = {

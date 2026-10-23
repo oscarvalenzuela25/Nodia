@@ -1,0 +1,39 @@
+{
+  "task": "AI39-native-initializer-r01",
+  "checks": 5,
+  "all_passed": true,
+  "binary_sha256": "9a820c17865fa825d04db416818679a9d63bd72e50835c396f496e5684626c9c",
+  "actual_production_initializer": true,
+  "effective_codex_settings_validated_by_initializer": true,
+  "ephemeral_thread_with_dynamic_tools_accepted": true,
+  "requested_methods": [
+    "initialize",
+    "config/read",
+    "thread/start"
+  ],
+  "notification_methods": [
+    "configWarning",
+    "remoteControl/status/changed",
+    "thread/started"
+  ],
+  "owned_native_pid": 2852154,
+  "owned_native_process_reaped": true,
+  "synthetic_profile_auth_file_absent": true,
+  "provider_inference_requests": 0,
+  "model_list_requests": 0,
+  "account_read_requests": 0,
+  "login_requests": 0,
+  "personal_or_connection_profiles_opened": false,
+  "native_tool_callback_verified": false,
+  "test_script_sha256": "1bc367a3c0b4fc217f1d600eafb62e8a577c41059bd579dec497c2a2ee8201db",
+  "source_manifest": {
+    "common/ai/codex/codex-rpc.ts": "8a361da41a1bc552a7782f8aee1628e5f5909e4df791efbcc476af58d9527615",
+    "common/ai/codex/codex-contract.ts": "ce0a43fba3d0f5e2562a2891b83a52bc06c48929ca3e8ce25457f7656282c151",
+    "common/ai/codex/codex-process-ownership.ts": "312c912087906182b1fc28e8f30ab9bdd39b6db060b14af4c3b7f2fca7894d47",
+    "common/ai/codex/codex-chat-tool-channel.ts": "62c12ab9a4994d612daf4f655f0be0093835bf115f4c8df32c681ff2ebdf874d",
+    "ai-provider/use-case/codex-chat-tool-channel.use-case.ts": "b669d090e495ddbdefcf89d2a646d7f4f02c8d6729f8c6438739652fc8d214b3"
+  },
+  "network_namespace": true,
+  "isolated_source_transpile_not_full_build": true,
+  "private_stderr_emitted": false
+}

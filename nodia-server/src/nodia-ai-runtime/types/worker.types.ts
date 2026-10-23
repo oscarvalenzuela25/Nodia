@@ -4,7 +4,7 @@ import type { NodiaAiRun } from '../../nodia-ai-run/entities/nodia-ai-run.entity
 import type { NodiaAiSelection } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
 import type { NodiaAiJob } from '../entities/nodia-ai-job.entity.js';
 import type { NodiaAiJobAttempt } from '../entities/nodia-ai-job-attempt.entity.js';
-import type { NodiaAiRuntimeTerminalProof } from './reconciliation.types.js';
+import type { NodiaAiCodexRuntimeProofRequest, NodiaAiRuntimeTerminalProof } from './reconciliation.types.js';
 
 export const NODIA_AI_STAGE_HANDLER = Symbol('NODIA_AI_STAGE_HANDLER');
 export const NODIA_AI_CHAT_OPERATION = 'chat:respond';
@@ -21,6 +21,9 @@ export interface NodiaAiRuntimeReservation {
   resourceKey: string;
   fence: string;
   operationRef: string;
+  /** Private observation identity, bound to the durable descriptor before transport. */
+  adapterIdentity?: NodiaAiCodexRuntimeProofRequest['adapterIdentity'];
+  sessionGeneration?: string;
 }
 export interface NodiaAiStageContext {
   signal: AbortSignal;

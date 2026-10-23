@@ -13,6 +13,65 @@ const reservation = {
   operationRef: 'fixture-operation',
 };
 describe('CheckpointNodiaAiJobUseCase', () => {
+  function codexDispatch() {
+    const f = runtimeFixture(), claim = f.leased();
+    claim.run.selection_snapshot.mode = 'token_plan_agentic';
+    claim.run.context_manifest = { session_generation: 'b'.repeat(32), adapter_identity: {
+      provider_key: 'openai', contract_version: 'nodia-ai-codex-chat/1', connection_id: '1',
+    } };
+    const codexReservation = { resourceKey: 'codex-profile:' + 'a'.repeat(64), fence: '1',
+      operationRef: claim.attempt.id, sessionGeneration: 'b'.repeat(32),
+      adapterIdentity: { providerKey: 'openai' as const, contractVersion: 'nodia-ai-codex-chat/1' as const, connectionId: '1' } };
+    return { ...f, claim, codexReservation, checkpoint: new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy) };
+  }
+  it('persists the explicit Codex schema2 identity atomically with dispatch arming', async () => {
+    const f = codexDispatch();
+    await f.checkpoint.armDispatch(f.claim, undefined, f.codexReservation);
+    const descriptorWrite = f.query.mock.calls.find(([sql]) => sql.startsWith('UPDATE nodia_ai_jobs SET recovery_descriptor='))!;
+    expect(JSON.parse(String(descriptorWrite[1]?.[1]))).toEqual({ schema_version: 2, runtime: {
+      provider_key: 'openai', adapter_contract_version: 'nodia-ai-codex-chat/1', connection_id: '1', engine: 'agentic',
+      attempt_id: f.claim.attempt.id, operation_ref: f.claim.attempt.id,
+      resource_key: f.codexReservation.resourceKey, session_generation: 'b'.repeat(32),
+    } });
+    expect(f.query.mock.calls.filter(([sql]) => sql.includes('provider_dispatches_used='))).toHaveLength(1);
+  });
+  it.each(['connection', 'manifest', 'session', 'prefix', 'mode', 'missing_identity', 'operation'])('rejects mismatched Codex %s before budget or phase mutations', async (change) => {
+    const f = codexDispatch();
+    if (change === 'connection') f.codexReservation.adapterIdentity.connectionId = '2';
+    if (change === 'manifest') delete f.claim.run.context_manifest.adapter_identity;
+    if (change === 'session') f.codexReservation.sessionGeneration = 'c'.repeat(32);
+    if (change === 'prefix') f.codexReservation.resourceKey = 'gemini-profile:' + 'a'.repeat(64);
+    if (change === 'mode') f.claim.run.selection_snapshot.mode = 'token_plan_web';
+    if (change === 'missing_identity') Reflect.deleteProperty(f.codexReservation, 'adapterIdentity');
+    if (change === 'operation') f.codexReservation.operationRef = '9aa72a4f-8039-4979-bb21-329046333789';
+    await expect(f.checkpoint.armDispatch(f.claim, undefined, f.codexReservation)).rejects.toThrow('eligibility_changed');
+    expect(f.query.mock.calls.some(([sql]) => sql.includes('provider_dispatches_used=') || sql.includes("phase='dispatch_armed'") || sql.includes('recovery_descriptor='))).toBe(false);
+  });
+  it('preserves Gemini schema1 without manufacturing a Codex identity', async () => {
+    const f = runtimeFixture(), claim = f.leased();
+    claim.run.context_manifest.session_generation = 'b'.repeat(32);
+    const r = { resourceKey: 'gemini-profile:' + 'a'.repeat(64), operationRef: claim.attempt.id, fence: '1' };
+    await new CheckpointNodiaAiJobUseCase(f.runtimePort, f.authorization, f.policy).armDispatch(claim, undefined, r);
+    const call = f.query.mock.calls.find(([sql]) => sql.startsWith('UPDATE nodia_ai_jobs SET recovery_descriptor='))!;
+    const value = JSON.parse(String(call[1]?.[1])) as { schema_version: number; runtime: object };
+    expect(value.schema_version).toBe(1); expect(Object.keys(value.runtime)).toHaveLength(5);
+    expect(value.runtime).not.toHaveProperty('provider_key');
+  });
+  it('does not accept a Gemini terminal proof to complete an armed Codex attempt', async () => {
+    const f = codexDispatch();
+    f.claim.attempt.phase = 'dispatch_armed';
+    f.job.recovery_descriptor = runtimeProofDescriptor({ engine: 'agentic', attemptId: f.claim.attempt.id,
+      operationRef: f.claim.attempt.id, resourceKey: f.codexReservation.resourceKey,
+      sessionGeneration: f.codexReservation.sessionGeneration, adapterIdentity: f.codexReservation.adapterIdentity });
+    const persist = vi.fn();
+    const proof = { engine: 'agentic' as const, attemptId: f.claim.attempt.id, operationRef: f.claim.attempt.id,
+      resourceKey: 'gemini-profile:' + 'a'.repeat(64), sessionGeneration: 'b'.repeat(32),
+      terminalProofId: 'b3e5e6f3-6de9-4c27-8509-2b9d01acf5ed', processClosed: true as const,
+      outcome: 'completed' as const, observedAt: f.now };
+    await expect(f.checkpoint.finish(f.claim, { status: 'completed', terminalProof: proof, persist })).rejects.toThrow('invalid_terminal_proof');
+    expect(persist).not.toHaveBeenCalled();
+    expect(f.query.mock.calls.some(([sql]) => sql.includes('active_job_id=NULL') || sql.includes("'reconcile_ack'"))).toBe(false);
+  });
   it('rejects an old worker after restore even if the copied lease still appears current', async () => {
     const f = runtimeFixture(), claim = f.leased(), work = vi.fn(async () => undefined);
     f.job.recovery_descriptor = { restore_quarantined: true };

@@ -1,0 +1,25 @@
+{
+  "stage": "AI39",
+  "scope": "isolated_compiled_Linux_journal",
+  "status": "passed",
+  "began_VM_utc": "2026-10-22T23:25:07.253138+00:00",
+  "finished_VM_utc": "2026-10-22T23:25:07.500081+00:00",
+  "fixture": {
+    "status": "passed",
+    "checks": 16,
+    "scope": "Linux private journal only",
+    "accountCalls": 0,
+    "nativeGenerations": 0,
+    "businessEffects": 0,
+    "syntheticCertificates": true
+  },
+  "exit_code": 0,
+  "fixture_resources_cleaned": true,
+  "source_manifest_sha256": "cf074455a38b0d84e169cb0ba93a980af6fe095cb1fec9c0eb72d932b1e0e651",
+  "stdout_bytes": 157,
+  "stderr_bytes": 0,
+  "private_output_emitted": false,
+  "provider_requests": 0,
+  "operational_services_changed": 0,
+  "configured_database_or_credentials_used": false
+}

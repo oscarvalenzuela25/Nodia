@@ -1,0 +1,565 @@
+{
+  "date": "2026-10-23",
+  "deleted_files": 27837,
+  "deleted_bytes": 1101987786,
+  "targets": [
+    {
+      "path": ".tmp",
+      "files": 23323,
+      "bytes": 1066149029,
+      "directory": true
+    },
+    {
+      "path": "nodia-server/.tmp",
+      "files": 4000,
+      "bytes": 28092015,
+      "directory": true
+    },
+    {
+      "path": "nodia-client/.tmp",
+      "files": 90,
+      "bytes": 283333,
+      "directory": true
+    },
+    {
+      "path": "output",
+      "files": 0,
+      "bytes": 0,
+      "directory": true
+    },
+    {
+      "path": "outputs",
+      "files": 11,
+      "bytes": 639313,
+      "directory": true
+    },
+    {
+      "path": "nodia-client/coverage",
+      "files": 105,
+      "bytes": 900009,
+      "directory": true
+    },
+    {
+      "path": "docs/evidence/scripts/__pycache__",
+      "files": 143,
+      "bytes": 2120819,
+      "directory": true
+    },
+    {
+      "path": "nodia-gemini-microservice/__pycache__",
+      "files": 48,
+      "bytes": 703041,
+      "directory": true
+    },
+    {
+      "path": "nodia-gemini-microservice/experiments/__pycache__",
+      "files": 8,
+      "bytes": 112799,
+      "directory": true
+    },
+    {
+      "path": "nodia-gemini-microservice/scripts/__pycache__",
+      "files": 1,
+      "bytes": 13945,
+      "directory": true
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/__pycache__",
+      "files": 46,
+      "bytes": 1020381,
+      "directory": true
+    },
+    {
+      "path": "nodia-gemini-microservice/tests/fixtures/__pycache__",
+      "files": 3,
+      "bytes": 10687,
+      "directory": true
+    },
+    {
+      "path": "ai10-build-final.log",
+      "files": 1,
+      "bytes": 2388,
+      "directory": false
+    },
+    {
+      "path": "ai10-build-types.log",
+      "files": 1,
+      "bytes": 0,
+      "directory": false
+    },
+    {
+      "path": "ai10-build.log",
+      "files": 1,
+      "bytes": 2388,
+      "directory": false
+    },
+    {
+      "path": "ai10-catalog.log",
+      "files": 1,
+      "bytes": 293,
+      "directory": false
+    },
+    {
+      "path": "ai10-format.log",
+      "files": 1,
+      "bytes": 41,
+      "directory": false
+    },
+    {
+      "path": "ai10-integration-debug.log",
+      "files": 1,
+      "bytes": 10597,
+      "directory": false
+    },
+    {
+      "path": "ai10-integration-final.log",
+      "files": 1,
+      "bytes": 3300,
+      "directory": false
+    },
+    {
+      "path": "ai10-integration.log",
+      "files": 1,
+      "bytes": 2739,
+      "directory": false
+    },
+    {
+      "path": "ai10-lint.log",
+      "files": 1,
+      "bytes": 0,
+      "directory": false
+    },
+    {
+      "path": "ai10-reconcile-final.log",
+      "files": 1,
+      "bytes": 2311,
+      "directory": false
+    },
+    {
+      "path": "ai10-reconcile-review.log",
+      "files": 1,
+      "bytes": 15083,
+      "directory": false
+    },
+    {
+      "path": "ai10-reconcile-write.log",
+      "files": 1,
+      "bytes": 15082,
+      "directory": false
+    },
+    {
+      "path": "ai10-types.log",
+      "files": 1,
+      "bytes": 11677,
+      "directory": false
+    },
+    {
+      "path": "ai10-unit.log",
+      "files": 1,
+      "bytes": 468,
+      "directory": false
+    },
+    {
+      "path": "ai1012-adapter-tests.log",
+      "files": 1,
+      "bytes": 562,
+      "directory": false
+    },
+    {
+      "path": "ai1012-adapter-types.log",
+      "files": 1,
+      "bytes": 0,
+      "directory": false
+    },
+    {
+      "path": "ai1012-python.log",
+      "files": 1,
+      "bytes": 42025,
+      "directory": false
+    },
+    {
+      "path": "ai1012-stage-tests.log",
+      "files": 1,
+      "bytes": 585,
+      "directory": false
+    },
+    {
+      "path": "ai11-build-local.log",
+      "files": 1,
+      "bytes": 0,
+      "directory": false
+    },
+    {
+      "path": "ai11-final-alltypes.log",
+      "files": 1,
+      "bytes": 10078,
+      "directory": false
+    },
+    {
+      "path": "ai11-format.log",
+      "files": 1,
+      "bytes": 2093,
+      "directory": false
+    },
+    {
+      "path": "ai11-integration.log",
+      "files": 1,
+      "bytes": 4356,
+      "directory": false
+    },
+    {
+      "path": "ai11-reconcile-alltypes.log",
+      "files": 1,
+      "bytes": 10205,
+      "directory": false
+    },
+    {
+      "path": "ai11-reconcile-format.log",
+      "files": 1,
+      "bytes": 42,
+      "directory": false
+    },
+    {
+      "path": "ai11-reconcile-types.log",
+      "files": 1,
+      "bytes": 0,
+      "directory": false
+    },
+    {
+      "path": "ai11-reconcile-unit.log",
+      "files": 1,
+      "bytes": 466,
+      "directory": false
+    },
+    {
+      "path": "ai11-types.log",
+      "files": 1,
+      "bytes": 10423,
+      "directory": false
+    },
+    {
+      "path": "ai11-unit.log",
+      "files": 1,
+      "bytes": 466,
+      "directory": false
+    },
+    {
+      "path": "ai12-context-alltypes.log",
+      "files": 1,
+      "bytes": 10078,
+      "directory": false
+    },
+    {
+      "path": "ai12-context-format.log",
+      "files": 1,
+      "bytes": 1484,
+      "directory": false
+    },
+    {
+      "path": "ai12-context-lint.log",
+      "files": 1,
+      "bytes": 423,
+      "directory": false
+    },
+    {
+      "path": "ai12-context-reconcile-review.log",
+      "files": 1,
+      "bytes": 8667,
+      "directory": false
+    },
+    {
+      "path": "ai12-context-types.log",
+      "files": 1,
+      "bytes": 0,
+      "directory": false
+    },
+    {
+      "path": "ai12-context-unit.log",
+      "files": 1,
+      "bytes": 471,
+      "directory": false
+    },
+    {
+      "path": "nodia-client/.tmp-ai32-r02-review-client-tests.log",
+      "files": 1,
+      "bytes": 424,
+      "directory": false
+    },
+    {
+      "path": "nodia-server/tsconfig.build.tsbuildinfo",
+      "files": 1,
+      "bytes": 620414,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai15-python-final.log",
+      "files": 1,
+      "bytes": 42705,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai15-python-tests.log",
+      "files": 1,
+      "bytes": 42034,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-python.log",
+      "files": 1,
+      "bytes": 59429,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-agentic-custom-final-tests.log",
+      "files": 1,
+      "bytes": 59615,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-agentic-final-tests.log",
+      "files": 1,
+      "bytes": 59537,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-agentic-focal.log",
+      "files": 1,
+      "bytes": 10117,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-citations-tests-final.log",
+      "files": 1,
+      "bytes": 62165,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-citations-tests.log",
+      "files": 1,
+      "bytes": 61314,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-final-python.log",
+      "files": 1,
+      "bytes": 59535,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-json-tests-final.log",
+      "files": 1,
+      "bytes": 59533,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-json-tests.log",
+      "files": 1,
+      "bytes": 59427,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-webm-tests-final.log",
+      "files": 1,
+      "bytes": 61312,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r01-webm-tests.log",
+      "files": 1,
+      "bytes": 62371,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r02-mime-tests-final.log",
+      "files": 1,
+      "bytes": 67256,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r02-mime-tests.log",
+      "files": 1,
+      "bytes": 69057,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r03-windows-tests.log",
+      "files": 1,
+      "bytes": 79062,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r04-audio-transport-final-tests.log",
+      "files": 1,
+      "bytes": 2048,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests-final.log",
+      "files": 1,
+      "bytes": 84334,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-ai32-r04-windows-tests.log",
+      "files": 1,
+      "bytes": 84336,
+      "directory": false
+    },
+    {
+      "path": "nodia-gemini-microservice/.tmp-web-diagnostics-tests.log",
+      "files": 1,
+      "bytes": 47564,
+      "directory": false
+    },
+    {
+      "path": "nodia-client/.temp/route-loading-proof.png",
+      "files": 1,
+      "bytes": 7556,
+      "directory": false
+    },
+    {
+      "path": "nodia-server/.temp/ai-providers-http-check.mjs",
+      "files": 1,
+      "bytes": 8085,
+      "directory": false
+    },
+    {
+      "path": "nodia-server/.temp/business-description-http-check.mjs",
+      "files": 1,
+      "bytes": 4394,
+      "directory": false
+    }
+  ],
+  "verification": "all planned targets absent after builds",
+  "preserved": [
+    "credentials and sessions",
+    "dependencies and active Vite cache",
+    "dist build outputs",
+    "current recovery artifacts",
+    "consolidated evidence",
+    "existing product tests"
+  ],
+  "formatting": {
+    "normalized_files": 797,
+    "additional_agent_file_already_normalized": 1,
+    "managed_text_scanned": 5368,
+    "remaining_CRLF": 0
+  },
+  "knowledge": {
+    "technical_hashes_updated": 85,
+    "capabilities": 74,
+    "fragments": 31,
+    "bindings": 31,
+    "releaseId": "06bf13b7fd4dc03f1ba7334bf42e96ffa8deb4091092cdae15830d2b43226474",
+    "publication_approval_changes": false,
+    "runtime_deployment": false,
+    "additional_provenance_change": "relocated referenced backup path in specification31; no knowledge fragment content change",
+    "registry_sha256": "1adb012ce065359fd76075a7660d5ce50a1e50657c339a58153e37ba82e5d808",
+    "baseline_comparison": "Complete parsed baseline comparison: 85 technical hash leaves differ; no other semantic differences. Baseline raw bytes were not retained because registry was already LF; no prior raw SHA claimed."
+  },
+  "validation": {
+    "client_build": "passed (existing chunk-size warning)",
+    "server_build": "passed",
+    "knowledge_check": "passed",
+    "knowledge_build": "passed",
+    "normalized_python_AST": 120,
+    "archive_entries_hashes": "verified",
+    "historical_knowledge_test": "known incompatible frozen AI32-R02 reconstruction; not rewritten",
+    "git_diff_check": "passed",
+    "context_build": "passed"
+  },
+  "recovery_artifacts": [
+    {
+      "path": "ops/lab/artifacts/ai38-owner-adopt-plan-r01.json",
+      "bytes": 180,
+      "sha256": "e20990a677656c71e8c57af3840c2fe868236d5187b79f4c3fb52c9066856670"
+    },
+    {
+      "path": "ops/lab/artifacts/ai38-owner-deploy-r01.tar.gz",
+      "bytes": 2578262,
+      "sha256": "1214928cc4e6b0bb58cd20ffa7f18364b90f1603ecc46dc8352dcc57fc360b5a"
+    },
+    {
+      "path": "ops/lab/artifacts/ai40-server-r01.tar.gz",
+      "bytes": 3170568,
+      "sha256": "07b6becba4195ce1ee678d7aab5a6f8fcd6bb0ed05dbf2f7f8d3cadad8f8968c"
+    },
+    {
+      "path": "ops/lab/artifacts/ai40-server-r02.tar.gz",
+      "bytes": 3170673,
+      "sha256": "f2d8bd8b11a0c8952ff0d0dd6dd2b97ddaac38e96cc8b68930b9a857ca5e5954"
+    },
+    {
+      "path": "ops/lab/artifacts/ai40-server-r03.tar.gz",
+      "bytes": 3170774,
+      "sha256": "27e28ffc86fb0045837a8fe34a4e60740cae74e3d8c4d66db07c329a53a84517"
+    },
+    {
+      "path": "ops/lab/artifacts/before-provider-contacts-2026-10-05T23-27-16.569Z.dump",
+      "bytes": 109582,
+      "sha256": "58e99b1694b2c1241168fc5765ea1f213b056db62a851c930d9ec632448788f2"
+    },
+    {
+      "path": "ops/lab/artifacts/retained-acceptance-inputs-2026-10-23.zip",
+      "bytes": 354289,
+      "sha256": "963383e3c87641ec87d6d339eff6e9ff7dc591285f6fee3eab3bc995eea59e86"
+    }
+  ],
+  "post_normalization_edits": [
+    {
+      "path": ".gitignore",
+      "current_sha256": "17407885a91a4a07a04307af44d237233145be9ce056292d9b9bd39ec4be8e8a",
+      "reason": "ignore future disposable outputs"
+    },
+    {
+      "path": "AGENTS.md",
+      "current_sha256": "175214e622675a2177ab09bea5e62fce60be982b2252cb3f5fe7a7a99078d2ad",
+      "reason": "atomic testing and workspace hygiene policy"
+    },
+    {
+      "path": "nodia-client/AGENTS.md",
+      "current_sha256": "2932b17a022c8cfedcfa6767d66a75f8cb53002cec63782cb6c857b274339469",
+      "reason": "atomic testing policy"
+    },
+    {
+      "path": "nodia-server/AGENTS.md",
+      "current_sha256": "6bd95aa725ba55a8f27cefa41108a366e10e3dde70692e347b7fff94932ad3b4",
+      "reason": "atomic testing policy"
+    },
+    {
+      "path": "nodia-gemini-microservice/AGENTS.md",
+      "current_sha256": "11b7b48a66d991a9bea965cbf64f3dd4872fde5b10a36de283205dde733c8303",
+      "reason": "atomic testing policy"
+    },
+    {
+      "path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+      "current_sha256": "1adb012ce065359fd76075a7660d5ce50a1e50657c339a58153e37ba82e5d808",
+      "reason": "technical provenance after LF normalization"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-package-r01.py",
+      "current_sha256": "66ef2470c8ea658c10576782708862f119fcd0d727856199fb13be6a6ee59014",
+      "reason": "durable recovery input path"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-package-r02.py",
+      "current_sha256": "8087fb34237a30aa30b90ca6858e80ca2bc77149f87909149524371f0a6dc715",
+      "reason": "durable recovery input path"
+    },
+    {
+      "path": "docs/evidence/scripts/nodia-ai-ai40-package-r03.py",
+      "current_sha256": "e9e20614fb62a528fb1b478449db44e8feab51ba167af27c2751b562d93b4fa2",
+      "reason": "durable recovery input path"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai15-timeout-investigation.md",
+      "current_sha256": "ec0c1ae52d6cc18c6d9e7baa4df3baabbf54a94eb31cf0495ef4d87052844759",
+      "reason": "relocated evidence image"
+    },
+    {
+      "path": "docs/mvp/31-provider-contacts-proposal.md",
+      "current_sha256": "5c1500ff7768f6cc0202a75e1842794bf312def8c204b438a94fd2fb655851d6",
+      "reason": "relocated referenced recovery backup"
+    }
+  ]
+}

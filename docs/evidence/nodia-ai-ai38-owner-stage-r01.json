@@ -1,0 +1,1 @@
+{"stage": "AI-38", "status": "staged_not_activated", "release": "/opt/nodia/releases/nodia-server-ai38-owner-r01", "archive_sha256": "1214928cc4e6b0bb58cd20ffa7f18364b90f1603ecc46dc8352dcc57fc360b5a", "manifest_sha256": "4c3fe6d600adab362a71c5f76357383e98aa7acda7c93aa73e61bfb29c626f92", "members": 3880, "service_changes": 0, "configured_SQL_writes": 0, "provider_requests": 0}

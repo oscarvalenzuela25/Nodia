@@ -97,7 +97,7 @@ export class ExecuteCodexInvoiceUseCase {
     try {
       lease = await this.runtime.acquire(id);
       if (signal.aborted) throw codexError('codex_cancelled', 499);
-      const session = await this.runtime.observe(id);
+      const session = await this.runtime.observe(id, undefined, lease.profile);
       if (session.available !== true)
         throw codexError('codex_runtime_unavailable');
       if (session.authenticated !== true)
@@ -105,7 +105,11 @@ export class ExecuteCodexInvoiceUseCase {
       if (session.usageAllowed === false)
         throw codexError('codex_quota_exhausted', 429);
       progress?.emit('session_checked');
-      const models = await this.runtime.listModels(id);
+      const models = await this.runtime.listModels(
+        id,
+        undefined,
+        lease.profile,
+      );
       const exact = models.find((m) => m.id === selected);
       if (
         !exact ||
@@ -113,7 +117,12 @@ export class ExecuteCodexInvoiceUseCase {
         (thinking && !exact.supportedReasoningEfforts.includes(thinking))
       )
         throw codexError('codex_model_unavailable', 400);
-      progress?.resolve({ providerId: id, provider: 'openai', mode: 'token_plan_agentic', model: selected });
+      progress?.resolve({
+        providerId: id,
+        provider: 'openai',
+        mode: 'token_plan_agentic',
+        model: selected,
+      });
       progress?.emit('model_checked');
       const images = await codexDocument(
         file.buffer,
@@ -139,7 +148,10 @@ export class ExecuteCodexInvoiceUseCase {
       const threadId = codexObject(threadResult.thread).id;
       if (typeof threadId !== 'string' || threadId.length > 128)
         throw codexError('codex_protocol_invalid', 502);
-      const messages = new Map<string, { turnId: string | null; text: string }>();
+      const messages = new Map<
+        string,
+        { turnId: string | null; text: string }
+      >();
       let turnId: string | null = null;
       let terminal: Record<string, unknown> | null = null;
       let events = 0;
@@ -177,7 +189,14 @@ export class ExecuteCodexInvoiceUseCase {
           );
           return;
         }
-        resolveTurn([...messages.values()].filter(message => message.turnId === null || message.turnId === turnId).map(message => message.text).join(''));
+        resolveTurn(
+          [...messages.values()]
+            .filter(
+              (message) => message.turnId === null || message.turnId === turnId,
+            )
+            .map((message) => message.text)
+            .join(''),
+        );
       };
       const onEvent = (method: string, params: unknown) => {
         try {
@@ -209,7 +228,10 @@ export class ExecuteCodexInvoiceUseCase {
               )
                 throw codexError('codex_protocol_invalid', 502);
               const eventTurn = typeof p.turnId === 'string' ? p.turnId : null;
-              messages.set(`${eventTurn ?? ''}:${item.id}`, { turnId: eventTurn, text: item.text });
+              messages.set(`${eventTurn ?? ''}:${item.id}`, {
+                turnId: eventTurn,
+                text: item.text,
+              });
               if (turnId) progress?.emit('response_receiving');
             }
           }
@@ -267,7 +289,12 @@ export class ExecuteCodexInvoiceUseCase {
           throw codexError('codex_protocol_invalid', 502);
         turnId = turn.id;
         progress?.emit('turn_started');
-        if ([...messages.values()].some(message => message.turnId === null || message.turnId === turnId)) progress?.emit('response_receiving');
+        if (
+          [...messages.values()].some(
+            (message) => message.turnId === null || message.turnId === turnId,
+          )
+        )
+          progress?.emit('response_receiving');
         checkTerminal();
         const extracted = parseApiInvoice(await completion);
         progress?.emit('response_received');

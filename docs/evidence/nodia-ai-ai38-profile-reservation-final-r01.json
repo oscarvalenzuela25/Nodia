@@ -1,0 +1,378 @@
+{
+  "schema": "ai38-profile-reservation-final-v1",
+  "status": "observed_read_only",
+  "observed_at_VM_utc": "2026-10-22T20:00:11.212457+00:00",
+  "source_sha256": "1a55240dec1f6beb71213f4dc9083840624d80679f0219d4be58d234d5c25026",
+  "server_manifest_sha256": "4c3fe6d600adab362a71c5f76357383e98aa7acda7c93aa73e61bfb29c626f92",
+  "server_members": 3879,
+  "dist_outputs": 2851,
+  "knowledge_release": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+  "consumers": {
+    "nodia-api": {
+      "active": "active",
+      "sub": "running",
+      "pid": 2786324,
+      "working_directory": "/opt/nodia/releases/nodia-server-ai38-owner-r01",
+      "recovery_config_path_verified": true,
+      "original_dotenv_path_verified": true,
+      "other_environment_fields_emitted": false,
+      "entrypoint_sha256": "62cd2df681a1dde11abafefd7846a4fdee3fba4b76bf39f240686470a92d2468",
+      "argv_exact_match": true
+    },
+    "nodia-ai-worker": {
+      "active": "active",
+      "sub": "running",
+      "pid": 2786325,
+      "working_directory": "/opt/nodia/releases/nodia-server-ai38-owner-r01",
+      "recovery_config_path_verified": true,
+      "original_dotenv_path_verified": true,
+      "other_environment_fields_emitted": false,
+      "entrypoint_sha256": "f56eaec6d6224378a270b8e36c9735397531a2a70c8a85c7cde11e6c95246c28",
+      "argv_exact_match": true
+    }
+  },
+  "Gemini": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z",
+    "configured_user": "nodia",
+    "mounts_count": 6,
+    "mounts_sha256": "53fd4410a90c4ac4ed177d0e5e2bcbadafe347f18c697114b0143688d460a8e5",
+    "environment_sha256": "00d426e35704c2466aa957684b516ca9ecae87f5fd67ce76457654413b03ec3c",
+    "same_epoch_after_inventory": true
+  },
+  "native_public_source_hashes": {
+    "profile_admission.py": "341e0faf3b2c5c473a760b92119e89bc4821452fa98d49c497dc94f545b0406b",
+    "main.py": "f5d449e606947fd23afdc0e766566ffa04e5055bd2087969667045216dbfc55a",
+    "nodia_ai_chat.py": "ca8fdd4dcdee34ede7059dc71d35a88d0da2cc9253ff592d4ebf032f0dc0c356",
+    "durable_login.py": "4e8296bd58976519b8a49a36c2fa380038e9fc8e99bcddd4e0dea44402956151",
+    "native_mcp_sessions.py": "4e05adbd35fd2391e05f54952d839bbb3d7c14d3145609474ee6b2a1f6cbbb20",
+    "native_mcp_stdio.py": "37b77325fff33b8b53ce30bc33c55ae3dd54e2f1e480fb7d515595e44c6cdd20",
+    "native_execution_agents.py": "06871d65d2681257edcb2c8db9673ea8429688ac7ea894b91b8000b99f8004f6",
+    "native_cli_diagnostics.py": "fc19ab0655d9c06f2985c9fcebfc2f2d236f863fbb7fd3eecc7fb83991bd2ffe",
+    "agentic_service.py": "a8f8172892b4e2702cbab41e2c469b8878721c2fca9464ac2f5dba9cf5661e6e",
+    "agentic_login_terminal.py": "4586051b5b4cbf158869f15b2c9bffc2bb9b0582a2a8b0deea3c32ebc0ba18c2",
+    "attachment_inspector.py": "6b8723a2a91b196dfa83e90a7016b59bd0387e123b78453e7b973f6aa8621da2",
+    "windows_process_job.py": "4a4d6c235dd56e02f4a5d245ac1c5977ca318c996fff0938b92ba864e73992b1",
+    "schemas.py": "858fe66b93466347d634a58dbe4d5cdf50703a2db585b0b38a98d9db54694320",
+    "login_request_store.py": "de522f93e6e5fe44ededf7a86c1c140360d7a86034b092086725569d43539f61",
+    "gemini_service.py": "5b042c89f9678ff774bd6bbac814c8e579d56b497c9e088c357a226dae2d7bfd",
+    "native_attachments.py": "d7d2df584668d4d88250cbadad6997758a96e49b86a7c55b71f3c02ee70b06c4",
+    "durable_login_routes.py": "8000a67577c49adc79ea4891196833e1c0206793a5d668896bd80ab7a11abb87",
+    "agentic_login.py": "10e080d2e8c55bd1bf6c1a4926cdbb195cecaed26c0d208fd2551338f0379225",
+    "agentic_tool_gate.py": "d4fbbd7462ba5771a43166635112af8db95d20941fcf1deb702c4f0b921eb9bd",
+    "service_errors.py": "4876a8bf47e3a2bd882a21d9dd5ad19d6aea22967f6875ef29c956d327e55068",
+    "agentic_cli.py": "3605f0f300c15cf8bc66b94b38ee8b09da40f3427a88844c0d3cd47785903d08",
+    "native_context_budget.py": "5a5414e0f9130278b8cf0ecb2fb6a1315e3cead101f4a88f9573cc5bc5db6f77",
+    "session_store.py": "dd4c37825a3e21f5909067a8d984685be016bead021dcc89ae285933739839e6",
+    "agentic_progress.py": "3791a8308ab1179f4ccf5dee98ce98a1e66200a4fadd63e37d6be89805bf5c2a",
+    "web_upload_diagnostics.py": "786c9e20e52358a8eb3d5a59cee25c1aaef720217fb59c325ba29b76aa6894df",
+    "agentic_observation.py": "4eb2887a5b912cf495ca20ef96d08a34d9e37e98422be2757d351400de98caeb",
+    "invoice_parser.py": "bee80a80d59f8aabf8d3988d01cd4eec1e7bb3f7dc95a96f3bfa2a4ab3de3dec",
+    "request_guard.py": "c811d3b9468511a49b2ab3d31821608c177009487c18c2b34c8dbb019e7ee866",
+    "web_audio_transport.py": "8403765c38826fcbeceabaa1a2673598bb74c428830caba4e7c9bf38987d5661",
+    "login_viewer.py": "b79b69e3effed5dcda9b54d44b26f9140d99f1e0f0c3373a66ec862ea82e8c96",
+    "web_session_cleanup.py": "22a25a74a4f5372983a0bd6123d1f870347db11dda0774c29d5fd5176883312e",
+    "agentic_process_launcher.py": "8741c527bbf250f9b20013f67bbd688bd118e83cfad8541a49df45fa62b56f16",
+    "run_tests.py": "8c09df755930f7b2cb158ac9aca0ddbcc41ba6abff62f256b1316237f7d328cc",
+    "auth.py": "27bb7d617a2315cd6899ec67db8caf24dea741779abea9662b1f35c423ce0eca",
+    "web_reasoning_adapter.py": "4e2d535c82393d2da1bb339819a54411afafcb0ccf9c5acd1461c9abff5c3171",
+    "native_attempts.py": "102cd400cd5400798984ae37fb4b497f3cb58cc5420488e62360134a46615f60",
+    "attachment_inspector_worker.py": "3579be757bb9b7a4fdab96f19843f91133f9bf8e56fc4a555a662a380cb82033",
+    "interactive_login.py": "38e8ae229d39764394c96fa3f0daaee0b2adb65aa4dba11fbfd977c72c309848",
+    "run.py": "b405f408ae3a990c2928859004a8f1feb9472d8a769ca7fd159335e347f346af",
+    "login_supervisor.py": "8859645ee2dde0543348ee34f38bc2bb0c1410e9a2723529aa13a2e38d7a4317",
+    "service_auth.py": "2524177ca00df67c9163f8e55a3e95f06082a66a24c3edd8fc5d78fd88b924cb",
+    "web_candidate_diagnostics.py": "dc38d840600f32af6d6ae354bcb01b8db67fc674716c0c6edc82b22dae5d558d",
+    "web_generation_diagnostics.py": "747065999bdbbd08514bf66e2e25e91100e5eaa136de11b5af2369c77592adcd",
+    "browser_manager.py": "10fa3fae6a51ac943041d8a85d8442d28015d697db70a6afc2f22bf8f3a262e8",
+    "login_cgroups.py": "117c73f407e35c6c63c583311257835fad49d3742d9eb42f17ea2c589e772088",
+    "analysis_observations.py": "fa20fb6bebd75d7a72427a5af06ff4a470a6f7a2a4a6716c7eb944b0ba7702c3",
+    "nodia_ai_tool_gate.py": "8712f62945548d9546f32ffb7a5d508117180b7ae2c33392876da5e804b0aaf1"
+  },
+  "native_public_source_count": 47,
+  "requirements_sha256": "aaf250f1b2f3bd6a5843c85910d0f1001f8883864116d363a278c1b65558205a",
+  "distribution_inventory": [
+    [
+      "PyYAML",
+      "6.0.3"
+    ],
+    [
+      "annotated-doc",
+      "0.0.5"
+    ],
+    [
+      "annotated-types",
+      "0.8.0"
+    ],
+    [
+      "anyio",
+      "4.15.1"
+    ],
+    [
+      "av",
+      "19.0.1"
+    ],
+    [
+      "certifi",
+      "2026.7.22"
+    ],
+    [
+      "cffi",
+      "2.1.1"
+    ],
+    [
+      "click",
+      "8.5.0"
+    ],
+    [
+      "colorama",
+      "0.4.6"
+    ],
+    [
+      "curl_cffi",
+      "0.16.3"
+    ],
+    [
+      "distlib",
+      "0.4.3"
+    ],
+    [
+      "fastapi",
+      "0.141.1"
+    ],
+    [
+      "filelock",
+      "3.32.5"
+    ],
+    [
+      "gemini-webapi",
+      "2.1.1"
+    ],
+    [
+      "greenlet",
+      "3.5.6"
+    ],
+    [
+      "h11",
+      "0.16.0"
+    ],
+    [
+      "httpcore",
+      "1.0.9"
+    ],
+    [
+      "httptools",
+      "0.8.0"
+    ],
+    [
+      "httpx",
+      "0.28.1"
+    ],
+    [
+      "idna",
+      "3.20"
+    ],
+    [
+      "loguru",
+      "0.7.3"
+    ],
+    [
+      "orjson",
+      "3.11.9"
+    ],
+    [
+      "pillow",
+      "13.0.0"
+    ],
+    [
+      "pip",
+      "26.2.1"
+    ],
+    [
+      "platformdirs",
+      "4.11.7"
+    ],
+    [
+      "playwright",
+      "1.63.0"
+    ],
+    [
+      "pycparser",
+      "3.0"
+    ],
+    [
+      "pydantic",
+      "2.12.5"
+    ],
+    [
+      "pydantic_core",
+      "2.41.5"
+    ],
+    [
+      "pyee",
+      "13.0.1"
+    ],
+    [
+      "pypdf",
+      "6.19.0"
+    ],
+    [
+      "python-discovery",
+      "1.6.0"
+    ],
+    [
+      "python-dotenv",
+      "1.2.3"
+    ],
+    [
+      "python-multipart",
+      "0.0.32"
+    ],
+    [
+      "starlette",
+      "1.6.0"
+    ],
+    [
+      "typing-inspection",
+      "0.4.4"
+    ],
+    [
+      "typing_extensions",
+      "4.16.0"
+    ],
+    [
+      "uvicorn",
+      "0.53.0"
+    ],
+    [
+      "virtualenv",
+      "21.7.8"
+    ],
+    [
+      "watchfiles",
+      "1.2.0"
+    ],
+    [
+      "websockets",
+      "17.1"
+    ],
+    [
+      "win32_setctime",
+      "1.2.0"
+    ]
+  ],
+  "distribution_count": 42,
+  "FIX_plan_sha256": "b141dc30c38b7136b7de2d785284ddda5d6ad2e0d2be5b97fd8f58d12a692264",
+  "FIX_build_receipt_sha256": "9c4d6f597018fda0660cccc8df501d61430b88de743d06fdeac443c793780e7d",
+  "quiet": {
+    "native": {
+      "unknown_markers": 0,
+      "armed_native_proofs": 0,
+      "terminal_native_proofs": 0,
+      "invalid_native_proofs": 0,
+      "temporary_attachment_directories": 0,
+      "temporary_cli_directories": 0,
+      "agentic_home_configured": true,
+      "stage": "AI-32-R04",
+      "scope": "read_only_native_runtime_artifact_counts",
+      "observed_at_utc": "2026-10-22T20:00:09Z",
+      "provider_calls": 0,
+      "configured_database_modified": false,
+      "profile_bytes_read": false
+    },
+    "SQL": {
+      "stage": "AI-36-C05",
+      "scope": "post_disposable_live_read_only_operational_quiescence",
+      "status": "passed",
+      "observed_at_utc": "2026-10-22T20:00:09.568Z",
+      "pending_jobs": 0,
+      "open_attempts": 0,
+      "retained_slots": 0,
+      "preserved_r05_chat": 1,
+      "configured_SQL_writes": 0,
+      "provider_requests": 0,
+      "storage_operations": 0,
+      "services_restarted": false,
+      "source_sha256": "e4f32a756acbd2ab1ae15056352eca4429a59cb780a2ab8dfe861f9d2287f395"
+    }
+  },
+  "SQL_schema_and_selection": {
+    "migrations": 29,
+    "migration_ledger_sha256": "574b65ed4c72528d258c7a393762a834b9ef622a31453dcd22cccfac0f34637a",
+    "schema_sha256": "37056718a9e1dcbedc2053054e64237182f9ef6b4a742319b21de461cb39febc",
+    "provider_configuration_sha256": "8c4b5bbff3985cfe2982c5de6664d81a8d3abdfbed4f97c35b6aee359b9cada7",
+    "read_only": true
+  },
+  "operator_configuration": {
+    "recovery.json": {
+      "sha256": "4ad8a1dfc1c439fcd7edbef19a54f0d6d7f9659e16b9ceafc9e96db5cf0f918d",
+      "uid": 10000,
+      "mode": "0o600"
+    },
+    "backup.json": {
+      "sha256": "20407b1bea525dde5c6c9bea476d26c5695045b7ab6595f1ca7529e00be39adc",
+      "uid": 10000,
+      "mode": "0o600"
+    },
+    "backup-public.pem": {
+      "sha256": "8d3883cfe51fc28edc0b83d86d8ec5e937fe14bd929b1b888b307743903bef61",
+      "uid": 10000,
+      "mode": "0o644"
+    },
+    "backup-runner.env": {
+      "sha256": "bd31bc390923956ab7afd8031adc34242e2b1f55f5ef502d80e27e81e6095030",
+      "uid": 0,
+      "mode": "0o600"
+    }
+  },
+  "external_status": {
+    "operation": "status",
+    "coverage_from": "2026-10-20T23:52:27.154Z",
+    "updated_at": "2026-10-22T19:55:59.374Z",
+    "first_sequence": 1,
+    "last_sequence": 0,
+    "entries": 0,
+    "unconfirmed": 0,
+    "coverage_closed_at": null,
+    "backups": 8,
+    "expired_backups": 0,
+    "release_authorized": false
+  },
+  "timers": {
+    "nodia-ai-backup.timer": {
+      "active": "active",
+      "sub": "waiting",
+      "pid": 0,
+      "working_directory": ""
+    },
+    "nodia-ai-backup-rotate.timer": {
+      "active": "active",
+      "sub": "waiting",
+      "pid": 0,
+      "working_directory": ""
+    }
+  },
+  "oneshots": {
+    "nodia-ai-backup": {
+      "active": "inactive",
+      "sub": "dead",
+      "pid": 0,
+      "working_directory": ""
+    },
+    "nodia-ai-backup-rotate": {
+      "active": "inactive",
+      "sub": "dead",
+      "pid": 0,
+      "working_directory": ""
+    }
+  },
+  "nginx_sha256": "2f96d9f04d2bc2eba6e1d8bc126ec7d4a5c5b5202bfa3238d87d23e94c52a857",
+  "configured_SQL_writes": 0,
+  "native_HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "external_journal_read_calls_not_counted": true,
+  "storage_mutations": 0,
+  "service_changes": 0,
+  "operational_profile_or_login_bytes_opened": false
+}

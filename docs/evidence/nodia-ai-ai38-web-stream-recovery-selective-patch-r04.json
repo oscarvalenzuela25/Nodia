@@ -1,0 +1,28 @@
+{
+  "schema": "ai38-web-stream-recovery-selective-patch-v1",
+  "status": "passed",
+  "archive_sha256": "1e49e74e9d65cd8d532f78c42f51b118fc2d542a2cb450b51272bd8282661e29",
+  "image_sources": {
+    "gemini_service.py": "0617b30f35727d03ccd3ee4f804d86984d69f5314b4f2a8f10d658579614cb3d",
+    "nodia_ai_chat.py": "a25bc89db5946ca246bda1d243a75b38ed3d18ec8a3bb5cd42bad90619f3f7a8",
+    "web_chat_recovery.py": "c93fb4ebadc9310ccb4f7ae547cc5c2af33098cfbf9e7bc890233914cabab0b8"
+  },
+  "service_old_sha256": "5b042c89f9678ff774bd6bbac814c8e579d56b497c9e088c357a226dae2d7bfd",
+  "service_new_sha256": "0617b30f35727d03ccd3ee4f804d86984d69f5314b4f2a8f10d658579614cb3d",
+  "service_exact_reviewed_changes": 5,
+  "chat_old_sha256": "ca8fdd4dcdee34ede7059dc71d35a88d0da2cc9253ff592d4ebf032f0dc0c356",
+  "chat_new_sha256": "a25bc89db5946ca246bda1d243a75b38ed3d18ec8a3bb5cd42bad90619f3f7a8",
+  "chat_changes": "single_explicit_chat_budget_argument_insertion_CRLF_preserved",
+  "whole_workspace_chat_adopted": false,
+  "unchanged_base_python_files": 46,
+  "expected_target_python_files": 49,
+  "Windows_tests": {
+    "discovered": 527,
+    "passed": 525,
+    "platform_skips": 2,
+    "exit": 0,
+    "log_sha256": "9b14c74f0514d78696492e36440dc451a490b80da0c58bbe63b9718d173cb4d3"
+  },
+  "privacy_mutation_receipt": "nodia-ai-ai38-web-stream-recovery-privacy-mutation-r02.json",
+  "provider_calls": 0
+}

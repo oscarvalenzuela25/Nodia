@@ -14,6 +14,7 @@ function record(input: unknown): Record<string, unknown> | null {
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 function valid(request: NodiaAiRuntimeProofRequest): void {
   if (
+    request.adapterIdentity !== undefined ||
     !['web', 'agentic'].includes(request.engine) ||
     !uuid.test(request.attemptId) ||
     !/^gemini-profile:[a-f0-9]{64}$/.test(request.resourceKey) ||

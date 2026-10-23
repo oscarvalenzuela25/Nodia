@@ -1,0 +1,253 @@
+--- B8/main.py
++++ DIAG/main.py
+@@ -148,14 +148,14 @@
+                     if state.profiles.identity("agentic") is None:
+                         await state.agentic.initialize()
+                     else:
+-                        async with state.profiles.operation("agentic"):
++                        async with state.profiles.operation("agentic", purpose="startup"):
+                             await state.agentic.initialize()
+                 except ServiceError as error:
+                     if error.code != "runtime_busy":
+                         raise
+                     state.agentic_start_deferred = True
+             try:
+-                async with state.profiles.operation("web"):
++                async with state.profiles.operation("web", purpose="startup"):
+                     await state.web.init_client()
+             except Exception as error:
+                 logger.warning("Initial Gemini connection failed: {}", type(error).__name__)
+@@ -233,7 +233,7 @@
+         return HealthResponse(status="ok")
+ 
+     async def web_status() -> WebStatusResponse:
+-        async with application.state.profiles.operation("web"):
++        async with application.state.profiles.operation("web", purpose="health_status"):
+             return await unlocked_web_status()
+ 
+     async def unlocked_web_status() -> WebStatusResponse:
+@@ -268,7 +268,7 @@
+     async def agentic_status():
+         if application.state.profiles.identity("agentic") is None:
+             return AgenticStatusResponse.model_validate(await application.state.agentic.get_status())
+-        async with application.state.profiles.operation("agentic"):
++        async with application.state.profiles.operation("agentic", purpose="health_status"):
+             if application.state.agentic_start_deferred:
+                 await application.state.agentic.initialize()
+                 application.state.agentic_start_deferred = False
+@@ -289,7 +289,7 @@
+         existing = application.state.agentic_login.status(None, actor)
+         if existing and existing["state"] in ("running", "waiting_code", "verifying"):
+             return existing
+-        reservation = profiles.reserve("agentic")
++        reservation = profiles.reserve("agentic", purpose="login")
+         try:
+             return await application.state.agentic_login.start(actor, reservation.release)
+         except BaseException:
+@@ -354,7 +354,7 @@
+     @application.get("/models")
+     @application.get("/web/models")
+     async def get_models():
+-        async with application.state.profiles.operation("web"):
++        async with application.state.profiles.operation("web", purpose="discovery"):
+             return await application.state.web.get_models_and_quota()
+ 
+     async def run_login() -> bool:
+@@ -369,7 +369,7 @@
+     @application.post("/auth/login/start", response_model=LoginJobResponse)
+     async def start_login(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+         application.state.web.assert_login_allowed()
+-        reservation = application.state.profiles.reserve("web")
++        reservation = application.state.profiles.reserve("web", purpose="login")
+         try:
+             job = application.state.login.start(run_login, actor, reservation.release)
+         except BaseException:
+@@ -384,7 +384,7 @@
+     async def logout_web(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+         if application.state.login.is_active:
+             raise ServiceError("web_session_busy", "Cancela el inicio de sesión Web en curso antes de cambiar de cuenta.", 409)
+-        async with application.state.profiles.operation("web"):
++        async with application.state.profiles.operation("web", purpose="logout"):
+             await application.state.web.disconnect()
+         return WebLogoutResponse(status="disconnected")
+ 
+@@ -439,7 +439,7 @@
+     async def refresh_auth():
+         web = application.state.web
+         try:
+-            async with application.state.profiles.operation("web"):
++            async with application.state.profiles.operation("web", purpose="refresh"):
+                 await web.recover_auth(web.client)
+         except AuthError:
+             raise ServiceError("session_expired", "La sesión de Gemini Web necesita renovarse.") from None
+@@ -485,7 +485,7 @@
+                     dispatched = True
+                 if identifier:
+                     application.state.observations.emit(identifier, stage)
+-            async with application.state.profiles.operation(options.engine):
++            async with application.state.profiles.operation(options.engine, purpose="execution"):
+                 try:
+                     result = await execute_analysis(file, options, service, application.state.temp_dir, application.state.limits, progress)
+                     if dispatched:
+--- B8/nodia_ai_chat.py
++++ DIAG/nodia_ai_chat.py
+@@ -225,7 +225,7 @@
+         }
+         if resource is None:
+             return observation
+-        async with self.profiles.operation(engine):
++        async with self.profiles.operation(engine, purpose="eligibility"):
+             try:
+                 if engine == "web":
+                     await self.web.init_client()
+@@ -330,7 +330,7 @@
+             raise ServiceError("attempt_already_dispatched", "El intento ya fue admitido; no se reenviará.", 409)
+         if len(self.attempts) >= self.maximum_attempts:
+             raise ServiceError("adapter_admission_capacity", "Se requiere drenar y reiniciar el adaptador.", 503)
+-        async with self.profiles.operation(engine):
++        async with self.profiles.operation(engine, purpose="execution"):
+             if engine == "web":
+                 if not self.web.is_initialized or self.web.client is None:
+                     raise ServiceError("session_required", "Verifica la sesión Web antes de ejecutar.", 503)
+--- B8/durable_login.py
++++ DIAG/durable_login.py
+@@ -54,7 +54,7 @@
+                     raise ServiceError("login_request_mismatch", "El plazo del intento cambió.", 409)
+             else:
+                 self.store.prune()
+-                reservation = self.profiles.reserve(engine)
++                reservation = self.profiles.reserve(engine, purpose="login")
+                 record = self._new(key, request_id, engine, actor, provider, deadline)
+                 try:
+                     record["containment"] = self.containment.create(key)
+--- B8/native_mcp_sessions.py
++++ DIAG/native_mcp_sessions.py
+@@ -295,7 +295,7 @@
+             raise ServiceError("mcp_adapter_unverified","El protocolo MCP exacto todavía no está verificado.",409)
+         if not adapter.agentic.is_available() or adapter.agentic.runner is None:
+             raise ServiceError("agentic_unavailable","El adaptador Agentic no está disponible.",503)
+-        reservation=adapter.profiles.reserve("agentic")
++        reservation=adapter.profiles.reserve("agentic", purpose="mcp_execution")
+         try:
+             status=await adapter.agentic.get_status()
+             if not status["has_active_session"] or len([m for m in status["models"] if m["id"]==request.model_id])!=1:
+--- B8/profile_admission.py
++++ DIAG/profile_admission.py
+@@ -10,15 +10,34 @@
+ import os
+ import json
+ from collections.abc import AsyncIterator
++from dataclasses import dataclass
++from time import monotonic
++from typing import Literal, get_args
+ from uuid import uuid4
++
++from loguru import logger
+ 
+ from service_errors import ServiceError
+ 
+ 
++ProfilePurpose = Literal["legacy", "health_status", "eligibility", "login", "execution",
++                         "mcp_execution", "discovery", "startup", "logout", "refresh"]
++_PURPOSES = frozenset(get_args(ProfilePurpose))
++
++
++@dataclass(frozen=True)
++class _ProfileOwner:
++    engine: str
++    purpose: ProfilePurpose
++    nonce: str
++    acquired_at: float
++
++
+ class ProfileReservation:
+-    def __init__(self, gate: "ProfileAdmission", identity: str):
++    def __init__(self, gate: "ProfileAdmission", identity: str, owner: _ProfileOwner):
+         self.gate = gate
+         self.identity = identity
++        self._owner = owner
+         self.released = False
+ 
+     def release(self) -> None:
+@@ -26,6 +45,10 @@
+             self.released = True
+             if self.identity not in self.gate._quarantined:
+                 self.gate._held.discard(self.identity)
++                if self.gate._owners.get(self.identity) is self._owner:
++                    self.gate._owners.pop(self.identity, None)
++            self.gate._diagnostic("release", self._owner.engine, self._owner.purpose,
++                                  self._owner, self.identity in self.gate._quarantined)
+ 
+ 
+ class ProfileAdmission:
+@@ -35,6 +58,9 @@
+             self._identities["agentic"] = self._identity(agentic_profile)
+         self._held: set[str] = set()
+         self._quarantined: set[str] = set()
++        # At most one current diagnostic owner per configured physical profile;
++        # no history, request payload, path, account or session is retained here.
++        self._owners: dict[str, _ProfileOwner] = {}
+         self._state_dir = state_dir
+         self._operations: dict[str, dict[str, str]] = {}
+         if state_dir is not None:
+@@ -50,15 +76,39 @@
+     def identity(self, engine: str) -> str | None:
+         return self._identities.get(engine)
+ 
+-    def reserve(self, engine: str) -> ProfileReservation:
++    @staticmethod
++    def _diagnostic(event: Literal["acquire", "release", "reject"], engine: str,
++                    purpose: ProfilePurpose, owner: _ProfileOwner | None,
++                    quarantined: bool = False, reason: str | None = None) -> None:
++        value = {"event": event, "engine": engine if engine in ("web", "agentic") else "unknown",
++                 "purpose": purpose, "reservation_nonce": owner.nonce if owner else None,
++                 "owner_engine": owner.engine if owner else None,
++                 "owner_purpose": owner.purpose if owner else None,
++                 "elapsed_ms": max(0, round((monotonic() - owner.acquired_at) * 1000)) if owner else None,
++                 "quarantined": quarantined, "reason": reason}
++        try:
++            logger.info("nodia_ai_profile_reservation {}", json.dumps(value, separators=(",", ":")))
++        except Exception:
++            # Diagnostics cannot change admission or turn completed work unknown.
++            pass
++
++    def reserve(self, engine: str, *, purpose: ProfilePurpose = "legacy") -> ProfileReservation:
++        if purpose not in _PURPOSES:
++            raise ValueError("Invalid profile reservation purpose")
+         identity = self.identity(engine)
+         if identity is None:
++            self._diagnostic("reject", engine, purpose, None, reason="runtime_unconfigured")
+             raise ServiceError("runtime_unconfigured", "El perfil del motor no está configurado.", 503)
+         if identity in self._held:
++            self._diagnostic("reject", engine, purpose, self._owners.get(identity),
++                             identity in self._quarantined, "runtime_busy")
+             raise ServiceError("runtime_busy", "El perfil está ocupado por otra operación.", 409)
+         # No await between check and acquisition: one process/event loop owner.
+         self._held.add(identity)
+-        return ProfileReservation(self, identity)
++        owner = _ProfileOwner(engine, purpose, uuid4().hex, monotonic())
++        self._owners[identity] = owner
++        self._diagnostic("acquire", engine, purpose, owner)
++        return ProfileReservation(self, identity, owner)
+ 
+     def arm_dispatch(self, engine: str, operation: dict[str, str] | None = None) -> None:
+         identity = self.identity(engine)
+@@ -116,6 +166,7 @@
+         if identity is not None:
+             self._quarantined.discard(identity)
+             self._held.discard(identity)
++            self._owners.pop(identity, None)
+ 
+     def quarantine(self, engine: str) -> None:
+         identity = self.identity(engine)
+@@ -124,8 +175,8 @@
+             self._held.add(identity)
+ 
+     @asynccontextmanager
+-    async def operation(self, engine: str) -> AsyncIterator[None]:
+-        reservation = self.reserve(engine)
++    async def operation(self, engine: str, *, purpose: ProfilePurpose = "legacy") -> AsyncIterator[None]:
++        reservation = self.reserve(engine, purpose=purpose)
+         try:
+             yield
+         finally:

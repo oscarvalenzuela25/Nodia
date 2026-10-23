@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "stage": "AI-40",
+  "scope": "Local synthetic tests of controlled deployment wrappers only",
+  "observed_at_host_utc": "2026-10-23T02:09:26.847564+00:00",
+  "tests": [
+    {
+      "revision": "r01",
+      "command": [
+        "python",
+        "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-tests-r01.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 10,
+      "driver": "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-r01.py",
+      "driver_sha256": "629d1675610fd95f91d3d322c9af669c527b8fa2a96e8951ec23870733ebd3c5",
+      "driver_pin_preserved": true,
+      "tests_sha256": "0163c3ed6ea7a33292c65e8ab0b346d0af9d4a7d762e2c7bf627c342a378db8b"
+    },
+    {
+      "revision": "r02",
+      "command": [
+        "python",
+        "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-tests-r02.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 20,
+      "driver": "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-r02.py",
+      "driver_sha256": "b3b2b173eec84a944b7eb822d886cd344a6873779d83bf2d2f0e191b20d0c74f",
+      "driver_pin_preserved": true,
+      "tests_sha256": "e51100b4d31e964168a558777ccc34096f847a363478d5b0e6529866f94a860e"
+    },
+    {
+      "revision": "r03",
+      "command": [
+        "python",
+        "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-tests-r03.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 22,
+      "driver": "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-r03.py",
+      "driver_sha256": "0c772ab68292cb60e769e0958c4bf8cc532b37c3bfe2017a5b3a8e465daf6a9d",
+      "driver_pin_preserved": true,
+      "tests_sha256": "a690cb92f944fa472b90b0a5c1e3fcc1582cfa1359087dfb878f667981d1cb73"
+    }
+  ],
+  "total_passed": 52,
+  "py_compile": {
+    "command": [
+      "python",
+      "-m",
+      "py_compile",
+      "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-r01.py",
+      "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-tests-r01.py",
+      "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-r02.py",
+      "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-tests-r02.py",
+      "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-r03.py",
+      "docs/evidence/scripts/nodia-ai-ai40-runtime-fix-adopt-tests-r03.py"
+    ],
+    "exit_code": 0
+  },
+  "frozen_base": {
+    "path": "docs/evidence/scripts/nodia-ai-ai40-adopt-r01.py",
+    "sha256": "c952cf7136c61ddb531789e52e47972e16f4bc1d9c481a9d519ff43b66f7a000",
+    "pin_preserved": true
+  },
+  "VM_operations": 0,
+  "browser_operations": 0,
+  "provider_generations": 0,
+  "SQL_writes": 0,
+  "production_changes": false,
+  "real_deployment_acceptance": false
+}

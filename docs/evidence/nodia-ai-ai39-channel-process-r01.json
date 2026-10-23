@@ -1,0 +1,48 @@
+{
+  "task": "AI39-channel-process-r01",
+  "mode": "isolated_real_jsonl_synthetic_peer",
+  "checks": 14,
+  "all_passed": true,
+  "check_names": [
+    "uninstalled-channel-denies-false",
+    "ocr-cannot-install-chat-channel",
+    "rpc-closed-false",
+    "owned-process-reaped-false",
+    "uninstalled-channel-denies-true",
+    "native-response-text-envelope",
+    "replay-blocked-before-gateway",
+    "foreign-turn-denied",
+    "permissions-denied",
+    "detach-restores-ocr-denial",
+    "rpc-closed-true",
+    "owned-process-reaped-true",
+    "gateway-executed-once",
+    "admitted-request-hook-counts-rejections"
+  ],
+  "native_pids": [
+    2850295,
+    2850302
+  ],
+  "owned_children_reaped": true,
+  "gateway_callbacks": 1,
+  "admitted_request_budget_hooks": 4,
+  "real_business_effects": 0,
+  "provider_inference_requests": 0,
+  "account_or_connection_profiles_opened": false,
+  "test_script_sha256": "802f88a313f7c6bb54fccad66f242e845091359d1a85327db9c94a0a83fe38ef",
+  "limits": [
+    "Synthetic peer does not prove native tool invocation or durable gateway/leases.",
+    "Local overflow requires the future adapter to account for all RPC frames.",
+    "Stopping a tool channel is not a terminal native proof or a release of a runtime slot."
+  ],
+  "source_manifest": {
+    "common/ai/codex/codex-rpc.ts": "8a361da41a1bc552a7782f8aee1628e5f5909e4df791efbcc476af58d9527615",
+    "common/ai/codex/codex-contract.ts": "ce0a43fba3d0f5e2562a2891b83a52bc06c48929ca3e8ce25457f7656282c151",
+    "common/ai/codex/codex-process-ownership.ts": "312c912087906182b1fc28e8f30ab9bdd39b6db060b14af4c3b7f2fca7894d47",
+    "common/ai/codex/codex-chat-tool-channel.ts": "62c12ab9a4994d612daf4f655f0be0093835bf115f4c8df32c681ff2ebdf874d",
+    "ai-provider/use-case/codex-chat-tool-channel.use-case.ts": "b669d090e495ddbdefcf89d2a646d7f4f02c8d6729f8c6438739652fc8d214b3"
+  },
+  "network_namespace": true,
+  "isolated_source_transpile_not_full_build": true,
+  "private_stderr_emitted": false
+}

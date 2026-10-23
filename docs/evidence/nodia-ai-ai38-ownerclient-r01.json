@@ -1,0 +1,59 @@
+{
+  "VM_operations": 0,
+  "archive_path": ".tmp/ai38-ownerclient-r01.tar.gz",
+  "archive_sha256": "176f6e9306d1a694b31907355599efc8718d8405587f23a01f3a462597721ca3",
+  "baseline_manifest_sha256": "0c54fcafebe607a661b169288daa92fe12ca7110278d94eac9160478214ee49b",
+  "build_exit": 0,
+  "build_log_sha256": "893b0a448a5405fcb585e89c64ccafc47ad4bae7c875bf7c39d8f89d96e9cfb2",
+  "build_outputs": 171,
+  "builder_sha256": "3d3fde2e6fbdadb44a8cac2ec614504a7c1d9bb21ce743fa2d291f3acbf5410c",
+  "changed_sources": {
+    "src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx": {
+      "after": "93cc1fbf79d0e0075d60e8abbed93f4029eb8d5f9e21acb84defa189de6c77d9",
+      "before": "939e406932a12acbbc6292d1aacef5673058b22011265aaf326e94f4a4ba8fd7"
+    },
+    "src/modules/nodiaAi/infrastructure/eligibilityPresentation.ts": {
+      "after": "5c23edb2037bb89fa0e55027ef41b0e0be84e9b7bdd6e0db146818e2fd8217f2",
+      "before": null
+    },
+    "src/modules/nodiaAi/infrastructure/useServices.ts": {
+      "after": "9d294b2649fea9ffcd1e978d98994a2cda55d7477761ba51bfb1090e853af42f",
+      "before": "0f585de4d6411d22a8bfe2353edd5bce14ebb0343c9f4c51d83446c7cbe5c5c5"
+    },
+    "src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx": {
+      "after": "e14cfb3552eff1db8e5808a53c6ccf22e42dd33c9e50b44a8c033eed23b8bbd9",
+      "before": "147e38ccb37f626766a1dd9036c7dd75a87eab1025a2b08743ecba30cfd09f79"
+    }
+  },
+  "deployment": false,
+  "differences_explained": {
+    "ConfigurationDrawer": "Refresh status on opening and recoverable explicit retry, preserving draft configuration.",
+    "ES_EN_JSON": "Translated feedback for freshness and explicit retry; baseline manifest omitted JSON source hashes.",
+    "NodiaAI": "Present stale/unavailable status and retry, without replaying a message or selecting a fallback.",
+    "compiled_graph": "Vite regenerates affected modules and their importers with content hashes; identical bytes remain identifiable by SHA.",
+    "eligibilityPresentation": "Shared pure classification of eligibility state for drawer and page.",
+    "useServices": "Refresh provider eligibility after a completed turn; invalidate pending stale snapshot safely."
+  },
+  "historical_translation_source_hashes_available": false,
+  "manifest_sha256": "cdc832c045cb26a4050d4fcceb979b9b7ef910b3ce3471c56c05cd7f219a1a93",
+  "other_baseline_sources_preserved": 644,
+  "package_members_including_manifest": 178,
+  "path": ".tmp/ai38-ownerclient-r01/nodia-client",
+  "private_environment_copied": false,
+  "production_source_count": 648,
+  "public_config": {
+    "api_url": "/api/v1",
+    "google_client_id_present": true,
+    "google_client_id_sha256": "92d734acd9f93db3084a903aebff28adaf5f83d9dca318c7ddf19ed7a4ab7e3a",
+    "same_Google_client_as_candidate01": true
+  },
+  "release": "/opt/nodia/releases/nodia-client-ai38-owner-r01",
+  "reviewed_translation_hashes": {
+    "src/translate/en/nodiaAi.json": "ad10f02fbccfabf87168b6ab643a100f6b520ca796eea07aee6b0f87f2c4b32d",
+    "src/translate/es/nodiaAi.json": "45332ecf8969b6f727f72dfabfc78a9067de4f83189b795525503a6d73b6b80a"
+  },
+  "root_build_inputs_and_lock_preserved": true,
+  "schema": "nodia-ai-ai38-ownerclient-r01-v1",
+  "source_stability_asserted_before_and_after_build": true,
+  "status": "frozen_local_build_not_deployed"
+}

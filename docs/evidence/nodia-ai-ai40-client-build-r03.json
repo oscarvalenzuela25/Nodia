@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "stage": "AI-40",
+  "scope": "Current compiled frontend build after 21-second own UI wait budget; full suite belongs to previous 3.5-second candidate",
+  "observed_at_host_utc": "2026-10-23T02:39:01.364009+00:00",
+  "sources": {
+    "nodia-client/src/layouts/components/Topbar/components/AiProviderIndicators/modeHealth.ts": "3ee55eb28facb4eef587a94e75a4cf94286e6b969db616351470d6853c8fedf7",
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx": "dfc90e7beb3328d3c2a7b3d29d23d14349561ab7f8601943299baed9957632ba",
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/types.ts": "7910f9a67afb140ab3264efc540f909869561d97d1b1584864e94ab634f6ae9f",
+    "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts": "eb1f8d818b87ee58ae378edb9f8f853b7fbe2fbf42c305e84264ff113dc184fe",
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx": "8f77878eab0d6dff88ab0c6406eb95b869f9af4305b04ee6099c2c8166dc0a6e",
+    "nodia-client/src/test/layouts/components/Topbar/components/AiProviderIndicators/AiProviderIndicators.test.tsx": "ee4cbef67ad732524a43792670f9afb6b779fb4fb7de297eaa078350b9d45887",
+    "nodia-client/src/test/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.test.tsx": "4aff8a5631542061bafbfff4f3109d24876f2d28a7c2382c5b37b355ab134635",
+    "nodia-client/src/test/modules/nodiaAi/infrastructure/useServices.test.tsx": "21cd9211e656269c94a8eb237072310b035fe82461de632ccd6fec94d34af77d",
+    "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx": "7b3c68942e5a4747d5a22e350e963cdbaab1ff246bd9b5649f9e8da1765dc03c",
+    "nodia-client/src/translate/en/nodiaAi.json": "8cee72220e2a61cf9aab0522707568e015853767b1f03f0e8dda28e5b84b90a9",
+    "nodia-client/src/translate/es/nodiaAi.json": "43e3ef54dfdf6e39e5312af2dc7c758ffe1c2b34190bb2f9a058d9d604529471"
+  },
+  "compiled_assets": [
+    {
+      "path": "nodia-client/dist/assets/index-iFjAPG6i.js",
+      "bytes": 393023,
+      "sha256": "4c91a882e5c48e60e296052b86e8c1bd923e9601ba16aba6ce35011659bb2f91"
+    },
+    {
+      "path": "nodia-client/dist/assets/NodiaAI-z-YI-6L2.js",
+      "bytes": 56726,
+      "sha256": "17268357af6a9e03917660fb26652ded5ea5d68b853431bc8812538fd1af007b"
+    },
+    {
+      "path": "nodia-client/dist/assets/useServices-D0hOKl_3.js",
+      "bytes": 26009,
+      "sha256": "5d24903678b6314f2bfed45cc36f4955c7eab5fde7bbeb8c238dc33b65b99052"
+    }
+  ],
+  "current_focused_QA": {
+    "path": "docs/evidence/nodia-ai-ai40-client-busy-window-final-r01.json",
+    "sha256": "b874371161bca08f0223486bdaef399715af77ae0cbc410d1c113f5a6a46882c",
+    "passed": 126,
+    "failed": 0,
+    "full_suite_is_exact_current_source": false
+  },
+  "prior_full_suite": {
+    "receipt": "docs/evidence/nodia-ai-ai40-client-qa-r02.json",
+    "passed": 1823,
+    "failed": 0,
+    "files": 229,
+    "source_sha256": "b7816b8870e76f45a35f1614ee7c4a5870c6b0a18cb99f74fc53475e07d71eed",
+    "wait_budget_ms": 3500,
+    "is_exact_current_source": false,
+    "rerun_after_delay_adjustment": false
+  },
+  "all_changes_since_prior_full_suite": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts",
+      "candidate_sha256": "cb9215376f840cdbb1a95ba601b50ccc350dce787dc86c24544a5acc59f9286c",
+      "current_sha256": "eb1f8d818b87ee58ae378edb9f8f853b7fbe2fbf42c305e84264ff113dc184fe",
+      "production": true
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/useServices.test.tsx",
+      "candidate_sha256": "21c57854c920a78a5505626c56bde8cfa85397155cbbbad1ae60563b90b8b4d5",
+      "current_sha256": "21cd9211e656269c94a8eb237072310b035fe82461de632ccd6fec94d34af77d",
+      "production": false
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+      "candidate_sha256": "0979ee1bbac800ebaca2ecaec634203f92d122c691bada9057bc3d3753304119",
+      "current_sha256": "7b3c68942e5a4747d5a22e350e963cdbaab1ff246bd9b5649f9e8da1765dc03c",
+      "production": false
+    }
+  ],
+  "current_source_sha256": "df2e84d3cbba411481ebddab9eaac83d044e53d9da7da9e5ba24ed8f0cdc6624",
+  "build_exit_code": 0,
+  "authenticated_UI_verification": {
+    "served_by": "Vite dev server",
+    "port": 5174,
+    "compiled_build_adopted_for_UI_acceptance": false,
+    "deployment_limitation": "Compiled frontend stop/start was rejected by approval policy",
+    "provenance": "Parent operator environment; this local build receipt does not attest browser acceptance of the final change"
+  },
+  "VM_operations": 0,
+  "browser_operations": 0,
+  "provider_generations": 0
+}

@@ -1,0 +1,107 @@
+{
+  "stage": "AI39-C02",
+  "scope": "worktree_recovery_identity_and_existing_Gemini_boundaries",
+  "native_Codex_runtime_verified": false,
+  "Codex_available_or_enabled": false,
+  "database_schema_changes": false,
+  "deployment": false,
+  "sources": [
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/types/reconciliation.types.ts",
+      "sha256": "e63b153d95cdc89d0df8ae9444bd2c27a2ac2ccff2e33fcf0c2d530f36596b5c"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/runtime-reconciliation-descriptor.ts",
+      "sha256": "23aa68ac80f51ab6aff48f62aa2053e2eb9bf4089d32edc2f60b252b00961b38"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/runtime-reconciliation-identity.use-case.spec.ts",
+      "sha256": "1b7cdb987ba3c12b0481eb264156803a8af4c412dd93e95ce45d8e6f57fe2945"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/reconcile-nodia-ai-runtime.use-case.ts",
+      "sha256": "381816947fee8e26c031f7559c549fd44831329956bcc8843037b10749f31c73"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-runtime/use-case/reconcile-nodia-ai-runtime.use-case.spec.ts",
+      "sha256": "9c26f2877cfe85c59ab8655810d624e33519860d1f0ae0df1011dbaba9995e7a"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/native-terminal-proof.ts",
+      "sha256": "a849dfe9090ef93de722fe20e8bdb6b03906550d191ab1d59e3332c3a04ca1bb"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/reconcile-gemini-nodia-ai-runtime.use-case.ts",
+      "sha256": "4db5071b72d86b0662f6b5a647bb0351f9269c97a9da0d3005799391578366e8"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-adapter/use-case/reconcile-gemini-nodia-ai-runtime.use-case.spec.ts",
+      "sha256": "f055c703cb6e62d3c5e09174d1c9a4220abb28f8b6939dbb4ef69f23ff57fe43"
+    }
+  ],
+  "contracts": {
+    "legacy_Gemini_schema": 1,
+    "Codex_schema": 2,
+    "Codex_provider_key": "openai",
+    "Codex_adapter_contract": "nodia-ai-codex-chat/1",
+    "Codex_mode": "agentic",
+    "connection_id": "canonical_positive_PostgreSQL_BIGINT_string",
+    "profile_and_session_shapes": "Nodia_owned_declared_contract_pending_runtime",
+    "cross_provider_connection_terminal_rejection": true,
+    "Gemini_transport_rejects_Codex_identity_before_request": true
+  },
+  "checks": {
+    "targeted_use_cases": {
+      "tests": 179,
+      "files": 5,
+      "exit_code": 0
+    },
+    "production_typecheck_noEmit": {
+      "exit_code": 0
+    },
+    "changed_file_oxlint": {
+      "exit_code": 0,
+      "warnings": 0
+    },
+    "full_suite_initial": {
+      "tests": 4434,
+      "passed": 4433,
+      "failed": 1,
+      "reason": "existing_DI_compile_test_exceeded_5000ms_while_full_build_was_running",
+      "test": "compose-nodia-ai-published-families.use-case.spec.ts",
+      "exit_code": 1
+    },
+    "full_suite_final": {
+      "command": "npm run test -- --maxWorkers=2",
+      "tests": 4475,
+      "files": 246,
+      "passed": 4475,
+      "failed": 0,
+      "exit_code": 0,
+      "duration_seconds": 290.72
+    },
+    "full_build_before_last_guards": {
+      "exit_code": 0,
+      "release_id": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130"
+    },
+    "legacy_structural_validator": {
+      "command": "npm run test:nodia-ai:contracts",
+      "observed_by": "root_agent",
+      "result": "fails_preexisting_AI15_0_or_67_assumption_at_line374",
+      "frozen_validator_changed": false,
+      "HEAD_and_current_registry_capabilities": 74,
+      "HEAD_and_current_registry_same_bytes": true,
+      "registry_sha256": "e9c22c9b8ce84f9f7a6dbea750562326189074fb91e5d75f9ff57ce2dcd42149"
+    },
+    "final_native_Nest_build": {
+      "command": "npx nest build",
+      "exit_code": 0,
+      "after_final_C02_source_changes": true
+    }
+  },
+  "pending": [
+    "C03 adapter/router and durable Codex dispatch identity are not activated",
+    "Native Codex protocol/inference/terminal proof acceptance remain separate",
+    "No SQL integration of the declared v2 contract is claimed by these unit fixtures"
+  ]
+}

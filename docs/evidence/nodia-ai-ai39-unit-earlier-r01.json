@@ -1,0 +1,25 @@
+{
+  "stage": "AI39",
+  "scope": "earlier_global_unit_cut",
+  "status": "failed",
+  "summary": {
+    "numTotalTests": 4573,
+    "numPassedTests": 4572,
+    "numFailedTests": 1,
+    "numPendingTests": 0,
+    "success": false
+  },
+  "failed_assertions": [
+    {
+      "file": "src/nodia-ai-products/external/use-case/read-external.use-case.spec.ts",
+      "name": "ReadNodiaAiExternalUseCase native Codex cancellation stops only the leased profile and releases it after cleanup",
+      "failure": [
+        "AssertionError: expected false to be true // Object.is equality\n    at C:/Users/Oscar/Desktop/Nodia/nodia-server/src/nodia-ai-products/external/use-case/read-external.use-case.spec.ts:452:28\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Users/Oscar/Desktop/Nodia/nodia-server/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+      ]
+    }
+  ],
+  "raw_report_sha256": "a7324ada82324ad9c988f00165d870c71d07100a9c80cb0997831ef5150909ae",
+  "diagnosis": "The direct get() fixture did not represent the supervisor-owned profile, and a fixed number of microtasks did not await acquisition. The corrected fixture registers its exact synthetic profile and awaits the actual RPC before cancellation; production ownership/cancellation assertions retained.",
+  "superseded_by": "nodia-ai-ai39-unit-qa-r02.json",
+  "provider_requests": 0
+}

@@ -13,7 +13,9 @@ import {
 } from '../../nodia-ai-runtime/config/runtime-policy.js';
 import {
   NodiaAiKnownPreDispatchError,
+  NodiaAiLostLeaseError,
   type NodiaAiClaim,
+  type NodiaAiRuntimeReservation,
   type NodiaAiStageContext,
   type NodiaAiStageHandler,
   type NodiaAiStageOutcome,
@@ -38,6 +40,7 @@ import { AttestNodiaAiNativeSourcesUseCase, type NodiaAiNativeSourceInput } from
 import { NodiaAiToolSelectionFlowUseCase, nodiaAiToolSelectionState } from '../../nodia-ai-tools/use-case/nodia-ai-tool-selection-flow.use-case.js';
 import { CleanupNodiaAiRuntimeProofsUseCase } from '../../nodia-ai-runtime/use-case/cleanup-nodia-ai-runtime-proofs.use-case.js';
 import { NodiaAiJobAttempt } from '../../nodia-ai-runtime/entities/nodia-ai-job-attempt.entity.js';
+import { bindObservationReservation, observationMatchesManifest } from './nodia-ai-observation-identity.js';
 
 /** Conversation stages expose only the ToolGateway's published, authorized contracts. */
 @Injectable()
@@ -172,6 +175,9 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
     if (
       !observation.available ||
       !observation.resourceKey ||
+      (!delegated && !observationMatchesManifest(selection, observation, claim.run.context_manifest)) ||
+      (delegated && (observation.adapterIdentity !== undefined ||
+        (observation.adapterContractVersion !== undefined && observation.adapterContractVersion !== 'nodia-ai-gemini-chat/1'))) ||
       observation.configurationGeneration !==
         (delegated
           ? target!.configuration_generation
@@ -187,7 +193,7 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
       throw new NodiaAiKnownPreDispatchError('nodia_ai:eligibility_changed');
     if (
       nativeRefs.length &&
-      (!this.attachments ||
+      (observation.adapterContractVersion === 'nodia-ai-codex-chat/1' || !this.attachments ||
         nativeRefs.some(
           (part) =>
             !observation.verifiedAttachmentMediaTypes?.some((mime) =>
@@ -273,7 +279,8 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
       observation.resourceKey,
       claim.attempt.id,
     );
-    const dispatchDeadline = await context.armDispatch(selection, reservation, async (manager) => {
+    const boundReservation = bindObservationReservation(selection, observation, reservation, claim.attempt.id);
+    const dispatchDeadline = await context.armDispatch(selection, boundReservation, async (manager) => {
       await this.checkRouting(manager, claim, delegated);
       await this.checkSources(manager, claim, data);
     });
@@ -286,6 +293,7 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
         resourceKey: observation.resourceKey,
         configurationGeneration: observation.configurationGeneration,
         sessionGeneration: observation.sessionGeneration,
+        ...(boundReservation.adapterIdentity ? { onLeaseCheck: (signal: AbortSignal) => this.assertRuntimeLease(claim, context, boundReservation, signal) } : {}),
         ...(nativeAttachments.length ? { attachments: nativeAttachments } : {}),
         ...(selection.mode === 'token_plan_agentic' &&
         Boolean(observation.supportsMcp)
@@ -298,21 +306,12 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
                 if (signal.aborted) throw new Error('nodia_ai:cancelled');
                 return this.tools.execute(claim, context, call);
               },
-              onProtocolProgress: async (
-                total: number,
-                signal: AbortSignal,
-                unforwardedToolRequests = 0,
-              ) => {
-                if (signal.aborted) throw new Error('nodia_ai:cancelled');
-                return this.tools.progress(
-                  claim,
-                  context,
-                  total,
-                  unforwardedToolRequests,
-                );
-              },
             }
           : {}),
+        ...(selection.mode === 'token_plan_agentic' ? {
+          onProtocolProgress: (total: number, signal: AbortSignal, unforwarded = 0) =>
+            this.protocolProgress(claim, context, total, signal, unforwarded),
+        } : {}),
       },
       context.signal,
     );
@@ -589,6 +588,7 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
     const observation = await this.adapter.observe(selection, context.signal);
     this.rejectRetryableObservationTimeout(claim, selection, observation, context.signal);
     if (!observation.available || !observation.resourceKey ||
+      !observationMatchesManifest(selection, observation, claim.run.context_manifest) ||
       observation.configurationGeneration !== claim.run.context_manifest.configuration_generation ||
       observation.sessionGeneration !== claim.run.context_manifest.session_generation ||
       observation.resourceKey !== claim.run.context_manifest.resource_key)
@@ -597,7 +597,8 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
       await this.checkSources(manager, claim, data);
       await this.adapter.verifyConfiguration(selection, observation.configurationGeneration, manager);
     });
-    const reservation = await this.reserve.execute(claim, observation.resourceKey, claim.attempt.id);
+    const reservation = bindObservationReservation(selection, observation,
+      await this.reserve.execute(claim, observation.resourceKey, claim.attempt.id), claim.attempt.id);
     const dispatchDeadline = await context.armDispatch(selection, reservation, async (manager) => {
       await this.checkSources(manager, claim, data);
       const scope = { schema_version: 1, module_routes: claim.run.context_manifest.module_routes };
@@ -622,6 +623,9 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
       deadlineAt: dispatchDeadline,
       resourceKey: observation.resourceKey, configurationGeneration: observation.configurationGeneration,
       sessionGeneration: observation.sessionGeneration,
+      ...(reservation.adapterIdentity ? { onLeaseCheck: (signal: AbortSignal) => this.assertRuntimeLease(claim, context, reservation, signal) } : {}),
+      ...(selection.mode === 'token_plan_agentic' ? { onProtocolProgress: (total: number, signal: AbortSignal, unforwarded = 0) =>
+        this.protocolProgress(claim, context, total, signal, unforwarded) } : {}),
     }, context.signal);
     const failure = (errorCode: string): NodiaAiStageOutcome => ({
       status: 'failed', errorCode, terminalProof: response.terminalProof,
@@ -670,6 +674,24 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
         await this.release.execute(claim, reservation, response.terminalProof, manager);
       },
     };
+  }
+  private async assertRuntimeLease(claim: NodiaAiClaim, context: NodiaAiStageContext,
+    reservation: NodiaAiRuntimeReservation, signal: AbortSignal): Promise<void> {
+    if (signal.aborted || context.signal.aborted) throw new NodiaAiLostLeaseError();
+    await context.checkpoint(async (manager) => {
+      const rows: { resource_key: string }[] = await manager.query(
+        "SELECT resource_key FROM nodia_ai_runtime_slots WHERE resource_key=$1 AND state='held' AND job_id=$2 AND holder_worker_id=$3 AND fence=$4 AND external_operation_ref=$5 AND lease_until>clock_timestamp() FOR SHARE",
+        [reservation.resourceKey, claim.job.id, claim.attempt.worker_id, reservation.fence, reservation.operationRef],
+      );
+      if (rows.length !== 1) throw new NodiaAiLostLeaseError();
+    });
+    if (signal.aborted || context.signal.aborted) throw new NodiaAiLostLeaseError();
+  }
+  private async protocolProgress(claim: NodiaAiClaim, context: NodiaAiStageContext,
+    total: number, signal: AbortSignal, unforwarded: number): Promise<void> {
+    if (signal.aborted || context.signal.aborted) throw new NodiaAiLostLeaseError();
+    await this.tools.progress(claim, context, total, unforwarded);
+    if (signal.aborted || context.signal.aborted) throw new NodiaAiLostLeaseError();
   }
   private async measure(input: NodiaAiContextMeasureInput, signal: AbortSignal) {
     const measurement = await this.adapter.measureContext(input, signal);

@@ -1,0 +1,1 @@
+{"stage": "AI40", "status": "staged_not_activated", "root": "/opt/nodia/releases/nodia-server-ai40-r01", "manifest_sha256": "5815fc87fb5e7ce600267470774dddd9eaafdbae6ead388d0589b982205b4429", "files": 4060, "service_changes": 0, "provider_requests": 0, "configured_SQL_writes": 0}

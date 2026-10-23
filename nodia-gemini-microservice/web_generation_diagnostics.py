@@ -22,6 +22,7 @@ from gemini_webapi.types import Candidate, ModelOutput
 from web_audio_transport import (adapt_req_file_data, native_audio_scope_active,
     new_audio_transport_diagnostic)
 from web_candidate_diagnostics import describe_preparser
+from web_stream_frame_diagnostics import StreamFrameDiagnostics
 from web_upload_diagnostics import (BodyPacingDiagnostics, ObservedUploadTransport,
     UploadDiagnostics, upload_observation, upload_observation_active)
 
@@ -159,6 +160,7 @@ class WebGenerationDiagnostics:
         self.upstream_eof_elapsed_ms: int | None = None
         self.uploads = UploadDiagnostics(attempt_id, sink)
         self.body_pacing = BodyPacingDiagnostics(self.elapsed_ms)
+        self.stream_frames = StreamFrameDiagnostics()
         self.audio_transport = new_audio_transport_diagnostic()
         self.structured_text: dict[str, Any] = {
             "applied": False, "candidate_checks": 0, "protected_ampersands_total": 0,
@@ -250,6 +252,7 @@ class WebGenerationDiagnostics:
                 "upstream_eof_seen": self.upstream_eof_seen,
                 "upstream_eof_elapsed_ms": self.upstream_eof_elapsed_ms,
                 "uploads": self.uploads.snapshot(), "body_pacing": self.body_pacing.snapshot(),
+                "stream_frames": self.stream_frames.snapshot(),
                 "audio_transport": deepcopy(self.audio_transport),
                 "structured_text": deepcopy(self.structured_text)}
 
@@ -266,6 +269,7 @@ def _role(client: Any, trace: WebGenerationDiagnostics) -> TaskRole:
 class _Response:
     def __init__(self, response: Any, client: Any, trace: WebGenerationDiagnostics):
         self.response, self.client, self.trace = response, client, trace
+        self.trace.stream_frames.start()
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self.response, name)
@@ -276,6 +280,7 @@ class _Response:
                 self.trace.body_pacing.chunk()
                 self.trace.increment("byte_chunks")
                 self.trace.increment("body_bytes", len(chunk))
+                self.trace.stream_frames.feed(chunk)
                 if self.trace.counts["byte_chunks"] == 1:
                     self.trace.note("first_body_chunk", _role(self.client, self.trace))
             yield chunk
@@ -302,6 +307,8 @@ class _StreamContext:
         return _Response(response, self.client, self.trace)
 
     async def __aexit__(self, *exception):
+        # Discard partial private frame text on success, errors and cancellation.
+        self.trace.stream_frames.close()
         self.trace.note("stream_exit_started", _role(self.client, self.trace))
         try:
             result = await self.context.__aexit__(*exception)

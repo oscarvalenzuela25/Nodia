@@ -1,0 +1,10 @@
+{
+  "schema": "ai38-profile-baseline-DOM-v1",
+  "observed_at_operator_clock": "2026-10-22T19:25:24.746Z",
+  "composer_enabled": false,
+  "visible_busy": true,
+  "new_messages_sent": 0,
+  "new_business_confirmations": 0,
+  "source": "local_Vite_authenticated_session_API_VM_before_DIAG_adoption",
+  "cause": "unknown_until_instrumented"
+}

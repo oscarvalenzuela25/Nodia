@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "scope": "offline_canonical_FIX_callers_and_preserved_native_body_AST",
+  "source_sha256": "8be0fa4fdd8bbab601c4041ea2f73f0d03e3f25e8a4d409fe001c439c2188cd9",
+  "canonical_transform_sha256": "3c3a28c6b280e1bfff9805f6ecfe853429b5b1899d8108b60cfc435b5ed51561",
+  "proofs": [
+    {
+      "file": "main.py",
+      "diagnostic_sha256": "2b38a58df40a8aeb8f2c99c740fcbda6dd43056e2deb282a7b0779da5237ce26",
+      "fixed_sha256": "f5d449e606947fd23afdc0e766566ffa04e5055bd2087969667045216dbfc55a",
+      "proof": "agentic_status_AsyncWith_body_identical",
+      "entire_remaining_module_AST_identical": true,
+      "CLI_session_model_effort_MCP_and_modality_checks_preserved": true,
+      "exact_pinned_transform_match": true
+    },
+    {
+      "file": "nodia_ai_chat.py",
+      "diagnostic_sha256": "79f3b6c0d1fcdcebd548e3542c15e90526c5ec829c5531b9387d963e1d8a6990",
+      "fixed_sha256": "ca8fdd4dcdee34ede7059dc71d35a88d0da2cc9253ff592d4ebf032f0dc0c356",
+      "proof": "observe_original_native_Try_identical_inside_new_admission_envelope",
+      "entire_remaining_module_AST_identical": true,
+      "CLI_session_model_effort_MCP_and_modality_checks_preserved": true,
+      "exact_pinned_transform_match": true
+    }
+  ],
+  "HTTP_requests": 0,
+  "VM_changes": 0
+}

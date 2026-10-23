@@ -1,0 +1,41 @@
+{
+  "archive_path": ".tmp/ai38-owner-deploy-r01.tar.gz",
+  "archive_sha256": "1214928cc4e6b0bb58cd20ffa7f18364b90f1603ecc46dc8352dcc57fc360b5a",
+  "baseline_archive_sha256": "c90effd03a6a0a7f8f95ec807f04435756eb94183d705129ac5b422d4abe9945",
+  "baseline_manifest_sha256": "c8f49aa3adb21f63da4d75f84a811ab3b758e90ce57fe8aff2e8d2fc498256ae",
+  "baseline_other_members_preserved": 3875,
+  "changes": {
+    "dist/user/dto/filter-user.dto.d.ts": {
+      "after": "903d3de364cb921e8b2598f46203b10e1b23e25759b1da048e35a4d3d5047df2",
+      "before": "209ec95af0b7838db8e8b9060f869987c2dcae5c4a70b39f623e2faa5e1c5b42"
+    },
+    "dist/user/dto/filter-user.dto.js": {
+      "after": "dccaebb825a97c72e59af975e5441e022ee9d97241f17f89bbad37f69cdefde3",
+      "before": "7eec6fa949992026561c97cd129b6cffd8f220212012a774761d6d7f478faa70"
+    },
+    "dist/user/dto/filter-user.dto.js.map": {
+      "after": "0d6a61c5367bf0316f45d18ca1c107ad8f9ffac9d5790ead8aefb0b686083769",
+      "before": "577c91f845d87300cc79ffe32e79555e732af7224cc59587de39a7fdeed07c0c"
+    },
+    "src/user/dto/filter-user.dto.ts": {
+      "after": "fb22c78a27a86366a993b0a4e77343fd8ac27ebf79bb1ac5c8fd5bf30364feb0",
+      "before": "97dc28dd5cc2ac5e8541ef74a1790c34d9366684103ff793e760c2a1142f2bb4"
+    }
+  },
+  "dependency_lock_preserved": true,
+  "deployment_performed": false,
+  "dist_outputs": 2851,
+  "env_or_dependencies_embedded": false,
+  "journal_sources_and_ops_preserved": true,
+  "knowledge_release": "4189005373b4e6040a0e441d21c2978fe1d423ae568e53f74df1592e6f900130",
+  "manifest_path": "docs/evidence/nodia-ai-ai38-owner-deploy-package-r01.json",
+  "manifest_sha256": "4c3fe6d600adab362a71c5f76357383e98aa7acda7c93aa73e61bfb29c626f92",
+  "members": 3879,
+  "migrations_preserved": true,
+  "provider_requests": 0,
+  "release": "/opt/nodia/releases/nodia-server-ai38-owner-r01",
+  "release_authorized": false,
+  "runtime_imports_or_VM_operations": 0,
+  "schema": "nodia-ai-ai38-owner-deploy-package-build-v1",
+  "status": "frozen_offline_successor_not_deployed"
+}

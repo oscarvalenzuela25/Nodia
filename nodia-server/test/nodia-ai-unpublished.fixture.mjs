@@ -27,12 +27,26 @@ export async function createNodiaAiUnpublishedFixture() {
   const contextTokens = await import('../dist/nodia-ai-context/types/knowledge.types.js');
   const toolTokens = await import('../dist/nodia-ai-tools/types/tool-registry.types.js');
   const RegistryModule = await loadAi('nodia-ai-tools/nodia-ai-tool-registry.module','NodiaAiToolRegistryModule');
-  const ProductReads = await loadAi('nodia-ai-products/nodia-ai-product-reads.module','NodiaAiProductReadsModule');
-  const actual = Reflect.getMetadata('imports',RegistryModule).find(value => value?.module === ProductReads);
-  if (!actual) throw new Error('Missing explicit product composition');
+  // Every published family must match the explicitly empty synthetic manifest.
+  // Clearing only product reads leaves later write/common families published and
+  // correctly fails LoadNodiaAiKnowledge's registry/manifest equality barrier.
+  const familyTypes = await Promise.all([
+    ['nodia-ai-products/nodia-ai-product-reads.module','NodiaAiProductReadsModule'],
+    ['nodia-ai-write-tools/nodia-ai-write-tools.module','NodiaAiWriteToolsModule'],
+    ['nodia-ai-invoice-analysis/nodia-ai-invoice-analysis.module','NodiaAiInvoiceAnalysisModule'],
+    ['nodia-ai-common-reads/nodia-ai-common-reads.module','NodiaAiCommonReadsModule'],
+    ['nodia-ai-common-preparation/nodia-ai-common-preparation.module','NodiaAiCommonPreparationModule'],
+  ].map(([file,name]) => loadAi(file,name)));
+  const imports = Reflect.getMetadata('imports',RegistryModule);
+  const publicationModules = familyTypes.map(ModuleType => {
+    const matches = imports.filter(value => value?.module === ModuleType);
+    if (matches.length !== 1) throw new Error('Missing explicit empty publication composition');
+    return { actual: matches[0], ModuleType };
+  });
   return {
     override(builder) {
-      builder.overrideModule(actual).useModule(ProductReads.forPublication([]));
+      for (const { actual, ModuleType } of publicationModules)
+        builder.overrideModule(actual).useModule(ModuleType.forPublication([]));
       builder.overrideProvider(contextTokens.NODIA_AI_KNOWLEDGE_ROOT).useValue(root);
       builder.overrideProvider(contextTokens.NODIA_AI_KNOWLEDGE_PIN).useValue(pin);
       builder.overrideProvider(contextTokens.NODIA_AI_KNOWLEDGE_SCHEMA).useValue(schema);

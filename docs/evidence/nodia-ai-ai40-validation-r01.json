@@ -1,0 +1,79 @@
+{
+  "schema": "nodia-ai-ai40-validation-v1",
+  "stage": "AI-40",
+  "status": "partial_scoped_linux_acceptance",
+  "consolidated_at_host_utc": "2026-10-23T02:42:35.467320+00:00",
+  "environment": "local_linux_VM",
+  "selection_observed": {
+    "connection_id": "1",
+    "mode": "token_plan_agentic",
+    "model_id": "gpt-6.1-sol",
+    "effort_id": null
+  },
+  "server_release": "/opt/nodia/releases/nodia-server-ai40-r03",
+  "server_manifest_sha256": "0e769ded9a0a36e6d62a17415ea15d1843ce48735ff746ce5e238c5c3b2ea341",
+  "ui_surface": "authenticated_local_Vite_5174",
+  "compiled_client_adoption_accepted": false,
+  "server_unit_tests": 4651,
+  "client_global_scope": "1823 tests on the frozen 3.5-second candidate; final 21-second delta verified by focused tests/build, not another global run",
+  "receipt_sha256": {
+    "nodia-ai-ai40-unit-qa-r03.json": "781b5c4f21c520dbb73b00c2aa7863932e73caa988216513b704c4859ec0ee33",
+    "nodia-ai-ai40-build-r03.json": "128d5491760a0ba9a963e3c117729beed2220b7a220e9210c5df2300c7fe1a3f",
+    "nodia-ai-ai40-client-qa-r02.json": "1faffb213a2d9b575841716e3513c4602c46ce647d7e34a21c46a6477330995b",
+    "nodia-ai-ai40-client-build-r03.json": "b8110db8d1295a37c9e20aabf368de83cc1d9095151e803f0e1793130261bf74",
+    "nodia-ai-ai40-client-busy-window-final-r01.json": "b874371161bca08f0223486bdaef399715af77ae0cbc410d1c113f5a6a46882c",
+    "nodia-ai-ai40-operator-qa-r02.json": "241678ee7ebf3f439ba2dfae93767ba3ec0d5769b6da9126542c0b99e04c829e",
+    "nodia-ai-ai40-availability-operator-qa-r01.json": "46c7638fff8a918421402415ad647ab08fe167f12171504c4be99c103a55b771",
+    "nodia-ai-ai40-server-package-r03.json": "0e769ded9a0a36e6d62a17415ea15d1843ce48735ff746ce5e238c5c3b2ea341",
+    "nodia-ai-ai40-package-r03.json": "bf66cff01971873f69a6b1daa70704f726e0a1c071cf38823c838439f765d454",
+    "nodia-ai-ai40-stage-r03.json": "51925ca0b349b3d54f17c9c1eb92b203e5a3eda9e6fa07da3509a79b2e6df3cd",
+    "nodia-ai-ai40-availability-adopt-r01.json": "ce71ee1816e411fe2b93a8361eda77699ba3cb2b048792d5e52f96505dc4435b",
+    "nodia-ai-ai40-real-canary-r06.json": "1a3513bc8984210cccd82672e2aad72c0c07be7eb369065e1ea7e13417b6d3ed",
+    "nodia-ai-ai40-live-ui-r01.json": "ea066c9dab77b8d2110674608c0cc81c6ec45d981ca206bc943214d55be7097e",
+    "nodia-ai-ai40-ui-final-sql-r01.json": "9ecbcedc7d29add2ddc37004403147e7da2213aa53e89400141ab1bc33a4eee3",
+    "nodia-ai-ai40-ui-final-sql-reloaded-r01.json": "9e4822111d6872508e4909be5aa94aecbfc342715de26ca2a4070cb0d2f76a99",
+    "nodia-ai-ai40-final-environment-r01.json": "10e92cb372fd65285bfded11b4c3acd8c9b3456b9062835aa679fcc661def3e2",
+    "nodia-ai-ai40-ui-effect-sql-r01.json": "5ffee1a36e05e8f8c0bfa917701c676fd260be7b8ca2fbc5cb1ca589e3aa2f97",
+    "nodia-ai-ai40-ui-effect-sql-reloaded-r01.json": "ebe1c3cb547f1e4b5343049c06b5d51ac16e8b89e9f19ad85395dd2422319f54",
+    "nodia-ai-ai40-ack-window-r02.json": "0eabc7b586ff994dcab7ec746357127cef5a76a0faad0a67691f30d179d306a0",
+    "nodia-ai-ai40-checks-qa-r01.json": "b5fb95ad71054775abd5c666d17de39f2b1d0575f5cd02518c8c569be0991789",
+    "nodia-ai-ai40-store-linux-r02.json": "a9f34157cdef424fab4ae74d5ae891af20178fa9e5532d3e51bc12fb984679d8"
+  },
+  "accepted_scopes": [
+    "Explicit Codex drawer selection with discovered model/effort metadata and secure account link",
+    "Real account and scoped MCP acceptance with gateway, nonce, terminal and ACK",
+    "Normal UI/worker knowledge reads and semantic conversation continuity",
+    "Explicit Gemini Web/Codex selection changes preserve history and the current draft",
+    "Human confirmation of the exact proposal: one execution, receipt and movement 2",
+    "Readback, route return and reload preserve IDs without repeating the effect",
+    "Bounded GET-only post-turn availability recovery; current native proofs acknowledged"
+  ],
+  "remaining_scopes": [
+    "Business capability families beyond the specific financial preparation/effect tested",
+    "Real cancellation, uncertain-result reconciliation, revocation and long-context acceptance for Codex",
+    "Native image/PDF/audio per exact MIME/model/connection; remain blocked",
+    "Unsent draft persistence across full reload/authentication remount",
+    "Compiled Client adoption and R03 rollback rehearsal",
+    "Windows, remote production and unrelated AI-38 delivery gates"
+  ],
+  "preserved_negative_evidence": [
+    "Initial host canary transport failure before dispatch and the reverted namespace misdiagnosis",
+    "Successful transport canaries R02/R03 with incorrect timestamp mirror; not operational acceptance",
+    "Normal R01 worker result rejected after a committed tool receipt by the global JSON-node limit",
+    "Two R02 deployment attempts stopped before admission; neither replayed in place",
+    "R03 post-turn UI busy state persisted with the insufficient 3.5-second window",
+    "Historical AI-15 structure checker still rejects its frozen 0/67 expectation against current 74 publication",
+    "Automatic review rejected replacing the local dev server with compiled preview before execution"
+  ],
+  "safety": {
+    "new_publication": false,
+    "approval_inferred": false,
+    "SQL_restore": false,
+    "migration_executed": false,
+    "credential_bytes_in_evidence": false,
+    "generation_replayed_on_unknown": false,
+    "business_effects_confirmed_by_human": 1,
+    "confirmed_movement_retained_for_review": "2"
+  },
+  "services_left_active": true
+}

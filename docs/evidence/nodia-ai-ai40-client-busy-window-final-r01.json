@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "stage": "AI-40",
+  "scope": "Final bounded busy observation window; exact current source receives focused QA, not a repeated global suite",
+  "observed_at_host_utc": "2026-10-23T02:39:01.345447+00:00",
+  "UI_recovery_policy": {
+    "additional_GET_delays_ms": [
+      1000,
+      5000,
+      15000
+    ],
+    "additional_GETs_maximum": 3,
+    "delay_sum_ms": 21000,
+    "request_latency_additional_to_delays": true,
+    "trigger": "Same actor, conversation and exact selection active-to-idle transition followed by runtime_busy",
+    "stops_on": [
+      "available",
+      "non_busy_reason",
+      "HTTP_error",
+      "new_active_work",
+      "conversation_change",
+      "selection_change",
+      "actor_session_change",
+      "logout",
+      "unmount"
+    ],
+    "provider_or_execution_replay": false,
+    "SLA_guarantee": false,
+    "rationale": {
+      "policy_source": "docs/mvp/nodia-ai-v1-runtime-policy.json",
+      "maintenance_heartbeat_seconds": 5,
+      "nominal_ACK_step_seconds": 15,
+      "observation": "Prior 3.5-second wait budget ended before an operator-observed ACK about 4.17 seconds after SQL completion; this UI wait budget accommodates a nominal maintenance cycle, not arbitrary delays"
+    }
+  },
+  "focused_current_source": {
+    "report": ".tmp/ai40-client-busy-window-final-r01.json",
+    "report_sha256": "22b78ce914f7178695398bc5b318c570bb23f47af03e155624baa3acdddeb254",
+    "passed": 126,
+    "failed": 0,
+    "files": 4,
+    "coverage": [
+      "ACK becomes available after six seconds",
+      "Persistent busy remains bounded at three additional reads",
+      "HTTP and credential errors are not retried",
+      "Changes in actor/session/chat/selection/new turn and unmount cancel scheduled reads",
+      "Same composer DOM node and draft survive recovery",
+      "Expired Codex snapshot remains unverified while explicit denials stay visible"
+    ]
+  },
+  "source_snapshot": {
+    "files": 1068,
+    "method": "SHA256 of sorted compact JSON mapping root-relative POSIX src paths to file SHA256",
+    "sha256_at_evidence_snapshot": "df2e84d3cbba411481ebddab9eaac83d044e53d9da7da9e5ba24ed8f0cdc6624",
+    "sha256_at_manifest": "df2e84d3cbba411481ebddab9eaac83d044e53d9da7da9e5ba24ed8f0cdc6624",
+    "stable_between_evidence_snapshots": true
+  },
+  "prior_full_suite": {
+    "receipt": "docs/evidence/nodia-ai-ai40-client-qa-r02.json",
+    "passed": 1823,
+    "failed": 0,
+    "files": 229,
+    "source_sha256": "b7816b8870e76f45a35f1614ee7c4a5870c6b0a18cb99f74fc53475e07d71eed",
+    "wait_budget_ms": 3500,
+    "is_exact_current_source": false,
+    "rerun_after_delay_adjustment": false
+  },
+  "changes_after_prior_full_suite": [
+    {
+      "path": "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts",
+      "candidate_sha256": "cb9215376f840cdbb1a95ba601b50ccc350dce787dc86c24544a5acc59f9286c",
+      "current_sha256": "eb1f8d818b87ee58ae378edb9f8f853b7fbe2fbf42c305e84264ff113dc184fe",
+      "production": true
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/infrastructure/useServices.test.tsx",
+      "candidate_sha256": "21c57854c920a78a5505626c56bde8cfa85397155cbbbad1ae60563b90b8b4d5",
+      "current_sha256": "21cd9211e656269c94a8eb237072310b035fe82461de632ccd6fec94d34af77d",
+      "production": false
+    },
+    {
+      "path": "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx",
+      "candidate_sha256": "0979ee1bbac800ebaca2ecaec634203f92d122c691bada9057bc3d3753304119",
+      "current_sha256": "7b3c68942e5a4747d5a22e350e963cdbaab1ff246bd9b5649f9e8da1765dc03c",
+      "production": false
+    }
+  ],
+  "typecheck_and_build": {
+    "command": [
+      "npm.cmd",
+      "run",
+      "build"
+    ],
+    "exit_code": 0
+  },
+  "lint": {
+    "scope": "Five modified frontend and test files",
+    "exit_code": 0
+  },
+  "VM_operations": 0,
+  "browser_operations": 0,
+  "provider_generations": 0,
+  "real_UI_or_provider_acceptance_attested": false
+}

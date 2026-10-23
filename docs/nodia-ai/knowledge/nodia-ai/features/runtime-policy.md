@@ -4,11 +4,11 @@
   "document_id": "nodia-ai.runtime-policy",
   "product_id": "nodia-ai",
   "kind": "feature",
-  "revision": 15,
+  "revision": 19,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "AI-38: recorrido representativo autenticado con Gemini Agentic High y MCP publicado. Un mensaje, dos generaciones, cuatro callbacks; vista previa exacta y clic físico del usuario crean una ejecución/recibo y un gasto pendiente de prueba de importe 1. Salir, volver, recargar y reconsultar conservan la proyección SQL y una sola fila. Dos ACK nativos y cero pendientes; no se acredita disponibilidad continua del siguiente turno. Alta previa de navegación Finanzas/categoría propias separada del efecto. Corrección del filtro HTTP id_eq con12 pruebas/build/lint en fuente local, sin adopción en R02. Paquetes, época Gemini y publicación conservados; la ficha sigue draft y AI-38 parcial."
+    "notes": "AI-38: observador acotado de frames y presupuesto de recuperación del mismo chat adoptados selectivamente en R04, sin ampliar 120 s ni regenerar. Texto Web R05 completado en la sesión vigente; PNG anterior sin candidata pese a cinco consultas de historial, conciliado con ACK. Web sigue sin formatos verificados. MCP High y PNG/PDF/WAV/WebM Agentic acreditados en la nueva época. Doce generaciones: ocho completadas, cuatro desconocidas cerradas con ACK, sin replay o efectos comerciales nuevos; SQL/configuración conservados y cero pendientes. 496 pruebas Linux; 527 Windows, dos omisiones históricas. Sin nueva aceptación UI/R2/micrófono. AI-38 parcial; sin publicación."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento NodiaAI conforme AGENTS",
@@ -108,10 +108,30 @@
     {
       "path": "docs/evidence/nodia-ai-ai38-live-ui-r01.md",
       "kind": "implementation"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-owner-availability-r01.md",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/architecture/decisions/ADR-071-bounded-agentic-profile-observations.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-profile-reservation-r01.md",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-mcp-post-list-r01.md",
+      "kind": "implementation"
+    },
+    {
+      "path": "docs/evidence/nodia-ai-ai38-web-stream-r01.md",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-10-21",
+    "checked_on": "2026-10-22",
     "evidence_paths": [
       "docs/evidence/nodia-ai-ai04-runtime-policy-validation.json",
       "docs/evidence/nodia-ai-ai09-persistence-validation.json",
@@ -144,9 +164,9 @@
       "docs/evidence/nodia-ai-ai38-journal-validation-r02.json",
       "docs/evidence/nodia-ai-ai38-legacy-delete-validation-r01.json",
       "docs/evidence/nodia-ai-ai38-users-scope-fix-r01.json",
-      "docs/evidence/nodia-ai-ai38-live-ui-validation-r01.json"
+      "docs/evidence/nodia-ai-ai38-web-recovery-validation-r01.json"
     ],
-    "notes": "Actual: UI sin fixtures, restauración de sesión legítima, preparación publicada, revisión1/hash exactos y confirmación humana corroborados por SQL/DOM. El primer aviso humano no produjo HTTP o efecto; se conserva y sólo el segundo clic corresponde al challenge consumido y movimiento1. Proyección SQL idéntica tras reabrir, mismo conteo de mensajes y mismos IDs de efecto; no se comparan hashes de contenido de mensajes. ACK200 por cada intento y cierre nativo sin pendientes; diagnóstico terminal exacto ausente. Observador HTTP falló cerrado por rotación; sucesor acotado verifica inode/ancla anterior y una confirmación202. Validador offline:86 controles y seis alteraciones rechazadas. Ventana/túnel retirados, R02 y journal activos. El selector y la disponibilidad continua del siguiente turno conservan pendientes explícitos. Sin aprobación documental o nuevas capacidades; las revisiones y cortes anteriores son históricos."
+    "notes": "Cadena previa preservada y aceptación MCP/Agentic actual; IPC ordinal1 pre-ready, initialize3/list5/callback7, sin atribuir tiempos exactos o UUID a archivos por coincidencia. Web perdió sucesivamente sus pruebas al cerrar tres timeouts de generación; no JSON corrupto demostrado ni causa concreta de SDK/proveedor. Dos cohortes y PNG final se conservan, PDF final no iniciado. Once intentos nuevos únicos/once ACK, ocho completados/tres desconocidos, cero pendientes. Sin modelos alternativos, publicación o aprobación:31 fichas/74 capacidades y77 candidatas conservadas."
   },
   "approval": null
 }
@@ -340,3 +360,38 @@ El [ensayo representativo en la VM](../../../../evidence/nodia-ai-ai38-live-ui-r
 Dos ACK nativos y cierre sin pendientes; el diagnóstico terminal específico no apareció y permanece desconocido. Un sucesor del observador HTTP trata explícitamente la rotación de logs, verificando inode/ancla anterior y confirmación202 sin emitir cuerpos o tokens. La validación offline supera86 controles y rechaza seis alteraciones. La navegación de Finanzas y su categoría propias se dieron de alta desde la UI como preparación separada; el gasto permanece registrado.
 
 El selector de propietario tiene una corrección local del filtro HTTP id_eq con12 pruebas, build y lint correctos; R02 todavía no la contiene. La UI requiere recomprobar disponibilidad al terminar/reabrir y no se acredita disponibilidad continua del siguiente turno. La ventana/túnel temporales se retiran sin detener API/worker/Gemini ni cerrar el journal. Esta revisión15 permanece draft/unregistered/approval null;31 fichas aprobadas/74 capacidades y release418900… conservan su alcance,77 candidatas siguen sin publicar y AI-38 permanece parcial.
+
+## AI-38, continuación 2026-10-22 — selector y disponibilidad
+
+La [entrega](../../../../evidence/nodia-ai-ai38-owner-availability-r01.md) mantiene el significado de admisión: observar disponibilidad no reserva una ejecución futura. El chat revalida al terminar el trabajo y no habilita envío por un positivo antiguo después de un error. Una sesión ocupada bloquea; puede reconsultarse explícitamente sin perder el borrador. Dos turnos reales High y una recarga durante actividad verifican ese recorrido; una recarga en reposo aún observó409 nativo, recuperado con reconsulta. No se acredita disponibilidad continua ni al dueño causal de esa reserva. Salud y elegibilidad pueden competir según fuente; no se añadió coordinación especulativa con salud agregada.
+
+El selector HTTP de propietario se desplegó sin ampliar el esquema MCP o permisos. Un efecto financiero histórico permanece único; los nuevos turnos no usan herramientas de dominio ni confirman escrituras. El shell nginx de prueba se retiró y Vite se restauró; Server owner-r01 conserva journal, esquema, configuración y época Gemini. Esta revisión es draft/unregistered, no aprueba ni publica herramientas o contenido.
+
+## AI-38, continuación 2026-10-22 — reserva observacional acotada
+
+La [entrega verificada](../../../../evidence/nodia-ai-ai38-profile-reservation-r01.md) y [ADR-071 propuesto](../../../../architecture/decisions/ADR-071-bounded-agentic-profile-observations.md) identifican a salud como dueño del perfil durante dos reproducciones del bloqueo de elegibilidad, una de ellas en UI autenticada. Salud/elegibilidad Agentic esperan en FIFO acotada por perfil físico (un dueño y cuatro esperas; presupuesto total12/18s), comprobando la selección de cada petición y esperando la limpieza real antes de liberar. El timeout de trabajo no autoriza liberar un CLI aún activo. Login/ejecución, cuarentena y consumidores legacy conservan409/exclusión. Un sondeo no reserva la ejecución siguiente ni una etiqueta habilita acceso.
+
+Ambos órdenes controlados y una apertura/tres recargas autenticadas completan sin aviso de ocupado o reconsulta manual; no garantizan disponibilidad continua con carga, errores o indisponibilidad del proveedor. Se mantiene el historial y la proyección SQL exacta de seis mensajes/tres runs/un efecto histórico. No hay nuevas escrituras comerciales, permisos, esquema o herramientas. Windows503 pruebas correctas/dos omisiones; paquete Linux474/474. La imagen efectiva aplica sólo este delta sobre fuentes congeladas, sin adoptar backlog local ajeno.
+
+La nueva época Gemini invalida pruebas MCP/modalidades en memoria. El canario único retorna mcp_result_unknown con cero callbacks; cancelación/conciliación/ACK completan sin pendiente. No compite con salud en su ventana y su causa continúa desconocida. Las ocho pruebas de modalidades quedan preparadas pero no iniciadas por faltar calificación MCP; no se reutilizan pruebas históricas como actuales. Disponibilidad de metadata y autenticación no certifican herramientas o formatos. Próximo pendiente: recuperar MCP y reatestarlos en esta época. Esta revisión17 sigue draft/unregistered/approval null;31 fichas aprobadas/74 capacidades, release418900… y77 candidatas sin publicar conservados, AI-38 parcial.
+
+## AI-38, continuación 2026-10-22 — MCP recuperado y límites Web
+
+La [revalidación real](../../../../evidence/nodia-ai-ai38-mcp-post-list-r01.md) acredita un nuevo callback con nonce, respuesta, atestación y ACK en High, sin reiniciar o cambiar configuración, modelo, rol inheritMcp, permisos o plazos. El rechazo RPC observado antes de initialize no impide el éxito actual; el orden del timeout histórico no se conservó y su causa sigue desconocida.
+
+Agentic conserva PNG, PDF, WAV y WebM verificados por semántica/MIME y terminal/ACK en su misma selección/sesión. Web completa inicialmente PNG/PDF, y WAV en una nueva generación posterior, pero los timeouts WAV, WebM y finalmente PNG renuevan su cliente y dejan esos positivos como históricos. La observación final Web es disponible por metadata con cero formatos acreditados: no trasladar pruebas entre generaciones ni confundir sesión con inferencia. MCP sigue exclusivamente Agentic.
+
+Los tres fallos se sitúan durante generación, sin candidata o EOF, después de upload y apertura HTTP200. La falla PNG no utiliza la adaptación de audio; no se atribuyen todos los fallos a MIME, JSON o una causa upstream no comprobada. Los intentos desconocidos están conciliados con ACK, sin replay o pendientes; PDF final no se inicia. Las once generaciones nuevas suman ocho completadas y tres desconocidas cerradas, sin efectos comerciales. Se usan fixtures sintéticos; UI, micrófono físico y R2 conservan evidencias históricas sin revalidación nueva.
+
+Configuración/esquema, proyección SQL y efecto histórico único, journal/retención y fuentes ejecutadas conservados. Esta revisión18 sigue draft/unregistered/approval null;31 fichas aprobadas/74 capacidades, release418900… y77 candidatas sin publicar. AI-38 permanece parcial por la inferencia/formatos Web y los gates externos/publicación/retención documentados.
+
+
+## AI-38, continuación 2026-10-22 — stream Web y recuperación acotada
+
+La [investigación y sus recibos](../../../../evidence/nodia-ai-ai38-web-stream-r01.md) separan tres hechos: el SDK recibía frames válidos sin candidata; su watchdog previo no alcanzaba a recuperar historial antes del plazo total; adelantar esa recuperación permite consultarlo, pero no garantiza respuesta del proveedor. El nuevo presupuesto sólo aplica al chat, restaura los parámetros y conserva una sola generación. OCR no recibe ese argumento. La recuperación del SDK usa el CID nuevo y diferencia de RCID; no añade una validación propia del RID del stream.
+
+La adopción selectiva R04 conserva configuración, selección, dependencias, Server y nginx: 49 fuentes Python, imagen 6b9e2f7e, época 21:50:29 UTC. Los logs del SDK se silencian en construcción explícita para no filtrar contenido de la recuperación; se mantienen los diagnósticos acotados de Nodia. Un error de historial con transporte cerrado invalida el flag local antes de otra observación. 496 pruebas Linux sin omisiones y 527 Windows con dos omisiones históricas; el control de privacidad incluye mutación negativa.
+
+El texto R04 completó en 42,6 s sin usar recuperación; el PNG posterior terminó sin candidata a 119,3 s pese a cinco lecturas de historial, con conciliación y ACK. Ese fallo renueva la generación Web, por lo que los positivos anteriores no acreditan modalidades actuales. No se despacharon los otros tres formatos Web. MCP High completó una llamada real en la nueva época; el error RPC -32000 también aparece antes de initialize en ese éxito y no explica por sí solo el timeout histórico. La evidencia final discrimina formatos y sesiones; metadatos/autenticación no se toman como inferencia exitosa. Se conserva el estado parcial y no se publica esta ficha ni herramientas nuevas.
+
+El cierre de esta continuación acredita texto Web R05 en 4,67 s (sesión renovada y cero recuperación), MCP High y PNG/PDF/WAV/WebM Agentic vigentes. Los bindings finales posteriores a los canarios y el inventario de la misma época conservan selección/configuración, cero pendientes y la proyección SQL histórica exacta; doce generaciones nuevas, ocho completadas/cuatro desconocidas cerradas con ACK, sin efectos comerciales. La lista de MIME Web sigue vacía.

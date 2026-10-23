@@ -1,0 +1,63 @@
+{
+  "schema": "ai38-profile-reservation-offline-validation-successor-v1",
+  "status": "passed_profile_contention_fix_MCP_unverified",
+  "scope": "R01_integrity_plus_closed_terminal_and_local_qualification_guard_receipts",
+  "predecessor": {
+    "path": "docs/evidence/nodia-ai-ai38-profile-reservation-validation-r01.json",
+    "sha256": "e75fa850fa113007174c2d81b3374038b46ac87925e92e7c502b460c290f95a0",
+    "checks_preserved": 70,
+    "older_chains": {
+      "sha256": "63944af75f6def58f25646d042029d6cb142f1c4d77dbf2eefd44d4b9ed96f15",
+      "checks_preserved": 49,
+      "historical_86_checks_sha256": "eddd42dcc808edfbba4dc05739d3d9a9c9498760cde2ba78c9dce8c7f71296e6"
+    }
+  },
+  "additional_checks_passed": 7,
+  "additional_checks": [
+    "scoped_70_check_R01_receipt_preserved_exactly",
+    "R01_validator_and_entire_saved_evidence_chain_bytes_unchanged",
+    "closed_terminal_metadata_exact_attempt_and_FIX_epoch_without_new_dispatch",
+    "terminal_timeout_and_tools_list_reply_do_not_prove_provider_cause_CLI_consumption_or_MCP",
+    "local_modalities_guard_rejected_exact_failed_fresh_MCP_qualification",
+    "eight_modality_canaries_not_started_no_historical_proof_reuse_or_capability_promotion",
+    "failed_MCP_attempt_and_zero_generation_guard_distinguished_unknown_not_available"
+  ],
+  "source_files_sha256": {
+    "docs/evidence/nodia-ai-ai38-profile-reservation-validation-r01.json": "e75fa850fa113007174c2d81b3374038b46ac87925e92e7c502b460c290f95a0",
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reservation-validation.py": "3486bafc3b13bd866d8eabc468ccf1d0bb4ed1a1f0989233b508eff9326efe8f",
+    "docs/evidence/nodia-ai-ai38-profile-reservation-mcp-terminal-r02.json": "08ff1610072052ac787605e2cf1e627364cdeb1e47579e8c22584dfa3fe54b7c",
+    "docs/evidence/nodia-ai-ai38-profile-reservation-mcp-r01.json": "ac7e222e730f8ffa454562753d57d40e8ceafd6c05964da29b14cca9459f5a94",
+    "docs/evidence/nodia-ai-ai38-profile-reattest-modalities-no-start-r01.json": "ab8286eb1d09dde17d19e9f5dd4d4d17e034c05b721de4cfac8de6eb1f2320f5",
+    "docs/evidence/nodia-ai-ai38-profile-reattest-modalities-stage-r01.json": "82c4d3faeeff35e3f6b8164c99facc6697b0073a26b421f74fa9b8f674448200",
+    "docs/evidence/scripts/nodia-ai-ai38-profile-reattest-modalities-r01.py": "f51d16a67b73a5eb5f5eaa6beee4bad1ae06d0e1af0d7641487887835af843d3"
+  },
+  "validator_sha256": "1cfd2a77f3b8e4de59fe9129be57d122fa3ddadde6de25a532255e83d1c347fb",
+  "MCP": {
+    "acceptance": "conclusive_failed_reconciled",
+    "provider_result": "mcp_result_unknown",
+    "current_epoch_MCP_verified": false,
+    "supports_mcp_after": null,
+    "real_dispatches": 1,
+    "callbacks": 0,
+    "nonce_verified": false,
+    "cancel_reconcile_ACK_completed": true,
+    "automatic_retries": 0,
+    "modalities_acceptance_executed": false
+  },
+  "limits": [
+    "Profile contention fix accepted in sampled metadata races and four authenticated Vite reload samples; AI-38 not fully closed.",
+    "Fresh MCP canary failed with unknown result and was reconciled; metadata availability is not proof of inference or MCP capability.",
+    "Wait logs identify the blocking owner; they do not uniquely identify a waiter or prove same-request wait-to-acquire linkage.",
+    "UI used current Vite workspace, not the frozen production Client distribution; operator and VM clocks are not cross-correlated.",
+    "Linux image QA covers the surgical B8-derived slice; current local backlog parity is not claimed.",
+    "Only saved receipt projections and pinned public bytes were checked; no raw profiles, credentials, model payloads or terminal diagnostics were opened.",
+    "Closed terminal metadata shows a running_cli TimeoutError and a constructed tools/list reply; CLI consumption and provider root cause remain unproven.",
+    "The modality no-start receipt validates a local qualification guard; it is not modality acceptance or a second MCP generation."
+  ],
+  "validator_runtime_actions": {
+    "VM_mutations": 0,
+    "provider_requests": 0,
+    "SQL_requests": 0,
+    "full_QA_runs": 0
+  }
+}

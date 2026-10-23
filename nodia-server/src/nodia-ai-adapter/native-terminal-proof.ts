@@ -23,6 +23,7 @@ export function parseNativeTerminalProof(
     'observed_at',
   ];
   if (
+    expected.adapterIdentity !== undefined ||
     !value ||
     Object.keys(value).length !== keys.length ||
     keys.some((key) => !Object.hasOwn(value, key)) ||

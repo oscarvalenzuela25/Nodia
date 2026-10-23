@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "stage": "AI-40",
+  "scope": "Frontend successor build after bounded completion-read recovery; prior r01 receipts retained",
+  "observed_at_host_utc": "2026-10-23T02:36:07.906200+00:00",
+  "sources": {
+    "nodia-client/src/layouts/components/Topbar/components/AiProviderIndicators/modeHealth.ts": "3ee55eb28facb4eef587a94e75a4cf94286e6b969db616351470d6853c8fedf7",
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.tsx": "dfc90e7beb3328d3c2a7b3d29d23d14349561ab7f8601943299baed9957632ba",
+    "nodia-client/src/modules/nodiaAi/components/ConfigurationDrawer/types.ts": "7910f9a67afb140ab3264efc540f909869561d97d1b1584864e94ab634f6ae9f",
+    "nodia-client/src/modules/nodiaAi/infrastructure/useServices.ts": "cb9215376f840cdbb1a95ba601b50ccc350dce787dc86c24544a5acc59f9286c",
+    "nodia-client/src/modules/nodiaAi/pages/NodiaAI/NodiaAI.tsx": "8f77878eab0d6dff88ab0c6406eb95b869f9af4305b04ee6099c2c8166dc0a6e",
+    "nodia-client/src/test/layouts/components/Topbar/components/AiProviderIndicators/AiProviderIndicators.test.tsx": "ee4cbef67ad732524a43792670f9afb6b779fb4fb7de297eaa078350b9d45887",
+    "nodia-client/src/test/modules/nodiaAi/components/ConfigurationDrawer/ConfigurationDrawer.test.tsx": "4aff8a5631542061bafbfff4f3109d24876f2d28a7c2382c5b37b355ab134635",
+    "nodia-client/src/test/modules/nodiaAi/infrastructure/useServices.test.tsx": "21c57854c920a78a5505626c56bde8cfa85397155cbbbad1ae60563b90b8b4d5",
+    "nodia-client/src/test/modules/nodiaAi/pages/NodiaAI/NodiaAI.test.tsx": "0979ee1bbac800ebaca2ecaec634203f92d122c691bada9057bc3d3753304119",
+    "nodia-client/src/translate/en/nodiaAi.json": "8cee72220e2a61cf9aab0522707568e015853767b1f03f0e8dda28e5b84b90a9",
+    "nodia-client/src/translate/es/nodiaAi.json": "43e3ef54dfdf6e39e5312af2dc7c758ffe1c2b34190bb2f9a058d9d604529471"
+  },
+  "compiled_assets": [
+    {
+      "path": "nodia-client/dist/assets/index-DXkQeZJF.js",
+      "bytes": 393023,
+      "sha256": "0c60f625177dcb8f90e4560d55e353426e4a5471369f397b1c04ef4b291a784a"
+    },
+    {
+      "path": "nodia-client/dist/assets/NodiaAI-DFKfpvG3.js",
+      "bytes": 56726,
+      "sha256": "9fdd80bf67f46f80dda85becd9bcfd72f0c090f73c31fc0e14dd01236ddbbd1a"
+    },
+    {
+      "path": "nodia-client/dist/assets/useServices-DjE7gsIh.js",
+      "bytes": 26008,
+      "sha256": "df3a8a54dd1dddbc8f1e553739d166dac80359338d3150a9b2df5343eba207ae"
+    }
+  ],
+  "client_qa": {
+    "path": "docs/evidence/nodia-ai-ai40-client-qa-r02.json",
+    "sha256": "1faffb213a2d9b575841716e3513c4602c46ce647d7e34a21c46a6477330995b",
+    "global_passed": 1823,
+    "global_failed": 0,
+    "source_sha256_before": "b7816b8870e76f45a35f1614ee7c4a5870c6b0a18cb99f74fc53475e07d71eed",
+    "source_sha256_after": "b7816b8870e76f45a35f1614ee7c4a5870c6b0a18cb99f74fc53475e07d71eed",
+    "sources_unchanged": true
+  },
+  "authenticated_UI_verification": {
+    "served_by": "Vite dev server",
+    "port": 5174,
+    "compiled_build_adopted_for_UI_acceptance": false,
+    "deployment_limitation": "Stop/start of the compiled frontend deployment was rejected by approval policy",
+    "provenance": "Environment reported by the parent operator; browser acceptance of this fix is not attested by this local build receipt"
+  },
+  "provider_generations": 0,
+  "VM_operations": 0,
+  "browser_operations": 0,
+  "production_deployment_attested": false
+}

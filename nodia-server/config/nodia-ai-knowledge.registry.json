@@ -223,7 +223,7 @@
         },
         {
           "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
-          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+          "sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
         }
       ],
       "input_schema": {
@@ -299,11 +299,11 @@
         },
         {
           "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
-          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+          "sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
         },
         {
           "path": "nodia-server/src/ai-provider/use-case/get-ai-providers-health.use-case.ts",
-          "sha256": "39eca788a791fe14773c2312a4ff3b7aac81e2bc6231f33bc0bf349e3724fdec"
+          "sha256": "8314b3de6836a44985660f3914fa98cf99d8b7156dffd8ecaea170c831a97499"
         }
       ],
       "input_schema": {
@@ -379,7 +379,7 @@
         },
         {
           "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
-          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+          "sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
         }
       ],
       "input_schema": {
@@ -1091,7 +1091,7 @@
         },
         {
           "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
-          "sha256": "20a45c4be67f3f4e714cb86694c46c6245e593714e4a3663abbf2a96ea7036d3"
+          "sha256": "82df14d6bbd44c55d0e59d444c2f84847739b1fa32508065cd698cb871c75e2a"
         }
       ],
       "input_schema": {
@@ -1845,12 +1845,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalAuditListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalAuditListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -1881,12 +1881,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalBlocksGetInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalBlocksGetOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -1917,12 +1917,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalBlocksListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalBlocksListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -1953,12 +1953,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCalendarAvailabilityInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCalendarAvailabilityOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -1989,12 +1989,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCalendarCalendarInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCalendarCalendarOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2025,12 +2025,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCancellationPoliciesGetInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCancellationPoliciesGetOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2061,12 +2061,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCancellationPoliciesListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCancellationPoliciesListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2097,12 +2097,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCollaboratorsCandidatesInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCollaboratorsCandidatesOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2133,12 +2133,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCollaboratorsListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalCollaboratorsListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2169,12 +2169,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalExpensesGetInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalExpensesGetOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2205,12 +2205,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalExpensesListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalExpensesListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2241,12 +2241,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPaymentsGetInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPaymentsGetOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2277,12 +2277,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPaymentsListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPaymentsListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2313,12 +2313,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPropertiesGetInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPropertiesGetOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2349,12 +2349,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPropertiesListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalPropertiesListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2385,12 +2385,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalReservationsCancellationPreviewInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalReservationsCancellationPreviewOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2421,12 +2421,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalReservationsGetInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalReservationsGetOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2457,12 +2457,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalReservationsListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalReservationsListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2493,12 +2493,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalSummariesOverviewInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalSummariesOverviewOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2529,12 +2529,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalTurnoversGetInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalTurnoversGetOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2565,12 +2565,12 @@
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalTurnoversListInput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/reservations.schema.json",
         "definition": "RentalTurnoversListOutput",
-        "sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+        "sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -3341,8 +3341,8 @@
         {
           "capability_id": "nodia_rental_audit_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3360,14 +3360,14 @@
         {
           "capability_id": "nodia_rental_calendar_availability",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_calendar_calendar",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3385,14 +3385,14 @@
         {
           "capability_id": "nodia_rental_blocks_get",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_blocks_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3410,14 +3410,14 @@
         {
           "capability_id": "nodia_rental_cancellation_policies_get",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_cancellation_policies_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3435,14 +3435,14 @@
         {
           "capability_id": "nodia_rental_expenses_get",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_expenses_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3460,14 +3460,14 @@
         {
           "capability_id": "nodia_rental_payments_get",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_payments_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3485,14 +3485,14 @@
         {
           "capability_id": "nodia_rental_turnovers_get",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_turnovers_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3510,26 +3510,26 @@
         {
           "capability_id": "nodia_rental_collaborators_candidates",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_collaborators_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_properties_get",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_properties_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [
@@ -3547,26 +3547,26 @@
         {
           "capability_id": "nodia_rental_reservations_cancellation_preview",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_reservations_get",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_reservations_list",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         },
         {
           "capability_id": "nodia_rental_summaries_overview",
           "revision": 1,
-          "input_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0",
-          "output_schema_sha256": "faef6168d2eef8cfcdb682860276f0cddb51c317049cd7acd406938f9d852ea0"
+          "input_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de",
+          "output_schema_sha256": "cd6716ab30f4af08a758e683b63f3eeecd7a857c13afb5955bcab06e08da38de"
         }
       ],
       "required_module_routes": [

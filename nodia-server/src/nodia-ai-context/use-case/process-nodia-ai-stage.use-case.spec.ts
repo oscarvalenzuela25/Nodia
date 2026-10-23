@@ -20,7 +20,7 @@ import type { LoadNodiaAiRecoveryRefsUseCase } from './load-nodia-ai-recovery-re
 import { NODIA_AI_COMPACTION_BUILDER_VERSION, type NodiaAiCompactionSummary } from '../types/nodia-ai-compaction.types.js';
 import type { LoadNodiaAiKnowledgeUseCase } from './load-nodia-ai-knowledge.use-case.js';
 import type { AuthorizeNodiaAiUseCase } from '../../nodia-ai/use-case/authorize-nodia-ai.use-case.js';
-import type { NodiaAiAdapterPort } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
+import type { NodiaAiAdapterPort, NodiaAiAdapterRequest } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 import type { ReserveNodiaAiRuntimeSlotUseCase } from '../../nodia-ai-runtime/use-case/reserve-nodia-ai-runtime-slot.use-case.js';
 import type { ReleaseNodiaAiRuntimeSlotUseCase } from '../../nodia-ai-runtime/use-case/release-nodia-ai-runtime-slot.use-case.js';
 import type { NodiaAiRuntimePolicy } from '../../nodia-ai-runtime/config/runtime-policy.js';
@@ -300,6 +300,67 @@ function fixture(
 }
 
 describe('Process NodiaAI stage', () => {
+  function codexFixture() {
+    const f = fixture();
+    const adapterIdentity = { providerKey: 'openai' as const, contractVersion: 'nodia-ai-codex-chat/1' as const, connectionId: '2' };
+    f.claim.run.selection_snapshot.mode = 'token_plan_agentic';
+    f.claim.attempt.id = '293a45fa-49ed-4641-93fd-106832bdd0b7';
+    f.claim.attempt.worker_id = '293a45fa-49ed-4641-93fd-106832bdd0b8';
+    f.claim.job.id = '293a45fa-49ed-4641-93fd-106832bdd0b9';
+    Object.assign(f.observation, { source: 'codex_live_session_and_catalog', adapterContractVersion: 'nodia-ai-codex-chat/1',
+      adapterIdentity, resourceKey: 'codex-profile:' + 'a'.repeat(64), supportsMcp: true });
+    f.claim.run.context_manifest.resource_key = f.observation.resourceKey;
+    f.claim.run.context_manifest.adapter_identity = { provider_key: 'openai', contract_version: 'nodia-ai-codex-chat/1', connection_id: '2' };
+    f.reservation.resourceKey = f.observation.resourceKey; f.reservation.operationRef = f.claim.attempt.id;
+    Object.assign(f.proof, { engine: 'agentic', attemptId: f.claim.attempt.id, operationRef: f.claim.attempt.id,
+      resourceKey: f.observation.resourceKey, adapterIdentity });
+    return f;
+  }
+  it('binds Codex observation identity before dispatch and routes callbacks through fenced checkpoints and the common gateway', async () => {
+    const f = codexFixture(), signal = f.context.signal;
+    const originalQuery = f.query.getMockImplementation()!;
+    f.query.mockImplementation(async (sql, args) => sql.startsWith('SELECT resource_key FROM nodia_ai_runtime_slots')
+      ? [{ resource_key: f.observation.resourceKey }] : originalQuery(sql, args));
+    f.adapter.execute.mockImplementationOnce(async (request: NodiaAiAdapterRequest) => {
+      await request.onLeaseCheck!(signal);
+      await request.onProtocolProgress!(4, signal, 1);
+      await request.onToolCall!({ callId: 'synthetic-callback', name: 'nodia_knowledge_index', arguments: {} }, signal);
+      return { kind: 'answer', text: 'Respuesta sintética', terminalProof: f.proof };
+    });
+    const outcome = await f.subject.execute(f.claim, f.context);
+    expect(outcome.status).toBe('completed');
+    expect(f.armDispatch).toHaveBeenCalledWith(f.claim.run.selection_snapshot, { ...f.reservation,
+      adapterIdentity: { providerKey: 'openai', contractVersion: 'nodia-ai-codex-chat/1', connectionId: '2' }, sessionGeneration: f.observation.sessionGeneration }, expect.any(Function));
+    expect(f.tools.progress).toHaveBeenCalledExactlyOnceWith(f.claim, f.context, 4, 1);
+    expect(f.tools.execute).toHaveBeenCalledExactlyOnceWith(f.claim, f.context,
+      { callId: 'synthetic-callback', name: 'nodia_knowledge_index', arguments: {} });
+    const slot = f.query.mock.calls.find(([sql]) => sql.startsWith('SELECT resource_key FROM nodia_ai_runtime_slots'))!;
+    expect(slot[0]).toContain("state='held'"); expect(slot[0]).toContain('FOR SHARE');
+    expect(slot[1]).toEqual([f.reservation.resourceKey, f.claim.job.id, f.claim.attempt.worker_id, '8', f.claim.attempt.id]);
+  });
+  it('accounts every Codex protocol message even when no tools are attested and revokes callbacks after lease loss', async () => {
+    const f = codexFixture(); f.observation.supportsMcp = false;
+    await f.subject.execute(f.claim, f.context);
+    const request = f.adapter.execute.mock.calls[0][0] as NodiaAiAdapterRequest;
+    expect(request.onToolCall).toBeUndefined();
+    await request.onProtocolProgress!(7, f.context.signal, 2);
+    expect(f.tools.progress).toHaveBeenCalledExactlyOnceWith(f.claim, f.context, 7, 2);
+    await expect(request.onLeaseCheck!(f.context.signal)).rejects.toThrow('lease_lost');
+    const controller = new AbortController(); controller.abort();
+    await expect(request.onProtocolProgress!(8, controller.signal)).rejects.toThrow('lease_lost');
+    expect(f.tools.progress).toHaveBeenCalledTimes(1);
+    expect(f.tools.execute).not.toHaveBeenCalled();
+  });
+  it.each(['manifest_missing', 'manifest_connection', 'observation_connection', 'implicit_identity', 'changed_contract'])('does not reserve or dispatch Codex after %s', async (change) => {
+    const f = codexFixture();
+    if (change === 'manifest_missing') delete f.claim.run.context_manifest.adapter_identity;
+    if (change === 'manifest_connection') (f.claim.run.context_manifest.adapter_identity as Record<string, string>).connection_id = '4';
+    if (change === 'observation_connection') Object.assign(f.observation, { adapterIdentity: { providerKey: 'openai', contractVersion: 'nodia-ai-codex-chat/1', connectionId: '4' } });
+    if (change === 'implicit_identity') { Reflect.deleteProperty(f.observation, 'adapterIdentity'); Reflect.deleteProperty(f.observation, 'adapterContractVersion'); }
+    if (change === 'changed_contract') Object.assign(f.observation, { adapterContractVersion: 'nodia-ai-gemini-chat/1' });
+    await expect(f.subject.execute(f.claim, f.context)).rejects.toThrow('eligibility_changed');
+    expect(f.reserve.execute).not.toHaveBeenCalled(); expect(f.armDispatch).not.toHaveBeenCalled(); expect(f.adapter.execute).not.toHaveBeenCalled();
+  });
   it('marks only an exact direct Agentic observation timeout retryable before reserving or sending', async () => {
     const f = fixture();
     f.claim.run.selection_snapshot.mode = 'token_plan_agentic';

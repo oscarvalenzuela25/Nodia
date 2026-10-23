@@ -1,0 +1,139 @@
+{
+  "schema": "ai38-mcp-post-list-host-IPC-v1",
+  "observer_source_sha256": "b0a90844ea0829a8e33265aae370450d3e22901d550b10c16e563bd53a2cfc70",
+  "observer_ready": {
+    "event": "observer_ready",
+    "maximum_seconds": 180,
+    "poll_interval_ms": 100
+  },
+  "host_capture_began_at_utc": "2026-10-22T20:39:51.441664+00:00",
+  "native_epoch_before": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z"
+  },
+  "native_epoch_after": {
+    "id": "9b07866b018c51efcb481a47fa8d81ef94b98dab430c1535b54b5d098488f267",
+    "image": "sha256:073f319ffa35c75d82be379a2d6d0d48a1c760b7f37103c8194120e51d71660e",
+    "started_at": "2026-10-22T19:48:35.342867871Z"
+  },
+  "same_native_epoch": true,
+  "observation": {
+    "schema": "ai38-mcp-post-list-live-IPC-v1",
+    "status": "candidate_removed",
+    "elapsed_ms": 78293,
+    "candidate_seen": true,
+    "updates": [
+      {
+        "observed_relative_ms": 51209,
+        "observed_VM_utc": "2026-10-22T20:47:11.226776+00:00",
+        "ordinal": 1,
+        "kind": "rpc",
+        "rpc_messages": 1,
+        "tool_requests": 0,
+        "rpc_diagnostic": {
+          "method": "other",
+          "response": "error",
+          "error_code": -32000,
+          "unrecognized_error_code": false
+        }
+      },
+      {
+        "observed_relative_ms": 51209,
+        "observed_VM_utc": "2026-10-22T20:47:11.226810+00:00",
+        "ordinal": 2,
+        "kind": "rpc",
+        "rpc_messages": 2,
+        "tool_requests": 0,
+        "rpc_diagnostic": {
+          "method": "other",
+          "response": "notification",
+          "error_code": null,
+          "unrecognized_error_code": false
+        }
+      },
+      {
+        "observed_relative_ms": 51209,
+        "observed_VM_utc": "2026-10-22T20:47:11.226821+00:00",
+        "ordinal": 3,
+        "kind": "rpc",
+        "rpc_messages": 3,
+        "tool_requests": 0,
+        "rpc_diagnostic": {
+          "method": "initialize",
+          "response": "success",
+          "error_code": null,
+          "unrecognized_error_code": false
+        }
+      },
+      {
+        "observed_relative_ms": 51209,
+        "observed_VM_utc": "2026-10-22T20:47:11.226829+00:00",
+        "ordinal": 4,
+        "kind": "rpc",
+        "rpc_messages": 4,
+        "tool_requests": 0,
+        "rpc_diagnostic": {
+          "method": "notifications_initialized",
+          "response": "notification",
+          "error_code": null,
+          "unrecognized_error_code": false
+        }
+      },
+      {
+        "observed_relative_ms": 51209,
+        "observed_VM_utc": "2026-10-22T20:47:11.226836+00:00",
+        "ordinal": 5,
+        "kind": "rpc",
+        "rpc_messages": 5,
+        "tool_requests": 0,
+        "rpc_diagnostic": {
+          "method": "tools_list",
+          "response": "success",
+          "error_code": null,
+          "unrecognized_error_code": false
+        }
+      },
+      {
+        "observed_relative_ms": 54329,
+        "observed_VM_utc": "2026-10-22T20:47:14.346441+00:00",
+        "ordinal": 6,
+        "kind": "rpc",
+        "rpc_messages": 6,
+        "tool_requests": 0,
+        "rpc_diagnostic": {
+          "method": "other",
+          "response": "notification",
+          "error_code": null,
+          "unrecognized_error_code": false
+        }
+      },
+      {
+        "observed_relative_ms": 68423,
+        "observed_VM_utc": "2026-10-22T20:47:28.440625+00:00",
+        "ordinal": 7,
+        "kind": "tool_request",
+        "rpc_messages": 7,
+        "tool_requests": 1,
+        "rpc_diagnostic": null
+      }
+    ],
+    "update_count": 7,
+    "unique_ordinals": 7,
+    "snapshot_poll_interval_ms": 100,
+    "polling_cannot_prove_unobserved_intermediate_states": true,
+    "raw_method_names_not_retained_by_current_bridge": true,
+    "only_bridge_request_files_opened": true,
+    "profile_or_session_bytes_opened": false,
+    "payload_names_arguments_or_raw_logs_emitted": false,
+    "HTTP_requests": 0,
+    "provider_generation_requests": 0,
+    "service_changes": 0
+  },
+  "observer_exit_code": 0,
+  "private_stderr_bytes": 0,
+  "private_stderr_saved_or_emitted": false,
+  "HTTP_requests": 0,
+  "provider_generation_requests": 0,
+  "service_changes": 0
+}

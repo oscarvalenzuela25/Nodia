@@ -1,0 +1,12 @@
+{
+  "stage": "AI39",
+  "status": "staged_isolated_not_activated",
+  "root": "/opt/nodia/verification/ai39-worker-integration-r05",
+  "archive_sha256": "eca3e74601eb8928830d622f1546fd38cea1d9933e81e2f7e8836c2f6d1ff5dc",
+  "manifest_sha256": "6e75b4c495f4c0c0c6c16091131bcb4e907097099cdf0de056f748f10a27eae6",
+  "files": 4297,
+  "source_dependencies": "existing_read_only_Linux_node_modules",
+  "services_changed": 0,
+  "configured_SQL_writes": 0,
+  "provider_requests": 0
+}

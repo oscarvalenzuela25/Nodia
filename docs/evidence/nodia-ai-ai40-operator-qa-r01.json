@@ -1,0 +1,12 @@
+{
+  "stage": "AI40",
+  "observed_at_host_utc": "2026-10-23T00:48:41.231505+00:00",
+  "tests": 39,
+  "exit": 0,
+  "stdout": "",
+  "stderr": ".......................................\r\n----------------------------------------------------------------------\r\nRan 39 tests in 0.073s\r\n\r\nOK\r\n",
+  "driver_sha256": "c952cf7136c61ddb531789e52e47972e16f4bc1d9c481a9d519ff43b66f7a000",
+  "tests_sha256": "ccc8ac0be2c49f181e9046a5ca5ddf6c6fd9773e6d38666f5eb137b243509635",
+  "system_operations": 0,
+  "provider_requests": 0
+}

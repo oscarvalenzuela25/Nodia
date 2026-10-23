@@ -21,8 +21,10 @@ import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import useAuth from "../../../../hooks/useAuth";
 import useGeneralSettingsStore from "../../../../store/generalSettings/generalSettingsStore";
+import { hasModuleAccess } from "../../../../store/generalSettings/helpers";
 import TextInput from "../../../../components/inputs/TextInput";
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
+import { nodiaAiEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
 import ConfigurationDrawer from "../../components/ConfigurationDrawer";
 import Preferences from "../../components/Preferences";
 import ConversationHistory from "../../components/ConversationHistory";
@@ -104,6 +106,9 @@ function ChatPage() {
   const [filters, setFilters] = useState<ConversationFilters>({ search: "", archive: "active", pinned: false, view: "own" });
   const [search, setSearch] = useState("");
   const canViewAll = useGeneralSettingsStore(state => state.isLoaded && state.roles.includes("super_admin"));
+  const canManageConnections = useGeneralSettingsStore(state => state.isLoaded
+    && (state.roles.includes("super_admin") || state.actions.some(action => action.key === "ai:manage"))
+    && hasModuleAccess(state.modules, "/settings/ai-providers"));
   const [operationState, setOperation] = useState<{ operation: ConversationOperation; contextId: string | null; anchor: HTMLElement } | null>(null);
   const operation = operationState?.contextId === chatId ? operationState.operation : null;
   const [operationError, setOperationError] = useState<string | null>(null);
@@ -146,6 +151,7 @@ function ChatPage() {
     overlay === "configuration"
       ? configurationDraft
       : (chat?.selection ?? null),
+    { conversationId: chatId, active },
   );
   const create = useCreateNodiaAiConversation();
   const admit = useAdmitNodiaAiMessage(chatId);
@@ -189,7 +195,7 @@ function ChatPage() {
     !!chat?.selection &&
     !!eligibility.data &&
     sameSelection(chat.selection, eligibility.data.selection);
-  const usable = selectionMatches && eligibility.data?.available === true;
+  const usable = selectionMatches && !eligibility.isError && eligibility.data?.available === true;
   const sendDisabled =
     !chat ||
     chat.read_only ||
@@ -495,11 +501,18 @@ function ChatPage() {
               </Alert>
             )}
             {accessRejected && <Alert severity="warning">{t("organization.access_rejected")}</Alert>}
-            {chat && !chat.read_only && !usable && (
+            {chat && !chat.read_only && !usable && !eligibility.isError && (
               <Alert severity="info">
                 {eligibility.isFetching
                   ? t("checking_selection")
-                  : t("selection_unavailable")}
+                  : t(nodiaAiEligibilityReasonKey(selectionMatches ? eligibility.data?.reason : null))}
+                {chat.selection && !active && (
+                  <Button color="inherit" disabled={busy || readBusy || eligibility.isFetching}
+                    onClick={() => void eligibility.refetch()}
+                    sx={{ display: "flex", mt: 1, minHeight: 44, width: { xs: "100%", sm: "auto" } }}>
+                    {t("configuration.check_again")}
+                  </Button>
+                )}
               </Alert>
             )}
             {eligibility.isError && (
@@ -507,7 +520,7 @@ function ChatPage() {
                 severity="error"
                 action={
                   <Button
-                    disabled={eligibility.isFetching}
+                    disabled={active || busy || readBusy || eligibility.isFetching}
                     onClick={() => void eligibility.refetch()}
                   >
                     {t("retry")}
@@ -707,6 +720,7 @@ function ChatPage() {
           if (!saving) setOverlay(null);
         }}
         connections={connections}
+        canManageConnection={canManageConnections}
         selection={chat?.selection ?? null}
         routingEnabled={chat?.routing.enabled ?? false}
         onSelectionChange={setConfigurationDraft}

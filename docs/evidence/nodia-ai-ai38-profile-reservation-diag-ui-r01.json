@@ -1,0 +1,10 @@
+{
+  "schema": "ai38-profile-DIAG-reload-DOM-v1",
+  "observed_at_operator_clock": "2026-10-22T19:40:52.477Z",
+  "VM_window_begin_utc": "2026-10-22T19:46:46Z",
+  "composer_enabled": false,
+  "visible_busy": true,
+  "new_messages_sent": 0,
+  "new_business_confirmations": 0,
+  "source": "authenticated_Vite_reload_DIAG_epoch"
+}
